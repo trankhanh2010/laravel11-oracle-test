@@ -27,6 +27,7 @@ use App\Models\ExecuteRole;
 use App\Models\Commune;
 use App\Models\Service;
 use App\Models\Servive;
+use App\Models\ServicePaty;
 
 class HISController extends Controller
 {
@@ -73,6 +74,8 @@ class HISController extends Controller
     protected $commune_name = "commune";
     protected $service;
     protected $service_name = "service";
+    protected $service_paty;
+    protected $service_paty_name = 'service_paty';
 
     public function __construct()
     {
@@ -98,6 +101,7 @@ class HISController extends Controller
         $this->execute_role = new ExecuteRole();
         $this->commune = new Commune();
         $this->service = new Servive();
+        $this->service_paty = new ServicePaty();
     }
 
     /// Department
@@ -559,6 +563,9 @@ class HISController extends Controller
         $data20 = get_cache_1_n_with_ids($this->service, "applied_patient_type", $this->service_name, $id, $this->time);
         $data21 = get_cache_1_1($this->service, "default_patient_type", $this->service_name, $id, $this->time);
         $data22 = get_cache_1_n_with_ids($this->service, "applied_patient_classify", $this->service_name, $id, $this->time);
+        $data23 = get_cache_1_n_with_ids($this->service, "min_proc_time_except_paty", $this->service_name, $id, $this->time);
+        $data24 = get_cache_1_n_with_ids($this->service, "max_proc_time_except_paty", $this->service_name, $id, $this->time);
+        $data25 = get_cache_1_n_with_ids($this->service, "total_time_except_paty", $this->service_name, $id, $this->time);
 
         return response()->json(['data' => [
             'service' => $data,
@@ -567,8 +574,8 @@ class HISController extends Controller
             'service_unit' => $data3,
             'hein_service_type' => $data4,
             'bill_patient_type' => $data5,
-            'pttt_group_id' => $data6,
-            'pttt_method_id' => $data7,
+            'pttt_group' => $data6,
+            'pttt_method' => $data7,
             'icd_cm' => $data8,
             'revenue_department' => $data9,
             'package' => $data10,
@@ -583,8 +590,47 @@ class HISController extends Controller
             'film_size' => $data19,
             'applied_patient_type' => $data20,
             'default_patient_type' => $data21,
-            'applied_patient_classify' => $data22
+            'applied_patient_classify' => $data22,
+            'min_proc_time_except_paty' => $data23,
+            'max_proc_time_except_paty' => $data24,
+            'total_time_except_paty' => $data25
 
         ]], 200);    
     }
+
+    /// Service Paty
+    public function service_paty()
+    {
+        $data = get_cache($this->service_paty, $this->service_paty_name, null, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    public function service_paty_id($id)
+    {
+        $data = get_cache($this->service_paty, $this->service_paty_name, $id, $this->time);
+        $data1 = get_cache_1_1($this->service_paty, "service", $this->service_paty_name, $id, $this->time);
+        $data2 = get_cache_1_1($this->service_paty, "patient_type", $this->service_paty_name, $id, $this->time);
+        $data3 = get_cache_1_1($this->service_paty, "branch", $this->service_paty_name, $id, $this->time);
+        $data4 = get_cache_1_n_with_ids($this->service_paty, "request_room", $this->service_paty_name, $id, $this->time);
+        $data5 = get_cache_1_n_with_ids($this->service_paty, "execute_room", $this->service_paty_name, $id, $this->time);
+        $data6 = get_cache_1_n_with_ids($this->service_paty, "request_deparment", $this->service_paty_name, $id, $this->time);
+        $data7 = get_cache_1_1($this->service_paty, "package", $this->service_paty_name, $id, $this->time);
+        $data8 = get_cache_1_1($this->service_paty, "service_condition", $this->service_paty_name, $id, $this->time);
+        $data9 = get_cache_1_1($this->service_paty, "patient_classify", $this->service_paty_name, $id, $this->time);
+        $data10 = get_cache_1_1($this->service_paty, "ration_time", $this->service_paty_name, $id, $this->time);
+
+        return response()->json(['data' => [
+            'cashier_room' => $data,
+            'service' => $data1,
+            'patient_type' => $data2,
+            'branch' => $data3,
+            'request_room' => $data4,
+            'execute_room' => $data5,
+            'request_deparment' => $data6,
+            'package' => $data7,
+            'service_condition' => $data8,
+            'patient_classify' => $data9,
+            'ration_time' => $data10
+        ]], 200);   
+     }
 }

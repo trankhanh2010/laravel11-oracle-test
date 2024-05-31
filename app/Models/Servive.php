@@ -33,7 +33,10 @@ class Servive extends Model
         'film_size_id',
         'applied_patient_type_ids',
         'default_patient_type_id',
-        'applied_patient_classify_ids'
+        'applied_patient_classify_ids',
+        'min_proc_time_except_paty_ids',
+        'max_proc_time_except_paty_ids',
+        'total_time_except_paty_ids',
 
     ];
 
@@ -145,5 +148,20 @@ class Servive extends Model
     public function applied_patient_classifys()
     {
         return PatientClassify::whereIn('id', explode(',', $this->applied_patient_classify_ids))->get();
+    }
+
+    public function min_proc_time_except_patys()
+    {
+        return PatientType::whereIn('id', explode(',', $this->min_proc_time_except_paty_ids))->get();
+    }
+
+    public function max_proc_time_except_patys()
+    {
+        return PatientType::whereIn('id', explode(',', $this->max_proc_time_except_paty_ids))->get();
+    }
+
+    public function total_time_except_patys()
+    {
+        return PatientType::whereIn('id', explode(',', $this->min_proc_time_except_paty_ids))->get();
     }
 }

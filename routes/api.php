@@ -150,4 +150,10 @@ Route::group([
         Route::get("service", [HISController::class, "service"]);
         Route::get("service/{id}", [HISController::class, "service_id"]);
     });
+
+    /// Chính sách dịch vụ
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisServicePatyList'], function () {
+        Route::get("service-paty", [HISController::class, "service_paty"]);
+        Route::get("service-paty/{id}", [HISController::class, "service_paty_id"]);
+    });
 });
