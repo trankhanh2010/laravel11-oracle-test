@@ -156,4 +156,22 @@ Route::group([
         Route::get("service-paty", [HISController::class, "service_paty"]);
         Route::get("service-paty/{id}", [HISController::class, "service_paty_id"]);
     });
+
+    /// Dịch vụ máy
+    Route::group(['as' => 'HIS.Desktop.Plugins.ServiceMachine'], function () {
+
+        /// Dịch vụ
+        Route::get("service-machine", [HISController::class, "service_machine"]);
+        Route::get("service-machine/{id}", [HISController::class, "service_machine_id"]);
+
+        /// Máy
+        Route::get("machine", [HISController::class, "machine"]);
+        Route::get("machine/{id}", [HISController::class, "machine_id"]);
+    });
+
+    /// Dịch vụ phòng
+    Route::group(['as' => 'HIS.Desktop.Plugins.RoomService'], function () {
+        Route::get("room-service", [HISController::class, "room_service"]);
+        Route::get("room-service/{id}", [HISController::class, "room_service_id"]);
+    });
 });

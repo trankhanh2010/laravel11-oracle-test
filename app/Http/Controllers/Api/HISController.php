@@ -28,7 +28,8 @@ use App\Models\Commune;
 use App\Models\Service;
 use App\Models\Servive;
 use App\Models\ServicePaty;
-
+use App\Models\ServiceMachine;
+use App\Models\Machine;
 class HISController extends Controller
 {
     protected $time;
@@ -76,7 +77,10 @@ class HISController extends Controller
     protected $service_name = "service";
     protected $service_paty;
     protected $service_paty_name = 'service_paty';
-
+    protected $service_machine;
+    protected $service_machine_name = 'service_machine';
+    protected $machine;
+    protected $machine_name = 'machine';
     public function __construct()
     {
         $this->time = now()->addMinutes(1440);
@@ -102,6 +106,8 @@ class HISController extends Controller
         $this->commune = new Commune();
         $this->service = new Servive();
         $this->service_paty = new ServicePaty();
+        $this->service_machine = new ServiceMachine();
+        $this->machine = new Machine();
     }
 
     /// Department
@@ -620,7 +626,7 @@ class HISController extends Controller
         $data10 = get_cache_1_1($this->service_paty, "ration_time", $this->service_paty_name, $id, $this->time);
 
         return response()->json(['data' => [
-            'cashier_room' => $data,
+            'service_paty' => $data,
             'service' => $data1,
             'patient_type' => $data2,
             'branch' => $data3,
@@ -633,4 +639,40 @@ class HISController extends Controller
             'ration_time' => $data10
         ]], 200);   
      }
+
+        /// Service Machine
+    public function service_machine()
+    {
+        $data = get_cache($this->service_machine, $this->service_machine_name, null, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    public function service_machine_id($id)
+    {
+        $data = get_cache($this->service_machine, $this->service_machine_name, $id, $this->time);
+        $data1 = get_cache_1_1($this->service_machine, "service", $this->service_machine_name, $id, $this->time);
+        $data2 = get_cache_1_1_1($this->service_machine, "service.service_type", $this->service_machine_name, $id, $this->time);
+        $data3 = get_cache_1_1($this->service_machine, "machine", $this->service_machine_name, $id, $this->time);
+
+        return response()->json(['data' => [
+            'service_machine' => $data,
+            'service' => $data1,
+            'service_type' => $data2,
+            'machine' => $data3
+        ]], 200);   
+     }
+
+     public function machine()
+     {
+         $data = get_cache($this->machine, $this->machine_name, null, $this->time);
+         return response()->json(['data' => $data], 200);
+     }
+ 
+     public function machine_id($id)
+     {
+         $data = get_cache($this->machine, $this->machine_name, $id, $this->time);
+         return response()->json(['data' => [
+             'machine' => $data
+         ]], 200);   
+      }
 }
