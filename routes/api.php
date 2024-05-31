@@ -171,7 +171,7 @@ Route::group([
 
     /// Dịch vụ phòng
     Route::group(['as' => 'HIS.Desktop.Plugins.RoomService'], function () {
-        Route::get("room-service", [HISController::class, "room_service"]);
-        Route::get("room-service/{id}", [HISController::class, "room_service_id"]);
+        Route::get("service-room", [HISController::class, "service_room"]);
+        Route::get("service-room/{id}", [HISController::class, "service_room_id"]);
     });
 });

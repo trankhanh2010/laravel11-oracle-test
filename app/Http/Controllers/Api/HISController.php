@@ -30,6 +30,8 @@ use App\Models\Servive;
 use App\Models\ServicePaty;
 use App\Models\ServiceMachine;
 use App\Models\Machine;
+use App\Models\ServiceRoom;
+
 class HISController extends Controller
 {
     protected $time;
@@ -58,7 +60,7 @@ class HISController extends Controller
     protected $area;
     protected $area_name = "area";
     protected $refectory;
-    protected $refectory_name= "refectory";
+    protected $refectory_name = "refectory";
     protected $execute_group;
     protected $execute_group_name = "execute_group";
     protected $cashier_room;
@@ -81,6 +83,8 @@ class HISController extends Controller
     protected $service_machine_name = 'service_machine';
     protected $machine;
     protected $machine_name = 'machine';
+    protected $service_room;
+    protected $service_room_name = 'service_room';
     public function __construct()
     {
         $this->time = now()->addMinutes(1440);
@@ -96,7 +100,7 @@ class HISController extends Controller
         $this->medi_stock = new MediStock();
         $this->reception_room = new ReceptionRoom();
         $this->area = new Area();
-        $this->refectory= new Refectory();
+        $this->refectory = new Refectory();
         $this->execute_group = new ExecuteGroup();
         $this->cashier_room = new CashierRoom();
         $this->national = new National();
@@ -108,6 +112,7 @@ class HISController extends Controller
         $this->service_paty = new ServicePaty();
         $this->service_machine = new ServiceMachine();
         $this->machine = new Machine();
+        $this->service_room = new ServiceRoom();
     }
 
     /// Department
@@ -130,7 +135,7 @@ class HISController extends Controller
             'allow_treatment_type' => $data2,
             'default_instr_patient_type' => $data3,
             'req_surg_treatment_type' => $data4
-        ]], 200);    
+        ]], 200);
     }
 
     /// Bed Room
@@ -312,7 +317,8 @@ class HISController extends Controller
             'room' => $data1,
             'room_type' => $data2,
             'department' => $data3
-        ]], 200);    }
+        ]], 200);
+    }
 
     public function medi_stock_get_room($id)
     {
@@ -429,7 +435,8 @@ class HISController extends Controller
             'room_type' => $data1,
             'department' => $data2,
             'area' => $data3
-        ]], 200);    }
+        ]], 200);
+    }
 
     public function cashier_room_get_room_type($id)
     {
@@ -496,8 +503,9 @@ class HISController extends Controller
             'treatment_type' => $data3,
             'treatment_end_type' => $data4,
             'store_room' => $data5,
-            'parent' =>$data6
-        ]], 200);    }
+            'parent' => $data6
+        ]], 200);
+    }
 
     public function data_store_get_department_room($id)
     {
@@ -601,7 +609,7 @@ class HISController extends Controller
             'max_proc_time_except_paty' => $data24,
             'total_time_except_paty' => $data25
 
-        ]], 200);    
+        ]], 200);
     }
 
     /// Service Paty
@@ -637,10 +645,10 @@ class HISController extends Controller
             'service_condition' => $data8,
             'patient_classify' => $data9,
             'ration_time' => $data10
-        ]], 200);   
-     }
+        ]], 200);
+    }
 
-        /// Service Machine
+    /// Service Machine
     public function service_machine()
     {
         $data = get_cache($this->service_machine, $this->service_machine_name, null, $this->time);
@@ -659,20 +667,36 @@ class HISController extends Controller
             'service' => $data1,
             'service_type' => $data2,
             'machine' => $data3
-        ]], 200);   
-     }
+        ]], 200);
+    }
 
-     public function machine()
-     {
-         $data = get_cache($this->machine, $this->machine_name, null, $this->time);
-         return response()->json(['data' => $data], 200);
-     }
- 
-     public function machine_id($id)
-     {
-         $data = get_cache($this->machine, $this->machine_name, $id, $this->time);
-         return response()->json(['data' => [
-             'machine' => $data
-         ]], 200);   
-      }
+    /// Machine
+    public function machine()
+    {
+        $data = get_cache($this->machine, $this->machine_name, null, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    public function machine_id($id)
+    {
+        $data = get_cache($this->machine, $this->machine_name, $id, $this->time);
+        return response()->json(['data' => [
+            'machine' => $data
+        ]], 200);
+    }
+
+    /// Room Service
+    public function service_room()
+    {
+        $data = get_cache($this->service_room, $this->service_room_name, null, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    public function service_room_id($id)
+    {
+        $data = get_cache($this->service_room, $this->service_room_name, $id, $this->time);
+        return response()->json(['data' => [
+            'room_service' => $data
+        ]], 200);
+    }
 }
