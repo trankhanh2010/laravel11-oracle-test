@@ -12,7 +12,6 @@ class ExecuteRoom extends Model
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
     protected $table = 'HIS_EXECUTE_ROOM';
-  
     public function room()
     {
         return $this->belongsTo(Room::class);

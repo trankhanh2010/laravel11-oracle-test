@@ -15,16 +15,16 @@ class Machine extends Model
     protected $fillable = [
         'room_id',
         'room_ids',
-        'department_id'
+        'department_id',
     ];
 
-    public function rooms()
+    public function execute_rooms()
     {
-        return Room::whereIn('id', explode(',', $this->room_ids))->get();
+        return ExecuteRoom::whereIn('id', explode(',', $this->room_ids))->get();
     }
-    public function room()
+    public function execute_room()
     {
-        return $this->belongsTo(Room::class, 'room_id');
+        return $this->belongsTo(ExecuteRoom::class, 'room_id');
     }
     public function department()
     {

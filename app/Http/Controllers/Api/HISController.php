@@ -772,13 +772,13 @@ class HISController extends Controller
     {
         $data = get_cache($this->machine, $this->machine_name, $id, $this->time);
         $data1 = get_cache_1_1($this->machine, "department", $this->machine_name, $id, $this->time);
-        $data2 = get_cache_1_n_with_ids($this->machine, "room", $this->machine_name, $id, $this->time);
-        $data3 = get_cache_1_1($this->machine, "room", $this->machine_name, $id, $this->time);
+        $data2 = get_cache_1_n_with_ids($this->machine, "execute_room", $this->machine_name, $id, $this->time);
+        $data3 = get_cache_1_1($this->machine, "execute_room", $this->machine_name, $id, $this->time);
         return response()->json(['data' => [
             'machine' => $data,
             'department' => $data1,
-            'rooms' => $data2,
-            'room' => $data3
+            'execute_rooms' => $data2,
+            'execute_room' => $data3
         ]], 200);
     }
 
