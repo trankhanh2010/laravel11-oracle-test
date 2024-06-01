@@ -6,17 +6,12 @@ use App\Traits\dinh_dang_ten_truong;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ServiceUnit extends Model
+class CareerTitle extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his';
-    protected $table = 'HIS_Service_Unit';
+    protected $table = 'HIS_Career_Title';
     protected $fillable = [
-        'convert_id',
-    ];
 
-    public function convert()
-    {
-        return $this->belongsTo(ServiceUnit::class, 'convert_id', 'id');
-    }
+    ];
 }

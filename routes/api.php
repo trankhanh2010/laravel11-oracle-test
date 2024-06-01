@@ -149,6 +149,7 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisService'], function () {
         Route::get("service", [HISController::class, "service"]);
         Route::get("service/{id}", [HISController::class, "service_id"]);
+        Route::get("service/by-code/{type_id}", [HISController::class, "service_by_code"]);
     });
 
     /// Chính sách dịch vụ
@@ -159,12 +160,12 @@ Route::group([
 
     /// Dịch vụ máy
     Route::group(['as' => 'HIS.Desktop.Plugins.ServiceMachine'], function () {
-
-        /// Dịch vụ
         Route::get("service-machine", [HISController::class, "service_machine"]);
         Route::get("service-machine/{id}", [HISController::class, "service_machine_id"]);
+    });
 
-        /// Máy
+    /// Máy / Máy cận lâm sàn
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisMachine'], function () {
         Route::get("machine", [HISController::class, "machine"]);
         Route::get("machine/{id}", [HISController::class, "machine_id"]);
     });
@@ -173,5 +174,143 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.RoomService'], function () {
         Route::get("service-room", [HISController::class, "service_room"]);
         Route::get("service-room/{id}", [HISController::class, "service_room_id"]);
+    });
+
+    /// Phòng
+    Route::get("room", [HISController::class, "room"]);
+    Route::get("room/{id}", [HISController::class, "room_id"]);
+
+    /// Dịch vụ đi kèm
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisServiceFollow'], function () {
+        Route::get("service-follow", [HISController::class, "service_follow"]);
+        Route::get("service-follow/{id}", [HISController::class, "service_follow_id"]);
+    });
+
+    /// Giường
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisBed'], function () {
+        Route::get("bed", [HISController::class, "bed"]);
+        Route::get("bed/{id}", [HISController::class, "bed_id"]);
+    });
+
+    /// Giường - Dịch vụ giường
+    Route::group(['as' => 'HIS.Desktop.Plugins.BedBsty'], function () {
+        Route::get("bed-bsty", [HISController::class, "bed_bsty"]);
+        Route::get("bed-bsty/{id}", [HISController::class, "bed_bsty_id"]);
+    });
+
+    /// Loại giường
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisBedTypeList'], function () {
+        Route::get("bed-type", [HISController::class, "bed_type"]);
+        Route::get("bed-type/{id}", [HISController::class, "bed_type_id"]);
+    });
+
+    /// Nhóm dịch vụ
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisServSegr'], function () {
+        Route::get("serv-segr", [HISController::class, "serv_segr"]);
+        Route::get("serv-segr/{id}", [HISController::class, "serv_segr_id"]);
+        Route::get("service-group", [HISController::class, "service_group"]);
+        Route::get("service-group/{id}", [HISController::class, "service_group_id"]);
+    });
+
+    /// Tài khoản nhân viên
+    Route::group(['as' => 'HIS.Desktop.Plugins.EmpUser'], function () {
+        Route::get("emp-user", [HISController::class, "emp_user"]);
+        Route::get("emp-user/{id}", [HISController::class, "emp_user_id"]);
+    });
+
+    /// Thông tin tài khoản
+    Route::group(['as' => 'HIS.Desktop.Plugins.InfoUser'], function () {
+        Route::get("info-user/{id}", [HISController::class, "info_user_id"]);
+    });
+
+    /// Tài khoản - Vai trò thực hiện
+    Route::group(['as' => 'HIS.Desktop.Plugins.ExecuteRoleUser'], function () {
+        Route::get("execute-role-user", [HISController::class, "execute_role_user"]);
+        Route::get("execute-role-user/{id}", [HISController::class, "execute_role_user_id"]);
+    });
+
+    /// Vai trò
+    Route::group(['as' => 'ACS.Desktop.Plugins.AcsRole'], function () {
+        Route::get("role", [HISController::class, "role"]);
+        Route::get("role/{id}", [HISController::class, "role_id"]);
+    });
+
+    /// Vai trò - Chức năng 
+    Route::group(['as' => 'ACS.Desktop.Plugins.AcsModuleRole'], function () {
+        Route::get("module", [HISController::class, "module"]);
+        Route::get("module/{id}", [HISController::class, "module_id"]);
+    });
+
+    /// Dân tộc
+    Route::group(['as' => 'SDA.Desktop.Plugins.SdaEthnic'], function () {
+        Route::get("ethnic", [HISController::class, "ethnic"]);
+        Route::get("ethnic/{id}", [HISController::class, "ethnic_id"]);
+    });
+
+    /// Đối tượng bệnh nhân
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisPatientType'], function () {
+        Route::get("patient-type", [HISController::class, "patient_type"]);
+        Route::get("patient-type/{id}", [HISController::class, "patient_type_id"]);
+    });
+
+    /// Đối tượng ưu tiên
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisPriorityType'], function () {
+        Route::get("priority-type", [HISController::class, "priority_type"]);
+        Route::get("priority-type/{id}", [HISController::class, "priority_type_id"]);
+    });
+
+    /// Mối quan hệ
+    Route::group(['as' => 'HIS.Desktop.Plugins.EmrRelationList'], function () {
+
+        ////
+        ////
+    });
+
+    /// Nghề nghiệp
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisCareer'], function () {
+        Route::get("career", [HISController::class, "career"]);
+        Route::get("career/{id}", [HISController::class, "career_id"]);
+    });
+
+    /// Phân loại bệnh nhân
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisPatientClassify'], function () {
+        Route::get("patient-classify", [HISController::class, "patient_classify"]);
+        Route::get("patient-classify/{id}", [HISController::class, "patient_classify_id"]);
+    });
+
+    /// Tôn giáo
+    Route::group(['as' => 'SDA.Desktop.Plugins.SdaReligion'], function () {
+        Route::get("religion", [HISController::class, "religion"]);
+        Route::get("religion/{id}", [HISController::class, "religion_id"]);
+    });
+
+    /// Đơn vị tính
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisServiceUnitEdit'], function () {
+        Route::get("service-unit", [HISController::class, "service_unit"]);
+        Route::get("service-unit/{id}", [HISController::class, "service_unit_id"]);
+    });
+
+    /// Loại dịch vụ
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisServiceType'], function () {
+        Route::get("service-type", [HISController::class, "service_type"]);
+        Route::get("service-type/{id}", [HISController::class, "service_type_id"]);
+    });
+
+    /// Nhóm xuất ăn
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisRationGroup'], function () {
+        Route::get("ration-group", [HISController::class, "ration_group"]);
+        Route::get("ration-group/{id}", [HISController::class, "ration_group_id"]);
+    });
+
+    /// Loại y lệnh 
+    Route::group(['as' => 'HIS.Desktop.Plugins.ServiceReqType'], function () {
+        Route::get("service-req-type", [HISController::class, "service_req_type"]);
+        Route::get("service-req-type/{id}", [HISController::class, "service_req_type_id"]);
+    });
+
+    /// Bữa ăn
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisRationTime'], function () {
+        Route::get("ration-time", [HISController::class, "ration_time"]);
+        Route::get("ration-time/{id}", [HISController::class, "ration_time_id"]);
     });
 });

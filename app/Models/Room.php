@@ -18,6 +18,7 @@ class Room extends Model
         'default_drug_store_ids',
         'deposit_account_book_id',
         'bill_account_book_id',
+        'room_type_id',
     ];
 
     public function department()

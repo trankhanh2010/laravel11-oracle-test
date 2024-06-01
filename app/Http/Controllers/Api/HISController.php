@@ -31,7 +31,27 @@ use App\Models\ServicePaty;
 use App\Models\ServiceMachine;
 use App\Models\Machine;
 use App\Models\ServiceRoom;
-
+use App\Models\ServiceFollow;
+use App\Models\Bed;
+use App\Models\BedBsty;
+use App\Models\BedType;
+use App\Models\ServSegr;
+use App\Models\ServiceGroup;
+use App\Models\Employee;
+use App\Models\ExecuteRoleUser;
+use App\Models\Role;
+use App\Models\Module;
+use App\Models\Ethnic;
+use App\Models\PatientType;
+use App\Models\PriorityType;
+use App\Models\Career;
+use App\Models\PatientClassify;
+use App\Models\Religion;
+use App\Models\ServiceUnit;
+use App\Models\ServiceType;
+use App\Models\RationGroup;
+use App\Models\ServiceReqType;
+use App\Models\RationTime;
 class HISController extends Controller
 {
     protected $time;
@@ -85,6 +105,48 @@ class HISController extends Controller
     protected $machine_name = 'machine';
     protected $service_room;
     protected $service_room_name = 'service_room';
+    protected $service_follow;
+    protected $service_follow_name = 'service_follow';
+    protected $bed;
+    protected $bed_name = 'bed';
+    protected $bed_bsty;
+    protected $bed_bsty_name = 'bed_bsty';
+    protected $bed_type;
+    protected $bed_type_name = 'bed_type';
+    protected $serv_segr;
+    protected $serv_segr_name = 'serv_segr';
+    protected $service_group;
+    protected $service_group_name = 'service_group';
+    protected $emp_user;
+    protected $emp_user_name = 'employee';
+    protected $execute_role_user;
+    protected $execute_role_user_name = 'execute_role_user';
+    protected $role;
+    protected $role_name = 'role';
+    protected $module;
+    protected $module_name = 'module';
+    protected $ethnic;
+    protected $ethnic_name = 'ethnic';
+    protected $patient_type;
+    protected $patient_type_name = 'patient_type';
+    protected $priority_type;
+    protected $priority_type_name = 'priority_type';
+    protected $career;
+    protected $career_name = 'career';
+    protected $patient_classify;
+    protected $patient_classify_name = 'patient_classify';
+    protected $religion;
+    protected $religion_name = 'religion';
+    protected $service_unit;
+    protected $service_unit_name = 'service_unit';
+    protected $service_type;
+    protected $service_type_name = 'service_type';
+    protected $ration_group;
+    protected $ration_group_name = 'ration_group';
+    protected $service_req_type;
+    protected $service_req_type_name = 'service_req_type';
+    protected $ration_time;
+    protected $ration_time_name = 'ration_time';
     public function __construct()
     {
         $this->time = now()->addMinutes(1440);
@@ -113,6 +175,27 @@ class HISController extends Controller
         $this->service_machine = new ServiceMachine();
         $this->machine = new Machine();
         $this->service_room = new ServiceRoom();
+        $this->service_follow = new ServiceFollow();
+        $this->bed = new Bed();
+        $this->bed_bsty = new BedBsty();
+        $this->bed_type = new BedType();
+        $this->serv_segr = new ServSegr();
+        $this->service_group = new ServiceGroup();
+        $this->emp_user = new Employee();
+        $this->execute_role_user = new ExecuteRoleUser();
+        $this->role = new Role();
+        $this->module = new Module();
+        $this->ethnic = new Ethnic();
+        $this->patient_type = new PatientType();
+        $this->priority_type = new PriorityType();
+        $this->career = new Career();
+        $this->patient_classify = new PatientClassify();
+        $this->religion = new Religion();
+        $this->service_unit = new ServiceUnit();
+        $this->service_type = new ServiceType();
+        $this->ration_group = new RationGroup();
+        $this->service_req_type = new ServiceReqType();
+        $this->ration_time = new RationTime();
     }
 
     /// Department
@@ -612,6 +695,14 @@ class HISController extends Controller
         ]], 200);
     }
 
+
+    public function service_by_code($type_id)
+    {
+        $data = get_cache_by_code($this->service, $this->service_name, 'service_code', $type_id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+
     /// Service Paty
     public function service_paty()
     {
@@ -680,8 +771,14 @@ class HISController extends Controller
     public function machine_id($id)
     {
         $data = get_cache($this->machine, $this->machine_name, $id, $this->time);
+        $data1 = get_cache_1_1($this->machine, "department", $this->machine_name, $id, $this->time);
+        $data2 = get_cache_1_n_with_ids($this->machine, "room", $this->machine_name, $id, $this->time);
+        $data3 = get_cache_1_1($this->machine, "room", $this->machine_name, $id, $this->time);
         return response()->json(['data' => [
-            'machine' => $data
+            'machine' => $data,
+            'department' => $data1,
+            'rooms' => $data2,
+            'room' => $data3
         ]], 200);
     }
 
@@ -695,8 +792,446 @@ class HISController extends Controller
     public function service_room_id($id)
     {
         $data = get_cache($this->service_room, $this->service_room_name, $id, $this->time);
+        $data1 = get_cache_1_1($this->service_room, "service", $this->service_room_name, $id, $this->time);
+        $data2 = get_cache_1_1_1($this->service_room, "service.service_type", $this->service_room_name, $id, $this->time);
+        $data3 = get_cache_1_1($this->service_room, "room", $this->service_room_name, $id, $this->time);
+        $data4 = get_cache_1_1_1($this->service_room, "room.room_type", $this->service_room_name, $id, $this->time);
         return response()->json(['data' => [
-            'room_service' => $data
+            'room_service' => $data,
+            'service' => $data1,
+            'service_type' => $data2,
+            'room' => $data3,
+            'room_type' => $data4
+        ]], 200);
+    }
+
+    /// Room
+    public function room()
+    {
+        $data = get_cache($this->room, $this->room_name, null, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    public function room_id($id)
+    {
+        $data = get_cache($this->room, $this->room_name, $id, $this->time);
+        $data1 = get_cache_1_1($this->room, "room_type", $this->room_name, $id, $this->time);
+        $data2 = get_cache_1_1($this->room, "department", $this->room_name, $id, $this->time);
+        return response()->json(['data' => [
+            'room' => $data,
+            'room_type' => $data1,
+            'department' => $data2
+        ]], 200);
+    }
+
+    /// Service Follow
+    public function service_follow()
+    {
+        $data = get_cache($this->service_follow, $this->service_follow_name, null, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    public function service_follow_id($id)
+    {
+        $data = get_cache($this->service_follow, $this->service_follow_name, $id, $this->time);
+        $data1 = get_cache_1_1($this->service_follow, "service", $this->service_follow_name, $id, $this->time);
+        $data2 = get_cache_1_1_1($this->service_follow, "service.service_type", $this->service_follow_name, $id, $this->time);
+        $data3 = get_cache_1_1($this->service_follow, "follow", $this->service_follow_name, $id, $this->time);
+        $data4 = get_cache_1_1_1($this->service_follow, "follow.service_type", $this->service_follow_name, $id, $this->time);
+        $data5 = get_cache_1_n_with_ids($this->service_follow, "treatment_type", $this->service_follow_name, $id, $this->time);
+
+        return response()->json(['data' => [
+            'service_follow' => $data,
+            'service' => $data1,
+            'service_type' => $data2,
+            'follow' => $data3,
+            'follow_type' => $data4,
+            'treatment_type' => $data5
+        ]], 200);
+    }
+
+
+    /// Bed
+    public function bed()
+    {
+        $data = get_cache($this->bed, $this->bed_name, null, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    public function bed_id($id)
+    {
+        $data = get_cache($this->bed, $this->bed_name, $id, $this->time);
+        $data1 = get_cache_1_1($this->bed, "bed_type", $this->bed_name, $id, $this->time);
+        $data2 = get_cache_1_1($this->bed, "bed_room", $this->bed_name, $id, $this->time);
+        $data3 = get_cache_1_1_1_1($this->bed, "bed_room.room.department", $this->bed_name, $id, $this->time);
+
+        return response()->json(['data' => [
+            'bed' => $data,
+            'bed_type' => $data1,
+            'bed_room' => $data2,
+            'department' => $data3
+        ]], 200);
+    }
+
+    /// BedBsty
+    public function bed_bsty()
+    {
+        $data = get_cache($this->bed_bsty, $this->bed_bsty_name, null, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    public function bed_bsty_id($id)
+    {
+        $data = get_cache($this->bed_bsty, $this->bed_bsty_name, $id, $this->time);
+        $data1 = get_cache_1_1($this->bed_bsty, "bed", $this->bed_bsty_name, $id, $this->time);
+        $data2 = get_cache_1_1_1($this->bed_bsty, "bed.bed_room", $this->bed_bsty_name, $id, $this->time);
+        $data3 = get_cache_1_1_1_1_1($this->bed_bsty, "bed.bed_room.room.department", $this->bed_bsty_name, $id, $this->time);
+        $data4 = get_cache_1_1($this->bed_bsty, "bed_service_type", $this->bed_bsty_name, $id, $this->time);
+
+        return response()->json(['data' => [
+            'bed_bsty' => $data,
+            'bed' => $data1,
+            'bed_room' => $data2,
+            'department' => $data3,
+            'bed_service_type' => $data4
+
+        ]], 200);
+    }
+
+    /// Bed Type List
+    public function bed_type()
+    {
+        $data = get_cache($this->bed_type, $this->bed_type_name, null, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    public function bed_type_id($id)
+    {
+        $data = get_cache($this->bed_type, $this->bed_type_name, $id, $this->time);
+
+        return response()->json(['data' => [
+            'bed_type' => $data
+
+        ]], 200);
+    }
+
+    /// Serv Segr
+    public function serv_segr()
+    {
+        $data = get_cache($this->serv_segr, $this->serv_segr_name, null, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    public function serv_segr_id($id)
+    {
+        $data = get_cache($this->serv_segr, $this->serv_segr_name, $id, $this->time);
+        $data1 = get_cache_1_1($this->serv_segr, "room", $this->serv_segr_name, $id, $this->time);
+        $data2 = get_cache_1_1($this->serv_segr, "service", $this->serv_segr_name, $id, $this->time);
+        $data3 = get_cache_1_1($this->serv_segr, "service_group", $this->serv_segr_name, $id, $this->time);
+        return response()->json(['data' => [
+            'serv_segr' => $data,
+            'room' => $data1,
+            'service' => $data2,
+            'service_group' => $data3
+        ]], 200);
+    }
+
+    /// Service Group
+    public function service_group()
+    {
+        $data = get_cache($this->service_group, $this->service_group_name, null, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    public function service_group_id($id)
+    {
+        $data = get_cache($this->service_group, $this->service_group_name, $id, $this->time);
+        return response()->json(['data' => [
+            'service_group' => $data
+        ]], 200);
+    }
+
+    /// Employee User
+    public function emp_user()
+    {
+        $data = get_cache($this->emp_user, $this->emp_user_name, null, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    public function emp_user_id($id)
+    {
+        $data = get_cache($this->emp_user, $this->emp_user_name, $id, $this->time);
+        $data1 = get_cache_1_1($this->emp_user, "department", $this->emp_user_name, $id, $this->time);
+        $data2 = get_cache_1_1($this->emp_user, "gender", $this->emp_user_name, $id, $this->time);
+        $data3 = get_cache_1_1($this->emp_user, "branch", $this->emp_user_name, $id, $this->time);
+        $data4 = get_cache_1_1($this->emp_user, "career_title", $this->emp_user_name, $id, $this->time);
+        $data5 = get_cache_1_n_with_ids($this->emp_user, "default_medi_stock", $this->emp_user_name, $id, $this->time);
+
+        return response()->json(['data' => [
+            'emp_user' => $data,
+            'department' => $data1,
+            'genderr' => $data2,
+            'branch' => $data3,
+            'career_title' => $data4,
+            'default_medi_stock' => $data5,
+
+        ]], 200);
+    }
+
+    /// Info User
+    public function info_user_id($id)
+    {
+        $data = get_cache($this->emp_user, $this->emp_user_name, $id, $this->time);
+        $data1 = get_cache_1_1($this->emp_user, "department", $this->emp_user_name, $id, $this->time);
+        $data2 = get_cache_1_1($this->emp_user, "gender", $this->emp_user_name, $id, $this->time);
+        $data3 = get_cache_1_1($this->emp_user, "branch", $this->emp_user_name, $id, $this->time);
+        $data4 = get_cache_1_1($this->emp_user, "career_title", $this->emp_user_name, $id, $this->time);
+        $data5 = get_cache_1_n_with_ids($this->emp_user, "default_medi_stock", $this->emp_user_name, $id, $this->time);
+
+        return response()->json(['data' => [
+            'info_user' => $data,
+            'department' => $data1,
+            'genderr' => $data2,
+            'branch' => $data3,
+            'career_title' => $data4,
+            'default_medi_stock' => $data5,
+
+        ]], 200);
+    }
+
+    /// Execute Role User
+    public function execute_role_user()
+    {
+        $data = get_cache($this->execute_role_user, $this->execute_role_user_name, null, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    public function execute_role_user_id($id)
+    {
+        $data = get_cache($this->execute_role_user, $this->execute_role_user_name, $id, $this->time);
+        $data1 = get_cache_1_1($this->execute_role_user, "execute_role", $this->execute_role_user_name, $id, $this->time);
+
+        return response()->json(['data' => [
+            'execute_role_user' => $data,
+            'execute_role' => $data1,
+
+        ]], 200);
+    }
+
+    /// Role
+    public function role()
+    {
+        $data = get_cache($this->role, $this->role_name, null, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    public function role_id($id)
+    {
+        $data = get_cache($this->role, $this->role_name, $id, $this->time);
+        $data1 = get_cache_1_n($this->role, 'module', $this->role_name, $id, $this->time);
+        return response()->json(['data' => [
+            'role' => $data,
+            'module' => $data1
+        ]], 200);
+    }
+
+    /// Module
+    public function module()
+    {
+        $data = get_cache($this->module, $this->module_name, null, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    public function module_id($id)
+    {
+        $data = get_cache($this->module, $this->module_name, $id, $this->time);
+        return response()->json(['data' => [
+            'module' => $data
+        ]], 200);
+    }
+
+    /// Ethnic
+    public function ethnic()
+    {
+        $data = get_cache($this->ethnic, $this->ethnic_name, null, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    public function ethnic_id($id)
+    {
+        $data = get_cache($this->module, $this->ethnic_name, $id, $this->time);
+        return response()->json(['data' => [
+            'ethnic' => $data
+        ]], 200);
+    }
+
+    /// Patient Type
+    public function patient_type()
+    {
+        $data = get_cache($this->patient_type, $this->patient_type_name, null, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    public function patient_type_id($id)
+    {
+        $data = get_cache($this->patient_type, $this->patient_type_name, $id, $this->time);
+        $data1 = get_cache_1_n_with_ids($this->patient_type, 'treatment_type', $this->patient_type_name, $id, $this->time);
+        $data2 = get_cache_1_1($this->patient_type, 'base_patient_type', $this->patient_type_name, $id, $this->time);
+        $data3 = get_cache_1_n_with_ids($this->patient_type, 'other_pay_source', $this->patient_type_name, $id, $this->time);
+
+        return response()->json(['data' => [
+            'patient_type' => $data,
+            'treatment_type' => $data1,
+            'base_patient_type' => $data2,
+            'other_pay_source' => $data3
+        ]], 200);
+    }
+
+    /// Priority Type
+    public function priority_type()
+    {
+        $data = get_cache($this->priority_type, $this->priority_type_name, null, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    public function priority_type_id($id)
+    {
+        $data = get_cache($this->priority_type, $this->priority_type_name, $id, $this->time);
+        return response()->json(['data' => [
+            'patient_type' => $data
+        ]], 200);
+    }
+
+    /// Career
+    public function career()
+    {
+        $data = get_cache($this->career, $this->career_name, null, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    public function career_id($id)
+    {
+        $data = get_cache($this->career, $this->career_name, $id, $this->time);
+        return response()->json(['data' => [
+            'career' => $data
+        ]], 200);
+    }
+
+    /// Patient Classify
+    public function patient_classify()
+    {
+        $data = get_cache($this->patient_classify, $this->patient_classify_name, null, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    public function patient_classify_id($id)
+    {
+        $data = get_cache($this->patient_classify, $this->patient_classify_name, $id, $this->time);
+        $data1 = get_cache_1_1($this->patient_classify, 'patient_type', $this->patient_classify_name, $id, $this->time);
+        $data2 = get_cache_1_1($this->patient_classify, 'other_pay_source', $this->patient_classify_name, $id, $this->time);
+        $data3 = get_cache_1_1($this->patient_classify, 'BHYT_whitelist', $this->patient_classify_name, $id, $this->time);
+
+        return response()->json(['data' => [
+            'patient_classify' => $data,
+            'patient_type' => $data1,
+            'other_pay_source' => $data2,
+            'BHYT_whitelist' => $data3
+        ]], 200);
+    }
+
+    /// Religion
+    public function religion()
+    {
+        $data = get_cache($this->religion, $this->religion_name, null, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    public function religion_id($id)
+    {
+        $data = get_cache($this->religion, $this->religion_name, $id, $this->time);
+        return response()->json(['data' => [
+            'religion' => $data
+        ]], 200);
+    }
+
+    /// Service Unit
+    public function service_unit()
+    {
+        $data = get_cache($this->service_unit, $this->service_unit_name, null, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    public function service_unit_id($id)
+    {
+        $data = get_cache($this->service_unit, $this->service_unit_name, $id, $this->time);
+        $data1 = get_cache_1_1($this->service_unit, 'convert', $this->service_unit_name, $id, $this->time);
+
+        return response()->json(['data' => [
+            'service_unit' => $data,
+            'convert' => $data1
+        ]], 200);
+    }
+
+    /// Service Type
+    public function service_type()
+    {
+        $data = get_cache($this->service_type, $this->service_type_name, null, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    public function service_type_id($id)
+    {
+        $data = get_cache($this->service_type, $this->service_type_name, $id, $this->time);
+        $data1 = get_cache_1_1($this->service_type, 'exe_service_module', $this->service_type_name, $id, $this->time);
+
+        return response()->json(['data' => [
+            'service_type' => $data,
+            'exe_service_module' => $data1
+        ]], 200);
+    }
+
+    /// Ration Group
+    public function ration_group()
+    {
+        $data = get_cache($this->ration_group, $this->ration_group_name, null, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    public function ration_group_id($id)
+    {
+        $data = get_cache($this->ration_group, $this->ration_group_name, $id, $this->time);
+        return response()->json(['data' => [
+            'ration_group' => $data,
+        ]], 200);
+    }
+
+    /// ServiceReq Type
+    public function service_req_type()
+    {
+        $data = get_cache($this->service_req_type, $this->service_req_type_name, null, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    public function service_req_type_id($id)
+    {
+        $data = get_cache($this->service_req_type, $this->service_req_type_name, $id, $this->time);
+        return response()->json(['data' => [
+            'service_req_type' => $data,
+        ]], 200);
+    }
+
+    /// ServiceReq Type
+    public function ration_time()
+    {
+        $data = get_cache($this->ration_time, $this->ration_time_name, null, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    public function ration_time_id($id)
+    {
+        $data = get_cache($this->ration_time, $this->ration_time_name, $id, $this->time);
+        return response()->json(['data' => [
+            'ration_time' => $data,
         ]], 200);
     }
 }

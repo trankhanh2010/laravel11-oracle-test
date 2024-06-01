@@ -48,13 +48,14 @@ if (!function_exists('get_cache')) {
     }
 }
 
+
 if (!function_exists('get_cache_1_1')) {
     function get_cache_1_1($model, $relationship_name, $name, $id = null, $time)
     {
         if (!is_numeric($id)) {
             return response()->json(['error' => 'Id không hợp lệ'], 400)->original;
         }
-        $data = Cache::remember($name.'_get_'.$relationship_name.'_'.$id, $time , function () use ($model, $relationship_name, $id) {
+        $data = Cache::remember($name . '_get_' . $relationship_name . '_' . $id, $time, function () use ($model, $relationship_name, $id) {
             return $model->find($id)->$relationship_name()->get();
         });
         return $data;
@@ -67,8 +68,8 @@ if (!function_exists('get_cache_1_n')) {
         if (!is_numeric($id)) {
             return response()->json(['error' => 'Id không hợp lệ'], 400)->original;
         }
-        $data = Cache::remember($name.'_get_'.$relationship_name.'_'.$id, $time , function () use ($model, $relationship_name, $id) {
-            $relationship_name = $relationship_name.'s';
+        $data = Cache::remember($name . '_get_' . $relationship_name . '_' . $id, $time, function () use ($model, $relationship_name, $id) {
+            $relationship_name = $relationship_name . 's';
             return $model->find($id)->$relationship_name()->get();
         });
         return $data;
@@ -81,8 +82,8 @@ if (!function_exists('get_cache_1_n_with_ids')) {
         if (!is_numeric($id)) {
             return response()->json(['error' => 'Id không hợp lệ'], 400)->original;
         }
-        $data = Cache::remember($name.'_get_'.$relationship_name.'_'.$id, $time , function () use ($model, $relationship_name, $id) {
-            $relationship_name = $relationship_name.'s';
+        $data = Cache::remember($name . '_get_' . $relationship_name . 's_' . $id, $time, function () use ($model, $relationship_name, $id) {
+            $relationship_name = $relationship_name . 's';
             return $model->find($id)->$relationship_name();
         });
         return $data;
@@ -95,10 +96,10 @@ if (!function_exists('get_cache_1_1_n_with_ids')) {
         if (!is_numeric($id)) {
             return response()->json(['error' => 'Id không hợp lệ'], 400)->original;
         }
-        $data = Cache::remember($name.'_get_'.$relationship_name.'_'.$id, $time , function () use ($model, $relationship_name, $id) {
+        $data = Cache::remember($name . '_get_' . $relationship_name . '_' . $id, $time, function () use ($model, $relationship_name, $id) {
             $parts = explode(".", $relationship_name);
             $a0 = $parts[0];
-            $a1 = $parts[1].'s';
+            $a1 = $parts[1] . 's';
             return $model::with($a0)->find($id)->$a0->$a1();
         });
         return $data;
@@ -111,7 +112,7 @@ if (!function_exists('get_cache_1_1_1')) {
         if (!is_numeric($id)) {
             return response()->json(['error' => 'Id không hợp lệ'], 400)->original;
         }
-        $data = Cache::remember($name.'_get_'.$relationship_name.'_'.$id, $time , function () use ($model, $relationship_name, $id) {
+        $data = Cache::remember($name . '_get_' . $relationship_name . '_' . $id, $time, function () use ($model, $relationship_name, $id) {
             $parts = explode(".", $relationship_name);
             $a0 = $parts[0];
             $a1 = $parts[1];
@@ -128,7 +129,7 @@ if (!function_exists('get_cache_1_1_1_1')) {
         if (!is_numeric($id)) {
             return response()->json(['error' => 'Id không hợp lệ'], 400)->original;
         }
-        $data = Cache::remember($name.'_get_'.$relationship_name.'_'.$id, $time , function () use ($model, $relationship_name, $id) {
+        $data = Cache::remember($name . '_get_' . $relationship_name . '_' . $id, $time, function () use ($model, $relationship_name, $id) {
             $parts = explode(".", $relationship_name);
             $a0 = $parts[0];
             $a1 = $parts[1];
@@ -139,3 +140,30 @@ if (!function_exists('get_cache_1_1_1_1')) {
     }
 }
 
+if (!function_exists('get_cache_1_1_1_1_1')) {
+    function get_cache_1_1_1_1_1($model, $relationship_name, $name, $id = null, $time)
+    {
+        if (!is_numeric($id)) {
+            return response()->json(['error' => 'Id không hợp lệ'], 400)->original;
+        }
+        $data = Cache::remember($name . '_get_' . $relationship_name . '_' . $id, $time, function () use ($model, $relationship_name, $id) {
+            $parts = explode(".", $relationship_name);
+            $a0 = $parts[0];
+            $a1 = $parts[1];
+            $a2 = $parts[2];
+            $a3 = $parts[3];
+            return $model::with($relationship_name)->find($id)->$a0->$a1->$a2->$a3;
+        });
+        return $data;
+    }
+}
+
+if (!function_exists('get_cache_by_code')) {
+    function get_cache_by_code($model, $name, $type_name, $type, $time)
+    {
+        $data = Cache::remember($name . '_by_' . $type_name , $time, function () use ($model, $type_name, $type) {
+            return $model::where($type_name, 'LIKE', $type . '%')->get();
+        });
+        return $data;
+    }
+}

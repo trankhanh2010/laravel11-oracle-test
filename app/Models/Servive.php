@@ -37,7 +37,7 @@ class Servive extends Model
         'min_proc_time_except_paty_ids',
         'max_proc_time_except_paty_ids',
         'total_time_except_paty_ids',
-
+        'service_code',
     ];
 
     public function service_type()
