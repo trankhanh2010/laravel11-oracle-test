@@ -11,4 +11,11 @@ class Commune extends Model
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_sda'; 
     protected $table = 'SDA_Commune';
+    protected $fillable = [
+        'district_id'
+    ];
+    public function district()
+    {
+        return $this->belongsTo(District::class, 'district_id');
+    }
 }

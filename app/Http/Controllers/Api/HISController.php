@@ -209,7 +209,10 @@ class HISController extends Controller
     /// Department
     public function department()
     {
-        $data = get_cache($this->department, $this->department_name, null, $this->time);
+        $param = [
+            'branch:id,branch_name,branch_code',
+        ];
+        $data = get_cache_full($this->department, $param, $this->department_name, null, $this->time);
         return response()->json(['data' => $data], 200);
     }
 
@@ -232,7 +235,16 @@ class HISController extends Controller
     /// Bed Room
     public function bed_room()
     {
-        $data = get_cache($this->bed_room, $this->bed_room_name, null, $this->time);
+        $param = [
+            'room:id,department_id,speciality_id,default_cashier_room_id,default_instr_patient_type_id',
+            'room.department:id,department_name,department_code',
+            'room.department.area:id,area_name',
+            'room.speciality:id,speciality_name,speciality_code',
+            'room.default_cashier_room:id,cashier_room_name',
+            'room.default_instr_patient_type:id,patient_type_name',
+
+        ];
+        $data = get_cache_full($this->bed_room, $param, $this->bed_room_name, null, $this->time);
         return response()->json(['data' => $data], 200);
     }
 
@@ -278,7 +290,12 @@ class HISController extends Controller
     /// Execute Room
     public function execute_room()
     {
-        $data = get_cache($this->execute_room, $this->execute_room_name, null, $this->time);
+        $param = [
+            'room:id,department_id',
+            'room.department:id,department_name,department_code',
+            'room.department.area:id,area_name,area_code'
+        ];
+        $data = get_cache_full($this->execute_room, $param, $this->execute_room_name, null, $this->time);
         return response()->json(['data' => $data], 200);
     }
 
@@ -379,20 +396,33 @@ class HISController extends Controller
     /// District
     public function district()
     {
-        $data = get_cache($this->district, $this->district_name, null, $this->time);
+        $param = [
+            'province:id,province_name,province_code',
+        ];
+        $data = get_cache_full($this->district, $param, $this->district_name, null, $this->time);
         return response()->json(['data' => $data], 200);
     }
 
     public function district_id($id)
     {
         $data = get_cache($this->district, $this->district_name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
+        $data1 = get_cache_1_1($this->district, "province", $this->district_name, $id, $this->time);
+        return response()->json(['data' => [
+            'district' => $data,
+            'province' => $data1
+        ]], 200);
     }
 
     /// Medi Stock
     public function medi_stock()
     {
-        $data = get_cache($this->medi_stock, $this->medi_stock_name, null, $this->time);
+        $param = [
+            'room:id,department_id,room_type_id',
+            'room.department:id,department_name,department_code',
+            'room.room_type:id,room_type_name,room_type_code',
+            'parent:id,medi_stock_name,medi_stock_code'
+        ];
+        $data = get_cache_full($this->medi_stock, $param, $this->medi_stock_name, null, $this->time);
         return response()->json(['data' => $data], 200);
     }
 
@@ -402,12 +432,14 @@ class HISController extends Controller
         $data1 = get_cache_1_1($this->medi_stock, "room", $this->medi_stock_name, $id, $this->time);
         $data2 = get_cache_1_1_1($this->medi_stock, "room.room_type", $this->medi_stock_name, $id, $this->time);
         $data3 = get_cache_1_1_1($this->medi_stock, "room.department", $this->medi_stock_name, $id, $this->time);
+        $data4 = get_cache_1_1($this->medi_stock, "parent", $this->medi_stock_name, $id, $this->time);
 
         return response()->json(['data' => [
             'medi_stock' => $data,
             'room' => $data1,
             'room_type' => $data2,
-            'department' => $data3
+            'department' => $data3,
+            'parent' => $data4
         ]], 200);
     }
 
@@ -432,7 +464,11 @@ class HISController extends Controller
     /// Reception Room
     public function reception_room()
     {
-        $data = get_cache($this->reception_room, $this->reception_room_name, null, $this->time);
+        $param = [
+            'room:id,department_id',
+            'room.department:id,department_name,department_code'
+        ];
+        $data = get_cache_full($this->reception_room, $param, $this->reception_room_name, null, $this->time);
         return response()->json(['data' => $data], 200);
     }
 
@@ -474,7 +510,11 @@ class HISController extends Controller
     /// Refectory
     public function refectory()
     {
-        $data = get_cache($this->refectory, $this->refectory_name, null, $this->time);
+        $param =[
+            'room:id,department_id',
+            'room.department:id,department_name'
+        ];
+        $data = get_cache_full($this->refectory, $param, $this->refectory_name, null, $this->time);
         return response()->json(['data' => $data], 200);
     }
 
@@ -510,7 +550,12 @@ class HISController extends Controller
     /// Cashier Room
     public function cashier_room()
     {
-        $data = get_cache($this->cashier_room, $this->cashier_room_name, null, $this->time);
+        $param = [
+            'room:id,department_id',
+            'room.department:id,department_name,department_code',
+            'room.department.area:id,area_name,area_code'
+        ];
+        $data = get_cache_full($this->cashier_room, $param, $this->cashier_room_name, null, $this->time);
         return response()->json(['data' => $data], 200);
     }
 
@@ -561,20 +606,33 @@ class HISController extends Controller
     /// Province
     public function province()
     {
-        $data = get_cache($this->province, $this->province_name, null, $this->time);
+        $param = [
+            'national:id,national_name,national_code'
+        ];
+        $data = get_cache_full($this->province, $param, $this->province_name, null, $this->time);
         return response()->json(['data' => $data], 200);
     }
 
     public function province_id($id)
     {
         $data = get_cache($this->province, $this->province_name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
+        $data1 = get_cache_1_1($this->province, 'national', $this->province_name, $id, $this->time);
+        return response()->json(['data' =>[
+            'province' => $data,
+            'national' => $data1
+        ]], 200);
     }
 
     /// DataStore
     public function data_store()
     {
-        $data = get_cache($this->data_store, $this->data_store_name, null, $this->time);
+        $param = [
+            'room:id,department_id',
+            'room.department:id,department_name,department_code',
+            'stored_room:id',
+            'stored_department:id,department_name,department_code'
+        ];
+        $data = get_cache_full($this->data_store, $param, $this->data_store_name, null, $this->time);
         return response()->json(['data' => $data], 200);
     }
 
@@ -582,18 +640,18 @@ class HISController extends Controller
     {
         $data = get_cache($this->data_store, $this->data_store_name, $id, $this->time);
         $data1 = get_cache_1_1_1($this->data_store, "room.department", $this->data_store_name, $id, $this->time);
-        $data2 = get_cache_1_1($this->data_store, "department", $this->data_store_name, $id, $this->time);
+        $data2 = get_cache_1_1($this->data_store, "stored_department", $this->data_store_name, $id, $this->time);
         $data3 = get_cache_1_n_with_ids($this->data_store, "treatment_type", $this->data_store_name, $id, $this->time);
         $data4 = get_cache_1_n_with_ids($this->data_store, "treatment_end_type", $this->data_store_name, $id, $this->time);
-        $data5 = get_cache_1_1($this->data_store, "store_room", $this->data_store_name, $id, $this->time);
+        $data5 = get_cache_1_1($this->data_store, "stored_room", $this->data_store_name, $id, $this->time);
         $data6 = get_cache_1_1($this->data_store, "parent", $this->data_store_name, $id, $this->time);
         return response()->json(['data' => [
             'data_store' => $data,
-            'department_room' => $data1,
-            'department' => $data2,
+            'department' => $data1,
+            'stored_department' => $data2,
             'treatment_type' => $data3,
             'treatment_end_type' => $data4,
-            'store_room' => $data5,
+            'stored_room' => $data5,
             'parent' => $data6
         ]], 200);
     }
@@ -626,14 +684,21 @@ class HISController extends Controller
     /// Commune
     public function commune()
     {
-        $data = get_cache($this->commune, $this->commune_name, null, $this->time);
+        $param = [
+            'district:id,district_name,district_code'
+        ];
+        $data = get_cache_full($this->commune, $param, $this->commune_name, null, $this->time);
         return response()->json(['data' => $data], 200);
     }
 
     public function commune_id($id)
     {
         $data = get_cache($this->commune, $this->commune_name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
+        $data1 = get_cache_1_1($this->commune, 'district', $this->commune_name, $id, $this->time);
+        return response()->json(['data' => [
+            'commune' => $data,
+            'district' => $data1
+        ]], 200);
     }
 
     ///Service

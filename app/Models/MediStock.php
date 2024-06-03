@@ -12,10 +12,17 @@ class MediStock extends Model
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his';
     protected $table = 'HIS_Medi_Stock';
-
+    protected $fillable = [
+        'parent_id'
+    ];
     public function room()
     {
         return $this->belongsTo(Room::class, 'room_id');
+    }
+
+    public function parent()
+    {
+        return $this->belongsTo(MediStock::class, 'parent_id');
     }
 
     public function department($id)

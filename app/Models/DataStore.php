@@ -16,6 +16,8 @@ class DataStore extends Model
         'treatment_type_ids',
         'treatment_end_type_ids',
         'parent_id',
+        'stored_department_id',
+        'stored_room_id'
     ];
 
     public function room()
@@ -23,7 +25,7 @@ class DataStore extends Model
         return $this->belongsTo(Room::class, 'room_id');
     }
 
-    public function store_room()
+    public function stored_room()
     {
         return $this->belongsTo(Room::class, 'store_room_id');
     }
@@ -53,7 +55,7 @@ class DataStore extends Model
             ->first();
         return $department;
     }
-    public function department()
+    public function stored_department()
     {
         return $this->belongsTo(Department::class, 'stored_department_id');
     }

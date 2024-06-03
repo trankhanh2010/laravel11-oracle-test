@@ -11,4 +11,12 @@ class District extends Model
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_sda'; 
     protected $table = 'SDA_district';
+    protected $fillable = [
+        'province_id',
+    ];
+
+    public function province()
+    {
+        return $this->belongsTo(Province::class, 'province_id');
+    }
 }
