@@ -25,4 +25,9 @@ class ServiceRoom extends Model
     {
         return $this->belongsTo(Room::class, 'room_id');
     }
+    
+    public function execute_room()
+    {
+        return $this->belongsTo(ExecuteRoom::class, 'room_id');
+    }
 }

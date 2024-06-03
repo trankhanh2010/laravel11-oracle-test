@@ -53,7 +53,7 @@ use App\Models\RationGroup;
 use App\Models\ServiceReqType;
 use App\Models\RationTime;
 use App\Models\Relation;
-
+use App\Models\ModuleRole;
 class HISController extends Controller
 {
     protected $time;
@@ -151,6 +151,8 @@ class HISController extends Controller
     protected $ration_time_name = 'ration_time';
     protected $relation_list;
     protected $relation_list_name = 'relation_list';
+    protected $module_role;
+    protected $module_role_name = 'module_role';
     public function __construct()
     {
         $this->time = now()->addMinutes(1440);
@@ -201,6 +203,7 @@ class HISController extends Controller
         $this->service_req_type = new ServiceReqType();
         $this->ration_time = new RationTime();
         $this->relation_list = new Relation();
+        $this->module_role = new ModuleRole();
     }
 
     /// Department
@@ -711,7 +714,13 @@ class HISController extends Controller
     /// Service Paty
     public function service_paty()
     {
-        $data = get_cache($this->service_paty, $this->service_paty_name, null, $this->time);
+        $param = [
+            'service:id,service_name,service_type_id',
+            'service.service_type:id,service_type_name,service_type_code',
+            'patient_type:id,patient_type_name,patient_type_code'
+        ];
+
+        $data = get_cache_full($this->service_paty, $param, $this->service_paty_name, null, $this->time);
         return response()->json(['data' => $data], 200);
     }
 
@@ -747,7 +756,12 @@ class HISController extends Controller
     /// Service Machine
     public function service_machine()
     {
-        $data = get_cache($this->service_machine, $this->service_machine_name, null, $this->time);
+        $param = [
+            'service:id,service_name,service_type_id',
+            'service.service_type:id,service_type_name,service_type_code',
+            'machine:id,machine_name,machine_code,machine_group_code',
+        ];
+        $data = get_cache_full($this->service_machine, $param, $this->service_machine_name, null, $this->time);
         return response()->json(['data' => $data], 200);
     }
 
@@ -769,7 +783,10 @@ class HISController extends Controller
     /// Machine
     public function machine()
     {
-        $data = get_cache($this->machine, $this->machine_name, null, $this->time);
+        $param = [
+            'department:id,department_name',
+        ];
+        $data = get_cache_full($this->machine, $param, $this->machine_name, null, $this->time);
         return response()->json(['data' => $data], 200);
     }
 
@@ -790,7 +807,16 @@ class HISController extends Controller
     /// Room Service
     public function service_room()
     {
-        $data = get_cache($this->service_room, $this->service_room_name, null, $this->time);
+        $param = [
+            'service:id,service_name,service_type_id',
+            'service.service_type:id,service_type_name,service_type_code',
+            'room:id,room_type_id,department_id',
+            'execute_room:id,execute_room_name',
+            'room.room_type:id,room_type_name',
+            'room.department:id,department_name',
+            
+        ];
+        $data = get_cache_full($this->service_room, $param, $this->service_room_name, null, $this->time);
         return response()->json(['data' => $data], 200);
     }
 
@@ -801,12 +827,14 @@ class HISController extends Controller
         $data2 = get_cache_1_1_1($this->service_room, "service.service_type", $this->service_room_name, $id, $this->time);
         $data3 = get_cache_1_1($this->service_room, "room", $this->service_room_name, $id, $this->time);
         $data4 = get_cache_1_1_1($this->service_room, "room.room_type", $this->service_room_name, $id, $this->time);
+        $data5 = get_cache_1_1($this->service_room, "execute_room", $this->service_room_name, $id, $this->time);
         return response()->json(['data' => [
             'room_service' => $data,
             'service' => $data1,
             'service_type' => $data2,
             'room' => $data3,
-            'room_type' => $data4
+            'room_type' => $data4,
+            'execute_room' => $data5
         ]], 200);
     }
 
@@ -832,7 +860,13 @@ class HISController extends Controller
     /// Service Follow
     public function service_follow()
     {
-        $data = get_cache($this->service_follow, $this->service_follow_name, null, $this->time);
+        $param = [
+            'service:id,service_name,service_type_id',
+            'service.service_type:id,service_type_name,service_type_code',
+            'follow:id,service_name,service_type_id',
+            'follow.service_type:id,service_type_name,service_type_code',
+        ];
+        $data = get_cache_full($this->service_follow, $param, $this->service_follow_name, null, $this->time);
         return response()->json(['data' => $data], 200);
     }
 
@@ -859,7 +893,13 @@ class HISController extends Controller
     /// Bed
     public function bed()
     {
-        $data = get_cache($this->bed, $this->bed_name, null, $this->time);
+        $param = [
+            'bed_type:id,bed_type_name',
+            'bed_room:id,bed_room_name,room_id',
+            'bed_room.room:id,department_id',
+            'bed_room.room.department:id,department_name'
+        ];
+        $data = get_cache_full($this->bed, $param, $this->bed_name, null, $this->time);
         return response()->json(['data' => $data], 200);
     }
 
@@ -881,7 +921,14 @@ class HISController extends Controller
     /// BedBsty
     public function bed_bsty()
     {
-        $data = get_cache($this->bed_bsty, $this->bed_bsty_name, null, $this->time);
+        $param = [
+            'bed:id,bed_name,bed_room_id',
+            'bed.bed_room:id,bed_room_name',
+            'bed.bed_room.room:id,department_id',
+            'bed.bed_room.room.department:id,department_name',
+            'bed_service_type:id,service_name,service_code'
+        ];
+        $data = get_cache_full($this->bed_bsty, $param, $this->bed_bsty_name, null, $this->time);
         return response()->json(['data' => $data], 200);
     }
 
@@ -923,7 +970,12 @@ class HISController extends Controller
     /// Serv Segr
     public function serv_segr()
     {
-        $data = get_cache($this->serv_segr, $this->serv_segr_name, null, $this->time);
+        $param = [
+            'service:id,service_name,service_type_id',
+            'service.service_type:id,service_type_name,service_type_code',
+            'service_group:id,service_group_name',
+        ];
+        $data = get_cache_full($this->serv_segr, $param, $this->serv_segr_name, null, $this->time);
         return response()->json(['data' => $data], 200);
     }
 
@@ -959,7 +1011,12 @@ class HISController extends Controller
     /// Employee User
     public function emp_user()
     {
-        $data = get_cache($this->emp_user, $this->emp_user_name, null, $this->time);
+        $param = [
+            'department:id,department_name',
+            'gender:id,gender_name',
+            'career_title:id,career_title_name,career_title_code'
+        ];
+        $data = get_cache_full($this->emp_user, $param, $this->emp_user_name, null, $this->time);
         return response()->json(['data' => $data], 200);
     }
 
@@ -1007,7 +1064,11 @@ class HISController extends Controller
     /// Execute Role User
     public function execute_role_user()
     {
-        $data = get_cache($this->execute_role_user, $this->execute_role_user_name, null, $this->time);
+        $param = [
+            'execute_role:id,execute_role_name',
+        ];
+
+        $data = get_cache_full($this->execute_role_user, $param, $this->execute_role_user_name, null, $this->time);
         return response()->json(['data' => $data], 200);
     }
 
@@ -1041,17 +1102,25 @@ class HISController extends Controller
     }
 
     /// Module
-    public function module()
+    public function module_role()
     {
-        $data = get_cache($this->module, $this->module_name, null, $this->time);
+        $param = [
+            'module:id,module_name',
+            'role:id,role_name,role_code',
+        ];
+        $data = get_cache_full($this->module_role, $param, $this->module_role_name, null, $this->time);
         return response()->json(['data' => $data], 200);
     }
 
-    public function module_id($id)
+    public function module_role_id($id)
     {
-        $data = get_cache($this->module, $this->module_name, $id, $this->time);
+        $data = get_cache($this->module_role, $this->module_role_name, $id, $this->time);
+        $data1 = get_cache_1_1($this->module_role, 'module', $this->module_role_name, $id, $this->time);
+        $data2 = get_cache_1_1($this->module_role, 'role', $this->module_role_name, $id, $this->time);
         return response()->json(['data' => [
-            'module' => $data
+            'module_role' => $data,
+            'module' => $data1,
+            'role' => $data2
         ]], 200);
     }
 
@@ -1162,7 +1231,10 @@ class HISController extends Controller
     /// Service Unit
     public function service_unit()
     {
-        $data = get_cache($this->service_unit, $this->service_unit_name, null, $this->time);
+        $param = [
+            'convert:id,service_unit_name',
+        ];
+        $data = get_cache_full($this->service_unit, $param, $this->service_unit_name, null, $this->time);
         return response()->json(['data' => $data], 200);
     }
 
@@ -1180,7 +1252,10 @@ class HISController extends Controller
     /// Service Type
     public function service_type()
     {
-        $data = get_cache($this->service_type, $this->service_type_name, null, $this->time);
+        $param = [
+            'exe_service_module:id,exe_service_module_name,module_link',
+        ];
+        $data = get_cache_full($this->service_type, $param, $this->service_type_name, null, $this->time);
         return response()->json(['data' => $data], 200);
     }
 

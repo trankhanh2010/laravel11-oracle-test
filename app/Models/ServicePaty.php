@@ -46,7 +46,7 @@ class ServicePaty extends Model
 
     public function execute_rooms()
     {
-        return Room::whereIn('id', explode(',', $this->execute_room_ids))->get();
+        return ExecuteRoom::whereIn('room_id', explode(',', $this->execute_room_ids))->get();
     }
 
     public function request_deparments()

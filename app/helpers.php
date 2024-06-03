@@ -48,6 +48,28 @@ if (!function_exists('get_cache')) {
     }
 }
 
+if (!function_exists('get_cache_full')) {
+    function get_cache_full($model, $relation_ship, $name, $id = null, $time)
+    {
+        if (!$id) {
+            $data = Cache::remember($name, $time, function () use ($model, $relation_ship) {
+                return $model::with($relation_ship)->get();
+            });
+            return $data;
+        } else {
+            if (!is_numeric($id)) {
+                return response()->json(['error' => 'Id không hợp lệ'], 400)->original;
+            }
+            $data = Cache::remember($name . '_id_' . $id, $time, function () use ($model, $id) {
+                return $model->find($id);
+            });
+            // Xóa Cache nếu không có dữ liệu
+            if (!$data) Cache::forget($name . '_id_' . $id);
+            return $data;
+        }
+    }
+}
+
 
 if (!function_exists('get_cache_1_1')) {
     function get_cache_1_1($model, $relationship_name, $name, $id = null, $time)

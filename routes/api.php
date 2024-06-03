@@ -237,8 +237,8 @@ Route::group([
 
     /// Vai trò - Chức năng 
     Route::group(['as' => 'ACS.Desktop.Plugins.AcsModuleRole'], function () {
-        Route::get("module", [HISController::class, "module"]);
-        Route::get("module/{id}", [HISController::class, "module_id"]);
+        Route::get("module-role", [HISController::class, "module_role"]);
+        Route::get("module-role/{id}", [HISController::class, "module_role_id"]);
     });
 
     /// Dân tộc

@@ -12,6 +12,7 @@ class Room extends Model
     protected $connection = 'oracle_his'; // Kết nối CSDL mặc định
     protected $table = 'HIS_ROOM';
     protected $fillable = [
+        'id',
         'default_cashier_room_id',
         'default_instr_patient_type_id',
         'default_service_id',
@@ -70,5 +71,4 @@ class Room extends Model
     {
         return $this->hasOne(BedRoom::class);
     }
-
 }
