@@ -52,6 +52,8 @@ use App\Models\ServiceType;
 use App\Models\RationGroup;
 use App\Models\ServiceReqType;
 use App\Models\RationTime;
+use App\Models\Relation;
+
 class HISController extends Controller
 {
     protected $time;
@@ -147,6 +149,8 @@ class HISController extends Controller
     protected $service_req_type_name = 'service_req_type';
     protected $ration_time;
     protected $ration_time_name = 'ration_time';
+    protected $relation_list;
+    protected $relation_list_name = 'relation_list';
     public function __construct()
     {
         $this->time = now()->addMinutes(1440);
@@ -196,6 +200,7 @@ class HISController extends Controller
         $this->ration_group = new RationGroup();
         $this->service_req_type = new ServiceReqType();
         $this->ration_time = new RationTime();
+        $this->relation_list = new Relation();
     }
 
     /// Department
@@ -1232,6 +1237,21 @@ class HISController extends Controller
         $data = get_cache($this->ration_time, $this->ration_time_name, $id, $this->time);
         return response()->json(['data' => [
             'ration_time' => $data,
+        ]], 200);
+    }
+
+    /// ServiceReq Type
+    public function relation_list()
+    {
+        $data = get_cache($this->relation_list, $this->relation_list_name, null, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    public function relation_list_id($id)
+    {
+        $data = get_cache($this->relation_list, $this->relation_list_name, $id, $this->time);
+        return response()->json(['data' => [
+            'relation_list' => $data,
         ]], 200);
     }
 }

@@ -261,9 +261,8 @@ Route::group([
 
     /// Mối quan hệ
     Route::group(['as' => 'HIS.Desktop.Plugins.EmrRelationList'], function () {
-
-        ////
-        ////
+        Route::get("relation-list", [HISController::class, "relation_list"]);
+        Route::get("relation-list/{id}", [HISController::class, "relation_list_id"]);
     });
 
     /// Nghề nghiệp
