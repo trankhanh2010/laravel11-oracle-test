@@ -123,6 +123,17 @@ return [
             'charset' => 'AL32UTF8',
             'prefix' => '',
         ],
+        'oracle_emr' => [
+            'driver' => 'oracle',
+            'host' => env('DB_EMR_HOST', '192.168.101.251'),
+            'port' => env('DB_EMR_PORT', '1521'),
+            'database' => env('DB_EMR_DATABASE', 'oracletest'),
+            'username' => env('DB_EMR_USERNAME', 'EMR_RS'),
+            'password' => env('DB_EMR_PASSWORD', 'EMR_RS'),
+            'service_name' => env('DB_EMR_SERVICE_NAME', 'orcl'),
+            'charset' => 'AL32UTF8',
+            'prefix' => '',
+        ],
 
     ],
 

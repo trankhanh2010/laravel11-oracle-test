@@ -20,7 +20,8 @@ class Machine extends Model
 
     public function execute_rooms()
     {
-        return ExecuteRoom::whereIn('id', explode(',', $this->room_ids))->get();
+        // Lấy theo room_id trong Execute_Room
+        return ExecuteRoom::whereIn('room_id', explode(',', $this->room_ids))->get();
     }
     public function execute_room()
     {
