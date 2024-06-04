@@ -30,7 +30,7 @@ class Machine extends Model
     }
     public function execute_room()
     {
-        return $this->belongsTo(ExecuteRoom::class, 'room_id');
+        return $this->belongsTo(ExecuteRoom::class, 'room_id', 'room_id');
     }
     public function department()
     {

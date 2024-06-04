@@ -53,7 +53,7 @@ class Service extends Model
 
     public function execute_rooms()
     {
-        return $this->belongsToMany(ExecuteRoom::class, ServiceRoom::class, 'service_id', 'room_id');
+        return $this->belongsToMany(ExecuteRoom::class, ServiceRoom::class, 'service_id', 'room_id', 'id', 'room_id');
     }
 
     public function follows()
