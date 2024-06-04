@@ -36,6 +36,11 @@ class MediStock extends Model
         ->withPivot('exp_medi_stock_id');
     }
 
+    public function material_types()
+    {
+        return $this->belongsToMany(MaterialType::class, MediStockMaty::class, 'medi_stock_id', 'material_type_id');
+    }
+
     public function department($id)
     {
         $department = DB::connection('oracle_his')->table('his_medi_stock')

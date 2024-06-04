@@ -380,4 +380,17 @@ Route::group([
         Route::get("medicine-type/all/medi-stock", [HISController::class, "medicine_type_with_medi_stock"]);
         Route::get("medicine-type/{id}/medi-stock", [HISController::class, "medicine_type_with_medi_stock"]);
     });
+
+    /// Kho - Loại vật tư
+    Route::group(['as' => 'HIS.Desktop.Plugins.MediStockMatyList'], function () {
+        // Trả về tất cả mối quan hệ
+        Route::get("medi-stock-maty-list", [HISController::class, "medi_stock_maty_list"]);
+        Route::get("medi-stock-maty-list/{id}", [HISController::class, "medi_stock_maty_list_id"]);
+        // Trả về tất cả kho cùng loại vật tư 
+        Route::get("medi-stock/all/material-type", [HISController::class, "medi_stock_with_material_type"]);
+        Route::get("medi-stock/{id}/material-type", [HISController::class, "medi_stock_with_material_type"]);
+        // Trả về tất cả loại vật tư cùng kho
+        Route::get("material-type/all/medi-stock", [HISController::class, "material_type_with_medi_stock"]);
+        Route::get("material-type/{id}/medi-stock", [HISController::class, "material_type_with_medi_stock"]);
+    });
 });
