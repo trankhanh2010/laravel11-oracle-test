@@ -312,4 +312,20 @@ Route::group([
         Route::get("ration-time", [HISController::class, "ration_time"]);
         Route::get("ration-time/{id}", [HISController::class, "ration_time_id"]);
     });
+
+    /// Kho - Đối tượng
+    Route::group(['as' => 'HIS.Desktop.Plugins.MestPatientType'], function () {
+        Route::get("mest-patient-type", [HISController::class, "mest_patient_type"]);
+        Route::get("mest-patient-type/{id}", [HISController::class, "mest_patient_type_id"]);
+    });
+
+    /// Kho - Loại thuốc
+    Route::group(['as' => 'HIS.Desktop.Plugins.MediStockMetyList'], function () {
+        // Trả về tất cả mối quan hệ
+        Route::get("medi-stock-mety-list", [HISController::class, "medi_stock_mety_list"]);
+        Route::get("medi-stock-mety-list/{id}", [HISController::class, "medi_stock_mety_list_id"]);
+        // Trả về tất cả kho cùng loại thuốc 
+        Route::get("medi-stock/medicine-type", [HISController::class, "medi_stock_with_medicine_type"]);
+
+    });
 });

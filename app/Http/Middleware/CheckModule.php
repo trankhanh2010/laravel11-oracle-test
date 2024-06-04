@@ -6,8 +6,8 @@ use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Route;
-use App\Models\User;
-use App\Models\Module;
+use App\Models\ACS\User;
+use App\Models\ACS\Module;
 class CheckModule
 {
     /**

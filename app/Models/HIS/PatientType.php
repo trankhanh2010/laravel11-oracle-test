@@ -1,0 +1,40 @@
+<?php
+
+namespace App\Models\HIS;
+
+use App\Traits\dinh_dang_ten_truong;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class PatientType extends Model
+{
+    use HasFactory, dinh_dang_ten_truong;
+    protected $connection = 'oracle_his'; 
+    protected $table = 'HIS_patient_type ';
+    protected $fillable = [
+        'base_patient_type_id',
+        'inherit_patient_type_ids',
+        'other_pay_source_ids',
+        'other_paySource_id',
+        'treatment_type_ids',
+    ];
+    public function reception_rooms()
+    {
+        return $this->hasMany(ReceptionRoom::class, 'patient_type_ids', 'id');
+    }
+
+    public function base_patient_type()
+    {
+        return $this->belongsTo(PatientType::class, 'base_patient_type_id', 'id');
+    }
+
+    public function treatment_types()
+    {
+        return TreatmentType::whereIn('id', explode(',', $this->treatment_type_ids))->get();
+    }
+
+    public function other_pay_sources()
+    {
+        return OtherPaySource::whereIn('id', explode(',', $this->other_pay_source_ids))->get();
+    }
+}

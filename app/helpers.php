@@ -2,8 +2,8 @@
 
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Http\JsonResponse;
-use App\Models\Token;
-use App\Models\User;
+use App\Models\ACS\Token;
+use App\Models\ACS\User;
 
 
 if (!function_exists('get_user_with_loginname')) {

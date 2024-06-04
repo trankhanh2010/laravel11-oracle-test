@@ -5,55 +5,57 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
-use App\Models\Department;
-use App\Models\BedRoom;
-use App\Models\ExecuteRoom;
-use App\Models\Room;
-use App\Models\Speciality;
-use App\Models\TreatmentType;
-use App\Models\MediOrg;
-use App\Models\Branch;
-use App\Models\District;
-use App\Models\MediStock;
-use App\Models\ReceptionRoom;
-use App\Models\Area;
-use App\Models\Refectory;
-use App\Models\ExecuteGroup;
-use App\Models\CashierRoom;
-use App\Models\National;
-use App\Models\Province;
-use App\Models\DataStore;
-use App\Models\ExecuteRole;
-use App\Models\Commune;
-use App\Models\Service;
-use App\Models\Servive;
-use App\Models\ServicePaty;
-use App\Models\ServiceMachine;
-use App\Models\Machine;
-use App\Models\ServiceRoom;
-use App\Models\ServiceFollow;
-use App\Models\Bed;
-use App\Models\BedBsty;
-use App\Models\BedType;
-use App\Models\ServSegr;
-use App\Models\ServiceGroup;
-use App\Models\Employee;
-use App\Models\ExecuteRoleUser;
-use App\Models\Role;
-use App\Models\Module;
-use App\Models\Ethnic;
-use App\Models\PatientType;
-use App\Models\PriorityType;
-use App\Models\Career;
-use App\Models\PatientClassify;
-use App\Models\Religion;
-use App\Models\ServiceUnit;
-use App\Models\ServiceType;
-use App\Models\RationGroup;
-use App\Models\ServiceReqType;
-use App\Models\RationTime;
-use App\Models\Relation;
-use App\Models\ModuleRole;
+use App\Models\HIS\Department;
+use App\Models\HIS\BedRoom;
+use App\Models\HIS\ExecuteRoom;
+use App\Models\HIS\Room;
+use App\Models\HIS\Speciality;
+use App\Models\HIS\TreatmentType;
+use App\Models\HIS\MediOrg;
+use App\Models\HIS\Branch;
+use App\Models\SDA\District;
+use App\Models\HIS\MediStock;
+use App\Models\HIS\ReceptionRoom;
+use App\Models\HIS\Area;
+use App\Models\HIS\Refectory;
+use App\Models\HIS\ExecuteGroup;
+use App\Models\HIS\CashierRoom;
+use App\Models\SDA\National;
+use App\Models\SDA\Province;
+use App\Models\HIS\DataStore;
+use App\Models\HIS\ExecuteRole;
+use App\Models\SDA\Commune;
+use App\Models\HIS\Service;
+use App\Models\HIS\ServicePaty;
+use App\Models\HIS\ServiceMachine;
+use App\Models\HIS\Machine;
+use App\Models\HIS\ServiceRoom;
+use App\Models\HIS\ServiceFollow;
+use App\Models\HIS\Bed;
+use App\Models\HIS\BedBsty;
+use App\Models\HIS\BedType;
+use App\Models\HIS\ServSegr;
+use App\Models\HIS\ServiceGroup;
+use App\Models\HIS\Employee;
+use App\Models\HIS\ExecuteRoleUser;
+use App\Models\ACS\Role;
+use App\Models\ACS\Module;
+use App\Models\SDA\Ethnic;
+use App\Models\HIS\PatientType;
+use App\Models\HIS\PriorityType;
+use App\Models\HIS\Career;
+use App\Models\HIS\PatientClassify;
+use App\Models\SDA\Religion;
+use App\Models\HIS\ServiceUnit;
+use App\Models\HIS\ServiceType;
+use App\Models\HIS\RationGroup;
+use App\Models\HIS\ServiceReqType;
+use App\Models\HIS\RationTime;
+use App\Models\EMR\Relation;
+use App\Models\ACS\ModuleRole;
+use App\Models\HIS\MestPatientType;
+use App\Models\HIS\MediStockMety;
+
 class HISController extends Controller
 {
     protected $time;
@@ -153,6 +155,10 @@ class HISController extends Controller
     protected $relation_list_name = 'relation_list';
     protected $module_role;
     protected $module_role_name = 'module_role';
+    protected $mest_patient_type;
+    protected $mest_patient_type_name = 'mest_patient_type';
+    protected $medi_stock_mety_list;
+    protected $medi_stock_mety_list_name = 'medi_stock_mety';
     public function __construct()
     {
         $this->time = now()->addMinutes(1440);
@@ -176,7 +182,7 @@ class HISController extends Controller
         $this->data_store = new DataStore();
         $this->execute_role = new ExecuteRole();
         $this->commune = new Commune();
-        $this->service = new Servive();
+        $this->service = new Service();
         $this->service_paty = new ServicePaty();
         $this->service_machine = new ServiceMachine();
         $this->machine = new Machine();
@@ -204,6 +210,8 @@ class HISController extends Controller
         $this->ration_time = new RationTime();
         $this->relation_list = new Relation();
         $this->module_role = new ModuleRole();
+        $this->mest_patient_type = new MestPatientType();
+        $this->medi_stock_mety_list = new MediStockMety();
     }
 
     /// Department
@@ -510,7 +518,7 @@ class HISController extends Controller
     /// Refectory
     public function refectory()
     {
-        $param =[
+        $param = [
             'room:id,department_id',
             'room.department:id,department_name'
         ];
@@ -617,7 +625,7 @@ class HISController extends Controller
     {
         $data = get_cache($this->province, $this->province_name, $id, $this->time);
         $data1 = get_cache_1_1($this->province, 'national', $this->province_name, $id, $this->time);
-        return response()->json(['data' =>[
+        return response()->json(['data' => [
             'province' => $data,
             'national' => $data1
         ]], 200);
@@ -701,7 +709,7 @@ class HISController extends Controller
         ]], 200);
     }
 
-    ///Service
+    /// Service
     public function service()
     {
         $data = get_cache($this->service, $this->service_name, null, $this->time);
@@ -782,7 +790,9 @@ class HISController extends Controller
         $param = [
             'service:id,service_name,service_type_id',
             'service.service_type:id,service_type_name,service_type_code',
-            'patient_type:id,patient_type_name,patient_type_code'
+            'patient_type:id,patient_type_name,patient_type_code',
+            'branch:id,branch_name,branch_code',
+            'package:id,package_name,package_code'
         ];
 
         $data = get_cache_full($this->service_paty, $param, $this->service_paty_name, null, $this->time);
@@ -850,6 +860,7 @@ class HISController extends Controller
     {
         $param = [
             'department:id,department_name',
+
         ];
         $data = get_cache_full($this->machine, $param, $this->machine_name, null, $this->time);
         return response()->json(['data' => $data], 200);
@@ -879,7 +890,7 @@ class HISController extends Controller
             'execute_room:id,execute_room_name',
             'room.room_type:id,room_type_name',
             'room.department:id,department_name',
-            
+
         ];
         $data = get_cache_full($this->service_room, $param, $this->service_room_name, null, $this->time);
         return response()->json(['data' => $data], 200);
@@ -1393,5 +1404,68 @@ class HISController extends Controller
         return response()->json(['data' => [
             'relation_list' => $data,
         ]], 200);
+    }
+
+    /// Mest Patient Type
+
+    public function mest_patient_type()
+    {
+        $param = [
+            'medi_stock:id,medi_stock_name,medi_stock_code',
+            'patient_type:id,patient_type_name,patient_type_code'
+        ];
+        $data = get_cache_full($this->mest_patient_type, $param, $this->mest_patient_type_name, null, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    public function mest_patient_type_id($id)
+    {
+        $data = get_cache($this->mest_patient_type, $this->mest_patient_type_name, $id, $this->time);
+        $data1 = get_cache_1_1($this->mest_patient_type, 'medi_stock', $this->mest_patient_type_name, $id, $this->time);
+        $data2 = get_cache_1_1($this->mest_patient_type, 'patient_type', $this->mest_patient_type_name, $id, $this->time);
+
+        return response()->json(['data' => [
+            'mest_patient_type' => $data,
+            'medi_stock' => $data1,
+            'patient_type' => $data2
+        ]], 200);
+    }
+
+    /// Mest Patient Type
+
+    public function medi_stock_mety_list()
+    {
+        $param = [
+            'medi_stock:id,medi_stock_name,medi_stock_code',
+            'medicine_type:id,medicine_type_name,medicine_type_code',
+            'exp_medi_stock:id,medi_stock_name,medi_stock_code'
+        ];
+        $data = get_cache_full($this->medi_stock_mety_list, $param, $this->medi_stock_mety_list_name, null, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    public function medi_stock_mety_list_id($id)
+    {
+        $data = get_cache($this->medi_stock_mety_list, $this->medi_stock_mety_list_name, $id, $this->time);
+        $data1 = get_cache_1_1($this->medi_stock_mety_list, 'medi_stock', $this->medi_stock_mety_list_name, $id, $this->time);
+        $data2 = get_cache_1_1($this->medi_stock_mety_list, 'medicine_type', $this->medi_stock_mety_list_name, $id, $this->time);
+        $data3 = get_cache_1_1($this->medi_stock_mety_list, 'exp_medi_stock', $this->medi_stock_mety_list_name, $id, $this->time);
+        return response()->json(['data' => [
+            'medi_stock_mety_list' => $data,
+            'medi_stock' => $data1,
+            'medicine_type' => $data2,
+            'exp_medi_stock' => $data3
+        ]], 200);
+    }
+
+    public function medi_stock_with_medicine_type()
+    {
+        $param = [
+            'medi_stock:id,medi_stock_name,medi_stock_code',
+            'medicine_type:id,medicine_type_name,medicine_type_code',
+            'exp_medi_stock:id,medi_stock_name,medi_stock_code'
+        ];
+        $data = get_cache_full($this->medi_stock, $param, $this->medi_stock_name, null, $this->time);
+        return response()->json(['data' => $data], 200);
     }
 }
