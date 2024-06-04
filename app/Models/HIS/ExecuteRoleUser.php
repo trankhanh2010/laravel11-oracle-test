@@ -13,6 +13,7 @@ class ExecuteRoleUser extends Model
     protected $table = 'HIS_Execute_Role_User';
     protected $fillable = [
         'execute_role_id',
+        'loginname'
     ];
 
     public function execute_role()

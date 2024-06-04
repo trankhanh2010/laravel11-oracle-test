@@ -18,6 +18,17 @@ class PatientType extends Model
         'other_paySource_id',
         'treatment_type_ids',
     ];
+
+    public function services()
+    {
+        return $this->belongsToMany(Service::class, ServicePaty::class, 'patient_type_id', 'service_id')
+        ->withPivot('price','vat_ratio');
+    }
+
+    public function medi_stocks()
+    {
+        return $this->belongsToMany(MediStock::class, MestPatientType::class, 'patient_type_id', 'medi_stock_id');
+    }
     public function reception_rooms()
     {
         return $this->hasMany(ReceptionRoom::class, 'patient_type_ids', 'id');

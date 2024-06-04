@@ -55,7 +55,8 @@ use App\Models\EMR\Relation;
 use App\Models\ACS\ModuleRole;
 use App\Models\HIS\MestPatientType;
 use App\Models\HIS\MediStockMety;
-
+use App\Models\ACS\User;
+use App\Models\HIS\MedicineType;
 class HISController extends Controller
 {
     protected $time;
@@ -159,6 +160,10 @@ class HISController extends Controller
     protected $mest_patient_type_name = 'mest_patient_type';
     protected $medi_stock_mety_list;
     protected $medi_stock_mety_list_name = 'medi_stock_mety';
+    protected $user;
+    protected $user_name = 'user';
+    protected $medicine_type;
+    protected $medicine_type_name = 'medicine_type';
     public function __construct()
     {
         $this->time = now()->addMinutes(1440);
@@ -212,6 +217,8 @@ class HISController extends Controller
         $this->module_role = new ModuleRole();
         $this->mest_patient_type = new MestPatientType();
         $this->medi_stock_mety_list = new MediStockMety();
+        $this->user = new User();
+        $this->medicine_type = new MedicineType();
     }
 
     /// Department
@@ -744,7 +751,6 @@ class HISController extends Controller
         $data23 = get_cache_1_n_with_ids($this->service, "min_proc_time_except_paty", $this->service_name, $id, $this->time);
         $data24 = get_cache_1_n_with_ids($this->service, "max_proc_time_except_paty", $this->service_name, $id, $this->time);
         $data25 = get_cache_1_n_with_ids($this->service, "total_time_except_paty", $this->service_name, $id, $this->time);
-
         return response()->json(['data' => [
             'service' => $data,
             'service_type' => $data1,
@@ -772,7 +778,6 @@ class HISController extends Controller
             'min_proc_time_except_paty' => $data23,
             'max_proc_time_except_paty' => $data24,
             'total_time_except_paty' => $data25
-
         ]], 200);
     }
 
@@ -794,7 +799,6 @@ class HISController extends Controller
             'branch:id,branch_name,branch_code',
             'package:id,package_name,package_code'
         ];
-
         $data = get_cache_full($this->service_paty, $param, $this->service_paty_name, null, $this->time);
         return response()->json(['data' => $data], 200);
     }
@@ -812,7 +816,6 @@ class HISController extends Controller
         $data8 = get_cache_1_1($this->service_paty, "service_condition", $this->service_paty_name, $id, $this->time);
         $data9 = get_cache_1_1($this->service_paty, "patient_classify", $this->service_paty_name, $id, $this->time);
         $data10 = get_cache_1_1($this->service_paty, "ration_time", $this->service_paty_name, $id, $this->time);
-
         return response()->json(['data' => [
             'service_paty' => $data,
             'service' => $data1,
@@ -826,6 +829,40 @@ class HISController extends Controller
             'patient_classify' => $data9,
             'ration_time' => $data10
         ]], 200);
+    }
+
+    public function service_with_patient_type($id = null)
+    {
+        if($id == null){
+            $name = $this->service_name.'_with_'.$this->patient_type_name;
+            $param = [
+                'patient_types:id,patient_type_name,patient_type_code',
+            ];
+        }else{
+            $name = $this->service_name.'_'.$id.'_with_'.$this->patient_type_name;
+            $param = [
+                'patient_types',
+            ];
+        }
+        $data = get_cache_full($this->service, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    public function patient_type_with_service($id = null)
+    {
+        if($id == null){
+            $name = $this->patient_type_name.'_with_'.$this->service_name;
+            $param = [
+                'services:id,service_name,service_code',
+            ];
+        }else{
+            $name = $this->patient_type_name.'_'.$id.'_with_'.$this->service_name;
+            $param = [
+                'services',
+            ];
+        }
+        $data = get_cache_full($this->patient_type, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
     }
 
     /// Service Machine
@@ -855,6 +892,40 @@ class HISController extends Controller
         ]], 200);
     }
 
+    public function service_with_machine($id = null)
+    {
+        if($id == null){
+            $name = $this->service_name.'_with_'.$this->machine_name;
+            $param = [
+                'machines:id,machine_name,machine_code',
+            ];
+        }else{
+            $name = $this->service_name.'_'.$id.'_with_'.$this->machine_name;
+            $param = [
+                'machines',
+            ];
+        }
+        $data = get_cache_full($this->service, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    public function machine_with_service($id = null)
+    {
+        if($id == null){
+            $name = $this->machine_name.'_with_'.$this->service_name;
+            $param = [
+                'services:id,service_name,service_code',
+            ];
+        }else{
+            $name = $this->machine_name.'_'.$id.'_with_'.$this->service_name;
+            $param = [
+                'services',
+            ];
+        }
+        $data = get_cache_full($this->machine, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
     /// Machine
     public function machine()
     {
@@ -880,7 +951,7 @@ class HISController extends Controller
         ]], 200);
     }
 
-    /// Room Service
+    /// Service Room
     public function service_room()
     {
         $param = [
@@ -912,6 +983,52 @@ class HISController extends Controller
             'room_type' => $data4,
             'execute_room' => $data5
         ]], 200);
+    }
+
+    public function service_with_room($id = null)
+    {
+        if($id == null){
+            $name = $this->service_name.'_with_'.$this->execute_room_name;
+            $param = [
+                'execute_rooms:id,room_id,execute_room_name,execute_room_code',
+                'execute_rooms.room:id,department_id,room_type_id',
+                'execute_rooms.room.department:id,department_name,department_code',
+                'execute_rooms.room.room_type:id,room_type_name,room_type_code'
+            ];
+        }else{
+            $name = $this->service_name.'_'.$id.'_with_'.$this->execute_room_name;
+            $param = [
+                'execute_rooms',
+                'execute_rooms.room:id,department_id,room_type_id',
+                'execute_rooms.room.department',
+                'execute_rooms.room.room_type'
+            ];
+        }
+        $data = get_cache_full($this->service, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    public function room_with_service($id = null)
+    {
+        if($id == null){
+            $name = $this->execute_room_name.'_with_'.$this->service_name;
+            $param = [
+                'services:id,service_name,service_code',
+                'room:id,department_id,room_type_id',
+                'room.department:id,department_name,department_code',
+                'room.room_type:id,room_type_name,room_type_code'
+            ];
+        }else{
+            $name = $this->execute_room_name.'_'.$id.'_with_'.$this->service_name;
+            $param = [
+                'services',
+                'room:id,department_id,room_type_id',
+                'room.department:id,department_name,department_code',
+                'room.room_type:id,room_type_name,room_type_code'
+            ];
+        }
+        $data = get_cache_full($this->execute_room, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
     }
 
     /// Room
@@ -963,6 +1080,40 @@ class HISController extends Controller
             'follow_type' => $data4,
             'treatment_type' => $data5
         ]], 200);
+    }
+
+    public function service_with_follow($id = null)
+    {
+        if($id == null){
+            $name = $this->service_name.'_with_follow'.$this->service_name;
+            $param = [
+                'follows:id,service_name,service_code',
+            ];
+        }else{
+            $name = $this->service_name.'_'.$id.'_with_'.$this->machine_name;
+            $param = [
+                'follows',
+            ];
+        }
+        $data = get_cache_full($this->service, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    public function follow_with_service($id = null)
+    {
+        if($id == null){
+            $name = $this->service_name.'_follow_with_'.$this->service_name;
+            $param = [
+                'services:id,service_name,service_code',
+            ];
+        }else{
+            $name = $this->service_name.'_'.$id.'_with_'.$this->service_name;
+            $param = [
+                'services',
+            ];
+        }
+        $data = get_cache_full($this->service, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
     }
 
 
@@ -1024,6 +1175,52 @@ class HISController extends Controller
             'bed_service_type' => $data4
 
         ]], 200);
+    }
+
+    public function service_with_bed($id = null)
+    {
+        if($id == null){
+            $name = $this->service_name.'_with_'.$this->bed_name;
+            $param = [
+                'beds:id,bed_name,bed_room_id',
+                'beds.bed_room:id,bed_room_name,room_id',
+                'beds.bed_room.room:id,department_id',
+                'beds.bed_room.room.department:id,department_name,department_code',
+            ];
+        }else{
+            $name = $this->service_name.'_'.$id.'_with_'.$this->bed_name;
+            $param = [
+                'beds',
+                'beds.bed_room:id,bed_room_name,room_id',
+                'beds.bed_room.room:id,department_id',
+                'beds.bed_room.room.department:id,department_name,department_code',
+            ];
+        }
+        $data = get_cache_full($this->service, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    public function bed_with_service($id = null)
+    {
+        if($id == null){
+            $name = $this->bed_name.'_with_'.$this->service_name;
+            $param = [
+                'bed_room:id,bed_room_name,room_id',
+                'bed_room.room:id,department_id',
+                'bed_room.room.department:id,department_name,department_code',
+                'services:id,service_name,service_code'
+            ];
+        }else{
+            $name = $this->bed_name.'_'.$id.'_with_'.$this->service_name;
+            $param = [
+                'bed_room',
+                'bed_room.room:id,department_id',
+                'bed_room.room.department:id,department_name,department_code',
+                'services'
+            ];
+        }
+        $data = get_cache_full($this->bed, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
     }
 
     /// Bed Type List
@@ -1159,6 +1356,44 @@ class HISController extends Controller
 
         ]], 200);
     }
+
+    public function execute_role_with_user($id = null)
+    {
+        if($id == null){
+            $name = $this->execute_role_name.'_with_'.$this->emp_user_name;
+            $param = [
+                'employees:id,loginname,tdl_username,department_id',
+                'employees.department:id,department_name,department_code'
+            ];
+        }else{
+            $name = $this->execute_role_name.'_'.$id.'_with_'.$this->emp_user_name;
+            $param = [
+                'employees',
+                'employees.department'
+            ];
+        }
+        $data = get_cache_full($this->execute_role, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    public function user_with_execute_role($id = null)
+    {
+        if($id == null){
+            $name = $this->emp_user_name.'_with_'.$this->execute_role_name;
+            $param = [
+                'execute_roles:id,execute_role_name,execute_role_code',
+                'department:id,department_code,department_name'
+            ];
+        }else{
+            $name = $this->emp_user_name.'_'.$id.'_with_'.$this->execute_role_name;
+            $param = [
+                'execute_roles',
+                'department'
+            ];
+        }
+        $data = get_cache_full($this->emp_user, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }    
 
     /// Role
     public function role()
@@ -1431,7 +1666,41 @@ class HISController extends Controller
         ]], 200);
     }
 
-    /// Mest Patient Type
+    public function medi_stock_with_patient_type($id = null)
+    {
+        if($id == null){
+            $name = $this->medi_stock_name.'_with_'.$this->patient_type_name;
+            $param = [
+                'patient_types:id,patient_type_name,patient_type_code'
+            ];
+        }else{
+            $name = $this->medi_stock_name.'_'.$id.'_with_'.$this->patient_type_name;
+            $param = [
+                'patient_types'
+            ];
+        }
+        $data = get_cache_full($this->medi_stock, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    public function patient_type_with_medi_stock($id = null)
+    {
+        if($id == null){
+            $name = $this->patient_type_name.'_with_'.$this->medi_stock_name;
+            $param = [
+                'medi_stocks:id,medi_stock_name,medi_stock_code'
+            ];
+        }else{
+            $name = $this->patient_type_name.'_'.$id.'_with_'.$this->medi_stock_name;
+            $param = [
+                'medi_stocks'
+            ];
+        }
+        $data = get_cache_full($this->patient_type, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }   
+
+    /// Medi Stock Mety List
 
     public function medi_stock_mety_list()
     {
@@ -1458,14 +1727,44 @@ class HISController extends Controller
         ]], 200);
     }
 
-    public function medi_stock_with_medicine_type()
+    public function medi_stock_with_medicine_type($id = null)
     {
-        $param = [
-            'medi_stock:id,medi_stock_name,medi_stock_code',
-            'medicine_type:id,medicine_type_name,medicine_type_code',
-            'exp_medi_stock:id,medi_stock_name,medi_stock_code'
-        ];
-        $data = get_cache_full($this->medi_stock, $param, $this->medi_stock_name, null, $this->time);
+        if($id == null){
+            $name = $this->medi_stock_name.'_with_'.$this->medicine_type_name;
+            $param = [
+                'medicine_types:id,medicine_type_name,medicine_type_code,tdl_service_unit_id',
+                'medicine_types.service_unit:id,service_unit_name,service_unit_code'
+            ];
+        }else{
+            $name = $this->medi_stock_name.'_'.$id.'_with_'.$this->medicine_type_name;
+            $param = [
+                'medicine_types',
+                'medicine_types.service_unit'
+
+            ];
+        }
+        $data = get_cache_full($this->medi_stock, $param, $name, $id, $this->time);
         return response()->json(['data' => $data], 200);
     }
+
+    public function medicine_type_with_medi_stock($id = null)
+    {
+        if($id == null){
+            $name = $this->medicine_type_name.'_with_'.$this->medi_stock_name;
+            $param = [
+                'medi_stocks:id,medi_stock_name,medi_stock_code',
+                'service_unit:id,service_unit_name,service_unit_code'
+            ];
+        }else{
+            $name = $this->medicine_type_name.'_'.$id.'_with_'.$this->medi_stock_name;
+            $param = [
+                'medi_stocks',
+                'service_unit'
+            ];
+        }
+        $data = get_cache_full($this->medicine_type, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }   
+
+
 }

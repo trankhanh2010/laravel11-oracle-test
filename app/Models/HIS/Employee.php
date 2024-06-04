@@ -51,4 +51,9 @@ class Employee extends Model
         return $this->belongsTo(CareerTitle::class,'career_title_id');
     }
 
+    public function execute_roles()
+    {
+        return $this->belongsToMany(ExecuteRole::class, ExecuteRoleUser::class, 'loginname', 'execute_role_id','loginname','id');
+    }
+
 }

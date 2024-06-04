@@ -18,6 +18,11 @@ class Machine extends Model
         'department_id',
     ];
 
+    public function services()
+    {
+        return $this->belongsToMany(Service::class, ServiceMachine::class, 'machine_id', 'service_id');
+    }
+
     public function execute_rooms()
     {
         // Lấy theo room_id trong Execute_Room

@@ -31,4 +31,9 @@ class Bed extends Model
     {
         return $this->belongsTo(TreatmentRoom::class, 'treatment_room_id');
     }
+
+    public function services()
+    {
+        return $this->belongsToMany(Service::class, BedBsty::class, 'bed_id', 'bed_service_type_id');
+    }
 }

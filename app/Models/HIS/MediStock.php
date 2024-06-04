@@ -25,6 +25,17 @@ class MediStock extends Model
         return $this->belongsTo(MediStock::class, 'parent_id');
     }
 
+    public function patient_types()
+    {
+        return $this->belongsToMany(PatientType::class, MestPatientType::class, 'medi_stock_id', 'patient_type_id');
+    }
+
+    public function medicine_types()
+    {
+        return $this->belongsToMany(MedicineType::class, MediStockMety::class, 'medi_stock_id', 'medicine_type_id')
+        ->withPivot('exp_medi_stock_id');
+    }
+
     public function department($id)
     {
         $department = DB::connection('oracle_his')->table('his_medi_stock')

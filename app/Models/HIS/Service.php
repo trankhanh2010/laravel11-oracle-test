@@ -40,6 +40,36 @@ class Service extends Model
         'service_code',
     ];
 
+    public function patient_types()
+    {
+        return $this->belongsToMany(PatientType::class, ServicePaty::class, 'service_id', 'patient_type_id')
+        ->withPivot('price','vat_ratio');
+    }
+
+    public function machines()
+    {
+        return $this->belongsToMany(Machine::class, ServiceMachine::class, 'service_id', 'machine_id');
+    }
+
+    public function execute_rooms()
+    {
+        return $this->belongsToMany(ExecuteRoom::class, ServiceRoom::class, 'service_id', 'room_id');
+    }
+
+    public function follows()
+    {
+        return $this->belongsToMany(Service::class, ServiceFollow::class, 'service_id', 'follow_id');
+    }
+
+    public function services()
+    {
+        return $this->belongsToMany(Service::class, ServiceFollow::class, 'follow_id', 'service_id');
+    }
+
+    public function beds()
+    {
+        return $this->belongsToMany(Bed::class, BedBsty::class, 'bed_service_type_id', 'bed_id');
+    }
     public function service_type()
     {
         return $this->belongsTo(ServiceType::class, 'service_type_id');

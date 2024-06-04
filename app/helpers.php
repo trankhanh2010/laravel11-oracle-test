@@ -56,15 +56,10 @@ if (!function_exists('get_cache_full')) {
                 return $model::with($relation_ship)->get();
             });
             return $data;
-        } else {
-            if (!is_numeric($id)) {
-                return response()->json(['error' => 'Id không hợp lệ'], 400)->original;
-            }
-            $data = Cache::remember($name . '_id_' . $id, $time, function () use ($model, $id) {
-                return $model->find($id);
+        } else{
+            $data = Cache::remember($name, $time, function () use ($model, $relation_ship,$id) {
+                return $model::where('id', $id)->with($relation_ship)->get();
             });
-            // Xóa Cache nếu không có dữ liệu
-            if (!$data) Cache::forget($name . '_id_' . $id);
             return $data;
         }
     }

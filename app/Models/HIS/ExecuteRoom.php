@@ -17,6 +17,10 @@ class ExecuteRoom extends Model
         return $this->belongsTo(Room::class);
     }   
 
+    public function services()
+    {
+        return $this->belongsToMany(Service::class, ServiceRoom::class, 'room_id', 'service_id');
+    }
     public function department($id)
     {
         $department = DB::connection('oracle_his')->table('his_execute_room')

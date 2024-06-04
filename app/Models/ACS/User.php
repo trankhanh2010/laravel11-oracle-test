@@ -2,6 +2,8 @@
 
 namespace App\Models\ACS;
 
+use App\Models\HIS\ExecuteRole;
+use App\Models\HIS\ExecuteRoleUser;
 use App\Traits\dinh_dang_ten_truong;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -64,5 +66,5 @@ class User extends Authenticatable
         }
         return $spAdmin;
     }
-  
+    
 }

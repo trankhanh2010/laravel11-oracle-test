@@ -12,11 +12,17 @@ class MedicineType extends Model
     protected $connection = 'oracle_his';
     protected $table = 'HIS_Medicine_Type';
     protected $fillable = [
-       
+       'tdl_service_unit_id'
     ];
 
     public function medi_stocks()
     {
-        return $this->belongsToMany(MediStock::class)->withPivot('stock');
+        return $this->belongsToMany(MediStock::class, MediStockMety::class, 'medicine_type_id', 'medi_stock_id')
+        ->withPivot('exp_medi_stock_id');
+    }
+
+    public function service_unit()
+    {
+        return $this->belongsTo(ServiceUnit::class, 'tdl_service_unit_id');
     }
 }
