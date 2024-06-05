@@ -41,6 +41,11 @@ class MediStock extends Model
         return $this->belongsToMany(MaterialType::class, MediStockMaty::class, 'medi_stock_id', 'material_type_id');
     }
 
+    public function rooms()
+    {
+        return $this->belongsToMany(Room::class, MestRoom::class, 'medi_stock_id', 'room_id');
+    }
+
     public function department($id)
     {
         $department = DB::connection('oracle_his')->table('his_medi_stock')

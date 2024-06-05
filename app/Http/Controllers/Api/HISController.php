@@ -59,6 +59,8 @@ use App\Models\ACS\User;
 use App\Models\HIS\MedicineType;
 use App\Models\HIS\MediStockMaty;
 use App\Models\HIS\MaterialType;
+use App\Models\HIS\MestRoom;
+
 class HISController extends Controller
 {
     protected $time;
@@ -170,6 +172,8 @@ class HISController extends Controller
     protected $medi_stock_maty_list_name = 'medi_stock_maty';
     protected $material_type;
     protected $material_type_name = 'material_type';
+    protected $mest_export_room;
+    protected $mest_export_room_name = 'mest_export_room';
     public function __construct()
     {
         $this->time = now()->addMinutes(1440);
@@ -227,6 +231,7 @@ class HISController extends Controller
         $this->medicine_type = new MedicineType();
         $this->medi_stock_maty_list = new MediStockMaty();
         $this->material_type = new MaterialType();
+        $this->mest_export_room = new MestRoom();
     }
 
     /// Department
@@ -292,24 +297,6 @@ class HISController extends Controller
         ]], 200);
     }
 
-    public function bed_room_get_room($id)
-    {
-        $data = get_cache_1_1($this->bed_room, "room", $this->bed_room_name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    public function bed_room_get_department($id)
-    {
-        $data = get_cache_1_1_1($this->bed_room, "room.department", $this->bed_room_name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    public function bed_room_get_area($id)
-    {
-        $data = get_cache_1_1_1_1($this->bed_room, "room.department.area", $this->bed_room_name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
     /// Execute Room
     public function execute_room()
     {
@@ -351,17 +338,6 @@ class HISController extends Controller
             'deposit_account_book' => $data10,
             'bill_account_book' => $data11
         ]], 200);
-    }
-
-    public function execute_room_get_room($id)
-    {
-        $data = get_cache_1_1($this->execute_room, "room", $this->execute_room_name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-    public function execute_room_get_department($id)
-    {
-        $data = get_cache_1_1_1($this->execute_room, "room.department", $this->execute_room_name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
     }
 
     /// Speciality     
@@ -466,24 +442,6 @@ class HISController extends Controller
         ]], 200);
     }
 
-    public function medi_stock_get_room($id)
-    {
-        $data = get_cache_1_1($this->medi_stock, "room", $this->medi_stock_name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    public function medi_stock_get_room_type($id)
-    {
-        $data = get_cache_1_1_1($this->medi_stock, "room.room_type", $this->medi_stock_name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    public function medi_stock_get_department($id)
-    {
-        $data = get_cache_1_1_1($this->medi_stock, "room.department", $this->medi_stock_name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
     /// Reception Room
     public function reception_room()
     {
@@ -509,12 +467,6 @@ class HISController extends Controller
             'area' => $data3,
             'default_cashier_room' => $data4,
         ]], 200);
-    }
-
-    public function reception_room_get_department($id)
-    {
-        $data = get_cache_1_1_1($this->reception_room, "room.department", $this->reception_room_name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
     }
 
     /// Area
@@ -571,48 +523,27 @@ class HISController extends Controller
     }
 
     /// Cashier Room
-    public function cashier_room()
+    public function cashier_room($id = null)
     {
-        $param = [
-            'room:id,department_id',
-            'room.department:id,department_name,department_code',
-            'room.department.area:id,area_name,area_code'
-        ];
-        $data = get_cache_full($this->cashier_room, $param, $this->cashier_room_name, null, $this->time);
+        if ($id == null) {
+            $name = $this->cashier_room_name;
+            $param = [
+                'room:id,department_id',
+                'room.department:id,department_name,department_code',
+                'room.department.area'
+            ];
+        } else {
+            $name = $this->cashier_room_name.'_'.$id;
+            $param = [
+                'room',
+                'room.department',
+                'room.department.area'
+            ];
+        }
+        $data = get_cache_full($this->cashier_room, $param, $name, $id, $this->time);
         return response()->json(['data' => $data], 200);
     }
 
-    public function cashier_room_id($id)
-    {
-        $data = get_cache($this->cashier_room, $this->cashier_room_name, $id, $this->time);
-        $data1 = get_cache_1_1_1($this->cashier_room, "room.room_type", $this->cashier_room_name, $id, $this->time);
-        $data2 = get_cache_1_1_1($this->cashier_room, "room.department", $this->cashier_room_name, $id, $this->time);
-        $data3 = get_cache_1_1_1_1($this->cashier_room, "room.department.area", $this->cashier_room_name, $id, $this->time);
-
-        return response()->json(['data' => [
-            'cashier_room' => $data,
-            'room_type' => $data1,
-            'department' => $data2,
-            'area' => $data3
-        ]], 200);
-    }
-
-    public function cashier_room_get_room_type($id)
-    {
-        $data = get_cache_1_1_1($this->cashier_room, "room.room_type", $this->cashier_room_name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    public function cashier_room_get_department($id)
-    {
-        $data = get_cache_1_1_1($this->cashier_room, "room.department", $this->cashier_room_name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-    public function cashier_room_get_area($id)
-    {
-        $data = get_cache_1_1_1_1($this->cashier_room, "room.department.area", $this->cashier_room_name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
     /// National 
     public function national()
     {
@@ -627,24 +558,23 @@ class HISController extends Controller
     }
 
     /// Province
-    public function province()
+    public function province($id = null)
     {
-        $param = [
-            'national:id,national_name,national_code'
-        ];
-        $data = get_cache_full($this->province, $param, $this->province_name, null, $this->time);
+        if ($id == null) {
+            $name = $this->province_name;
+            $param = [
+                'national:id,national_name,national_code'
+            ];
+        } else {
+            $name = $this->province_name.'_'.$id;
+            $param = [
+                'national'
+            ];
+        }
+        $data = get_cache_full($this->province, $param, $name, $id, $this->time);
         return response()->json(['data' => $data], 200);
     }
 
-    public function province_id($id)
-    {
-        $data = get_cache($this->province, $this->province_name, $id, $this->time);
-        $data1 = get_cache_1_1($this->province, 'national', $this->province_name, $id, $this->time);
-        return response()->json(['data' => [
-            'province' => $data,
-            'national' => $data1
-        ]], 200);
-    }
 
     /// DataStore
     public function data_store()
@@ -679,18 +609,6 @@ class HISController extends Controller
         ]], 200);
     }
 
-    public function data_store_get_department_room($id)
-    {
-        $data = get_cache_1_1_1($this->data_store, "room.department", $this->data_store_name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    public function data_store_get_department($id)
-    {
-        $data = get_cache_1_1($this->data_store, "department", $this->data_store_name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
     /// ExecuteRole
     public function execute_role()
     {
@@ -705,23 +623,21 @@ class HISController extends Controller
     }
 
     /// Commune
-    public function commune()
+    public function commune($id = null)
     {
-        $param = [
-            'district:id,district_name,district_code'
-        ];
-        $data = get_cache_full($this->commune, $param, $this->commune_name, null, $this->time);
+        if ($id == null) {
+            $name = $this->commune_name;
+            $param = [
+                'district:id,district_name,district_code'
+            ];
+        } else {
+            $name = $this->commune_name.'_'.$id;
+            $param = [
+                'district'
+            ];
+        }
+        $data = get_cache_full($this->commune, $param, $name, $id, $this->time);
         return response()->json(['data' => $data], 200);
-    }
-
-    public function commune_id($id)
-    {
-        $data = get_cache($this->commune, $this->commune_name, $id, $this->time);
-        $data1 = get_cache_1_1($this->commune, 'district', $this->commune_name, $id, $this->time);
-        return response()->json(['data' => [
-            'commune' => $data,
-            'district' => $data1
-        ]], 200);
     }
 
     /// Service
@@ -795,7 +711,6 @@ class HISController extends Controller
         $data = get_cache_by_code($this->service, $this->service_name, 'service_code', $type_id, $this->time);
         return response()->json(['data' => $data], 200);
     }
-
 
     /// Service Paty
     public function service_paty()
@@ -960,38 +875,33 @@ class HISController extends Controller
     }
 
     /// Service Room
-    public function service_room()
+    public function service_room($id = null)
     {
-        $param = [
-            'service:id,service_name,service_type_id',
-            'service.service_type:id,service_type_name,service_type_code',
-            'room:id,room_type_id,department_id',
-            'execute_room:id,execute_room_name',
-            'room.room_type:id,room_type_name',
-            'room.department:id,department_name',
-
-        ];
-        $data = get_cache_full($this->service_room, $param, $this->service_room_name, null, $this->time);
+        if ($id == null) {
+            $name = $this->service_room_name;
+            $param = [
+                'service:id,service_name,service_type_id',
+                'service.service_type:id,service_type_name,service_type_code',
+                'room:id,room_type_id,department_id',
+                'room.execute_room:id,room_id,execute_room_name,execute_room_code',
+                'room.room_type:id,room_type_name',
+                'room.department:id,department_name',
+            ];
+        } else {
+            $name = $this->service_room_name . '_' . $id;
+            $param = [
+                'service',
+                'service.service_type',
+                'room',
+                'room.execute_room',
+                'room.room_type',
+                'room.department',
+            ];
+        }
+        $data = get_cache_full($this->service_room, $param, $name, $id, $this->time);
         return response()->json(['data' => $data], 200);
     }
 
-    public function service_room_id($id)
-    {
-        $data = get_cache($this->service_room, $this->service_room_name, $id, $this->time);
-        $data1 = get_cache_1_1($this->service_room, "service", $this->service_room_name, $id, $this->time);
-        $data2 = get_cache_1_1_1($this->service_room, "service.service_type", $this->service_room_name, $id, $this->time);
-        $data3 = get_cache_1_1($this->service_room, "room", $this->service_room_name, $id, $this->time);
-        $data4 = get_cache_1_1_1($this->service_room, "room.room_type", $this->service_room_name, $id, $this->time);
-        $data5 = get_cache_1_1($this->service_room, "execute_room", $this->service_room_name, $id, $this->time);
-        return response()->json(['data' => [
-            'room_service' => $data,
-            'service' => $data1,
-            'service_type' => $data2,
-            'room' => $data3,
-            'room_type' => $data4,
-            'execute_room' => $data5
-        ]], 200);
-    }
 
     public function service_with_room($id = null)
     {
@@ -1024,7 +934,8 @@ class HISController extends Controller
                 'services:id,service_name,service_code',
                 'room:id,department_id,room_type_id',
                 'room.department:id,department_name,department_code',
-                'room.room_type:id,room_type_name,room_type_code'
+                'room.room_type:id,room_type_name,room_type_code',
+                'room.execute_room:id,room_id,execute_room_name,execute_room_code'
             ];
         } else {
             $name = $this->execute_room_name . '_' . $id . '_with_' . $this->service_name;
@@ -1032,7 +943,8 @@ class HISController extends Controller
                 'services',
                 'room:id,department_id,room_type_id',
                 'room.department:id,department_name,department_code',
-                'room.room_type:id,room_type_name,room_type_code'
+                'room.room_type:id,room_type_name,room_type_code',
+                'room.execute_room'
             ];
         }
         $data = get_cache_full($this->execute_room, $param, $name, $id, $this->time);
@@ -1040,22 +952,25 @@ class HISController extends Controller
     }
 
     /// Room
-    public function room()
+    public function room($id = null)
     {
-        $data = get_cache($this->room, $this->room_name, null, $this->time);
+        if ($id == null) {
+            $name = $this->room_name;
+            $param = [
+                'department:id,department_name,department_code',
+                'room_type:id,room_type_name,room_type_code',
+                'execute_room:id,room_id,execute_room_name,execute_room_code'
+            ];
+        } else {
+            $name = $this->room_name.'_'.$id;
+            $param = [
+                'department',
+                'room_type',
+                'execute_room'
+            ];
+        }
+        $data = get_cache_full($this->room, $param, $name, $id, $this->time);
         return response()->json(['data' => $data], 200);
-    }
-
-    public function room_id($id)
-    {
-        $data = get_cache($this->room, $this->room_name, $id, $this->time);
-        $data1 = get_cache_1_1($this->room, "room_type", $this->room_name, $id, $this->time);
-        $data2 = get_cache_1_1($this->room, "department", $this->room_name, $id, $this->time);
-        return response()->json(['data' => [
-            'room' => $data,
-            'room_type' => $data1,
-            'department' => $data2
-        ]], 200);
     }
 
     /// Service Follow
@@ -1126,63 +1041,53 @@ class HISController extends Controller
 
 
     /// Bed
-    public function bed()
+    public function bed($id = null)
     {
-        $param = [
-            'bed_type:id,bed_type_name',
-            'bed_room:id,bed_room_name,room_id',
-            'bed_room.room:id,department_id',
-            'bed_room.room.department:id,department_name'
-        ];
-        $data = get_cache_full($this->bed, $param, $this->bed_name, null, $this->time);
+        if ($id == null) {
+            $name = $this->bed_name;
+            $param = [
+                'bed_type:id,bed_type_name',
+                'bed_room:id,bed_room_name,room_id',
+                'bed_room.room:id,department_id',
+                'bed_room.room.department:id,department_name'
+            ];
+        } else {
+            $name = $this->bed_name.'_'.$id;
+            $param = [
+                'bed_type',
+                'bed_room',
+                'bed_room.room',
+                'bed_room.room.department'
+            ];
+        }
+        $data = get_cache_full($this->bed, $param, $name, $id, $this->time);
         return response()->json(['data' => $data], 200);
-    }
-
-    public function bed_id($id)
-    {
-        $data = get_cache($this->bed, $this->bed_name, $id, $this->time);
-        $data1 = get_cache_1_1($this->bed, "bed_type", $this->bed_name, $id, $this->time);
-        $data2 = get_cache_1_1($this->bed, "bed_room", $this->bed_name, $id, $this->time);
-        $data3 = get_cache_1_1_1_1($this->bed, "bed_room.room.department", $this->bed_name, $id, $this->time);
-
-        return response()->json(['data' => [
-            'bed' => $data,
-            'bed_type' => $data1,
-            'bed_room' => $data2,
-            'department' => $data3
-        ]], 200);
     }
 
     /// BedBsty
-    public function bed_bsty()
+    public function bed_bsty($id = null)
     {
-        $param = [
-            'bed:id,bed_name,bed_room_id',
-            'bed.bed_room:id,bed_room_name',
-            'bed.bed_room.room:id,department_id',
-            'bed.bed_room.room.department:id,department_name',
-            'bed_service_type:id,service_name,service_code'
-        ];
-        $data = get_cache_full($this->bed_bsty, $param, $this->bed_bsty_name, null, $this->time);
+        if ($id == null) {
+            $name = $this->bed_bsty_name;
+            $param = [
+                'bed:id,bed_name,bed_room_id',
+                'bed.bed_room:id,bed_room_name',
+                'bed.bed_room.room:id,department_id',
+                'bed.bed_room.room.department:id,department_name',
+                'bed_service_type:id,service_name,service_code'
+            ];
+        } else {
+            $name = $this->bed_bsty_name.'_'.$id;
+            $param = [
+                'bed',
+                'bed.bed_room',
+                'bed.bed_room.room',
+                'bed.bed_room.room.department',
+                'bed_service_type'
+            ];
+        }
+        $data = get_cache_full($this->bed_bsty, $param, $name, $id, $this->time);
         return response()->json(['data' => $data], 200);
-    }
-
-    public function bed_bsty_id($id)
-    {
-        $data = get_cache($this->bed_bsty, $this->bed_bsty_name, $id, $this->time);
-        $data1 = get_cache_1_1($this->bed_bsty, "bed", $this->bed_bsty_name, $id, $this->time);
-        $data2 = get_cache_1_1_1($this->bed_bsty, "bed.bed_room", $this->bed_bsty_name, $id, $this->time);
-        $data3 = get_cache_1_1_1_1_1($this->bed_bsty, "bed.bed_room.room.department", $this->bed_bsty_name, $id, $this->time);
-        $data4 = get_cache_1_1($this->bed_bsty, "bed_service_type", $this->bed_bsty_name, $id, $this->time);
-
-        return response()->json(['data' => [
-            'bed_bsty' => $data,
-            'bed' => $data1,
-            'bed_room' => $data2,
-            'department' => $data3,
-            'bed_service_type' => $data4
-
-        ]], 200);
     }
 
     public function service_with_bed($id = null)
@@ -1249,29 +1154,25 @@ class HISController extends Controller
     }
 
     /// Serv Segr
-    public function serv_segr()
+    public function serv_segr($id = null)
     {
-        $param = [
-            'service:id,service_name,service_type_id',
-            'service.service_type:id,service_type_name,service_type_code',
-            'service_group:id,service_group_name',
-        ];
-        $data = get_cache_full($this->serv_segr, $param, $this->serv_segr_name, null, $this->time);
+        if ($id == null) {
+            $name = $this->serv_segr_name;
+            $param = [
+                'service:id,service_name,service_type_id',
+                'service.service_type:id,service_type_name,service_type_code',
+                'service_group:id,service_group_name',
+            ];
+        } else {
+            $name = $this->serv_segr_name.'_'.$id;
+            $param = [
+                'service',
+                'service.service_type',
+                'service_group',
+            ];
+        }
+        $data = get_cache_full($this->serv_segr, $param, $name, $id, $this->time);
         return response()->json(['data' => $data], 200);
-    }
-
-    public function serv_segr_id($id)
-    {
-        $data = get_cache($this->serv_segr, $this->serv_segr_name, $id, $this->time);
-        $data1 = get_cache_1_1($this->serv_segr, "room", $this->serv_segr_name, $id, $this->time);
-        $data2 = get_cache_1_1($this->serv_segr, "service", $this->serv_segr_name, $id, $this->time);
-        $data3 = get_cache_1_1($this->serv_segr, "service_group", $this->serv_segr_name, $id, $this->time);
-        return response()->json(['data' => [
-            'serv_segr' => $data,
-            'room' => $data1,
-            'service' => $data2,
-            'service_group' => $data3
-        ]], 200);
     }
 
     /// Service Group
@@ -1343,26 +1244,21 @@ class HISController extends Controller
     }
 
     /// Execute Role User
-    public function execute_role_user()
+    public function execute_role_user($id = null)
     {
-        $param = [
-            'execute_role:id,execute_role_name',
-        ];
-
-        $data = get_cache_full($this->execute_role_user, $param, $this->execute_role_user_name, null, $this->time);
+        if ($id == null) {
+            $name = $this->execute_role_user_name;
+            $param = [
+                'execute_role:id,execute_role_name',
+            ];
+        } else {
+            $name = $this->execute_role_user_name.'_'.$id;
+            $param = [
+                'execute_role',
+            ];
+        }
+        $data = get_cache_full($this->execute_role_user, $param, $name, $id, $this->time);
         return response()->json(['data' => $data], 200);
-    }
-
-    public function execute_role_user_id($id)
-    {
-        $data = get_cache($this->execute_role_user, $this->execute_role_user_name, $id, $this->time);
-        $data1 = get_cache_1_1($this->execute_role_user, "execute_role", $this->execute_role_user_name, $id, $this->time);
-
-        return response()->json(['data' => [
-            'execute_role_user' => $data,
-            'execute_role' => $data1,
-
-        ]], 200);
     }
 
     public function execute_role_with_user($id = null)
@@ -1404,44 +1300,44 @@ class HISController extends Controller
     }
 
     /// Role
-    public function role()
+    public function role($id = null)
     {
-        $data = get_cache($this->role, $this->role_name, null, $this->time);
+        if ($id == null) {
+            $name = $this->role_name;
+            $param = [
+                'modules:id,module_name'
+            ];
+        } else {
+            $name = $this->role_name.'_'.$id;
+            $param = [
+                'modules'
+            ];
+        }
+        $data = get_cache_full($this->role, $param, $name, $id, $this->time);
         return response()->json(['data' => $data], 200);
     }
 
-    public function role_id($id)
-    {
-        $data = get_cache($this->role, $this->role_name, $id, $this->time);
-        $data1 = get_cache_1_n($this->role, 'module', $this->role_name, $id, $this->time);
-        return response()->json(['data' => [
-            'role' => $data,
-            'module' => $data1
-        ]], 200);
-    }
 
     /// Module
-    public function module_role()
+    public function module_role($id = null)
     {
-        $param = [
-            'module:id,module_name',
-            'role:id,role_name,role_code',
-        ];
-        $data = get_cache_full($this->module_role, $param, $this->module_role_name, null, $this->time);
+        if ($id == null) {
+            $name = $this->module_role_name;
+            $param = [
+                'module:id,module_name',
+                'role:id,role_name,role_code',
+            ];
+        } else {
+            $name = $this->module_role_name.'_'.$id;
+            $param = [
+                'module',
+                'role',
+            ];
+        }
+        $data = get_cache_full($this->module_role, $param, $name, $id, $this->time);
         return response()->json(['data' => $data], 200);
     }
 
-    public function module_role_id($id)
-    {
-        $data = get_cache($this->module_role, $this->module_role_name, $id, $this->time);
-        $data1 = get_cache_1_1($this->module_role, 'module', $this->module_role_name, $id, $this->time);
-        $data2 = get_cache_1_1($this->module_role, 'role', $this->module_role_name, $id, $this->time);
-        return response()->json(['data' => [
-            'module_role' => $data,
-            'module' => $data1,
-            'role' => $data2
-        ]], 200);
-    }
 
     /// Ethnic
     public function ethnic()
@@ -1511,25 +1407,25 @@ class HISController extends Controller
     }
 
     /// Patient Classify
-    public function patient_classify()
+    public function patient_classify($id = null)
     {
-        $data = get_cache($this->patient_classify, $this->patient_classify_name, null, $this->time);
+        if ($id == null) {
+            $name = $this->patient_classify_name;
+            $param = [
+                'patient_type',
+                'other_pay_source',
+                'BHYT_whitelist',
+            ];
+        } else {
+            $name = $this->patient_classify_name.'_'.$id;
+            $param = [
+                'patient_type',
+                'other_pay_source',
+                'BHYT_whitelist'
+            ];
+        }
+        $data = get_cache_full($this->patient_classify, $param, $name, $id, $this->time);
         return response()->json(['data' => $data], 200);
-    }
-
-    public function patient_classify_id($id)
-    {
-        $data = get_cache($this->patient_classify, $this->patient_classify_name, $id, $this->time);
-        $data1 = get_cache_1_1($this->patient_classify, 'patient_type', $this->patient_classify_name, $id, $this->time);
-        $data2 = get_cache_1_1($this->patient_classify, 'other_pay_source', $this->patient_classify_name, $id, $this->time);
-        $data3 = get_cache_1_1($this->patient_classify, 'BHYT_whitelist', $this->patient_classify_name, $id, $this->time);
-
-        return response()->json(['data' => [
-            'patient_classify' => $data,
-            'patient_type' => $data1,
-            'other_pay_source' => $data2,
-            'BHYT_whitelist' => $data3
-        ]], 200);
     }
 
     /// Religion
@@ -1548,45 +1444,39 @@ class HISController extends Controller
     }
 
     /// Service Unit
-    public function service_unit()
+    public function service_unit($id = null)
     {
-        $param = [
-            'convert:id,service_unit_name',
-        ];
-        $data = get_cache_full($this->service_unit, $param, $this->service_unit_name, null, $this->time);
+        if ($id == null) {
+            $name = $this->service_unit_name;
+            $param = [
+                'convert:id,service_unit_name',
+            ];
+        } else {
+            $name = $this->service_unit_name.'_'.$id;
+            $param = [
+                'convert',
+            ];
+        }
+        $data = get_cache_full($this->service_unit, $param, $name, $id, $this->time);
         return response()->json(['data' => $data], 200);
-    }
-
-    public function service_unit_id($id)
-    {
-        $data = get_cache($this->service_unit, $this->service_unit_name, $id, $this->time);
-        $data1 = get_cache_1_1($this->service_unit, 'convert', $this->service_unit_name, $id, $this->time);
-
-        return response()->json(['data' => [
-            'service_unit' => $data,
-            'convert' => $data1
-        ]], 200);
     }
 
     /// Service Type
-    public function service_type()
+    public function service_type($id = null)
     {
-        $param = [
-            'exe_service_module:id,exe_service_module_name,module_link',
-        ];
-        $data = get_cache_full($this->service_type, $param, $this->service_type_name, null, $this->time);
+        if ($id == null) {
+            $name = $this->service_type_name;
+            $param = [
+                'exe_service_module:id,exe_service_module_name,module_link',
+            ];
+        } else {
+            $name = $this->service_type_name.'_'.$id;
+            $param = [
+                'exe_service_module',
+            ];
+        }
+        $data = get_cache_full($this->service_type, $param, $name, $id, $this->time);
         return response()->json(['data' => $data], 200);
-    }
-
-    public function service_type_id($id)
-    {
-        $data = get_cache($this->service_type, $this->service_type_name, $id, $this->time);
-        $data1 = get_cache_1_1($this->service_type, 'exe_service_module', $this->service_type_name, $id, $this->time);
-
-        return response()->json(['data' => [
-            'service_type' => $data,
-            'exe_service_module' => $data1
-        ]], 200);
     }
 
     /// Ration Group
@@ -1651,27 +1541,23 @@ class HISController extends Controller
 
     /// Mest Patient Type
 
-    public function mest_patient_type()
+    public function mest_patient_type($id = null)
     {
-        $param = [
-            'medi_stock:id,medi_stock_name,medi_stock_code',
-            'patient_type:id,patient_type_name,patient_type_code'
-        ];
-        $data = get_cache_full($this->mest_patient_type, $param, $this->mest_patient_type_name, null, $this->time);
+        if ($id == null) {
+            $name = $this->mest_patient_type_name;
+            $param = [
+                'medi_stock:id,medi_stock_name,medi_stock_code',
+                'patient_type:id,patient_type_name,patient_type_code'
+            ];
+        } else {
+            $name = $this->mest_patient_type_name.'_'.$id;
+            $param = [
+                'medi_stock',
+                'patient_type'
+            ];
+        }
+        $data = get_cache_full($this->mest_patient_type, $param, $name, $id, $this->time);
         return response()->json(['data' => $data], 200);
-    }
-
-    public function mest_patient_type_id($id)
-    {
-        $data = get_cache($this->mest_patient_type, $this->mest_patient_type_name, $id, $this->time);
-        $data1 = get_cache_1_1($this->mest_patient_type, 'medi_stock', $this->mest_patient_type_name, $id, $this->time);
-        $data2 = get_cache_1_1($this->mest_patient_type, 'patient_type', $this->mest_patient_type_name, $id, $this->time);
-
-        return response()->json(['data' => [
-            'mest_patient_type' => $data,
-            'medi_stock' => $data1,
-            'patient_type' => $data2
-        ]], 200);
     }
 
     public function medi_stock_with_patient_type($id = null)
@@ -1710,29 +1596,25 @@ class HISController extends Controller
 
     /// Medi Stock Mety List
 
-    public function medi_stock_mety_list()
+    public function medi_stock_mety_list($id = null)
     {
-        $param = [
-            'medi_stock:id,medi_stock_name,medi_stock_code',
-            'medicine_type:id,medicine_type_name,medicine_type_code',
-            'exp_medi_stock:id,medi_stock_name,medi_stock_code'
-        ];
-        $data = get_cache_full($this->medi_stock_mety_list, $param, $this->medi_stock_mety_list_name, null, $this->time);
+        if ($id == null) {
+            $name = $this->medi_stock_mety_list_name;
+            $param = [
+                'medi_stock:id,medi_stock_name,medi_stock_code',
+                'medicine_type:id,medicine_type_name,medicine_type_code',
+                'exp_medi_stock:id,medi_stock_name,medi_stock_code'
+            ];
+        } else {
+            $name = $this->medi_stock_mety_list_name.'_'.$id;
+            $param = [
+                'medi_stock',
+                'medicine_type',
+                'exp_medi_stock'
+            ];
+        }
+        $data = get_cache_full($this->medi_stock_mety_list, $param, $name, $id, $this->time);
         return response()->json(['data' => $data], 200);
-    }
-
-    public function medi_stock_mety_list_id($id)
-    {
-        $data = get_cache($this->medi_stock_mety_list, $this->medi_stock_mety_list_name, $id, $this->time);
-        $data1 = get_cache_1_1($this->medi_stock_mety_list, 'medi_stock', $this->medi_stock_mety_list_name, $id, $this->time);
-        $data2 = get_cache_1_1($this->medi_stock_mety_list, 'medicine_type', $this->medi_stock_mety_list_name, $id, $this->time);
-        $data3 = get_cache_1_1($this->medi_stock_mety_list, 'exp_medi_stock', $this->medi_stock_mety_list_name, $id, $this->time);
-        return response()->json(['data' => [
-            'medi_stock_mety_list' => $data,
-            'medi_stock' => $data1,
-            'medicine_type' => $data2,
-            'exp_medi_stock' => $data3
-        ]], 200);
     }
 
     public function medi_stock_with_medicine_type($id = null)
@@ -1775,29 +1657,25 @@ class HISController extends Controller
     }
 
     /// Medi Stock Maty List
-    public function medi_stock_maty_list()
+    public function medi_stock_maty_list($id = null)
     {
-        $param = [
-            'medi_stock:id,medi_stock_name,medi_stock_code',
-            'material_type:id,material_type_name,material_type_code',
-            'exp_medi_stock:id,medi_stock_name,medi_stock_code'
-        ];
-        $data = get_cache_full($this->medi_stock_maty_list, $param, $this->medi_stock_maty_list_name, null, $this->time);
+        if ($id == null) {
+            $name = $this->medi_stock_maty_list_name;
+            $param = [
+                'medi_stock:id,medi_stock_name,medi_stock_code',
+                'material_type:id,material_type_name,material_type_code',
+                'exp_medi_stock:id,medi_stock_name,medi_stock_code'
+            ];
+        } else {
+            $name = $this->medi_stock_maty_list_name.'_'.$id;
+            $param = [
+                'medi_stock',
+                'material_type',
+                'exp_medi_stock'
+            ];
+        }
+        $data = get_cache_full($this->medi_stock_maty_list, $param, $name, $id, $this->time);
         return response()->json(['data' => $data], 200);
-    }
-
-    public function medi_stock_maty_list_id($id)
-    {
-        $data = get_cache($this->medi_stock_mety_list, $this->medi_stock_maty_list_name, $id, $this->time);
-        $data1 = get_cache_1_1($this->medi_stock_maty_list, 'medi_stock', $this->medi_stock_maty_list_name, $id, $this->time);
-        $data2 = get_cache_1_1($this->medi_stock_maty_list, 'material_type', $this->medi_stock_maty_list_name, $id, $this->time);
-        $data3 = get_cache_1_1($this->medi_stock_maty_list, 'exp_medi_stock', $this->medi_stock_maty_list_name, $id, $this->time);
-        return response()->json(['data' => [
-            'medi_stock_mety_list' => $data,
-            'medi_stock' => $data1,
-            'material_type' => $data2,
-            'exp_medi_stock' => $data3
-        ]], 200);
     }
 
     public function medi_stock_with_material_type($id = null)
@@ -1835,6 +1713,74 @@ class HISController extends Controller
             ];
         }
         $data = get_cache_full($this->material_type, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    /// Mest Export Room
+    public function mest_export_room($id = null)
+    {
+        if ($id == null ) {
+            $name = $this->mest_export_room_name;
+            $param = [
+                'medi_stock:id,medi_stock_name,medi_stock_code,is_active,is_delete,creator,modifier',
+                'room:id,department_id',
+                'room.execute_room:id,room_id,execute_room_name,execute_room_code',
+                'room.department:id,department_name,department_code'
+            ];
+        } else {
+            $name = $this->mest_export_room_name.'_'.$id;
+            $param = [
+                'medi_stock',
+                'room',
+                'room.execute_room',
+                'room.department'
+            ];
+        }
+        $data = get_cache_full($this->mest_export_room, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    public function medi_stock_with_room($id = null)
+    {
+        if ($id == null) {
+            $name = $this->medi_stock_name . '_with_' . $this->room_name;
+            $param = [
+                'rooms:id,department_id,room_type_id',
+                'rooms.execute_room:id,room_id,execute_room_name,execute_room_code'
+            ];
+        } else {
+            $name = $this->medi_stock_name . '_' . $id . '_with_' . $this->room_name;
+            $param = [
+                'rooms',
+                'rooms.execute_room',
+                'rooms.department',
+                'rooms.room_type'
+            ];
+        }
+        $data = get_cache_full($this->medi_stock, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    public function room_with_medi_stock($id = null)
+    {
+        if ($id == null) {
+            $name = $this->room_name . '_with_' . $this->medi_stock_name;
+            $param = [
+                'execute_room:id,room_id,execute_room_name,execute_room_code',
+                'department:id,department_name,department_code',
+                'room_type:id,room_type_name,room_type_code',
+                'medi_stocks:id,medi_stock_name,medi_stock_code'
+            ];
+        } else {
+            $name = $this->room_name . '_' . $id . '_with_' . $this->medi_stock_name;
+            $param = [
+                'execute_room',
+                'department',
+                'room_type',
+                'medi_stocks'
+            ];
+        }
+        $data = get_cache_full($this->room, $param, $name, $id, $this->time);
         return response()->json(['data' => $data], 200);
     }
 }

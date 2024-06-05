@@ -12,6 +12,9 @@ class ExecuteRoom extends Model
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
     protected $table = 'HIS_EXECUTE_ROOM';
+    protected $fillable = [
+        'room_id'
+    ];
     public function room()
     {
         return $this->belongsTo(Room::class);
@@ -30,5 +33,10 @@ class ExecuteRoom extends Model
             ->where('his_execute_room.id', $id)
             ->first();
         return $department;
+    }
+
+    public function medi_stocks()
+    {
+        return $this->belongsToMany(MediStock::class, MestRoom::class, 'medi_stock_id', 'room_id');
     }
 }

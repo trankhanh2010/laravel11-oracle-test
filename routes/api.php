@@ -28,17 +28,12 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisBedRoomList'], function () {
         Route::get("bed-room", [HISController::class, "bed_room"]);
         Route::get("bed-room/{id}", [HISController::class, "bed_room_id"]);
-        Route::get('bed-room/{id}/room', [HISController::class, 'bed_room_get_room']);
-        Route::get('bed-room/{id}/department', [HISController::class, 'bed_room_get_department']);
-        Route::get('bed-room/{id}/area', [HISController::class, 'bed_room_get_area']);
     });
 
     /// Phòng khám/cls/pttt
     Route::group(['as' => 'HIS.Desktop.Plugins.HisExecuteRoom'], function () {
         Route::get("execute-room", [HISController::class, "execute_room"]);
         Route::get("execute-room/{id}", [HISController::class, "execute_room_id"]);
-        Route::get('execute-room/{id}/room', [HISController::class, 'execute_room_get_room']);
-        Route::get('execute-room/{id}/department', [HISController::class, 'execute_room_get_department']);
     });
 
     /// Chuyên khoa
@@ -73,16 +68,12 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisMediStock'], function () {
         Route::get("medi-stock", [HISController::class, "medi_stock"]);
         Route::get("medi-stock/{id}", [HISController::class, "medi_stock_id"]);
-        Route::get("medi-stock/{id}/room", [HISController::class, "medi_stock_get_room"]);
-        Route::get("medi-stock/{id}/room-type", [HISController::class, "medi_stock_get_room_type"]);
-        Route::get("medi-stock/{id}/department", [HISController::class, "medi_stock_get_department"]);
     });
 
     /// Khu đón tiếp
     Route::group(['as' => 'HIS.Desktop.Plugins.HisReceptionRoom'], function () {
         Route::get("reception-room", [HISController::class, "reception_room"]);
         Route::get("reception-room/{id}", [HISController::class, "reception_room_id"]);
-        Route::get("reception-room/{id}/department", [HISController::class, "reception_room_get_department"]);
     });
 
     /// Khu vực
@@ -95,7 +86,6 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisRefectory'], function () {
         Route::get("refectory", [HISController::class, "refectory"]);
         Route::get("refectory/{id}", [HISController::class, "refectory_id"]);
-        Route::get("refectory/{id}/department", [HISController::class, "refectory_get_department"]);
     });
 
     /// Nhóm thực hiện
@@ -107,10 +97,7 @@ Route::group([
     /// Phòng thu ngân
     Route::group(['as' => 'HIS.Desktop.Plugins.HisCashierRoom'], function () {
         Route::get("cashier-room", [HISController::class, "cashier_room"]);
-        Route::get("cashier-room/{id}", [HISController::class, "cashier_room_id"]);
-        Route::get("cashier-room/{id}/room-type", [HISController::class, "cashier_room_get_room_type"]);
-        Route::get("cashier-room/{id}/department", [HISController::class, "cashier_room_get_department"]);
-        Route::get("cashier-room/{id}/area", [HISController::class, "cashier_room_get_area"]);
+        Route::get("cashier-room/{id}", [HISController::class, "cashier_room"]);
     });
 
     /// Quốc gia
@@ -122,15 +109,13 @@ Route::group([
     /// Tỉnh
     Route::group(['as' => 'SDA.Desktop.Plugins.SdaProvince'], function () {
         Route::get("province", [HISController::class, "province"]);
-        Route::get("province/{id}", [HISController::class, "province_id"]);
+        Route::get("province/{id}", [HISController::class, "province"]);
     });
 
     /// Tủ bệnh án
     Route::group(['as' => 'HIS.Desktop.Plugins.HisDataStore'], function () {
         Route::get("data-store", [HISController::class, "data_store"]);
         Route::get("data-store/{id}", [HISController::class, "data_store_id"]);
-        Route::get("data-store/{id}/department-room", [HISController::class, "data_store_get_department_room"]);
-        Route::get("data-store/{id}/department", [HISController::class, "data_store_get_department"]);
     });
 
     /// Vai trò thực hiện
@@ -142,7 +127,7 @@ Route::group([
     /// Xã
     Route::group(['as' => 'SDA.Desktop.Plugins.SdaCommune'], function () {
         Route::get("commune", [HISController::class, "commune"]);
-        Route::get("commune/{id}", [HISController::class, "commune_id"]);
+        Route::get("commune/{id}", [HISController::class, "commune"]);
     });
 
     /// Dịch vụ kỹ thuật
@@ -188,7 +173,7 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.RoomService'], function () {
         // Trả về tất cả mối quan hệ
         Route::get("service-room", [HISController::class, "service_room"]);
-        Route::get("service-room/{id}", [HISController::class, "service_room_id"]);
+        Route::get("service-room/{id}", [HISController::class, "service_room"]);
         // Trả về tất cả dịch vụ cùng phòng
         Route::get("service/all/room", [HISController::class, "service_with_room"]);
         Route::get("service/{id}/room", [HISController::class, "service_with_room"]);
@@ -199,7 +184,7 @@ Route::group([
 
     /// Phòng
     Route::get("room", [HISController::class, "room"]);
-    Route::get("room/{id}", [HISController::class, "room_id"]);
+    Route::get("room/{id}", [HISController::class, "room"]);
 
     /// Dịch vụ đi kèm
     Route::group(['as' => 'HIS.Desktop.Plugins.HisServiceFollow'], function () {
@@ -217,7 +202,7 @@ Route::group([
     /// Giường
     Route::group(['as' => 'HIS.Desktop.Plugins.HisBed'], function () {
         Route::get("bed", [HISController::class, "bed"]);
-        Route::get("bed/{id}", [HISController::class, "bed_id"]);
+        Route::get("bed/{id}", [HISController::class, "bed"]);
     });
 
     /// Giường - Dịch vụ giường
@@ -236,13 +221,13 @@ Route::group([
     /// Loại giường
     Route::group(['as' => 'HIS.Desktop.Plugins.HisBedTypeList'], function () {
         Route::get("bed-type", [HISController::class, "bed_type"]);
-        Route::get("bed-type/{id}", [HISController::class, "bed_type_id"]);
+        Route::get("bed-type/{id}", [HISController::class, "bed_type"]);
     });
 
     /// Nhóm dịch vụ
     Route::group(['as' => 'HIS.Desktop.Plugins.HisServSegr'], function () {
         Route::get("serv-segr", [HISController::class, "serv_segr"]);
-        Route::get("serv-segr/{id}", [HISController::class, "serv_segr_id"]);
+        Route::get("serv-segr/{id}", [HISController::class, "serv_segr"]);
         Route::get("service-group", [HISController::class, "service_group"]);
         Route::get("service-group/{id}", [HISController::class, "service_group_id"]);
     });
@@ -262,7 +247,7 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.ExecuteRoleUser'], function () {
         // Trả về tất cả mối quan hệ
         Route::get("execute-role-user", [HISController::class, "execute_role_user"]);
-        Route::get("execute-role-user/{id}", [HISController::class, "execute_role_user_id"]);
+        Route::get("execute-role-user/{id}", [HISController::class, "execute_role_user"]);
         // Trả về tất cả tài khoản cùng vai trò thực hiện
         Route::get("user/all/execute-role", [HISController::class, "user_with_execute_role"]);
         Route::get("user/{id}/execute-role", [HISController::class, "user_with_execute_role"]);
@@ -274,13 +259,13 @@ Route::group([
     /// Vai trò
     Route::group(['as' => 'ACS.Desktop.Plugins.AcsRole'], function () {
         Route::get("role", [HISController::class, "role"]);
-        Route::get("role/{id}", [HISController::class, "role_id"]);
+        Route::get("role/{id}", [HISController::class, "role"]);
     });
 
     /// Vai trò - Chức năng 
     Route::group(['as' => 'ACS.Desktop.Plugins.AcsModuleRole'], function () {
         Route::get("module-role", [HISController::class, "module_role"]);
-        Route::get("module-role/{id}", [HISController::class, "module_role_id"]);
+        Route::get("module-role/{id}", [HISController::class, "module_role"]);
     });
 
     /// Dân tộc
@@ -316,7 +301,7 @@ Route::group([
     /// Phân loại bệnh nhân
     Route::group(['as' => 'HIS.Desktop.Plugins.HisPatientClassify'], function () {
         Route::get("patient-classify", [HISController::class, "patient_classify"]);
-        Route::get("patient-classify/{id}", [HISController::class, "patient_classify_id"]);
+        Route::get("patient-classify/{id}", [HISController::class, "patient_classify"]);
     });
 
     /// Tôn giáo
@@ -328,13 +313,13 @@ Route::group([
     /// Đơn vị tính
     Route::group(['as' => 'HIS.Desktop.Plugins.HisServiceUnitEdit'], function () {
         Route::get("service-unit", [HISController::class, "service_unit"]);
-        Route::get("service-unit/{id}", [HISController::class, "service_unit_id"]);
+        Route::get("service-unit/{id}", [HISController::class, "service_unit"]);
     });
 
     /// Loại dịch vụ
     Route::group(['as' => 'HIS.Desktop.Plugins.HisServiceType'], function () {
         Route::get("service-type", [HISController::class, "service_type"]);
-        Route::get("service-type/{id}", [HISController::class, "service_type_id"]);
+        Route::get("service-type/{id}", [HISController::class, "service_type"]);
     });
 
     /// Nhóm xuất ăn
@@ -359,7 +344,7 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.MestPatientType'], function () {
         // Trả về tất cả mối quan hệ
         Route::get("mest-patient-type", [HISController::class, "mest_patient_type"]);
-        Route::get("mest-patient-type/{id}", [HISController::class, "mest_patient_type_id"]);
+        Route::get("mest-patient-type/{id}", [HISController::class, "mest_patient_type"]);
         // Trả về tất cả kho cùng đối tượng
         Route::get("medi-stock/all/patient-type", [HISController::class, "medi_stock_with_patient_type"]);
         Route::get("medi-stock/{id}/patient-type", [HISController::class, "medi_stock_with_patient_type"]);
@@ -372,7 +357,7 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.MediStockMetyList'], function () {
         // Trả về tất cả mối quan hệ
         Route::get("medi-stock-mety-list", [HISController::class, "medi_stock_mety_list"]);
-        Route::get("medi-stock-mety-list/{id}", [HISController::class, "medi_stock_mety_list_id"]);
+        Route::get("medi-stock-mety-list/{id}", [HISController::class, "medi_stock_mety_list"]);
         // Trả về tất cả kho cùng loại thuốc 
         Route::get("medi-stock/all/medicine-type", [HISController::class, "medi_stock_with_medicine_type"]);
         Route::get("medi-stock/{id}/medicine-type", [HISController::class, "medi_stock_with_medicine_type"]);
@@ -385,12 +370,25 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.MediStockMatyList'], function () {
         // Trả về tất cả mối quan hệ
         Route::get("medi-stock-maty-list", [HISController::class, "medi_stock_maty_list"]);
-        Route::get("medi-stock-maty-list/{id}", [HISController::class, "medi_stock_maty_list_id"]);
+        Route::get("medi-stock-maty-list/{id}", [HISController::class, "medi_stock_maty_list"]);
         // Trả về tất cả kho cùng loại vật tư 
         Route::get("medi-stock/all/material-type", [HISController::class, "medi_stock_with_material_type"]);
         Route::get("medi-stock/{id}/material-type", [HISController::class, "medi_stock_with_material_type"]);
         // Trả về tất cả loại vật tư cùng kho
         Route::get("material-type/all/medi-stock", [HISController::class, "material_type_with_medi_stock"]);
         Route::get("material-type/{id}/medi-stock", [HISController::class, "material_type_with_medi_stock"]);
+    });
+
+    /// Kho - Phòng
+    Route::group(['as' => 'HIS.Desktop.Plugins.MestExportRoom'], function () {
+        // Trả về tất cả mối quan hệ
+        Route::get("mest-export-room", [HISController::class, "mest_export_room"]);
+        Route::get("mest-export-room/{id}", [HISController::class, "mest_export_room"]);
+        // Trả về tất cả kho cùng phòng
+        Route::get("medi-stock/all/room", [HISController::class, "medi_stock_with_room"]);
+        Route::get("medi-stock/{id}/room", [HISController::class, "medi_stock_with_room"]);
+        // Trả về tất cả phòng cùng kho
+        Route::get("room/all/medi-stock", [HISController::class, "room_with_medi_stock"]);
+        Route::get("room/{id}/medi-stock", [HISController::class, "room_with_medi_stock"]);
     });
 });

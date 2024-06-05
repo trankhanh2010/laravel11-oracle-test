@@ -71,4 +71,14 @@ class Room extends Model
     {
         return $this->hasOne(BedRoom::class);
     }
+
+    public function execute_room()
+    {
+        return $this->hasOne(ExecuteRoom::class, 'room_id', 'id');
+    }
+
+    public function medi_stocks()
+    {
+        return $this->belongsToMany(MediStock::class, MestRoom::class, 'room_id', 'medi_stock_id');
+    }
 }
