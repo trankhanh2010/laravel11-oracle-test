@@ -31,4 +31,9 @@ class PatientClassify extends Model
     {
         return BHYTWhitelist::whereIn('id', explode(',', $this->BHYT_whitelist_ids))->get();
     }
+
+    public function militarry_ranks()
+    {
+        return MilitaryRank::whereIn('id', explode(',', $this->militarry_rank_ids))->get();
+    }
 }

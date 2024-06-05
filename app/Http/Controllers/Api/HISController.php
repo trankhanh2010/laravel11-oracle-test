@@ -60,7 +60,42 @@ use App\Models\HIS\MedicineType;
 use App\Models\HIS\MediStockMaty;
 use App\Models\HIS\MaterialType;
 use App\Models\HIS\MestRoom;
-
+use App\Models\HIS\ExroRoom;
+use App\Models\HIS\PatientTypeRoom;
+use App\Models\HIS\SaleProfitCFG;
+use App\Models\HIS\PatientTypeAllow;
+use App\Models\HIS\Position;
+use App\Models\HIS\WorkPlace;
+use App\Models\HIS\BornPosition;
+use App\Models\HIS\PatientCase;
+use App\Models\HIS\BHYTWhitelist;
+use App\Models\HIS\HeinServiceType;
+use App\Models\HIS\BHYTParam;
+use App\Models\HIS\BHYTBlacklist;
+use App\Models\HIS\MedicinePaty;
+use App\Models\HIS\AccidentBodyPart;
+use App\Models\HIS\PreparationsBlood;
+use App\Models\HIS\Contraindication;
+use App\Models\HIS\DosageForm;
+use App\Models\HIS\AccidentLocation;
+use App\Models\HIS\LicenseClass;
+use App\Models\HIS\Manufacturer;
+use App\Models\HIS\Icd;
+use App\Models\HIS\MediRecordType;
+use App\Models\HIS\FileType;
+use App\Models\HIS\TreatmentEndType;
+use App\Models\HIS\TranPatiTech;
+use App\Models\HIS\DebateReason;
+use App\Models\HIS\CancelReason;
+use App\Models\HIS\InteractionReason;
+use App\Models\HIS\UnlimitReason;
+use App\Models\HIS\HospitalizeReason;
+use App\Models\HIS\ExpMestReason;
+use App\Models\HIS\CareerTitle;
+use App\Models\HIS\AccidentHurtType;
+use App\Models\HIS\Supplier;
+use App\Models\HIS\ProcessingMethod;
+use App\Models\HIS\DeathWithin;
 class HISController extends Controller
 {
     protected $time;
@@ -174,6 +209,78 @@ class HISController extends Controller
     protected $material_type_name = 'material_type';
     protected $mest_export_room;
     protected $mest_export_room_name = 'mest_export_room';
+    protected $exro_room;
+    protected $exro_room_name = 'exro_room';
+    protected $patient_type_room;
+    protected $patient_type_room_name = 'patient_type_room';
+    protected $sale_profit_cfg;
+    protected $sale_profit_cfg_name = 'sale_profit_cfg';
+    protected $patient_type_allow;
+    protected $patient_type_allow_name = 'patient_type_allow';
+    protected $position;
+    protected $position_name = 'position';
+    protected $work_place;
+    protected $work_place_name = 'work_place';
+    protected $born_position;
+    protected $born_position_name = 'born_position';
+    protected $patient_case;
+    protected $patient_case_name = 'patient_case';
+    protected $bhyt_whitelist;
+    protected $bhyt_whitelist_name = 'bhyt_whitelist';
+    protected $hein_service_type;
+    protected $hein_service_type_name = 'hein_service_type';
+    protected $bhyt_param;
+    protected $bhyt_param_name = 'bhyt_param';
+    protected $bhyt_blacklist;
+    protected $bhyt_blacklist_name = 'bhyt_blacklist';
+    protected $medicine_paty;
+    protected $medicine_paty_name = 'medicine_paty';
+    protected $accident_body_part;
+    protected $accident_body_part_name = 'accident_body_part';
+    protected $preparations_blood;
+    protected $preparations_blood_name = 'preparations_blood';
+    protected $contraindication;
+    protected $contraindication_name = 'contraindication';
+    protected $dosage_form;
+    protected $dosage_form_name = 'dosage_form';
+    protected $accident_location;
+    protected $accident_location_name = 'accident_location';
+    protected $license_class;
+    protected $license_class_name = 'license_class';
+    protected $manufacturer;
+    protected $manufacturer_name = 'manufacturer';
+    protected $icd;
+    protected $icd_name = 'icd';
+    protected $medi_record_type;
+    protected $medi_record_type_name = 'medi_record_type';
+    protected $file_type;
+    protected $file_type_name = 'file_type';
+    protected $treatment_end_type;
+    protected $treatment_end_type_name = 'treatment_end_type';
+    protected $tran_pati_tech;
+    protected $tran_pati_tech_name = 'tran_pati_tech';
+    protected $debate_reason;
+    protected $debate_reason_name = 'debate_reason';
+    protected $cancel_reason;
+    protected $cancel_reason_name = 'cancel_reason';
+    protected $interaction_reason;
+    protected $interaction_reason_name = 'interaction_reason';
+    protected $unlimit_reason;
+    protected $unlimit_reason_name = 'unlimit_reason';
+    protected $hospitalize_reason;
+    protected $hospitalize_reason_name = 'hospitalize_reason';
+    protected $exp_mest_reason;
+    protected $exp_mest_reason_name = 'exp_mest_reason';
+    protected $career_title;
+    protected $career_title_name = 'career_title';
+    protected $accident_hurt_type;
+    protected $accident_hurt_type_name = 'accident_hurt_type';
+    protected $supplier;
+    protected $supplier_name = 'supplier';
+    protected $processing_method;
+    protected $processing_method_name = 'processing_method';
+    protected $death_within;
+    protected $death_within_name = 'death_within';
     public function __construct()
     {
         $this->time = now()->addMinutes(1440);
@@ -232,6 +339,42 @@ class HISController extends Controller
         $this->medi_stock_maty_list = new MediStockMaty();
         $this->material_type = new MaterialType();
         $this->mest_export_room = new MestRoom();
+        $this->exro_room = new ExroRoom();
+        $this->patient_type_room = new PatientTypeRoom();
+        $this->sale_profit_cfg = new SaleProfitCFG();
+        $this->patient_type_allow = new PatientTypeAllow();
+        $this->position = new Position();
+        $this->work_place = new WorkPlace();
+        $this->born_position = new BornPosition();
+        $this->patient_case = new PatientCase();
+        $this->bhyt_whitelist = new BHYTWhitelist();
+        $this->hein_service_type = new HeinServiceType();
+        $this->bhyt_param = new BHYTParam();
+        $this->bhyt_blacklist = new BHYTBlacklist();
+        $this->medicine_paty = new MedicinePaty();
+        $this->accident_body_part = new AccidentBodyPart();
+        $this->preparations_blood = new PreparationsBlood();
+        $this->contraindication = new Contraindication();
+        $this->dosage_form = new DosageForm();
+        $this->accident_location = new AccidentLocation();
+        $this->license_class = new LicenseClass();
+        $this->manufacturer = new Manufacturer();
+        $this->icd = new Icd();
+        $this->medi_record_type = new MediRecordType();
+        $this->file_type = new FileType();
+        $this->treatment_end_type = new TreatmentEndType();
+        $this->tran_pati_tech = new TranPatiTech();
+        $this->debate_reason = new DebateReason();
+        $this->cancel_reason = new CancelReason();
+        $this->interaction_reason = new InteractionReason();
+        $this->unlimit_reason = new UnlimitReason();
+        $this->hospitalize_reason = new HospitalizeReason();
+        $this->exp_mest_reason = new ExpMestReason();
+        $this->career_title = new CareerTitle();
+        $this->accident_hurt_type = new AccidentHurtType();
+        $this->supplier = new Supplier();
+        $this->processing_method = new ProcessingMethod();
+        $this->death_within = new DeathWithin();
     }
 
     /// Department
@@ -354,15 +497,20 @@ class HISController extends Controller
     }
 
     /// Treatment Type     
-    public function treatment_type()
+    public function treatment_type($id = null)
     {
-        $data = get_cache($this->treatment_type, $this->treatment_type_name, null, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    public function treatment_type_id($id)
-    {
-        $data = get_cache($this->treatment_type, $this->treatment_type_name, $id, $this->time);
+        if ($id == null) {
+            $name = $this->treatment_type_name;
+            $param = [
+                'required_service'
+            ];
+        } else {
+            $name = $this->treatment_type_name . '_' . $id;
+            $param = [
+                'required_service'
+            ];
+        }
+        $data = get_cache_full($this->treatment_type, $param, $name, $id, $this->time);
         return response()->json(['data' => $data], 200);
     }
 
@@ -533,7 +681,7 @@ class HISController extends Controller
                 'room.department.area'
             ];
         } else {
-            $name = $this->cashier_room_name.'_'.$id;
+            $name = $this->cashier_room_name . '_' . $id;
             $param = [
                 'room',
                 'room.department',
@@ -566,7 +714,7 @@ class HISController extends Controller
                 'national:id,national_name,national_code'
             ];
         } else {
-            $name = $this->province_name.'_'.$id;
+            $name = $this->province_name . '_' . $id;
             $param = [
                 'national'
             ];
@@ -631,7 +779,7 @@ class HISController extends Controller
                 'district:id,district_name,district_code'
             ];
         } else {
-            $name = $this->commune_name.'_'.$id;
+            $name = $this->commune_name . '_' . $id;
             $param = [
                 'district'
             ];
@@ -863,14 +1011,10 @@ class HISController extends Controller
     public function machine_id($id)
     {
         $data = get_cache($this->machine, $this->machine_name, $id, $this->time);
-        $data1 = get_cache_1_1($this->machine, "department", $this->machine_name, $id, $this->time);
-        $data2 = get_cache_1_n_with_ids($this->machine, "execute_room", $this->machine_name, $id, $this->time);
-        $data3 = get_cache_1_1($this->machine, "execute_room", $this->machine_name, $id, $this->time);
+        $data1 = get_cache_1_n_with_ids($this->machine, "room", $this->machine_name, $id, $this->time);
         return response()->json(['data' => [
             'machine' => $data,
-            'department' => $data1,
-            'execute_rooms' => $data2,
-            'execute_room' => $data3
+            'rooms' => $data1,
         ]], 200);
     }
 
@@ -962,7 +1106,7 @@ class HISController extends Controller
                 'execute_room:id,room_id,execute_room_name,execute_room_code'
             ];
         } else {
-            $name = $this->room_name.'_'.$id;
+            $name = $this->room_name . '_' . $id;
             $param = [
                 'department',
                 'room_type',
@@ -1052,7 +1196,7 @@ class HISController extends Controller
                 'bed_room.room.department:id,department_name'
             ];
         } else {
-            $name = $this->bed_name.'_'.$id;
+            $name = $this->bed_name . '_' . $id;
             $param = [
                 'bed_type',
                 'bed_room',
@@ -1077,7 +1221,7 @@ class HISController extends Controller
                 'bed_service_type:id,service_name,service_code'
             ];
         } else {
-            $name = $this->bed_bsty_name.'_'.$id;
+            $name = $this->bed_bsty_name . '_' . $id;
             $param = [
                 'bed',
                 'bed.bed_room',
@@ -1164,7 +1308,7 @@ class HISController extends Controller
                 'service_group:id,service_group_name',
             ];
         } else {
-            $name = $this->serv_segr_name.'_'.$id;
+            $name = $this->serv_segr_name . '_' . $id;
             $param = [
                 'service',
                 'service.service_type',
@@ -1252,7 +1396,7 @@ class HISController extends Controller
                 'execute_role:id,execute_role_name',
             ];
         } else {
-            $name = $this->execute_role_user_name.'_'.$id;
+            $name = $this->execute_role_user_name . '_' . $id;
             $param = [
                 'execute_role',
             ];
@@ -1308,7 +1452,7 @@ class HISController extends Controller
                 'modules:id,module_name'
             ];
         } else {
-            $name = $this->role_name.'_'.$id;
+            $name = $this->role_name . '_' . $id;
             $param = [
                 'modules'
             ];
@@ -1328,7 +1472,7 @@ class HISController extends Controller
                 'role:id,role_name,role_code',
             ];
         } else {
-            $name = $this->module_role_name.'_'.$id;
+            $name = $this->module_role_name . '_' . $id;
             $param = [
                 'module',
                 'role',
@@ -1367,12 +1511,16 @@ class HISController extends Controller
         $data1 = get_cache_1_n_with_ids($this->patient_type, 'treatment_type', $this->patient_type_name, $id, $this->time);
         $data2 = get_cache_1_1($this->patient_type, 'base_patient_type', $this->patient_type_name, $id, $this->time);
         $data3 = get_cache_1_n_with_ids($this->patient_type, 'other_pay_source', $this->patient_type_name, $id, $this->time);
+        $data4 = get_cache_1_n_with_ids($this->patient_type, 'inherit_patient_type', $this->patient_type_name, $id, $this->time);
+        $data5 = get_cache_1_1($this->patient_type, 'other_pay_source', $this->patient_type_name, $id, $this->time);
 
         return response()->json(['data' => [
             'patient_type' => $data,
-            'treatment_type' => $data1,
+            'treatment_types' => $data1,
             'base_patient_type' => $data2,
-            'other_pay_source' => $data3
+            'other_pay_sources' => $data3,
+            'inherit_patient_type' => $data4,
+            'other_pay_source' => $data5
         ]], 200);
     }
 
@@ -1415,13 +1563,15 @@ class HISController extends Controller
                 'patient_type',
                 'other_pay_source',
                 'BHYT_whitelist',
+                'militarry_ranks'
             ];
         } else {
-            $name = $this->patient_classify_name.'_'.$id;
+            $name = $this->patient_classify_name . '_' . $id;
             $param = [
                 'patient_type',
                 'other_pay_source',
-                'BHYT_whitelist'
+                'BHYT_whitelist',
+                'militarry_ranks'
             ];
         }
         $data = get_cache_full($this->patient_classify, $param, $name, $id, $this->time);
@@ -1452,7 +1602,7 @@ class HISController extends Controller
                 'convert:id,service_unit_name',
             ];
         } else {
-            $name = $this->service_unit_name.'_'.$id;
+            $name = $this->service_unit_name . '_' . $id;
             $param = [
                 'convert',
             ];
@@ -1470,7 +1620,7 @@ class HISController extends Controller
                 'exe_service_module:id,exe_service_module_name,module_link',
             ];
         } else {
-            $name = $this->service_type_name.'_'.$id;
+            $name = $this->service_type_name . '_' . $id;
             $param = [
                 'exe_service_module',
             ];
@@ -1550,7 +1700,7 @@ class HISController extends Controller
                 'patient_type:id,patient_type_name,patient_type_code'
             ];
         } else {
-            $name = $this->mest_patient_type_name.'_'.$id;
+            $name = $this->mest_patient_type_name . '_' . $id;
             $param = [
                 'medi_stock',
                 'patient_type'
@@ -1606,7 +1756,7 @@ class HISController extends Controller
                 'exp_medi_stock:id,medi_stock_name,medi_stock_code'
             ];
         } else {
-            $name = $this->medi_stock_mety_list_name.'_'.$id;
+            $name = $this->medi_stock_mety_list_name . '_' . $id;
             $param = [
                 'medi_stock',
                 'medicine_type',
@@ -1667,7 +1817,7 @@ class HISController extends Controller
                 'exp_medi_stock:id,medi_stock_name,medi_stock_code'
             ];
         } else {
-            $name = $this->medi_stock_maty_list_name.'_'.$id;
+            $name = $this->medi_stock_maty_list_name . '_' . $id;
             $param = [
                 'medi_stock',
                 'material_type',
@@ -1719,7 +1869,7 @@ class HISController extends Controller
     /// Mest Export Room
     public function mest_export_room($id = null)
     {
-        if ($id == null ) {
+        if ($id == null) {
             $name = $this->mest_export_room_name;
             $param = [
                 'medi_stock:id,medi_stock_name,medi_stock_code,is_active,is_delete,creator,modifier',
@@ -1728,7 +1878,7 @@ class HISController extends Controller
                 'room.department:id,department_name,department_code'
             ];
         } else {
-            $name = $this->mest_export_room_name.'_'.$id;
+            $name = $this->mest_export_room_name . '_' . $id;
             $param = [
                 'medi_stock',
                 'room',
@@ -1781,6 +1931,661 @@ class HISController extends Controller
             ];
         }
         $data = get_cache_full($this->room, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    /// Exro Room
+    public function exro_room($id = null)
+    {
+        if ($id == null) {
+            $name = $this->exro_room_name;
+            $param = [
+                'room:id,department_id',
+                'room.execute_room:id,room_id,execute_room_name',
+                'room.department:id,department_name,department_code',
+                'execute_room:id,room_id,execute_room_name,execute_room_code',
+                'execute_room.room:id,department_id',
+                'execute_room.room.department:id,department_name,department_code'
+            ];
+        } else {
+            $name = $this->exro_room_name . '_' . $id;
+            $param = [
+                'room',
+                'room.execute_room',
+                'room.department',
+                'execute_room',
+                'execute_room.room',
+                'execute_room.room.department'
+            ];
+        }
+        $data = get_cache_full($this->exro_room, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    public function execute_room_with_room($id = null)
+    {
+        if ($id == null) {
+            $name = $this->execute_room_name . '_with_' . $this->room_name;
+            $param = [
+                'rooms:id,department_id',
+                'rooms.execute_room:id,room_id,execute_room_name',
+                'rooms.department:id,department_name,department_code',
+                'room.department:id,department_name,department_code',
+            ];
+        } else {
+            $name = $this->execute_room_name . '_' . $id . '_with_' . $this->room_name;
+            $param = [
+                'rooms',
+                'rooms.execute_room',
+                'rooms.department',
+                'room.department',
+            ];
+        }
+        $data = get_cache_full($this->execute_room, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    public function room_with_execute_room($id = null)
+    {
+        if ($id == null) {
+            $name = $this->room_name . '_with_' . $this->execute_room_name;
+            $param = [
+                'department:id,department_name,department_code',
+                'execute_room:id,room_id,execute_room_name,execute_room_code',
+                'execute_rooms:id,room_id,execute_room_name,execute_room_code',
+                'execute_rooms.room:id,department_id',
+                'execute_rooms.room.department:id,department_name,department_code',
+            ];
+        } else {
+            $name = $this->room_name . '_' . $id . '_with_' . $this->execute_room_name;
+            $param = [
+                'department',
+                'execute_room',
+                'execute_rooms',
+                'execute_room.rooms',
+                'execute_room.room.departments',
+            ];
+        }
+        $data = get_cache_full($this->room, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    /// Patient Type Room
+    public function patient_type_room($id = null)
+    {
+        if ($id == null) {
+            $name = $this->patient_type_room_name;
+            $param = [
+                'room:id,department_id,room_type_id',
+                'room.execute_room:id,room_id,execute_room_name,execute_room_code',
+                'room.department:id,department_name,department_code',
+                'room.room_type:id,room_type_name,room_type_code',
+                'patient_type:id,patient_type_name,patient_type_code'
+            ];
+        } else {
+            $name = $this->patient_type_room_name . '_' . $id;
+            $param = [
+                'room',
+                'room.execute_room',
+                'room.department',
+                'room.room_type',
+                'patient_type'
+            ];
+        }
+        $data = get_cache_full($this->patient_type_room, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    public function patient_type_with_room($id = null)
+    {
+        if ($id == null) {
+            $name = $this->patient_type_name . '_with_' . $this->room_name;
+            $param = [
+                'rooms:id,department_id,room_type_id',
+                'rooms.execute_room:id,room_id,execute_room_name,execute_room_code',
+                'rooms.department:id,department_name,department_code',
+                'rooms.room_type:id,room_type_name,room_type_code',
+            ];
+        } else {
+            $name = $this->patient_type_name . '_' . $id . '_with_' . $this->room_name;
+            $param = [
+                'rooms',
+                'rooms.execute_room',
+                'rooms.department',
+                'rooms.room_type',
+            ];
+        }
+        $data = get_cache_full($this->patient_type, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    public function room_with_patient_type($id = null)
+    {
+        if ($id == null) {
+            $name = $this->room_name . '_with_' . $this->patient_type_name;
+            $param = [
+                'execute_room:id,room_id,execute_room_name,execute_room_code',
+                'department:id,department_name,department_code',
+                'room_type:id,room_type_name,room_type_code',
+                'patient_types:id,patient_type_name,patient_type_code'
+            ];
+        } else {
+            $name = $this->room_name . '_' . $id . '_with_' . $this->patient_type_name;
+            $param = [
+                'execute_room',
+                'department',
+                'room_type',
+                'patient_types'
+            ];
+        }
+        $data = get_cache_full($this->room, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    /// Sale Profit CFG
+    public function sale_profit_cfg($id = null)
+    {
+        if ($id == null) {
+            $name = $this->sale_profit_cfg_name;
+            $param = [];
+        } else {
+            $name = $this->sale_profit_cfg_name . '_' . $id;
+            $param = [];
+        }
+        $data = get_cache_full($this->sale_profit_cfg, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    /// Patient Type Allow
+    public function patient_type_allow($id = null)
+    {
+        if ($id == null) {
+            $name = $this->patient_type_allow_name;
+            $param = [
+                'patient_type',
+                'patient_type_allow'
+            ];
+        } else {
+            $name = $this->patient_type_allow_name . '_' . $id;
+            $param = [
+                'patient_type',
+                'patient_type_allow'
+            ];
+        }
+        $data = get_cache_full($this->patient_type_allow, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    /// Position
+    public function position($id = null)
+    {
+        if ($id == null) {
+            $name = $this->position_name;
+            $param = [];
+        } else {
+            $name = $this->position_name . '_' . $id;
+            $param = [];
+        }
+        $data = get_cache_full($this->position, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+
+    /// Work Place
+    public function work_place($id = null)
+    {
+        if ($id == null) {
+            $name = $this->work_place_name;
+            $param = [];
+        } else {
+            $name = $this->work_place_name . '_' . $id;
+            $param = [];
+        }
+        $data = get_cache_full($this->work_place, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    /// Born Position
+    public function born_position($id = null)
+    {
+        if ($id == null) {
+            $name = $this->born_position_name;
+            $param = [];
+        } else {
+            $name = $this->born_position_name . '_' . $id;
+            $param = [];
+        }
+        $data = get_cache_full($this->born_position, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    /// Born Position
+    public function patient_case($id = null)
+    {
+        if ($id == null) {
+            $name = $this->patient_case_name;
+            $param = [];
+        } else {
+            $name = $this->patient_case_name . '_' . $id;
+            $param = [];
+        }
+        $data = get_cache_full($this->patient_case, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    /// Hein Service Type
+    public function hein_service_type($id = null)
+    {
+        if ($id == null) {
+            $name = $this->hein_service_type_name;
+            $param = [];
+        } else {
+            $name = $this->hein_service_type_name . '_' . $id;
+            $param = [];
+        }
+        $data = get_cache_full($this->hein_service_type, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    /// BHYT Whitelist
+    public function bhyt_whitelist($id = null)
+    {
+        if ($id == null) {
+            $name = $this->bhyt_whitelist_name;
+            $param = [
+                'career'
+            ];
+        } else {
+            $name = $this->bhyt_whitelist_name . '_' . $id;
+            $param = [
+                'career'
+            ];
+        }
+        $data = get_cache_full($this->bhyt_whitelist, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    /// BHYT Param
+    public function bhyt_param($id = null)
+    {
+        if ($id == null) {
+            $name = $this->bhyt_param_name;
+            $param = [];
+        } else {
+            $name = $this->bhyt_param_name . '_' . $id;
+            $param = [];
+        }
+        $data = get_cache_full($this->bhyt_param, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    /// BHYT Blacklist
+    public function bhyt_blacklist($id = null)
+    {
+        if ($id == null) {
+            $name = $this->bhyt_blacklist_name;
+            $param = [];
+        } else {
+            $name = $this->bhyt_blacklist_name . '_' . $id;
+            $param = [];
+        }
+        $data = get_cache_full($this->bhyt_blacklist, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    /// Medicine Paty
+    public function medicine_paty($id = null)
+    {
+        if ($id == null) {
+            $name = $this->medicine_paty_name;
+            $param = [
+                'medicine',
+                'medicine.medicine_type:id,medicine_type_name,medicine_type_code',
+                'patient_type'
+            ];
+        } else {
+            $name = $this->medicine_paty_name . '_' . $id;
+            $param = [
+                'medicine',
+                'medicine.medicine_type',
+                'patient_type'
+            ];
+        }
+        $data = get_cache_full($this->medicine_paty, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    /// Accident Body Part
+    public function accident_body_part($id = null)
+    {
+        if ($id == null) {
+            $name = $this->accident_body_part_name;
+            $param = [];
+        } else {
+            $name = $this->accident_body_part_name . '_' . $id;
+            $param = [];
+        }
+        $data = get_cache_full($this->accident_body_part, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    /// Preparations Blood
+    public function preparations_blood($id = null)
+    {
+        if ($id == null) {
+            $name = $this->preparations_blood_name;
+            $param = [];
+        } else {
+            $name = $this->preparations_blood_name . '_' . $id;
+            $param = [];
+        }
+        $data = get_cache_full($this->preparations_blood, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    /// Contraindication
+    public function contraindication($id = null)
+    {
+        if ($id == null) {
+            $name = $this->contraindication_name;
+            $param = [];
+        } else {
+            $name = $this->contraindication_name . '_' . $id;
+            $param = [];
+        }
+        $data = get_cache_full($this->contraindication, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    /// Dosage Form
+    public function dosage_form($id = null)
+    {
+        if ($id == null) {
+            $name = $this->dosage_form_name;
+            $param = [];
+        } else {
+            $name = $this->dosage_form_name . '_' . $id;
+            $param = [];
+        }
+        $data = get_cache_full($this->dosage_form, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    /// Accident Location
+    public function accident_location($id = null)
+    {
+        if ($id == null) {
+            $name = $this->accident_location_name;
+            $param = [];
+        } else {
+            $name = $this->accident_location_name . '_' . $id;
+            $param = [];
+        }
+        $data = get_cache_full($this->accident_location, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    /// License Class
+    public function license_class($id = null)
+    {
+        if ($id == null) {
+            $name = $this->license_class_name;
+            $param = [];
+        } else {
+            $name = $this->license_class_name . '_' . $id;
+            $param = [];
+        }
+        $data = get_cache_full($this->license_class, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    /// Manufacturer
+    public function manufacturer($id = null)
+    {
+        if ($id == null) {
+            $name = $this->manufacturer_name;
+            $param = [];
+        } else {
+            $name = $this->manufacturer_name . '_' . $id;
+            $param = [];
+        }
+        $data = get_cache_full($this->manufacturer, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    /// ICD
+    public function icd($id = null)
+    {
+        if ($id == null) {
+            $name = $this->icd_name;
+            $param = [
+                'icd_group',
+                'icd_chapter',
+                'gender',
+                'age_type'
+            ];
+        } else {
+            $name = $this->icd_name . '_' . $id;
+            $param = [
+                'icd_group',
+                'icd_chapter',
+                'gender',
+                'age_type'
+            ];
+        }
+        $data = get_cache_full($this->icd, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    /// Medi Record Type
+    public function medi_record_type($id = null)
+    {
+        if ($id == null) {
+            $name = $this->medi_record_type_name;
+            $param = [];
+        } else {
+            $name = $this->medi_record_type_name . '_' . $id;
+            $param = [];
+        }
+        $data = get_cache_full($this->medi_record_type, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    /// File Type
+    public function file_type($id = null)
+    {
+        if ($id == null) {
+            $name = $this->file_type_name;
+            $param = [];
+        } else {
+            $name = $this->file_type_name . '_' . $id;
+            $param = [];
+        }
+        $data = get_cache_full($this->file_type, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    /// Treatment End Type
+    public function treatment_end_type($id = null)
+    {
+        if ($id == null) {
+            $name = $this->treatment_end_type_name;
+            $param = [];
+        } else {
+            $name = $this->treatment_end_type_name . '_' . $id;
+            $param = [];
+        }
+        $data = get_cache_full($this->treatment_end_type, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    /// Tran Pati Tech
+    public function tran_pati_tech($id = null)
+    {
+        if ($id == null) {
+            $name = $this->tran_pati_tech_name;
+            $param = [];
+        } else {
+            $name = $this->tran_pati_tech_name . '_' . $id;
+            $param = [];
+        }
+        $data = get_cache_full($this->tran_pati_tech, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    /// Debate Reason
+    public function debate_reason($id = null)
+    {
+        if ($id == null) {
+            $name = $this->debate_reason_name;
+            $param = [];
+        } else {
+            $name = $this->debate_reason_name . '_' . $id;
+            $param = [];
+        }
+        $data = get_cache_full($this->debate_reason, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    /// Cancel Reason
+    public function cancel_reason($id = null)
+    {
+        if ($id == null) {
+            $name = $this->cancel_reason_name;
+            $param = [];
+        } else {
+            $name = $this->cancel_reason_name . '_' . $id;
+            $param = [];
+        }
+        $data = get_cache_full($this->cancel_reason, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    /// Interaction Reason
+    public function interaction_reason($id = null)
+    {
+        if ($id == null) {
+            $name = $this->interaction_reason_name;
+            $param = [];
+        } else {
+            $name = $this->interaction_reason_name . '_' . $id;
+            $param = [];
+        }
+        $data = get_cache_full($this->interaction_reason, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    /// Unlimit Reason
+    public function unlimit_reason($id = null)
+    {
+        if ($id == null) {
+            $name = $this->unlimit_reason_name;
+            $param = [];
+        } else {
+            $name = $this->unlimit_reason_name . '_' . $id;
+            $param = [];
+        }
+        $data = get_cache_full($this->unlimit_reason, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    /// Hospitalize Reason
+    public function hospitalize_reason($id = null)
+    {
+        if ($id == null) {
+            $name = $this->hospitalize_reason_name;
+            $param = [];
+        } else {
+            $name = $this->hospitalize_reason_name . '_' . $id;
+            $param = [];
+        }
+        $data = get_cache_full($this->hospitalize_reason, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    /// Exp Mest Reason
+    public function exp_mest_reason($id = null)
+    {
+        if ($id == null) {
+            $name = $this->exp_mest_reason_name;
+            $param = [];
+        } else {
+            $name = $this->exp_mest_reason_name . '_' . $id;
+            $param = [];
+        }
+        $data = get_cache_full($this->exp_mest_reason, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+
+    /// Career Title
+    public function career_title($id = null)
+    {
+        if ($id == null) {
+            $name = $this->career_title_name;
+            $param = [];
+        } else {
+            $name = $this->career_title_name . '_' . $id;
+            $param = [];
+        }
+        $data = get_cache_full($this->career_title, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    /// Accident Hurt Type
+    public function accident_hurt_type($id = null)
+    {
+        if ($id == null) {
+            $name = $this->accident_hurt_type_name;
+            $param = [];
+        } else {
+            $name = $this->accident_hurt_type_name . '_' . $id;
+            $param = [];
+        }
+        $data = get_cache_full($this->accident_hurt_type, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+
+    /// Supplier
+    public function supplier($id = null)
+    {
+        if ($id == null) {
+            $name = $this->supplier_name;
+            $param = [];
+        } else {
+            $name = $this->supplier_name . '_' . $id;
+            $param = [];
+        }
+        $data = get_cache_full($this->supplier, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    /// Processing
+    public function processing_method($id = null)
+    {
+        if ($id == null) {
+            $name = $this->processing_method_name;
+            $param = [];
+        } else {
+            $name = $this->processing_method_name . '_' . $id;
+            $param = [];
+        }
+        $data = get_cache_full($this->processing_method, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    /// Death Within
+    public function death_within($id = null)
+    {
+        if ($id == null) {
+            $name = $this->death_within_name;
+            $param = [];
+        } else {
+            $name = $this->death_within_name . '_' . $id;
+            $param = [];
+        }
+        $data = get_cache_full($this->death_within, $param, $name, $id, $this->time);
         return response()->json(['data' => $data], 200);
     }
 }

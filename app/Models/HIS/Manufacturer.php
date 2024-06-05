@@ -6,14 +6,11 @@ use App\Traits\dinh_dang_ten_truong;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class TreatmentType extends Model
+class Manufacturer extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_treatment_type';
-    
-    public function required_service()
-    {
-        return $this->belongsTo(Service::class, 'required_service_id', 'id');
-    }
+    protected $table = 'HIS_Manufacturer';
+    protected $fillable = [
+    ];
 }

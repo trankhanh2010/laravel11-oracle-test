@@ -48,4 +48,19 @@ class PatientType extends Model
     {
         return OtherPaySource::whereIn('id', explode(',', $this->other_pay_source_ids))->get();
     }
+
+    public function rooms()
+    {
+        return $this->belongsToMany(Room::class, PatientTypeRoom::class, 'patient_type_id', 'room_id');
+    }
+
+    public function inherit_patient_types()
+    {
+        return PatientType::whereIn('id', explode(',', $this->inheritPatientTypeIds))->get();
+    }
+
+    public function other_pay_source()
+    {
+        return $this->belongsTo(OtherPaySource::class, 'other_pay_source_id', 'id');
+    }
 }

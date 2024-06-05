@@ -6,17 +6,21 @@ use App\Traits\dinh_dang_ten_truong;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class BHYTWhitelist extends Model
+class MedicinePaty extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_BHYT_Whitelist';
+    protected $table = 'HIS_Medicine_Paty';
     protected $fillable = [
-
     ];
 
-    public function career()
+    public function medicine()
     {
-        return $this->belongsTo(Career::class, 'career_id', 'id');
+        return $this->belongsTo(Medicine::class, 'medicine_id');
+    }
+
+    public function patient_type()
+    {
+        return $this->belongsTo(PatientType::class, 'patient_type_id');
     }
 }

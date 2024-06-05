@@ -39,4 +39,9 @@ class ExecuteRoom extends Model
     {
         return $this->belongsToMany(MediStock::class, MestRoom::class, 'medi_stock_id', 'room_id');
     }
+    public function rooms()
+    {
+        return $this->belongsToMany(Room::class, ExroRoom::class, 'execute_room_id', 'room_id')
+        ->withPivot('is_hold_order', 'is_allow_request', 'is_priority_require');
+    }
 }

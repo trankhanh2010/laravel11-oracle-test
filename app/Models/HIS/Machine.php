@@ -28,6 +28,11 @@ class Machine extends Model
         // Lấy theo room_id trong Execute_Room
         return ExecuteRoom::whereIn('room_id', explode(',', $this->room_ids))->get();
     }
+    public function rooms()
+    {
+        // Lấy theo room_id trong Execute_Room
+        return Room::with('execute_room', 'department')->whereIn('id', explode(',', $this->room_ids))->get();
+    }
     public function execute_room()
     {
         return $this->belongsTo(ExecuteRoom::class, 'room_id', 'room_id');

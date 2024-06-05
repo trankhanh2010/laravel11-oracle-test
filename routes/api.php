@@ -44,7 +44,7 @@ Route::group([
 
     /// Diện điều trị
     Route::get("treatment-type", [HISController::class, "treatment_type"]);
-    Route::get("treatment-type/{id}", [HISController::class, "treatment_type_id"]);
+    Route::get("treatment-type/{id}", [HISController::class, "treatment_type"]);
 
     /// Cơ sở khám chữa bệnh ban đầu
     Route::group(['as' => 'HIS.Desktop.Plugins.HisMediOrg'], function () {
@@ -390,5 +390,240 @@ Route::group([
         // Trả về tất cả phòng cùng kho
         Route::get("room/all/medi-stock", [HISController::class, "room_with_medi_stock"]);
         Route::get("room/{id}/medi-stock", [HISController::class, "room_with_medi_stock"]);
+    });
+
+    /// Phòng chỉ định - Phòng thực hiện 
+    Route::group(['as' => 'HIS.Desktop.Plugins.ExroRoom'], function () {
+        // Trả về tất cả mối quan hệ
+        Route::get("exro-room", [HISController::class, "exro_room"]);
+        Route::get("exro-room/{id}", [HISController::class, "exro_room"]);
+        // Trả về tất cả phòng thực hiện cùng phòng chỉ định
+        Route::get("execute-room/all/room", [HISController::class, "execute_room_with_room"]);
+        Route::get("execute-room/{id}/room", [HISController::class, "execute_room_with_room"]);
+        // Trả về tất cả phòng chỉ định cùng phòng thực hiện
+        Route::get("room/all/execute-room", [HISController::class, "room_with_execute_room"]);
+        Route::get("room/{id}/execute-room", [HISController::class, "room_with_execute_room"]);
+    });
+
+    /// Phòng thực hiện - Đối tượng bệnh nhân
+    Route::group(['as' => 'HIS.Desktop.Plugins.PatientTypeRoom'], function () {
+        // Trả về tất cả mối quan hệ
+        Route::get("patient-type-room", [HISController::class, "patient_type_room"]);
+        Route::get("patient-type-room/{id}", [HISController::class, "patient_type_room"]);
+        // Trả về tất cả phòng thực hiện cùng đối tượng bệnh nhân
+        Route::get("room/all/patient-type", [HISController::class, "room_with_patient_type"]);
+        Route::get("room/{id}/patient-type", [HISController::class, "room_with_patient_type"]);
+        // Trả về tất cả đối tượng bệnh nhân cùng phòng thực hiện
+        Route::get("patient-type/all/room", [HISController::class, "patient_type_with_room"]);
+        Route::get("patient-type/{id}/room", [HISController::class, "patient_type_with_room"]);
+    });
+
+    /// Thiết lập lợi nhuận xuất bán
+    Route::group(['as' => 'HIS.Desktop.Plugins.EstablishSaleProfitCFG'], function () {
+        Route::get("sale-profit-cfg", [HISController::class, "sale_profit_cfg"]);
+        Route::get("sale-profit-cfg/{id}", [HISController::class, "sale_profit_cfg"]);
+    });
+
+    /// Chuyển đổi đối tượng
+    Route::group(['as' => 'HIS.Desktop.Plugins.PatientTypeAllow'], function () {
+        Route::get("patient-type-allow", [HISController::class, "patient_type_allow"]);
+        Route::get("patient-type-allow/{id}", [HISController::class, "patient_type_allow"]);
+    });
+
+    /// Chức vụ
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisPosition'], function () {
+        Route::get("position", [HISController::class, "position"]);
+        Route::get("position/{id}", [HISController::class, "position"]);
+    });
+
+    /// Nơi làm việc
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisWorkPlace'], function () {
+        Route::get("work-place", [HISController::class, "work_place"]);
+        Route::get("work-place/{id}", [HISController::class, "work_place"]);
+    });
+
+    /// Ngôi thai
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisBornPosition'], function () {
+        Route::get("born-position", [HISController::class, "born_position"]);
+        Route::get("born-position/{id}", [HISController::class, "born_position"]);
+    });
+
+    /// Trường hợp bệnh
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisPatientCase'], function () {
+        Route::get("patient-case", [HISController::class, "patient_case"]);
+        Route::get("patient-case/{id}", [HISController::class, "patient_case"]);
+    });
+
+    /// Đầu mã thẻ BHYT
+    Route::group(['as' => 'BHYT HIS.Desktop.Plugins.HisBhytWhitelist'], function () {
+        Route::get("bhyt-whitelist", [HISController::class, "bhyt_whitelist"]);
+        Route::get("bhyt-whitelist/{id}", [HISController::class, "bhyt_whitelist"]);
+    });
+
+    /// Nhóm dịch vụ BHYT
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisHeinServiceType'], function () {
+        Route::get("hein-service-type", [HISController::class, "hein_service_type"]);
+        Route::get("hein-service-type/{id}", [HISController::class, "hein_service_type"]);
+    });
+
+    /// Tham số BHYT
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisBHYTParam'], function () {
+        Route::get("bhyt-param", [HISController::class, "bhyt_param"]);
+        Route::get("bhyt-param/{id}", [HISController::class, "bhyt_param"]);
+    });
+
+    /// Thẻ BHYT không hợp lệ
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisBhytBlacklist'], function () {
+        Route::get("bhyt-blacklist", [HISController::class, "bhyt_blacklist"]);
+        Route::get("bhyt-blacklist/{id}", [HISController::class, "bhyt_blacklist"]);
+    });
+
+    /// Chính sách giá thuốc
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisMedicinePaty'], function () {
+        Route::get("medicine-paty", [HISController::class, "medicine_paty"]);
+        Route::get("medicine-paty/{id}", [HISController::class, "medicine_paty"]);
+    });
+
+    /// Bộ phận thương tích
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisAccidentBodyPart'], function () {
+        Route::get("accident-body-part", [HISController::class, "accident_body_part"]);
+        Route::get("accident-body-part/{id}", [HISController::class, "accident_body_part"]);
+    });
+
+    /// Chế phẩm máu
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisPreparationsBlood'], function () {
+        Route::get("preparations-blood", [HISController::class, "preparations_blood"]);
+        Route::get("preparations-blood/{id}", [HISController::class, "preparations_blood"]);
+    });
+
+    /// Chống chỉ định
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisContraindication'], function () {
+        Route::get("contraindication", [HISController::class, "contraindication"]);
+        Route::get("contraindication/{id}", [HISController::class, "contraindication"]);
+    });
+
+    /// Dạng bào chế
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisDosageForm'], function () {
+        Route::get("dosage-form", [HISController::class, "dosage_form"]);
+        Route::get("dosage-form/{id}", [HISController::class, "dosage_form"]);
+    });
+
+    /// Địa điểm tai nạn
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisAccidentLocation'], function () {
+        Route::get("accident-location", [HISController::class, "accident_location"]);
+        Route::get("accident-location/{id}", [HISController::class, "accident_location"]);
+    });
+
+    /// Hạng lái xe
+    Route::group(['as' => 'HIS.Desktop.Plugins.LicenseClass'], function () {
+        Route::get("license-class", [HISController::class, "license_class"]);
+        Route::get("license-class/{id}", [HISController::class, "license_class"]);
+    });
+
+    /// Hãng sản xuất
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisManufacturer'], function () {
+        Route::get("manufacturer", [HISController::class, "manufacturer"]);
+        Route::get("manufacturer/{id}", [HISController::class, "manufacturer"]);
+    });
+
+    /// ICD
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisIcd'], function () {
+        Route::get("icd", [HISController::class, "icd"]);
+        Route::get("icd/{id}", [HISController::class, "icd"]);
+    });
+
+    /// Loại bệnh án
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisMediRecordType'], function () {
+        Route::get("medi-record-type", [HISController::class, "medi_record_type"]);
+        Route::get("medi-record-type/{id}", [HISController::class, "medi_record_type"]);
+    });
+
+    /// Loại giấy tờ
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisFileType'], function () {
+        Route::get("file-type", [HISController::class, "file_type"]);
+        Route::get("file-type/{id}", [HISController::class, "file_type"]);
+    });
+
+    /// Loại ra viện
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisTreatmentEndType'], function () {
+        Route::get("treatment-end-type", [HISController::class, "treatment_end_type"]);
+        Route::get("treatment-end-type/{id}", [HISController::class, "treatment_end_type"]);
+    });
+
+    /// Lý do chuyển tuyến chuyên môn
+    Route::group(['as' => 'HIS.Desktop.Plugins.TranPatiTech'], function () {
+        Route::get("tran-pati-tech", [HISController::class, "tran_pati_tech"]);
+        Route::get("tran-pati-tech/{id}", [HISController::class, "tran_pati_tech"]);
+    });
+
+    /// Lý do hội chẩn
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisDebateReason'], function () {
+        Route::get("debate-reason", [HISController::class, "debate_reason"]);
+        Route::get("debate-reason/{id}", [HISController::class, "debate_reason"]);
+    });
+
+    /// Lý do hủy giao dịch
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisCancelReason'], function () {
+        Route::get("cancel-reason", [HISController::class, "cancel_reason"]);
+        Route::get("cancel-reason/{id}", [HISController::class, "cancel_reason"]);
+    });
+
+    /// Lý do kê đơn tương tác
+    Route::group(['as' => 'HIS.Desktop.Plugins.InteractionReason'], function () {
+        Route::get("interaction-reason", [HISController::class, "interaction_reason"]);
+        Route::get("interaction-reason/{id}", [HISController::class, "interaction_reason"]);
+    });
+
+    /// Lý do mở trần
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisUnlimitReason'], function () {
+        Route::get("unlimit-reason", [HISController::class, "unlimit_reason"]);
+        Route::get("unlimit-reason/{id}", [HISController::class, "unlimit_reason"]);
+    });
+
+    /// Lý do nhập viện
+    Route::group(['as' => 'HIS.Desktop.Plugins.HospitalizeReason'], function () {
+        Route::get("hospitalize-reason", [HISController::class, "hospitalize_reason"]);
+        Route::get("hospitalize-reason/{id}", [HISController::class, "hospitalize_reason"]);
+    });
+
+    /// Lý do xuất
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisExpMestReason'], function () {
+        Route::get("exp-mest-reason", [HISController::class, "exp_mest_reason"]);
+        Route::get("exp-mest-reason/{id}", [HISController::class, "exp_mest_reason"]);
+    });
+
+    /// Nghề nghiệp nhân viên
+    Route::group(['as' => 'HIS.Desktop.Plugins.CareerTitle'], function () {
+        Route::get("career-title", [HISController::class, "career_title"]);
+        Route::get("career-title/{id}", [HISController::class, "career_title"]);
+    });
+
+    /// Nguyên nhân tai nạn 
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisAccidentHurtType'], function () {
+        Route::get("accident-hurt-type", [HISController::class, "accident_hurt_type"]);
+        Route::get("accident-hurt-type/{id}", [HISController::class, "accident_hurt_type"]);
+    });
+
+    /// Nhà cung cấp
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisSupplier'], function () {
+        Route::get("supplier", [HISController::class, "supplier"]);
+        Route::get("supplier/{id}", [HISController::class, "supplier"]);
+    });
+
+    /// Phương pháp ché biến
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisProcessing'], function () {
+        Route::get("processing-method", [HISController::class, "processing_method"]);
+        Route::get("processing-method/{id}", [HISController::class, "processing_method"]);
+    });
+
+    /// Thời gian tử vong
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisDeathWithin'], function () {
+        Route::get("death-within", [HISController::class, "death_within"]);
+        Route::get("death-within/{id}", [HISController::class, "death_within"]);
+    });
+
+    /// Vị trí hồ sơ bệnh án
+    Route::group(['as' => 'HIS.Desktop.Plugins.LocationTreatment'], function () {
+
     });
 });
