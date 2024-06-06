@@ -176,10 +176,10 @@ if (!function_exists('get_cache_1_1_1_1_1')) {
 }
 
 if (!function_exists('get_cache_by_code')) {
-    function get_cache_by_code($model, $name, $type_name, $type, $time)
+    function get_cache_by_code($model, $name, $param, $type_name, $type, $time)
     {
-        $data = Cache::remember($name . '_by_' . $type_name , $time, function () use ($model, $type_name, $type) {
-            return $model::where($type_name, 'LIKE', $type . '%')->get();
+        $data = Cache::remember($name . '_by_' . $type_name.'_'.$type , $time, function () use ($model, $param, $type_name, $type) {
+            return $model::with($param)->where($type_name, 'LIKE', $type . '%')->get();
         });
         return $data;
     }

@@ -117,6 +117,9 @@ use App\Models\HIS\MedicineGroup;
 use App\Models\HIS\TestIndex;
 use App\Models\HIS\TestIndexUnit;
 use App\Models\HIS\TestSampleType;
+use App\Models\HIS\UserRoom;
+use App\Models\HIS\Debate;
+
 class HISController extends Controller
 {
     protected $time;
@@ -344,6 +347,10 @@ class HISController extends Controller
     protected $test_index_unit_name = 'test_index_unit';
     protected $test_sample_type;
     protected $test_sample_type_name = 'test_sample_type';
+    protected $user_room;
+    protected $user_room_name = 'user_room';
+    protected $debate;
+    protected $debate_name = 'debate';
     public function __construct()
     {
         $this->time = now()->addMinutes(1440);
@@ -459,6 +466,8 @@ class HISController extends Controller
         $this->test_index = new TestIndex();
         $this->test_index_unit = new TestIndexUnit();
         $this->test_sample_type = new TestSampleType();
+        $this->user_room = new UserRoom();
+        $this->debate = new Debate();
     }
 
     /// Department
@@ -480,9 +489,9 @@ class HISController extends Controller
             ];
         }
         $data = get_cache_full($this->department, $param, $name, $id, $this->time);
-        foreach($data as $key => $item){
+        foreach ($data as $key => $item) {
             $item->allow_treatment_type = get_cache_1_n_with_ids($this->department, "allow_treatment_type", $this->department_name, $item->id, $this->time);
-        }    
+        }
         return response()->json(['data' => $data], 200);
     }
 
@@ -511,9 +520,9 @@ class HISController extends Controller
             ];
         }
         $data = get_cache_full($this->bed_room, $param, $name, $id, $this->time);
-        foreach($data as $key => $item){
+        foreach ($data as $key => $item) {
             $item->treatment_type = get_cache_1_n_with_ids($this->bed_room, "treatment_type", $this->bed_room_name, $item->id, $this->time);
-        }  
+        }
         return response()->json(['data' => $data], 200);
     }
 
@@ -550,9 +559,9 @@ class HISController extends Controller
             ];
         }
         $data = get_cache_full($this->execute_room, $param, $name, $id, $this->time);
-        foreach($data as $key => $item){
+        foreach ($data as $key => $item) {
             $item->default_drug_store = get_cache_1_1_n_with_ids($this->execute_room, "room.default_drug_store", $this->execute_room_name, $item->id, $this->time);
-        }  
+        }
         return response()->json(['data' => $data], 200);
     }
 
@@ -929,7 +938,8 @@ class HISController extends Controller
 
     public function service_by_code($type_id)
     {
-        $data = get_cache_by_code($this->service, $this->service_name, 'service_code', $type_id, $this->time);
+        $param = [];
+        $data = get_cache_by_code($this->service, $this->service_name, $param, 'service_code', $type_id, $this->time);
         return response()->json(['data' => $data], 200);
     }
 
@@ -2988,12 +2998,10 @@ class HISController extends Controller
     {
         if ($id == null) {
             $name = $this->test_index_unit_name;
-            $param = [
-            ];
+            $param = [];
         } else {
             $name = $this->test_index_unit_name . '_' . $id;
-            $param = [
-            ];
+            $param = [];
         }
         $data = get_cache_full($this->test_index_unit, $param, $name, $id, $this->time);
         return response()->json(['data' => $data], 200);
@@ -3004,14 +3012,60 @@ class HISController extends Controller
     {
         if ($id == null) {
             $name = $this->test_sample_type_name;
-            $param = [
-            ];
+            $param = [];
         } else {
             $name = $this->test_sample_type_name . '_' . $id;
-            $param = [
-            ];
+            $param = [];
         }
         $data = get_cache_full($this->test_sample_type, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    /// User Room
+    public function user_with_room($loginname = null)
+    {
+        $param = [
+            'room:id,department_id,room_type_id',
+            'room.execute_room:id,room_id,execute_room_name,execute_room_code',
+            'room.room_type:id,room_type_name,room_type_code',
+            'room.department:id,branch_id,department_name,department_code',
+            'room.department.branch:id,branch_name,branch_code',
+        ];
+        $data = get_cache_by_code($this->user_room, $this->user_room_name, $param, 'loginname', $loginname, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    /// Debate
+    public function debate($id = null)
+    {
+        if ($id == null) {
+            $name = $this->debate_name;
+            $param = [
+                'treatment:id,treatment_code,icd_code,icd_name,icd_sub_code,icd_text,in_time,in_date',
+                'icddelete:id,icd_name,icd_code',
+                'debate_type:id,debate_type_name,debate_type_code',
+                'surgery_service:id,service_name,service_code',
+                'emotionless_method:id,emotionless_method_name,emotionless_method_code',
+                'pttt_method:id,pttt_method_name,pttt_method_code',
+                'tracking',
+                'service:id,service_name,service_code',
+                'debate_reason:id,debate_reason_name'
+            ];
+        } else {
+            $name = $this->debate_name . '_' . $id;
+            $param = [
+                'treatment',
+                'icddelete',
+                'debate_type',
+                'surgery_service',
+                'emotionless_method',
+                'pttt_method',
+                'tracking',
+                'service',
+                'debate_reason'
+            ];
+        }
+        $data = get_cache_full($this->debate, $param, $name, $id, $this->time);
         return response()->json(['data' => $data], 200);
     }
 }

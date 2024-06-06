@@ -750,4 +750,12 @@ Route::group([
         Route::get("test-sample-type", [HISController::class, "test_sample_type"]);
         Route::get("test-sample-type/{id}", [HISController::class, "test_sample_type"]);
     });
+
+    /// Nhân viên - Phòng
+    // Trả về nhân viên cùng phòng
+    Route::get("user/{loginname}/room", [HISController::class, "user_with_room"]);
+
+    // Debate
+    Route::get("debate", [HISController::class, "debate"]);
+    Route::get("debate/{id}", [HISController::class, "debate"]);
 });
