@@ -96,6 +96,27 @@ use App\Models\HIS\AccidentHurtType;
 use App\Models\HIS\Supplier;
 use App\Models\HIS\ProcessingMethod;
 use App\Models\HIS\DeathWithin;
+use App\Models\HIS\LocationStore;
+use App\Models\HIS\AccidentCare;
+use App\Models\HIS\PtttTable;
+use App\Models\HIS\PtttGroup;
+use App\Models\HIS\PtttMethod;
+use App\Models\HIS\EmotionlessMethod;
+use App\Models\HIS\PtttCatastrophe;
+use App\Models\HIS\PtttCondition;
+use App\Models\HIS\Awareness;
+use App\Models\HIS\MedicineLine;
+use App\Models\HIS\BloodVolume;
+use App\Models\HIS\MedicineUseForm;
+use App\Models\HIS\BidType;
+use App\Models\HIS\MedicineTypeAcIn;
+use App\Models\HIS\ActiveIngredient;
+use App\Models\HIS\AtcGroup;
+use App\Models\HIS\BloodGroup;
+use App\Models\HIS\MedicineGroup;
+use App\Models\HIS\TestIndex;
+use App\Models\HIS\TestIndexUnit;
+use App\Models\HIS\TestSampleType;
 class HISController extends Controller
 {
     protected $time;
@@ -281,6 +302,48 @@ class HISController extends Controller
     protected $processing_method_name = 'processing_method';
     protected $death_within;
     protected $death_within_name = 'death_within';
+    protected $location_store;
+    protected $location_store_name = 'location_store';
+    protected $accident_care;
+    protected $accident_care_name = 'accident_care';
+    protected $pttt_table;
+    protected $pttt_table_name = 'pttt_table';
+    protected $pttt_group;
+    protected $pttt_group_name = 'pttt_group';
+    protected $pttt_method;
+    protected $pttt_method_name = 'pttt_method';
+    protected $emotionless_method;
+    protected $emotionless_method_name = 'emotionless_method';
+    protected $pttt_catastrophe;
+    protected $pttt_catastrophe_name = 'pttt_catastrophe';
+    protected $pttt_condition;
+    protected $pttt_condition_name = 'pttt_condition';
+    protected $awareness;
+    protected $awareness_name = 'awareness';
+    protected $medicine_line;
+    protected $medicine_line_name = 'medicine_line';
+    protected $blood_volume;
+    protected $blood_volume_name = 'blood_volume';
+    protected $medicine_use_form;
+    protected $medicine_use_form_name = 'medicine_use_form';
+    protected $bid_type;
+    protected $bid_type_name = 'bid_type';
+    protected $medicine_type_acin;
+    protected $medicine_type_acin_name = 'medicine_type_acin';
+    protected $active_ingredient;
+    protected $active_ingredient_name = 'active_ingredient';
+    protected $atc_group;
+    protected $atc_group_name = 'atc_group';
+    protected $blood_group;
+    protected $blood_group_name = 'blood_group';
+    protected $medicine_group;
+    protected $medicine_group_name = 'medicine_group';
+    protected $test_index;
+    protected $test_index_name = 'test_index';
+    protected $test_index_unit;
+    protected $test_index_unit_name = 'test_index_unit';
+    protected $test_sample_type;
+    protected $test_sample_type_name = 'test_sample_type';
     public function __construct()
     {
         $this->time = now()->addMinutes(1440);
@@ -375,6 +438,27 @@ class HISController extends Controller
         $this->supplier = new Supplier();
         $this->processing_method = new ProcessingMethod();
         $this->death_within = new DeathWithin();
+        $this->location_store = new LocationStore();
+        $this->accident_care = new AccidentCare();
+        $this->pttt_table = new PtttTable();
+        $this->pttt_group = new PtttGroup();
+        $this->pttt_method = new PtttMethod();
+        $this->emotionless_method = new EmotionlessMethod();
+        $this->pttt_catastrophe = new PtttCatastrophe();
+        $this->pttt_condition = new PtttCondition();
+        $this->awareness = new Awareness();
+        $this->medicine_line = new MedicineLine();
+        $this->blood_volume = new BloodVolume();
+        $this->medicine_use_form = new MedicineUseForm();
+        $this->bid_type = new BidType();
+        $this->medicine_type_acin = new MedicineTypeAcIn();
+        $this->active_ingredient = new ActiveIngredient();
+        $this->atc_group = new AtcGroup();
+        $this->blood_group = new BloodGroup();
+        $this->medicine_group = new MedicineGroup();
+        $this->test_index = new TestIndex();
+        $this->test_index_unit = new TestIndexUnit();
+        $this->test_sample_type = new TestSampleType();
     }
 
     /// Department
@@ -2586,6 +2670,359 @@ class HISController extends Controller
             $param = [];
         }
         $data = get_cache_full($this->death_within, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    /// Location Treatment
+    public function location_treatment($id = null)
+    {
+        if ($id == null) {
+            $name = $this->location_store_name;
+            $param = [];
+        } else {
+            $name = $this->location_store_name . '_' . $id;
+            $param = [];
+        }
+        $data = get_cache_full($this->location_store, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    /// Accident Care
+    public function accident_care($id = null)
+    {
+        if ($id == null) {
+            $name = $this->accident_care_name;
+            $param = [];
+        } else {
+            $name = $this->accident_care_name . '_' . $id;
+            $param = [];
+        }
+        $data = get_cache_full($this->accident_care, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    /// Pttt Table
+    public function pttt_table($id = null)
+    {
+        if ($id == null) {
+            $name = $this->pttt_table_name;
+            $param = [
+                'execute_room:id,execute_room_name,execute_room_code'
+            ];
+        } else {
+            $name = $this->pttt_table_name . '_' . $id;
+            $param = [
+                'execute_room'
+            ];
+        }
+        $data = get_cache_full($this->pttt_table, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    /// Pttt Group
+    public function pttt_group($id = null)
+    {
+        if ($id == null) {
+            $name = $this->pttt_group_name;
+            $param = [
+                'serv_segrs:id,service_id,service_group_id',
+                'serv_segrs.service:id,service_name,service_type_id',
+                'serv_segrs.service.service_type:id,service_type_name,service_type_code',
+                'serv_segrs.service_group:id,service_group_name',
+            ];
+        } else {
+            $name = $this->pttt_group_name . '_' . $id;
+            $param = [
+                'serv_segrs',
+                'serv_segrs.service',
+                'serv_segrs.service.service_type',
+                'serv_segrs.service_group',
+            ];
+        }
+        $data = get_cache_full($this->pttt_group, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    /// Pttt Method
+    public function pttt_method($id = null)
+    {
+        if ($id == null) {
+            $name = $this->pttt_method_name;
+            $param = [
+                'pttt_group:id,pttt_group_name,pttt_group_name'
+            ];
+        } else {
+            $name = $this->pttt_method_name . '_' . $id;
+            $param = [
+                'pttt_group'
+            ];
+        }
+        $data = get_cache_full($this->pttt_method, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    /// Emotionless Method
+    public function emotionless_method($id = null)
+    {
+        if ($id == null) {
+            $name = $this->emotionless_method_name;
+            $param = [];
+        } else {
+            $name = $this->emotionless_method_name . '_' . $id;
+            $param = [];
+        }
+        $data = get_cache_full($this->emotionless_method, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    /// Pttt Catastrophe
+    public function pttt_catastrophe($id = null)
+    {
+        if ($id == null) {
+            $name = $this->pttt_catastrophe_name;
+            $param = [];
+        } else {
+            $name = $this->pttt_catastrophe_name . '_' . $id;
+            $param = [];
+        }
+        $data = get_cache_full($this->pttt_catastrophe, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    /// Pttt Condition
+    public function pttt_condition($id = null)
+    {
+        if ($id == null) {
+            $name = $this->pttt_condition_name;
+            $param = [];
+        } else {
+            $name = $this->pttt_condition_name . '_' . $id;
+            $param = [];
+        }
+        $data = get_cache_full($this->pttt_condition, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    /// Awareness
+    public function awareness($id = null)
+    {
+        if ($id == null) {
+            $name = $this->awareness_name;
+            $param = [];
+        } else {
+            $name = $this->awareness_name . '_' . $id;
+            $param = [];
+        }
+        $data = get_cache_full($this->awareness, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    /// Medicine Line
+    public function medicine_line($id = null)
+    {
+        if ($id == null) {
+            $name = $this->medicine_line_name;
+            $param = [];
+        } else {
+            $name = $this->medicine_line_name . '_' . $id;
+            $param = [];
+        }
+        $data = get_cache_full($this->medicine_line, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    /// Blood Volume
+    public function blood_volume($id = null)
+    {
+        if ($id == null) {
+            $name = $this->blood_volume_name;
+            $param = [];
+        } else {
+            $name = $this->blood_volume_name . '_' . $id;
+            $param = [];
+        }
+        $data = get_cache_full($this->blood_volume, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    /// Medicine Use Form
+    public function medicine_use_form($id = null)
+    {
+        if ($id == null) {
+            $name = $this->medicine_use_form_name;
+            $param = [];
+        } else {
+            $name = $this->medicine_use_form_name . '_' . $id;
+            $param = [];
+        }
+        $data = get_cache_full($this->medicine_use_form, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    /// Bid Type
+    public function bid_type($id = null)
+    {
+        if ($id == null) {
+            $name = $this->bid_type_name;
+            $param = [];
+        } else {
+            $name = $this->bid_type_name . '_' . $id;
+            $param = [];
+        }
+        $data = get_cache_full($this->bid_type, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    /// Medicine Type Active Ingredient
+    public function medicine_type_acin($id = null)
+    {
+        if ($id == null) {
+            $name = $this->medicine_type_acin_name;
+            $param = [
+                'medicine_type:id,medicine_type_name,medicine_type_code',
+                'active_ingredient:id,active_ingredient_name,active_ingredient_code'
+            ];
+        } else {
+            $name = $this->medicine_type_acin_name . '_' . $id;
+            $param = [
+                'medicine_type',
+                'active_ingredient'
+            ];
+        }
+        $data = get_cache_full($this->medicine_type_acin, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    public function medicine_type_with_active_ingredient($id = null)
+    {
+        if ($id == null) {
+            $name = $this->medicine_type_name . '_with_' . $this->active_ingredient_name;
+            $param = [
+                'active_ingredients:id,active_ingredient_name,active_ingredient_code'
+            ];
+        } else {
+            $name = $this->medicine_type_name . '_' . $id . '_with_' . $this->active_ingredient_name;
+            $param = [
+                'active_ingredients'
+            ];
+        }
+        $data = get_cache_full($this->medicine_type, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    public function active_ingredient_with_medicine_type($id = null)
+    {
+        if ($id == null) {
+            $name = $this->active_ingredient_name . '_with_' . $this->medicine_type_name;
+            $param = [
+                'medicine_types:id,medicine_type_name,medicine_type_code'
+            ];
+        } else {
+            $name = $this->active_ingredient_name . '_' . $id . '_with_' . $this->medicine_type_name;
+            $param = [
+                'medicine_types'
+            ];
+        }
+        $data = get_cache_full($this->active_ingredient, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    /// Atc Group
+    public function atc_group($id = null)
+    {
+        if ($id == null) {
+            $name = $this->atc_group_name;
+            $param = [];
+        } else {
+            $name = $this->atc_group_name . '_' . $id;
+            $param = [];
+        }
+        $data = get_cache_full($this->atc_group, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    /// Blood Group
+    public function blood_group($id = null)
+    {
+        if ($id == null) {
+            $name = $this->blood_group_name;
+            $param = [];
+        } else {
+            $name = $this->blood_group_name . '_' . $id;
+            $param = [];
+        }
+        $data = get_cache_full($this->blood_group, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+
+    /// Medicine Group
+    public function medicine_group($id = null)
+    {
+        if ($id == null) {
+            $name = $this->medicine_group_name;
+            $param = [];
+        } else {
+            $name = $this->medicine_group_name . '_' . $id;
+            $param = [];
+        }
+        $data = get_cache_full($this->medicine_group, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    /// Test Index
+    public function test_index($id = null)
+    {
+        if ($id == null) {
+            $name = $this->test_index_name;
+            $param = [
+                'test_service_type:id,service_name,service_code',
+                'test_index_unit:id,test_index_unit_name,test_index_unit_code',
+                'test_index_group:id,test_index_group_name,test_index_group_code',
+                'material_type:id,material_type_name,material_type_code'
+            ];
+        } else {
+            $name = $this->test_index_name . '_' . $id;
+            $param = [
+                'test_service_type',
+                'test_index_unit',
+                'test_index_group',
+                'material_type'
+            ];
+        }
+        $data = get_cache_full($this->test_index, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    /// Test Index Unit
+    public function test_index_unit($id = null)
+    {
+        if ($id == null) {
+            $name = $this->test_index_unit_name;
+            $param = [
+            ];
+        } else {
+            $name = $this->test_index_unit_name . '_' . $id;
+            $param = [
+            ];
+        }
+        $data = get_cache_full($this->test_index_unit, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    /// Test Sample Type
+    public function test_sample_type($id = null)
+    {
+        if ($id == null) {
+            $name = $this->test_sample_type_name;
+            $param = [
+            ];
+        } else {
+            $name = $this->test_sample_type_name . '_' . $id;
+            $param = [
+            ];
+        }
+        $data = get_cache_full($this->test_sample_type, $param, $name, $id, $this->time);
         return response()->json(['data' => $data], 200);
     }
 }

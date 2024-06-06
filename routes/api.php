@@ -624,6 +624,130 @@ Route::group([
 
     /// Vị trí hồ sơ bệnh án
     Route::group(['as' => 'HIS.Desktop.Plugins.LocationTreatment'], function () {
+        Route::get("location-treatment", [HISController::class, "location_treatment"]);
+        Route::get("location-treatment/{id}", [HISController::class, "location_treatment"]);
+    });
 
+    /// Xử lý sau tai nạn
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisAccidentCare'], function () {
+        Route::get("accident-care", [HISController::class, "accident_care"]);
+        Route::get("accident-care/{id}", [HISController::class, "accident_care"]);
+    });
+
+    /// Bàn mổ
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisPtttTable'], function () {
+        Route::get("pttt-table", [HISController::class, "pttt_table"]);
+        Route::get("pttt-table/{id}", [HISController::class, "pttt_table"]);
+    });
+
+    /// Nhóm PTTT
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisPtttGroup'], function () {
+        //Trả về tất cả nhóm pttt cùng nhóm dịch vụ 
+        Route::get("pttt-group", [HISController::class, "pttt_group"]);
+        Route::get("pttt-group/{id}", [HISController::class, "pttt_group"]);
+    });
+
+    /// Phương pháp PTTT
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisPtttMethod'], function () {
+        //Trả về tất cả nhóm pttt cùng nhóm dịch vụ 
+        Route::get("pttt-method", [HISController::class, "pttt_method"]);
+        Route::get("pttt-method/{id}", [HISController::class, "pttt_method"]);
+    });
+
+    /// Phương pháp vô cảm
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisEmotionlessMethod'], function () {
+        Route::get("emotionless-method", [HISController::class, "emotionless_method"]);
+        Route::get("emotionless-method/{id}", [HISController::class, "emotionless_method"]);
+    });
+
+    /// Tai biến PTTT
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisPtttCatastrophe'], function () {
+        Route::get("pttt-catastrophe", [HISController::class, "pttt_catastrophe"]);
+        Route::get("pttt-catastrophe/{id}", [HISController::class, "pttt_catastrophe"]);
+    });
+
+    /// Tình trạng PTTT
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisPtttCondition'], function () {
+        Route::get("pttt-condition", [HISController::class, "pttt_condition"]);
+        Route::get("pttt-condition/{id}", [HISController::class, "pttt_condition"]);
+    });
+
+    /// Ý thức
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisAwareness'], function () {
+        Route::get("awareness", [HISController::class, "awareness"]);
+        Route::get("awareness/{id}", [HISController::class, "awareness"]);
+    });
+
+    /// Dòng thuốc
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisMedicineLine'], function () {
+        Route::get("medicine-line", [HISController::class, "medicine_line"]);
+        Route::get("medicine-line/{id}", [HISController::class, "medicine_line"]);
+    });
+
+    /// Dung tích túi máu
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisBloodVolume'], function () {
+        Route::get("blood-volume", [HISController::class, "blood_volume"]);
+        Route::get("blood-volume/{id}", [HISController::class, "blood_volume"]);
+    });
+
+    /// Đường dùng thuốc
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisMedicineUseForm'], function () {
+        Route::get("medicine-use-form", [HISController::class, "medicine_use_form"]);
+        Route::get("medicine-use-form/{id}", [HISController::class, "medicine_use_form"]);
+    });
+
+    /// Loại thầu
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisBidType'], function () {
+        Route::get("bid-type", [HISController::class, "bid_type"]);
+        Route::get("bid-type/{id}", [HISController::class, "bid_type"]);
+    });
+
+    /// Loại thuốc - Hoạt chất
+    Route::group(['as' => 'HIS.Desktop.Plugins.MedicineTypeActiveIngredient'], function () {
+        // Trả về tất cả mối quan hệ
+        Route::get("medicine-type-acin", [HISController::class, "medicine_type_acin"]);
+        Route::get("medicine-type-acin/{id}", [HISController::class, "medicine_type_acin"]);
+        // Trả về tất cả loại thuốc cùng hoạt chất
+        Route::get("medicine-type/all/active-ingredient", [HISController::class, "medicine_type_with_active_ingredient"]);
+        Route::get("medicine-type/{id}/active-ingredient", [HISController::class, "medicine_type_with_active_ingredient"]);
+        // Trả về tất cả hoạt chất cùng loại thuốc
+        Route::get("active-ingredient/all/medicine-type", [HISController::class, "active_ingredient_with_medicine_type"]);
+        Route::get("active-ingredient/{id}/medicine-type", [HISController::class, "active_ingredient_with_medicine_type"]);
+    });
+
+    /// Nhóm ATC
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisAtcGroup'], function () {
+        Route::get("atc-group", [HISController::class, "atc_group"]);
+        Route::get("atc-group/{id}", [HISController::class, "atc_group"]);
+    });
+
+    /// Nhóm máu
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisBloodGroup'], function () {
+        Route::get("blood-group", [HISController::class, "blood_group"]);
+        Route::get("blood-group/{id}", [HISController::class, "blood_group"]);
+    });
+
+    /// Nhóm thuốc
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisMedicineGroup'], function () {
+        Route::get("medicine-group", [HISController::class, "medicine_group"]);
+        Route::get("medicine-group/{id}", [HISController::class, "medicine_group"]);
+    });
+
+    /// Chỉ số xét nghiệm
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisTestIndex'], function () {
+        Route::get("test-index", [HISController::class, "test_index"]);
+        Route::get("test-index/{id}", [HISController::class, "test_index"]);
+    });
+
+    /// Đơn vị tính chỉ số xét nghiệm
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisTestIndexUnit'], function () {
+        Route::get("test-index-unit", [HISController::class, "test_index_unit"]);
+        Route::get("test-index-unit/{id}", [HISController::class, "test_index_unit"]);
+    });
+
+    /// Loại mẫu bệnh phẩm
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisTestSampleType'], function () {
+        Route::get("test-sample-type", [HISController::class, "test_sample_type"]);
+        Route::get("test-sample-type/{id}", [HISController::class, "test_sample_type"]);
     });
 });

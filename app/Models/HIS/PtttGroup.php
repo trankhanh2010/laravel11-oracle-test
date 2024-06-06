@@ -12,4 +12,13 @@ class PtttGroup extends Model
     protected $connection = 'oracle_his'; 
     protected $table = 'HIS_Pttt_Group';
 
+    public function serv_segrs()
+    {
+        return $this->belongsToMany(ServSegr::class, SereServPttt::class, 'pttt_group_id', 'sere_serv_id');
+    }
+
+    public function pttt_group()
+    {
+        return $this->belongsTo(PtttGroup::class, 'pttt_group_id');
+    }
 }

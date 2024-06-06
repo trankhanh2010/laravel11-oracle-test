@@ -32,4 +32,9 @@ class ServSegr extends Model
         return $this->belongsTo(ServiceGroup::class, 'service_group_id');
     }
 
+    public function pttt_groups()
+    {
+        return $this->belongsToMany(PtttGroup::class, SereServPttt::class, 'sere_serv_id', 'pttt_group_id');
+    }
+
 }

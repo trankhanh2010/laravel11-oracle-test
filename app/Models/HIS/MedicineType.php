@@ -25,4 +25,9 @@ class MedicineType extends Model
     {
         return $this->belongsTo(ServiceUnit::class, 'tdl_service_unit_id');
     }
+
+    public function active_ingredients()
+    {
+        return $this->belongsToMany(ActiveIngredient::class, MedicineTypeAcIn::class, 'medicine_type_id', 'active_ingredient_id');
+    }
 }
