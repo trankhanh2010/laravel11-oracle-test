@@ -462,109 +462,98 @@ class HISController extends Controller
     }
 
     /// Department
-    public function department()
+    public function department($id = null)
     {
-        $param = [
-            'branch:id,branch_name,branch_code',
-        ];
-        $data = get_cache_full($this->department, $param, $this->department_name, null, $this->time);
+        if ($id == null) {
+            $name = $this->department_name;
+            $param = [
+                'branch:id,branch_name,branch_code',
+                'room.default_instr_patient_type',
+                'req_surg_treatment_type'
+            ];
+        } else {
+            $name = $this->department_name . '_' . $id;
+            $param = [
+                'branch',
+                'room.default_instr_patient_type',
+                'req_surg_treatment_type'
+            ];
+        }
+        $data = get_cache_full($this->department, $param, $name, $id, $this->time);
+        foreach($data as $key => $item){
+            $item->allow_treatment_type = get_cache_1_n_with_ids($this->department, "allow_treatment_type", $this->department_name, $item->id, $this->time);
+        }    
         return response()->json(['data' => $data], 200);
-    }
-
-    public function department_id($id)
-    {
-        $data = get_cache($this->department, $this->department_name, $id, $this->time);
-        $data1 = get_cache_1_1($this->department, "branch", $this->department_name, $id, $this->time);
-        $data2 = get_cache_1_n_with_ids($this->department, "allow_treatment_type", $this->department_name, $id, $this->time);
-        $data3 = get_cache_1_1_1($this->department, "room.default_instr_patient_type", $this->department_name, $id, $this->time);
-        $data4 = get_cache_1_1($this->department, "req_surg_treatment_type", $this->department_name, $id, $this->time);
-        return response()->json(['data' => [
-            'department' => $data,
-            'branch' => $data1,
-            'allow_treatment_type' => $data2,
-            'default_instr_patient_type' => $data3,
-            'req_surg_treatment_type' => $data4
-        ]], 200);
     }
 
     /// Bed Room
-    public function bed_room()
+    public function bed_room($id = null)
     {
-        $param = [
-            'room:id,department_id,speciality_id,default_cashier_room_id,default_instr_patient_type_id',
-            'room.department:id,department_name,department_code',
-            'room.department.area:id,area_name',
-            'room.speciality:id,speciality_name,speciality_code',
-            'room.default_cashier_room:id,cashier_room_name',
-            'room.default_instr_patient_type:id,patient_type_name',
-
-        ];
-        $data = get_cache_full($this->bed_room, $param, $this->bed_room_name, null, $this->time);
+        if ($id == null) {
+            $name = $this->bed_room_name;
+            $param = [
+                'room',
+                'room.department:id,department_name,department_code',
+                'room.department.area:id,area_name',
+                'room.speciality:id,speciality_name,speciality_code',
+                'room.default_cashier_room:id,cashier_room_name',
+                'room.default_instr_patient_type:id,patient_type_name',
+            ];
+        } else {
+            $name = $this->bed_room_name . '_' . $id;
+            $param = [
+                'room',
+                'room.department',
+                'room.department.area',
+                'room.speciality',
+                'room.default_cashier_room',
+                'room.default_instr_patient_type',
+            ];
+        }
+        $data = get_cache_full($this->bed_room, $param, $name, $id, $this->time);
+        foreach($data as $key => $item){
+            $item->treatment_type = get_cache_1_n_with_ids($this->bed_room, "treatment_type", $this->bed_room_name, $item->id, $this->time);
+        }  
         return response()->json(['data' => $data], 200);
-    }
-
-    public function bed_room_id($id)
-    {
-        $data = get_cache($this->bed_room, $this->bed_room_name, $id, $this->time);
-        $data1 = get_cache_1_1_1($this->bed_room, "room.department", $this->bed_room_name, $id, $this->time);
-        $data2 = get_cache_1_1_1_1($this->bed_room, "room.department.area", $this->bed_room_name, $id, $this->time);
-        $data3 = get_cache_1_1_1($this->bed_room, "room.speciality", $this->bed_room_name, $id, $this->time);
-        $data4 = get_cache_1_n_with_ids($this->bed_room, "treatment_type", $this->bed_room_name, $id, $this->time);
-        $data5 = get_cache_1_1_1($this->bed_room, "room.default_cashier_room", $this->bed_room_name, $id, $this->time);
-        $data6 = get_cache_1_1_1($this->bed_room, "room.default_instr_patient_type", $this->bed_room_name, $id, $this->time);
-        return response()->json(['data' => [
-            'bed_room' => $data,
-            'department' => $data1,
-            'area' => $data2,
-            'speciality' => $data3,
-            'treatment_type' => $data4,
-            'default_cashier_room' => $data5,
-            'default_instr_patient_type' => $data6
-
-        ]], 200);
     }
 
     /// Execute Room
-    public function execute_room()
+    public function execute_room($id = null)
     {
-        $param = [
-            'room:id,department_id',
-            'room.department:id,department_name,department_code',
-            'room.department.area:id,area_name,area_code'
-        ];
-        $data = get_cache_full($this->execute_room, $param, $this->execute_room_name, null, $this->time);
+        if ($id == null) {
+            $name = $this->execute_room_name;
+            $param = [
+                'room',
+                'room.department:id,department_name,department_code',
+                'room.department.area:id,area_name,area_code',
+                'room.room_type:id,room_type_name,room_type_code',
+                'room.speciality:id,speciality_name,speciality_code',
+                'room.default_cashier_room:id,cashier_room_name,cashier_room_code',
+                'room.default_instr_patient_type',
+                'room.default_service:id,service_name,service_code',
+                'room.deposit_account_book',
+                'room.bill_account_book'
+            ];
+        } else {
+            $name = $this->execute_room_name . '_' . $id;
+            $param = [
+                'room',
+                'room.department',
+                'room.department.area',
+                'room.room_type',
+                'room.speciality',
+                'room.default_cashier_room',
+                'room.default_instr_patient_type',
+                'room.default_service',
+                'room.deposit_account_book',
+                'room.bill_account_book'
+            ];
+        }
+        $data = get_cache_full($this->execute_room, $param, $name, $id, $this->time);
+        foreach($data as $key => $item){
+            $item->default_drug_store = get_cache_1_1_n_with_ids($this->execute_room, "room.default_drug_store", $this->execute_room_name, $item->id, $this->time);
+        }  
         return response()->json(['data' => $data], 200);
-    }
-
-    public function execute_room_id($id)
-    {
-        $data = get_cache($this->execute_room, $this->execute_room_name, $id, $this->time);
-        $data1 = get_cache_1_1($this->execute_room, "room", $this->execute_room_name, $id, $this->time);
-        $data2 = get_cache_1_1_1($this->execute_room, "room.department", $this->execute_room_name, $id, $this->time);
-        $data3 = get_cache_1_1_1($this->execute_room, "room.room_type", $this->execute_room_name, $id, $this->time);
-        $data4 = get_cache_1_1_1($this->execute_room, "room.speciality", $this->execute_room_name, $id, $this->time);
-        $data5 = get_cache_1_1_1_1($this->execute_room, "room.department.area", $this->execute_room_name, $id, $this->time);
-        $data6 = get_cache_1_1_1($this->execute_room, "room.default_cashier_room", $this->execute_room_name, $id, $this->time);
-        $data7 = get_cache_1_1_1($this->execute_room, "room.default_instr_patient_type", $this->execute_room_name, $id, $this->time);
-        $data8 = get_cache_1_1_1($this->execute_room, "room.default_service", $this->execute_room_name, $id, $this->time);
-        $data9 = get_cache_1_1_n_with_ids($this->execute_room, "room.default_drug_store", $this->execute_room_name, $id, $this->time);
-        $data10 = get_cache_1_1_1($this->execute_room, "room.deposit_account_book", $this->execute_room_name, $id, $this->time);
-        $data11 = get_cache_1_1_1($this->execute_room, "room.bill_account_book", $this->execute_room_name, $id, $this->time);
-
-        return response()->json(['data' => [
-            'execute_room' => $data,
-            'room' => $data1,
-            'department' => $data2,
-            'room_type' => $data3,
-            'speciality' => $data4,
-            'area' => $data5,
-            'default_cashier_room' => $data6,
-            'default_instr_patient_type' => $data7,
-            'default_service' => $data8,
-            'default_drug_stores' => $data9,
-            'deposit_account_book' => $data10,
-            'bill_account_book' => $data11
-        ]], 200);
     }
 
     /// Speciality     

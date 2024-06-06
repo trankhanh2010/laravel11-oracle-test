@@ -21,19 +21,19 @@ Route::group([
     /// Khoa phòng
     Route::group(['as' => 'HIS.Desktop.Plugins.HisDepartment'], function () {
         Route::get("department", [HISController::class, "department"]);
-        Route::get("department/{id}", [HISController::class, "department_id"]);
+        Route::get("department/{id}", [HISController::class, "department"]);
     });
 
     /// Buồng bệnh
     Route::group(['as' => 'HIS.Desktop.Plugins.HisBedRoomList'], function () {
         Route::get("bed-room", [HISController::class, "bed_room"]);
-        Route::get("bed-room/{id}", [HISController::class, "bed_room_id"]);
+        Route::get("bed-room/{id}", [HISController::class, "bed_room"]);
     });
 
     /// Phòng khám/cls/pttt
     Route::group(['as' => 'HIS.Desktop.Plugins.HisExecuteRoom'], function () {
         Route::get("execute-room", [HISController::class, "execute_room"]);
-        Route::get("execute-room/{id}", [HISController::class, "execute_room_id"]);
+        Route::get("execute-room/{id}", [HISController::class, "execute_room"]);
     });
 
     /// Chuyên khoa
