@@ -119,7 +119,9 @@ use App\Models\HIS\TestIndexUnit;
 use App\Models\HIS\TestSampleType;
 use App\Models\HIS\UserRoom;
 use App\Models\HIS\Debate;
-
+use App\Models\HIS\DebateUser;
+use App\Models\HIS\DebateEkipUser;
+use App\Models\HIS\DebateType;
 class HISController extends Controller
 {
     protected $time;
@@ -351,6 +353,12 @@ class HISController extends Controller
     protected $user_room_name = 'user_room';
     protected $debate;
     protected $debate_name = 'debate';
+    protected $debate_user;
+    protected $debate_user_name = 'debate_user';
+    protected $debate_ekip_user;
+    protected $debate_ekip_user_name = 'debate_ekip_user';
+    protected $debate_type;
+    protected $debate_type_name = 'debate_type';
     public function __construct()
     {
         $this->time = now()->addMinutes(1440);
@@ -468,6 +476,9 @@ class HISController extends Controller
         $this->test_sample_type = new TestSampleType();
         $this->user_room = new UserRoom();
         $this->debate = new Debate();
+        $this->debate_user = new DebateUser();
+        $this->debate_ekip_user = new DebateEkipUser();
+        $this->debate_type = new DebateType();
     }
 
     /// Department
@@ -840,15 +851,71 @@ class HISController extends Controller
     }
 
     /// ExecuteRole
-    public function execute_role()
+    public function execute_role($id = null)
     {
-        $data = get_cache($this->execute_role, $this->execute_role_name, null, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    public function execute_role_id($id)
-    {
-        $data = get_cache($this->execute_role, $this->execute_role_name, $id, $this->time);
+        if ($id == null) {
+            $name = $this->execute_role_name;
+            $param = [
+                'debate_ekip_users:id,debate_id,loginname,username,execute_role_id,department_id',
+                'debate_ekip_users.execute_role:id,execute_role_name,execute_role_code',
+                'debate_ekip_users.department:id,department_name,department_code',
+                'debate_invite_users:id,debate_id,loginname,username,execute_role_id',
+                'debate_invite_users.execute_role:id,execute_role_name,execute_role_code',
+                'debate_users:id,debate_id,loginname,username,execute_role_id',
+                'debate_users.execute_role:id,execute_role_name,execute_role_code',
+                'ekip_plan_users:id,execute_role_id,loginname,username',
+                'ekip_temp_users:id,execute_role_id,loginname,username',
+                'execute_role_users:id,execute_role_id,loginname',
+                'exp_mest_users:id,execute_role_id,loginname,username',
+                'imp_mest_users:id,execute_role_id,loginname,username',
+                'imp_user_temp_dts:id,execute_role_id,loginname,username',
+                'mest_inve_users:id,execute_role_id,loginname,username',
+                'remunerations:id,execute_role_id,service_id,price,execute_loginname,execute_username',
+                'surg_remu_details:id,execute_role_id,group_code,price,surg_remuneration_id',
+                'user_group_temp_dts:id,execute_role_id,group_code,user_group_temp_id,loginname,username,description'
+            ];
+        } else {
+            $name = $this->execute_role_name . '_' . $id;
+            $param = [
+                'debate_ekip_users:id,debate_id,loginname,username,execute_role_id,department_id',
+                'debate_ekip_users.execute_role:id,execute_role_name,execute_role_code',
+                'debate_ekip_users.department:id,department_name,department_code',
+                'debate_invite_users:id,debate_id,loginname,username,execute_role_id',
+                'debate_invite_users.execute_role:id,execute_role_name,execute_role_code',
+                'debate_users:id,debate_id,loginname,username,execute_role_id',
+                'debate_users.execute_role:id,execute_role_name,execute_role_code',
+                'ekip_plan_users:id,execute_role_id,loginname,username',
+                'ekip_temp_users:id,execute_role_id,loginname,username',
+                'execute_role_users:id,execute_role_id,loginname',
+                'exp_mest_users:id,execute_role_id,loginname,username',
+                'imp_mest_users:id,execute_role_id,loginname,username',
+                'imp_user_temp_dts:id,execute_role_id,loginname,username',
+                'mest_inve_users:id,execute_role_id,loginname,username',
+                'remunerations:id,execute_role_id,service_id,price,execute_loginname,execute_username',
+                'surg_remu_details:id,execute_role_id,group_code,price,surg_remuneration_id',
+                'user_group_temp_dts:id,execute_role_id,group_code,user_group_temp_id,loginname,username,description'
+            ];
+        }
+        $select = [
+            'id',
+            'create_time', 
+            'modify_time',
+            'creator',
+            'modifier',
+            'app_creator',
+            'app_modifier',
+            'is_active',
+            'is_delete',
+            'execute_role_code',
+            'execute_role_name',
+            'is_surg_main',
+            'is_surgry',
+            'is_stock',
+            'is_position',
+            'is_title',
+            'allow_simultaneity'
+        ];
+        $data = get_cache_full_select($this->execute_role, $param, $select, $name, $id, $this->time);
         return response()->json(['data' => $data], 200);
     }
 
@@ -3041,15 +3108,22 @@ class HISController extends Controller
         if ($id == null) {
             $name = $this->debate_name;
             $param = [
-                'treatment:id,treatment_code,icd_code,icd_name,icd_sub_code,icd_text,in_time,in_date',
+                'treatment:id,tdl_patient_first_name,tdl_patient_last_name,tdl_patient_name,tdl_patient_dob,tdl_patient_address,tdl_patient_gender_name',
                 'icddelete:id,icd_name,icd_code',
                 'debate_type:id,debate_type_name,debate_type_code',
                 'surgery_service:id,service_name,service_code',
                 'emotionless_method:id,emotionless_method_name,emotionless_method_code',
                 'pttt_method:id,pttt_method_name,pttt_method_code',
-                'tracking',
+                'tracking:id,medical_instruction,content',
                 'service:id,service_name,service_code',
-                'debate_reason:id,debate_reason_name'
+                'debate_reason:id,debate_reason_name',
+                'debate_ekip_users:id,debate_id,loginname,username,execute_role_id,department_id',
+                'debate_ekip_users.execute_role:id,execute_role_name,execute_role_code',
+                'debate_ekip_users.department:id,department_name,department_code',
+                'debate_invite_users:id,debate_id,loginname,username,execute_role_id',
+                'debate_invite_users.execute_role:id,execute_role_name,execute_role_code',
+                'debate_users:id,debate_id,loginname,username,execute_role_id',
+                'debate_users.execute_role:id,execute_role_name,execute_role_code'
             ];
         } else {
             $name = $this->debate_name . '_' . $id;
@@ -3062,10 +3136,112 @@ class HISController extends Controller
                 'pttt_method',
                 'tracking',
                 'service',
-                'debate_reason'
+                'debate_reason',
+                'debate_ekip_users',
+                'debate_ekip_users.execute_role',
+                'debate_ekip_users.department',
+                'debate_invite_users',
+                'debate_invite_users.execute_role',
+                'debate_users',
+                'debate_users.execute_role'
             ];
         }
-        $data = get_cache_full($this->debate, $param, $name, $id, $this->time);
+        $select = [
+            'id',
+            'create_time', 
+            'modify_time',
+            'creator',
+            'modifier',
+            'app_creator',
+            'app_modifier',
+            'is_active',
+            'is_delete',
+            'icd_code',
+            'icd_name',
+            'icd_sub_code',
+            'icd_text',
+            'debate_time',
+            'request_loginname',
+            'request_username',
+            'treatment_tracking',
+            'treatment_from_time',
+            'treatment_method',
+            'location',
+            'pathological_history',
+            'hospitalization_state',
+            'before_diagnostic',
+            'diagnostic',
+            'care_method',
+            'conclusion',
+            'discussion',
+            'medicine_use_form_name',
+            'medicine_type_name',
+            'treatment_id',
+            'icd_id__delete',
+            'debate_type_id',
+            'department_id',
+            'surgery_service_id',
+            'emotionless_method_id',
+            'pttt_method_id',
+            'tracking_id',
+            'service_id',
+            'debate_reason_id',
+            'medicine_type_ids',
+            'active_ingredient_ids',
+        ];
+        $data = get_cache_full_select($this->debate, $param, $select, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    /// Debate User
+    public function debate_user($id = null)
+    {
+        if ($id == null) {
+            $name = $this->debate_user_name;
+            $param = [];
+        } else {
+            $name = $this->debate_user_name . '_' . $id;
+            $param = [];
+        }
+        $data = get_cache_full($this->debate_user, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    /// Debate Ekip User
+    public function debate_ekip_user($id = null)
+    {
+        if ($id == null) {
+            $name = $this->debate_ekip_user_name;
+            $param = [
+                'execute_role:id,execute_role_name,execute_role_code',
+                'department:id,department_name,department_code'
+            ];
+        } else {
+            $name = $this->debate_ekip_user_name . '_' . $id;
+            $param = [
+                'execute_role',
+                'department'
+            ];
+        }
+        $data = get_cache_full($this->debate_ekip_user, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    /// Debate Type
+    public function debate_type($id = null)
+    {
+        if ($id == null) {
+            $name = $this->debate_type_name;
+            $param = [
+                'debates:id,debate_type_id,icd_name,icd_code,icd_sub_code'
+            ];
+        } else {
+            $name = $this->debate_type_name . '_' . $id;
+            $param = [
+                'debates'
+            ];
+        }
+        $data = get_cache_full($this->debate_type, $param, $name, $id, $this->time);
         return response()->json(['data' => $data], 200);
     }
 }

@@ -6,17 +6,17 @@ use App\Traits\dinh_dang_ten_truong;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class DebateType extends Model
+class DebateUser extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
+    
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_Debate_type';
+    protected $table = 'HIS_Debate_User';
     protected $fillable = [
 
     ];
-
-    public function debates()
+    public function execute_role()
     {
-        return $this->hasMany(Debate::class, 'debate_type_id');
+        return $this->belongsTo(ExecuteRole::class, 'execute_role_id');
     }
 }

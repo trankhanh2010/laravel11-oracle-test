@@ -56,12 +56,39 @@ if (!function_exists('get_cache_full')) {
                 return $model::with($relation_ship)->get();
             });
             return $data;
-        } else{
-            $data = Cache::remember($name, $time, function () use ($model, $relation_ship,$id) {
+        } else {
+            $data = Cache::remember($name, $time, function () use ($model, $relation_ship, $id) {
                 return $model::where('id', $id)->with($relation_ship)->get();
             });
             return $data;
         }
+    }
+}
+
+if (!function_exists('get_cache_full_select')) {
+    function get_cache_full_select($model, $relation_ship, $select, $name, $id = null, $time)
+    {
+        if (!$id) {
+            $data = Cache::remember($name, $time, function () use ($model, $relation_ship, $select) {
+                return $model::select($select)->with($relation_ship)->get();
+            });
+            return $data;
+        } else {
+            $data = Cache::remember($name, $time, function () use ($model, $relation_ship, $id, $select) {
+                return $model::select($select)->where('id', $id)->with($relation_ship)->get();
+            });
+            return $data;
+        }
+    }
+}
+
+if (!function_exists('update_cache')) {
+    function update_cache($name, $data_update, $time)
+    {
+        $data = Cache::remember($name, $time, function () use ($data_update) {
+            return $data_update;
+        });
+        return $data;
     }
 }
 
@@ -178,9 +205,15 @@ if (!function_exists('get_cache_1_1_1_1_1')) {
 if (!function_exists('get_cache_by_code')) {
     function get_cache_by_code($model, $name, $param, $type_name, $type, $time)
     {
-        $data = Cache::remember($name . '_by_' . $type_name.'_'.$type , $time, function () use ($model, $param, $type_name, $type) {
-            return $model::with($param)->where($type_name, 'LIKE', $type . '%')->get();
-        });
+        if ($type == null) {
+            $data = Cache::remember($name . '_by_' . $type_name . '_' . $type, $time, function () use ($model, $param, $type_name, $type) {
+                return $model::with($param)->get();
+            });
+        } else {
+            $data = Cache::remember($name . '_by_' . $type_name . '_' . $type, $time, function () use ($model, $param, $type_name, $type) {
+                return $model::with($param)->where($type_name, 'LIKE', $type . '%')->get();
+            });
+        }
         return $data;
     }
 }

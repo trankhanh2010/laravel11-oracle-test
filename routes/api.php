@@ -121,7 +121,7 @@ Route::group([
     /// Vai trò thực hiện
     Route::group(['as' => 'HIS.Desktop.Plugins.HisExecuteRole'], function () {
         Route::get("execute-role", [HISController::class, "execute_role"]);
-        Route::get("execute-role/{id}", [HISController::class, "execute_role_id"]);
+        Route::get("execute-role/{id}", [HISController::class, "execute_role"]);
     });
 
     /// Xã
@@ -753,9 +753,22 @@ Route::group([
 
     /// Nhân viên - Phòng
     // Trả về nhân viên cùng phòng
+    Route::get("user/all/room", [HISController::class, "user_with_room"]);
     Route::get("user/{loginname}/room", [HISController::class, "user_with_room"]);
 
     // Debate
     Route::get("debate", [HISController::class, "debate"]);
     Route::get("debate/{id}", [HISController::class, "debate"]);
+
+    // Debate User
+    Route::get("debate-user", [HISController::class, "debate_user"]);
+    Route::get("debate-user/{id}", [HISController::class, "debate_user"]);
+
+    // Debate Ekip User
+    Route::get("debate-ekip-user", [HISController::class, "debate_ekip_user"]);
+    Route::get("debate-ekip-user/{id}", [HISController::class, "debate_ekip_user"]);
+
+    // Debate Type
+    Route::get("debate-type", [HISController::class, "debate_type"]);
+    Route::get("debate-type/{id}", [HISController::class, "debate_type"]);
 });

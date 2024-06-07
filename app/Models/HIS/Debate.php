@@ -21,7 +21,7 @@ class Debate extends Model
     }
     public function icddelete()
     {
-        return $this->belongsTo(Icd::class, 'icd_id_delete');
+        return $this->belongsTo(Icd::class, 'icd_id__delete');
     }
     public function department()
     {
@@ -62,5 +62,17 @@ class Debate extends Model
     public function active_ingredients()
     {
         return ActiveIngredient::whereIn('id', explode(',', $this->active_ingredient_ids))->get();
+    }
+    public function debate_ekip_users()
+    {
+        return $this->hasMany(DebateEkipUser::class, 'debate_id');
+    }
+    public function debate_invite_users()
+    {
+        return $this->hasMany(DebateInviteUser::class, 'debate_id');
+    }
+    public function debate_users()
+    {
+        return $this->hasMany(DebateUser::class, 'debate_id');
     }
 }
