@@ -4,7 +4,8 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Http\JsonResponse;
 use App\Models\ACS\Token;
 use App\Models\ACS\User;
-
+use App\Models\HIS\UserRoom;
+use Illuminate\Support\Facades\Request;
 
 if (!function_exists('get_user_with_loginname')) {
     function get_user_with_loginname($loginname)
@@ -86,7 +87,7 @@ if (!function_exists('get_cache_full_select_paginate')) {
     function get_cache_full_select_paginate($model, $relation_ship, $per_page, $select, $name, $id = null, $time)
     {
         if (!$id) {
-            $data = Cache::remember($name, $time, function () use ($model, $relation_ship, $select, $per_page ) {
+            $data = Cache::remember($name, $time, function () use ($model, $relation_ship, $select, $per_page) {
                 return $model->with($relation_ship)->paginate($per_page);
             });
             return $data;
@@ -241,5 +242,25 @@ if (!function_exists('get_cache_by_code')) {
             });
         }
         return $data;
+    }
+}
+
+if (!function_exists('view_service_req')) {
+    function view_service_req($execute_room_id, $token, $time)
+    {
+        $loginname = Cache::remember('token_' . $token . '_loginname', $time, function () use ($token) {
+            return Token::select()->where('token_code', '=', $token)->value('login_name');
+        });
+        $user = get_user_with_loginname($loginname);
+        if($user->checkSuperAdmin()){
+            return true;
+        }
+        $check = Cache::remember('loginname_check_execute_room_id_' . $execute_room_id, $time, function () use ($loginname, $execute_room_id, $time) {
+            $user_room = new UserRoom();
+            return UserRoom::with('room.execute_room')
+                ->whereHas('room.execute_room', function ($query) use ($execute_room_id) {
+                    $query->where('id', $execute_room_id);
+                })->exists();
+        });
     }
 }

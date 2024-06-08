@@ -3279,6 +3279,9 @@ class HISController extends Controller
     /// Service Req
     public function service_req($id = null, Request $request)
     {
+        if(!view_service_req($this->param_request['ApiData']['EXECUTE_ROOM_ID'],$request->bearerToken(),$this->time)){
+            return response()->json(['message' => '403'], 403);
+        }
         $select = [
             'id',
             'service_req_code',

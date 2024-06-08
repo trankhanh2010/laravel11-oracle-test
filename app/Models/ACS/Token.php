@@ -13,4 +13,5 @@ class Token extends Model
     // protected $connection = 'oracle'; // Kết nối CSDL mặc định
     protected $table = 'ACS_TOKEN';
 
+
 }
