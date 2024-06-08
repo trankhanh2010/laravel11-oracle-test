@@ -771,4 +771,9 @@ Route::group([
     // Debate Type
     Route::get("debate-type", [HISController::class, "debate_type"]);
     Route::get("debate-type/{id}", [HISController::class, "debate_type"]);
+
+    // Service Req
+    Route::get("service-req", [HISController::class, "service_req"]);
+    Route::get("service-req/{id}", [HISController::class, "service_req"]);
+
 });

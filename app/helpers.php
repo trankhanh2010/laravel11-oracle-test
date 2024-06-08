@@ -82,6 +82,23 @@ if (!function_exists('get_cache_full_select')) {
     }
 }
 
+if (!function_exists('get_cache_full_select_paginate')) {
+    function get_cache_full_select_paginate($model, $relation_ship, $per_page, $select, $name, $id = null, $time)
+    {
+        if (!$id) {
+            $data = Cache::remember($name, $time, function () use ($model, $relation_ship, $select, $per_page ) {
+                return $model->with($relation_ship)->paginate($per_page);
+            });
+            return $data;
+        } else {
+            $data = Cache::remember($name, $time, function () use ($model, $relation_ship, $id, $select) {
+                return $model::select($select)->where('id', $id)->with($relation_ship)->get();
+            });
+            return $data;
+        }
+    }
+}
+
 if (!function_exists('update_cache')) {
     function update_cache($name, $data_update, $time)
     {
@@ -92,6 +109,15 @@ if (!function_exists('update_cache')) {
     }
 }
 
+// if (!function_exists('cache_model_construct')) {
+//     function cache_model_construct($name, $model, $time)
+//     {
+//         $data = Cache::remember($name.'_construct', $time, function () use ($model) {
+//             return $model::lazy()->all();
+//         });
+//         return $data;
+//     }
+// }
 
 if (!function_exists('get_cache_1_1')) {
     function get_cache_1_1($model, $relationship_name, $name, $id = null, $time)

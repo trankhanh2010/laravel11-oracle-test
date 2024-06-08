@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Crypt;
 use App\Models\HIS\Department;
 use App\Models\HIS\BedRoom;
 use App\Models\HIS\ExecuteRoom;
@@ -122,9 +123,17 @@ use App\Models\HIS\Debate;
 use App\Models\HIS\DebateUser;
 use App\Models\HIS\DebateEkipUser;
 use App\Models\HIS\DebateType;
+use App\Models\HIS\Treatment;
+use App\Models\HIS\Tracking;
+use App\Models\HIS\DebateInviteUser;
+use App\Models\HIS\ServiceReq;
 class HISController extends Controller
 {
+    protected $data = [];
     protected $time;
+    protected $per_page;
+    protected $page;
+    protected $param_request;
     protected $department;
     protected $department_name = "department";
     protected $bed_room;
@@ -359,9 +368,20 @@ class HISController extends Controller
     protected $debate_ekip_user_name = 'debate_ekip_user';
     protected $debate_type;
     protected $debate_type_name = 'debate_type';
-    public function __construct()
+    protected $treatment;
+    protected $treatment_name = 'treatment';
+    protected $tracking;
+    protected $tracking_name = 'tracking';
+    protected $debate_invite_user;
+    protected $debate_invite_user_name = 'debate_invite_user';
+    protected $service_req;
+    protected $service_req_name = 'service_req';
+    public function __construct(Request $request)
     {
         $this->time = now()->addMinutes(1440);
+        $this->param_request = json_decode(base64_decode($request->input('param')), true);
+        $this->per_page = $request->query('perPage', 50); 
+        $this->page = $request->query('page', 1); 
         $this->department = new Department();
         $this->bed_room = new BedRoom();
         $this->execute_room = new ExecuteRoom();
@@ -479,6 +499,10 @@ class HISController extends Controller
         $this->debate_user = new DebateUser();
         $this->debate_ekip_user = new DebateEkipUser();
         $this->debate_type = new DebateType();
+        $this->treatment = new Treatment();
+        $this->tracking = new Tracking();
+        $this->debate_invite_user = new DebateInviteUser();
+        $this->service_req = new ServiceReq();
     }
 
     /// Department
@@ -898,7 +922,7 @@ class HISController extends Controller
         }
         $select = [
             'id',
-            'create_time', 
+            'create_time',
             'modify_time',
             'creator',
             'modifier',
@@ -2588,10 +2612,14 @@ class HISController extends Controller
     {
         if ($id == null) {
             $name = $this->debate_reason_name;
-            $param = [];
+            $param = [
+                'debates:id,debate_reason_id,icd_name,icd_code,icd_sub_code'
+            ];
         } else {
             $name = $this->debate_reason_name . '_' . $id;
-            $param = [];
+            $param = [
+                'debates'
+            ];
         }
         $data = get_cache_full($this->debate_reason, $param, $name, $id, $this->time);
         return response()->json(['data' => $data], 200);
@@ -3148,7 +3176,7 @@ class HISController extends Controller
         }
         $select = [
             'id',
-            'create_time', 
+            'create_time',
             'modify_time',
             'creator',
             'modifier',
@@ -3242,6 +3270,110 @@ class HISController extends Controller
             ];
         }
         $data = get_cache_full($this->debate_type, $param, $name, $id, $this->time);
+        return response()->json(['data' => $data], 200);
+    }
+
+    /// Service Req
+    public function service_req($id = null, Request $request)
+    {
+        $sub_name = '';
+        $select = [
+            'id',
+            'service_req_code',
+            'tdl_patient_code',
+            'tdl_patient_name',
+            'tdl_patient_gender_name',
+            'tdl_patient_dob',
+            'tdl_patient_address',
+            'treatment_id',
+            'tdl_patient_avatar_url',
+            'service_req_stt_id',
+            'parent_id',
+            'execute_room_id',
+            'exe_service_module_id',
+            'request_department_id',
+            'tdl_treatment_code',
+            'dhst_id',
+            'priority',
+            'request_room_id',
+            'intruction_time',
+            'num_order',
+            'service_req_type_id',
+            'tdl_hein_card_number',
+            'tdl_treatment_type_id',
+            'intruction_date',
+            'execute_loginname',
+            'execute_username',
+            'tdl_patient_type_id',
+            'is_not_in_debt',
+            'vir_intruction_month',
+            'has_child',
+            'tdl_patient_phone',
+            'resulting_time',
+            'tdl_service_ids',
+            'call_count',
+            'tdl_patient_unsigned_name',
+            'start_time',
+            'note',
+            'tdl_patient_id',
+            'icd_code',
+            'icd_name',
+            'icd_sub_code',
+            'icd_text',
+            // 'order_time'
+        ];
+        $model = $this->service_req::select($select);
+        if($this->param_request['ApiData']['SERVICE_REQ_STT_IDs'] != null){
+            $model->whereIn('service_req_stt_id', $this->param_request['ApiData']['SERVICE_REQ_STT_IDs']);
+            $sub_name = $sub_name.'_in_service_req_stt_id_'.implode(',',$this->param_request['ApiData']['SERVICE_REQ_STT_IDs']);
+        }
+        if($this->param_request['ApiData']['NOT_IN_SERVICE_REQ_TYPE_IDs'] != null){
+            $model->whereNotIn('service_req_stt_id', $this->param_request['ApiData']['NOT_IN_SERVICE_REQ_TYPE_IDs']);
+            $sub_name = $sub_name.'_not_in_service_req_stt_id_'.implode(',',$this->param_request['ApiData']['NOT_IN_SERVICE_REQ_TYPE_IDs']);
+        }
+        if($this->param_request['ApiData']['TDL_PATIENT_TYPE_IDs'] != null){
+            $model->whereIn('tdl_patient_type_id', $this->param_request['ApiData']['TDL_PATIENT_TYPE_IDs']);
+            $sub_name = $sub_name.'_in_tdl_patient_type_id_'.implode(',',$this->param_request['ApiData']['TDL_PATIENT_TYPE_IDs']);
+        }
+        if(($this->param_request['ApiData']['INTRUCTION_TIME_FROM'] != null) && ($this->param_request['ApiData']['INTRUCTION_TIME_TO'] != null)){
+            $model->whereBetween('intruction_time', [$this->param_request['ApiData']['INTRUCTION_TIME_FROM'], $this->param_request['ApiData']['INTRUCTION_TIME_TO']]);
+            $sub_name = $sub_name.'_intruction_time_'.$this->param_request['ApiData']['INTRUCTION_TIME_FROM'].'_'.$this->param_request['ApiData']['INTRUCTION_TIME_TO'];
+        }
+        if($this->param_request['ApiData']['SERVICE_REQ_STT_IDs'] != null){
+            $model->whereIn('service_req_stt_id', $this->param_request['ApiData']['SERVICE_REQ_STT_IDs']);
+            $sub_name = $sub_name.'_in_service_req_stt_id_'.implode(',',$this->param_request['ApiData']['SERVICE_REQ_STT_IDs']);
+        }
+        if($this->param_request['ApiData']['EXECUTE_ROOM_ID'] != null){
+            $model->where('execute_room_id','=', $this->param_request['ApiData']['EXECUTE_ROOM_ID']);
+            $sub_name = $sub_name.'_where_execute_room_id_'.$this->param_request['ApiData']['EXECUTE_ROOM_ID'];
+        }
+        if(($this->param_request['ApiData']['ORDER_FIELD'] != null) && ($this->param_request['ApiData']['ORDER_DIRECTION'] != null)){
+            $model->orderBy($this->param_request['ApiData']['ORDER_FIELD'],$this->param_request['ApiData']['ORDER_DIRECTION']);
+            $sub_name = $sub_name.'_order_by_'.$this->param_request['ApiData']['ORDER_FIELD'].'_'.$this->param_request['ApiData']['ORDER_DIRECTION'];
+        }
+        if(($this->param_request['ApiData']['ORDER_FIELD1'] != null) && ($this->param_request['ApiData']['ORDER_DIRECTION1'] != null)){
+            $model->orderBy($this->param_request['ApiData']['ORDER_FIELD1'],$this->param_request['ApiData']['ORDER_DIRECTION1']);
+            $sub_name = $sub_name.'_order_by_'.$this->param_request['ApiData']['ORDER_FIELD1'].'_'.$this->param_request['ApiData']['ORDER_DIRECTION1'];
+        }
+        if(($this->param_request['ApiData']['ORDER_FIELD2'] != null) && ($this->param_request['ApiData']['ORDER_DIRECTION2'] != null)){
+            $model->orderBy($this->param_request['ApiData']['ORDER_FIELD2'],$this->param_request['ApiData']['ORDER_DIRECTION2']);
+            $sub_name = $sub_name.'_order_by_'.$this->param_request['ApiData']['ORDER_FIELD2'].'_'.$this->param_request['ApiData']['ORDER_DIRECTION2'];
+        }
+        if(($this->param_request['ApiData']['ORDER_FIELD3'] != null) && ($this->param_request['ApiData']['ORDER_DIRECTION3'] != null)){
+            $model->orderBy($this->param_request['ApiData']['ORDER_FIELD3'],$this->param_request['ApiData']['ORDER_DIRECTION3']);
+            $sub_name = $sub_name.'_order_by_'.$this->param_request['ApiData']['ORDER_FIELD3'].'_'.$this->param_request['ApiData']['ORDER_DIRECTION3'];
+        }
+        $param = [
+        ];
+        $model = $model->with($param)->paginate($this->per_page);
+        if ($id == null) {
+            $name = $this->service_req_name.'_page_'.$this->page.'_per_page_'.$this->per_page.$sub_name;
+            $data = update_cache($name, $model, $this->time);
+        } else {
+            $name = $this->service_req . '_' . $id;
+            $data = get_cache_full_select($this->service_req, $param, $select, $name, $id, $this->time);
+        }
+       
         return response()->json(['data' => $data], 200);
     }
 }
