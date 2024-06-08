@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Gate;
 use App\Models\HIS\Department;
 use App\Models\HIS\BedRoom;
 use App\Models\HIS\ExecuteRoom;
@@ -127,6 +128,8 @@ use App\Models\HIS\Treatment;
 use App\Models\HIS\Tracking;
 use App\Models\HIS\DebateInviteUser;
 use App\Models\HIS\ServiceReq;
+use Illuminate\Support\Facades\Auth;
+
 class HISController extends Controller
 {
     protected $data = [];
@@ -3276,7 +3279,6 @@ class HISController extends Controller
     /// Service Req
     public function service_req($id = null, Request $request)
     {
-        $sub_name = '';
         $select = [
             'id',
             'service_req_code',
@@ -3325,55 +3327,37 @@ class HISController extends Controller
         $model = $this->service_req::select($select);
         if($this->param_request['ApiData']['SERVICE_REQ_STT_IDs'] != null){
             $model->whereIn('service_req_stt_id', $this->param_request['ApiData']['SERVICE_REQ_STT_IDs']);
-            $sub_name = $sub_name.'_in_service_req_stt_id_'.implode(',',$this->param_request['ApiData']['SERVICE_REQ_STT_IDs']);
         }
         if($this->param_request['ApiData']['NOT_IN_SERVICE_REQ_TYPE_IDs'] != null){
             $model->whereNotIn('service_req_stt_id', $this->param_request['ApiData']['NOT_IN_SERVICE_REQ_TYPE_IDs']);
-            $sub_name = $sub_name.'_not_in_service_req_stt_id_'.implode(',',$this->param_request['ApiData']['NOT_IN_SERVICE_REQ_TYPE_IDs']);
         }
         if($this->param_request['ApiData']['TDL_PATIENT_TYPE_IDs'] != null){
             $model->whereIn('tdl_patient_type_id', $this->param_request['ApiData']['TDL_PATIENT_TYPE_IDs']);
-            $sub_name = $sub_name.'_in_tdl_patient_type_id_'.implode(',',$this->param_request['ApiData']['TDL_PATIENT_TYPE_IDs']);
         }
         if(($this->param_request['ApiData']['INTRUCTION_TIME_FROM'] != null) && ($this->param_request['ApiData']['INTRUCTION_TIME_TO'] != null)){
             $model->whereBetween('intruction_time', [$this->param_request['ApiData']['INTRUCTION_TIME_FROM'], $this->param_request['ApiData']['INTRUCTION_TIME_TO']]);
-            $sub_name = $sub_name.'_intruction_time_'.$this->param_request['ApiData']['INTRUCTION_TIME_FROM'].'_'.$this->param_request['ApiData']['INTRUCTION_TIME_TO'];
         }
         if($this->param_request['ApiData']['SERVICE_REQ_STT_IDs'] != null){
             $model->whereIn('service_req_stt_id', $this->param_request['ApiData']['SERVICE_REQ_STT_IDs']);
-            $sub_name = $sub_name.'_in_service_req_stt_id_'.implode(',',$this->param_request['ApiData']['SERVICE_REQ_STT_IDs']);
         }
         if($this->param_request['ApiData']['EXECUTE_ROOM_ID'] != null){
             $model->where('execute_room_id','=', $this->param_request['ApiData']['EXECUTE_ROOM_ID']);
-            $sub_name = $sub_name.'_where_execute_room_id_'.$this->param_request['ApiData']['EXECUTE_ROOM_ID'];
         }
         if(($this->param_request['ApiData']['ORDER_FIELD'] != null) && ($this->param_request['ApiData']['ORDER_DIRECTION'] != null)){
             $model->orderBy($this->param_request['ApiData']['ORDER_FIELD'],$this->param_request['ApiData']['ORDER_DIRECTION']);
-            $sub_name = $sub_name.'_order_by_'.$this->param_request['ApiData']['ORDER_FIELD'].'_'.$this->param_request['ApiData']['ORDER_DIRECTION'];
         }
         if(($this->param_request['ApiData']['ORDER_FIELD1'] != null) && ($this->param_request['ApiData']['ORDER_DIRECTION1'] != null)){
             $model->orderBy($this->param_request['ApiData']['ORDER_FIELD1'],$this->param_request['ApiData']['ORDER_DIRECTION1']);
-            $sub_name = $sub_name.'_order_by_'.$this->param_request['ApiData']['ORDER_FIELD1'].'_'.$this->param_request['ApiData']['ORDER_DIRECTION1'];
         }
         if(($this->param_request['ApiData']['ORDER_FIELD2'] != null) && ($this->param_request['ApiData']['ORDER_DIRECTION2'] != null)){
             $model->orderBy($this->param_request['ApiData']['ORDER_FIELD2'],$this->param_request['ApiData']['ORDER_DIRECTION2']);
-            $sub_name = $sub_name.'_order_by_'.$this->param_request['ApiData']['ORDER_FIELD2'].'_'.$this->param_request['ApiData']['ORDER_DIRECTION2'];
         }
         if(($this->param_request['ApiData']['ORDER_FIELD3'] != null) && ($this->param_request['ApiData']['ORDER_DIRECTION3'] != null)){
             $model->orderBy($this->param_request['ApiData']['ORDER_FIELD3'],$this->param_request['ApiData']['ORDER_DIRECTION3']);
-            $sub_name = $sub_name.'_order_by_'.$this->param_request['ApiData']['ORDER_FIELD3'].'_'.$this->param_request['ApiData']['ORDER_DIRECTION3'];
         }
         $param = [
         ];
-        $model = $model->with($param)->paginate($this->per_page);
-        if ($id == null) {
-            $name = $this->service_req_name.'_page_'.$this->page.'_per_page_'.$this->per_page.$sub_name;
-            $data = update_cache($name, $model, $this->time);
-        } else {
-            $name = $this->service_req . '_' . $id;
-            $data = get_cache_full_select($this->service_req, $param, $select, $name, $id, $this->time);
-        }
-       
-        return response()->json(['data' => $data], 200);
+        $data = $model->with($param)->paginate($this->per_page); 
+        return response()->json($data, 200);
     }
 }

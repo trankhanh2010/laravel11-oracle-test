@@ -774,6 +774,4 @@ Route::group([
 
     // Service Req
     Route::get("service-req", [HISController::class, "service_req"]);
-    Route::get("service-req/{id}", [HISController::class, "service_req"]);
-
 });

@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Cache;
 use App\Models\ACS\Token;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Carbon;
+use App\Models\ACS\User;
 class CheckToken
 {
     /**
@@ -37,6 +38,11 @@ class CheckToken
         if (!$token || (!$token->is_active) || ($token->is_delete) || ($is_expire)) {
             return response()->json(['message' => 'Token không hợp lệ'], 401);
         }
+        $user = User::where('loginname','=',$token->login_name)->get();
+        // Đặt người dùng hiện tại vào request
+        $request->setUserResolver(function () use ($user) {
+            return $user;
+        });
         // Nếu token hợp lệ, cho phép tiếp tục xử lý request
         return $next($request);
     }
