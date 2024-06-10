@@ -134,6 +134,8 @@ class HISController extends Controller
 {
     protected $data = [];
     protected $time;
+    protected $start;
+    protected $limit;
     protected $per_page;
     protected $page;
     protected $param_request;
@@ -381,10 +383,18 @@ class HISController extends Controller
     protected $service_req_name = 'service_req';
     public function __construct(Request $request)
     {
+        // Khai báo các biến
         $this->time = now()->addMinutes(1440);
         $this->param_request = json_decode(base64_decode($request->input('param')), true);
-        $this->per_page = $request->query('perPage', 50); 
-        $this->page = $request->query('page', 1); 
+        $this->per_page = $request->query('perPage', 50);
+        $this->page = $request->query('page', 1);
+        $this->start = $this->param_request['CommonParam']['Start'];
+        $this->limit = $this->param_request['CommonParam']['Limit'];
+        if ($this->limit > 1000) {
+            $this->limit = 1000;
+        }
+
+        // Khởi tạo các model
         $this->department = new Department();
         $this->bed_room = new BedRoom();
         $this->execute_room = new ExecuteRoom();
@@ -3279,8 +3289,11 @@ class HISController extends Controller
     /// Service Req
     public function service_req($id = null, Request $request)
     {
-        if(!view_service_req($this->param_request['ApiData']['EXECUTE_ROOM_ID'],$request->bearerToken(),$this->time)){
-            return response()->json(['message' => '403'], 403);
+        // Kiểm tra xem User có quyền xem execute_room không
+        if ((isset($this->param_request['ApiData']['EXECUTE_ROOM_ID'])) && $this->param_request['ApiData']['EXECUTE_ROOM_ID'] != null) {
+            if (!view_service_req($this->param_request['ApiData']['EXECUTE_ROOM_ID'], $request->bearerToken(), $this->time)) {
+                return response()->json(['message' => '403'], 403);
+            }
         }
         $select = [
             'id',
@@ -3311,6 +3324,7 @@ class HISController extends Controller
             'execute_username',
             'tdl_patient_type_id',
             'is_not_in_debt',
+            'is_no_execute',
             'vir_intruction_month',
             'has_child',
             'tdl_patient_phone',
@@ -3328,39 +3342,51 @@ class HISController extends Controller
             // 'order_time'
         ];
         $model = $this->service_req::select($select);
-        if($this->param_request['ApiData']['SERVICE_REQ_STT_IDs'] != null){
+        if ((isset($this->param_request['ApiData']['SERVICE_REQ_STT_IDs'])) && ($this->param_request['ApiData']['SERVICE_REQ_STT_IDs'] != null)) {
             $model->whereIn('service_req_stt_id', $this->param_request['ApiData']['SERVICE_REQ_STT_IDs']);
         }
-        if($this->param_request['ApiData']['NOT_IN_SERVICE_REQ_TYPE_IDs'] != null){
+        if ((isset($this->param_request['ApiData']['NOT_IN_SERVICE_REQ_TYPE_IDs'])) && ($this->param_request['ApiData']['NOT_IN_SERVICE_REQ_TYPE_IDs'] != null)) {
             $model->whereNotIn('service_req_stt_id', $this->param_request['ApiData']['NOT_IN_SERVICE_REQ_TYPE_IDs']);
         }
-        if($this->param_request['ApiData']['TDL_PATIENT_TYPE_IDs'] != null){
+        if (isset($this->param_request['ApiData']['TDL_PATIENT_TYPE_IDs']) && ($this->param_request['ApiData']['TDL_PATIENT_TYPE_IDs'] != null)) {
             $model->whereIn('tdl_patient_type_id', $this->param_request['ApiData']['TDL_PATIENT_TYPE_IDs']);
         }
-        if(($this->param_request['ApiData']['INTRUCTION_TIME_FROM'] != null) && ($this->param_request['ApiData']['INTRUCTION_TIME_TO'] != null)){
-            $model->whereBetween('intruction_time', [$this->param_request['ApiData']['INTRUCTION_TIME_FROM'], $this->param_request['ApiData']['INTRUCTION_TIME_TO']]);
+        if(isset($this->param_request['ApiData']['INTRUCTION_DATE__EQUAL']) && ($this->param_request['ApiData']['INTRUCTION_DATE__EQUAL'] != null)){
+            $model->where('intruction_time', '=', $this->param_request['ApiData']['INTRUCTION_DATE__EQUAL']);
+        }else{
+            if ((isset($this->param_request['ApiData']['INTRUCTION_TIME_FROM'])) && (isset($this->param_request['ApiData']['INTRUCTION_TIME_TO'])) && ($this->param_request['ApiData']['INTRUCTION_TIME_FROM'] != null) && ($this->param_request['ApiData']['INTRUCTION_TIME_TO'] != null)) {
+                $model->whereBetween('intruction_time', [$this->param_request['ApiData']['INTRUCTION_TIME_FROM'], $this->param_request['ApiData']['INTRUCTION_TIME_TO']]);
+            }
         }
-        if($this->param_request['ApiData']['SERVICE_REQ_STT_IDs'] != null){
+        if ((isset($this->param_request['ApiData']['SERVICE_REQ_STT_IDs'])) && ($this->param_request['ApiData']['SERVICE_REQ_STT_IDs'] != null)) {
             $model->whereIn('service_req_stt_id', $this->param_request['ApiData']['SERVICE_REQ_STT_IDs']);
         }
-        if($this->param_request['ApiData']['EXECUTE_ROOM_ID'] != null){
-            $model->where('execute_room_id','=', $this->param_request['ApiData']['EXECUTE_ROOM_ID']);
+        if ((isset($this->param_request['ApiData']['EXECUTE_ROOM_ID'])) && $this->param_request['ApiData']['EXECUTE_ROOM_ID'] != null) {
+            $model->where('execute_room_id', '=', $this->param_request['ApiData']['EXECUTE_ROOM_ID']);
         }
-        if(($this->param_request['ApiData']['ORDER_FIELD'] != null) && ($this->param_request['ApiData']['ORDER_DIRECTION'] != null)){
-            $model->orderBy($this->param_request['ApiData']['ORDER_FIELD'],$this->param_request['ApiData']['ORDER_DIRECTION']);
+        if (($this->param_request['ApiData']['ORDER_FIELD']) && ($this->param_request['ApiData']['ORDER_DIRECTION']) && ($this->param_request['ApiData']['ORDER_FIELD'] != null) && ($this->param_request['ApiData']['ORDER_DIRECTION'] != null)) {
+            $model->orderBy($this->param_request['ApiData']['ORDER_FIELD'], $this->param_request['ApiData']['ORDER_DIRECTION']);
         }
-        if(($this->param_request['ApiData']['ORDER_FIELD1'] != null) && ($this->param_request['ApiData']['ORDER_DIRECTION1'] != null)){
-            $model->orderBy($this->param_request['ApiData']['ORDER_FIELD1'],$this->param_request['ApiData']['ORDER_DIRECTION1']);
+        if (($this->param_request['ApiData']['ORDER_FIELD1']) && ($this->param_request['ApiData']['ORDER_DIRECTION1']) && ($this->param_request['ApiData']['ORDER_FIELD1'] != null) && ($this->param_request['ApiData']['ORDER_DIRECTION1'] != null)) {
+            $model->orderBy($this->param_request['ApiData']['ORDER_FIELD1'], $this->param_request['ApiData']['ORDER_DIRECTION1']);
         }
-        if(($this->param_request['ApiData']['ORDER_FIELD2'] != null) && ($this->param_request['ApiData']['ORDER_DIRECTION2'] != null)){
-            $model->orderBy($this->param_request['ApiData']['ORDER_FIELD2'],$this->param_request['ApiData']['ORDER_DIRECTION2']);
+        if (($this->param_request['ApiData']['ORDER_FIELD2']) && ($this->param_request['ApiData']['ORDER_DIRECTION2']) && ($this->param_request['ApiData']['ORDER_FIELD2'] != null) && ($this->param_request['ApiData']['ORDER_DIRECTION2'] != null)) {
+            $model->orderBy($this->param_request['ApiData']['ORDER_FIELD2'], $this->param_request['ApiData']['ORDER_DIRECTION2']);
         }
-        if(($this->param_request['ApiData']['ORDER_FIELD3'] != null) && ($this->param_request['ApiData']['ORDER_DIRECTION3'] != null)){
-            $model->orderBy($this->param_request['ApiData']['ORDER_FIELD3'],$this->param_request['ApiData']['ORDER_DIRECTION3']);
+        if (($this->param_request['ApiData']['ORDER_FIELD3']) && ($this->param_request['ApiData']['ORDER_DIRECTION3']) && ($this->param_request['ApiData']['ORDER_FIELD3'] != null) && ($this->param_request['ApiData']['ORDER_DIRECTION3'] != null)) {
+            $model->orderBy($this->param_request['ApiData']['ORDER_FIELD3'], $this->param_request['ApiData']['ORDER_DIRECTION3']);
         }
-        $param = [
-        ];
-        $data = $model->with($param)->paginate($this->per_page); 
-        return response()->json($data, 200);
+        $param = [];
+        $count = $model->count();
+        $data = $model->skip($this->start)->take($this->limit)->with($param)->get();
+        return response()->json([
+            'data' =>
+            $data,
+            'Param' => [
+                'Start' => $this->start,
+                'Limit' => $this->limit,
+                'Count' => $count
+            ]
+        ], 200);
     }
 }
