@@ -388,8 +388,8 @@ class HISController extends Controller
         $this->param_request = json_decode(base64_decode($request->input('param')), true);
         $this->per_page = $request->query('perPage', 50);
         $this->page = $request->query('page', 1);
-        $this->start = $this->param_request['CommonParam']['Start'];
-        $this->limit = $this->param_request['CommonParam']['Limit'];
+        $this->start = $this->param_request['CommonParam']['Start'] ?? 0;
+        $this->limit = $this->param_request['CommonParam']['Limit'] ?? 1000;
         if ($this->limit > 1000) {
             $this->limit = 1000;
         }
@@ -3130,7 +3130,7 @@ class HISController extends Controller
     }
 
     /// User Room
-    public function user_with_room($loginname = null)
+    public function user_with_room()
     {
         $param = [
             'room:id,department_id,room_type_id',
@@ -3139,54 +3139,31 @@ class HISController extends Controller
             'room.department:id,branch_id,department_name,department_code',
             'room.department.branch:id,branch_name,branch_code',
         ];
-        $data = get_cache_by_code($this->user_room, $this->user_room_name, $param, 'loginname', $loginname, $this->time);
+        $data = get_cache_by_code($this->user_room, $this->user_room_name, $param, 'loginname', $this->param_request['ApiData']['LOGINNAME'], $this->time);
         return response()->json(['data' => $data], 200);
     }
 
     /// Debate
-    public function debate($id = null)
+    public function debate()
     {
-        if ($id == null) {
-            $name = $this->debate_name;
-            $param = [
-                'treatment:id,tdl_patient_first_name,tdl_patient_last_name,tdl_patient_name,tdl_patient_dob,tdl_patient_address,tdl_patient_gender_name',
-                'icddelete:id,icd_name,icd_code',
-                'debate_type:id,debate_type_name,debate_type_code',
-                'surgery_service:id,service_name,service_code',
-                'emotionless_method:id,emotionless_method_name,emotionless_method_code',
-                'pttt_method:id,pttt_method_name,pttt_method_code',
-                'tracking:id,medical_instruction,content',
-                'service:id,service_name,service_code',
-                'debate_reason:id,debate_reason_name',
-                'debate_ekip_users:id,debate_id,loginname,username,execute_role_id,department_id',
-                'debate_ekip_users.execute_role:id,execute_role_name,execute_role_code',
-                'debate_ekip_users.department:id,department_name,department_code',
-                'debate_invite_users:id,debate_id,loginname,username,execute_role_id',
-                'debate_invite_users.execute_role:id,execute_role_name,execute_role_code',
-                'debate_users:id,debate_id,loginname,username,execute_role_id',
-                'debate_users.execute_role:id,execute_role_name,execute_role_code'
-            ];
-        } else {
-            $name = $this->debate_name . '_' . $id;
-            $param = [
-                'treatment',
-                'icddelete',
-                'debate_type',
-                'surgery_service',
-                'emotionless_method',
-                'pttt_method',
-                'tracking',
-                'service',
-                'debate_reason',
-                'debate_ekip_users',
-                'debate_ekip_users.execute_role',
-                'debate_ekip_users.department',
-                'debate_invite_users',
-                'debate_invite_users.execute_role',
-                'debate_users',
-                'debate_users.execute_role'
-            ];
-        }
+        $param = [
+            'treatment:id,tdl_patient_first_name,tdl_patient_last_name,tdl_patient_name,tdl_patient_dob,tdl_patient_address,tdl_patient_gender_name',
+            'icddelete:id,icd_name,icd_code',
+            'debate_type:id,debate_type_name,debate_type_code',
+            'surgery_service:id,service_name,service_code',
+            'emotionless_method:id,emotionless_method_name,emotionless_method_code',
+            'pttt_method:id,pttt_method_name,pttt_method_code',
+            'tracking:id,medical_instruction,content',
+            'service:id,service_name,service_code',
+            'debate_reason:id,debate_reason_name',
+            'debate_ekip_users:id,debate_id,loginname,username,execute_role_id,department_id',
+            'debate_ekip_users.execute_role:id,execute_role_name,execute_role_code',
+            'debate_ekip_users.department:id,department_name,department_code',
+            'debate_invite_users:id,debate_id,loginname,username,execute_role_id',
+            'debate_invite_users.execute_role:id,execute_role_name,execute_role_code',
+            'debate_users:id,debate_id,loginname,username,execute_role_id',
+            'debate_users.execute_role:id,execute_role_name,execute_role_code'
+        ];
         $select = [
             'id',
             'create_time',
@@ -3230,41 +3207,38 @@ class HISController extends Controller
             'medicine_type_ids',
             'active_ingredient_ids',
         ];
-        $data = get_cache_full_select($this->debate, $param, $select, $name, $id, $this->time);
+        $model = $this->debate::select($select);
+        if ((isset($this->param_request['ApiData']['ID'])) && ($this->param_request['ApiData']['ID'] != null)) {
+            $model->find($this->param_request['ApiData']['ID']);
+        }
+        if ((isset($this->param_request['ApiData']['TREATMENT_ID']))) {
+            $model->where('treatment_id', $this->param_request['ApiData']['TREATMENT_ID']);
+        }
+        $data = $model->with($param)->get();
         return response()->json(['data' => $data], 200);
     }
 
     /// Debate User
     public function debate_user($id = null)
     {
-        if ($id == null) {
-            $name = $this->debate_user_name;
-            $param = [];
-        } else {
-            $name = $this->debate_user_name . '_' . $id;
-            $param = [];
+        if ((isset($this->param_request['ApiData']['DEBATE_ID']))) {
+            $model = $this->debate_user->where('debate_id', $this->param_request['ApiData']['DEBATE_ID']);
         }
-        $data = get_cache_full($this->debate_user, $param, $name, $id, $this->time);
+        $data = $model->get();
         return response()->json(['data' => $data], 200);
     }
 
     /// Debate Ekip User
     public function debate_ekip_user($id = null)
     {
-        if ($id == null) {
-            $name = $this->debate_ekip_user_name;
-            $param = [
-                'execute_role:id,execute_role_name,execute_role_code',
-                'department:id,department_name,department_code'
-            ];
-        } else {
-            $name = $this->debate_ekip_user_name . '_' . $id;
-            $param = [
-                'execute_role',
-                'department'
-            ];
+        $param = [
+            'execute_role:id,execute_role_name,execute_role_code',
+            'department:id,department_name,department_code'
+        ];
+        if ((isset($this->param_request['ApiData']['DEBATE_ID']))) {
+            $model = $this->debate_ekip_user->where('debate_id', $this->param_request['ApiData']['DEBATE_ID']);
         }
-        $data = get_cache_full($this->debate_ekip_user, $param, $name, $id, $this->time);
+        $data = $model->with($param)->get();
         return response()->json(['data' => $data], 200);
     }
 
@@ -3351,9 +3325,9 @@ class HISController extends Controller
         if (isset($this->param_request['ApiData']['TDL_PATIENT_TYPE_IDs']) && ($this->param_request['ApiData']['TDL_PATIENT_TYPE_IDs'] != null)) {
             $model->whereIn('tdl_patient_type_id', $this->param_request['ApiData']['TDL_PATIENT_TYPE_IDs']);
         }
-        if(isset($this->param_request['ApiData']['INTRUCTION_DATE__EQUAL']) && ($this->param_request['ApiData']['INTRUCTION_DATE__EQUAL'] != null)){
+        if (isset($this->param_request['ApiData']['INTRUCTION_DATE__EQUAL']) && ($this->param_request['ApiData']['INTRUCTION_DATE__EQUAL'] != null)) {
             $model->where('intruction_time', '=', $this->param_request['ApiData']['INTRUCTION_DATE__EQUAL']);
-        }else{
+        } else {
             if ((isset($this->param_request['ApiData']['INTRUCTION_TIME_FROM'])) && (isset($this->param_request['ApiData']['INTRUCTION_TIME_TO'])) && ($this->param_request['ApiData']['INTRUCTION_TIME_FROM'] != null) && ($this->param_request['ApiData']['INTRUCTION_TIME_TO'] != null)) {
                 $model->whereBetween('intruction_time', [$this->param_request['ApiData']['INTRUCTION_TIME_FROM'], $this->param_request['ApiData']['INTRUCTION_TIME_TO']]);
             }
@@ -3363,6 +3337,19 @@ class HISController extends Controller
         }
         if ((isset($this->param_request['ApiData']['EXECUTE_ROOM_ID'])) && $this->param_request['ApiData']['EXECUTE_ROOM_ID'] != null) {
             $model->where('execute_room_id', '=', $this->param_request['ApiData']['EXECUTE_ROOM_ID']);
+        }
+        if ((isset($this->param_request['ApiData']['HAS_EXECUTE']))) {
+            if ($this->param_request['ApiData']['HAS_EXECUTE']) {
+                $model->where('is_no_execute', '=', null);
+            } else {
+                $model->where('is_no_execute', '=', 1);
+            }
+        }
+        if ((isset($this->param_request['ApiData']['IS_NOT_KSK_REQURIED_APROVAL__OR__IS_KSK_APPROVE']))) {
+            $model->Where(function ($query) {
+                $query->where('tdl_ksk_is_required_approval', '!=', null)
+                    ->orWhere('tdl_is_ksk_approve', '=', null);
+            });
         }
         if (($this->param_request['ApiData']['ORDER_FIELD']) && ($this->param_request['ApiData']['ORDER_DIRECTION']) && ($this->param_request['ApiData']['ORDER_FIELD'] != null) && ($this->param_request['ApiData']['ORDER_DIRECTION'] != null)) {
             $model->orderBy($this->param_request['ApiData']['ORDER_FIELD'], $this->param_request['ApiData']['ORDER_DIRECTION']);

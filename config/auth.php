@@ -68,7 +68,7 @@ return [
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
-            'model' => App\Models\ACS\Token::class,
+            'model' => App\Models\ACS\User::class,
         ],
 
         // 'users' => [

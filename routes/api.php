@@ -753,28 +753,21 @@ Route::group([
 
     /// Nhân viên - Phòng
     // Trả về nhân viên cùng phòng
-    Route::get("v1/user/all/room", [HISController::class, "user_with_room"]);
-    Route::get("v1/user/{loginname}/room", [HISController::class, "user_with_room"]);
+    Route::get("v1/user-room", [HISController::class, "user_with_room"]);
 
     // Debate
     Route::get("v1/debate", [HISController::class, "debate"]);
-    Route::get("v1/debate/{id}", [HISController::class, "debate"]);
 
     // Debate User
     Route::get("v1/debate-user", [HISController::class, "debate_user"]);
-    Route::get("v1/debate-user/{id}", [HISController::class, "debate_user"]);
 
     // Debate Ekip User
     Route::get("v1/debate-ekip-user", [HISController::class, "debate_ekip_user"]);
-    Route::get("v1/debate-ekip-user/{id}", [HISController::class, "debate_ekip_user"]);
 
     // Debate Type
     Route::get("v1/debate-type", [HISController::class, "debate_type"]);
     Route::get("v1/debate-type/{id}", [HISController::class, "debate_type"]);
 
-
-
-    
     // Service Req
     Route::get("v1/service-req", [HISController::class, "service_req"]);
 });
