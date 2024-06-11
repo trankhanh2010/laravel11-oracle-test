@@ -12,3 +12,4 @@ class Relation extends Model
     protected $connection = 'oracle_emr'; 
     protected $table = 'EMR_Relation';
 }
+

@@ -128,8 +128,8 @@ use App\Models\HIS\Treatment;
 use App\Models\HIS\Tracking;
 use App\Models\HIS\DebateInviteUser;
 use App\Models\HIS\ServiceReq;
-use Illuminate\Support\Facades\Auth;
-
+use App\Models\HIS\ExpMest;
+use App\Models\HIS\ExpMestMedicine;
 class HISController extends Controller
 {
     protected $data = [];
@@ -381,6 +381,10 @@ class HISController extends Controller
     protected $debate_invite_user_name = 'debate_invite_user';
     protected $service_req;
     protected $service_req_name = 'service_req';
+    protected $exp_mest;
+    protected $exp_mest_name = 'exp_mest';
+    protected $exp_mest_medicine;
+    protected $exp_mest_medicine_name = 'exp_mest_medicine';
     public function __construct(Request $request)
     {
         // Khai báo các biến
@@ -516,6 +520,8 @@ class HISController extends Controller
         $this->tracking = new Tracking();
         $this->debate_invite_user = new DebateInviteUser();
         $this->service_req = new ServiceReq();
+        $this->exp_mest = new ExpMest();
+        $this->exp_mest_medicine = new ExpMestMedicine();
     }
 
     /// Department
@@ -3373,6 +3379,430 @@ class HISController extends Controller
                 'Start' => $this->start,
                 'Limit' => $this->limit,
                 'Count' => $count
+            ]
+        ], 200);
+    }
+
+    // Tracking
+    public function tracking(Request $request)
+    {
+        $select = [
+            'id',
+            'create_time',
+            'modify_time',
+            'creator',
+            'modifier',
+            'app_creator',
+            'app_modifier',
+            'is_active',
+            'is_delete',
+            'treatment_id',
+            'tracking_time',
+            'icd_code',
+            'icd_name',
+            'department_id',
+            'care_instruction',
+            'room_id',
+            'emr_document_stt_id',
+            'content',
+        ];
+        $model = $this->tracking::select($select);
+        if ((isset($this->param_request['ApiData']['TREATMENT_IDs'])) && ($this->param_request['ApiData']['TREATMENT_IDs'] != null)) {
+            $model->whereIn('treatment_id', $this->param_request['ApiData']['TREATMENT_IDs']);
+        }
+        if ((isset($this->param_request['ApiData']['TREATMENT_ID'])) && ($this->param_request['ApiData']['TREATMENT_ID'] != null)) {
+            $model->where('treatment_id', $this->param_request['ApiData']['TREATMENT_ID']);
+        }
+        if ((isset($this->param_request['ApiData']['CREATE_TIME_TO'])) && ($this->param_request['ApiData']['CREATE_TIME_TO'] != null)) {
+            $model->where('create_time', $this->param_request['ApiData']['CREATE_TIME_TO']);
+        }
+        if ((isset($this->param_request['ApiData']['IS_INCLUDE_DELETED']))) {
+            if (!($this->param_request['ApiData']['IS_INCLUDE_DELETED'])) {
+                $model->where('is_delete', 0);
+            }
+        }
+        if (($this->param_request['ApiData']['ORDER_FIELD']) && ($this->param_request['ApiData']['ORDER_DIRECTION']) && ($this->param_request['ApiData']['ORDER_FIELD'] != null) && ($this->param_request['ApiData']['ORDER_DIRECTION'] != null)) {
+            $model->orderBy($this->param_request['ApiData']['ORDER_FIELD'], $this->param_request['ApiData']['ORDER_DIRECTION']);
+        }
+        $param = [
+            'cares',
+            'debates',
+            'Dhsts',
+            'service_reqs'
+        ];
+        $count = $model->count();
+        $data = $model->skip($this->start)->take($this->limit)->with($param)->get();
+        return response()->json([
+            'data' =>
+            $data,
+            'Param' => [
+                'Start' => $this->start,
+                'Limit' => $this->limit,
+                'Count' => $count
+            ]
+        ], 200);
+    }
+
+    public function tracking_get_data(Request $request)
+    {
+        $select_treatment = [
+            'id',
+            'create_time',
+            'modify_time',
+            'creator',
+            'modifier',
+            'app_creator',
+            'app_modifier',
+            'is_active',
+            'is_delete',
+            'icd_code',
+            'icd_name',
+            'icd_sub_code',
+            'icd_text',
+            'treatment_code',
+            'patient_id',
+            'branch_id',
+            'is_pause',
+            'is_lock_hein',
+            'fee_lock_time',
+            'fee_lock_order',
+            'fee_lock_room_id',
+            'fee_lock_department_id',
+            'in_time',
+            'in_date',
+            'clinical_in_time',
+            'out_time',
+            'in_code',
+            'in_room_id',
+            'in_department_id',
+            'in_loginname',
+            'in_username',
+            'in_treatment_type_id',
+            'in_icd_code',
+            'in_icd_name',
+            'hospitalization_reason',
+            'end_loginname',
+            'end_username',
+            'end_room_id',
+            'end_department_id',
+            'end_code',
+            'treatment_day_count',
+            'treatment_result_id',
+            'treatment_end_type_id',
+            'advise',
+            'out_date',
+            'store_time',
+            'data_store_id',
+            'store_code',
+            'tdl_hein_card_number',
+            'clinical_note',
+            'subclinical_result',
+            'treatment_method',
+            'tdl_first_exam_room_id',
+            'tdl_treatment_type_id',
+            'tdl_patient_type_id',
+            'tdl_hein_medi_org_code',
+            'tdl_hein_medi_org_name',
+            'tdl_patient_code',
+            'tdl_patient_name',
+            'tdl_patient_first_name',
+            'tdl_patient_last_name',
+            'tdl_patient_dob',
+            'tdl_patient_is_has_not_day_dob',
+            'tdl_patient_address',
+            'tdl_patient_gender_id',
+            'tdl_patient_gender_name',
+            'tdl_patient_national_name',
+            'tdl_patient_relative_name',
+            'medi_record_type_id',
+            'department_ids',
+            'co_department_ids',
+            'last_department_id',
+            'medi_record_id',
+            'is_sync_emr',
+            'tdl_hein_card_from_time',
+            'tdl_hein_card_to_time',
+            'vir_in_month',
+            'vir_out_month',
+            'in_code_seed_code',
+            'vir_in_year',
+            'vir_out_year',
+            'fee_lock_loginname',
+            'fee_lock_username',
+            'emr_cover_type_id',
+            'hospitalize_department_id',
+            'tdl_patient_national_code',
+            'is_bhyt_holded',
+            'tdl_patient_unsigned_name',
+            'tdl_patient_ethnic_name',
+            'IS_TUBERCULOSIS',
+            'EXIT_DEPARTMENT_ID',
+            'STORE_BORDEREAU_CODE',
+            'HEIN_LOCK_TIME',
+            'RECEPTION_FORM',
+            'VIR_STORE_BORDEREAU_CODE',
+            'STORE_BORDEREAU_TIME',
+            'STORE_BORDEREAU_SEED_CODE'
+        ];
+        $select_service_req = [
+            'ID',
+            'CREATE_TIME',
+            'MODIFY_TIME',
+            'CREATOR',
+            'MODIFIER',
+            'APP_CREATOR',
+            'APP_MODIFIER',
+            'IS_ACTIVE',
+            'IS_DELETE',
+            'SERVICE_REQ_CODE',
+            'SERVICE_REQ_TYPE_ID',
+            'SERVICE_REQ_STT_ID',
+            'TREATMENT_ID',
+            'INTRUCTION_TIME',
+            'INTRUCTION_DATE',
+            'REQUEST_ROOM_ID',
+            'REQUEST_DEPARTMENT_ID',
+            'REQUEST_LOGINNAME',
+            'REQUEST_USERNAME',
+            'EXECUTE_ROOM_ID',
+            'EXECUTE_DEPARTMENT_ID',
+            'EXECUTE_LOGINNAME',
+            'EXECUTE_USERNAME',
+            'START_TIME',
+            'FINISH_TIME',
+            'ICD_CODE',
+            'ICD_NAME',
+            'NUM_ORDER',
+            'PRIORITY',
+            'TRACKING_ID',
+            'TREATMENT_TYPE_ID',
+            'SESSION_CODE',
+            'TDL_TREATMENT_CODE',
+            'TDL_HEIN_CARD_NUMBER',
+            'TDL_PATIENT_ID',
+            'TDL_PATIENT_CODE',
+            'TDL_PATIENT_NAME',
+            'TDL_PATIENT_FIRST_NAME',
+            'TDL_PATIENT_LAST_NAME',
+            'TDL_PATIENT_DOB',
+            'TDL_PATIENT_IS_HAS_NOT_DAY_DOB',
+            'TDL_PATIENT_ADDRESS',
+            'TDL_PATIENT_GENDER_ID',
+            'TDL_PATIENT_GENDER_NAME',
+            'TDL_PATIENT_NATIONAL_NAME',
+            'TDL_HEIN_MEDI_ORG_CODE',
+            'TDL_HEIN_MEDI_ORG_NAME',
+            'TDL_TREATMENT_TYPE_ID',
+            'VIR_KIDNEY',
+            'TDL_PATIENT_TYPE_ID',
+            'IS_SEND_BARCODE_TO_LIS',
+            'CONSULTANT_LOGINNAME',
+            'CONSULTANT_USERNAME',
+            'IS_NOT_IN_DEBT',
+            'VIR_INTRUCTION_MONTH',
+            'BARCODE_LENGTH',
+            'TDL_SERVICE_IDS',
+            'TDL_PATIENT_NATIONAL_CODE',
+            'TDL_PATIENT_UNSIGNED_NAME',
+            'VIR_CREATE_DATE',
+        ];
+        $select_exp_mest = [
+            'ID',
+            'CREATE_TIME',
+            'MODIFY_TIME',
+            'CREATOR',
+            'MODIFIER',
+            'APP_CREATOR',
+            'APP_MODIFIER',
+            'IS_ACTIVE',
+            'IS_DELETE',
+            'EXP_MEST_CODE',
+            'EXP_MEST_TYPE_ID',
+            'EXP_MEST_STT_ID',
+            'MEDI_STOCK_ID',
+            'REQ_LOGINNAME',
+            'REQ_USERNAME',
+            'REQ_ROOM_ID',
+            'REQ_DEPARTMENT_ID',
+            'CREATE_DATE',
+            'LAST_EXP_LOGINNAME',
+            'LAST_EXP_USERNAME',
+            'LAST_EXP_TIME',
+            'FINISH_TIME',
+            'FINISH_DATE',
+            'SERVICE_REQ_ID',
+            'TDL_TOTAL_PRICE',
+            'TDL_SERVICE_REQ_CODE',
+            'TDL_INTRUCTION_TIME',
+            'TDL_INTRUCTION_DATE',
+            'TDL_TREATMENT_ID',
+            'TDL_TREATMENT_CODE',
+            'IS_EXPORT_EQUAL_APPROVE',
+            'TDL_PATIENT_ID',
+            'TDL_PATIENT_CODE',
+            'TDL_PATIENT_NAME',
+            'TDL_PATIENT_FIRST_NAME',
+            'TDL_PATIENT_LAST_NAME',
+            'TDL_PATIENT_DOB',
+            'TDL_PATIENT_IS_HAS_NOT_DAY_DOB',
+            'TDL_PATIENT_ADDRESS',
+            'TDL_PATIENT_GENDER_ID',
+            'TDL_PATIENT_GENDER_NAME',
+            'TDL_PATIENT_TYPE_ID',
+            'TDL_HEIN_CARD_NUMBER',
+            'EXP_MEST_SUB_CODE',
+            'LAST_APPROVAL_LOGINNAME',
+            'LAST_APPROVAL_USERNAME',
+            'LAST_APPROVAL_TIME',
+            'LAST_APPROVAL_DATE',
+            'TDL_PATIENT_NATIONAL_NAME',
+            'VIR_CREATE_MONTH',
+            'ICD_CODE',
+            'ICD_NAME',
+            'EXP_MEST_SUB_CODE_2',
+            'VIR_CREATE_YEAR',
+            'VIR_HEIN_CARD_PREFIX',
+            'PRIORITY',
+        ];
+        $select_exp_mest_medicine = [
+            'ID',
+                'CREATE_TIME',
+                'MODIFY_TIME',
+                'CREATOR',
+                'MODIFIER',
+                'APP_CREATOR',
+                'APP_MODIFIER',
+                'IS_ACTIVE',
+                'IS_DELETE',
+                'EXP_MEST_ID',
+                'MEDICINE_ID',
+                'TDL_MEDI_STOCK_ID',
+                'TDL_MEDICINE_TYPE_ID',
+                'IS_EXPORT',
+                'AMOUNT',
+                'PRICE',
+                'VAT_RATIO',
+                'NUM_ORDER',
+                'APPROVAL_LOGINNAME',
+                'APPROVAL_USERNAME',
+                'APPROVAL_TIME',
+                'APPROVAL_DATE',
+                'EXP_LOGINNAME',
+                'EXP_USERNAME',
+                'EXP_TIME',
+                'EXP_DATE',
+                'PATIENT_TYPE_ID',
+                'USE_TIME_TO',
+                'TUTORIAL',
+                'TDL_SERVICE_REQ_ID',
+                'TDL_TREATMENT_ID',
+                'VIR_PRICE',
+                'MORNING',
+                'EVENING',
+        ];
+        $exp_mest_medicine = $this->exp_mest_medicine::select($select_exp_mest_medicine);
+        $treatment = $this->treatment::select($select_treatment);
+        $service_req = $this->service_req::select($select_service_req);
+        $exp_mest = $this->exp_mest::select($select_exp_mest);
+        if ((isset($this->param_request['ApiData']['TreatmentId'])) && ($this->param_request['ApiData']['TreatmentId'] != null)) {
+            $treatment->where('id', $this->param_request['ApiData']['TreatmentId']);
+            $service_req->where('treatment_id', $this->param_request['ApiData']['TreatmentId']);
+            $exp_mest->where('tdl_treatment_id', $this->param_request['ApiData']['TreatmentId']);
+            $exp_mest_medicine->where('tdl_treatment_id', $this->param_request['ApiData']['TreatmentId']);
+        }
+        $param_treatment = [
+            'accident_hurts',
+            'adrs',
+            'allergy_cards',
+            'antibiotic_requests',
+            'appointment_servs',
+            'babys',
+            'cares',
+            'care_sums',
+            'carer_card_borrows',
+            'debates',
+            'department_trans',
+            'deposit_reqs',
+            'dhsts',
+            'exp_mest_maty_reqs',
+            'exp_mest_mety_reqs',
+            'hein_approvals',
+            'hiv_treatments',
+            'hold_returns',
+            'imp_mest_mate_reqs',
+            'imp_mest_medi_reqs',
+            'infusion_sums',
+            'medi_react_sums',
+            'medical_assessments',
+            'medicine_interactives',
+            'mr_check_summarys',
+            'obey_contraindis',
+            'patient_type_alters',
+            'prepares',
+            'reha_sums',
+            'sere_servs',
+            'service_reqs',
+            'severe_illness_infos',
+            'trackings',
+            'trans_reqs',
+            'transactions',
+            'transfusion_sums',
+            'treatment_bed_rooms',
+            'treatment_borrows',
+            'treatment_files',
+            'treatment_loggings',
+            'treatment_unlimits',
+            'tuberculosis_treats'
+        ];
+        $param_service_req = [
+            'bed_logs',
+            'drug_interventions',
+            'exam_sere_dires',
+            'exp_mests',
+            'ksk_drivers',
+            'his_ksk_driver_cars',
+            'ksk_generals',
+            'ksk_occupationals',
+            'ksk_others',
+            'ksk_over_eighteens',
+            'ksk_period_drivers',
+            'ksk_under_eighteens',
+            'sere_servs',
+            'sere_serv_exts',
+            'sere_serv_rations',
+            'service_req_matys',
+            'service_req_metys'
+        ];
+        $param_exp_mest = [
+            'exp_blty_services',
+            'exp_mest_bloods',
+            'exp_mest_blty_reqs',
+            'exp_mest_materials',
+            'exp_mest_maty_reqs',
+            'exp_mest_medicines',
+            'exp_mest_mety_reqs',
+            'exp_mest_users',
+            'sere_serv_teins',
+            'transaction_exps',
+            'vitamin_as'
+        ];
+        $param_exp_mest_medicine = [
+            'bcs_mety_req_dts',
+            'imp_mest_medi_reqs',
+            'medicine_beans'
+        ];
+
+        $data_treatment = $treatment->with($param_treatment)->first();
+        $data_service_req = $service_req->with($param_service_req)->get();
+        $data_exp_mest = $exp_mest->with($param_exp_mest)->get();
+        $data_exp_mest_medicine = $exp_mest_medicine->with($param_exp_mest_medicine)->get();
+
+        return response()->json([
+            'Data' => [
+                'Treatment' => $data_treatment,
+                'ServiceReqs' => $data_service_req,
+                'ExpMests' => $data_exp_mest,
+                'ExpMestMedicines' => $data_exp_mest_medicine
             ]
         ], 200);
     }

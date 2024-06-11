@@ -770,4 +770,8 @@ Route::group([
 
     // Service Req
     Route::get("v1/service-req", [HISController::class, "service_req"]);
+
+    // Tracking
+    Route::get("v1/tracking/get", [HISController::class, "tracking"]);
+    Route::get("v1/tracking/get-data", [HISController::class, "tracking_get_data"]);
 });
