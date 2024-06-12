@@ -3295,14 +3295,34 @@ class HISController extends Controller
     }
 
     /// Service Req
-    public function service_req($id = null, Request $request)
+    public function service_req_get_L_view($id = null, Request $request)
     {
+        // Khai báo các biến từ json param
+        $request_execute_room_id = $this->param_request['ApiData']['EXECUTE_ROOM_ID'] ?? null;
+        $request_service_req_stt_ids = $this->param_request['ApiData']['SERVICE_REQ_STT_IDs'] ?? null;
+        $request_not_in_service_req_type_ids = $this->param_request['ApiData']['NOT_IN_SERVICE_REQ_TYPE_IDs'] ?? null;
+        $request_tdl_patient_type_ids = $this->param_request['ApiData']['TDL_PATIENT_TYPE_IDs'] ?? null;
+        $request_intruction_date__equal = $this->param_request['ApiData']['INTRUCTION_DATE__EQUAL'] ?? null;
+        $request_intruction_time_from = $this->param_request['ApiData']['INTRUCTION_TIME_FROM'] ?? null;
+        $request_intruction_time_to = $this->param_request['ApiData']['INTRUCTION_TIME_TO'] ?? null;
+        $request_has_execute = $this->param_request['ApiData']['HAS_EXECUTE'] ?? null;
+        $request_is_not_ksk_requried_aproval__or__is_ksk_approve = $this->param_request['ApiData']['IS_NOT_KSK_REQURIED_APROVAL__OR__IS_KSK_APPROVE'] ?? null;
+        $request_order_field = $this->param_request['ApiData']['ORDER_FIELD'] ?? null;
+        $request_order_direction = $this->param_request['ApiData']['ORDER_DIRECTION'] ?? null;
+        $request_order_field1 = $this->param_request['ApiData']['ORDER_FIELD1'] ?? null;
+        $request_order_direction1 = $this->param_request['ApiData']['ORDER_DIRECTION1'] ?? null;
+        $request_order_field2 = $this->param_request['ApiData']['ORDER_FIELD2'] ?? null;
+        $request_order_direction2 = $this->param_request['ApiData']['ORDER_DIRECTION2'] ?? null;
+        $request_order_field3 = $this->param_request['ApiData']['ORDER_FIELD3'] ?? null;
+        $request_order_direction3 = $this->param_request['ApiData']['ORDER_DIRECTION3'] ?? null;
         // Kiểm tra xem User có quyền xem execute_room không
-        if ((isset($this->param_request['ApiData']['EXECUTE_ROOM_ID'])) && $this->param_request['ApiData']['EXECUTE_ROOM_ID'] != null) {
-            if (!view_service_req($this->param_request['ApiData']['EXECUTE_ROOM_ID'], $request->bearerToken(), $this->time)) {
+        if ( $request_execute_room_id != null) {
+            if (!view_service_req($request_execute_room_id, $request->bearerToken(), $this->time)) {
                 return response()->json(['message' => '403'], 403);
             }
         }
+
+        // Khai báo các trường cần select
         $select = [
             'id',
             'service_req_code',
@@ -3349,57 +3369,65 @@ class HISController extends Controller
             'icd_text',
             // 'order_time'
         ];
+
+        // Khởi tạo model
         $model = $this->service_req::select($select);
-        if ((isset($this->param_request['ApiData']['SERVICE_REQ_STT_IDs'])) && ($this->param_request['ApiData']['SERVICE_REQ_STT_IDs'] != null)) {
-            $model->whereIn('service_req_stt_id', $this->param_request['ApiData']['SERVICE_REQ_STT_IDs']);
+
+        // Lọc theo điều kiện của json param
+        if ($request_service_req_stt_ids != null) {
+            $model->whereIn('service_req_stt_id', $request_service_req_stt_ids);
         }
-        if ((isset($this->param_request['ApiData']['NOT_IN_SERVICE_REQ_TYPE_IDs'])) && ($this->param_request['ApiData']['NOT_IN_SERVICE_REQ_TYPE_IDs'] != null)) {
-            $model->whereNotIn('service_req_stt_id', $this->param_request['ApiData']['NOT_IN_SERVICE_REQ_TYPE_IDs']);
+        if ($request_not_in_service_req_type_ids != null) {
+            $model->whereNotIn('service_req_stt_id', $request_not_in_service_req_type_ids);
         }
-        if (isset($this->param_request['ApiData']['TDL_PATIENT_TYPE_IDs']) && ($this->param_request['ApiData']['TDL_PATIENT_TYPE_IDs'] != null)) {
-            $model->whereIn('tdl_patient_type_id', $this->param_request['ApiData']['TDL_PATIENT_TYPE_IDs']);
+        if ($request_tdl_patient_type_ids != null) {
+            $model->whereIn('tdl_patient_type_id', $request_tdl_patient_type_ids);
         }
-        if (isset($this->param_request['ApiData']['INTRUCTION_DATE__EQUAL']) && ($this->param_request['ApiData']['INTRUCTION_DATE__EQUAL'] != null)) {
-            $model->where('intruction_time', '=', $this->param_request['ApiData']['INTRUCTION_DATE__EQUAL']);
+        if ($request_intruction_date__equal != null) {
+            $model->where('intruction_time', '=',  $request_intruction_date__equal);
         } else {
-            if ((isset($this->param_request['ApiData']['INTRUCTION_TIME_FROM'])) && (isset($this->param_request['ApiData']['INTRUCTION_TIME_TO'])) && ($this->param_request['ApiData']['INTRUCTION_TIME_FROM'] != null) && ($this->param_request['ApiData']['INTRUCTION_TIME_TO'] != null)) {
-                $model->whereBetween('intruction_time', [$this->param_request['ApiData']['INTRUCTION_TIME_FROM'], $this->param_request['ApiData']['INTRUCTION_TIME_TO']]);
+            if (($request_intruction_time_from != null) && ($request_intruction_time_to != null)) {
+                $model->whereBetween('intruction_time', [$request_intruction_time_from, $request_intruction_time_to]);
             }
         }
-        if ((isset($this->param_request['ApiData']['SERVICE_REQ_STT_IDs'])) && ($this->param_request['ApiData']['SERVICE_REQ_STT_IDs'] != null)) {
-            $model->whereIn('service_req_stt_id', $this->param_request['ApiData']['SERVICE_REQ_STT_IDs']);
+        if ($request_service_req_stt_ids != null) {
+            $model->whereIn('service_req_stt_id', $request_service_req_stt_ids);
         }
-        if ((isset($this->param_request['ApiData']['EXECUTE_ROOM_ID'])) && $this->param_request['ApiData']['EXECUTE_ROOM_ID'] != null) {
-            $model->where('execute_room_id', '=', $this->param_request['ApiData']['EXECUTE_ROOM_ID']);
+        if ($request_execute_room_id != null) {
+            $model->where('execute_room_id', '=', $request_execute_room_id);
         }
-        if ((isset($this->param_request['ApiData']['HAS_EXECUTE']))) {
-            if ($this->param_request['ApiData']['HAS_EXECUTE']) {
-                $model->where('is_no_execute', '=', null);
-            } else {
-                $model->where('is_no_execute', '=', 1);
-            }
+        if ($request_has_execute != null) {
+            $model->where('is_no_execute', '=', null);
+        } else {
+            $model->where('is_no_execute', '=', 1);
         }
-        if ((isset($this->param_request['ApiData']['IS_NOT_KSK_REQURIED_APROVAL__OR__IS_KSK_APPROVE']))) {
-            $model->Where(function ($query) {
-                $query->where('tdl_ksk_is_required_approval', '!=', null)
-                    ->orWhere('tdl_is_ksk_approve', '=', null);
-            });
+        // if ($request_is_not_ksk_requried_aproval__or__is_ksk_approve) {
+        //     $model->Where(function ($query) {
+        //         $query->where('tdl_ksk_is_required_approval', '!=', null)
+        //             ->orWhere('tdl_is_ksk_approve', '=', null);
+        //     });
+        // }
+        if (($request_order_field != null) && ($request_order_direction != null)) {
+            $model->orderBy($request_order_field, $request_order_direction);
         }
-        if (($this->param_request['ApiData']['ORDER_FIELD']) && ($this->param_request['ApiData']['ORDER_DIRECTION']) && ($this->param_request['ApiData']['ORDER_FIELD'] != null) && ($this->param_request['ApiData']['ORDER_DIRECTION'] != null)) {
-            $model->orderBy($this->param_request['ApiData']['ORDER_FIELD'], $this->param_request['ApiData']['ORDER_DIRECTION']);
+        if (($request_order_field1 != null) && ($request_order_direction1 != null)) {
+            $model->orderBy($request_order_field1, $request_order_direction1);
         }
-        if (($this->param_request['ApiData']['ORDER_FIELD1']) && ($this->param_request['ApiData']['ORDER_DIRECTION1']) && ($this->param_request['ApiData']['ORDER_FIELD1'] != null) && ($this->param_request['ApiData']['ORDER_DIRECTION1'] != null)) {
-            $model->orderBy($this->param_request['ApiData']['ORDER_FIELD1'], $this->param_request['ApiData']['ORDER_DIRECTION1']);
+        if (($request_order_field2 != null) && ($request_order_direction2 != null)) {
+            $model->orderBy($request_order_field2, $request_order_direction2);
         }
-        if (($this->param_request['ApiData']['ORDER_FIELD2']) && ($this->param_request['ApiData']['ORDER_DIRECTION2']) && ($this->param_request['ApiData']['ORDER_FIELD2'] != null) && ($this->param_request['ApiData']['ORDER_DIRECTION2'] != null)) {
-            $model->orderBy($this->param_request['ApiData']['ORDER_FIELD2'], $this->param_request['ApiData']['ORDER_DIRECTION2']);
+        if (($request_order_field3 != null) && ($request_order_direction3 != null)) {
+            $model->orderBy($request_order_field3, $request_order_direction3);
         }
-        if (($this->param_request['ApiData']['ORDER_FIELD3']) && ($this->param_request['ApiData']['ORDER_DIRECTION3']) && ($this->param_request['ApiData']['ORDER_FIELD3'] != null) && ($this->param_request['ApiData']['ORDER_DIRECTION3'] != null)) {
-            $model->orderBy($this->param_request['ApiData']['ORDER_FIELD3'], $this->param_request['ApiData']['ORDER_DIRECTION3']);
-        }
+
+        // Khai báo các bảng liên kết
         $param = [];
+
+        // Lấy dữ liệu
         $count = $model->count();
         $data = $model->skip($this->start)->take($this->limit)->with($param)->get();
+
+        // Trả về dữ liệu
         return response()->json([
             'data' =>
             $data,

@@ -769,7 +769,7 @@ Route::group([
     Route::get("v1/debate-type/{id}", [HISController::class, "debate_type"]);
 
     // Service Req
-    Route::get("v1/service-req", [HISController::class, "service_req"]);
+    Route::get("v1/service-req/get-L-view", [HISController::class, "service_req_get_L_view"]);
 
     // Tracking
     Route::get("v1/tracking/get", [HISController::class, "tracking"]);
