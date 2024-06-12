@@ -3414,6 +3414,7 @@ class HISController extends Controller
     // Tracking
     public function tracking(Request $request)
     {
+        // Khai báo các biến lấy từ json param
         $request_treatment_ids = $this->param_request['ApiData']['TREATMENT_IDs'] ?? null;
         $request_treatment_id = $this->param_request['ApiData']['TREATMENT_ID'] ?? null;
         $request_create_time_to = $this->param_request['ApiData']['CREATE_TIME_TO'] ?? null;
@@ -3421,6 +3422,7 @@ class HISController extends Controller
         $request_order_field = $this->param_request['ApiData']['ORDER_FIELD'] ?? null;
         $request_order_direction = $this->param_request['ApiData']['ORDER_DIRECTION'] ?? null;
 
+        // Khai báo các trường cần select
         $select = [
             'id',
             'create_time',
@@ -3441,11 +3443,15 @@ class HISController extends Controller
             'emr_document_stt_id',
             'content',
         ];
+
+        // Khởi tạo, gán các model vào các biến 
         $model = $this->tracking::select($select);
+
+        // Kiểm tra các điều kiện từ json param
         if ($request_treatment_ids != null) {
             $model->whereIn('treatment_id',  $request_treatment_ids);
-        }else{
-            if ( $request_treatment_id != null) {
+        } else {
+            if ($request_treatment_id != null) {
                 $model->where('treatment_id', $request_treatment_id);
             }
         }
@@ -3458,14 +3464,20 @@ class HISController extends Controller
         if (($request_order_field != null) && ($request_order_direction != null)) {
             $model->orderBy($request_order_field, $request_order_direction);
         }
+
+        // Khai báo các bảng liên kết dùng cho with()
         $param = [
             'cares',
             'debates',
             'Dhsts',
             'service_reqs'
         ];
+
+        // Lấy dữ liệu
         $count = $model->count();
         $data = $model->skip($this->start)->take($this->limit)->with($param)->get();
+
+        // Trả về dữ liệu
         return response()->json([
             'data' =>
             $data,
@@ -4008,6 +4020,9 @@ class HISController extends Controller
             'material_beans'
         ];
         $param_sere_serv = [
+            'exp_mest_bloods',
+            'exp_mest_materials',
+            'exp_mest_medicines',
             'sere_serv_bills',
             'sere_serv_debts',
             'sere_serv_deposits',
@@ -4079,6 +4094,145 @@ class HISController extends Controller
                     'TrackingId' => $request_tracking_id,
                     'TreatmentId' => $request_treatment_id,
                 ]
+            ]
+        ], 200);
+    }
+
+    // Sere Serv
+    public function sere_serv(Request $request)
+    {
+        // Khai báo các biến lấy từ json param
+        $request_id = $this->param_request['ApiData']['ID'] ?? null;
+        $request_service_req_id = $this->param_request['ApiData']['SERVICE_REQ_ID'] ?? null;
+        $request_service_type_id = $this->param_request['ApiData']['SERVICE_TYPE_ID'] ?? null;
+        $request_order_field = $this->param_request['ApiData']['ORDER_FIELD'] ?? null;
+        $request_order_direction = $this->param_request['ApiData']['ORDER_DIRECTION'] ?? null;
+        $request_service_req_ids = $this->param_request['ApiData']['SERVICE_REQ_IDs'] ?? null;
+        $request_treatment_id = $this->param_request['ApiData']['TREATMENT_ID'] ?? null;
+        $request_is_include_deleted = $this->param_request['ApiData']['IS_INCLUDE_DELETED'] ?? null;
+
+        // Khai báo các trường cần select
+        $select = [
+            "ID",
+            "CREATE_TIME",
+            "MODIFY_TIME",
+            "CREATOR",
+            "MODIFIER",
+            "APP_CREATOR",
+            "APP_MODIFIER",
+            "IS_ACTIVE",
+            "IS_DELETE",
+            "SERVICE_ID",
+            "SERVICE_REQ_ID",
+            "PATIENT_TYPE_ID",
+            "PRIMARY_PRICE",
+            "AMOUNT",
+            "PRICE",
+            "ORIGINAL_PRICE",
+            "VAT_RATIO",
+            "MEDICINE_ID",
+            "EXP_MEST_MEDICINE_ID",
+            "TDL_INTRUCTION_TIME",
+            "TDL_INTRUCTION_DATE",
+            "TDL_PATIENT_ID",
+            "TDL_TREATMENT_ID",
+            "TDL_TREATMENT_CODE",
+            "TDL_SERVICE_CODE",
+            "TDL_SERVICE_NAME",
+            "TDL_HEIN_SERVICE_BHYT_NAME",
+            "TDL_SERVICE_TYPE_ID",
+            "TDL_SERVICE_UNIT_ID",
+            "TDL_HEIN_SERVICE_TYPE_ID",
+            "TDL_ACTIVE_INGR_BHYT_CODE",
+            "TDL_ACTIVE_INGR_BHYT_NAME",
+            "TDL_MEDICINE_CONCENTRA",
+            "TDL_MEDICINE_REGISTER_NUMBER",
+            "TDL_MEDICINE_PACKAGE_NUMBER",
+            "TDL_SERVICE_REQ_CODE",
+            "TDL_REQUEST_ROOM_ID",
+            "TDL_REQUEST_DEPARTMENT_ID",
+            "TDL_REQUEST_LOGINNAME",
+            "TDL_REQUEST_USERNAME",
+            "TDL_EXECUTE_ROOM_ID",
+            "TDL_EXECUTE_DEPARTMENT_ID",
+            "TDL_EXECUTE_BRANCH_ID",
+            "TDL_SERVICE_REQ_TYPE_ID",
+            "TDL_HST_BHYT_CODE",
+            "VIR_PRICE",
+            "VIR_PRICE_NO_ADD_PRICE",
+            "VIR_PRICE_NO_EXPEND",
+            "VIR_HEIN_PRICE",
+            "VIR_PATIENT_PRICE",
+            "VIR_PATIENT_PRICE_BHYT",
+            "VIR_TOTAL_PRICE",
+            "VIR_TOTAL_PRICE_NO_ADD_PRICE",
+            "VIR_TOTAL_PRICE_NO_EXPEND",
+            "VIR_TOTAL_HEIN_PRICE",
+            "VIR_TOTAL_PATIENT_PRICE",
+            "VIR_TOTAL_PATIENT_PRICE_BHYT",
+            "VIR_TOTAL_PATIENT_PRICE_NO_DC",
+            "VIR_TOTAL_PATIENT_PRICE_TEMP",
+        ];
+
+        // Khởi tạo, gán các model vào các biến 
+        $model = $this->sere_serv::select($select);
+
+        // Kiểm tra các điều kiện từ json param
+        if($request_id != null){
+            $model->where('id', $request_id);
+        }else{
+            if ($request_service_req_ids != null) {
+                $model->whereIn('service_req_id',  $request_service_req_ids);
+            } else {
+                if ($request_service_req_id != null) {
+                    $model->where('service_req_id', $request_service_req_id);
+                }
+            }
+            if ($request_treatment_id != null) {
+                $model->where('tdl_treatment_id', $request_treatment_id);
+            }
+            if ($request_service_type_id != null) {
+                $model->where('tdl_service_type_id', $request_service_type_id);
+            }
+        }
+        if (!$request_is_include_deleted) {
+            $model->where('is_delete', 0);
+        }
+        if (($request_order_field != null) && ($request_order_direction != null)) {
+            $model->orderBy($request_order_field, $request_order_direction);
+        }
+
+        // Khai báo các bảng liên kết dùng cho with()
+        $param = [
+            'exp_mest_bloods',
+            'exp_mest_materials',
+            'exp_mest_medicines',
+            'sere_serv_bills',
+            'sere_serv_debts',
+            'sere_serv_deposits',
+            'sere_serv_files',
+            'sere_serv_matys',
+            'sere_serv_pttts',
+            'sere_serv_rehas',
+            'sere_serv_suins',
+            'sere_serv_teins',
+            'service_change_reqs',
+            'sese_depo_repays',
+            'sese_trans_reqs'
+        ];
+
+        // Lấy dữ liệu
+        $count = $model->count();
+        $data = $model->skip($this->start)->take($this->limit)->with($param)->get();
+
+        // Trả về dữ liệu
+        return response()->json([
+            'data' =>
+            $data,
+            'Param' => [
+                'Start' => $this->start,
+                'Limit' => $this->limit,
+                'Count' => $count
             ]
         ], 200);
     }

@@ -62,4 +62,16 @@ class SereServ extends Model
     {
         return $this->hasMany(SeseTransReq::class);
     }
+    public function exp_mest_bloods()
+    {
+        return $this->hasManyThrough(ExpMestBlood::class, ExpMest::class, 'service_req_id', 'exp_mest_id', 'service_req_id', 'id');
+    }
+    public function exp_mest_materials()
+    {
+        return $this->hasManyThrough(ExpMestMaterial::class, ExpMest::class, 'service_req_id', 'exp_mest_id', 'service_req_id', 'id');
+    }
+    public function exp_mest_medicines()
+    {
+        return $this->hasManyThrough(ExpMestMedicine::class, ExpMest::class, 'service_req_id', 'exp_mest_id', 'service_req_id', 'id');
+    }
 }
