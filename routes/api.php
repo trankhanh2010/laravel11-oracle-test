@@ -774,4 +774,8 @@ Route::group([
     // Tracking
     Route::get("v1/tracking/get", [HISController::class, "tracking"]);
     Route::get("v1/tracking/get-data", [HISController::class, "tracking_get_data"]);
+
+    // Sere Serv
+    Route::get("v1/sere-serv/get", [HISController::class, "sere_serv"]);
+
 });

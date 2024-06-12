@@ -130,6 +130,13 @@ use App\Models\HIS\DebateInviteUser;
 use App\Models\HIS\ServiceReq;
 use App\Models\HIS\ExpMest;
 use App\Models\HIS\ExpMestMedicine;
+use App\Models\HIS\ExpMestMaterial;
+use App\Models\HIS\ImpMest;
+use App\Models\HIS\SereServExt;
+use App\Models\HIS\SereServ;
+use App\Models\HIS\Dhst;
+use App\Models\HIS\Care;
+
 class HISController extends Controller
 {
     protected $data = [];
@@ -385,6 +392,18 @@ class HISController extends Controller
     protected $exp_mest_name = 'exp_mest';
     protected $exp_mest_medicine;
     protected $exp_mest_medicine_name = 'exp_mest_medicine';
+    protected $exp_mest_material;
+    protected $exp_mest_material_name = 'exp_mest_material';
+    protected $imp_mest;
+    protected $imp_mest_name = 'imp_mest';
+    protected $sere_serv_ext;
+    protected $sere_serv_ext_name = 'sere_serv_ext';
+    protected $sere_serv;
+    protected $sere_serv_name = 'sere_serv';
+    protected $dhst;
+    protected $dhst_name = 'dhst';
+    protected $care;
+    protected $care_name = 'care';
     public function __construct(Request $request)
     {
         // Khai báo các biến
@@ -393,9 +412,12 @@ class HISController extends Controller
         $this->per_page = $request->query('perPage', 50);
         $this->page = $request->query('page', 1);
         $this->start = $this->param_request['CommonParam']['Start'] ?? 0;
-        $this->limit = $this->param_request['CommonParam']['Limit'] ?? 1000;
-        if ($this->limit > 1000) {
-            $this->limit = 1000;
+        $this->limit = $this->param_request['CommonParam']['Limit'] ?? 100;
+        if ($this->start < 0) {
+            $this->start = 0;
+        }
+        if ($this->limit > 100) {
+            $this->limit = 100;
         }
 
         // Khởi tạo các model
@@ -522,6 +544,12 @@ class HISController extends Controller
         $this->service_req = new ServiceReq();
         $this->exp_mest = new ExpMest();
         $this->exp_mest_medicine = new ExpMestMedicine();
+        $this->exp_mest_material = new ExpMestMaterial();
+        $this->imp_mest = new ImpMest();
+        $this->sere_serv_ext = new SereServExt();
+        $this->sere_serv = new SereServ();
+        $this->dhst = new Dhst();
+        $this->care = new Care();
     }
 
     /// Department
@@ -3386,6 +3414,13 @@ class HISController extends Controller
     // Tracking
     public function tracking(Request $request)
     {
+        $request_treatment_ids = $this->param_request['ApiData']['TREATMENT_IDs'] ?? null;
+        $request_treatment_id = $this->param_request['ApiData']['TREATMENT_ID'] ?? null;
+        $request_create_time_to = $this->param_request['ApiData']['CREATE_TIME_TO'] ?? null;
+        $request_is_include_deleted = $this->param_request['ApiData']['IS_INCLUDE_DELETED'] ?? null;
+        $request_order_field = $this->param_request['ApiData']['ORDER_FIELD'] ?? null;
+        $request_order_direction = $this->param_request['ApiData']['ORDER_DIRECTION'] ?? null;
+
         $select = [
             'id',
             'create_time',
@@ -3407,22 +3442,21 @@ class HISController extends Controller
             'content',
         ];
         $model = $this->tracking::select($select);
-        if ((isset($this->param_request['ApiData']['TREATMENT_IDs'])) && ($this->param_request['ApiData']['TREATMENT_IDs'] != null)) {
-            $model->whereIn('treatment_id', $this->param_request['ApiData']['TREATMENT_IDs']);
-        }
-        if ((isset($this->param_request['ApiData']['TREATMENT_ID'])) && ($this->param_request['ApiData']['TREATMENT_ID'] != null)) {
-            $model->where('treatment_id', $this->param_request['ApiData']['TREATMENT_ID']);
-        }
-        if ((isset($this->param_request['ApiData']['CREATE_TIME_TO'])) && ($this->param_request['ApiData']['CREATE_TIME_TO'] != null)) {
-            $model->where('create_time', $this->param_request['ApiData']['CREATE_TIME_TO']);
-        }
-        if ((isset($this->param_request['ApiData']['IS_INCLUDE_DELETED']))) {
-            if (!($this->param_request['ApiData']['IS_INCLUDE_DELETED'])) {
-                $model->where('is_delete', 0);
+        if ($request_treatment_ids != null) {
+            $model->whereIn('treatment_id',  $request_treatment_ids);
+        }else{
+            if ( $request_treatment_id != null) {
+                $model->where('treatment_id', $request_treatment_id);
             }
         }
-        if (($this->param_request['ApiData']['ORDER_FIELD']) && ($this->param_request['ApiData']['ORDER_DIRECTION']) && ($this->param_request['ApiData']['ORDER_FIELD'] != null) && ($this->param_request['ApiData']['ORDER_DIRECTION'] != null)) {
-            $model->orderBy($this->param_request['ApiData']['ORDER_FIELD'], $this->param_request['ApiData']['ORDER_DIRECTION']);
+        if ($request_create_time_to != null) {
+            $model->where('create_time', $request_create_time_to);
+        }
+        if (!$request_is_include_deleted) {
+            $model->where('is_delete', 0);
+        }
+        if (($request_order_field != null) && ($request_order_direction != null)) {
+            $model->orderBy($request_order_field, $request_order_direction);
         }
         $param = [
             'cares',
@@ -3445,6 +3479,13 @@ class HISController extends Controller
 
     public function tracking_get_data(Request $request)
     {
+        // Khai báo các biến lấy từ json param
+        $request_treatment_id = $this->param_request['ApiData']['TreatmentId'] ?? null;
+        $request_tracking_id = $this->param_request['ApiData']['TrackingId'] ?? null;
+        $request_include_material = $this->param_request['ApiData']['IncludeMaterial'] ?? null;
+        $request_include_blood_pres = $this->param_request['ApiData']['IncludeBloodPres'] ?? null;
+
+        // Khai báo các trường cần select
         $select_treatment = [
             'id',
             'create_time',
@@ -3664,52 +3705,221 @@ class HISController extends Controller
             'VIR_HEIN_CARD_PREFIX',
             'PRIORITY',
         ];
+        $select_imp_mest = [];
         $select_exp_mest_medicine = [
             'ID',
-                'CREATE_TIME',
-                'MODIFY_TIME',
-                'CREATOR',
-                'MODIFIER',
-                'APP_CREATOR',
-                'APP_MODIFIER',
-                'IS_ACTIVE',
-                'IS_DELETE',
-                'EXP_MEST_ID',
-                'MEDICINE_ID',
-                'TDL_MEDI_STOCK_ID',
-                'TDL_MEDICINE_TYPE_ID',
-                'IS_EXPORT',
-                'AMOUNT',
-                'PRICE',
-                'VAT_RATIO',
-                'NUM_ORDER',
-                'APPROVAL_LOGINNAME',
-                'APPROVAL_USERNAME',
-                'APPROVAL_TIME',
-                'APPROVAL_DATE',
-                'EXP_LOGINNAME',
-                'EXP_USERNAME',
-                'EXP_TIME',
-                'EXP_DATE',
-                'PATIENT_TYPE_ID',
-                'USE_TIME_TO',
-                'TUTORIAL',
-                'TDL_SERVICE_REQ_ID',
-                'TDL_TREATMENT_ID',
-                'VIR_PRICE',
-                'MORNING',
-                'EVENING',
+            'CREATE_TIME',
+            'MODIFY_TIME',
+            'CREATOR',
+            'MODIFIER',
+            'APP_CREATOR',
+            'APP_MODIFIER',
+            'IS_ACTIVE',
+            'IS_DELETE',
+            'EXP_MEST_ID',
+            'MEDICINE_ID',
+            'TDL_MEDI_STOCK_ID',
+            'TDL_MEDICINE_TYPE_ID',
+            'IS_EXPORT',
+            'AMOUNT',
+            'PRICE',
+            'VAT_RATIO',
+            'NUM_ORDER',
+            'APPROVAL_LOGINNAME',
+            'APPROVAL_USERNAME',
+            'APPROVAL_TIME',
+            'APPROVAL_DATE',
+            'EXP_LOGINNAME',
+            'EXP_USERNAME',
+            'EXP_TIME',
+            'EXP_DATE',
+            'PATIENT_TYPE_ID',
+            'USE_TIME_TO',
+            'TUTORIAL',
+            'TDL_SERVICE_REQ_ID',
+            'TDL_TREATMENT_ID',
+            'VIR_PRICE',
+            'MORNING',
+            'EVENING',
         ];
-        $exp_mest_medicine = $this->exp_mest_medicine::select($select_exp_mest_medicine);
+        $select_exp_mest_material = [
+            'ID',
+            'CREATE_TIME',
+            'MODIFY_TIME',
+            'CREATOR',
+            'MODIFIER',
+            'APP_CREATOR',
+            'APP_MODIFIER',
+            'IS_ACTIVE',
+            'IS_DELETE',
+            'EXP_MEST_ID',
+            'MATERIAL_ID',
+            'TDL_MEDI_STOCK_ID',
+            'TDL_MATERIAL_TYPE_ID',
+            'TDL_AGGR_EXP_MEST_ID',
+            'IS_EXPORT',
+            'AMOUNT',
+            'PRICE',
+            'VAT_RATIO',
+            'NUM_ORDER',
+            'APPROVAL_LOGINNAME',
+            'APPROVAL_USERNAME',
+            'APPROVAL_TIME',
+            'APPROVAL_DATE',
+            'EXP_LOGINNAME',
+            'EXP_USERNAME',
+            'EXP_TIME',
+            'EXP_DATE',
+            'PATIENT_TYPE_ID',
+            'TDL_SERVICE_REQ_ID',
+            'TDL_TREATMENT_ID',
+            'EQUIPMENT_SET_ORDER',
+            'VIR_PRICE',
+        ];
+        $select_sere_serv = [
+            "ID",
+            "CREATE_TIME",
+            "MODIFY_TIME",
+            "CREATOR",
+            "APP_CREATOR",
+            "APP_MODIFIER",
+            "IS_ACTIVE",
+            "IS_DELETE",
+            "SERVICE_ID",
+            "SERVICE_REQ_ID",
+            "PATIENT_TYPE_ID",
+            "PRIMARY_PATIENT_TYPE_ID",
+            "PRIMARY_PRICE",
+            "LIMIT_PRICE",
+            "HEIN_APPROVAL_ID",
+            "JSON_PATIENT_TYPE_ALTER",
+            "AMOUNT",
+            "PRICE",
+            "ORIGINAL_PRICE",
+            "HEIN_PRICE",
+            "HEIN_RATIO",
+            "HEIN_LIMIT_PRICE",
+            "VAT_RATIO",
+            "HEIN_CARD_NUMBER",
+            "TDL_INTRUCTION_TIME",
+            "TDL_INTRUCTION_DATE",
+            "TDL_PATIENT_ID",
+            "TDL_TREATMENT_ID",
+            "TDL_TREATMENT_CODE",
+            "TDL_SERVICE_CODE",
+            "TDL_SERVICE_NAME",
+            "TDL_HEIN_SERVICE_BHYT_CODE",
+            "TDL_HEIN_SERVICE_BHYT_NAME",
+            "TDL_SERVICE_TYPE_ID",
+            "TDL_SERVICE_UNIT_ID",
+            "TDL_HEIN_SERVICE_TYPE_ID",
+            "TDL_SERVICE_REQ_CODE",
+            "TDL_REQUEST_ROOM_ID",
+            "TDL_REQUEST_DEPARTMENT_ID",
+            "TDL_REQUEST_LOGINNAME",
+            "TDL_REQUEST_USERNAME",
+            "TDL_EXECUTE_ROOM_ID",
+            "TDL_EXECUTE_DEPARTMENT_ID",
+            "TDL_EXECUTE_BRANCH_ID",
+            "TDL_SERVICE_REQ_TYPE_ID",
+            "TDL_HST_BHYT_CODE",
+            "TDL_IS_MAIN_EXAM",
+            "VIR_PRICE",
+            "VIR_PRICE_NO_ADD_PRICE",
+            "VIR_PRICE_NO_EXPEND",
+            "VIR_HEIN_PRICE",
+            "VIR_PATIENT_PRICE",
+            "VIR_PATIENT_PRICE_BHYT",
+            "VIR_TOTAL_PRICE",
+            "VIR_TOTAL_PRICE_NO_ADD_PRICE",
+            "VIR_TOTAL_PRICE_NO_EXPEND",
+            "VIR_TOTAL_HEIN_PRICE",
+            "VIR_TOTAL_PATIENT_PRICE",
+            "VIR_TOTAL_PATIENT_PRICE_BHYT",
+            "VIR_TOTAL_PATIENT_PRICE_NO_DC",
+            "VIR_TOTAL_PATIENT_PRICE_TEMP",
+        ];
+        $select_sere_serv_ext = [
+            "ID",
+            "CREATE_TIME",
+            "MODIFY_TIME",
+            "MODIFIER",
+            "APP_MODIFIER",
+            "IS_ACTIVE",
+            "IS_DELETE",
+            "SERE_SERV_ID",
+            "CONCLUDE",
+            "JSON_PRINT_ID",
+            "DESCRIPTION_SAR_PRINT_ID",
+            "NUMBER_OF_FILM",
+            "BEGIN_TIME",
+            "END_TIME",
+            "TDL_SERVICE_REQ_ID",
+            "TDL_TREATMENT_ID",
+            "SUBCLINICAL_RESULT_USERNAME",
+            "SUBCLINICAL_RESULT_LOGINNAME",
+            "DESCRIPTION"
+        ];
+        $select_dhst = [
+            "ID",
+            "CREATE_TIME",
+            "MODIFY_TIME",
+            "CREATOR",
+            "MODIFIER",
+            "APP_CREATOR",
+            "APP_MODIFIER",
+            "IS_ACTIVE",
+            "IS_DELETE",
+            "TREATMENT_ID",
+            "EXECUTE_ROOM_ID",
+            "EXECUTE_LOGINNAME",
+            "EXECUTE_USERNAME",
+            "EXECUTE_TIME",
+            "WEIGHT",
+            "HEIGHT",
+            "BLOOD_PRESSURE_MAX",
+            "BLOOD_PRESSURE_MIN",
+            "PULSE",
+            "VIR_BMI",
+            "VIR_BODY_SURFACE_AREA",
+        ];
+        $select_care = [];
+
+        // Khởi tạo, gán các model vào các biến 
+        $tracking = $this->tracking;
         $treatment = $this->treatment::select($select_treatment);
         $service_req = $this->service_req::select($select_service_req);
         $exp_mest = $this->exp_mest::select($select_exp_mest);
-        if ((isset($this->param_request['ApiData']['TreatmentId'])) && ($this->param_request['ApiData']['TreatmentId'] != null)) {
-            $treatment->where('id', $this->param_request['ApiData']['TreatmentId']);
-            $service_req->where('treatment_id', $this->param_request['ApiData']['TreatmentId']);
-            $exp_mest->where('tdl_treatment_id', $this->param_request['ApiData']['TreatmentId']);
-            $exp_mest_medicine->where('tdl_treatment_id', $this->param_request['ApiData']['TreatmentId']);
+        $imp_mest = $this->imp_mest::select();
+        $exp_mest_medicine = $this->exp_mest_medicine::select($select_exp_mest_medicine);
+        if ($request_include_material) {
+            $exp_mest_material = $this->exp_mest_material::select($select_exp_mest_material);
         }
+        $sere_serv = $this->sere_serv::select($select_sere_serv);
+        $sere_serv_ext = $this->sere_serv_ext::select($select_sere_serv_ext);
+        $dhst = $this->dhst::select($select_dhst);
+        $care = $this->care::select();
+        // Kiểm tra các điều kiện từ json param
+        if (($request_treatment_id != null) || ($request_tracking_id != null)) {
+            // Nếu có Tracking_id thì lấy Treatment_id từ Tracking_id
+            if (($request_tracking_id != null)) {
+                $request_treatment_id = $tracking::find($request_tracking_id)->treatment_id;
+            }
+            $treatment->find($request_treatment_id);
+            $service_req->where('treatment_id', $request_treatment_id);
+            $exp_mest->where('tdl_treatment_id', $request_treatment_id);
+            $imp_mest->where('tdl_treatment_id', $request_treatment_id);
+            $exp_mest_medicine->where('tdl_treatment_id', $request_treatment_id);
+            if ($request_include_material) {
+                $exp_mest_material->where('tdl_treatment_id', $request_treatment_id);
+            }
+            $sere_serv->where('tdl_treatment_id', $request_treatment_id);
+            $sere_serv_ext->where('tdl_treatment_id', $request_treatment_id);
+            $dhst->where('treatment_id', $request_treatment_id);
+            $care->where('treatment_id', $request_treatment_id);
+        }
+
+        // Khai báo các bảng liên kết dùng cho with()
         $param_treatment = [
             'accident_hurts',
             'adrs',
@@ -3752,7 +3962,7 @@ class HISController extends Controller
             'treatment_files',
             'treatment_loggings',
             'treatment_unlimits',
-            'tuberculosis_treats'
+            'tuberculosis_treats',
         ];
         $param_service_req = [
             'bed_logs',
@@ -3786,23 +3996,89 @@ class HISController extends Controller
             'transaction_exps',
             'vitamin_as'
         ];
+        $param_imp_mest = [];
         $param_exp_mest_medicine = [
             'bcs_mety_req_dts',
             'imp_mest_medi_reqs',
             'medicine_beans'
         ];
-
+        $param_exp_mest_material = [
+            'bcs_maty_req_dts',
+            'imp_mest_mate_reqs',
+            'material_beans'
+        ];
+        $param_sere_serv = [
+            'sere_serv_bills',
+            'sere_serv_debts',
+            'sere_serv_deposits',
+            'sere_serv_files',
+            'sere_serv_matys',
+            'sere_serv_pttts',
+            'sere_serv_rehas',
+            'sere_serv_suins',
+            'sere_serv_teins',
+            'service_change_reqs',
+            'sese_depo_repays',
+            'sese_trans_reqs'
+        ];
+        $param_sere_serv_ext = [];
+        $param_dhst = [
+            'antibiotic_requests',
+            'cares',
+            'ksk_generals',
+            'ksk_occupationals',
+            'service_reqs'
+        ];
+        $param_care = [];
+        // Lấy dữ liệu
         $data_treatment = $treatment->with($param_treatment)->first();
         $data_service_req = $service_req->with($param_service_req)->get();
         $data_exp_mest = $exp_mest->with($param_exp_mest)->get();
+        $data_imp_mest = $imp_mest->with($param_imp_mest)->get();
         $data_exp_mest_medicine = $exp_mest_medicine->with($param_exp_mest_medicine)->get();
+        if ($request_include_material) {
+            $data_exp_mest_material = $exp_mest_material->with($param_exp_mest_material)->get();
+            $data_imp_mest_material  = $this->treatment::find($request_treatment_id)->imp_mest_materials()->get();
+        }
+        if ($request_include_blood_pres) {
+            $data_imp_mest_blood  = $this->treatment::find($request_treatment_id)->imp_mest_bloods()->get();
+        }
+        $data_imp_mest_medicine  = $this->treatment::find($request_treatment_id)->imp_mest_medicines()->get();
+        $data_service_req_mety  = $this->treatment::find($request_treatment_id)->service_req_metys()->get();
+        $data_service_req_maty  = $this->treatment::find($request_treatment_id)->service_req_matys()->get();
+        $data_sere_serv_ration = $this->treatment::find($request_treatment_id)->sere_serv_rations()->get();
+        $data_sere_serv = $sere_serv->with($param_sere_serv)->get();
+        $data_sere_serv_ext = $sere_serv_ext->with($param_sere_serv_ext)->get();
+        $data_exp_mest_blty_req = $this->treatment::find($request_treatment_id)->exp_mest_blty_reqs()->get();
+        $data_dhst = $dhst->with($param_dhst)->get();
+        $data_care = $care->with($param_care)->get();
+        $data_care_detail  = $this->treatment::find($request_treatment_id)->care_details()->get();
 
+        // Trả về dữ liệu
         return response()->json([
             'Data' => [
                 'Treatment' => $data_treatment,
                 'ServiceReqs' => $data_service_req,
                 'ExpMests' => $data_exp_mest,
-                'ExpMestMedicines' => $data_exp_mest_medicine
+                'ImpMests' => $data_imp_mest,
+                'ExpMestMedicines' => $data_exp_mest_medicine,
+                'ExpMestMaterials' => $data_exp_mest_material ?? null,
+                'ImpMestMedicines' => $data_imp_mest_medicine,
+                'ImpMestMaterials' => $data_imp_mest_material ?? null,
+                'ImpMestBloods' => $data_imp_mest_blood ?? null,
+                'ServiceReqMetys' => $data_service_req_mety,
+                'ServiceReqMatys' => $data_service_req_maty,
+                'SereServRations' => $data_sere_serv_ration,
+                'ExpMestBltyReqs' => $data_exp_mest_blty_req,
+                'SereServs' => $data_sere_serv,
+                'SereServExt' => $data_sere_serv_ext,
+                'DHSTs' => $data_dhst,
+                'Cares' => $data_care,
+                'CareDetails' => $data_care_detail,
+                'Param' => [
+                    'TrackingId' => $request_tracking_id,
+                    'TreatmentId' => $request_treatment_id,
+                ]
             ]
         ], 200);
     }

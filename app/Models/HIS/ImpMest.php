@@ -6,13 +6,18 @@ use App\Traits\dinh_dang_ten_truong;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Care extends Model
+class ImpMest extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_Care';
+    protected $table = 'HIS_IMP_MEST';
     protected $fillable = [
 
     ];
-    
+    public function imp_mest_medicines()
+    {
+        return $this->hasMany(ImpMestMedicine::class);
+    }
 }
+
+

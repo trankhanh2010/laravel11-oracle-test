@@ -186,4 +186,40 @@ class Treatment extends Model
     {
         return $this->hasMany(ExpMest::class);
     }
+    public function imp_mests()
+    {
+        return $this->hasMany(ImpMest::class, 'TDL_treatment_id');
+    }
+    public function imp_mest_medicines()
+    {
+        return $this->hasManyThrough(ImpMestMedicine::class, ImpMest::class, 'tdl_treatment_id', 'imp_mest_id', 'id', 'id' );
+    }
+    public function imp_mest_materials()
+    {
+        return $this->hasManyThrough(ImpMestMaterial::class, ImpMest::class, 'tdl_treatment_id', 'imp_mest_id', 'id', 'id' );
+    }
+    public function imp_mest_bloods()
+    {
+        return $this->hasManyThrough(ImpMestBlood::class, ImpMest::class, 'tdl_treatment_id', 'imp_mest_id', 'id', 'id' );
+    }
+    public function service_req_metys()
+    {
+        return $this->hasMany(ServiceReqMety::class, 'TDL_treatment_id');
+    }
+    public function service_req_matys()
+    {
+        return $this->hasMany(ServiceReqMaty::class, 'TDL_treatment_id');
+    }
+    public function sere_serv_rations()
+    {
+        return $this->hasManyThrough(SereServRation::class, SereServ::class, 'tdl_treatment_id', 'service_req_id');
+    }
+    public function exp_mest_blty_reqs()
+    {
+        return $this->hasManyThrough(ExpMestBltyReq::class, ExpMest::class, 'tdl_treatment_id', 'exp_mest_id');
+    }
+    public function care_details()
+    {
+        return $this->hasManyThrough(CareDetail::class, Care::class);
+    }
 }

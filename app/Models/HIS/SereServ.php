@@ -14,4 +14,52 @@ class SereServ extends Model
     protected $fillable = [
 
     ];
+    public function sere_serv_bills()
+    {
+        return $this->hasMany(SereServBill::class);
+    }
+    public function sere_serv_debts()
+    {
+        return $this->hasMany(SereServDebt::class);
+    }
+    public function sere_serv_deposits()
+    {
+        return $this->hasMany(SereServDeposit::class);
+    }
+    public function sere_serv_files()
+    {
+        return $this->hasMany(SereServFile::class);
+    }
+    public function sere_serv_matys()
+    {
+        return $this->hasMany(SereServMaty::class);
+    }
+    public function sere_serv_pttts()
+    {
+        return $this->hasMany(SereServPttt::class);
+    }
+    public function sere_serv_rehas()
+    {
+        return $this->hasMany(SereServReha::class);
+    }
+    public function sere_serv_suins()
+    {
+        return $this->hasMany(SereServSuin::class);
+    }
+    public function sere_serv_teins()
+    {
+        return $this->hasMany(SereServTein::class);
+    }
+    public function service_change_reqs()
+    {
+        return $this->hasMany(ServiceChangeReq::class);
+    }
+    public function sese_depo_repays()
+    {
+        return $this->hasManyThrough(SeseDepoRepay::class, SereServDeposit::class, 'sere_serv_id', 'sere_serv_deposit_id');
+    }
+    public function sese_trans_reqs()
+    {
+        return $this->hasMany(SeseTransReq::class);
+    }
 }
