@@ -222,4 +222,16 @@ class Treatment extends Model
     {
         return $this->hasManyThrough(CareDetail::class, Care::class);
     }
+    public function patient_type(){
+        return $this->belongsTo(PatientType::class, 'tdl_patient_type_id');
+    }
+    public function treatment_type(){
+        return $this->belongsTo(TreatmentType::class, 'tdl_treatment_type_id');
+    }
+    public function last_department(){
+        return $this->belongsTo(Department::class, 'last_department_id');
+    }
+    public function patient(){
+        return $this->belongsTo(Patient::class, 'patient_id');
+    }
 }

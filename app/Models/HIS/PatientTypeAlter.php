@@ -14,4 +14,10 @@ class PatientTypeAlter extends Model
     protected $fillable = [
 
     ];
+    public function patient_type(){
+        return $this->belongsTo(PatientType::class);
+    }
+    public function treatment_type(){
+        return $this->belongsTo(TreatmentType::class);
+    }
 }

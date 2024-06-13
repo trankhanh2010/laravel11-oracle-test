@@ -136,6 +136,8 @@ use App\Models\HIS\SereServExt;
 use App\Models\HIS\SereServ;
 use App\Models\HIS\Dhst;
 use App\Models\HIS\Care;
+use App\Models\HIS\PatientTypeAlter;
+use App\Models\HIS\TreatmentBedRoom;
 
 class HISController extends Controller
 {
@@ -404,6 +406,10 @@ class HISController extends Controller
     protected $dhst_name = 'dhst';
     protected $care;
     protected $care_name = 'care';
+    protected $patient_type_alter;
+    protected $patient_type_alter_name = 'patient_type_alter';
+    protected $treatment_bed_room;
+    protected $treatment_bed_room_name = 'treatment_bed_room';
     public function __construct(Request $request)
     {
         // Khai báo các biến
@@ -550,6 +556,8 @@ class HISController extends Controller
         $this->sere_serv = new SereServ();
         $this->dhst = new Dhst();
         $this->care = new Care();
+        $this->patient_type_alter = new PatientTypeAlter();
+        $this->treatment_bed_room = new TreatmentBedRoom();
     }
 
     /// Department
@@ -3316,7 +3324,7 @@ class HISController extends Controller
         $request_order_field3 = $this->param_request['ApiData']['ORDER_FIELD3'] ?? null;
         $request_order_direction3 = $this->param_request['ApiData']['ORDER_DIRECTION3'] ?? null;
         // Kiểm tra xem User có quyền xem execute_room không
-        if ( $request_execute_room_id != null) {
+        if ($request_execute_room_id != null) {
             if (!view_service_req($request_execute_room_id, $request->bearerToken(), $this->time)) {
                 return response()->json(['message' => '403'], 403);
             }
@@ -4206,9 +4214,9 @@ class HISController extends Controller
         $model = $this->sere_serv::select($select);
 
         // Kiểm tra các điều kiện từ json param
-        if($request_id != null){
+        if ($request_id != null) {
             $model->where('id', $request_id);
-        }else{
+        } else {
             if ($request_service_req_ids != null) {
                 $model->whereIn('service_req_id',  $request_service_req_ids);
             } else {
@@ -4247,6 +4255,383 @@ class HISController extends Controller
             'service_change_reqs',
             'sese_depo_repays',
             'sese_trans_reqs'
+        ];
+
+        // Lấy dữ liệu
+        $count = $model->count();
+        $data = $model->skip($this->start)->take($this->limit)->with($param)->get();
+
+        // Trả về dữ liệu
+        return response()->json([
+            'data' =>
+            $data,
+            'Param' => [
+                'Start' => $this->start,
+                'Limit' => $this->limit,
+                'Count' => $count
+            ]
+        ], 200);
+    }
+
+    // Patient Type Alter
+    public function patient_type_alter_get_view(Request $request)
+    {
+        // Khai báo các biến lấy từ json param
+        $request_treatment_id = $this->param_request['ApiData']['TREATMENT_ID'] ?? null;
+        $request_log_time_to = $this->param_request['ApiData']['LOG_TIME_TO'] ?? null;
+        $request_is_include_deleted = $this->param_request['ApiData']['IS_INCLUDE_DELETED'] ?? null;
+
+        // Khai báo các trường cần select
+        $select = [
+            "ID",
+            "CREATE_TIME",
+            "MODIFY_TIME",
+            "CREATOR",
+            "MODIFIER",
+            "APP_CREATOR",
+            "APP_MODIFIER",
+            "IS_ACTIVE",
+            "IS_DELETE",
+            "DEPARTMENT_TRAN_ID",
+            "TREATMENT_TYPE_ID",
+            "PATIENT_TYPE_ID",
+            "LOG_TIME",
+            "TREATMENT_ID",
+            "TDL_PATIENT_ID",
+            "EXECUTE_ROOM_ID",
+            "LEVEL_CODE",
+            "RIGHT_ROUTE_CODE",
+            "RIGHT_ROUTE_TYPE_CODE",
+            "HEIN_MEDI_ORG_CODE",
+            "HEIN_MEDI_ORG_NAME",
+            "HAS_BIRTH_CERTIFICATE",
+            "HEIN_CARD_NUMBER",
+            "HEIN_CARD_FROM_TIME",
+            "HEIN_CARD_TO_TIME",
+            "ADDRESS",
+            "JOIN_5_YEAR",
+            "PAID_6_MONTH",
+            "PRIMARY_PATIENT_TYPE_ID",
+        ];
+
+        // Khởi tạo, gán các model vào các biến 
+        $model = $this->patient_type_alter::select($select);
+
+        // Kiểm tra các điều kiện từ json param
+
+        if (!$request_is_include_deleted) {
+            $model->where('is_delete', 0);
+        }
+        if ($request_treatment_id != null) {
+            $model->where('treatment_id', $request_treatment_id);
+        }
+        if ($request_log_time_to != null) {
+            $model->where('log_time', $request_treatment_id);
+        }
+
+        // Khai báo các bảng liên kết dùng cho with()
+        $param = [
+            'patient_type:id,patient_type_code,patient_type_name,IS_COPAYMENT',
+            'treatment_type:id,treatment_type_code,treatment_type_name,HEIN_TREATMENT_TYPE_CODE'
+        ];
+
+        // Lấy dữ liệu
+        $count = $model->count();
+        $data = $model->skip($this->start)->take($this->limit)->with($param)->get();
+
+        // Trả về dữ liệu
+        return response()->json([
+            'data' =>
+            $data,
+            'Param' => [
+                'Start' => $this->start,
+                'Limit' => $this->limit,
+                'Count' => $count
+            ]
+        ], 200);
+    }
+
+    // Treatment
+    public function treatment_get_L_view(Request $request)
+    {
+        // Khai báo các biến lấy từ json param
+        $request_order_field = $this->param_request['ApiData']['ORDER_FIELD'] ?? null;
+        $request_order_direction = $this->param_request['ApiData']['ORDER_DIRECTION'] ?? null;
+        $request_key_word = $this->param_request['ApiData']['KEY_WORD'] ?? null;
+        $request_patient_code__exact = $this->param_request['ApiData']['PATIENT_CODE__EXACT'] ?? null;
+        // Khai báo các trường cần select
+        $select = [
+            "ID",
+            "CREATE_TIME",
+            "TREATMENT_CODE",
+            "TDL_PATIENT_CODE",
+            "TDL_PATIENT_NAME",
+            "TDL_PATIENT_DOB",
+            "TDL_PATIENT_GENDER_NAME",
+            "ICD_CODE",
+            "ICD_NAME",
+            "ICD_SUB_CODE",
+            "ICD_TEXT",
+            "IN_TIME",
+            "IS_ACTIVE",
+            "IN_DATE",
+        ];
+
+        // Khởi tạo, gán các model vào các biến 
+        $model = $this->treatment::select($select);
+
+        // Kiểm tra các điều kiện từ json param
+
+        if (($request_order_field != null) && ($request_order_direction != null)) {
+            $model->orderBy($request_order_field, $request_order_direction);
+        }
+        if ($request_patient_code__exact != null) {
+            $model->where('tdl_patient_code', $request_patient_code__exact);
+        } else {
+            if ($request_key_word != null) {
+                $model->where('tdl_patient_name', 'like', '%' . $request_key_word . '%');
+            }
+        }
+
+        // Khai báo các bảng liên kết dùng cho with()
+        $param = [];
+
+        // Lấy dữ liệu
+        $count = $model->count();
+        $data = $model->skip($this->start)->take($this->limit)->with($param)->get();
+
+        // Trả về dữ liệu
+        return response()->json([
+            'data' =>
+            $data,
+            'Param' => [
+                'Start' => $this->start,
+                'Limit' => $this->limit,
+                'Count' => $count
+            ]
+        ], 200);
+    }
+
+    public function treatment_get_treatment_with_patient_type_info_sdo(Request $request)
+    {
+        // Khai báo các biến lấy từ json param
+        $request_treatment_id = $this->param_request['ApiData']['TREATMENT_ID'] ?? null;
+        $request_intruction_time = $this->param_request['ApiData']['INTRUCTION_TIME'] ?? null;
+
+        // Khai báo các trường cần select
+        $select = [
+            // "PATIENT_TYPE",
+            "TDL_HEIN_MEDI_ORG_CODE",
+            // "RIGHT_ROUTE_TYPE_CODE",
+            "TDL_HEIN_CARD_NUMBER",
+            // "LEVEL_CODE",
+            // "RIGHT_ROUTE_CODE",
+            "TDL_HEIN_CARD_FROM_TIME",
+            "TDL_HEIN_CARD_TO_TIME",
+            // "HEIN_CARD_ADDRESS",
+            // "SERVER_TIME",
+            // "PRIMARY_PATIENT_TYPE_ID",
+            "ID",
+            "CREATE_TIME",
+            "MODIFY_TIME",
+            "CREATOR",
+            "MODIFIER",
+            "APP_CREATOR",
+            "APP_MODIFIER",
+            "IS_ACTIVE",
+            "IS_DELETE",
+            "TREATMENT_CODE",
+            "PATIENT_ID",
+            "BRANCH_ID",
+            "ICD_CODE",
+            "ICD_NAME",
+            "ICD_SUB_CODE",
+            "ICD_TEXT",
+            "IN_TIME",
+            "IN_DATE",
+            "CLINICAL_IN_TIME",
+            "IN_CODE",
+            "IN_ROOM_ID",
+            "IN_DEPARTMENT_ID",
+            "IN_LOGINNAME",
+            "IN_USERNAME",
+            "IN_TREATMENT_TYPE_ID",
+            "IN_ICD_CODE",
+            "IN_ICD_NAME",
+            "IN_ICD_SUB_CODE",
+            "IN_ICD_TEXT",
+            "HOSPITALIZATION_REASON",
+            "DOCTOR_LOGINNAME",
+            "DOCTOR_USERNAME",
+            "IS_CHRONIC",
+            "JSON_PRINT_ID",
+            "IS_EMERGENCY",
+            "SUBCLINICAL_RESULT",
+            "TDL_FIRST_EXAM_ROOM_ID",
+            "TDL_TREATMENT_TYPE_ID",
+            "TDL_PATIENT_TYPE_ID",
+            "FUND_CUSTOMER_NAME",
+            "TDL_PATIENT_CODE",
+            "TDL_PATIENT_NAME",
+            "TDL_PATIENT_FIRST_NAME",
+            "TDL_PATIENT_LAST_NAME",
+            "TDL_PATIENT_DOB",
+            "TDL_PATIENT_ADDRESS",
+            "TDL_PATIENT_GENDER_ID",
+            "TDL_PATIENT_GENDER_NAME",
+            "TDL_PATIENT_CAREER_NAME",
+            "TDL_PATIENT_DISTRICT_CODE",
+            "TDL_PATIENT_PROVINCE_CODE",
+            "TDL_PATIENT_COMMUNE_CODE",
+            "TDL_PATIENT_NATIONAL_NAME",
+            "TDL_PATIENT_RELATIVE_TYPE",
+            "TDL_PATIENT_RELATIVE_NAME",
+            "DEPARTMENT_IDS",
+            "CO_DEPARTMENT_IDS",
+            "LAST_DEPARTMENT_ID",
+            "TDL_PATIENT_PHONE",
+            "IS_SYNC_EMR",
+            "VIR_IN_MONTH",
+            "IN_CODE_SEED_CODE",
+            "VIR_IN_YEAR",
+            "EMR_COVER_TYPE_ID",
+            "HOSPITALIZE_DEPARTMENT_ID",
+            "TDL_PATIENT_RELATIVE_MOBILE",
+            "TDL_PATIENT_NATIONAL_CODE",
+            "TDL_PATIENT_PROVINCE_NAME",
+            "TDL_PATIENT_DISTRICT_NAME",
+            "TDL_PATIENT_COMMUNE_NAME",
+            "TDL_PATIENT_UNSIGNED_NAME",
+            "TDL_PATIENT_ETHNIC_NAME",
+            "IS_TUBERCULOSIS",
+        ];
+
+        // Khởi tạo, gán các model vào các biến 
+        $model = $this->treatment::select($select);
+
+        // Kiểm tra các điều kiện từ json param
+        if ($request_treatment_id != null) {
+            $model->where('id', $request_treatment_id);
+        }
+        if ($request_intruction_time != null) {
+            $model->where('in_time', $request_intruction_time);
+        }
+        // Khai báo các bảng liên kết dùng cho with()
+        $param = [
+            'patient_type:id,patient_type_code,patient_type_name,IS_COPAYMENT',
+            'treatment_type:id,treatment_type_code,treatment_type_name,HEIN_TREATMENT_TYPE_CODE',
+            'accident_hurts',
+            'adrs',
+            'allergy_cards',
+            'antibiotic_requests',
+            'appointment_servs',
+            'babys',
+            'cares',
+            'care_sums',
+            'carer_card_borrows',
+            'debates',
+            'department_trans',
+            'deposit_reqs',
+            'dhsts',
+            'exp_mest_maty_reqs',
+            'exp_mest_mety_reqs',
+            'hein_approvals',
+            'hiv_treatments',
+            'hold_returns',
+            'imp_mest_mate_reqs',
+            'imp_mest_medi_reqs',
+            'infusion_sums',
+            'medi_react_sums',
+            'medical_assessments',
+            'medicine_interactives',
+            'mr_check_summarys',
+            'obey_contraindis',
+            'patient_type_alters',
+            'prepares',
+            'reha_sums',
+            'sere_servs',
+            'service_reqs',
+            'severe_illness_infos',
+            'trackings',
+            'trans_reqs',
+            'transactions',
+            'transfusion_sums',
+            'treatment_bed_rooms',
+            'treatment_borrows',
+            'treatment_files',
+            'treatment_loggings',
+            'treatment_unlimits',
+            'tuberculosis_treats'
+        ];
+
+        // Lấy dữ liệu
+        $count = $model->count();
+        $data = $model->skip($this->start)->take($this->limit)->with($param)->get();
+
+        // Trả về dữ liệu
+        return response()->json([
+            'data' =>
+            $data,
+            'Param' => [
+                'Start' => $this->start,
+                'Limit' => $this->limit,
+                'Count' => $count
+            ]
+        ], 200);
+    }
+
+    // Treatment Bed Room
+    public function treatment_bed_room_get_L_view(Request $request)
+    {
+        // Khai báo các biến lấy từ json param
+        $request_is_in_room = $this->param_request['ApiData']['IS_IN_ROOM'] ?? null;
+        $request_add_time_to = $this->param_request['ApiData']['ADD_TIME_TO'] ?? null;
+        $request_add_time_from = $this->param_request['ApiData']['ADD_TIME_FROM'] ?? null;
+        $request_bed_room_ids = $this->param_request['ApiData']['BED_ROOM_IDs'] ?? null;
+        $request_order_field = $this->param_request['ApiData']['ORDER_FIELD'] ?? null;
+        $request_order_direction = $this->param_request['ApiData']['ORDER_DIRECTION'] ?? null;
+        $request_is_include_deleted = $this->param_request['ApiData']['IS_INCLUDE_DELETED'] ?? null;
+
+        // Khai báo các trường cần select
+        $select = [
+            "ID",
+            "TREATMENT_ID",
+            "CO_TREATMENT_ID",
+            "ADD_TIME",
+            "BED_ROOM_ID",
+            // "NOTE",
+        ];
+
+        // Khởi tạo, gán các model vào các biến 
+        $model = $this->treatment_bed_room::select($select);
+
+        // Kiểm tra các điều kiện từ json param
+        if($request_bed_room_ids != null){
+            $model->whereIn('bed_room_id', $request_bed_room_ids);
+        }
+        if($request_is_in_room){
+            if($request_add_time_from != null){
+                $model->where('add_time', '>=', $request_add_time_from);
+            }
+        }else{
+            if(($request_add_time_from != null) && ($request_add_time_to != null)){
+                $model->whereBetween('add_time', [$request_add_time_from, $request_add_time_to]);
+            }
+        }
+        if (!$request_is_include_deleted) {
+            $model->where('is_delete', 0);
+        }
+        // if (($request_order_field != null) && ($request_order_direction != null)) {
+        //     $model->orderBy($request_order_field, $request_order_direction);
+        // }
+
+        // Khai báo các bảng liên kết dùng cho with()
+        $param = [
+            'treatment:id,tdl_patient_type_id,PATIENT_ID,TREATMENT_CODE,TDL_PATIENT_FIRST_NAME,TDL_PATIENT_LAST_NAME,TDL_PATIENT_NAME,TDL_PATIENT_DOB,TDL_PATIENT_GENDER_NAME,TDL_PATIENT_CODE,TDL_PATIENT_ADDRESS,TDL_HEIN_CARD_NUMBER,TDL_HEIN_MEDI_ORG_CODE,ICD_CODE,ICD_NAME,ICD_TEXT,ICD_SUB_CODE,TDL_PATIENT_GENDER_ID,TDL_HEIN_MEDI_ORG_NAME,TDL_TREATMENT_TYPE_ID,EMR_COVER_TYPE_ID,CLINICAL_IN_TIME,CO_TREAT_DEPARTMENT_IDS,LAST_DEPARTMENT_ID,TDL_PATIENT_UNSIGNED_NAME,TREATMENT_METHOD,TDL_HEIN_CARD_FROM_TIME,TDL_HEIN_CARD_TO_TIME',
+            'treatment.patient_type:id,patient_type_code,patient_type_name',
+            'treatment.last_department:id,department_code,department_name',
+            'treatment.patient:id,note',
+            'bed_room:id,bed_room_name'
         ];
 
         // Lấy dữ liệu

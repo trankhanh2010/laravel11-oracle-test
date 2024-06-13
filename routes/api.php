@@ -778,4 +778,14 @@ Route::group([
     // Sere Serv
     Route::get("v1/sere-serv/get", [HISController::class, "sere_serv"]);
 
+    // Patient Type Alter
+    Route::get("v1/patient-type-alter/get-view", [HISController::class, "patient_type_alter_get_view"]);
+
+    // Treatment
+    Route::get("v1/treatment/get-L-view", [HISController::class, "treatment_get_L_view"]);
+    Route::get("v1/treatment/get-treatment-with-patient-type-info-sdo", [HISController::class, "treatment_get_treatment_with_patient_type_info_sdo"]);
+
+    // Treatment Bed Room
+    Route::get("v1/treatment-bed-room/get-L-view", [HISController::class, "treatment_bed_room_get_L_view"]);
+
 });
