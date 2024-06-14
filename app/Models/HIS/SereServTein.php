@@ -14,4 +14,12 @@ class SereServTein extends Model
     protected $fillable = [
 
     ];
+    public function machine()
+    {
+        return $this->belongsTo(Machine::class);
+    }
+    public function test_index()
+    {
+        return $this->belongsTo(TestIndex::class);
+    }
 }

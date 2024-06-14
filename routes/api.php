@@ -753,16 +753,17 @@ Route::group([
 
     /// Nhân viên - Phòng
     // Trả về nhân viên cùng phòng
-    Route::get("v1/user-room", [HISController::class, "user_with_room"]);
+    Route::get("v1/user-room/get-view", [HISController::class, "user_with_room"]);
 
     // Debate
-    Route::get("v1/debate", [HISController::class, "debate"]);
+    Route::get("v1/debate/get", [HISController::class, "debate_get"]);
+    Route::get("v1/debate/get-view", [HISController::class, "debate_get_view"]);
 
     // Debate User
-    Route::get("v1/debate-user", [HISController::class, "debate_user"]);
+    Route::get("v1/debate-user/get", [HISController::class, "debate_user"]);
 
     // Debate Ekip User
-    Route::get("v1/debate-ekip-user", [HISController::class, "debate_ekip_user"]);
+    Route::get("v1/debate-ekip-user/get", [HISController::class, "debate_ekip_user"]);
 
     // Debate Type
     Route::get("v1/debate-type", [HISController::class, "debate_type"]);
@@ -787,5 +788,15 @@ Route::group([
 
     // Treatment Bed Room
     Route::get("v1/treatment-bed-room/get-L-view", [HISController::class, "treatment_bed_room_get_L_view"]);
+
+    // DHST
+    Route::get("v1/dhst/get", [HISController::class, "dhst_get"]);
+
+    // Sere Serv Ext
+    Route::get("v1/sere-serv-ext/get", [HISController::class, "sere_serv_ext"]);
+
+    // Sere Serv Tein
+    Route::get("v1/sere-serv-tein/get", [HISController::class, "sere_serv_tein_get"]);
+    Route::get("v1/sere-serv-tein/get-view", [HISController::class, "sere_serv_tein_get_view"]);
 
 });

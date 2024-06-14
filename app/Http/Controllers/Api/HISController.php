@@ -139,6 +139,7 @@ use App\Models\HIS\Dhst;
 use App\Models\HIS\Care;
 use App\Models\HIS\PatientTypeAlter;
 use App\Models\HIS\TreatmentBedRoom;
+use App\Models\HIS\SereServTein;
 
 class HISController extends Controller
 {
@@ -411,6 +412,8 @@ class HISController extends Controller
     protected $patient_type_alter_name = 'patient_type_alter';
     protected $treatment_bed_room;
     protected $treatment_bed_room_name = 'treatment_bed_room';
+    protected $sere_serv_tein;
+    protected $sere_serv_tein_name = 'sere_serv_tein';
     public function __construct(Request $request)
     {
         // Khai báo các biến
@@ -559,6 +562,7 @@ class HISController extends Controller
         $this->care = new Care();
         $this->patient_type_alter = new PatientTypeAlter();
         $this->treatment_bed_room = new TreatmentBedRoom();
+        $this->sere_serv_tein = new SereServTein();
     }
 
     /// Department
@@ -3175,6 +3179,34 @@ class HISController extends Controller
     /// User Room
     public function user_with_room()
     {
+        // Khai báo các biến lấy từ json param
+        $request_loginname = $this->param_request['ApiData']['LOGINNAME'] ?? null;
+
+        // Khai báo các trường cần select
+        $select = [
+            "id",
+            "create_Time",
+            "modify_Time",
+            "creator",
+            "modifier",
+            "app_Creator",
+            "app_Modifier",
+            "is_Active",
+            "is_Delete",
+            "group_Code",
+            "loginname",
+            "room_Id",
+        ];
+
+        // Khởi tạo, gán các model vào các biến 
+        $model = $this->user_room::select($select);
+
+        // Kiểm tra các điều kiện từ json param
+        if ($request_loginname != null) {
+            $model->where('loginname', $request_loginname);
+        }
+
+        // Khai báo các bảng liên kết dùng cho with()
         $param = [
             'room:id,department_id,room_type_id',
             'room.execute_room:id,room_id,execute_room_name,execute_room_code',
@@ -3182,31 +3214,29 @@ class HISController extends Controller
             'room.department:id,branch_id,department_name,department_code',
             'room.department.branch:id,branch_name,branch_code',
         ];
-        $data = get_cache_by_code($this->user_room, $this->user_room_name, $param, 'loginname', $this->param_request['ApiData']['LOGINNAME'], $this->time);
-        return response()->json(['data' => $data], 200);
+
+        // Lấy dữ liệu
+        $count = $model->count();
+        $data = $model->skip($this->start)->take($this->limit)->with($param)->get();
+        // Trả về dữ liệu
+        return response()->json([
+            'data' =>
+            $data,
+            'Param' => [
+                'Start' => $this->start,
+                'Limit' => $this->limit,
+                'Count' => $count
+            ]
+        ], 200);
     }
 
     /// Debate
-    public function debate()
+    public function debate_get()
     {
-        $param = [
-            'treatment:id,tdl_patient_first_name,tdl_patient_last_name,tdl_patient_name,tdl_patient_dob,tdl_patient_address,tdl_patient_gender_name',
-            'icddelete:id,icd_name,icd_code',
-            'debate_type:id,debate_type_name,debate_type_code',
-            'surgery_service:id,service_name,service_code',
-            'emotionless_method:id,emotionless_method_name,emotionless_method_code',
-            'pttt_method:id,pttt_method_name,pttt_method_code',
-            'tracking:id,medical_instruction,content',
-            'service:id,service_name,service_code',
-            'debate_reason:id,debate_reason_name',
-            'debate_ekip_users:id,debate_id,loginname,username,execute_role_id,department_id',
-            'debate_ekip_users.execute_role:id,execute_role_name,execute_role_code',
-            'debate_ekip_users.department:id,department_name,department_code',
-            'debate_invite_users:id,debate_id,loginname,username,execute_role_id',
-            'debate_invite_users.execute_role:id,execute_role_name,execute_role_code',
-            'debate_users:id,debate_id,loginname,username,execute_role_id',
-            'debate_users.execute_role:id,execute_role_name,execute_role_code'
-        ];
+        $request_is_include_deleted = $this->param_request['ApiData']['IS_INCLUDE_DELETED'] ?? null;
+        $request_id = $this->param_request['ApiData']['ID'] ?? null;
+        $request_treatment_id = $this->param_request['ApiData']['TREATMENT_ID'] ?? null;
+
         $select = [
             'id',
             'create_time',
@@ -3250,13 +3280,111 @@ class HISController extends Controller
             'medicine_type_ids',
             'active_ingredient_ids',
         ];
+
+        $param = [
+            'treatment:id,tdl_patient_first_name,tdl_patient_last_name,tdl_patient_name,tdl_patient_dob,tdl_patient_address,tdl_patient_gender_name',
+            'icddelete:id,icd_name,icd_code',
+            'debate_type:id,debate_type_name,debate_type_code',
+            'surgery_service:id,service_name,service_code',
+            'emotionless_method:id,emotionless_method_name,emotionless_method_code',
+            'pttt_method:id,pttt_method_name,pttt_method_code',
+            'tracking:id,medical_instruction,content',
+            'service:id,service_name,service_code',
+            'debate_reason:id,debate_reason_name',
+            'debate_ekip_users:id,debate_id,loginname,username,execute_role_id,department_id',
+            'debate_ekip_users.execute_role:id,execute_role_name,execute_role_code',
+            'debate_ekip_users.department:id,department_name,department_code',
+            'debate_invite_users:id,debate_id,loginname,username,execute_role_id',
+            'debate_invite_users.execute_role:id,execute_role_name,execute_role_code',
+            'debate_users:id,debate_id,loginname,username,execute_role_id',
+            'debate_users.execute_role:id,execute_role_name,execute_role_code'
+        ];
         $model = $this->debate::select($select);
-        if ((isset($this->param_request['ApiData']['ID'])) && ($this->param_request['ApiData']['ID'] != null)) {
-            $model->find($this->param_request['ApiData']['ID']);
+        if ($request_id != null) {
+            $model->find($request_id)->first();
+        }else{
+            if ($request_treatment_id != null) {
+                $model->where('treatment_id', $request_treatment_id);
+            }   
         }
-        if ((isset($this->param_request['ApiData']['TREATMENT_ID']))) {
-            $model->where('treatment_id', $this->param_request['ApiData']['TREATMENT_ID']);
+        if (!$request_is_include_deleted) {
+            $model->where('is_delete', 0);
         }
+        $data = $model->with($param)->get();
+        return response()->json(['data' => $data], 200);
+    }
+
+    public function debate_get_view()
+    {
+        $request_treatment_id = $this->param_request['ApiData']['TREATMENT_ID'] ?? null;
+        $request_treatment_code__exact = $this->param_request['ApiData']['TREATMENT_CODE__EXACT'] ?? null;
+        $request_department_ids = $this->param_request['ApiData']['DEPARTMENT_IDs'] ?? null;
+        $request_is_include_deleted = $this->param_request['ApiData']['IS_INCLUDE_DELETED'] ?? null;
+        $request_order_field = $this->param_request['ApiData']['ORDER_FIELD'] ?? null;
+        $request_order_direction = $this->param_request['ApiData']['ORDER_DIRECTION'] ?? null;
+
+        $select = [
+            "his_debate.ID",
+            "his_debate.CREATE_TIME",
+            "his_debate.MODIFY_TIME",
+            "his_debate.CREATOR",
+            "his_debate.MODIFIER",
+            "his_debate.APP_CREATOR",
+            "his_debate.APP_MODIFIER",
+            "his_debate.IS_ACTIVE",
+            "his_debate.IS_DELETE",
+            "his_debate.TREATMENT_ID",
+            "his_debate.ICD_CODE",
+            "his_debate.ICD_NAME",
+            "his_debate.ICD_SUB_CODE",
+            "his_debate.ICD_TEXT",
+            "his_debate.DEPARTMENT_ID",
+            "his_debate.DEBATE_TIME",
+            "his_debate.REQUEST_LOGINNAME",
+            "his_debate.REQUEST_USERNAME",
+            "his_debate.TREATMENT_TRACKING",
+            "his_debate.TREATMENT_FROM_TIME",
+            "his_debate.TREATMENT_TO_TIME",
+            "his_debate.LOCATION",
+            "his_debate.CONCLUSION",
+            "his_debate.DEBATE_TYPE_ID",
+            "his_debate.CONTENT_TYPE",
+            "his_debate.SUBCLINICAL_PROCESSES",
+            "his_debate.EMOTIONLESS_METHOD_ID",
+            "his_debate.SURGERY_TIME",
+            "his_debate.PTTT_METHOD_ID",
+            "his_treatment.treatment_code"
+        ];
+
+        $model = $this->debate::select($select)->join('his_treatment', 'his_debate.treatment_id', '=', 'his_treatment.id');
+
+        if ($request_treatment_id != null) {
+            $model->where('his_debate.treatment_id', $request_treatment_id);
+        }
+
+        if ($request_treatment_code__exact != null) {
+            $model->where('his_treatment.treatment_code', $request_treatment_code__exact);
+        }
+        if ($request_department_ids != null) {
+            $model->whereIn('his_debate.department_id', $request_department_ids);
+        }
+        if (!$request_is_include_deleted) {
+            $model->where('his_debate.is_delete', 0);
+        }
+        if (($request_order_field != null) && ($request_order_direction != null)) {
+            $model->orderBy($request_order_field, $request_order_direction);
+        }
+
+        $param = [
+            'treatment:id,patient_id,treatment_code,tdl_patient_first_name,tdl_patient_last_name,tdl_patient_name,tdl_patient_dob,tdl_patient_address,tdl_patient_gender_name',
+            'department:id,department_code,department_name',
+            'debate_type:id,debate_type_name,debate_type_code',
+            'emotionless_method:id,emotionless_method_name,emotionless_method_code',
+            'pttt_method:id,pttt_method_name,pttt_method_code',
+            'debate_reason:id,debate_reason_name,debate_reason_code',
+
+        ];
+ 
         $data = $model->with($param)->get();
         return response()->json(['data' => $data], 200);
     }
@@ -3264,8 +3392,15 @@ class HISController extends Controller
     /// Debate User
     public function debate_user($id = null)
     {
-        if ((isset($this->param_request['ApiData']['DEBATE_ID']))) {
-            $model = $this->debate_user->where('debate_id', $this->param_request['ApiData']['DEBATE_ID']);
+        $request_debate_id = $this->param_request['ApiData']['DEBATE_ID'] ?? null;
+        $request_is_include_deleted = $this->param_request['ApiData']['IS_INCLUDE_DELETED'] ?? null;
+
+        $model = $this->debate_user::select();
+        if ($request_debate_id != null) {
+            $model->where('debate_id', $request_debate_id);
+        }
+        if (!$request_is_include_deleted) {
+            $model->where('is_delete', 0);
         }
         $data = $model->get();
         return response()->json(['data' => $data], 200);
@@ -3274,13 +3409,22 @@ class HISController extends Controller
     /// Debate Ekip User
     public function debate_ekip_user($id = null)
     {
+        $request_debate_id = $this->param_request['ApiData']['DEBATE_ID'] ?? null;
+        $request_is_include_deleted = $this->param_request['ApiData']['IS_INCLUDE_DELETED'] ?? null;
+
         $param = [
             'execute_role:id,execute_role_name,execute_role_code',
             'department:id,department_name,department_code'
         ];
-        if ((isset($this->param_request['ApiData']['DEBATE_ID']))) {
-            $model = $this->debate_ekip_user->where('debate_id', $this->param_request['ApiData']['DEBATE_ID']);
+
+        $model = $this->debate_ekip_user::select();
+        if ($request_debate_id != null) {
+            $model->where('debate_id', $request_debate_id);
         }
+        if (!$request_is_include_deleted) {
+            $model->where('is_delete', 0);
+        }
+
         $data = $model->with($param)->get();
         return response()->json(['data' => $data], 200);
     }
@@ -4327,7 +4471,7 @@ class HISController extends Controller
             $model->where('treatment_id', $request_treatment_id);
         }
         if ($request_log_time_to != null) {
-            $model->where('log_time', $request_treatment_id);
+            $model->where('log_time', $request_log_time_to);
         }
 
         // Khai báo các bảng liên kết dùng cho with()
@@ -4497,7 +4641,6 @@ class HISController extends Controller
             "TDL_HEIN_CARD_NUMBER",
             "TDL_HEIN_CARD_FROM_TIME",
             "TDL_HEIN_CARD_TO_TIME",
-            // "PRIMARY_PATIENT_TYPE_ID",
         ];
 
         // Khởi tạo, gán các model vào các biến 
@@ -4600,15 +4743,15 @@ class HISController extends Controller
         $model = $this->treatment_bed_room::join('his_treatment', 'his_treatment_bed_room.treatment_id', '=', 'his_treatment.id')->select($select);
 
         // Kiểm tra các điều kiện từ json param
-        if($request_bed_room_ids != null){
+        if ($request_bed_room_ids != null) {
             $model->whereIn('his_treatment_bed_room.bed_room_id', $request_bed_room_ids);
         }
-        if($request_is_in_room){
-            if($request_add_time_from != null){
+        if ($request_is_in_room) {
+            if ($request_add_time_from != null) {
                 $model->where('his_treatment_bed_room.add_time', '>=', $request_add_time_from);
             }
-        }else{
-            if(($request_add_time_from != null) && ($request_add_time_to != null)){
+        } else {
+            if (($request_add_time_from != null) && ($request_add_time_to != null)) {
                 $model->whereBetween('his_treatment_bed_room.add_time', [$request_add_time_from, $request_add_time_to]);
             }
         }
@@ -4616,15 +4759,15 @@ class HISController extends Controller
             $model->where('his_treatment_bed_room.is_delete', 0);
         }
         if (($request_order_field != null) && ($request_order_direction != null)) {
-            $model->orderBy('his_treatment.'.$request_order_field, $request_order_direction);
+            $model->orderBy('his_treatment.' . $request_order_field, $request_order_direction);
         }
 
         // Khai báo các bảng liên kết dùng cho with()
         $param = [
             'treatment'
-            => function ($query) use($request_order_field, $request_order_direction) {
-                $query->select('id','tdl_patient_type_id','PATIENT_ID','TREATMENT_CODE','TDL_PATIENT_LAST_NAME','TDL_PATIENT_NAME','TDL_PATIENT_DOB','TDL_PATIENT_GENDER_NAME','TDL_PATIENT_CODE','TDL_PATIENT_ADDRESS','TDL_HEIN_CARD_NUMBER','TDL_HEIN_MEDI_ORG_CODE','ICD_CODE','ICD_NAME','ICD_TEXT','ICD_SUB_CODE','TDL_PATIENT_GENDER_ID','TDL_HEIN_MEDI_ORG_NAME','TDL_TREATMENT_TYPE_ID','EMR_COVER_TYPE_ID','CLINICAL_IN_TIME','CO_TREAT_DEPARTMENT_IDS','LAST_DEPARTMENT_ID','TDL_PATIENT_UNSIGNED_NAME','TREATMENT_METHOD','TDL_HEIN_CARD_FROM_TIME','TDL_HEIN_CARD_TO_TIME')
-                ->orderBy($request_order_field, $request_order_direction);
+            => function ($query) use ($request_order_field, $request_order_direction) {
+                $query->select('id', 'tdl_patient_type_id', 'PATIENT_ID', 'TREATMENT_CODE', 'TDL_PATIENT_LAST_NAME', 'TDL_PATIENT_NAME', 'TDL_PATIENT_DOB', 'TDL_PATIENT_GENDER_NAME', 'TDL_PATIENT_CODE', 'TDL_PATIENT_ADDRESS', 'TDL_HEIN_CARD_NUMBER', 'TDL_HEIN_MEDI_ORG_CODE', 'ICD_CODE', 'ICD_NAME', 'ICD_TEXT', 'ICD_SUB_CODE', 'TDL_PATIENT_GENDER_ID', 'TDL_HEIN_MEDI_ORG_NAME', 'TDL_TREATMENT_TYPE_ID', 'EMR_COVER_TYPE_ID', 'CLINICAL_IN_TIME', 'CO_TREAT_DEPARTMENT_IDS', 'LAST_DEPARTMENT_ID', 'TDL_PATIENT_UNSIGNED_NAME', 'TREATMENT_METHOD', 'TDL_HEIN_CARD_FROM_TIME', 'TDL_HEIN_CARD_TO_TIME')
+                    ->orderBy($request_order_field, $request_order_direction);
             },
             'treatment.patient_type:id,patient_type_code,patient_type_name',
             'treatment.last_department:id,department_code,department_name',
@@ -4634,7 +4777,282 @@ class HISController extends Controller
 
         // Lấy dữ liệu
         $count = $model->count();
-        
+
+        $data = $model->skip($this->start)->take($this->limit)->with($param)->get();
+
+        // Trả về dữ liệu
+        return response()->json([
+            'data' =>
+            $data,
+            'Param' => [
+                'Start' => $this->start,
+                'Limit' => $this->limit,
+                'Count' => $count
+            ]
+        ], 200);
+    }
+
+    // DHST
+    public function dhst_get(Request $request)
+    {
+        // Khai báo các biến lấy từ json param
+        $request_id = $this->param_request['ApiData']['ID'] ?? null;
+        $request_is_include_deleted = $this->param_request['ApiData']['IS_INCLUDE_DELETED'] ?? null;
+
+        // Khai báo các trường cần select
+        $select = [
+            "ID",
+            "CREATE_TIME",
+            "MODIFY_TIME",
+            "CREATOR",
+            "MODIFIER",
+            "APP_CREATOR",
+            "APP_MODIFIER",
+            "IS_ACTIVE",
+            "IS_DELETE",
+            "TREATMENT_ID",
+            "EXECUTE_ROOM_ID",
+            "EXECUTE_LOGINNAME",
+            "EXECUTE_USERNAME",
+            "EXECUTE_TIME",
+            "TEMPERATURE",
+            "BREATH_RATE",
+            "WEIGHT",
+            "HEIGHT",
+            "BLOOD_PRESSURE_MAX",
+            "BLOOD_PRESSURE_MIN",
+            "PULSE",
+            "VIR_BMI",
+            "VIR_BODY_SURFACE_AREA",
+        ];
+
+        // Khởi tạo, gán các model vào các biến 
+        $model = $this->dhst::select($select);
+
+        // Kiểm tra các điều kiện từ json param
+        if ($request_id != null) {
+            $model->where('id', $request_id);
+        }
+        if (!$request_is_include_deleted) {
+            $model->where('is_delete', 0);
+        }
+
+        // Khai báo các bảng liên kết dùng cho with()
+        $param = [
+            'antibiotic_requests',
+            'cares',
+            'ksk_generals',
+            'ksk_occupationals',
+            'service_reqs',
+        ];
+
+        // Lấy dữ liệu
+        $count = $model->count();
+        $data = $model->skip($this->start)->take($this->limit)->with($param)->get();
+
+        // Trả về dữ liệu
+        return response()->json([
+            'data' =>
+            $data,
+            'Param' => [
+                'Start' => $this->start,
+                'Limit' => $this->limit,
+                'Count' => $count
+            ]
+        ], 200);
+    }
+
+    // Sere Serv Ext
+    public function sere_serv_ext(Request $request)
+    {
+        // Khai báo các biến lấy từ json param
+        $request_sere_serv_id = $this->param_request['ApiData']['SERE_SERV_ID'] ?? null;
+        $request_sere_serv_ids = $this->param_request['ApiData']['SERE_SERV_IDs'] ?? null;
+        $request_is_include_deleted = $this->param_request['ApiData']['IS_INCLUDE_DELETED'] ?? null;
+        $request_is_active = $this->param_request['ApiData']['IS_ACTIVE'] ?? null;
+
+        // Khai báo các trường cần select
+        $select = [
+            "ID",
+            "CREATE_TIME",
+            "MODIFY_TIME",
+            "MODIFIER",
+            "APP_MODIFIER",
+            "IS_ACTIVE",
+            "IS_DELETE",
+            "SERE_SERV_ID",
+            "CONCLUDE",
+            "JSON_PRINT_ID",
+            "DESCRIPTION_SAR_PRINT_ID",
+            "MACHINE_CODE",
+            "MACHINE_ID",
+            "NUMBER_OF_FILM",
+            "BEGIN_TIME",
+            "END_TIME",
+            "TDL_SERVICE_REQ_ID",
+            "TDL_TREATMENT_ID",
+            "FILM_SIZE_ID",
+            "SUBCLINICAL_PRES_USERNAME",
+            "SUBCLINICAL_PRES_LOGINNAME",
+            "SUBCLINICAL_RESULT_USERNAME",
+            "SUBCLINICAL_RESULT_LOGINNAME",
+            "SUBCLINICAL_PRES_ID",
+            "DESCRIPTION",
+        ];
+
+        // Khởi tạo, gán các model vào các biến 
+        $model = $this->sere_serv_ext::select($select);
+
+        // Kiểm tra các điều kiện từ json param
+        if ($request_sere_serv_id != null) {
+            $model->where('sere_serv_id', $request_sere_serv_id);
+        } else {
+            if ($request_sere_serv_ids != null) {
+                $model->whereIn('sere_serv_id', $request_sere_serv_ids);
+            }
+        }
+        if (!$request_is_include_deleted) {
+            $model->where('is_delete', 0);
+        }
+        if ($request_is_active) {
+            $model->where('is_active', 1);
+        } else {
+            $model->where('is_active', 0);
+        }
+
+        // Khai báo các bảng liên kết dùng cho with()
+        $param = [];
+
+        // Lấy dữ liệu
+        $count = $model->count();
+        $data = $model->skip($this->start)->take($this->limit)->with($param)->get();
+
+        // Trả về dữ liệu
+        return response()->json([
+            'data' =>
+            $data,
+            'Param' => [
+                'Start' => $this->start,
+                'Limit' => $this->limit,
+                'Count' => $count
+            ]
+        ], 200);
+    }
+
+    // Sere Serv Tein
+    public function sere_serv_tein_get(Request $request)
+    {
+        // Khai báo các biến lấy từ json param
+        $request_test_index_ids = $this->param_request['ApiData']['TEST_INDEX_IDs'] ?? null;
+        $request_tdl_treatment_id = $this->param_request['ApiData']['TDL_TREATMENT_ID'] ?? null;
+        $request_is_include_deleted = $this->param_request['ApiData']['IS_INCLUDE_DELETED'] ?? null;
+
+        // Khai báo các trường cần select
+        $select = [
+            "ID",
+            "CREATE_TIME",
+            "MODIFY_TIME",
+            "CREATOR",
+            "MODIFIER",
+            "APP_CREATOR",
+            "APP_MODIFIER",
+            "IS_ACTIVE",
+            "IS_DELETE",
+            "SERE_SERV_ID",
+            "TEST_INDEX_ID",
+            "VALUE",
+            "RESULT_CODE",
+            "TDL_TREATMENT_ID",
+            "TDL_SERVICE_REQ_ID",
+            "RESULT_DESCRIPTION",
+        ];
+
+        // Khởi tạo, gán các model vào các biến 
+        $model = $this->sere_serv_tein::select($select);
+
+        // Kiểm tra các điều kiện từ json param
+        if ($request_test_index_ids != null) {
+            $model->whereIn('test_index_id', $request_test_index_ids);
+        }
+        if ($request_tdl_treatment_id != null) {
+            $model->where('tdl_treatment_id', $request_tdl_treatment_id);
+        }
+        if (!$request_is_include_deleted) {
+            $model->where('is_delete', 0);
+        }
+
+        // Khai báo các bảng liên kết dùng cho with()
+        $param = [];
+
+        // Lấy dữ liệu
+        $count = $model->count();
+        $data = $model->skip($this->start)->take($this->limit)->with($param)->get();
+
+        // Trả về dữ liệu
+        return response()->json([
+            'data' =>
+            $data,
+            'Param' => [
+                'Start' => $this->start,
+                'Limit' => $this->limit,
+                'Count' => $count
+            ]
+        ], 200);
+    }
+
+    public function sere_serv_tein_get_view(Request $request)
+    {
+        // Khai báo các biến lấy từ json param
+        $request_sere_serv_ids = $this->param_request['ApiData']['SERE_SERV_IDs'] ?? null;
+        $request_is_include_deleted = $this->param_request['ApiData']['IS_INCLUDE_DELETED'] ?? null;
+        $request_is_active = $this->param_request['ApiData']['IS_ACTIVE'] ?? null;
+
+        // Khai báo các trường cần select
+        $select = [
+            "ID",
+            "CREATE_TIME",
+            "MODIFY_TIME",
+            "CREATOR",
+            "MODIFIER",
+            "APP_CREATOR",
+            "APP_MODIFIER",
+            "IS_ACTIVE",
+            "IS_DELETE",
+            "SERE_SERV_ID",
+            "TEST_INDEX_ID",
+            "VALUE",
+            "TDL_TREATMENT_ID",
+            "MACHINE_ID",
+            "NOTE",
+            "LEAVEN",
+            "TDL_SERVICE_REQ_ID",
+        ];
+
+        // Khởi tạo, gán các model vào các biến 
+        $model = $this->sere_serv_tein::select($select);
+
+        // Kiểm tra các điều kiện từ json param
+        if ($request_sere_serv_ids != null) {
+            $model->whereIn('sere_serv_id', $request_sere_serv_ids);
+        }
+        if (!$request_is_include_deleted) {
+            $model->where('is_delete', 0);
+        }
+        if ($request_is_active) {
+            $model->where('is_active', 1);
+        } else {
+            $model->where('is_active', 0);
+        }
+
+        // Khai báo các bảng liên kết dùng cho with()
+        $param = [
+            'machine:id,machine_group_code,source_code,serial_number,MACHINE_NAME,MACHINE_CODE',
+            'test_index:id,test_index_unit_id,TEST_INDEX_NAME,TEST_INDEX_CODE,IS_NOT_SHOW_SERVICE',
+            'test_index.test_index_unit:id,TEST_INDEX_UNIT_NAME,TEST_INDEX_UNIT_CODE',
+        ];
+
+        // Lấy dữ liệu
+        $count = $model->count();
         $data = $model->skip($this->start)->take($this->limit)->with($param)->get();
 
         // Trả về dữ liệu

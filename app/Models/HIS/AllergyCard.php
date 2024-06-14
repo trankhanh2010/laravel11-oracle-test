@@ -15,3 +15,4 @@ class AllergyCard extends Model
 
     ];
 }
+
