@@ -14,6 +14,44 @@ class Treatment extends Model
     protected $fillable = [
 
     ];
+    protected $appends = [
+        'server_time',
+        'patienttype'
+    ];
+
+    public function getServerTimeAttribute()
+    {
+        return now()->format('Ymdhis');
+    }
+    public function getPatientTypeAttribute()
+    {
+        $treatment_type_code =  $this->treatment_type()->value('treatment_type_code') ?? '';
+        $patient_type_code = $this->patient_type()->value('patient_type_code') ?? '';
+        $hein_medi_ord_code = $this->tdl_hein_medi_org_code ?? '';
+        $right_route_type_code = $this->hein_approvals()->value('right_route_type_code') ?? '';
+        $hein_card_number = $this->hein_card_number ?? '';
+        $level_code = $this->hein_approvals()->value('level_code') ?? '';
+        $right_route_code = $this->hein_approvals()->value('right_route_code') ?? '';
+        $hein_card_from_time = $this->tdl_hein_card_from_time ?? '';
+        $hein_card_to_time = $this->tdl_hein_card_to_time ?? '';
+        $hein_card_address = $this->hein_approvals()->value('address') ?? '';
+        $primary_patient_type_id = $this->patient_type_alters()->value('primary_patient_type_id') ?? '';
+        $patient_type = 
+            $treatment_type_code.'|'.
+            $patient_type_code.'|'.
+            $hein_medi_ord_code.'|'.
+            $right_route_type_code.'|'.
+            $hein_card_number.'|'.
+            $level_code.'|'.
+            $right_route_code.'|'.
+            $hein_card_from_time.'|'.
+            $hein_card_to_time.'|'.
+            $hein_card_address.'|'.
+            $primary_patient_type_id;
+        return  $patient_type;
+    }
+
+    // Phương thức để trả về giá trị của current_time
     public function accident_hurts()
     {
         return $this->hasMany(AccdientHurt::class);

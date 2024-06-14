@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -4417,20 +4418,8 @@ class HISController extends Controller
         // Khai báo các biến lấy từ json param
         $request_treatment_id = $this->param_request['ApiData']['TREATMENT_ID'] ?? null;
         $request_intruction_time = $this->param_request['ApiData']['INTRUCTION_TIME'] ?? null;
-
         // Khai báo các trường cần select
         $select = [
-            // "PATIENT_TYPE",
-            "TDL_HEIN_MEDI_ORG_CODE",
-            // "RIGHT_ROUTE_TYPE_CODE",
-            "TDL_HEIN_CARD_NUMBER",
-            // "LEVEL_CODE",
-            // "RIGHT_ROUTE_CODE",
-            "TDL_HEIN_CARD_FROM_TIME",
-            "TDL_HEIN_CARD_TO_TIME",
-            // "HEIN_CARD_ADDRESS",
-            // "SERVER_TIME",
-            // "PRIMARY_PATIENT_TYPE_ID",
             "ID",
             "CREATE_TIME",
             "MODIFY_TIME",
@@ -4504,6 +4493,11 @@ class HISController extends Controller
             "TDL_PATIENT_UNSIGNED_NAME",
             "TDL_PATIENT_ETHNIC_NAME",
             "IS_TUBERCULOSIS",
+            "TDL_HEIN_MEDI_ORG_CODE",
+            "TDL_HEIN_CARD_NUMBER",
+            "TDL_HEIN_CARD_FROM_TIME",
+            "TDL_HEIN_CARD_TO_TIME",
+            // "PRIMARY_PATIENT_TYPE_ID",
         ];
 
         // Khởi tạo, gán các model vào các biến 
@@ -4535,7 +4529,7 @@ class HISController extends Controller
             'dhsts',
             'exp_mest_maty_reqs',
             'exp_mest_mety_reqs',
-            'hein_approvals',
+            'hein_approvals:id,treatment_id,LEVEL_CODE,RIGHT_ROUTE_CODE,RIGHT_ROUTE_TYPE_CODE,ADDRESS',
             'hiv_treatments',
             'hold_returns',
             'imp_mest_mate_reqs',
@@ -4594,40 +4588,44 @@ class HISController extends Controller
 
         // Khai báo các trường cần select
         $select = [
-            "ID",
-            "TREATMENT_ID",
-            "CO_TREATMENT_ID",
-            "ADD_TIME",
-            "BED_ROOM_ID",
-            // "NOTE",
+            "his_treatment_bed_room.ID",
+            "his_treatment_bed_room.TREATMENT_ID",
+            "his_treatment_bed_room.CO_TREATMENT_ID",
+            "his_treatment_bed_room.ADD_TIME",
+            "his_treatment_bed_room.BED_ROOM_ID",
+            "his_treatment.TDL_PATIENT_FIRST_NAME"
         ];
 
         // Khởi tạo, gán các model vào các biến 
-        $model = $this->treatment_bed_room::select($select);
+        $model = $this->treatment_bed_room::join('his_treatment', 'his_treatment_bed_room.treatment_id', '=', 'his_treatment.id')->select($select);
 
         // Kiểm tra các điều kiện từ json param
         if($request_bed_room_ids != null){
-            $model->whereIn('bed_room_id', $request_bed_room_ids);
+            $model->whereIn('his_treatment_bed_room.bed_room_id', $request_bed_room_ids);
         }
         if($request_is_in_room){
             if($request_add_time_from != null){
-                $model->where('add_time', '>=', $request_add_time_from);
+                $model->where('his_treatment_bed_room.add_time', '>=', $request_add_time_from);
             }
         }else{
             if(($request_add_time_from != null) && ($request_add_time_to != null)){
-                $model->whereBetween('add_time', [$request_add_time_from, $request_add_time_to]);
+                $model->whereBetween('his_treatment_bed_room.add_time', [$request_add_time_from, $request_add_time_to]);
             }
         }
         if (!$request_is_include_deleted) {
-            $model->where('is_delete', 0);
+            $model->where('his_treatment_bed_room.is_delete', 0);
         }
-        // if (($request_order_field != null) && ($request_order_direction != null)) {
-        //     $model->orderBy($request_order_field, $request_order_direction);
-        // }
+        if (($request_order_field != null) && ($request_order_direction != null)) {
+            $model->orderBy('his_treatment.'.$request_order_field, $request_order_direction);
+        }
 
         // Khai báo các bảng liên kết dùng cho with()
         $param = [
-            'treatment:id,tdl_patient_type_id,PATIENT_ID,TREATMENT_CODE,TDL_PATIENT_FIRST_NAME,TDL_PATIENT_LAST_NAME,TDL_PATIENT_NAME,TDL_PATIENT_DOB,TDL_PATIENT_GENDER_NAME,TDL_PATIENT_CODE,TDL_PATIENT_ADDRESS,TDL_HEIN_CARD_NUMBER,TDL_HEIN_MEDI_ORG_CODE,ICD_CODE,ICD_NAME,ICD_TEXT,ICD_SUB_CODE,TDL_PATIENT_GENDER_ID,TDL_HEIN_MEDI_ORG_NAME,TDL_TREATMENT_TYPE_ID,EMR_COVER_TYPE_ID,CLINICAL_IN_TIME,CO_TREAT_DEPARTMENT_IDS,LAST_DEPARTMENT_ID,TDL_PATIENT_UNSIGNED_NAME,TREATMENT_METHOD,TDL_HEIN_CARD_FROM_TIME,TDL_HEIN_CARD_TO_TIME',
+            'treatment'
+            => function ($query) use($request_order_field, $request_order_direction) {
+                $query->select('id','tdl_patient_type_id','PATIENT_ID','TREATMENT_CODE','TDL_PATIENT_LAST_NAME','TDL_PATIENT_NAME','TDL_PATIENT_DOB','TDL_PATIENT_GENDER_NAME','TDL_PATIENT_CODE','TDL_PATIENT_ADDRESS','TDL_HEIN_CARD_NUMBER','TDL_HEIN_MEDI_ORG_CODE','ICD_CODE','ICD_NAME','ICD_TEXT','ICD_SUB_CODE','TDL_PATIENT_GENDER_ID','TDL_HEIN_MEDI_ORG_NAME','TDL_TREATMENT_TYPE_ID','EMR_COVER_TYPE_ID','CLINICAL_IN_TIME','CO_TREAT_DEPARTMENT_IDS','LAST_DEPARTMENT_ID','TDL_PATIENT_UNSIGNED_NAME','TREATMENT_METHOD','TDL_HEIN_CARD_FROM_TIME','TDL_HEIN_CARD_TO_TIME')
+                ->orderBy($request_order_field, $request_order_direction);
+            },
             'treatment.patient_type:id,patient_type_code,patient_type_name',
             'treatment.last_department:id,department_code,department_name',
             'treatment.patient:id,note',
@@ -4636,6 +4634,7 @@ class HISController extends Controller
 
         // Lấy dữ liệu
         $count = $model->count();
+        
         $data = $model->skip($this->start)->take($this->limit)->with($param)->get();
 
         // Trả về dữ liệu
