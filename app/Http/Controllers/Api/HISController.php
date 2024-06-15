@@ -645,7 +645,7 @@ class HISController extends Controller
     }
 
     public function department_update(UpdateDepartmentRequest $request, $id){
-        $department = $this->department()::findOrFail($id);
+        $department = $this->department->findOrFail($id);
         $department->update($request);
         return response()->json([
             'data' => $department
