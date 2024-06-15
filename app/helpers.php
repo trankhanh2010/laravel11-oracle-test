@@ -264,3 +264,14 @@ if (!function_exists('view_service_req')) {
         });
     }
 }
+
+
+if (!function_exists('get_loginname_with_token')) {
+    function get_loginname_with_token($token, $time)
+    {
+        $loginname = Cache::remember('token_' . $token . '_loginname', $time, function () use ($token) {
+            return Token::select()->where('token_code', '=', $token)->value('login_name');
+        });
+        return $loginname;
+    }
+}

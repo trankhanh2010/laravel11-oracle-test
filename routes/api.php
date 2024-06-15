@@ -22,7 +22,12 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisDepartment'], function () {
         Route::get("v1/department", [HISController::class, "department"]);
         Route::get("v1/department/{id}", [HISController::class, "department"]);
+        Route::post("v1/department", [HISController::class, "department_create"]);        
+        Route::put("v1/department/{id}", [HISController::class, "department_update"]);        
     });
+
+    /// Đơn vị
+    Route::get("v1/group", [HISController::class, "group"]);       
 
     /// Buồng bệnh
     Route::group(['as' => 'HIS.Desktop.Plugins.HisBedRoomList'], function () {
@@ -526,7 +531,7 @@ Route::group([
         Route::get("v1/manufacturer/{id}", [HISController::class, "manufacturer"]);
     });
 
-    /// ICD
+    /// ICD - Accepted Icd - Chẩn đoán
     Route::group(['as' => 'HIS.Desktop.Plugins.HisIcd'], function () {
         Route::get("v1/icd", [HISController::class, "icd"]);
         Route::get("v1/icd/{id}", [HISController::class, "icd"]);

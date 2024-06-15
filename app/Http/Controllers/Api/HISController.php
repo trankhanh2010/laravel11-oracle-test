@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Gate;
+
+// use Model
 use App\Models\HIS\Department;
 use App\Models\HIS\BedRoom;
 use App\Models\HIS\ExecuteRoom;
@@ -140,7 +142,11 @@ use App\Models\HIS\Care;
 use App\Models\HIS\PatientTypeAlter;
 use App\Models\HIS\TreatmentBedRoom;
 use App\Models\HIS\SereServTein;
+use App\Models\SDA\Group;
 
+// use Request
+use App\Http\Requests\Department\CreateDepartmentRequest;
+use App\Http\Requests\Department\UpdateDepartmentRequest;
 class HISController extends Controller
 {
     protected $data = [];
@@ -150,6 +156,10 @@ class HISController extends Controller
     protected $per_page;
     protected $page;
     protected $param_request;
+    // Khai báo các biến mặc định model
+    protected $app_creator = "MOS_v2";
+    protected $app_modifier = "MOS_v2";
+    // Khai báo các biến model
     protected $department;
     protected $department_name = "department";
     protected $bed_room;
@@ -414,6 +424,8 @@ class HISController extends Controller
     protected $treatment_bed_room_name = 'treatment_bed_room';
     protected $sere_serv_tein;
     protected $sere_serv_tein_name = 'sere_serv_tein';
+    protected $group;
+    protected $group_name ='group';
     public function __construct(Request $request)
     {
         // Khai báo các biến
@@ -563,6 +575,8 @@ class HISController extends Controller
         $this->patient_type_alter = new PatientTypeAlter();
         $this->treatment_bed_room = new TreatmentBedRoom();
         $this->sere_serv_tein = new SereServTein();
+        $this->group = new Group();
+
     }
 
     /// Department
@@ -572,21 +586,80 @@ class HISController extends Controller
             $name = $this->department_name;
             $param = [
                 'branch:id,branch_name,branch_code',
-                'room.default_instr_patient_type',
-                'req_surg_treatment_type'
+                'req_surg_treatment_type:id,treatment_type_code,treatment_type_name',
+                'default_instr_patient_type:id,patient_type_code,patient_type_name'
             ];
         } else {
             $name = $this->department_name . '_' . $id;
             $param = [
-                'branch',
-                'room.default_instr_patient_type',
-                'req_surg_treatment_type'
+                'branch:id,branch_name,branch_code',
+                'req_surg_treatment_type:id,treatment_type_code,treatment_type_name',
+                'default_instr_patient_type:id,patient_type_code,patient_type_name'
             ];
         }
         $data = get_cache_full($this->department, $param, $name, $id, $this->time);
         foreach ($data as $key => $item) {
             $item->allow_treatment_type = get_cache_1_n_with_ids($this->department, "allow_treatment_type", $this->department_name, $item->id, $this->time);
         }
+        return response()->json(['data' => $data], 200);
+    }
+
+    public function department_create(CreateDepartmentRequest $request){
+        $department = $this->department::create([
+            'create_time' => now()->format('Ymdhis'),
+            'modify_time' => now()->format('Ymdhis'),
+            'creator' => get_loginname_with_token( $request->bearerToken(), $this->time),
+            'modifier' => get_loginname_with_token( $request->bearerToken(), $this->time),
+            'app_creator' => $this->app_creator,
+            'app_modifier' => $this->app_modifier,
+            'is_active' => 1,
+            'is_delete' => 0,
+            'department_code' => $request->department_code,
+            'department_name' => $request->department_name,
+            'g_code' => $request->g_code,
+            'bhyt_code' => $request->bhyt_code,
+            'branch_id' => $request->branch_id,
+            'default_instr_patient_type_id' => $request->default_instr_patient_type_id,
+            'allow_treatment_type_ids' => $request->allow_treatment_type_ids,
+            'theory_patient_count' => $request->theory_patient_count,
+            'reality_patient_count' => $request->reality_patient_count,
+            'req_surg_treatment_type_id' => $request->req_surg_treatment_type_id,
+            'phone' => $request->phone,
+            'head_loginname' => $request->head_loginname,
+            'head_username' => $request->head_username,
+            'accepted_icd_codes' => $request->accepted_icd_codes,
+            'is_exam' => $request->is_exam,
+            'is_clinical' => $request->is_clinical,
+            'allow_assign_package_price' => $request->allow_assign_package_price,
+            'auto_bed_assign_option' => $request->auto_bed_assign_option,
+            'is_emergency' => $request->is_emergency,
+            'is_auto_receive_patient' => $request->is_auto_receive_patient,
+            'allow_assign_surgery_price' => $request->allow_assign_surgery_price,
+            'is_in_dep_stock_moba' => $request->is_in_dep_stock_moba,
+            'warning_when_is_no_surg' => $request->warning_when_is_no_surg,
+        ]);
+
+        return response()->json([
+            'data' => $department
+        ], 201);
+    }
+
+    public function department_update(UpdateDepartmentRequest $request, $id){
+        $department = $this->department()::findOrFail($id);
+        $department->update($request);
+        return response()->json([
+            'data' => $department
+        ], 201);
+    }
+
+    /// Group
+    
+    public function group()
+    {
+        $name = $this->group_name;
+        $param = [
+        ];
+        $data = get_cache_full($this->group, $param, $name, null, $this->time);
         return response()->json(['data' => $data], 200);
     }
 
