@@ -6,11 +6,27 @@ use App\Traits\dinh_dang_ten_truong;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
+
 class BedRoom extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
+    public $time = 604800;
     protected $connection = 'oracle_his'; // Kết nối CSDL mặc định
     protected $table = 'HIS_BED_ROOM';
+    public function getTreatmentTypeIdsAttribute($value)
+    {
+        if($value != null){
+             // Tạo Cache để tránh trùng lặp truy vấn
+             return Cache::remember('allow_treatment_type_ids_'.$value, $this->time, function () use ($value) {
+                return TreatmentType::
+                select('id', 'treatment_type_code', 'treatment_type_name')
+                ->whereIn('id', explode(',', $value))->get();
+            });        
+        }else{
+            return $value;
+        }
+    }
     protected $fillable = [
         'treatment_type_ids',
     ];

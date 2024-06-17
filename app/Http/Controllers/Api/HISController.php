@@ -148,6 +148,11 @@ use App\Models\SDA\Group;
 // use Request
 use App\Http\Requests\Department\CreateDepartmentRequest;
 use App\Http\Requests\Department\UpdateDepartmentRequest;
+use App\Http\Requests\Area\CreateAreaRequest;
+use App\Http\Requests\Area\UpdateAreaRequest;
+use App\Http\Requests\BedRoom\CreateBedRoomRequest;
+use App\Http\Requests\BedRoom\UpdateBedRoomRequest;
+
 class HISController extends Controller
 {
     protected $data = [];
@@ -426,11 +431,11 @@ class HISController extends Controller
     protected $sere_serv_tein;
     protected $sere_serv_tein_name = 'sere_serv_tein';
     protected $group;
-    protected $group_name ='group';
+    protected $group_name = 'group';
     public function __construct(Request $request)
     {
         // Khai báo các biến
-        $this->time = now()->addMinutes(1440);
+        $this->time = now()->addMinutes(10080);
         $this->param_request = json_decode(base64_decode($request->input('param')), true);
         $this->per_page = $request->query('perPage', 50);
         $this->page = $request->query('page', 1);
@@ -577,7 +582,6 @@ class HISController extends Controller
         $this->treatment_bed_room = new TreatmentBedRoom();
         $this->sere_serv_tein = new SereServTein();
         $this->group = new Group();
-
     }
 
     /// Department
@@ -588,9 +592,16 @@ class HISController extends Controller
             $param = [
                 'branch:id,branch_name,branch_code',
                 'req_surg_treatment_type:id,treatment_type_code,treatment_type_name',
-                'default_instr_patient_type:id,patient_type_code,patient_type_name'
+                'default_instr_patient_type:id,patient_type_code,patient_type_name',
             ];
         } else {
+            if (!is_numeric($id)) {
+                return return_id_error($id);
+            }
+            $data = $this->department->find($id);
+            if ($data == null) {
+                return return_not_record($id);
+            }
             $name = $this->department_name . '_' . $id;
             $param = [
                 'branch:id,branch_name,branch_code',
@@ -599,9 +610,9 @@ class HISController extends Controller
             ];
         }
         $data = get_cache_full($this->department, $param, $name, $id, $this->time);
-        foreach ($data as $key => $item) {
-            $item->allow_treatment_type = get_cache_1_n_with_ids($this->department, "allow_treatment_type", $this->department_name, $item->id, $this->time);
-        }
+        // foreach ($data as $key => $item) {
+        //     $item->allow_treatment_type = get_cache_1_n_with_ids($this->department, "allow_treatment_type", $this->department_name, $item->id, $this->time);
+        // }
         $count = $data->count();
         $param_return = [
             'start' => null,
@@ -611,14 +622,13 @@ class HISController extends Controller
         return return_data_success($param_return, $data);
     }
 
-    public function department_create(CreateDepartmentRequest $request){
-        event(new DeleteCache($this->department_name));
-
+    public function department_create(CreateDepartmentRequest $request)
+    {
         $data = $this->department::create([
             'create_time' => now()->format('Ymdhis'),
             'modify_time' => now()->format('Ymdhis'),
-            'creator' => get_loginname_with_token( $request->bearerToken(), $this->time),
-            'modifier' => get_loginname_with_token( $request->bearerToken(), $this->time),
+            'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
+            'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
             'app_creator' => $this->app_creator,
             'app_modifier' => $this->app_modifier,
             'is_active' => 1,
@@ -648,20 +658,22 @@ class HISController extends Controller
             'warning_when_is_no_surg' => $request->warning_when_is_no_surg,
         ]);
         // Gọi event để xóa cache
+        event(new DeleteCache($this->department_name));
         return return_data_create_success($data);
     }
 
-    public function department_update(UpdateDepartmentRequest $request, $id){
-        if(!is_numeric($id)){
+    public function department_update(UpdateDepartmentRequest $request, $id)
+    {
+        if (!is_numeric($id)) {
             return return_id_error($id);
         }
         $data = $this->department->find($id);
-        if($data == null){
+        if ($data == null) {
             return return_not_record($id);
         }
         $data->update([
             'modify_time' => now()->format('Ymdhis'),
-            'modifier' => get_loginname_with_token( $request->bearerToken(), $this->time),
+            'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
             'app_modifier' => $this->app_modifier,
             'department_name' => $request->department_name,
             'g_code' => $request->g_code,
@@ -685,33 +697,37 @@ class HISController extends Controller
             'is_in_dep_stock_moba' => $request->is_in_dep_stock_moba,
             'warning_when_is_no_surg' => $request->warning_when_is_no_surg,
         ]);
+        // Gọi event để xóa cache
+        event(new DeleteCache($this->department_name));
         return return_data_update_success($data);
     }
 
-    public function department_delete(Request $request, $id){
-        if(!is_numeric($id)){
+    public function department_delete(Request $request, $id)
+    {
+        if (!is_numeric($id)) {
             return return_id_error($id);
         }
         $data = $this->department->find($id);
-        if($data == null){
+        if ($data == null) {
             return return_not_record($id);
         }
         $data->update([
             'modify_time' => now()->format('Ymdhis'),
-            'modifier' => get_loginname_with_token( $request->bearerToken(), $this->time),
+            'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
             'app_modifier' => $this->app_modifier,
             'is_delete' => 1
         ]);
+        // Gọi event để xóa cache
+        event(new DeleteCache($this->department_name));
         return return_data_delete_success($data);
     }
 
     /// Group
-    
+
     public function group()
     {
         $name = $this->group_name;
-        $param = [
-        ];
+        $param = [];
         $data = get_cache_full($this->group, $param, $name, null, $this->time);
         $count = $data->count();
         $param_return = [
@@ -728,7 +744,7 @@ class HISController extends Controller
         if ($id == null) {
             $name = $this->bed_room_name;
             $param = [
-                'room',
+                'room:id,department_id,speciality_id,default_cashier_room_id,default_instr_patient_type_id',
                 'room.department:id,department_name,department_code',
                 'room.department.area:id,area_name',
                 'room.speciality:id,speciality_name,speciality_code',
@@ -736,6 +752,13 @@ class HISController extends Controller
                 'room.default_instr_patient_type:id,patient_type_name',
             ];
         } else {
+            if (!is_numeric($id)) {
+                return return_id_error($id);
+            }
+            $data = $this->bed_room->find($id);
+            if ($data == null) {
+                return return_not_record($id);
+            }
             $name = $this->bed_room_name . '_' . $id;
             $param = [
                 'room',
@@ -746,13 +769,58 @@ class HISController extends Controller
                 'room.default_instr_patient_type',
             ];
         }
-        $data = get_cache_full($this->bed_room, $param, $name, $id, $this->time);
-        foreach ($data as $key => $item) {
-            $item->treatment_type = get_cache_1_n_with_ids($this->bed_room, "treatment_type", $this->bed_room_name, $item->id, $this->time);
-        }
-        return response()->json(['data' => $data], 200);
+        $model = $this->bed_room;
+        $data = get_cache_full($model, $param, $name, $id, $this->time);
+        // foreach ($data as $key => $item) {
+        //     $item->treatment_type = get_cache_1_n_with_ids($this->bed_room, "treatment_type", $this->bed_room_name, $item->id, $this->time);
+        // }
+        $count = $data->count();
+        $param_return = [
+            'start' => null,
+            'limit' => null,
+            'count' => $count
+        ];
+        return return_data_success($param_return, $data);
     }
 
+    public function bed_room_create(CreateDepartmentRequest $request)
+    {
+        $data = $this->bed_room::create([
+            'create_time' => now()->format('Ymdhis'),
+            'modify_time' => now()->format('Ymdhis'),
+            'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
+            'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+            'app_creator' => $this->app_creator,
+            'app_modifier' => $this->app_modifier,
+            'is_active' => 1,
+            'is_delete' => 0,
+            'bed_room_code' => $request->bed_room_code,
+            'bed_room_name' => $request->bed_room_name,
+            'department_id' => $request->department_id,
+        ]);
+           
+        // Start transaction
+        DB::beginTransaction();
+
+        try {
+            DB::commit();
+        // Gọi event để xóa cache
+            event(new DeleteCache($this->bed_room));
+            return response()->json([
+                'success' => true,
+                'message' => 'Bedroom created successfully!',
+                'data' => $data,
+            ], 201);
+        } catch (\Exception $e) {
+            // Rollback transaction nếu có lỗi
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to create bedroom!',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
     /// Execute Room
     public function execute_room($id = null)
     {
@@ -927,18 +995,90 @@ class HISController extends Controller
     }
 
     /// Area
-    public function area()
+    public function area($id = null)
     {
-        $data = get_cache($this->area, $this->area_name, null, $this->time);
-        return response()->json(['data' => $data], 200);
+        if ($id == null) {
+            $data = get_cache($this->area, $this->area_name, null, $this->time);
+        } else {
+            if (!is_numeric($id)) {
+                return return_id_error($id);
+            }
+            $data = $this->area->find($id);
+            if ($data == null) {
+                return return_not_record($id);
+            }
+            $data = get_cache($this->area, $this->area_name, $id, $this->time);
+        }
+        $count = $data->count();
+        $param_return = [
+            'start' => null,
+            'limit' => null,
+            'count' => $count
+        ];
+        return return_data_success($param_return, $data);
     }
 
-    public function area_id($id)
+    public function area_create(CreateAreaRequest $request)
     {
-        $data = get_cache($this->area, $this->area_name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
+        $data = $this->area::create([
+            'create_time' => now()->format('Ymdhis'),
+            'modify_time' => now()->format('Ymdhis'),
+            'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
+            'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+            'app_creator' => $this->app_creator,
+            'app_modifier' => $this->app_modifier,
+            'is_active' => 1,
+            'is_delete' => 0,
+            'area_code' => $request->area_code,
+            'area_name' => $request->area_name,
+            'department_id' => $request->department_id
+        ]);
+        // Gọi event để xóa cache
+        event(new DeleteCache($this->area_name));
+        return return_data_create_success($data);
     }
 
+    public function area_update(UpdateAreaRequest $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->area->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        $data->update([
+            'modify_time' => now()->format('Ymdhis'),
+            'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+            'app_modifier' => $this->app_modifier,
+            'area_code' => $request->area_code,
+            'area_name' => $request->area_name,
+            'department_id' => $request->department_id
+        ]);
+        // Gọi event để xóa cache
+        event(new DeleteCache($this->area_name));
+        return return_data_update_success($data);
+    }
+
+    public function area_delete(Request $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->area->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        $data->update([
+            'modify_time' => now()->format('Ymdhis'),
+            'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+            'app_modifier' => $this->app_modifier,
+            'is_delete' => 1
+        ]);
+        // Gọi event để xóa cache
+        event(new DeleteCache($this->area_name));
+        return return_data_delete_success($data);
+    }
     /// Refectory
     public function refectory()
     {
@@ -3434,10 +3574,10 @@ class HISController extends Controller
         $model = $this->debate::select($select);
         if ($request_id != null) {
             $model->find($request_id)->first();
-        }else{
+        } else {
             if ($request_treatment_id != null) {
                 $model->where('treatment_id', $request_treatment_id);
-            }   
+            }
         }
         if (!$request_is_include_deleted) {
             $model->where('is_delete', 0);
@@ -3516,7 +3656,7 @@ class HISController extends Controller
             'debate_reason:id,debate_reason_name,debate_reason_code',
 
         ];
- 
+
         $data = $model->with($param)->get();
         return response()->json(['data' => $data], 200);
     }

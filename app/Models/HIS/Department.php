@@ -5,11 +5,13 @@ namespace App\Models\HIS;
 use App\Traits\dinh_dang_ten_truong;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 class Department extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     // protected $connection = 'oracle_data'; // Kết nối CSDL khác
+    public $time = 604800;
     protected $connection = 'oracle_his'; // Kết nối CSDL mặc định
     protected $table = 'HIS_DEPARTMENT';
     protected $fillable = [
@@ -45,6 +47,19 @@ class Department extends Model
         'is_in_dep_stock_moba' ,
         'warning_when_is_no_surg' ,
     ];
+    public function getAllowTreatmentTypeIdsAttribute($value)
+    {
+        if($value != null){
+            // Tạo Cache để tránh trùng lặp truy vấn
+            return Cache::remember('allow_treatment_type_ids_'.$value, $this->time, function () use ($value) {
+                return TreatmentType::
+                select('id', 'treatment_type_code', 'treatment_type_name')
+                ->whereIn('id', explode(',', $value))->get();
+            });        
+        }else{
+            return $value;
+        }
+    }
      // Đặt thuộc tính $timestamps thành false để tắt tự động thêm created_at và updated_at
     public $timestamps = false;
     public function room()
@@ -52,12 +67,12 @@ class Department extends Model
         return $this->hasOne(Room::class);
     }
 
-    public function allow_treatment_types()
-    {
-        return TreatmentType::
-            select('id', 'treatment_type_code', 'treatment_type_name')
-            ->whereIn('id', explode(',', $this->allow_treatment_type_ids))->get();
-    }
+    // public function allow_treatment_types()
+    // {
+    //     return TreatmentType::
+    //         select('id', 'treatment_type_code', 'treatment_type_name')
+    //         ->whereIn('id', explode(',', $this->allow_treatment_type_ids))->get();
+    // }
 
     public function req_surg_treatment_type()
     {

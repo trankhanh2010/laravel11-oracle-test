@@ -34,6 +34,9 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisBedRoomList'], function () {
         Route::get("v1/bed-room", [HISController::class, "bed_room"]);
         Route::get("v1/bed-room/{id}", [HISController::class, "bed_room"]);
+        Route::post("v1/bed-room", [HISController::class, "bed_room_create"]);        
+        Route::put("v1/bed-room/{id}", [HISController::class, "bed_room_update"]);       
+        Route::delete("v1/bed-room/{id}", [HISController::class, "bed_room_delete"]);       
     });
 
     /// Phòng khám/cls/pttt
@@ -85,7 +88,10 @@ Route::group([
     /// Khu vực
     Route::group(['as' => 'HIS.Desktop.Plugins.HisArea'], function () {
         Route::get("v1/area", [HISController::class, "area"]);
-        Route::get("v1/area/{id}", [HISController::class, "area_id"]);
+        Route::get("v1/area/{id}", [HISController::class, "area"]);
+        Route::post("v1/area", [HISController::class, "area_create"]);
+        Route::put("v1/area/{id}", [HISController::class, "area_update"]);
+        Route::delete("v1/area/{id}", [HISController::class, "area_delete"]);
     });
 
     /// Nhà ăn
