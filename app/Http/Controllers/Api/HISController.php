@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Events\Cache\DeleteCache;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -601,11 +602,19 @@ class HISController extends Controller
         foreach ($data as $key => $item) {
             $item->allow_treatment_type = get_cache_1_n_with_ids($this->department, "allow_treatment_type", $this->department_name, $item->id, $this->time);
         }
-        return response()->json(['data' => $data], 200);
+        $count = $data->count();
+        $param_return = [
+            'start' => null,
+            'limit' => null,
+            'count' => $count
+        ];
+        return return_data_success($param_return, $data);
     }
 
     public function department_create(CreateDepartmentRequest $request){
-        $department = $this->department::create([
+        event(new DeleteCache($this->department_name));
+
+        $data = $this->department::create([
             'create_time' => now()->format('Ymdhis'),
             'modify_time' => now()->format('Ymdhis'),
             'creator' => get_loginname_with_token( $request->bearerToken(), $this->time),
@@ -638,18 +647,62 @@ class HISController extends Controller
             'is_in_dep_stock_moba' => $request->is_in_dep_stock_moba,
             'warning_when_is_no_surg' => $request->warning_when_is_no_surg,
         ]);
-
-        return response()->json([
-            'data' => $department
-        ], 201);
+        // Gọi event để xóa cache
+        return return_data_create_success($data);
     }
 
     public function department_update(UpdateDepartmentRequest $request, $id){
-        $department = $this->department->findOrFail($id);
-        $department->update($request);
-        return response()->json([
-            'data' => $department
-        ], 201);
+        if(!is_numeric($id)){
+            return return_id_error($id);
+        }
+        $data = $this->department->find($id);
+        if($data == null){
+            return return_not_record($id);
+        }
+        $data->update([
+            'modify_time' => now()->format('Ymdhis'),
+            'modifier' => get_loginname_with_token( $request->bearerToken(), $this->time),
+            'app_modifier' => $this->app_modifier,
+            'department_name' => $request->department_name,
+            'g_code' => $request->g_code,
+            'bhyt_code' => $request->bhyt_code,
+            'default_instr_patient_type_id' => $request->default_instr_patient_type_id,
+            'allow_treatment_type_ids' => $request->allow_treatment_type_ids,
+            'theory_patient_count' => $request->theory_patient_count,
+            'reality_patient_count' => $request->reality_patient_count,
+            'req_surg_treatment_type_id' => $request->req_surg_treatment_type_id,
+            'phone' => $request->phone,
+            'head_loginname' => $request->head_loginname,
+            'head_username' => $request->head_username,
+            'accepted_icd_codes' => $request->accepted_icd_codes,
+            'is_exam' => $request->is_exam,
+            'is_clinical' => $request->is_clinical,
+            'allow_assign_package_price' => $request->allow_assign_package_price,
+            'auto_bed_assign_option' => $request->auto_bed_assign_option,
+            'is_emergency' => $request->is_emergency,
+            'is_auto_receive_patient' => $request->is_auto_receive_patient,
+            'allow_assign_surgery_price' => $request->allow_assign_surgery_price,
+            'is_in_dep_stock_moba' => $request->is_in_dep_stock_moba,
+            'warning_when_is_no_surg' => $request->warning_when_is_no_surg,
+        ]);
+        return return_data_update_success($data);
+    }
+
+    public function department_delete(Request $request, $id){
+        if(!is_numeric($id)){
+            return return_id_error($id);
+        }
+        $data = $this->department->find($id);
+        if($data == null){
+            return return_not_record($id);
+        }
+        $data->update([
+            'modify_time' => now()->format('Ymdhis'),
+            'modifier' => get_loginname_with_token( $request->bearerToken(), $this->time),
+            'app_modifier' => $this->app_modifier,
+            'is_delete' => 1
+        ]);
+        return return_data_delete_success($data);
     }
 
     /// Group
@@ -660,7 +713,13 @@ class HISController extends Controller
         $param = [
         ];
         $data = get_cache_full($this->group, $param, $name, null, $this->time);
-        return response()->json(['data' => $data], 200);
+        $count = $data->count();
+        $param_return = [
+            'start' => null,
+            'limit' => null,
+            'count' => $count
+        ];
+        return return_data_success($param_return, $data);
     }
 
     /// Bed Room

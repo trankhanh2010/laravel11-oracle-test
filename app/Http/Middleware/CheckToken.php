@@ -22,13 +22,17 @@ class CheckToken
     {
         $token_header = $request->bearerToken();
         if (!$token_header) {
-            return response()->json(['message' => 'Thiếu token'], 401);
+            return response()->json([
+                'success'   => false,
+                'message' => 'Thiếu token'], 401);
         }
 
         $token = get_token_header($request, $token_header);
         if(!$token){
             Cache::forget('token_'.$token_header);
-            return response()->json(['message' => 'Token không hợp lệ'], 401);
+            return response()->json([
+                'success'   => false,
+                'message' => 'Token không hợp lệ'], 401);
         }
         // dd(date("Y-m-d H:i:s", $token->expire_time));
         $date = Carbon::createFromTimestamp($token->expire_time);
@@ -36,7 +40,9 @@ class CheckToken
         $is_expire = Carbon::now()->greaterThan($date);
         // Nếu token không hợp lệ, trả về lỗi 401 Unauthorized
         if (!$token || (!$token->is_active) || ($token->is_delete) || ($is_expire)) {
-            return response()->json(['message' => 'Token không hợp lệ'], 401);
+            return response()->json([
+                'success'   => false,
+                'message' => 'Token không hợp lệ'], 401);
         }
         $user = User::where('loginname','=',$token->login_name)->get();
         // Đặt người dùng hiện tại vào request

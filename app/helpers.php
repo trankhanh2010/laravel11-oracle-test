@@ -275,3 +275,74 @@ if (!function_exists('get_loginname_with_token')) {
         return $loginname;
     }
 }
+
+if (!function_exists('return_id_error')) {
+    function return_id_error($id)
+    {
+        return response()->json([
+            'success'   => false,
+            'message'   => 'Id = '.$id.' không hợp lệ!',
+        ], 422)->original;
+    }
+}
+
+if (!function_exists('return_not_record')) {
+    function return_not_record($id)
+    {
+        return response()->json([
+            'success'   => false,
+            'message'   => 'Không tìm thấy bản ghi với id = '.$id.'!',
+        ], 422)->original;
+    }
+}
+
+if (!function_exists('return_data_success')) {
+    function return_data_success($param_return, $data_return)
+    {
+        if($param_return == null){
+            return response()->json([
+                'success' => true,
+                'data' => $data_return,
+            ], 200)->original;
+        }else{
+            return response()->json([
+                'success' => true,
+                'param' => $param_return,
+                'data' => $data_return,
+            ], 200)->original;
+        }
+    }
+}
+
+if (!function_exists('return_data_create_success')) {
+    function return_data_create_success($data_return)
+    {
+        return response()->json([
+            'success' => true,
+            'data' => $data_return,
+        ], 201)->original;
+
+    }
+}
+
+if (!function_exists('return_data_update_success')) {
+    function return_data_update_success($data_return)
+    {
+        return response()->json([
+            'success' => true,
+            'data' => $data_return,
+        ], 200)->original;
+
+    }
+}
+
+if (!function_exists('return_data_delete_success')) {
+    function return_data_delete_success($data_return)
+    {
+        return response()->json([
+            'success' => true,
+            'data' => $data_return,
+        ], 200)->original;
+
+    }
+}

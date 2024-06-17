@@ -23,7 +23,8 @@ Route::group([
         Route::get("v1/department", [HISController::class, "department"]);
         Route::get("v1/department/{id}", [HISController::class, "department"]);
         Route::post("v1/department", [HISController::class, "department_create"]);        
-        Route::put("v1/department/{id}", [HISController::class, "department_update"]);        
+        Route::put("v1/department/{id}", [HISController::class, "department_update"]);       
+        Route::delete("v1/department/{id}", [HISController::class, "department_delete"]);         
     });
 
     /// Đơn vị

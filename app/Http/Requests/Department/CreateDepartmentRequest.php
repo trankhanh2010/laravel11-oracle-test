@@ -68,7 +68,7 @@ class CreateDepartmentRequest extends FormRequest
             'g_code.required' => 'Mã đơn vị không được bỏ trống!',            
             'g_code.string' => 'Mã đơn vị phải là chuỗi string!',
             'g_code.max' => 'Mã đơn vị tối đa 20 kí tự!',            
-            'g_code.exists' => 'Mã đơn vị không tồn tại!',            
+            'g_code.exists' => 'Mã đơn vị '.$this->g_code.' không tồn tại!',            
 
             'bhyt_code.string' => 'Mã BHYT phải là chuỗi string!',
             'bhyt_code.max' => 'Mã BHYT tối đa 50 kí tự!',      
@@ -157,12 +157,12 @@ class CreateDepartmentRequest extends FormRequest
     {
         $validator->after(function ($validator) {
             if ($this->has('allow_treatment_type_ids') && (strlen($this->allow_treatment_type_ids) >= 20)) {
-                $validator->errors()->add('allow_treatment_type_ids', 'Danh sách Id diện điều trị tối đa 20 kí tự!');
+                $validator->errors()->add('allow_treatment_type_ids', 'Danh sách id diện điều trị tối đa 20 kí tự!');
             }
             if ($this->has('allow_treatment_type_ids_list') && ($this->allow_treatment_type_ids_list[0] != null)) {
                 foreach ($this->allow_treatment_type_ids_list as $id) {
                     if (!is_numeric($id) || !\App\Models\HIS\TreatmentType::find($id)) {
-                        $validator->errors()->add('allow_treatment_type_ids', 'Diện điều trị với Id = ' . $id . ' trong danh sách diện điều trị không tồn tại!');
+                        $validator->errors()->add('allow_treatment_type_ids', 'Diện điều trị với id = ' . $id . ' trong danh sách diện điều trị không tồn tại!');
                     }
                 }
             }
@@ -173,7 +173,7 @@ class CreateDepartmentRequest extends FormRequest
             if ($this->has('accepted_icd_codes_list') && ($this->accepted_icd_codes_list[0] != null)) {
                 foreach ($this->accepted_icd_codes_list as $icd_code) {
                     if (!\App\Models\HIS\Icd::where('icd_code', $icd_code)->exists()) {
-                        $validator->errors()->add('accepted_icd_codes', 'Chẩn đoán nhập viện với mã Icd Code = ' . $icd_code . ' trong danh sách chẩn đoán nhập viện không tồn tại!');
+                        $validator->errors()->add('accepted_icd_codes', 'Chẩn đoán nhập viện với icd code = ' . $icd_code . ' trong danh sách chẩn đoán nhập viện không tồn tại!');
                     }
                 }
             }
@@ -187,7 +187,7 @@ class CreateDepartmentRequest extends FormRequest
 
             'success'   => false,
 
-            'message'   => 'Validation errors',
+            'message'   => 'Dữ liệu không hợp lệ!',
 
             'data'      => $validator->errors()
 
