@@ -33,26 +33,26 @@ class UpdateAreaRequest extends FormRequest
                 'max:2',
                 Rule::unique('App\Models\HIS\Area')->ignore($this->id),
             ],
-            'area_name' => 'required|string|max:100',
-            'department_id' => 'required|integer|max:22|exists:App\Models\HIS\Department,id',
+            'area_name' =>      'required|string|max:100',
+            'department_id' =>  'required|integer|max:22|exists:App\Models\HIS\Department,id',
         ];
     }
     public function messages()
     {
         return [
-            'area_code.required' => 'Mã khu vực không được bỏ trống!',
-            'area_code.string' => 'Mã khu vực phải là chuỗi string!',
-            'area_code.max' => 'Mã khu vực tối đa 2 kí tự!',
-            'area_code.unique' => 'Mã khu vực ' . $this->area_code . ' đã tồn tại!',
+            'area_code.required' => config('keywords')['area']['area_code'].' không được bỏ trống!',
+            'area_code.string' => config('keywords')['area']['area_code'].' phải là chuỗi string!',
+            'area_code.max' => config('keywords')['area']['area_code'].' tối đa 2 kí tự!',
+            'area_code.unique' => config('keywords')['area']['area_code'].' = '. $this->area_code . ' đã tồn tại!',
 
-            'area_name.required' => 'Tên khu vực không được bỏ trống!',
-            'area_name.string' => 'Tên khu vực phải là chuỗi string!',
-            'area_name.max' => 'Tên khu vực tối đa 100 kí tự!',
+            'area_name.required' => config('keywords')['area']['area_name'].' không được bỏ trống!',
+            'area_name.string' => config('keywords')['area']['area_name'].' phải là chuỗi string!',
+            'area_name.max' => config('keywords')['area']['area_name'].' tối đa 100 kí tự!',
 
-            'department_id.required' => 'Id khoa không được bỏ trống!',
-            'department_id.integer' => 'Id khoa phải là số nguyên!',
-            'department_id.max' => 'Id khoa tối đa 22 kí tự!',
-            'department_id.exists' => 'Id khoa không tồn tại!',
+            'department_id.required' => config('keywords')['area']['department_id'].' không được bỏ trống!',
+            'department_id.integer' => config('keywords')['area']['department_id'].' phải là số nguyên!',
+            'department_id.max' => config('keywords')['area']['department_id'].' tối đa 22 kí tự!',
+            'department_id.exists' => config('keywords')['area']['department_id'].' = '.$this->department_id.' không tồn tại!',
 
         ];
     }

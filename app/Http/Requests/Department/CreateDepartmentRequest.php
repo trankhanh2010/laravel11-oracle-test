@@ -28,114 +28,118 @@ class CreateDepartmentRequest extends FormRequest
     public function rules()
     {
         return [
-            'department_code' => 'required|string|max:20|unique:App\Models\HIS\Department,department_code',
-            'department_name' => 'required|string|max:100',
-            'g_code' => 'required|string|max:20|exists:App\Models\SDA\Group,g_code',
-            'bhyt_code' => 'string|max:50',
-            'branch_id' => 'required|integer|max:22|exists:App\Models\HIS\Branch,id',
-            'default_instr_patient_type_id' => 'integer|max:22|exists:App\Models\HIS\PatientType,id',
-            'allow_treatment_type_ids' => 'string|max:20',
-            'theory_patient_count' => 'integer|max:22',
-            'reality_patient_count' => 'integer|max:22',
-            'req_surg_treatment_type_id' => 'integer|max:22|exists:App\Models\HIS\TreatmentType,id',
-            'phone' => 'string|max:50',
-            'head_loginname' => 'string|max:50',
-            'head_username' => 'string|max:100',
-            'accepted_icd_codes' => 'string|max:4000',
-            'is_exam' => 'integer|max:22|in:0,1',
-            'is_clinical' => 'integer|max:22|in:0,1',
-            'allow_assign_package_price' => 'integer|max:22|in:0,1',
-            'auto_bed_assign_option' => 'integer|max:22|in:0,1',
-            'is_emergency' => 'integer|max:22|in:0,1',
-            'is_auto_receive_patient' => 'integer|max:22|in:0,1',
-            'allow_assign_surgery_price' => 'integer|max:22|in:0,1',
-            'is_in_dep_stock_moba' => 'integer|max:22|in:0,1',
-            'warning_when_is_no_surg' => 'integer|max:22|in:0,1',
+            'department_code' =>                'required|string|max:20|unique:App\Models\HIS\Department,department_code',
+            'department_name' =>                'required|string|max:100',
+            'g_code' =>                         'required|string|max:20|exists:App\Models\SDA\Group,g_code',
+            'bhyt_code' =>                      'nullable|string|max:50',
+            'branch_id' =>                      'required|integer|max:22|exists:App\Models\HIS\Branch,id',
+            'default_instr_patient_type_id' =>  'nullable|integer|max:22|exists:App\Models\HIS\PatientType,id',
+            'allow_treatment_type_ids' =>       'nullable|string|max:20',
+            'theory_patient_count' =>           'nullable|integer|max:22',
+            'reality_patient_count' =>          'nullable|integer|max:22',
+            'req_surg_treatment_type_id' =>     'nullable|integer|max:22|exists:App\Models\HIS\TreatmentType,id',
+            'phone' =>                          'nullable|string|max:50',
+            'head_loginname' =>                 'nullable|string|max:50',
+            'head_username' =>                  'nullable|string|max:100',
+            'accepted_icd_codes' =>             'nullable|string|max:4000',
+            'is_exam' =>                        'nullable|integer|max:22|in:0,1',
+            'is_clinical' =>                    'nullable|integer|max:22|in:0,1',
+            'allow_assign_package_price' =>     'nullable|integer|max:22|in:0,1',
+            'auto_bed_assign_option' =>         'nullable|integer|max:22|in:0,1',
+            'is_emergency' =>                   'nullable|integer|max:22|in:0,1',
+            'is_auto_receive_patient' =>        'nullable|integer|max:22|in:0,1',
+            'allow_assign_surgery_price' =>     'nullable|integer|max:22|in:0,1',
+            'is_in_dep_stock_moba' =>           'nullable|integer|max:22|in:0,1',
+            'warning_when_is_no_surg' =>        'nullable|integer|max:22|in:0,1',
         ];
     }
     public function messages()
     {
         return [
-            'department_code.required' => 'Mã khoa không được bỏ trống!',
-            'department_code.string' => 'Mã khoa phải là chuỗi string!',
-            'department_code.max' => 'Mã khoa tối đa 20 kí tự!',            
-            'department_code.unique' => 'Mã khoa '.$this->department_code.' đã tồn tại!',
+            'department_code.required' => config('keywords')['department']['department_code'].' không được bỏ trống!',
+            'department_code.string' => config('keywords')['department']['department_code'].' phải là chuỗi string!',
+            'department_code.max' => config('keywords')['department']['department_code'].' tối đa 20 kí tự!',            
+            'department_code.unique' => config('keywords')['department']['department_code'].' = '.$this->department_code.' đã tồn tại!',
 
-            'department_name.required' => 'Tên khoa không được bỏ trống!',
-            'department_name.string' => 'Tên khoa phải là chuỗi string!',
-            'department_name.max' => 'Tên khoa tối đa 100 kí tự!',   
+            'department_name.required' => config('keywords')['department']['department_name'].' không được bỏ trống!',
+            'department_name.string' => config('keywords')['department']['department_name'].' phải là chuỗi string!',
+            'department_name.max' => config('keywords')['department']['department_name'].' tối đa 100 kí tự!',   
             
-            'g_code.required' => 'Mã đơn vị không được bỏ trống!',            
-            'g_code.string' => 'Mã đơn vị phải là chuỗi string!',
-            'g_code.max' => 'Mã đơn vị tối đa 20 kí tự!',            
-            'g_code.exists' => 'Mã đơn vị '.$this->g_code.' không tồn tại!',            
+            'g_code.required' => config('keywords')['department']['g_code'].' không được bỏ trống!',            
+            'g_code.string' => config('keywords')['department']['g_code'].' phải là chuỗi string!',
+            'g_code.max' => config('keywords')['department']['g_code'].' tối đa 20 kí tự!',            
+            'g_code.exists' => config('keywords')['department']['g_code'].' = '.$this->g_code.' không tồn tại!',            
 
-            'bhyt_code.string' => 'Mã BHYT phải là chuỗi string!',
-            'bhyt_code.max' => 'Mã BHYT tối đa 50 kí tự!',      
+            'bhyt_code.string' => config('keywords')['department']['bhyt_code'].' phải là chuỗi string!',
+            'bhyt_code.max' => config('keywords')['department']['bhyt_code'].' tối đa 50 kí tự!',      
 
-            'branch_id.required' => 'Id chi nhánh không được bỏ trống!',            
-            'branch_id.integer' => 'Id chi nhánh phải là số nguyên!',
-            'branch_id.max' => 'Id chi nhánh tối đa 22 kí tự!',            
-            'branch_id.exists' => 'Id chi nhánh không tồn tại!', 
+            'branch_id.required' => config('keywords')['department']['branch_id'].' không được bỏ trống!',            
+            'branch_id.integer' => config('keywords')['department']['branch_id'].' phải là số nguyên!',
+            'branch_id.max' => config('keywords')['department']['branch_id'].' tối đa 22 kí tự!',            
+            'branch_id.exists' => config('keywords')['department']['branch_id'].' không tồn tại!', 
 
-            'default_instr_patient_type_id.integer' => 'Id đối tượng  thanh toán mặc định khi chỉ định dịch vụ CLS phải là số nguyên!',
-            'default_instr_patient_type_id.max' => 'Id đối tượng  thanh toán mặc định khi chỉ định dịch vụ CLS tối đa 22 kí tự!',            
-            'default_instr_patient_type_id.exists' => 'Id đối tượng  thanh toán mặc định khi chỉ định dịch vụ CLS không tồn tại!', 
+            'default_instr_patient_type_id.integer' => config('keywords')['department']['default_instr_patient_type_id'].' phải là số nguyên!',
+            'default_instr_patient_type_id.max' => config('keywords')['department']['default_instr_patient_type_id'].' tối đa 22 kí tự!',            
+            'default_instr_patient_type_id.exists' => config('keywords')['department']['default_instr_patient_type_id'].' = '.$this->default_instr_patient_type_id.' không tồn tại!', 
 
-            'theory_patient_count.integer' => 'Số giường kế hoạch phải là số nguyên!',
-            'theory_patient_count.max' => 'Số giường kế hoạch tối đa 22 kí tự!',   
+            'allow_treatment_type_ids.string' => config('keywords')['department']['warning_when_is_no_surg'].' phải là chuỗi string!',
 
-            'reality_patient_count.integer' => 'Số giường thực tế phải là số nguyên!',
-            'reality_patient_count.max' => 'Số giường thực tế tối đa 22 kí tự!',   
+            'theory_patient_count.integer' => config('keywords')['department']['theory_patient_count'].' phải là số nguyên!',
+            'theory_patient_count.max' => config('keywords')['department']['theory_patient_count'].' tối đa 22 kí tự!',   
 
-            'req_surg_treatment_type_id.integer' => 'Id diện điều trị được dùng khi tính công phẫu thuật thủ thuật đối với khoa chỉ định dịch vụ phải là số nguyên!',
-            'req_surg_treatment_type_id.max' => 'Id diện điều trị được dùng khi tính công phẫu thuật thủ thuật đối với khoa chỉ định dịch vụ tối đa 22 kí tự!',            
-            'req_surg_treatment_type_id.exists' => 'Id diện điều trị được dùng khi tính công phẫu thuật thủ thuật đối với khoa chỉ định dịch vụ không tồn tại!', 
+            'reality_patient_count.integer' => config('keywords')['department']['reality_patient_count'].' phải là số nguyên!',
+            'reality_patient_count.max' => config('keywords')['department']['reality_patient_count'].' tối đa 22 kí tự!',   
 
-            'phone.string' => 'Số điện thoại phải là chuỗi string!',
-            'phone.max' => 'Số điện thoại tối đa 50 kí tự!',   
+            'req_surg_treatment_type_id.integer' => config('keywords')['department']['req_surg_treatment_type_id'].' phải là số nguyên!',
+            'req_surg_treatment_type_id.max' => config('keywords')['department']['req_surg_treatment_type_id'].' tối đa 22 kí tự!',            
+            'req_surg_treatment_type_id.exists' => config('keywords')['department']['req_surg_treatment_type_id'].' = '.$this->req_surg_treatment_type_id.' không tồn tại!', 
 
-            'head_loginname.string' => 'Loginname của trưởng khoa phải là chuỗi string!',
-            'head_loginname.max' => 'Loginname của trưởng khoa tối đa 50 kí tự!', 
+            'phone.string' => config('keywords')['department']['phone'].' phải là chuỗi string!',
+            'phone.max' => config('keywords')['department']['phone'].' tối đa 50 kí tự!',   
 
-            'head_username.string' => 'Username của trưởng khoa phải là chuỗi string!',
-            'head_username.max' => 'Username của trưởng khoa tối đa 100 kí tự!', 
+            'head_loginname.string' => config('keywords')['department']['head_loginname'].' phải là chuỗi string!',
+            'head_loginname.max' => config('keywords')['department']['head_loginname'].' tối đa 50 kí tự!', 
 
-            'is_exam.integer' => 'Trường là khoa khám bệnh phải là số nguyên!',
-            'is_exam.max' => 'Trường là khoa khám bệnh tối đa 22 kí tự!',  
-            'is_exam.in' => 'Trường là khoa khám bệnh phải là 0 hoặc 1!',  
+            'head_username.string' => config('keywords')['department']['head_username'].' phải là chuỗi string!',
+            'head_username.max' => config('keywords')['department']['head_username'].' tối đa 100 kí tự!', 
 
-            'is_clinical.integer' => 'Trường là khoa lâm sàng phải là số nguyên!',
-            'is_clinical.max' => 'Trường là khoa lâm sàng tối đa 22 kí tự!', 
-            'is_clinical.in' => 'Trường là khoa lâm sàng phải là 0 hoặc 1!', 
+            'accepted_icd_codes.string' => config('keywords')['department']['accepted_icd_codes'].' phải là chuỗi string!',
 
-            'allow_assign_package_price.integer' => 'Trường cho phép nhập giá gói lúc chỉ định gói phải là số nguyên!',
-            'allow_assign_package_price.max' => 'Trường cho phép nhập giá gói lúc chỉ định gói tối đa 22 kí tự!', 
-            'allow_assign_package_price.in' => 'Trường cho phép nhập giá gói lúc chỉ định gói phải là 0 hoặc 1!', 
+            'is_exam.integer' => config('keywords')['department']['is_exam'].' phải là số nguyên!',
+            'is_exam.max' => config('keywords')['department']['is_exam'].' tối đa 22 kí tự!',  
+            'is_exam.in' => config('keywords')['department']['is_exam'].' phải là 0 hoặc 1!',  
 
-            'auto_bed_assign_option.integer' => 'Trường tự động cảnh báo và cho phép chỉ định giường, dịch vụ giường khi chuyển khoa, kết thúc điều trị phải là số nguyên!',
-            'auto_bed_assign_option.max' => 'Trường tự động cảnh báo và cho phép chỉ định giường, dịch vụ giường khi chuyển khoa, kết thúc điều trị tối đa 22 kí tự!', 
-            'auto_bed_assign_option.in' => 'Trường tự động cảnh báo và cho phép chỉ định giường, dịch vụ giường khi chuyển khoa, kết thúc điều trị phải là 0 hoặc 1!', 
+            'is_clinical.integer' => config('keywords')['department']['is_clinical'].' phải là số nguyên!',
+            'is_clinical.max' => config('keywords')['department']['is_clinical'].' tối đa 22 kí tự!', 
+            'is_clinical.in' => config('keywords')['department']['is_clinical'].' phải là 0 hoặc 1!', 
+
+            'allow_assign_package_price.integer' => config('keywords')['department']['allow_assign_package_price'].' phải là số nguyên!',
+            'allow_assign_package_price.max' => config('keywords')['department']['allow_assign_package_price'].' tối đa 22 kí tự!', 
+            'allow_assign_package_price.in' => config('keywords')['department']['allow_assign_package_price'].' phải là 0 hoặc 1!', 
+
+            'auto_bed_assign_option.integer' => config('keywords')['department']['auto_bed_assign_option'].' phải là số nguyên!',
+            'auto_bed_assign_option.max' => config('keywords')['department']['auto_bed_assign_option'].' tối đa 22 kí tự!', 
+            'auto_bed_assign_option.in' => config('keywords')['department']['auto_bed_assign_option'].' phải là 0 hoặc 1!', 
             
-            'is_emergency.integer' => 'Trường là khoa cấp cứu phải là số nguyên!',
-            'is_emergency.max' => 'Trường là khoa cấp cứu tối đa 22 kí tự!', 
-            'is_emergency.in' => 'Trường là khoa cấp cứu phải là 0 hoặc 1!', 
+            'is_emergency.integer' => config('keywords')['department']['is_emergency'].' phải là số nguyên!',
+            'is_emergency.max' => config('keywords')['department']['is_emergency'].' tối đa 22 kí tự!', 
+            'is_emergency.in' => config('keywords')['department']['is_emergency'].' phải là 0 hoặc 1!', 
 
-            'is_auto_receive_patient.integer' => 'Trường tự động tiếp nhận bệnh nhân vào khoa phải là số nguyên!',
-            'is_auto_receive_patient.max' => 'Trường tự động tiếp nhận bệnh nhân vào khoa tối đa 22 kí tự!', 
-            'is_auto_receive_patient.in' => 'Trường tự động tiếp nhận bệnh nhân vào khoa phải là 0 hoặc 1!', 
+            'is_auto_receive_patient.integer' => config('keywords')['department']['is_auto_receive_patient'].' phải là số nguyên!',
+            'is_auto_receive_patient.max' => config('keywords')['department']['is_auto_receive_patient'].' tối đa 22 kí tự!', 
+            'is_auto_receive_patient.in' => config('keywords')['department']['is_auto_receive_patient'].' phải là 0 hoặc 1!', 
 
-            'allow_assign_surgery_price.integer' => 'Trường cho phép nhập giá lúc chỉ định phẫu thuật phải là số nguyên!',
-            'allow_assign_surgery_price.max' => 'Trường cho phép nhập giá lúc chỉ định phẫu thuật tối đa 22 kí tự!', 
-            'allow_assign_surgery_price.in' => 'Trường cho phép nhập giá lúc chỉ định phẫu thuật phải là 0 hoặc 1!', 
+            'allow_assign_surgery_price.integer' => config('keywords')['department']['allow_assign_surgery_price'].' phải là số nguyên!',
+            'allow_assign_surgery_price.max' => config('keywords')['department']['allow_assign_surgery_price'].' tối đa 22 kí tự!', 
+            'allow_assign_surgery_price.in' => config('keywords')['department']['allow_assign_surgery_price'].' phải là 0 hoặc 1!', 
 
-            'is_in_dep_stock_moba.integer' => 'Trường mặc định chọn kho thu hồi là kho thuộc khoa phải là số nguyên!',
-            'is_in_dep_stock_moba.max' => 'Trường mặc định chọn kho thu hồi là kho thuộc khoa tối đa 22 kí tự!',
-            'is_in_dep_stock_moba.in' => 'Trường mặc định chọn kho thu hồi là kho thuộc khoa phải là 0 hoặc 1!',
+            'is_in_dep_stock_moba.integer' => config('keywords')['department']['is_in_dep_stock_moba'].' phải là số nguyên!',
+            'is_in_dep_stock_moba.max' => config('keywords')['department']['is_in_dep_stock_moba'].' tối đa 22 kí tự!',
+            'is_in_dep_stock_moba.in' => config('keywords')['department']['is_in_dep_stock_moba'].' phải là 0 hoặc 1!',
 
-            'warning_when_is_no_surg.integer' => 'Trường cảnh báo khi chưa chỉ định dịch vụ phẫu thuật phải là số nguyên!',
-            'warning_when_is_no_surg.max' => 'Trường cảnh báo khi chưa chỉ định dịch vụ phẫu thuật cứu tối đa 22 kí tự!', 
-            'warning_when_is_no_surg.in' => 'Trường cảnh báo khi chưa chỉ định dịch vụ phẫu thuật cứu phải là 0 hoặc 1!', 
+            'warning_when_is_no_surg.integer' => config('keywords')['department']['warning_when_is_no_surg'].' phải là số nguyên!',
+            'warning_when_is_no_surg.max' => config('keywords')['department']['warning_when_is_no_surg'].' tối đa 22 kí tự!', 
+            'warning_when_is_no_surg.in' => config('keywords')['department']['warning_when_is_no_surg'].' phải là 0 hoặc 1!', 
 
         ];
     }
@@ -157,7 +161,7 @@ class CreateDepartmentRequest extends FormRequest
     {
         $validator->after(function ($validator) {
             if ($this->has('allow_treatment_type_ids') && (strlen($this->allow_treatment_type_ids) >= 20)) {
-                $validator->errors()->add('allow_treatment_type_ids', 'Danh sách id diện điều trị tối đa 20 kí tự!');
+                $validator->errors()->add('allow_treatment_type_ids', config('keywords')['department']['allow_treatment_type_ids'].' tối đa 20 kí tự!');
             }
             if ($this->has('allow_treatment_type_ids_list') && ($this->allow_treatment_type_ids_list[0] != null)) {
                 foreach ($this->allow_treatment_type_ids_list as $id) {
@@ -168,7 +172,7 @@ class CreateDepartmentRequest extends FormRequest
             }
             ///////////////////////////////////////////////////////////////////////////////////////////////////////
             if ($this->has('accepted_icd_codes') && (strlen($this->accepted_icd_codes) >= 4000)) {
-                $validator->errors()->add('accepted_icd_codes', 'Danh sách icd code diện điều trị tối đa 4000 kí tự!');
+                $validator->errors()->add('accepted_icd_codes', config('keywords')['department']['accepted_icd_codes'].' tối đa 4000 kí tự!');
             }
             if ($this->has('accepted_icd_codes_list') && ($this->accepted_icd_codes_list[0] != null)) {
                 foreach ($this->accepted_icd_codes_list as $icd_code) {
