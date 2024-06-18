@@ -14,6 +14,8 @@ class BedRoom extends Model
     public $time = 604800;
     protected $connection = 'oracle_his'; // Kết nối CSDL mặc định
     protected $table = 'HIS_BED_ROOM';
+    // Đặt thuộc tính $timestamps thành false để tắt tự động thêm created_at và updated_at
+    public $timestamps = false;
     public function getTreatmentTypeIdsAttribute($value)
     {
         if($value != null){
@@ -28,7 +30,19 @@ class BedRoom extends Model
         }
     }
     protected $fillable = [
+        'create_time' ,
+        'modify_time' ,
+        'creator' ,
+        'modifier' ,
+        'app_creator' ,
+        'app_modifier',
+        'is_active' ,
+        'is_delete' ,
+        'bed_room_code',
+        'bed_room_name' ,
+        'is_surgery',
         'treatment_type_ids',
+        'room_id' ,
     ];
     public function room()
     {

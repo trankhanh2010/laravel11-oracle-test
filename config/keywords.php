@@ -34,5 +34,21 @@ return [
         'department_id' => 'Id khoa phòng',
         'area_name' => 'Tên khu vực',
         'area_code' => 'Mã khu vực',
-    ]
+    ],
+    // Buồng bệnh - Bed Room
+    'bed_room' => [
+        'bed_room_code' => 'Mã buồng bệnh',
+        'bed_room_name' => 'Tên buồng bệnh',
+        'department_id' => 'Id khoa phòng',
+        'area_id' => 'Id khu vực',
+        'speciality_id' => 'Id chuyên khoa',
+        'treatment_type_ids' => 'Danh sách diện điều trị',
+        'default_cashier_room_id' => 'Id phòng thu ngân',
+        'default_instr_patient_type_id' => 'Id đối tượng thanh toán mặc định khi chỉ định dịch vụ CLS',
+        'is_surgery' => 'Trường là buồng phẫu thuật',
+        'is_restrict_req_service' => 'Trường giới hạn dịch vụ chỉ định',
+        'is_pause' => 'Trường tạm dừng',
+        'is_restrict_execute_room' => 'Trường kiểm soát sử dụng phòng xử lý theo dịch vụ',
+        'room_type_id' => 'Id loại phòng',
+    ],
 ];

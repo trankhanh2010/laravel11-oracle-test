@@ -34,7 +34,7 @@ class UpdateAreaRequest extends FormRequest
                 Rule::unique('App\Models\HIS\Area')->ignore($this->id),
             ],
             'area_name' =>      'required|string|max:100',
-            'department_id' =>  'required|integer|max:22|exists:App\Models\HIS\Department,id',
+            'department_id' =>  'required|integer|exists:App\Models\HIS\Department,id',
         ];
     }
     public function messages()
@@ -51,7 +51,6 @@ class UpdateAreaRequest extends FormRequest
 
             'department_id.required' => config('keywords')['area']['department_id'].' không được bỏ trống!',
             'department_id.integer' => config('keywords')['area']['department_id'].' phải là số nguyên!',
-            'department_id.max' => config('keywords')['area']['department_id'].' tối đa 22 kí tự!',
             'department_id.exists' => config('keywords')['area']['department_id'].' = '.$this->department_id.' không tồn tại!',
 
         ];

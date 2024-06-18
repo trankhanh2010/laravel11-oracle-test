@@ -631,8 +631,6 @@ class HISController extends Controller
             'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
             'app_creator' => $this->app_creator,
             'app_modifier' => $this->app_modifier,
-            'is_active' => 1,
-            'is_delete' => 0,
             'department_code' => $request->department_code,
             'department_name' => $request->department_name,
             'g_code' => $request->g_code,
@@ -783,42 +781,49 @@ class HISController extends Controller
         return return_data_success($param_return, $data);
     }
 
-    public function bed_room_create(CreateDepartmentRequest $request)
+    public function bed_room_create(CreateBedRoomRequest $request)
     {
-        $data = $this->bed_room::create([
-            'create_time' => now()->format('Ymdhis'),
-            'modify_time' => now()->format('Ymdhis'),
-            'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
-            'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
-            'app_creator' => $this->app_creator,
-            'app_modifier' => $this->app_modifier,
-            'is_active' => 1,
-            'is_delete' => 0,
-            'bed_room_code' => $request->bed_room_code,
-            'bed_room_name' => $request->bed_room_name,
-            'department_id' => $request->department_id,
-        ]);
-           
         // Start transaction
-        DB::beginTransaction();
-
+        DB::connection('oracle_his')->beginTransaction();
         try {
-            DB::commit();
-        // Gọi event để xóa cache
+            $room = $this->room::create([
+                'create_time' => now()->format('Ymdhis'),
+                'modify_time' => now()->format('Ymdhis'),
+                'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_creator' => $this->app_creator,
+                'app_modifier' => $this->app_modifier,
+                'department_id' => $request->department_id,
+                'area_id' => $request->area_id,
+                'speciality_id' => $request->speciality_id,
+                'default_cashier_room_id' => $request->default_cashier_room_id,
+                'default_instr_patient_type_id' => $request->default_instr_patient_type_id,
+                'is_restrict_req_service' => $request->is_restrict_req_service,
+                'is_pause' => $request->is_pause,
+                'is_restrict_execute_room' => $request->is_restrict_execute_room,
+                'room_type_id' => $request->room_type_id
+            ]);
+            $data = $this->bed_room::create([
+                'create_time' => now()->format('Ymdhis'),
+                'modify_time' => now()->format('Ymdhis'),
+                'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_creator' => $this->app_creator,
+                'app_modifier' => $this->app_modifier,
+                'bed_room_code' => $request->bed_room_code,
+                'bed_room_name' => $request->bed_room_name,
+                'is_surgery' => $request->is_surgery,
+                'treatment_type_ids' => $request->treatment_type_ids,
+                'room_id' => $room->id,
+            ]);
+            DB::connection('oracle_his')->commit();
+            // Gọi event để xóa cache
             event(new DeleteCache($this->bed_room));
-            return response()->json([
-                'success' => true,
-                'message' => 'Bedroom created successfully!',
-                'data' => $data,
-            ], 201);
+            return return_data_create_success([$data, $room]);
         } catch (\Exception $e) {
             // Rollback transaction nếu có lỗi
-            DB::rollBack();
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to create bedroom!',
-                'error' => $e->getMessage(),
-            ], 500);
+            DB::connection('oracle_his')->rollBack();
+            return return_data_fail_transaction();
         }
     }
     /// Execute Room

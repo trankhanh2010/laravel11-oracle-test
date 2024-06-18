@@ -282,7 +282,7 @@ if (!function_exists('return_id_error')) {
         return response()->json([
             'success'   => false,
             'message'   => 'Id = '.$id.' không hợp lệ!',
-        ], 422)->original;
+        ], 422);
     }
 }
 
@@ -292,7 +292,7 @@ if (!function_exists('return_not_record')) {
         return response()->json([
             'success'   => false,
             'message'   => 'Không tìm thấy bản ghi với id = '.$id.'!',
-        ], 422)->original;
+        ], 422);
     }
 }
 
@@ -309,7 +309,7 @@ if (!function_exists('return_data_success')) {
                 'success' => true,
                 'param' => $param_return,
                 'data' => $data_return,
-            ], 200)->original;
+            ], 200);
         }
     }
 }
@@ -320,7 +320,7 @@ if (!function_exists('return_data_create_success')) {
         return response()->json([
             'success' => true,
             'data' => $data_return,
-        ], 201)->original;
+        ], 201);
 
     }
 }
@@ -331,7 +331,7 @@ if (!function_exists('return_data_update_success')) {
         return response()->json([
             'success' => true,
             'data' => $data_return,
-        ], 200)->original;
+        ], 200);
 
     }
 }
@@ -342,7 +342,16 @@ if (!function_exists('return_data_delete_success')) {
         return response()->json([
             'success' => true,
             'data' => $data_return,
-        ], 200)->original;
+        ], 200);
 
+    }
+}
+
+if (!function_exists('return_data_fail_transaction')) {
+    function return_data_fail_transaction()
+    {
+        return response()->json([
+            'success' => false,
+        ], 500);
     }
 }
