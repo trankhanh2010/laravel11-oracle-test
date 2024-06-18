@@ -35,8 +35,8 @@ class CreateDepartmentRequest extends FormRequest
             'branch_id' =>                      'required|integer|exists:App\Models\HIS\Branch,id',
             'default_instr_patient_type_id' =>  'nullable|integer|exists:App\Models\HIS\PatientType,id',
             'allow_treatment_type_ids' =>       'nullable|string|max:20',
-            'theory_patient_count' =>           'nullable|integer',
-            'reality_patient_count' =>          'nullable|integer',
+            'theory_patient_count' =>           'nullable|integer|min:0',
+            'reality_patient_count' =>          'nullable|integer|min:0',
             'req_surg_treatment_type_id' =>     'nullable|integer|exists:App\Models\HIS\TreatmentType,id',
             'phone' =>                          'nullable|string|max:50',
             'head_loginname' =>                 'nullable|string|max:50',
@@ -83,8 +83,10 @@ class CreateDepartmentRequest extends FormRequest
             'allow_treatment_type_ids.string' => config('keywords')['department']['allow_treatment_type_ids'].' phải là chuỗi string!',
 
             'theory_patient_count.integer'  => config('keywords')['department']['theory_patient_count'].' phải là số nguyên!',
+            'theory_patient_count.min'  => config('keywords')['department']['theory_patient_count'].' lớn hơn bằng 0!',
 
             'reality_patient_count.integer'     => config('keywords')['department']['reality_patient_count'].' phải là số nguyên!',
+            'reality_patient_count.min'  => config('keywords')['department']['reality_patient_count'].' lớn hơn bằng 0!',
 
             'req_surg_treatment_type_id.integer'    => config('keywords')['department']['req_surg_treatment_type_id'].' phải là số nguyên!',
             'req_surg_treatment_type_id.exists'     => config('keywords')['department']['req_surg_treatment_type_id'].' = '.$this->req_surg_treatment_type_id.' không tồn tại!', 

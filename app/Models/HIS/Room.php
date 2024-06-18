@@ -5,7 +5,8 @@ namespace App\Models\HIS;
 use App\Traits\dinh_dang_ten_truong;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 class Room extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
@@ -36,16 +37,29 @@ class Room extends Model
         'bill_account_book_id',
         'room_type_id',
     ];
+    public function getDefaultDrugStoreIdsAttribute($value)
+    {
+        if($value != null){
+             // Tạo Cache để tránh trùng lặp truy vấn
+             return Cache::remember('default_drug_store_ids'.$value, $this->time, function () use ($value) {
+                return MediStock::
+                select('id', 'medi_stock_code', 'medi_stock_name')
+                ->whereIn('id', explode(',', $value))->get();
+            });        
+        }else{
+            return $value;
+        }
+    }
 
     public function department()
     {
         return $this->belongsTo(Department::class);
     }
 
-    public function default_drug_stores()
-    {
-        return MediStock::whereIn('id', explode(',', $this->default_drug_store_ids))->get();
-    }
+    // public function default_drug_stores()
+    // {
+    //     return MediStock::whereIn('id', explode(',', $this->default_drug_store_ids))->get();
+    // }
 
     public function deposit_account_book()
     {
@@ -106,5 +120,9 @@ class Room extends Model
     public function patient_types()
     {
         return $this->belongsToMany(PatientType::class, PatientTypeRoom::class, 'room_id', 'patient_type_id');
+    }
+    public function room_group()
+    {
+        return $this->belongsTo(RoomGroup::class);
     }
 }
