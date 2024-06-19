@@ -33,6 +33,13 @@ Route::group([
     /// Loại phòng
     Route::get("v1/room-type", [HISController::class, "room_type"]);       
 
+    /// Nhóm phòng
+    Route::get("v1/room-group", [HISController::class, "room_group"]);    
+    Route::post("v1/room-group", [HISController::class, "room_group_create"]);    
+
+    /// Link màn hình chờ
+    Route::get("v1/screen-saver-module-link", [HISController::class, "screen_saver_module_link"]);    
+
     /// Buồng bệnh
     Route::group(['as' => 'HIS.Desktop.Plugins.HisBedRoomList'], function () {
         Route::get("v1/bed-room", [HISController::class, "bed_room"]);
@@ -41,6 +48,9 @@ Route::group([
         Route::put("v1/bed-room/{id}", [HISController::class, "bed_room_update"]);       
         Route::delete("v1/bed-room/{id}", [HISController::class, "bed_room_delete"]);       
     });
+
+    /// Loại xét nghiệm
+    Route::get("v1/test-type", [HISController::class, "test_type"]);
 
     /// Phòng khám/cls/pttt
     Route::group(['as' => 'HIS.Desktop.Plugins.HisExecuteRoom'], function () {
@@ -54,7 +64,10 @@ Route::group([
     /// Chuyên khoa
     Route::group(['as' => 'HIS.Desktop.Plugins.HisSpeciality'], function () {
         Route::get("v1/speciality", [HISController::class, "speciality"]);
-        Route::get("v1/speciality/{id}", [HISController::class, "speciality_id"]);
+        Route::get("v1/speciality/{id}", [HISController::class, "speciality"]);
+        Route::post("v1/speciality", [HISController::class, "speciality_create"]);        
+        Route::put("v1/speciality/{id}", [HISController::class, "speciality_update"]);       
+        Route::delete("v1/speciality/{id}", [HISController::class, "speciality_delete"]);  
     });
 
     /// Diện điều trị

@@ -11,7 +11,7 @@ class Department extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     // protected $connection = 'oracle_data'; // Kết nối CSDL khác
-    public $time = 604800;
+    // public $time = 604800;
     protected $connection = 'oracle_his'; // Kết nối CSDL mặc định
     protected $table = 'HIS_DEPARTMENT';
     protected $fillable = [

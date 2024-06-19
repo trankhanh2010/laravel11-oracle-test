@@ -16,4 +16,9 @@ class Module extends Model
     {
         return $this->belongsToMany(Role::class, 'acs_module_role', 'module_id', 'role_id');
     }
+
+    public function module_group()
+    {
+        return $this->belongsTo(ModuleGroup::class);
+    }
 }

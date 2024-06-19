@@ -144,6 +144,10 @@ use App\Models\HIS\PatientTypeAlter;
 use App\Models\HIS\TreatmentBedRoom;
 use App\Models\HIS\SereServTein;
 use App\Models\SDA\Group;
+use App\Models\HIS\TestType;
+use App\Models\HIS\RoomGroup;
+use App\Models\HIS\RoomType;
+use App\Models\ACS\ModuleGroup;
 
 // use Request
 use App\Http\Requests\Department\CreateDepartmentRequest;
@@ -152,8 +156,11 @@ use App\Http\Requests\Area\CreateAreaRequest;
 use App\Http\Requests\Area\UpdateAreaRequest;
 use App\Http\Requests\BedRoom\CreateBedRoomRequest;
 use App\Http\Requests\BedRoom\UpdateBedRoomRequest;
-use App\Models\HIS\RoomType;
-
+use App\Http\Requests\ExecuteRoom\CreateExecuteRoomRequest;
+use App\Http\Requests\ExecuteRoom\UpdateExecuteRoomRequest;
+use App\Http\Requests\RoomGroup\CreateRoomGroupRequest;
+use App\Http\Requests\Speciality\CreateSpecialityRequest;
+use App\Http\Requests\Speciality\UpdateSpecialityRequest;
 class HISController extends Controller
 {
     protected $data = [];
@@ -435,6 +442,12 @@ class HISController extends Controller
     protected $group_name = 'group';
     protected $room_type;
     protected $room_type_name = 'room_type';
+    protected $test_type;
+    protected $test_type_name = 'test_type';
+    protected $room_group;
+    protected $room_group_name = 'room_group';
+    protected $module_group;
+    protected $module_group_name = 'module_group';
     public function __construct(Request $request)
     {
         // Khai báo các biến
@@ -586,6 +599,9 @@ class HISController extends Controller
         $this->sere_serv_tein = new SereServTein();
         $this->group = new Group();
         $this->room_type = new RoomType();
+        $this->test_type = new TestType();
+        $this->room_group = new RoomGroup();
+        $this->module_group = new ModuleGroup();
     }
 
     /// Department
@@ -673,7 +689,7 @@ class HISController extends Controller
         if ($data == null) {
             return return_not_record($id);
         }
-        $data->update([
+        $data_update =[
             'modify_time' => now()->format('Ymdhis'),
             'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
             'app_modifier' => $this->app_modifier,
@@ -698,7 +714,9 @@ class HISController extends Controller
             'allow_assign_surgery_price' => $request->allow_assign_surgery_price,
             'is_in_dep_stock_moba' => $request->is_in_dep_stock_moba,
             'warning_when_is_no_surg' => $request->warning_when_is_no_surg,
-        ]);
+        ];
+        $data->fill($data_update);
+        $data->save();
         // Gọi event để xóa cache
         event(new DeleteCache($this->department_name));
         return return_data_update_success($data);
@@ -858,40 +876,44 @@ class HISController extends Controller
         if ($room == null) {
             return return_not_record($data->room_id);
         }
-         // Start transaction
-         DB::connection('oracle_his')->beginTransaction();
-         try {
-             $room->update([
-                 'modify_time' => now()->format('Ymdhis'),
-                 'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
-                 'app_modifier' => $this->app_modifier,
-                 'area_id' => $request->area_id,
-                 'speciality_id' => $request->speciality_id,
-                 'default_cashier_room_id' => $request->default_cashier_room_id,
-                 'default_instr_patient_type_id' => $request->default_instr_patient_type_id,
-                 'is_restrict_req_service' => $request->is_restrict_req_service,
-                 'is_pause' => $request->is_pause,
-                 'is_restrict_execute_room' => $request->is_restrict_execute_room,
-                 'room_type_id' => $request->room_type_id
-             ]);
-             $data->update([
-                 'modify_time' => now()->format('Ymdhis'),
-                 'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
-                 'app_modifier' => $this->app_modifier,
-                 'bed_room_code' => $request->bed_room_code,
-                 'bed_room_name' => $request->bed_room_name,
-                 'is_surgery' => $request->is_surgery,
-                 'treatment_type_ids' => $request->treatment_type_ids,
-             ]);
-             DB::connection('oracle_his')->commit();
-             // Gọi event để xóa cache
-             event(new DeleteCache($this->bed_room_name));
-             return return_data_create_success([$data, $room]);
-         } catch (\Exception $e) {
-             // Rollback transaction nếu có lỗi
-             DB::connection('oracle_his')->rollBack();
-             return return_data_fail_transaction();
-         }
+        // Start transaction
+        DB::connection('oracle_his')->beginTransaction();
+        try {
+            $room_update = [
+                'modify_time' => now()->format('Ymdhis'),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_modifier' => $this->app_modifier,
+                'area_id' => $request->area_id,
+                'speciality_id' => $request->speciality_id,
+                'default_cashier_room_id' => $request->default_cashier_room_id,
+                'default_instr_patient_type_id' => $request->default_instr_patient_type_id,
+                'is_restrict_req_service' => $request->is_restrict_req_service,
+                'is_pause' => $request->is_pause,
+                'is_restrict_execute_room' => $request->is_restrict_execute_room,
+                'room_type_id' => $request->room_type_id
+            ];
+            $data_update = [
+                'modify_time' => now()->format('Ymdhis'),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_modifier' => $this->app_modifier,
+                'bed_room_code' => $request->bed_room_code,
+                'bed_room_name' => $request->bed_room_name,
+                'is_surgery' => $request->is_surgery,
+                'treatment_type_ids' => $request->treatment_type_ids,
+            ];
+            $room->fill($room_update);
+            $room->save();
+            $data->fill($data_update);
+            $data->save();
+            DB::connection('oracle_his')->commit();
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->bed_room_name));
+            return return_data_create_success([$data, $room]);
+        } catch (\Exception $e) {
+            // Rollback transaction nếu có lỗi
+            DB::connection('oracle_his')->rollBack();
+            return return_data_fail_transaction();
+        }
     }
 
     public function bed_room_delete(Request $request, $id)
@@ -907,29 +929,95 @@ class HISController extends Controller
         if ($room == null) {
             return return_not_record($data->room_id);
         }
-         // Start transaction
-         DB::connection('oracle_his')->beginTransaction();
-         try {
-             $room->update([
-                 'modify_time' => now()->format('Ymdhis'),
-                 'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
-                 'is_delete' => 1,
-             ]);
-             $data->update([
-                 'modify_time' => now()->format('Ymdhis'),
-                 'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
-                 'app_modifier' => $this->app_modifier,
-                 'is_delete' => 1,
-             ]);
-             DB::connection('oracle_his')->commit();
-             // Gọi event để xóa cache
-             event(new DeleteCache($this->bed_room_name));
-             return return_data_create_success([$data, $room]);
-         } catch (\Exception $e) {
-             // Rollback transaction nếu có lỗi
-             DB::connection('oracle_his')->rollBack();
-             return return_data_fail_transaction();
-         }
+        // Start transaction
+        DB::connection('oracle_his')->beginTransaction();
+        try {
+            $room->update([
+                'modify_time' => now()->format('Ymdhis'),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'is_delete' => 1,
+            ]);
+            $data->update([
+                'modify_time' => now()->format('Ymdhis'),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_modifier' => $this->app_modifier,
+                'is_delete' => 1,
+            ]);
+            DB::connection('oracle_his')->commit();
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->bed_room_name));
+            return return_data_create_success([$data, $room]);
+        } catch (\Exception $e) {
+            // Rollback transaction nếu có lỗi
+            DB::connection('oracle_his')->rollBack();
+            return return_data_fail_transaction();
+        }
+    }
+
+    /// Test Type
+    public function test_type()
+    {
+        $name = $this->test_type_name;
+        $param = [];
+        $data = get_cache_full($this->test_type, $param, $name, null, $this->time);
+        $count = $data->count();
+        $param_return = [
+            'start' => null,
+            'limit' => null,
+            'count' => $count
+        ];
+        return return_data_success($param_return, $data);
+    }
+
+    /// Room Group
+    public function room_group()
+    {
+        $name = $this->room_group_name;
+        $param = [];
+        $data = get_cache_full($this->room_group, $param, $name, null, $this->time);
+        $count = $data->count();
+        $param_return = [
+            'start' => null,
+            'limit' => null,
+            'count' => $count
+        ];
+        return return_data_success($param_return, $data);
+    }
+
+    public function room_group_create(CreateRoomGroupRequest $request)
+    {
+        $data = $this->room_group::create([
+            'create_time' => now()->format('Ymdhis'),
+            'modify_time' => now()->format('Ymdhis'),
+            'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
+            'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+            'app_creator' => $this->app_creator,
+            'app_modifier' => $this->app_modifier,
+            'group_code' => $request->group_code,
+            'room_group_name' => $request->room_group_name,
+            'room_group_code' => $request->room_group_code,
+        ]);
+        // Gọi event để xóa cache
+        event(new DeleteCache($this->room_group_name));
+        return return_data_create_success($data);
+    }
+
+    /// Link màn hình chờ
+    public function screen_saver_module_link()
+    {
+        $name = 'screen_saver_module_link';
+        $data = $this->module::select('acs_module.*')
+            ->join('ACS_MODULE_GROUP', 'ACS_MODULE.module_group_id', '=', 'ACS_MODULE_GROUP.id')
+            ->where('ACS_MODULE_GROUP.module_group_code', 'MHC')
+            ->get();
+        update_cache($name, $data, $this->time);
+        $count = $data->count();
+        $param_return = [
+            'start' => null,
+            'limit' => null,
+            'count' => $count
+        ];
+        return return_data_success($param_return, $data);
     }
 
     /// Execute Room
@@ -977,20 +1065,311 @@ class HISController extends Controller
         // foreach ($data as $key => $item) {
         //     $item->default_drug_store = get_cache_1_1_n_with_ids($this->execute_room, "room.default_drug_store", $this->execute_room_name, $item->id, $this->time);
         // }
-        return response()->json(['data' => $data], 200);
+        $count = $data->count();
+        $param_return = [
+            'start' => null,
+            'limit' => null,
+            'count' => $count
+        ];
+        return return_data_success($param_return, $data);
     }
 
+    public function execute_room_create(CreateExecuteRoomRequest $request)
+    {
+        // Start transaction
+        DB::connection('oracle_his')->beginTransaction();
+        try {
+            $room = $this->room::create([
+                'create_time' => now()->format('Ymdhis'),
+                'modify_time' => now()->format('Ymdhis'),
+                'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_creator' => $this->app_creator,
+                'app_modifier' => $this->app_modifier,
+                'department_id' => $request->department_id,
+                'room_group_id' => $request->room_group_id,
+                'room_type_id' => $request->room_type_id,
+                'order_issue_code' => $request->order_issue_code,
+                'hold_order' => $request->hold_order,
+                'speciality_id' => $request->speciality_id,
+                'address' => $request->address,
+                'responsible_loginname' => $request->responsible_loginname,
+                'responsible_username' => $request->responsible_username,
+                'default_instr_patient_type_id' => $request->default_instr_patient_type_id,
+                'default_drug_store_ids' => $request->default_drug_store_ids,
+                'default_cashier_room_id' => $request->default_cashier_room_id,
+                'area_id' => $request->area_id,
+                'screen_saver_module_link' => $request->screen_saver_module_link,
+                'bhyt_code' => $request->bhyt_code,
+                'deposit_account_book_id' => $request->deposit_account_book_id,
+                'bill_account_book_id' => $request->bill_account_book_id,
+                'is_use_kiosk' => $request->is_use_kiosk,
+                'is_restrict_execute_room' => $request->is_restrict_execute_room,
+                'is_restrict_time' => $request->is_restrict_time,
+                'is_restrict_req_service' => $request->is_restrict_req_service,
+                'is_allow_no_icd' => $request->is_allow_no_icd,
+                'is_pause' => $request->is_pause,
+                'is_restrict_medicine_type' => $request->is_restrict_medicine_type,
+                'is_restrict_patient_type' => $request->is_restrict_patient_type,
+                'is_block_num_order' => $request->is_block_num_order,
+                'default_service_id' => $request->default_service_id
+            ]);
+            $data = $this->execute_room::create([
+                'create_time' => now()->format('Ymdhis'),
+                'modify_time' => now()->format('Ymdhis'),
+                'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_creator' => $this->app_creator,
+                'app_modifier' => $this->app_modifier,
+                'execute_room_code' => $request->execute_room_code,
+                'execute_room_name' => $request->execute_room_name,
+                'num_order' => $request->num_order,
+                'test_type_code' => $request->test_type_code,
+                'max_request_by_day' => $request->max_request_by_day,
+                'max_appointment_by_day' => $request->max_appointment_by_day,
+                'max_req_bhyt_by_day' => $request->max_req_bhyt_by_day,
+                'max_patient_by_day' => $request->max_patient_by_day,
+                'average_eta' => $request->average_eta,
+                'is_emergency' => $request->is_emergency,
+                'is_exam' => $request->is_exam,
+                'is_speciality' => $request->is_speciality,
+                'is_vaccine' => $request->is_vaccine,
+                'allow_not_choose_service' => $request->allow_not_choose_service,
+                'is_kidney' => $request->is_kidney,
+                'kidney_shift_count' => $request->kidney_shift_count,
+                'is_surgery' => $request->is_surgery,
+                'is_auto_expend_add_exam' => $request->is_auto_expend_add_exam,
+                'is_pause_enclitic' => $request->is_pause_enclitic,
+                'is_vitamin_a' => $request->is_vitamin_a,
+                'room_id' => $room->id,
+            ]);
+            DB::connection('oracle_his')->commit();
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->execute_room_name));
+            return return_data_create_success([$data, $room]);
+        } catch (\Exception $e) {
+            // Rollback transaction nếu có lỗi
+            DB::connection('oracle_his')->rollBack();
+            return return_data_fail_transaction();
+        }
+    }
+
+    public function execute_room_update(UpdateExecuteRoomRequest $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->execute_room->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        $room = $this->room->find($data->room_id);
+        if ($room == null) {
+            return return_not_record($data->room_id);
+        }
+        // Start transaction
+        DB::connection('oracle_his')->beginTransaction();
+        try {
+            $room_update =[
+                'modify_time' => now()->format('Ymdhis'),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_modifier' => $this->app_modifier,
+                'room_group_id' => $request->room_group_id,
+                'room_type_id' => $request->room_type_id,
+                'order_issue_code' => $request->order_issue_code,
+                'hold_order' => $request->hold_order,
+                'speciality_id' => $request->speciality_id,
+                'address' => $request->address,
+                'responsible_loginname' => $request->responsible_loginname,
+                'responsible_username' => $request->responsible_username,
+                'default_instr_patient_type_id' => $request->default_instr_patient_type_id,
+                'default_drug_store_ids' => $request->default_drug_store_ids,
+                'default_cashier_room_id' => $request->default_cashier_room_id,
+                'area_id' => $request->area_id,
+                'screen_saver_module_link' => $request->screen_saver_module_link,
+                'bhyt_code' => $request->bhyt_code,
+                'deposit_account_book_id' => $request->deposit_account_book_id,
+                'bill_account_book_id' => $request->bill_account_book_id,
+                'is_use_kiosk' => $request->is_use_kiosk,
+                'is_restrict_execute_room' => $request->is_restrict_execute_room,
+                'is_restrict_time' => $request->is_restrict_time,
+                'is_restrict_req_service' => $request->is_restrict_req_service,
+                'is_allow_no_icd' => $request->is_allow_no_icd,
+                'is_pause' => $request->is_pause,
+                'is_restrict_medicine_type' => $request->is_restrict_medicine_type,
+                'is_restrict_patient_type' => $request->is_restrict_patient_type,
+                'is_block_num_order' => $request->is_block_num_order,
+                'default_service_id' => $request->default_service_id
+            ];
+            $data_update = [
+                'modify_time' => now()->format('Ymdhis'),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_modifier' => $this->app_modifier,
+                'execute_room_name' => $request->execute_room_name,
+                'num_order' => $request->num_order,
+                'test_type_code' => $request->test_type_code,
+                'max_request_by_day' => $request->max_request_by_day,
+                'max_appointment_by_day' => $request->max_appointment_by_day,
+                'max_req_bhyt_by_day' => $request->max_req_bhyt_by_day,
+                'max_patient_by_day' => $request->max_patient_by_day,
+                'average_eta' => $request->average_eta,
+                'is_emergency' => $request->is_emergency,
+                'is_exam' => $request->is_exam,
+                'is_speciality' => $request->is_speciality,
+                'is_vaccine' => $request->is_vaccine,
+                'allow_not_choose_service' => $request->allow_not_choose_service,
+                'is_kidney' => $request->is_kidney,
+                'kidney_shift_count' => $request->kidney_shift_count,
+                'is_surgery' => $request->is_surgery,
+                'is_auto_expend_add_exam' => $request->is_auto_expend_add_exam,
+                'is_pause_enclitic' => $request->is_pause_enclitic,
+                'is_vitamin_a' => $request->is_vitamin_a,
+            ];
+            $room->fill($room_update);
+            $room->save();
+            $data->fill($data_update);
+            $data->save();
+            DB::connection('oracle_his')->commit();
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->execute_room_name));
+            return return_data_create_success([$data, $room]);
+        } catch (\Exception $e) {
+            // Rollback transaction nếu có lỗi
+            DB::connection('oracle_his')->rollBack();
+            return return_data_fail_transaction();
+        }
+    }
+
+    public function execute_room_delete(Request $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->execute_room->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        $room = $this->room->find($data->room_id);
+        if ($room == null) {
+            return return_not_record($data->room_id);
+        }
+        // Start transaction
+        DB::connection('oracle_his')->beginTransaction();
+        try {
+            $room_update = [
+                'modify_time' => now()->format('Ymdhis'),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'is_delete' => 1,
+            ];
+            $data_update = [
+                'modify_time' => now()->format('Ymdhis'),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_modifier' => $this->app_modifier,
+                'is_delete' => 1,
+            ];
+            $room->fill($room_update);
+            $room->save();
+            $data->fill($data_update);
+            $data->save();
+            DB::connection('oracle_his')->commit();
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->execute_room_name));
+            return return_data_create_success([$data, $room]);
+        } catch (\Exception $e) {
+            // Rollback transaction nếu có lỗi
+            DB::connection('oracle_his')->rollBack();
+            return return_data_fail_transaction();
+        }
+    }
     /// Speciality     
-    public function speciality()
+    public function speciality($id = null)
     {
-        $data = get_cache($this->speciality, $this->speciality_name, null, $this->time);
-        return response()->json(['data' => $data], 200);
+        if ($id == null) {
+            $name = $this->speciality_name;
+            $param = [
+            ];
+        } else {
+            if (!is_numeric($id)) {
+                return return_id_error($id);
+            }
+            $data = $this->speciality->find($id);
+            if ($data == null) {
+                return return_not_record($id);
+            }
+            $name = $this->speciality_name . '_' . $id;
+            $param = [
+            ];
+        }
+        $data = get_cache_full($this->speciality, $param, $name, $id, $this->time);
+        $count = $data->count();
+        $param_return = [
+            'start' => null,
+            'limit' => null,
+            'count' => $count
+        ];
+        return return_data_success($param_return, $data);
     }
 
-    public function speciality_id($id)
+    public function speciality_create(CreateSpecialityRequest $request)
     {
-        $data = get_cache($this->speciality, $this->speciality_name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
+        $data = $this->speciality::create([
+            'create_time' => now()->format('Ymdhis'),
+            'modify_time' => now()->format('Ymdhis'),
+            'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
+            'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+            'app_creator' => $this->app_creator,
+            'app_modifier' => $this->app_modifier,
+            'speciality_code' => $request->speciality_code,
+            'speciality_name' => $request->speciality_name,
+            'bhyt_limit' => $request->bhyt_limit
+        ]);
+        // Gọi event để xóa cache
+        event(new DeleteCache($this->speciality_name));
+        return return_data_create_success($data);
+    }
+
+    public function speciality_update(UpdateSpecialityRequest $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->speciality->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        $data_update =[
+            'modify_time' => now()->format('Ymdhis'),
+            'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+            'app_modifier' => $this->app_modifier,
+            'speciality_code' => $request->speciality_code,
+            'speciality_name' => $request->speciality_name,
+            'bhyt_limit' => $request->bhyt_limit
+        ];
+        $data->fill($data_update);
+        $data->save();
+        // Gọi event để xóa cache
+        event(new DeleteCache($this->speciality_name));
+        return return_data_update_success($data);
+    }
+
+    public function speciality_delete(Request $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->speciality->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        $data->update([
+            'modify_time' => now()->format('Ymdhis'),
+            'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+            'app_modifier' => $this->app_modifier,
+            'is_delete' => 1
+        ]);
+        // Gọi event để xóa cache
+        event(new DeleteCache($this->speciality_name));
+        return return_data_delete_success($data);
     }
 
     /// Treatment Type     

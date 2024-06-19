@@ -50,17 +50,11 @@ class CreateAreaRequest extends FormRequest
     }
 
     public function failedValidation(Validator $validator)
-
     {
-
         throw new HttpResponseException(response()->json([
-
             'success'   => false,
-
             'message'   => 'Dữ liệu không hợp lệ!',
-
             'data'      => $validator->errors()
-
         ], 422));
     }
 }

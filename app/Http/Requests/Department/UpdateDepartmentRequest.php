@@ -35,8 +35,8 @@ class UpdateDepartmentRequest extends FormRequest
             'reality_patient_count' =>          'nullable|integer|min:0',
             'req_surg_treatment_type_id' =>     'nullable|integer|exists:App\Models\HIS\TreatmentType,id',
             'phone' =>                          'nullable|string|max:50',
-            'head_loginname' =>                 'nullable|string|max:50',
-            'head_username' =>                  'nullable|string|max:100',
+            'head_loginname' =>                 'nullable|string|max:50|exists:App\Models\HIS\Employee,loginname',
+            'head_username' =>                  'nullable|string|max:100|exists:App\Models\HIS\Employee,tdl_username',
             'accepted_icd_codes' =>             'nullable|string|max:4000',
             'is_exam' =>                        'nullable|integer|in:0,1',
             'is_clinical' =>                    'nullable|integer|in:0,1',
@@ -84,9 +84,11 @@ class UpdateDepartmentRequest extends FormRequest
 
             'head_loginname.string'     => config('keywords')['department']['head_loginname'] . ' phải là chuỗi string!',
             'head_loginname.max'        => config('keywords')['department']['head_loginname'] . ' tối đa 50 kí tự!',
+            'head_loginname.exists'     => config('keywords')['department']['head_loginname'].' = '.$this->head_loginname.' không tồn tại!',  
 
             'head_username.string'  => config('keywords')['department']['head_username'] . ' phải là chuỗi string!',
             'head_username.max'     => config('keywords')['department']['head_username'] . ' tối đa 100 kí tự!',
+            'head_username.exists'  => config('keywords')['department']['head_username'].' = '.$this->head_username.' không tồn tại!',  
 
             'accepted_icd_codes.string' => config('keywords')['department']['accepted_icd_codes'] . ' phải là chuỗi string!',
 

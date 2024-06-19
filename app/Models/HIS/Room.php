@@ -14,28 +14,8 @@ class Room extends Model
     protected $table = 'HIS_ROOM';
     // Đặt thuộc tính $timestamps thành false để tắt tự động thêm created_at và updated_at
     public $timestamps = false;
-    protected $fillable = [
-        'create_time',
-        'modify_time',
-        'creator',
-        'modifier',
-        'app_creator',
-        'app_modifier',
-        'is_active',
-        'is_delete',
-        'department_id',
-        'area_id',
-        'speciality_id',
-        'default_cashier_room_id',
-        'default_instr_patient_type_id',
-        'is_restrict_req_service',
-        'is_pause',
-        'is_restrict_execute_room',
-        'default_service_id',
-        'default_drug_store_ids',
-        'deposit_account_book_id',
-        'bill_account_book_id',
-        'room_type_id',
+    protected $guarded = [
+        'id',
     ];
     public function getDefaultDrugStoreIdsAttribute($value)
     {
