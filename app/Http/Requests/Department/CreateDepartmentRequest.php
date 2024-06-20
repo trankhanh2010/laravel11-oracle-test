@@ -83,10 +83,10 @@ class CreateDepartmentRequest extends FormRequest
             'allow_treatment_type_ids.string' => config('keywords')['department']['allow_treatment_type_ids'].' phải là chuỗi string!',
 
             'theory_patient_count.integer'  => config('keywords')['department']['theory_patient_count'].' phải là số nguyên!',
-            'theory_patient_count.min'  => config('keywords')['department']['theory_patient_count'].' lớn hơn bằng 0!',
+            'theory_patient_count.min'      => config('keywords')['department']['theory_patient_count'].' lớn hơn bằng 0!',
 
             'reality_patient_count.integer'     => config('keywords')['department']['reality_patient_count'].' phải là số nguyên!',
-            'reality_patient_count.min'  => config('keywords')['department']['reality_patient_count'].' lớn hơn bằng 0!',
+            'reality_patient_count.min'         => config('keywords')['department']['reality_patient_count'].' lớn hơn bằng 0!',
 
             'req_surg_treatment_type_id.integer'    => config('keywords')['department']['req_surg_treatment_type_id'].' phải là số nguyên!',
             'req_surg_treatment_type_id.exists'     => config('keywords')['department']['req_surg_treatment_type_id'].' = '.$this->req_surg_treatment_type_id.' không tồn tại!', 
@@ -174,17 +174,11 @@ class CreateDepartmentRequest extends FormRequest
         });
     }
     public function failedValidation(Validator $validator)
-
     {
-
         throw new HttpResponseException(response()->json([
-
             'success'   => false,
-
             'message'   => 'Dữ liệu không hợp lệ!',
-
             'data'      => $validator->errors()
-
         ], 422));
     }
 

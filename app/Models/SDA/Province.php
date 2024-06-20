@@ -18,4 +18,8 @@ class Province extends Model
     {
         return $this->belongsTo(National::class, 'national_id');
     }
+    public function districts()
+    {
+        return $this->hasMany(District::class);
+    }
 }

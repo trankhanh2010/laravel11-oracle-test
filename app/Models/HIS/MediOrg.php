@@ -11,4 +11,8 @@ class MediOrg extends Model
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
     protected $table = 'HIS_Medi_Org';
+    protected $guarded = [
+        'id'
+    ];
+    public $timestamps = false;
 }

@@ -59,7 +59,7 @@ if (!function_exists('get_cache_full')) {
             return $data;
         } else {
             $data = Cache::remember($name, $time, function () use ($model, $relation_ship, $id) {
-                return $model::where('id', $id)->with($relation_ship)->get();
+                return $model::where('id', $id)->with($relation_ship)->first();
             });
             return $data;
         }

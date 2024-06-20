@@ -12,6 +12,10 @@ class Branch extends Model
     protected $connection = 'oracle_his'; 
     protected $table = 'HIS_Branch';
 
+    protected $guarded = [
+        'id',
+    ];
+    public $timestamps = false;
     public function department()
     {
         return $this->hasOne(Department::class);

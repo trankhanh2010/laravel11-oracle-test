@@ -161,6 +161,12 @@ use App\Http\Requests\ExecuteRoom\UpdateExecuteRoomRequest;
 use App\Http\Requests\RoomGroup\CreateRoomGroupRequest;
 use App\Http\Requests\Speciality\CreateSpecialityRequest;
 use App\Http\Requests\Speciality\UpdateSpecialityRequest;
+use App\Http\Requests\TreatmentType\CreateTreatmentTypeRequest;
+use App\Http\Requests\TreatmentType\UpdateTreatmentTypeRequest;
+use App\Http\Requests\MediOrg\CreateMediOrgRequest;
+use App\Http\Requests\MediOrg\UpdateMediOrgRequest;
+use App\Http\Requests\Branch\CreateBranchRequest;
+use App\Http\Requests\Branch\UpdateBranchRequest;
 class HISController extends Controller
 {
     protected $data = [];
@@ -630,9 +636,7 @@ class HISController extends Controller
             ];
         }
         $data = get_cache_full($this->department, $param, $name, $id, $this->time);
-        // foreach ($data as $key => $item) {
-        //     $item->allow_treatment_type = get_cache_1_n_with_ids($this->department, "allow_treatment_type", $this->department_name, $item->id, $this->time);
-        // }
+
         $count = $data->count();
         $param_return = [
             'start' => null,
@@ -689,7 +693,7 @@ class HISController extends Controller
         if ($data == null) {
             return return_not_record($id);
         }
-        $data_update =[
+        $data_update = [
             'modify_time' => now()->format('Ymdhis'),
             'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
             'app_modifier' => $this->app_modifier,
@@ -1170,7 +1174,7 @@ class HISController extends Controller
         // Start transaction
         DB::connection('oracle_his')->beginTransaction();
         try {
-            $room_update =[
+            $room_update = [
                 'modify_time' => now()->format('Ymdhis'),
                 'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
                 'app_modifier' => $this->app_modifier,
@@ -1286,8 +1290,7 @@ class HISController extends Controller
     {
         if ($id == null) {
             $name = $this->speciality_name;
-            $param = [
-            ];
+            $param = [];
         } else {
             if (!is_numeric($id)) {
                 return return_id_error($id);
@@ -1297,8 +1300,7 @@ class HISController extends Controller
                 return return_not_record($id);
             }
             $name = $this->speciality_name . '_' . $id;
-            $param = [
-            ];
+            $param = [];
         }
         $data = get_cache_full($this->speciality, $param, $name, $id, $this->time);
         $count = $data->count();
@@ -1337,7 +1339,7 @@ class HISController extends Controller
         if ($data == null) {
             return return_not_record($id);
         }
-        $data_update =[
+        $data_update = [
             'modify_time' => now()->format('Ymdhis'),
             'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
             'app_modifier' => $this->app_modifier,
@@ -1381,59 +1383,384 @@ class HISController extends Controller
                 'required_service'
             ];
         } else {
+            if (!is_numeric($id)) {
+                return return_id_error($id);
+            }
+            $data = $this->treatment_type->find($id);
+            if ($data == null) {
+                return return_not_record($id);
+            }
             $name = $this->treatment_type_name . '_' . $id;
             $param = [
                 'required_service'
             ];
         }
         $data = get_cache_full($this->treatment_type, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
+        $count = $data->count();
+        $param_return = [
+            'start' => null,
+            'limit' => null,
+            'count' => $count
+        ];
+        return return_data_success($param_return, $data);
+    }
+
+    public function treatment_type_create(CreateTreatmentTypeRequest $request)
+    {
+        $data = $this->treatment_type::create([
+            'create_time' => now()->format('Ymdhis'),
+            'modify_time' => now()->format('Ymdhis'),
+            'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
+            'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+            'app_creator' => $this->app_creator,
+            'app_modifier' => $this->app_modifier,
+            'treatment_type_code' => $request->treatment_type_code,
+            'treatment_type_name' => $request->treatment_type_name,
+            'hein_treatment_type_code' => $request->hein_treatment_type_code,
+            'end_code_prefix' => $request->end_code_prefix,
+            'required_service_id' => $request->required_service_id,
+            'is_allow_reception' => $request->is_allow_reception,
+            'is_not_allow_unpause' => $request->is_not_allow_unpause,
+            'allow_hospitalize_when_pres' => $request->allow_hospitalize_when_pres,
+            'is_not_allow_share_bed' => $request->is_not_allow_share_bed,
+            'is_required_service_bed' => $request->is_required_service_bed,
+            'is_dis_service_repay' => $request->is_dis_service_repay,
+            'dis_service_deposit_option' => $request->dis_service_deposit_option,
+            'dis_deposit_option' => $request->dis_deposit_option,
+            'unsign_doc_finish_option' => $request->unsign_doc_finish_option,
+            'trans_time_out_time_option' => $request->trans_time_out_time_option,
+            'fee_debt_option' => $request->fee_debt_option,
+            'id' => null,
+        ]);
+        // Gọi event để xóa cache
+        event(new DeleteCache($this->treatment_type_name));
+        return return_data_create_success($data);
+    }
+
+    public function treatment_type_update(UpdateTreatmentTypeRequest $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->treatment_type->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        $data_update = [
+            'modify_time' => now()->format('Ymdhis'),
+            'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+            'app_modifier' => $this->app_modifier,
+            'hein_treatment_type_code' => $request->hein_treatment_type_code,
+            'end_code_prefix' => $request->end_code_prefix,
+            'required_service_id' => $request->required_service_id,
+            'is_allow_reception' => $request->is_allow_reception,
+            'is_not_allow_unpause' => $request->is_not_allow_unpause,
+            'allow_hospitalize_when_pres' => $request->allow_hospitalize_when_pres,
+            'is_not_allow_share_bed' => $request->is_not_allow_share_bed,
+            'is_required_service_bed' => $request->is_required_service_bed,
+            'is_dis_service_repay' => $request->is_dis_service_repay,
+            'dis_service_deposit_option' => $request->dis_service_deposit_option,
+            'dis_deposit_option' => $request->dis_deposit_option,
+            'unsign_doc_finish_option' => $request->unsign_doc_finish_option,
+            'trans_time_out_time_option' => $request->trans_time_out_time_option,
+            'fee_debt_option' => $request->fee_debt_option,
+        ];
+        $data->fill($data_update);
+        $data->save();
+        // Gọi event để xóa cache
+        event(new DeleteCache($this->treatment_type_name));
+        return return_data_update_success($data);
+    }
+
+    public function treatment_type_delete(Request $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->treatment_type->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        $data->update([
+            'modify_time' => now()->format('Ymdhis'),
+            'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+            'app_modifier' => $this->app_modifier,
+            'is_delete' => 1
+        ]);
+        // Gọi event để xóa cache
+        event(new DeleteCache($this->treatment_type_name));
+        return return_data_delete_success($data);
     }
 
     /// Medi Org
-    public function medi_org()
+    public function medi_org($id = null)
     {
-        $data = get_cache($this->medi_org, $this->medi_org_name, null, $this->time);
-        return response()->json(['data' => $data], 200);
+        if ($id == null) {
+            $name = $this->medi_org_name;
+            $param = [];
+        } else {
+            if (!is_numeric($id)) {
+                return return_id_error($id);
+            }
+            $data = $this->medi_org->find($id);
+            if ($data == null) {
+                return return_not_record($id);
+            }
+            $name = $this->medi_org_name . '_' . $id;
+            $param = [];
+        }
+        $data = get_cache_full($this->medi_org, $param, $name, $id, $this->time);
+        $count = $data->count();
+        $param_return = [
+            'start' => null,
+            'limit' => null,
+            'count' => $count
+        ];
+        return return_data_success($param_return, $data);
     }
 
-    public function medi_org_id($id)
+    public function medi_org_create(CreateMediOrgRequest $request)
     {
-        $data = get_cache($this->medi_org, $this->medi_org_name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
+        $data = $this->medi_org::create([
+            'create_time' => now()->format('Ymdhis'),
+            'modify_time' => now()->format('Ymdhis'),
+            'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
+            'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+            'app_creator' => $this->app_creator,
+            'app_modifier' => $this->app_modifier,
+            'medi_org_code' => $request->medi_org_code,
+            'medi_org_name' => $request->medi_org_name,
+            'province_code' => $request->province_code,
+            'province_name' => $request->province_name,
+            'district_code' => $request->district_code,
+            'district_name' => $request->district_name,
+            'commune_code' => $request->commune_code,
+            'commune_name' => $request->commune_name,
+            'address' => $request->address,
+            'rank_code' => $request->rank_code,
+            'level_code' => $request->level_code,
+        ]);
+        // Gọi event để xóa cache
+        event(new DeleteCache($this->medi_org_name));
+        return return_data_create_success($data);
+    }
+
+    public function medi_org_update(UpdateMediOrgRequest $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->medi_org->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        $data_update = [
+            'modify_time' => now()->format('Ymdhis'),
+            'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+            'app_modifier' => $this->app_modifier,
+            'medi_org_code' => $request->medi_org_code,
+            'medi_org_name' => $request->medi_org_name,
+            'province_code' => $request->province_code,
+            'province_name' => $request->province_name,
+            'district_code' => $request->district_code,
+            'district_name' => $request->district_name,
+            'commune_code' => $request->commune_code,
+            'commune_name' => $request->commune_name,
+            'address' => $request->address,
+            'rank_code' => $request->rank_code,
+            'level_code' => $request->level_code,
+        ];
+        $data->fill($data_update);
+        $data->save();
+        // Gọi event để xóa cache
+        event(new DeleteCache($this->medi_org_name));
+        return return_data_update_success($data);
+    }
+
+    public function medi_org_delete(Request $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->medi_org->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        $data->update([
+            'modify_time' => now()->format('Ymdhis'),
+            'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+            'app_modifier' => $this->app_modifier,
+            'is_delete' => 1
+        ]);
+        // Gọi event để xóa cache
+        event(new DeleteCache($this->medi_org_name));
+        return return_data_delete_success($data);
     }
 
     /// Branch
-    public function branch()
+    public function branch($id = null)
     {
-        $data = get_cache($this->branch, $this->branch_name, null, $this->time);
-        return response()->json(['data' => $data], 200);
+        if ($id == null) {
+            $name = $this->branch_name;
+            $param = [];
+        } else {
+            if (!is_numeric($id)) {
+                return return_id_error($id);
+            }
+            $data = $this->branch->find($id);
+            if ($data == null) {
+                return return_not_record($id);
+            }
+            $name = $this->branch_name . '_' . $id;
+            $param = [];
+        }
+        $data = get_cache_full($this->branch, $param, $name, $id, $this->time);
+        $count = $data->count();
+        $param_return = [
+            'start' => null,
+            'limit' => null,
+            'count' => $count
+        ];
+        return return_data_success($param_return, $data);
     }
 
-    public function branch_id($id)
+    public function branch_create(CreateBranchRequest $request)
     {
-        $data = get_cache($this->branch, $this->branch_name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
+        $data = $this->branch::create([
+            'create_time' => now()->format('Ymdhis'),
+            'modify_time' => now()->format('Ymdhis'),
+            'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
+            'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+            'app_creator' => $this->app_creator,
+            'app_modifier' => $this->app_modifier,
+            'branch_code' => $request->branch_code,
+            'branch_name' => $request->branch_name,
+            'hein_medi_org_code' => $request->hein_medi_org_code,
+            'accept_hein_medi_org_code' => $request->accept_hein_medi_org_code,
+            'sys_medi_org_code' => $request->sys_medi_org_code,
+            'province_code' => $request->province_code,
+            'province_name' => $request->province_name,
+            'district_code' => $request->district_code,
+            'district_name' => $request->district_name,
+            'commune_code' => $request->commune_code,
+            'commune_name' => $request->commune_name,
+            'address' => $request->address,
+            'parent_organization_name' => $request->parent_organization_name,
+            'hein_province_code' => $request->hein_province_code,
+            'hein_level_code' => $request->hein_level_code,
+            'do_not_allow_hein_level_code' => $request->do_not_allow_hein_level_code,
+            'tax_code' => $request->tax_code,
+            'account_number' => $request->account_number,
+            'phone' => $request->phone,
+            'representative' => $request->representative,
+            'position' => $request->position,
+            'representative_hein_code' => $request->representative_hein_code,
+            'auth_letter_issue_date' => $request->auth_letter_issue_date,
+            'auth_letter_num' => $request->auth_letter_num,
+            'bank_info' => $request->bank_info,
+            'the_branch_code' =>$request->the_branch_code,
+            'director_loginname' => $request->director_loginname,
+            'director_username' => $request->director_username,
+            'venture' => $request->venture,
+            'type' => $request->type,
+            'form' => $request->form,
+            'bed_approved' => $request->bed_approved,
+            'bed_actual' => $request->bed_actual,
+            'bed_resuscitation' => $request->bed_resuscitation,
+            'bed_resuscitation_emg' => $request->bed_resuscitation_emg,
+            'is_use_branch_time' => $request->is_use_branch_time
+        ]);
+        // Gọi event để xóa cache
+        event(new DeleteCache($this->branch_name));
+        return return_data_create_success($data);
+    }
+
+    public function branch_update(UpdateBranchRequest $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->branch->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        $data_update = [
+            'modify_time' => now()->format('Ymdhis'),
+            'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+            'app_modifier' => $this->app_modifier,
+            'branch_name' => $request->branch_name,
+            'hein_medi_org_code' => $request->hein_medi_org_code,
+            'accept_hein_medi_org_code' => $request->accept_hein_medi_org_code,
+            'sys_medi_org_code' => $request->sys_medi_org_code,
+            'province_code' => $request->province_code,
+            'province_name' => $request->province_name,
+            'district_code' => $request->district_code,
+            'district_name' => $request->district_name,
+            'commune_code' => $request->commune_code,
+            'commune_name' => $request->commune_name,
+            'address' => $request->address,
+            'parent_organization_name' => $request->parent_organization_name,
+            'hein_province_code' => $request->hein_province_code,
+            'hein_level_code' => $request->hein_level_code,
+            'do_not_allow_hein_level_code' => $request->do_not_allow_hein_level_code,
+            'tax_code' => $request->tax_code,
+            'account_number' => $request->account_number,
+            'phone' => $request->phone,
+            'representative' => $request->representative,
+            'position' => $request->position,
+            'representative_hein_code' => $request->representative_hein_code,
+            'auth_letter_issue_date' => $request->auth_letter_issue_date,
+            'auth_letter_num' => $request->auth_letter_num,
+            'bank_info' => $request->bank_info,
+            'the_branch_code' =>$request->the_branch_code,
+            'director_loginname' => $request->director_loginname,
+            'director_username' => $request->director_username,
+            'venture' => $request->venture,
+            'type' => $request->type,
+            'form' => $request->form,
+            'bed_approved' => $request->bed_approved,
+            'bed_actual' => $request->bed_actual,
+            'bed_resuscitation' => $request->bed_resuscitation,
+            'bed_resuscitation_emg' => $request->bed_resuscitation_emg,
+            'is_use_branch_time' => $request->is_use_branch_time
+        ];
+        $data->fill($data_update);
+        $data->save();
+        // Gọi event để xóa cache
+        event(new DeleteCache($this->branch_name));
+        return return_data_update_success($data);
     }
 
     /// District
-    public function district()
+    public function district($id = null)
     {
-        $param = [
-            'province:id,province_name,province_code',
+        if ($id == null) {
+            $name = $this->district_name;
+            $param = [
+                'province:id,province_name,province_code',
+            ];
+        } else {
+            if (!is_numeric($id)) {
+                return return_id_error($id);
+            }
+            $data = $this->district->find($id);
+            if ($data == null) {
+                return return_not_record($id);
+            }
+            $name = $this->district_name . '_' . $id;
+            $param = [
+                'province:id,province_name,province_code',
+                'communes'
+            ];
+        }
+        $data = get_cache_full($this->district, $param, $name, $id, $this->time);
+        $count = $data->count();
+        $param_return = [
+            'start' => null,
+            'limit' => null,
+            'count' => $count
         ];
-        $data = get_cache_full($this->district, $param, $this->district_name, null, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    public function district_id($id)
-    {
-        $data = get_cache($this->district, $this->district_name, $id, $this->time);
-        $data1 = get_cache_1_1($this->district, "province", $this->district_name, $id, $this->time);
-        return response()->json(['data' => [
-            'district' => $data,
-            'province' => $data1
-        ]], 200);
+        return return_data_success($param_return, $data);
     }
 
     /// Medi Stock
@@ -1662,13 +1989,27 @@ class HISController extends Controller
                 'national:id,national_name,national_code'
             ];
         } else {
+            if (!is_numeric($id)) {
+                return return_id_error($id);
+            }
+            $data = $this->province->find($id);
+            if ($data == null) {
+                return return_not_record($id);
+            }
             $name = $this->province_name . '_' . $id;
             $param = [
-                'national'
+                'national',
+                'districts'
             ];
         }
         $data = get_cache_full($this->province, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
+        $count = $data->count();
+        $param_return = [
+            'start' => null,
+            'limit' => null,
+            'count' => $count
+        ];
+        return return_data_success($param_return, $data);
     }
 
 
@@ -1777,19 +2118,33 @@ class HISController extends Controller
     /// Commune
     public function commune($id = null)
     {
+
         if ($id == null) {
             $name = $this->commune_name;
             $param = [
                 'district:id,district_name,district_code'
             ];
         } else {
+            if (!is_numeric($id)) {
+                return return_id_error($id);
+            }
+            $data = $this->commune->find($id);
+            if ($data == null) {
+                return return_not_record($id);
+            }
             $name = $this->commune_name . '_' . $id;
             $param = [
                 'district'
             ];
         }
         $data = get_cache_full($this->commune, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
+        $count = $data->count();
+        $param_return = [
+            'start' => null,
+            'limit' => null,
+            'count' => $count
+        ];
+        return return_data_success($param_return, $data);
     }
 
     /// Service

@@ -71,25 +71,36 @@ Route::group([
     });
 
     /// Diện điều trị
-    Route::get("v1/treatment-type", [HISController::class, "treatment_type"]);
-    Route::get("v1/treatment-type/{id}", [HISController::class, "treatment_type"]);
+    Route::group(['as' => 'HIS.Desktop.Plugins.TreatmentType'], function () {
+        Route::get("v1/treatment-type", [HISController::class, "treatment_type"]);
+        Route::get("v1/treatment-type/{id}", [HISController::class, "treatment_type"]);
+        Route::post("v1/treatment-type", [HISController::class, "treatment_type_create"]);        
+        Route::put("v1/treatment-type/{id}", [HISController::class, "treatment_type_update"]);       
+        Route::delete("v1/treatment-type/{id}", [HISController::class, "treatment_type_delete"]);  
+    });
 
     /// Cơ sở khám chữa bệnh ban đầu
     Route::group(['as' => 'HIS.Desktop.Plugins.HisMediOrg'], function () {
         Route::get("v1/medi-org", [HISController::class, "medi_org"]);
-        Route::get("v1/medi-org/{id}", [HISController::class, "medi_org_id"]);
+        Route::get("v1/medi-org/{id}", [HISController::class, "medi_org"]);
+        Route::post("v1/medi-org", [HISController::class, "medi_org_create"]);        
+        Route::put("v1/medi-org/{id}", [HISController::class, "medi_org_update"]);       
+        Route::delete("v1/medi-org/{id}", [HISController::class, "medi_org_delete"]);  
     });
 
     /// Cơ sở/Xã phường
     Route::group(['as' => 'HIS.Desktop.Plugins.HisBranch'], function () {
         Route::get("v1/branch", [HISController::class, "branch"]);
-        Route::get("v1/branch/{id}", [HISController::class, "branch_id"]);
+        Route::get("v1/branch/{id}", [HISController::class, "branch"]);
+        Route::post("v1/branch", [HISController::class, "branch_create"]);        
+        Route::put("v1/branch/{id}", [HISController::class, "branch_update"]);       
+        Route::delete("v1/branch/{id}", [HISController::class, "branch_delete"]);  
     });
 
     /// Huyện
     Route::group(['as' => 'SDA.Desktop.Plugins.SdaDistrict'], function () {
         Route::get("v1/district", [HISController::class, "district"]);
-        Route::get("v1/district/{id}", [HISController::class, "district_id"]);
+        Route::get("v1/district/{id}", [HISController::class, "district"]);
     });
 
     /// Kho
