@@ -11,13 +11,30 @@ class PatientType extends Model
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
     protected $table = 'HIS_patient_type ';
-    protected $fillable = [
-        'base_patient_type_id',
-        'inherit_patient_type_ids',
-        'other_pay_source_ids',
-        'other_paySource_id',
-        'treatment_type_ids',
+    protected $guarded = [
+        'id',
     ];
+    public $timestamps = false;
+    protected $appends = [
+        'treatment_types',
+        'other_pay_sources',
+        'inherit_patient_types'
+    ];
+    public function getTreatmentTypesAttribute()
+    {
+        $data = TreatmentType::whereIn('id', explode(',', $this->treatment_type_ids))->get();
+        return $data;
+    }
+    public function getOtherPaySourcesAttribute()
+    {
+        $data = OtherPaySource::whereIn('id', explode(',', $this->other_pay_source_ids))->get();
+        return $data;
+    }
+    public function getInheritPatientTypesAttribute()
+    {
+        $data = PatientType::whereIn('id', explode(',', $this->inheritPatientTypeIds))->get();
+        return $data;
+    }
 
     public function services()
     {

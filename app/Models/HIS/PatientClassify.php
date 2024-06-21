@@ -11,20 +11,33 @@ class PatientClassify extends Model
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his';
     protected $table = 'HIS_Patient_Classify';
-    protected $fillable = [
-        'patient_type_id',
-        'other_pay_source_id',
-        'BHYT_whitelist_ids'
+    public $timestamps = false;
+    protected $guarded = [
+        'id',
     ];
+    protected $appends = [
+        'bhyt_whitelists',
+        'militarry_ranks'
+    ];
+    public function getBHYTWhitelistsAttribute()
+    {
+        $data = BHYTWhitelist::whereIn('id', explode(',', $this->bhyt_whitelist_ids))->get();
+        return $data;
+    }
+    public function getMilitarryRanksAttribute()
+    {
+        $data = MilitaryRank::whereIn('id', explode(',', $this->military_rank_ids))->get();
+        return $data;
+    }
 
     public function patient_type()
     {
         return $this->belongsTo(PatientType::class, 'patient_type_id', 'id');
     }
 
-    public function orther_pay_source()
+    public function other_pay_source()
     {
-        return $this->belongsTo(OtherPaySource::class, 'other_pay_source_id', 'id');
+        return $this->belongsTo(OtherPaySource::class);
     }
 
     public function BHYT_whitelists()

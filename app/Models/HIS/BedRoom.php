@@ -16,34 +16,46 @@ class BedRoom extends Model
     protected $table = 'HIS_BED_ROOM';
     // Đặt thuộc tính $timestamps thành false để tắt tự động thêm created_at và updated_at
     public $timestamps = false;
-    public function getTreatmentTypeIdsAttribute($value)
-    {
-        if($value != null){
-             // Tạo Cache để tránh trùng lặp truy vấn
-             return Cache::remember('allow_treatment_type_ids_'.$value, $this->time, function () use ($value) {
-                return TreatmentType::
-                select('id', 'treatment_type_code', 'treatment_type_name')
-                ->whereIn('id', explode(',', $value))->get();
-            });        
-        }else{
-            return $value;
-        }
-    }
-    protected $fillable = [
-        'create_time' ,
-        'modify_time' ,
-        'creator' ,
-        'modifier' ,
-        'app_creator' ,
-        'app_modifier',
-        'is_active' ,
-        'is_delete' ,
-        'bed_room_code',
-        'bed_room_name' ,
-        'is_surgery',
-        'treatment_type_ids',
-        'room_id' ,
+    protected $appends = [
+        'treatment_types',
     ];
+    protected $guarded = [
+        'id',
+    ];
+    // public function getTreatmentTypeIdsAttribute($value)
+    // {
+    //     if($value != null){
+    //          // Tạo Cache để tránh trùng lặp truy vấn
+    //          return Cache::remember('allow_treatment_type_ids_'.$value, $this->time, function () use ($value) {
+    //             return TreatmentType::
+    //             select('id', 'treatment_type_code', 'treatment_type_name')
+    //             ->whereIn('id', explode(',', $value))->get();
+    //         });        
+    //     }else{
+    //         return $value;
+    //     }
+    // }
+    public function getTreatmentTypesAttribute()
+    {
+        $data = TreatmentType::whereIn('id', explode(',', $this->treatment_type_ids))->get();
+        return $data;
+    }
+
+    // protected $fillable = [
+    //     'create_time' ,
+    //     'modify_time' ,
+    //     'creator' ,
+    //     'modifier' ,
+    //     'app_creator' ,
+    //     'app_modifier',
+    //     'is_active' ,
+    //     'is_delete' ,
+    //     'bed_room_code',
+    //     'bed_room_name' ,
+    //     'is_surgery',
+    //     'treatment_type_ids',
+    //     'room_id' ,
+    // ];
     public function room()
     {
         return $this->belongsTo(Room::class, 'room_id');

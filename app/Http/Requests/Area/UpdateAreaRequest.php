@@ -26,6 +26,10 @@ class UpdateAreaRequest extends FormRequest
      */
     public function rules()
     {
+        // Kiểm tra Id nhập vào của người dùng trước khi dùng Rule
+        if(!is_numeric($this->id)){
+            throw new HttpResponseException(return_id_error($this->id));
+        }
         return [
             'area_code' => [
                 'required',

@@ -11,9 +11,10 @@ class District extends Model
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_sda'; 
     protected $table = 'SDA_district';
-    protected $fillable = [
-        'province_id',
+    protected $guarded = [
+        'id',
     ];
+    public $timestamps = false;
 
     public function province()
     {

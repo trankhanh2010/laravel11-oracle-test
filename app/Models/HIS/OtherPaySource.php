@@ -11,4 +11,8 @@ class OtherPaySource extends Model
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his';
     protected $table = 'HIS_Other_Pay_Source';
+    public $timestamps = false;
+    protected $guarded = [
+        'id',
+    ];
 }

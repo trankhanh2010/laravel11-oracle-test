@@ -148,7 +148,8 @@ use App\Models\HIS\TestType;
 use App\Models\HIS\RoomGroup;
 use App\Models\HIS\RoomType;
 use App\Models\ACS\ModuleGroup;
-
+use App\Models\HIS\OtherPaySource;
+use App\Models\HIS\MilitaryRank;
 // use Request
 use App\Http\Requests\Department\CreateDepartmentRequest;
 use App\Http\Requests\Department\UpdateDepartmentRequest;
@@ -167,6 +168,15 @@ use App\Http\Requests\MediOrg\CreateMediOrgRequest;
 use App\Http\Requests\MediOrg\UpdateMediOrgRequest;
 use App\Http\Requests\Branch\CreateBranchRequest;
 use App\Http\Requests\Branch\UpdateBranchRequest;
+use App\Http\Requests\District\CreateDistrictRequest;
+use App\Http\Requests\District\UpdateDistrictRequest;
+use App\Http\Requests\PatientClassify\CreatePatientClassifyRequest;
+use App\Http\Requests\PatientClassify\UpdatePatientClassifyRequest;
+use App\Http\Requests\OtherPaySource\CreateOtherPaySourceRequest;
+use App\Http\Requests\OtherPaySource\UpdateOtherPaySourceRequest;
+use App\Http\Requests\MediStock\CreateMediStockRequest;
+use App\Http\Requests\MediStock\UpdateMediStockRequest;
+
 class HISController extends Controller
 {
     protected $data = [];
@@ -454,6 +464,10 @@ class HISController extends Controller
     protected $room_group_name = 'room_group';
     protected $module_group;
     protected $module_group_name = 'module_group';
+    protected $other_pay_source;
+    protected $other_pay_source_name = 'other_pay_source';
+    protected $military_rank;
+    protected $military_rank_name = 'military_rank';
     public function __construct(Request $request)
     {
         // Khai báo các biến
@@ -608,6 +622,8 @@ class HISController extends Controller
         $this->test_type = new TestType();
         $this->room_group = new RoomGroup();
         $this->module_group = new ModuleGroup();
+        $this->other_pay_source = new OtherPaySource();
+        $this->military_rank = new MilitaryRank();
     }
 
     /// Department
@@ -1658,7 +1674,7 @@ class HISController extends Controller
             'auth_letter_issue_date' => $request->auth_letter_issue_date,
             'auth_letter_num' => $request->auth_letter_num,
             'bank_info' => $request->bank_info,
-            'the_branch_code' =>$request->the_branch_code,
+            'the_branch_code' => $request->the_branch_code,
             'director_loginname' => $request->director_loginname,
             'director_username' => $request->director_username,
             'venture' => $request->venture,
@@ -1712,7 +1728,7 @@ class HISController extends Controller
             'auth_letter_issue_date' => $request->auth_letter_issue_date,
             'auth_letter_num' => $request->auth_letter_num,
             'bank_info' => $request->bank_info,
-            'the_branch_code' =>$request->the_branch_code,
+            'the_branch_code' => $request->the_branch_code,
             'director_loginname' => $request->director_loginname,
             'director_username' => $request->director_username,
             'venture' => $request->venture,
@@ -1731,6 +1747,25 @@ class HISController extends Controller
         return return_data_update_success($data);
     }
 
+    public function branch_delete(Request $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->branch->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        $data->update([
+            'modify_time' => now()->format('Ymdhis'),
+            'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+            'app_modifier' => $this->app_modifier,
+            'is_delete' => 1
+        ]);
+        // Gọi event để xóa cache
+        event(new DeleteCache($this->branch_name));
+        return return_data_delete_success($data);
+    }
     /// District
     public function district($id = null)
     {
@@ -1763,34 +1798,406 @@ class HISController extends Controller
         return return_data_success($param_return, $data);
     }
 
-    /// Medi Stock
-    public function medi_stock()
+    public function district_create(CreateDistrictRequest $request)
     {
-        $param = [
-            'room:id,department_id,room_type_id',
-            'room.department:id,department_name,department_code',
-            'room.room_type:id,room_type_name,room_type_code',
-            'parent:id,medi_stock_name,medi_stock_code'
-        ];
-        $data = get_cache_full($this->medi_stock, $param, $this->medi_stock_name, null, $this->time);
-        return response()->json(['data' => $data], 200);
+        $data = $this->district::create([
+            'create_time' => now()->format('Ymdhis'),
+            'modify_time' => now()->format('Ymdhis'),
+            'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
+            'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+            'app_creator' => $this->app_creator,
+            'app_modifier' => $this->app_modifier,
+            'district_code' => $request->district_code,
+            'district_name' => $request->district_name,
+            'initial_name' => $request->initial_name,
+            'search_code' => $request->search_code,
+            'province_id' => $request->province_id,
+        ]);
+        // Gọi event để xóa cache
+        event(new DeleteCache($this->district_name));
+        return return_data_create_success($data);
     }
 
-    public function medi_stock_id($id)
+    public function district_update(UpdateDistrictRequest $request, $id)
     {
-        $data = get_cache($this->medi_stock, $this->medi_stock_name, $id, $this->time);
-        $data1 = get_cache_1_1($this->medi_stock, "room", $this->medi_stock_name, $id, $this->time);
-        $data2 = get_cache_1_1_1($this->medi_stock, "room.room_type", $this->medi_stock_name, $id, $this->time);
-        $data3 = get_cache_1_1_1($this->medi_stock, "room.department", $this->medi_stock_name, $id, $this->time);
-        $data4 = get_cache_1_1($this->medi_stock, "parent", $this->medi_stock_name, $id, $this->time);
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->district->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        $data_update = [
+            'modify_time' => now()->format('Ymdhis'),
+            'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+            'app_modifier' => $this->app_modifier,
+            'district_code' => $request->district_code,
+            'district_name' => $request->district_name,
+            'initial_name' => $request->initial_name,
+            'search_code' => $request->search_code,
+            'province_id' => $request->province_id,
+        ];
+        $data->fill($data_update);
+        $data->save();
+        // Gọi event để xóa cache
+        event(new DeleteCache($this->district_name));
+        return return_data_update_success($data);
+    }
 
-        return response()->json(['data' => [
-            'medi_stock' => $data,
-            'room' => $data1,
-            'room_type' => $data2,
-            'department' => $data3,
-            'parent' => $data4
-        ]], 200);
+    public function district_delete(Request $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->district->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        $data->update([
+            'modify_time' => now()->format('Ymdhis'),
+            'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+            'app_modifier' => $this->app_modifier,
+            'is_delete' => 1
+        ]);
+        // Gọi event để xóa cache
+        event(new DeleteCache($this->district_name));
+        return return_data_delete_success($data);
+    }
+
+    /// Other Pay Source
+    public function other_pay_source($id = null)
+    {
+        if ($id == null) {
+            $name = $this->other_pay_source_name;
+            $param = [];
+        } else {
+            if (!is_numeric($id)) {
+                return return_id_error($id);
+            }
+            $data = $this->other_pay_source->find($id);
+            if ($data == null) {
+                return return_not_record($id);
+            }
+            $name = $this->other_pay_source_name . '_' . $id;
+            $param = [];
+        }
+        $data = get_cache_full($this->other_pay_source, $param, $name, $id, $this->time);
+        $count = $data->count();
+        $param_return = [
+            'start' => null,
+            'limit' => null,
+            'count' => $count
+        ];
+        return return_data_success($param_return, $data);
+    }
+
+    public function other_pay_source_create(CreateOtherPaySourceRequest $request)
+    {
+        $data = $this->other_pay_source::create([
+            'create_time' => now()->format('Ymdhis'),
+            'modify_time' => now()->format('Ymdhis'),
+            'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
+            'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+            'app_creator' => $this->app_creator,
+            'app_modifier' => $this->app_modifier,
+            'other_pay_source_code' => $request->other_pay_source_code,
+            'other_pay_source_name' => $request->other_pay_source_name,
+            'hein_pay_source_type_id' => $request->hein_pay_source_type_id,
+            'is_not_for_treatment' => $request->is_not_for_treatment,
+            'is_not_paid_diff' => $request->is_not_paid_diff,
+            'is_paid_all' => $request->is_paid_all,
+        ]);
+        // Gọi event để xóa cache
+        event(new DeleteCache($this->other_pay_source_name));
+        return return_data_create_success($data);
+    }
+
+    public function other_pay_source_update(UpdateOtherPaySourceRequest $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->other_pay_source->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        $data_update = [
+            'modify_time' => now()->format('Ymdhis'),
+            'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+            'app_modifier' => $this->app_modifier,
+            'other_pay_source_code' => $request->other_pay_source_code,
+            'other_pay_source_name' => $request->other_pay_source_name,
+            'hein_pay_source_type_id' => $request->hein_pay_source_type_id,
+            'is_not_for_treatment' => $request->is_not_for_treatment,
+            'is_not_paid_diff' => $request->is_not_paid_diff,
+            'is_paid_all' => $request->is_paid_all,
+        ];
+        $data->fill($data_update);
+        $data->save();
+        // Gọi event để xóa cache
+        event(new DeleteCache($this->other_pay_source_name));
+        return return_data_update_success($data);
+    }
+
+    public function other_pay_source_delete(Request $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->other_pay_source->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        $data->update([
+            'modify_time' => now()->format('Ymdhis'),
+            'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+            'app_modifier' => $this->app_modifier,
+            'is_delete' => 1
+        ]);
+        // Gọi event để xóa cache
+        event(new DeleteCache($this->other_pay_source_name));
+        return return_data_delete_success($data);
+    }
+
+    /// Military Rank
+    public function military_rank($id = null)
+    {
+        if ($id == null) {
+            $name = $this->military_rank_name;
+            $param = [];
+        } else {
+            if (!is_numeric($id)) {
+                return return_id_error($id);
+            }
+            $data = $this->military_rank->find($id);
+            if ($data == null) {
+                return return_not_record($id);
+            }
+            $name = $this->military_rank_name . '_' . $id;
+            $param = [];
+        }
+        $data = get_cache_full($this->military_rank, $param, $name, $id, $this->time);
+        $count = $data->count();
+        $param_return = [
+            'start' => null,
+            'limit' => null,
+            'count' => $count
+        ];
+        return return_data_success($param_return, $data);
+    }
+
+    /// Medi Stock
+    public function medi_stock($id = null)
+    {
+        if ($id == null) {
+            $name = $this->medi_stock_name;
+            $param = [
+                'room:id,department_id,room_type_id',
+                'room.department:id,department_name,department_code',
+                'room.room_type:id,room_type_name,room_type_code',
+                'parent:id,medi_stock_name,medi_stock_code'
+            ];
+        } else {
+            if (!is_numeric($id)) {
+                return return_id_error($id);
+            }
+            $data = $this->medi_stock->find($id);
+            if ($data == null) {
+                return return_not_record($id);
+            }
+            $name = $this->medi_stock_name . '_' . $id;
+            $param = [
+                'room',
+                'room.department',
+                'room.room_type',
+                'parent'
+            ];
+        }
+        $data = get_cache_full($this->medi_stock, $param, $name, $id, $this->time);
+        $count = $data->count();
+        $param_return = [
+            'start' => null,
+            'limit' => null,
+            'count' => $count
+        ];
+        return return_data_success($param_return, $data);
+    }
+
+    public function medi_stock_create(CreateMediStockRequest $request)
+    {
+        // Start transaction
+        DB::connection('oracle_his')->beginTransaction();
+        try {
+            $room = $this->room::create([
+                'create_time' => now()->format('Ymdhis'),
+                'modify_time' => now()->format('Ymdhis'),
+                'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_creator' => $this->app_creator,
+                'app_modifier' => $this->app_modifier,
+                'department_id' => $request->department_id,
+                'room_type_id' => $request->room_type_id,
+
+            ]);
+            $data = $this->medi_stock::create([
+                'create_time' => now()->format('Ymdhis'),
+                'modify_time' => now()->format('Ymdhis'),
+                'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_creator' => $this->app_creator,
+                'app_modifier' => $this->app_modifier,
+                'medi_stock_code' => $request->medi_stock_code,
+                'medi_stock_name' => $request->medi_stock_name,
+                'bhyt_head_code' => $request->bhyt_head_code,
+                'not_in_bhyt_head_code' => $request->not_in_bhyt_head_code,
+                'parent_id' => $request->parent_id,
+                'is_allow_imp_supplier' => $request->is_allow_imp_supplier,
+                'do_not_imp_medicine' => $request->do_not_imp_medicine,
+                'do_not_imp_material' => $request->do_not_imp_material,
+                'is_odd' => $request->is_odd,
+                'is_blood' => $request->is_blood,
+                'is_show_ddt' => $request->is_show_ddt,
+                'is_planning_trans_as_default' => $request->is_planning_trans_as_default,
+                'is_auto_create_chms_imp' => $request->is_auto_create_chms_imp,
+                'is_auto_create_reusable_imp' => $request->is_auto_create_reusable_imp,
+                'is_goods_restrict' => $request->is_goods_restrict,
+                'is_show_inpatient_return_pres' => $request->is_show_inpatient_return_pres,
+                'is_moba_change_amount' => $request->is_moba_change_amount,
+                'is_for_rejected_moba' => $request->is_for_rejected_moba,
+                'is_show_anticipate' => $request->is_show_anticipate,
+                'is_cabinet' => $request->is_cabinet,
+                'is_new_medicine' => $request->is_new_medicine,
+                'is_traditional_medicine' => $request->is_traditional_medicine,
+                'is_drug_store' => $request->is_drug_store,
+                'is_show_drug_store' => $request->is_show_drug_store,
+                'is_business' => $request->is_business,
+                'is_expend' => $request->is_expend,
+                'patient_classify_ids' => $request->patient_classify_ids,
+                'cabinet_manage_option' => $request->cabinet_manage_option,
+                'room_id' => $room->id,
+            ]);
+            DB::connection('oracle_his')->commit();
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->medi_stock_name));
+            return return_data_create_success([$data, $room]);
+        } catch (\Exception $e) {
+            // Rollback transaction nếu có lỗi
+            DB::connection('oracle_his')->rollBack();
+            return return_data_fail_transaction();
+        }
+    }
+
+    public function medi_stock_update(UpdateMediStockRequest $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->medi_stock->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        $room = $this->room->find($data->room_id);
+        if ($room == null) {
+            return return_not_record($data->room_id);
+        }
+        // Start transaction
+        DB::connection('oracle_his')->beginTransaction();
+        try {
+            $room_update = [
+                'modify_time' => now()->format('Ymdhis'),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_modifier' => $this->app_modifier,
+                'department_id' => $request->department_id,
+                'room_type_id' => $request->room_type_id,
+            ];
+            $data_update = [
+                'modify_time' => now()->format('Ymdhis'),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_modifier' => $this->app_modifier,
+                'medi_stock_code' => $request->medi_stock_code,
+                'medi_stock_name' => $request->medi_stock_name,
+                'bhyt_head_code' => $request->bhyt_head_code,
+                'not_in_bhyt_head_code' => $request->not_in_bhyt_head_code,
+                'parent_id' => $request->parent_id,
+                'is_allow_imp_supplier' => $request->is_allow_imp_supplier,
+                'do_not_imp_medicine' => $request->do_not_imp_medicine,
+                'do_not_imp_material' => $request->do_not_imp_material,
+                'is_odd' => $request->is_odd,
+                'is_blood' => $request->is_blood,
+                'is_show_ddt' => $request->is_show_ddt,
+                'is_planning_trans_as_default' => $request->is_planning_trans_as_default,
+                'is_auto_create_chms_imp' => $request->is_auto_create_chms_imp,
+                'is_auto_create_reusable_imp' => $request->is_auto_create_reusable_imp,
+                'is_goods_restrict' => $request->is_goods_restrict,
+                'is_show_inpatient_return_pres' => $request->is_show_inpatient_return_pres,
+                'is_moba_change_amount' => $request->is_moba_change_amount,
+                'is_for_rejected_moba' => $request->is_for_rejected_moba,
+                'is_show_anticipate' => $request->is_show_anticipate,
+                'is_cabinet' => $request->is_cabinet,
+                'is_new_medicine' => $request->is_new_medicine,
+                'is_traditional_medicine' => $request->is_traditional_medicine,
+                'is_drug_store' => $request->is_drug_store,
+                'is_show_drug_store' => $request->is_show_drug_store,
+                'is_business' => $request->is_business,
+                'is_expend' => $request->is_expend,
+                'patient_classify_ids' => $request->patient_classify_ids,
+                'cabinet_manage_option' => $request->cabinet_manage_option,
+            ];
+            $room->fill($room_update);
+            $room->save();
+            $data->fill($data_update);
+            $data->save();
+            DB::connection('oracle_his')->commit();
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->medi_stock_name));
+            return return_data_create_success([$data, $room]);
+        } catch (\Exception $e) {
+            // Rollback transaction nếu có lỗi
+            DB::connection('oracle_his')->rollBack();
+            return return_data_fail_transaction();
+        }
+    }
+
+    public function medi_stock_delete(Request $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->medi_stock->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        $room = $this->room->find($data->room_id);
+        if ($room == null) {
+            return return_not_record($data->room_id);
+        }
+        // Start transaction
+        DB::connection('oracle_his')->beginTransaction();
+        try {
+            $room_update = [
+                'modify_time' => now()->format('Ymdhis'),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'is_delete' => 1,
+            ];
+            $data_update = [
+                'modify_time' => now()->format('Ymdhis'),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_modifier' => $this->app_modifier,
+                'is_delete' => 1,
+            ];
+            $room->fill($room_update);
+            $room->save();
+            $data->fill($data_update);
+            $data->save();
+            DB::connection('oracle_his')->commit();
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->medi_stock_name));
+            return return_data_create_success([$data, $room]);
+        } catch (\Exception $e) {
+            // Rollback transaction nếu có lỗi
+            DB::connection('oracle_his')->rollBack();
+            return return_data_fail_transaction();
+        }
     }
 
     /// Reception Room
@@ -2859,29 +3266,36 @@ class HISController extends Controller
     }
 
     /// Patient Type
-    public function patient_type()
+    public function patient_type($id = null)
     {
-        $data = get_cache($this->patient_type, $this->patient_type_name, null, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    public function patient_type_id($id)
-    {
-        $data = get_cache($this->patient_type, $this->patient_type_name, $id, $this->time);
-        $data1 = get_cache_1_n_with_ids($this->patient_type, 'treatment_type', $this->patient_type_name, $id, $this->time);
-        $data2 = get_cache_1_1($this->patient_type, 'base_patient_type', $this->patient_type_name, $id, $this->time);
-        $data3 = get_cache_1_n_with_ids($this->patient_type, 'other_pay_source', $this->patient_type_name, $id, $this->time);
-        $data4 = get_cache_1_n_with_ids($this->patient_type, 'inherit_patient_type', $this->patient_type_name, $id, $this->time);
-        $data5 = get_cache_1_1($this->patient_type, 'other_pay_source', $this->patient_type_name, $id, $this->time);
-
-        return response()->json(['data' => [
-            'patient_type' => $data,
-            'treatment_types' => $data1,
-            'base_patient_type' => $data2,
-            'other_pay_sources' => $data3,
-            'inherit_patient_type' => $data4,
-            'other_pay_source' => $data5
-        ]], 200);
+        if ($id == null) {
+            $name = $this->patient_type_name;
+            $param = [
+                'base_patient_type',
+                'other_pay_source'
+            ];
+        } else {
+            if (!is_numeric($id)) {
+                return return_id_error($id);
+            }
+            $data = $this->patient_type->find($id);
+            if ($data == null) {
+                return return_not_record($id);
+            }
+            $name = $this->patient_type_name . '_' . $id;
+            $param = [
+                'base_patient_type',
+                'other_pay_source'
+            ];
+        }
+        $data = get_cache_full($this->patient_type, $param, $name, $id, $this->time);
+        $count = $data->count();
+        $param_return = [
+            'start' => null,
+            'limit' => null,
+            'count' => $count
+        ];
+        return return_data_success($param_return, $data);
     }
 
     /// Priority Type
@@ -2922,22 +3336,106 @@ class HISController extends Controller
             $param = [
                 'patient_type',
                 'other_pay_source',
-                'BHYT_whitelist',
-                'militarry_ranks'
             ];
         } else {
+            if (!is_numeric($id)) {
+                return return_id_error($id);
+            }
+            $data = $this->patient_classify->find($id);
+            if ($data == null) {
+                return return_not_record($id);
+            }
             $name = $this->patient_classify_name . '_' . $id;
             $param = [
                 'patient_type',
                 'other_pay_source',
-                'BHYT_whitelist',
-                'militarry_ranks'
             ];
         }
         $data = get_cache_full($this->patient_classify, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
+        $count = $data->count();
+        $param_return = [
+            'start' => null,
+            'limit' => null,
+            'count' => $count
+        ];
+        return return_data_success($param_return, $data);
+    }
+    public function patient_classify_create(CreatePatientClassifyRequest $request)
+    {
+        $data = $this->patient_classify::create([
+            'create_time' => now()->format('Ymdhis'),
+            'modify_time' => now()->format('Ymdhis'),
+            'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
+            'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+            'app_creator' => $this->app_creator,
+            'app_modifier' => $this->app_modifier,
+            'is_active' => 1,
+            'is_delete' => 0,
+            'patient_classify_code' => $request->patient_classify_code,
+            'patient_classify_name' => $request->patient_classify_name,
+            'display_color' => $request->display_color,
+            'patient_type_id' => $request->patient_type_id,
+            'other_pay_source_id' => $request->other_pay_source_id,
+            'bhyt_whitelist_ids' => $request->bhyt_whitelist_ids,
+            'military_rank_ids' => $request->military_rank_ids,
+            'is_police' => $request->is_police
+
+        ]);
+        // Gọi event để xóa cache
+        event(new DeleteCache($this->patient_classify_name));
+        return return_data_create_success($data);
     }
 
+    public function patient_classify_update(UpdatePatientClassifyRequest $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->patient_classify->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        $data_update = [
+            'modify_time' => now()->format('Ymdhis'),
+            'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+            'app_modifier' => $this->app_modifier,
+            'is_active' => 1,
+            'is_delete' => 0,
+            'patient_classify_code' => $request->patient_classify_code,
+            'patient_classify_name' => $request->patient_classify_name,
+            'display_color' => $request->display_color,
+            'patient_type_id' => $request->patient_type_id,
+            'other_pay_source_id' => $request->other_pay_source_id,
+            'bhyt_whitelist_ids' => $request->bhyt_whitelist_ids,
+            'military_rank_ids' => $request->military_rank_ids,
+            'is_police' => $request->is_police
+        ];
+        $data->fill($data_update);
+        $data->save();
+        // Gọi event để xóa cache
+        event(new DeleteCache($this->patient_classify_name));
+        return return_data_update_success($data);
+    }
+
+    public function patient_classify_delete(Request $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->patient_classify->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        $data->update([
+            'modify_time' => now()->format('Ymdhis'),
+            'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+            'app_modifier' => $this->app_modifier,
+            'is_delete' => 1
+        ]);
+        // Gọi event để xóa cache
+        event(new DeleteCache($this->patient_classify_name));
+        return return_data_delete_success($data);
+    }
     /// Religion
     public function religion()
     {
@@ -3556,13 +4054,26 @@ class HISController extends Controller
                 'career'
             ];
         } else {
+            if (!is_numeric($id)) {
+                return return_id_error($id);
+            }
+            $data = $this->bhyt_whitelist->find($id);
+            if ($data == null) {
+                return return_not_record($id);
+            }
             $name = $this->bhyt_whitelist_name . '_' . $id;
             $param = [
                 'career'
             ];
         }
         $data = get_cache_full($this->bhyt_whitelist, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
+        $count = $data->count();
+        $param_return = [
+            'start' => null,
+            'limit' => null,
+            'count' => $count
+        ];
+        return return_data_success($param_return, $data);
     }
 
     /// BHYT Param

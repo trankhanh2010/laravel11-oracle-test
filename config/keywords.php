@@ -184,5 +184,67 @@ return [
         'bed_resuscitation' => 'Số giường hồi sức tích cực',
         'bed_resuscitation_emg' => 'Số giường hồi sức cấp cứu',
         'is_use_branch_time' => 'Trường sử dụng giờ hành chính'
-    ]
+    ],
+    // Huyện
+    'district' => [
+        'district_code' => 'Mã',
+        'district_name' => 'Tên',
+        'initial_name' => 'Tên đơn vị',
+        'search_code' => 'Tên viết tắt',
+        'province_id' => 'Id tỉnh / thành phố',
+    ],
+    // Phân loại bệnh nhân
+    'patient_classify' => [
+        'patient_classify_code' => 'Mã phân loại',
+        'patient_classify_name' => 'Tên phân loại',
+        'display_color' => 'Giá trị màu',
+        'patient_type_id' => 'Id đối tượng bệnh nhân',
+        'other_pay_source_id' => 'Id nguồn chi trả khác',
+        'bhyt_whitelist_ids' => 'Danh sách id đầu mã thẻ BHYT',
+        'military_rank_ids' => 'Danh sách id quân hàm',
+        'is_police' => 'Trường là công an'
+    ],
+    // Nguồn chi trả khác
+    'other_pay_source' => [
+        'other_pay_source_code' => 'Mã nguồn chi trả khác',
+        'other_pay_source_name' => 'Tên nguồn chi trả khác',
+        'hein_pay_source_type_id' => 'Id loại ngân sách',
+        'is_not_for_treatment' => 'Trường không gán cho hồ sơ',
+        'is_not_paid_diff' => 'Trường không chi trả tiền chênh lệch',
+        'is_paid_all' => 'Trường chi trả toàn bộ chi phí'
+    ],
+    // Kho
+    'medi_stock' => [
+        'medi_stock_code' => 'Mã kho',
+        'medi_stock_name' => 'Tên kho',
+        'department_id' => 'Id khoa phòng',
+        'room_type_id' => 'Id loại phòng',
+        'bhyt_head_code' => 'Đầu mã thẻ BHYT',
+        'not_in_bhyt_head_code' => 'Đầu mã thẻ BHYT không cho phép',
+        'parent_id' => 'Id kho cha',
+        'is_allow_imp_supplier' => 'Trường cho phép nhập từ NCC',
+        'do_not_imp_medicine' => "Trường không cho phép nhập thuốc ở chức năng 'nhập thuốc vật tư'",
+        'do_not_imp_material' => "Trường không cho phép nhập vật tư ở chức năng 'nhập thuốc vật tư'",
+        'is_odd' => 'Trường là kho thuốc lẻ',
+        'is_blood' => 'Trường là kho máu',
+        'is_show_ddt' => 'Trường cho phép hiển thị đơn điều trị ở danh sách xuất',
+        'is_planning_trans_as_default' => 'Trường sử dụng hình thức xuất kế hoạch là hình thức xuất mặc định khi xuất chuyển kho',
+        'is_auto_create_chms_imp' => 'Trường tự động tạo yêu nhập chuyển kho',
+        'is_auto_create_reusable_imp' => 'Trường tự động tạo yêu cầu nhập vật tư tái sử dụng sau khi thực xuất',
+        'is_goods_restrict' => 'Trường quản lí hạn chế các loại thuốc, vật tư được lưu trữ',
+        'is_show_inpatient_return_pres' => 'Trường hiển thị đơn nội trú trả lại (đơn tủ trực trả lại, điều trị trả lại',
+        'is_moba_change_amount' => 'Trường cho phép sửa số lượng khi duyệt phiếu trả',
+        'is_for_rejected_moba' => 'Trường là kho thuốc/ vật tư bị từ chối duyệt phiếu trả',
+        'is_show_anticipate' => 'Trường cho phép tiếp nhận phiếu dự trù',
+        'is_cabinet' => 'Trường là tủ trực',
+        'is_new_medicine' => 'Trường là kho tân dược',
+        'is_traditional_medicine' => 'Trường là kho y học cổ truyền',
+        'is_drug_store' => 'Trường là quầy thuốc',
+        'is_show_drug_store' => 'Trường chỉ hiển thị danh mục thuốc, vật tư quầy thuốc',
+        'is_business' => 'Trường là kho kinh doanh (nhà thuốc)',
+        'is_expend' => 'Trường là kho hao phí',
+        'patient_classify_ids' => 'Trường danh sách id các phân loại bệnh nhân mà kho cho phép kê thuốc',
+        'cabinet_manage_option' => 'Trường quản lí cơ số tủ trực'
+    ],
+    
 ];

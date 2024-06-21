@@ -12,9 +12,18 @@ class MediStock extends Model
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his';
     protected $table = 'HIS_Medi_Stock';
-    protected $fillable = [
-        'parent_id'
+    protected $guarded = [
+        'id',
     ];
+    public $timestamps = false;
+    protected $appends = [
+        'patient_classifys',
+    ];
+    public function getPatientClassifysAttribute()
+    {
+        $data = PatientClassify::whereIn('id', explode(',', $this->patient_classify_ids))->get();
+        return $data;
+    }
     public function room()
     {
         return $this->belongsTo(Room::class, 'room_id');

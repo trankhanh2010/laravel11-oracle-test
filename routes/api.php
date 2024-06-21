@@ -101,12 +101,30 @@ Route::group([
     Route::group(['as' => 'SDA.Desktop.Plugins.SdaDistrict'], function () {
         Route::get("v1/district", [HISController::class, "district"]);
         Route::get("v1/district/{id}", [HISController::class, "district"]);
+        Route::post("v1/district", [HISController::class, "district_create"]);        
+        Route::put("v1/district/{id}", [HISController::class, "district_update"]);       
+        Route::delete("v1/district/{id}", [HISController::class, "district_delete"]);  
+    });    
+
+    /// Nguồn chi trả khác
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisOtherPaySource'], function () {
+        Route::get("v1/other-pay-source", [HISController::class, "other_pay_source"]);
+        Route::get("v1/other-pay-source/{id}", [HISController::class, "other_pay_source"]);
+        Route::post("v1/other-pay-source", [HISController::class, "other_pay_source_create"]);        
+        Route::put("v1/other-pay-source/{id}", [HISController::class, "other_pay_source_update"]);       
+        Route::delete("v1/other-pay-source/{id}", [HISController::class, "other_pay_source_delete"]);  
     });
+
+    /// Quân hàm
+    Route::get("v1/military-rank", [HISController::class, "military_rank"]);
 
     /// Kho
     Route::group(['as' => 'HIS.Desktop.Plugins.HisMediStock'], function () {
         Route::get("v1/medi-stock", [HISController::class, "medi_stock"]);
-        Route::get("v1/medi-stock/{id}", [HISController::class, "medi_stock_id"]);
+        Route::get("v1/medi-stock/{id}", [HISController::class, "medi_stock"]);
+        Route::post("v1/medi-stock", [HISController::class, "medi_stock_create"]);        
+        Route::put("v1/medi-stock/{id}", [HISController::class, "medi_stock_update"]);       
+        Route::delete("v1/medi-stock/{id}", [HISController::class, "medi_stock_delete"]);  
     });
 
     /// Khu đón tiếp
@@ -319,7 +337,7 @@ Route::group([
     /// Đối tượng bệnh nhân
     Route::group(['as' => 'HIS.Desktop.Plugins.HisPatientType'], function () {
         Route::get("v1/patient-type", [HISController::class, "patient_type"]);
-        Route::get("v1/patient-type/{id}", [HISController::class, "patient_type_id"]);
+        Route::get("v1/patient-type/{id}", [HISController::class, "patient_type"]);
     });
 
     /// Đối tượng ưu tiên
@@ -344,6 +362,9 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisPatientClassify'], function () {
         Route::get("v1/patient-classify", [HISController::class, "patient_classify"]);
         Route::get("v1/patient-classify/{id}", [HISController::class, "patient_classify"]);
+        Route::post("v1/patient-classify", [HISController::class, "patient_classify_create"]);        
+        Route::put("v1/patient-classify/{id}", [HISController::class, "patient_classify_update"]);       
+        Route::delete("v1/patient-classify/{id}", [HISController::class, "patient_classify_delete"]);  
     });
 
     /// Tôn giáo
