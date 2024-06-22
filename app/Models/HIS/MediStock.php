@@ -6,7 +6,7 @@ use App\Traits\dinh_dang_ten_truong;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
-
+use App\Scopes\IsDeleteScope;
 class MediStock extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
@@ -19,6 +19,17 @@ class MediStock extends Model
     protected $appends = [
         'patient_classifys',
     ];
+    /// Chạy Scope để thêm điều kiện is_delete = 0 hoặc null
+    protected static function booted()
+    {
+        static::addGlobalScope(new IsDeleteScope);
+    }
+
+    /// Lấy ra bản ghi đã xóa mềm is_delete = 1
+    public static function withDeleted()
+    {
+        return with(new static)->newQueryWithoutScope(new IsDeleteScope)->where('is_delete', 1);
+    }
     public function getPatientClassifysAttribute()
     {
         $data = PatientClassify::whereIn('id', explode(',', $this->patient_classify_ids))->get();

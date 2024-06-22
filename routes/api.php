@@ -120,18 +120,13 @@ Route::group([
 
     /// Kho
     Route::group(['as' => 'HIS.Desktop.Plugins.HisMediStock'], function () {
-        Route::get("v1/medi-stock", [HISController::class, "medi_stock"]);
+        Route::get("v1/medi-stock", [HISController::class, "medi_stock"])->name('.api.medi_stock.index');
         Route::get("v1/medi-stock/{id}", [HISController::class, "medi_stock"]);
+        Route::get("v1/medi-stock/deleted", [HISController::class, "medi_stock"]);
+        Route::get("v1/medi-stock/restore/{id}", [HISController::class, "medi_stock_restore"]);
         Route::post("v1/medi-stock", [HISController::class, "medi_stock_create"]);        
         Route::put("v1/medi-stock/{id}", [HISController::class, "medi_stock_update"]);       
         Route::delete("v1/medi-stock/{id}", [HISController::class, "medi_stock_delete"]);
-        
-
-        
-        // còn thiếu phần cấu hình nhập xuất  
-
-
-
     });
 
     /// Khu đón tiếp

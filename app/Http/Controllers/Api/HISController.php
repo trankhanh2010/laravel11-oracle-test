@@ -2000,12 +2000,14 @@ class HISController extends Controller
                 'imp_mest_types',
             ];
         } else {
-            if (!is_numeric($id)) {
-                return return_id_error($id);
-            }
-            $data = $this->medi_stock->find($id);
-            if ($data == null) {
-                return return_not_record($id);
+            if ($id != 'deleted') {
+                if (!is_numeric($id)) {
+                    return return_id_error($id);
+                }
+                $data = $this->medi_stock->find($id);
+                if ($data == null) {
+                    return return_not_record($id);
+                }
             }
             $name = $this->medi_stock_name . '_' . $id;
             $param = [
@@ -2025,6 +2027,28 @@ class HISController extends Controller
             'count' => $count
         ];
         return return_data_success($param_return, $data);
+    }
+
+    public function medi_stock_restore($id = null, Request $request)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->medi_stock::withDeleted()->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        $data_update = [
+            'modify_time' => now()->format('Ymdhis'),
+            'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+            'app_modifier' => $this->app_modifier,
+            'is_delete' => 0,
+        ];
+        $data->fill($data_update);
+        $data->save();
+        // Gọi event để xóa cache
+        event(new DeleteCache($this->medi_stock_name));
+        return redirect()->route('HIS.Desktop.Plugins.HisMediStock.api.medi_stock.index');
     }
 
     public function medi_stock_create(CreateMediStockRequest $request)
@@ -2095,7 +2119,7 @@ class HISController extends Controller
                     $dataToSync_medi_stock_exty[$id]['is_auto_execute'] = $item->is_auto_execute;
                 }
                 $data->exp_mest_types()->sync($dataToSync_medi_stock_exty);
-            } 
+            }
             if ($request->medi_stock_imty !== null) {
                 $dataToSync_medi_stock_imty = [];
                 foreach ($request->medi_stock_imty as $item) {
@@ -2111,7 +2135,7 @@ class HISController extends Controller
                     $dataToSync_medi_stock_imty[$id]['is_auto_execute'] = $item->is_auto_execute;
                 }
                 $data->imp_mest_types()->sync($dataToSync_medi_stock_imty);
-            } 
+            }
             DB::connection('oracle_his')->commit();
             // Gọi event để xóa cache
             event(new DeleteCache($this->medi_stock_name));
@@ -2195,7 +2219,7 @@ class HISController extends Controller
                     $dataToSync_medi_stock_exty[$id]['is_auto_execute'] = $item->is_auto_execute;
                 }
                 $data->exp_mest_types()->sync($dataToSync_medi_stock_exty);
-            } 
+            }
             if ($request->medi_stock_imty !== null) {
                 $dataToSync_medi_stock_imty = [];
                 foreach ($request->medi_stock_imty as $item) {
@@ -2208,7 +2232,7 @@ class HISController extends Controller
                     $dataToSync_medi_stock_imty[$id]['is_auto_execute'] = $item->is_auto_execute;
                 }
                 $data->imp_mest_types()->sync($dataToSync_medi_stock_imty);
-            } 
+            }
             DB::connection('oracle_his')->commit();
             // Gọi event để xóa cache
             event(new DeleteCache($this->medi_stock_name));
