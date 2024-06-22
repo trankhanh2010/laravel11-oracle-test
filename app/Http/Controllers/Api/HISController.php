@@ -1995,7 +1995,9 @@ class HISController extends Controller
                 'room:id,department_id,room_type_id',
                 'room.department:id,department_name,department_code',
                 'room.room_type:id,room_type_name,room_type_code',
-                'parent:id,medi_stock_name,medi_stock_code'
+                'parent:id,medi_stock_name,medi_stock_code',
+                'exp_mest_types',
+                'imp_mest_types',
             ];
         } else {
             if (!is_numeric($id)) {
@@ -2010,7 +2012,9 @@ class HISController extends Controller
                 'room',
                 'room.department',
                 'room.room_type',
-                'parent'
+                'parent',
+                'exp_mest_types',
+                'imp_mest_types',
             ];
         }
         $data = get_cache_full($this->medi_stock, $param, $name, $id, $this->time);
@@ -2076,6 +2080,38 @@ class HISController extends Controller
                 'cabinet_manage_option' => $request->cabinet_manage_option,
                 'room_id' => $room->id,
             ]);
+            if ($request->medi_stock_exty !== null) {
+                $dataToSync_medi_stock_exty = [];
+                foreach ($request->medi_stock_exty as $item) {
+                    $id = $item->id;
+                    $dataToSync_medi_stock_exty[$id] = [];
+                    $dataToSync_medi_stock_exty[$id]['create_time'] = now()->format('Ymdhis');
+                    $dataToSync_medi_stock_exty[$id]['modify_time'] = now()->format('Ymdhis');
+                    $dataToSync_medi_stock_exty[$id]['creator'] = get_loginname_with_token($request->bearerToken(), $this->time);
+                    $dataToSync_medi_stock_exty[$id]['modifier'] = get_loginname_with_token($request->bearerToken(), $this->time);
+                    $dataToSync_medi_stock_exty[$id]['app_creator'] = $this->app_creator;
+                    $dataToSync_medi_stock_exty[$id]['app_modifier'] = $this->app_modifier;
+                    $dataToSync_medi_stock_exty[$id]['is_auto_approve'] = $item->is_auto_approve;
+                    $dataToSync_medi_stock_exty[$id]['is_auto_execute'] = $item->is_auto_execute;
+                }
+                $data->exp_mest_types()->sync($dataToSync_medi_stock_exty);
+            } 
+            if ($request->medi_stock_imty !== null) {
+                $dataToSync_medi_stock_imty = [];
+                foreach ($request->medi_stock_imty as $item) {
+                    $id = $item->id;
+                    $dataToSync_medi_stock_imty[$id] = [];
+                    $dataToSync_medi_stock_imty[$id]['create_time'] = now()->format('Ymdhis');
+                    $dataToSync_medi_stock_imty[$id]['modify_time'] = now()->format('Ymdhis');
+                    $dataToSync_medi_stock_imty[$id]['creator'] = get_loginname_with_token($request->bearerToken(), $this->time);
+                    $dataToSync_medi_stock_imty[$id]['modifier'] = get_loginname_with_token($request->bearerToken(), $this->time);
+                    $dataToSync_medi_stock_imty[$id]['app_creator'] = $this->app_creator;
+                    $dataToSync_medi_stock_imty[$id]['app_modifier'] = $this->app_modifier;
+                    $dataToSync_medi_stock_imty[$id]['is_auto_approve'] = $item->is_auto_approve;
+                    $dataToSync_medi_stock_imty[$id]['is_auto_execute'] = $item->is_auto_execute;
+                }
+                $data->imp_mest_types()->sync($dataToSync_medi_stock_imty);
+            } 
             DB::connection('oracle_his')->commit();
             // Gọi event để xóa cache
             event(new DeleteCache($this->medi_stock_name));
@@ -2147,6 +2183,32 @@ class HISController extends Controller
             $room->save();
             $data->fill($data_update);
             $data->save();
+            if ($request->medi_stock_exty !== null) {
+                $dataToSync_medi_stock_exty = [];
+                foreach ($request->medi_stock_exty as $item) {
+                    $id = $item->id;
+                    $dataToSync_medi_stock_exty[$id] = [];
+                    $dataToSync_medi_stock_exty[$id]['modify_time'] = now()->format('Ymdhis');
+                    $dataToSync_medi_stock_exty[$id]['modifier'] = get_loginname_with_token($request->bearerToken(), $this->time);
+                    $dataToSync_medi_stock_exty[$id]['app_modifier'] = $this->app_modifier;
+                    $dataToSync_medi_stock_exty[$id]['is_auto_approve'] = $item->is_auto_approve;
+                    $dataToSync_medi_stock_exty[$id]['is_auto_execute'] = $item->is_auto_execute;
+                }
+                $data->exp_mest_types()->sync($dataToSync_medi_stock_exty);
+            } 
+            if ($request->medi_stock_imty !== null) {
+                $dataToSync_medi_stock_imty = [];
+                foreach ($request->medi_stock_imty as $item) {
+                    $id = $item->id;
+                    $dataToSync_medi_stock_imty[$id] = [];
+                    $dataToSync_medi_stock_imty[$id]['modify_time'] = now()->format('Ymdhis');
+                    $dataToSync_medi_stock_imty[$id]['modifier'] = get_loginname_with_token($request->bearerToken(), $this->time);
+                    $dataToSync_medi_stock_imty[$id]['app_modifier'] = $this->app_modifier;
+                    $dataToSync_medi_stock_imty[$id]['is_auto_approve'] = $item->is_auto_approve;
+                    $dataToSync_medi_stock_imty[$id]['is_auto_execute'] = $item->is_auto_execute;
+                }
+                $data->imp_mest_types()->sync($dataToSync_medi_stock_imty);
+            } 
             DB::connection('oracle_his')->commit();
             // Gọi event để xóa cache
             event(new DeleteCache($this->medi_stock_name));
@@ -2201,30 +2263,38 @@ class HISController extends Controller
     }
 
     /// Reception Room
-    public function reception_room()
+    public function reception_room($id = null)
     {
-        $param = [
-            'room:id,department_id',
-            'room.department:id,department_name,department_code'
+        if ($id == null) {
+            $name = $this->reception_room_name;
+            $param = [
+                'room.department',
+                'room.department.area',
+                'room.default_cashier_room',
+            ];
+        } else {
+            if (!is_numeric($id)) {
+                return return_id_error($id);
+            }
+            $data = $this->reception_room->find($id);
+            if ($data == null) {
+                return return_not_record($id);
+            }
+            $name = $this->reception_room_name . '_' . $id;
+            $param = [
+                'room.department',
+                'room.department.area',
+                'room.default_cashier_room',
+            ];
+        }
+        $data = get_cache_full($this->reception_room, $param, $name, $id, $this->time);
+        $count = $data->count();
+        $param_return = [
+            'start' => null,
+            'limit' => null,
+            'count' => $count
         ];
-        $data = get_cache_full($this->reception_room, $param, $this->reception_room_name, null, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    public function reception_room_id($id)
-    {
-        $data = get_cache($this->reception_room, $this->reception_room_name, $id, $this->time);
-        $data1 = get_cache_1_1_1($this->reception_room, "room.department", $this->reception_room_name, $id, $this->time);
-        $data2 = get_cache_1_n_with_ids($this->reception_room, "patient_type", $this->reception_room_name, $id, $this->time);
-        $data3 = get_cache_1_1_1_1($this->reception_room, "room.department.area", $this->reception_room_name, $id, $this->time);
-        $data4 = get_cache_1_1_1($this->reception_room, "room.default_cashier_room", $this->reception_room_name, $id, $this->time);
-        return response()->json(['data' => [
-            'reception_room' => $data,
-            'department' => $data1,
-            'patient_type' => $data2,
-            'area' => $data3,
-            'default_cashier_room' => $data4,
-        ]], 200);
+        return return_data_success($param_return, $data);
     }
 
     /// Area

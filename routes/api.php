@@ -124,13 +124,23 @@ Route::group([
         Route::get("v1/medi-stock/{id}", [HISController::class, "medi_stock"]);
         Route::post("v1/medi-stock", [HISController::class, "medi_stock_create"]);        
         Route::put("v1/medi-stock/{id}", [HISController::class, "medi_stock_update"]);       
-        Route::delete("v1/medi-stock/{id}", [HISController::class, "medi_stock_delete"]);  
+        Route::delete("v1/medi-stock/{id}", [HISController::class, "medi_stock_delete"]);
+        
+
+        
+        // còn thiếu phần cấu hình nhập xuất  
+
+
+
     });
 
     /// Khu đón tiếp
     Route::group(['as' => 'HIS.Desktop.Plugins.HisReceptionRoom'], function () {
         Route::get("v1/reception-room", [HISController::class, "reception_room"]);
-        Route::get("v1/reception-room/{id}", [HISController::class, "reception_room_id"]);
+        Route::get("v1/reception-room/{id}", [HISController::class, "reception_room"]);
+        Route::post("v1/reception-room", [HISController::class, "reception_room_create"]);        
+        Route::put("v1/reception-room/{id}", [HISController::class, "reception_room_update"]);       
+        Route::delete("v1/reception-room/{id}", [HISController::class, "reception_room_delete"]);  
     });
 
     /// Khu vực

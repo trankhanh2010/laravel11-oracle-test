@@ -12,9 +12,18 @@ class ReceptionRoom extends Model
     protected $connection = 'oracle_his'; 
     protected $table = 'HIS_Reception_Room';
 
-    protected $fillable = [
-        'patient_type_ids',
+    public $timestamps = false;
+    protected $appends = [
+        'patient_types',
     ];
+    protected $guarded = [
+        'id',
+    ];
+    public function getPatientTypesAttribute()
+    {
+        $data = PatientType::whereIn('id', explode(',', $this->patient_type_ids))->get();
+        return $data;
+    }
 
     public function room()
     {

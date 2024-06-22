@@ -55,6 +55,8 @@ class CreateMediStockRequest extends FormRequest
             'is_expend' =>                      'nullable|integer|in:0,1',
             'patient_classify_ids' =>           'nullable|string|max:200',
             'cabinet_manage_option' =>          'nullable|integer|in:1,2,3',
+            'medi_stock_exty' =>                'nullable',
+            'medi_stock_imty' =>                'nullable',
 
         ];
     }
@@ -162,6 +164,17 @@ class CreateMediStockRequest extends FormRequest
                 'patient_classify_ids_list' => explode(',', $this->patient_classify_ids),
             ]);
         }
+        if ($this->has('medi_stock_exty')) {
+            $this->merge([
+                'medi_stock_exty' => json_decode($this->medi_stock_exty),
+            ]);
+        }
+        if ($this->has('medi_stock_imty')) {
+            $this->merge([
+                'medi_stock_imty' => json_decode($this->medi_stock_imty),
+            ]);
+        }
+        
     }
 
     public function withValidator($validator)
@@ -174,6 +187,40 @@ class CreateMediStockRequest extends FormRequest
                 foreach ($this->patient_classify_ids_list as $id) {
                     if (!is_numeric($id) || !\App\Models\HIS\PatientClassify::find($id)) {
                         $validator->errors()->add('patient_classify_ids', 'Phân loại bệnh nhân với id = ' . $id . ' trong danh sách phân loại bệnh nhân không tồn tại!');
+                    }
+                }
+            }
+            //////////
+            if ($this->has('medi_stock_exty') && (!is_array($this->medi_stock_exty))) {
+                $validator->errors()->add('medi_stock_exty', config('keywords')['medi_stock']['medi_stock_exty'].' phải là chuỗi json hợp lệ và có thể được chuyển sang mảng!');
+            }
+            if ($this->has('medi_stock_exty') && ($this->medi_stock_exty[0] != null)) {
+                foreach ($this->medi_stock_exty as $item) {
+                    if (!is_numeric($item->id) || !\App\Models\HIS\ExpMestType::find($item->id)) {
+                        $validator->errors()->add('medi_stock_exty', 'Bản ghi với id = ' . $item->id . ' trong '.config('keywords')['medi_stock']['medi_stock_exty'].' không tồn tại!');
+                    }
+                    if(!is_numeric($item->is_auto_approve) || (!in_array($item->is_auto_approve, [0, 1]))){
+                        $validator->errors()->add('medi_stock_exty', config('keywords')['medi_stock']['is_auto_approve'].' trong '.config('keywords')['medi_stock']['medi_stock_exty'] .' phải là số nguyên và có giá trị 0 hoặc 1!');
+                    }
+                    if(!is_numeric($item->is_auto_execute) || (!in_array($item->is_auto_execute, [0, 1]))){
+                        $validator->errors()->add('medi_stock_exty', config('keywords')['medi_stock']['is_auto_execute'].' trong '.config('keywords')['medi_stock']['medi_stock_exty'] .'phải là số nguyên và có giá trị 0 hoặc 1!');
+                    }
+                }
+            }
+            /////////
+            if ($this->has('medi_stock_imty') && (!is_array($this->medi_stock_imty))) {
+                $validator->errors()->add('medi_stock_imty', config('keywords')['medi_stock']['medi_stock_imty'].' phải là chuỗi json hợp lệ và có thể được chuyển sang mảng!');
+            }
+            if ($this->has('medi_stock_imty') && ($this->medi_stock_imty[0] != null)) {
+                foreach ($this->medi_stock_imty as $item) {
+                    if (!is_numeric($item->id) || !\App\Models\HIS\ImpMestType::find($item->id)) {
+                        $validator->errors()->add('medi_stock_imty', 'Bản ghi với id = ' . $item->id . ' trong '.config('keywords')['medi_stock']['medi_stock_imty'].' không tồn tại!');
+                    }
+                    if(!is_numeric($item->is_auto_approve) || (!in_array($item->is_auto_approve, [0, 1]))){
+                        $validator->errors()->add('medi_stock_imty', config('keywords')['medi_stock']['is_auto_approve'].' trong '.config('keywords')['medi_stock']['medi_stock_imty'] .'phải là số nguyên và có giá trị 0 hoặc 1!');
+                    }
+                    if(!is_numeric($item->is_auto_execute) || (!in_array($item->is_auto_execute, [0, 1]))){
+                        $validator->errors()->add('medi_stock_imty', config('keywords')['medi_stock']['is_auto_execute'].' trong '.config('keywords')['medi_stock']['medi_stock_imty'] .'phải là số nguyên và có giá trị 0 hoặc 1!');
                     }
                 }
             }

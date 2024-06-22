@@ -244,7 +244,12 @@ return [
         'is_business' => 'Trường là kho kinh doanh (nhà thuốc)',
         'is_expend' => 'Trường là kho hao phí',
         'patient_classify_ids' => 'Trường danh sách id các phân loại bệnh nhân mà kho cho phép kê thuốc',
-        'cabinet_manage_option' => 'Trường quản lí cơ số tủ trực'
+        'cabinet_manage_option' => 'Trường quản lí cơ số tủ trực',
+        'medi_stock_exty' => 'Trường chuỗi json danh sách id cấu hình xuất',
+        'medi_stock_imty' => 'Trường chuỗi json danh sách id cấu hình nhập',
+        'is_auto_approve' => 'Trường tự động duyệt',
+        'is_auto_execute' => 'Trường tự động xuất',
+        
     ],
     
 ];
