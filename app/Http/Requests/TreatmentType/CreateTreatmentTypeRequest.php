@@ -46,59 +46,59 @@ class CreateTreatmentTypeRequest extends FormRequest
     public function messages()
     {
         return [
-            'treatment_type_code.required'  => config('keywords')['treatment_type']['treatment_type_code'].' không được bỏ trống!',
-            'treatment_type_code.string'    => config('keywords')['treatment_type']['treatment_type_code'].' phải là chuỗi string!',
-            'treatment_type_code.max'       => config('keywords')['treatment_type']['treatment_type_code'].' tối đa 2 kí tự!',            
-            'treatment_type_code.unique'    => config('keywords')['treatment_type']['treatment_type_code'].' = '.$this->treatment_type_code.' đã tồn tại!',
+            'treatment_type_code.required'  => config('keywords')['treatment_type']['treatment_type_code'].config('keywords')['error']['required'],
+            'treatment_type_code.string'    => config('keywords')['treatment_type']['treatment_type_code'].config('keywords')['error']['string'],
+            'treatment_type_code.max'       => config('keywords')['treatment_type']['treatment_type_code'].config('keywords')['error']['string_max'],            
+            'treatment_type_code.unique'    => config('keywords')['treatment_type']['treatment_type_code'].config('keywords')['error']['unique'],
 
-            'treatment_type_name.required'  => config('keywords')['treatment_type']['treatment_type_name'].' không được bỏ trống!',
-            'treatment_type_name.string'    => config('keywords')['treatment_type']['treatment_type_name'].' phải là chuỗi string!',
-            'treatment_type_name.max'       => config('keywords')['treatment_type']['treatment_type_name'].' tối đa 100 kí tự!',   
+            'treatment_type_name.required'  => config('keywords')['treatment_type']['treatment_type_name'].config('keywords')['error']['required'],
+            'treatment_type_name.string'    => config('keywords')['treatment_type']['treatment_type_name'].config('keywords')['error']['string'],
+            'treatment_type_name.max'       => config('keywords')['treatment_type']['treatment_type_name'].config('keywords')['error']['string_max'],   
             
-            'hein_treatment_type_code.required'   => config('keywords')['treatment_type']['hein_treatment_type_code'].' không được bỏ trống!',            
-            'hein_treatment_type_code.string'     => config('keywords')['treatment_type']['hein_treatment_type_code'].' phải là chuỗi string!',
-            'hein_treatment_type_code.max'        => config('keywords')['treatment_type']['hein_treatment_type_code'].' tối đa 2 kí tự!',            
-            'hein_treatment_type_code.in'         => config('keywords')['treatment_type']['hein_treatment_type_code'].' phải là KH hoặc DT!',            
+            'hein_treatment_type_code.required'   => config('keywords')['treatment_type']['hein_treatment_type_code'].config('keywords')['error']['required'],            
+            'hein_treatment_type_code.string'     => config('keywords')['treatment_type']['hein_treatment_type_code'].config('keywords')['error']['string'],
+            'hein_treatment_type_code.max'        => config('keywords')['treatment_type']['hein_treatment_type_code'].config('keywords')['error']['string_max'],            
+            'hein_treatment_type_code.in'         => config('keywords')['treatment_type']['hein_treatment_type_code'].config('keywords')['error']['in'],            
 
-            'end_code_prefix.string'  => config('keywords')['treatment_type']['end_code_prefix'].' phải là chuỗi string!',
-            'end_code_prefix.max'     => config('keywords')['treatment_type']['end_code_prefix'].' tối đa 5 kí tự!',      
+            'end_code_prefix.string'  => config('keywords')['treatment_type']['end_code_prefix'].config('keywords')['error']['string'],
+            'end_code_prefix.max'     => config('keywords')['treatment_type']['end_code_prefix'].config('keywords')['error']['string_max'],      
 
-            'required_service_id.integer'     => config('keywords')['treatment_type']['required_service_id'].' phải là số nguyên!',
-            'required_service_id.exists'      => config('keywords')['treatment_type']['required_service_id'].' không tồn tại!', 
+            'required_service_id.integer'     => config('keywords')['treatment_type']['required_service_id'].config('keywords')['error']['integer'],
+            'required_service_id.exists'      => config('keywords')['treatment_type']['required_service_id'].config('keywords')['error']['exists'], 
 
-            'is_allow_reception.required'       => config('keywords')['treatment_type']['is_allow_reception'].' không được bỏ trống!',            
-            'is_allow_reception.integer'        => config('keywords')['treatment_type']['is_allow_reception'].' phải là số nguyên!',
-            'is_allow_reception.in'             => config('keywords')['treatment_type']['is_allow_reception'].' phải là 0 hoặc 1!', 
+            'is_allow_reception.required'       => config('keywords')['treatment_type']['is_allow_reception'].config('keywords')['error']['required'],            
+            'is_allow_reception.integer'        => config('keywords')['treatment_type']['is_allow_reception'].config('keywords')['error']['integer'],
+            'is_allow_reception.in'             => config('keywords')['treatment_type']['is_allow_reception'].config('keywords')['error']['in'], 
 
-            'is_not_allow_unpause.integer'        => config('keywords')['treatment_type']['is_not_allow_unpause'].' phải là số nguyên!',
-            'is_not_allow_unpause.in'             => config('keywords')['treatment_type']['is_not_allow_unpause'].' phải là 0 hoặc 1!', 
+            'is_not_allow_unpause.integer'        => config('keywords')['treatment_type']['is_not_allow_unpause'].config('keywords')['error']['integer'],
+            'is_not_allow_unpause.in'             => config('keywords')['treatment_type']['is_not_allow_unpause'].config('keywords')['error']['in'], 
             
-            'allow_hospitalize_when_pres.integer'        => config('keywords')['treatment_type']['allow_hospitalize_when_pres'].' phải là số nguyên!',
-            'allow_hospitalize_when_pres.in'             => config('keywords')['treatment_type']['allow_hospitalize_when_pres'].' phải là 0 hoặc 1!', 
+            'allow_hospitalize_when_pres.integer'        => config('keywords')['treatment_type']['allow_hospitalize_when_pres'].config('keywords')['error']['integer'],
+            'allow_hospitalize_when_pres.in'             => config('keywords')['treatment_type']['allow_hospitalize_when_pres'].config('keywords')['error']['in'], 
 
-            'is_not_allow_share_bed.integer'        => config('keywords')['treatment_type']['is_not_allow_share_bed'].' phải là số nguyên!',
-            'is_not_allow_share_bed.in'             => config('keywords')['treatment_type']['is_not_allow_share_bed'].' phải là 0 hoặc 1!', 
+            'is_not_allow_share_bed.integer'        => config('keywords')['treatment_type']['is_not_allow_share_bed'].config('keywords')['error']['integer'],
+            'is_not_allow_share_bed.in'             => config('keywords')['treatment_type']['is_not_allow_share_bed'].config('keywords')['error']['in'], 
 
-            'is_required_service_bed.integer'        => config('keywords')['treatment_type']['is_required_service_bed'].' phải là số nguyên!',
-            'is_required_service_bed.in'             => config('keywords')['treatment_type']['is_required_service_bed'].' phải là 0 hoặc 1!', 
+            'is_required_service_bed.integer'        => config('keywords')['treatment_type']['is_required_service_bed'].config('keywords')['error']['integer'],
+            'is_required_service_bed.in'             => config('keywords')['treatment_type']['is_required_service_bed'].config('keywords')['error']['in'], 
 
-            'is_dis_service_repay.integer'        => config('keywords')['treatment_type']['is_dis_service_repay'].' phải là số nguyên!',
-            'is_dis_service_repay.in'             => config('keywords')['treatment_type']['is_dis_service_repay'].' phải là 0 hoặc 1!', 
+            'is_dis_service_repay.integer'        => config('keywords')['treatment_type']['is_dis_service_repay'].config('keywords')['error']['integer'],
+            'is_dis_service_repay.in'             => config('keywords')['treatment_type']['is_dis_service_repay'].config('keywords')['error']['in'], 
  
-            'dis_service_deposit_option.integer'        => config('keywords')['treatment_type']['dis_service_deposit_option'].' phải là số nguyên!',
-            'dis_service_deposit_option.in'             => config('keywords')['treatment_type']['dis_service_deposit_option'].' phải là 1 hoặc 2!', 
+            'dis_service_deposit_option.integer'        => config('keywords')['treatment_type']['dis_service_deposit_option'].config('keywords')['error']['integer'],
+            'dis_service_deposit_option.in'             => config('keywords')['treatment_type']['dis_service_deposit_option'].config('keywords')['error']['in'], 
 
-            'dis_deposit_option.integer'        => config('keywords')['treatment_type']['dis_deposit_option'].' phải là số nguyên!',
-            'dis_deposit_option.in'             => config('keywords')['treatment_type']['dis_deposit_option'].' phải là 1 hoặc 2!', 
+            'dis_deposit_option.integer'        => config('keywords')['treatment_type']['dis_deposit_option'].config('keywords')['error']['integer'],
+            'dis_deposit_option.in'             => config('keywords')['treatment_type']['dis_deposit_option'].config('keywords')['error']['in'], 
 
-            'unsign_doc_finish_option.integer'        => config('keywords')['treatment_type']['unsign_doc_finish_option'].' phải là số nguyên!',
-            'unsign_doc_finish_option.in'             => config('keywords')['treatment_type']['unsign_doc_finish_option'].' phải là 1 hoặc 2!', 
+            'unsign_doc_finish_option.integer'        => config('keywords')['treatment_type']['unsign_doc_finish_option'].config('keywords')['error']['integer'],
+            'unsign_doc_finish_option.in'             => config('keywords')['treatment_type']['unsign_doc_finish_option'].config('keywords')['error']['in'], 
 
-            'trans_time_out_time_option.integer'        => config('keywords')['treatment_type']['trans_time_out_time_option'].' phải là số nguyên!',
-            'trans_time_out_time_option.in'             => config('keywords')['treatment_type']['trans_time_out_time_option'].' phải là 1 hoặc 2!', 
+            'trans_time_out_time_option.integer'        => config('keywords')['treatment_type']['trans_time_out_time_option'].config('keywords')['error']['integer'],
+            'trans_time_out_time_option.in'             => config('keywords')['treatment_type']['trans_time_out_time_option'].config('keywords')['error']['in'], 
 
-            'fee_debt_option.integer'        => config('keywords')['treatment_type']['fee_debt_option'].' phải là số nguyên!',
-            'fee_debt_option.in'             => config('keywords')['treatment_type']['fee_debt_option'].' phải là 1 hoặc 2!', 
+            'fee_debt_option.integer'        => config('keywords')['treatment_type']['fee_debt_option'].config('keywords')['error']['integer'],
+            'fee_debt_option.in'             => config('keywords')['treatment_type']['fee_debt_option'].config('keywords')['error']['in'], 
         ];
     }
 

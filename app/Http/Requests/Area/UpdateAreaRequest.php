@@ -44,18 +44,18 @@ class UpdateAreaRequest extends FormRequest
     public function messages()
     {
         return [
-            'area_code.required' => config('keywords')['area']['area_code'].' không được bỏ trống!',
-            'area_code.string' => config('keywords')['area']['area_code'].' phải là chuỗi string!',
-            'area_code.max' => config('keywords')['area']['area_code'].' tối đa 2 kí tự!',
-            'area_code.unique' => config('keywords')['area']['area_code'].' = '. $this->area_code . ' đã tồn tại!',
+            'area_code.required'    => config('keywords')['area']['area_code'].config('keywords')['error']['required'],
+            'area_code.string'      => config('keywords')['area']['area_code'].config('keywords')['error']['string'],
+            'area_code.max'         => config('keywords')['area']['area_code'].config('keywords')['error']['string_max'],
+            'area_code.unique'      => config('keywords')['area']['area_code'].config('keywords')['error']['unique'],
 
-            'area_name.required' => config('keywords')['area']['area_name'].' không được bỏ trống!',
-            'area_name.string' => config('keywords')['area']['area_name'].' phải là chuỗi string!',
-            'area_name.max' => config('keywords')['area']['area_name'].' tối đa 100 kí tự!',
+            'area_name.required'    => config('keywords')['area']['area_name'].config('keywords')['error']['required'],
+            'area_name.string'      => config('keywords')['area']['area_name'].config('keywords')['error']['string'],
+            'area_name.max'         => config('keywords')['area']['area_name'].config('keywords')['error']['string_max'],
 
-            'department_id.required' => config('keywords')['area']['department_id'].' không được bỏ trống!',
-            'department_id.integer' => config('keywords')['area']['department_id'].' phải là số nguyên!',
-            'department_id.exists' => config('keywords')['area']['department_id'].' = '.$this->department_id.' không tồn tại!',
+            'department_id.required'    => config('keywords')['area']['department_id'].config('keywords')['error']['required'],
+            'department_id.integer'     => config('keywords')['area']['department_id'].config('keywords')['error']['integer'],
+            'department_id.exists'      => config('keywords')['area']['department_id'].config('keywords')['error']['exists'],
 
         ];
     }

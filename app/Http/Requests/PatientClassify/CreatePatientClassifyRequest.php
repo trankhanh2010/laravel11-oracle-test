@@ -38,28 +38,34 @@ class CreatePatientClassifyRequest extends FormRequest
     public function messages()
     {
         return [
-            'patient_classify_code.required'    => config('keywords')['patient_classify']['patient_classify_code'].' không được bỏ trống!',
-            'patient_classify_code.string'      => config('keywords')['patient_classify']['patient_classify_code'].' phải là chuỗi string!',
-            'patient_classify_code.max'         => config('keywords')['patient_classify']['patient_classify_code'].' tối đa 10 kí tự!',
-            'patient_classify_code.unique'      => config('keywords')['patient_classify']['patient_classify_code'].' = '. $this->patient_classify_code . ' đã tồn tại!',
+            'patient_classify_code.required'    => config('keywords')['patient_classify']['patient_classify_code'].config('keywords')['error']['required'],
+            'patient_classify_code.string'      => config('keywords')['patient_classify']['patient_classify_code'].config('keywords')['error']['string'],
+            'patient_classify_code.max'         => config('keywords')['patient_classify']['patient_classify_code'].config('keywords')['error']['string_max'],
+            'patient_classify_code.unique'      => config('keywords')['patient_classify']['patient_classify_code'].config('keywords')['error']['unique'],
 
-            'patient_classify_name.required'    => config('keywords')['patient_classify']['patient_classify_name'].' không được bỏ trống!',
-            'patient_classify_name.string'      => config('keywords')['patient_classify']['patient_classify_name'].' phải là chuỗi string!',
-            'patient_classify_name.max'         => config('keywords')['patient_classify']['patient_classify_name'].' tối đa 100 kí tự!',
+            'patient_classify_name.required'    => config('keywords')['patient_classify']['patient_classify_name'].config('keywords')['error']['required'],
+            'patient_classify_name.string'      => config('keywords')['patient_classify']['patient_classify_name'].config('keywords')['error']['string'],
+            'patient_classify_name.max'         => config('keywords')['patient_classify']['patient_classify_name'].config('keywords')['error']['string_max'],
 
-            'display_color.required'    => config('keywords')['patient_classify']['display_color'].' không được bỏ trống!',
-            'display_color.string'      => config('keywords')['patient_classify']['display_color'].' phải là chuỗi string!',
-            'display_color.max'         => config('keywords')['patient_classify']['display_color'].' tối đa 20 kí tự!',
+            'display_color.required'    => config('keywords')['patient_classify']['display_color'].config('keywords')['error']['required'],
+            'display_color.string'      => config('keywords')['patient_classify']['display_color'].config('keywords')['error']['string'],
+            'display_color.max'         => config('keywords')['patient_classify']['display_color'].config('keywords')['error']['string_max'],
             // 'display_color.rgb_color'   => config('keywords')['patient_classify']['display_color'].' = '.$this->display_color.' không phải mã màu RGB!',
 
-            'patient_type_id.integer'       => config('keywords')['patient_classify']['patient_type_id'].' phải là số nguyên!',
-            'patient_type_id.exists'        => config('keywords')['patient_classify']['patient_type_id'].' = '.$this->patient_type_id.' không tồn tại!',
+            'patient_type_id.integer'       => config('keywords')['patient_classify']['patient_type_id'].config('keywords')['error']['integer'],
+            'patient_type_id.exists'        => config('keywords')['patient_classify']['patient_type_id'].config('keywords')['error']['exists'],
 
-            'other_pay_source_id.integer'       => config('keywords')['patient_classify']['other_pay_source_id'].' phải là số nguyên!',
-            'other_pay_source_id.exists'        => config('keywords')['patient_classify']['other_pay_source_id'].' = '.$this->patient_type_id.' không tồn tại!',
+            'other_pay_source_id.integer'       => config('keywords')['patient_classify']['other_pay_source_id'].config('keywords')['error']['integer'],
+            'other_pay_source_id.exists'        => config('keywords')['patient_classify']['other_pay_source_id'].config('keywords')['error']['exists'],
 
-            'is_police.integer'       => config('keywords')['patient_classify']['is_police'].' phải là số nguyên!',
-            'is_police.in'            => config('keywords')['patient_classify']['is_police'].' phải là 0 hoặc 1!',
+            'is_police.integer'       => config('keywords')['patient_classify']['is_police'].config('keywords')['error']['integer'],
+            'is_police.in'            => config('keywords')['patient_classify']['is_police'].config('keywords')['error']['in'],
+
+            'bhyt_whitelist_ids.string'      => config('keywords')['patient_classify']['bhyt_whitelist_ids'].config('keywords')['error']['string'],
+            'bhyt_whitelist_ids.max'         => config('keywords')['patient_classify']['bhyt_whitelist_ids'].config('keywords')['error']['string_max'],
+
+            'military_rank_ids.string'      => config('keywords')['patient_classify']['military_rank_ids'].config('keywords')['error']['string'],
+            'military_rank_ids.max'         => config('keywords')['patient_classify']['military_rank_ids'].config('keywords')['error']['string_max'],
 
         ];
     }
@@ -81,9 +87,6 @@ class CreatePatientClassifyRequest extends FormRequest
     public function withValidator($validator)
     {
         $validator->after(function ($validator) {
-            if ($this->has('bhyt_whitelist_ids') && (strlen($this->bhyt_whitelist_ids) >= 500)) {
-                $validator->errors()->add('bhyt_whitelist_ids', config('keywords')['patient_classify']['bhyt_whitelist_ids'].' tối đa 500 kí tự!');
-            }
             if ($this->has('bhyt_whitelist_ids_list') && ($this->bhyt_whitelist_ids_list[0] != null)) {
                 foreach ($this->bhyt_whitelist_ids_list as $id) {
                     if (!is_numeric($id) || !\App\Models\HIS\BHYTWhitelist::find($id)) {
@@ -92,9 +95,6 @@ class CreatePatientClassifyRequest extends FormRequest
                 }
             }
             ///////////////////////////////////////////////////////////////////////////////////////////////////////
-            if ($this->has('military_rank_ids') && (strlen($this->military_rank_ids) >= 500)) {
-                $validator->errors()->add('military_rank_ids', config('keywords')['patient_classify']['military_rank_ids'].' tối đa 500 kí tự!');
-            }
             if ($this->has('military_rank_ids_list') && ($this->military_rank_ids_list[0] != null)) {
                 foreach ($this->military_rank_ids_list as $id) {
                     if (!is_numeric($id) || !\App\Models\HIS\MilitaryRank::find($id)) {

@@ -1,6 +1,17 @@
 <?php
 
 return [
+    // Lỗi
+    'error' => [
+        'required' => ' không được bỏ trống!',
+        'string' => ' phải là chuỗi tring!',
+        'string_max' => ' có số kí tự tối đa là :max!',
+        'unique' => ' = :input đã tồn tại!',
+        'exists' => ' = :input không tồn tại!',
+        'integer' => ' phải là số nguyên!',
+        'integer_min' => ' phải lớn hơn hoặc bằng :min!',
+        'in' => ' chỉ chấp nhận các giá trị :values',
+    ],
     // Khoa phòng - Department
     'department' => [
         'department' => 'Khoa phòng',

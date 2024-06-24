@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
+use App\Scopes\IsDeleteScope;
+
 class Department extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
@@ -62,6 +64,17 @@ class Department extends Model
     }
      // Đặt thuộc tính $timestamps thành false để tắt tự động thêm created_at và updated_at
     public $timestamps = false;
+    /// Chạy Scope để thêm điều kiện is_delete = 0 hoặc null
+    protected static function booted()
+    {
+        static::addGlobalScope(new IsDeleteScope);
+    }
+
+    /// Lấy ra bản ghi đã xóa mềm is_delete = 1
+    public static function withDeleted()
+    {
+        return with(new static)->newQueryWithoutScope(new IsDeleteScope)->where('is_delete', 1);
+    }
     public function room()
     {
         return $this->hasOne(Room::class);

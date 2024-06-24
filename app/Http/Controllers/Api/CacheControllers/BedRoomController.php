@@ -1,0 +1,190 @@
+<?php
+
+namespace App\Http\Controllers\Api\CacheControllers;
+
+use App\Http\Controllers\BaseControllers\BaseApiCacheController;
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use App\Models\HIS\BedRoom;
+use App\Http\Requests\BedRoom\CreateBedRoomRequest;
+use App\Http\Requests\BedRoom\UpdateBedRoomRequest;
+use App\Events\Cache\DeleteCache;
+use App\Models\HIS\Room;
+use Illuminate\Support\Facades\DB;
+class BedRoomController extends BaseApiCacheController
+{
+    public function __construct(Request $request){
+        parent::__construct($request); // Gọi constructor của BaseController
+        $this->bed_room = new BedRoom();
+        $this->room = new Room();
+    }
+    public function bed_room($id = null)
+    {
+        if ($id == null) {
+            $name = $this->bed_room_name;
+            $param = [
+                'room:id,department_id,speciality_id,default_cashier_room_id,default_instr_patient_type_id',
+                'room.department:id,department_name,department_code',
+                'room.department.area:id,area_name',
+                'room.speciality:id,speciality_name,speciality_code',
+                'room.default_cashier_room:id,cashier_room_name',
+                'room.default_instr_patient_type:id,patient_type_name',
+            ];
+        } else {
+                if (!is_numeric($id)) {
+                    return return_id_error($id);
+                }
+                $data = $this->bed_room->find($id);
+                if ($data == null) {
+                    return return_not_record($id);
+                }
+            $name = $this->bed_room_name . '_' . $id;
+            $param = [
+                'room',
+                'room.department',
+                'room.department.area',
+                'room.speciality',
+                'room.default_cashier_room',
+                'room.default_instr_patient_type',
+            ];
+        }
+        $model = $this->bed_room;
+        $data = get_cache_full($model, $param, $name, $id, $this->time);
+        $count = $data->count();
+        $param_return = [
+            'start' => null,
+            'limit' => null,
+            'count' => $count
+        ];
+        return return_data_success($param_return, $data);
+    }
+
+    public function bed_room_create(CreateBedRoomRequest $request)
+    {
+        // Start transaction
+        DB::connection('oracle_his')->beginTransaction();
+        try {
+            $room = $this->room::create([
+                'create_time' => now()->format('Ymdhis'),
+                'modify_time' => now()->format('Ymdhis'),
+                'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_creator' => $this->app_creator,
+                'app_modifier' => $this->app_modifier,
+                'department_id' => $request->department_id,
+                'area_id' => $request->area_id,
+                'speciality_id' => $request->speciality_id,
+                'default_cashier_room_id' => $request->default_cashier_room_id,
+                'default_instr_patient_type_id' => $request->default_instr_patient_type_id,
+                'is_restrict_req_service' => $request->is_restrict_req_service,
+                'is_pause' => $request->is_pause,
+                'is_restrict_execute_room' => $request->is_restrict_execute_room,
+                'room_type_id' => $request->room_type_id
+            ]);
+            $data = $this->bed_room::create([
+                'create_time' => now()->format('Ymdhis'),
+                'modify_time' => now()->format('Ymdhis'),
+                'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_creator' => $this->app_creator,
+                'app_modifier' => $this->app_modifier,
+                'bed_room_code' => $request->bed_room_code,
+                'bed_room_name' => $request->bed_room_name,
+                'is_surgery' => $request->is_surgery,
+                'treatment_type_ids' => $request->treatment_type_ids,
+                'room_id' => $room->id,
+            ]);
+            DB::connection('oracle_his')->commit();
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->bed_room_name));
+            return return_data_create_success([$data, $room]);
+        } catch (\Exception $e) {
+            // Rollback transaction nếu có lỗi
+            DB::connection('oracle_his')->rollBack();
+            return return_data_fail_transaction();
+        }
+    }
+
+    public function bed_room_update(UpdateBedRoomRequest $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->bed_room->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        $room = $this->room->find($data->room_id);
+        if ($room == null) {
+            return return_not_record($data->room_id);
+        }
+        // Start transaction
+        DB::connection('oracle_his')->beginTransaction();
+        try {
+            $room_update = [
+                'modify_time' => now()->format('Ymdhis'),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_modifier' => $this->app_modifier,
+                'area_id' => $request->area_id,
+                'speciality_id' => $request->speciality_id,
+                'default_cashier_room_id' => $request->default_cashier_room_id,
+                'default_instr_patient_type_id' => $request->default_instr_patient_type_id,
+                'is_restrict_req_service' => $request->is_restrict_req_service,
+                'is_pause' => $request->is_pause,
+                'is_restrict_execute_room' => $request->is_restrict_execute_room,
+                'room_type_id' => $request->room_type_id
+            ];
+            $data_update = [
+                'modify_time' => now()->format('Ymdhis'),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_modifier' => $this->app_modifier,
+                'bed_room_code' => $request->bed_room_code,
+                'bed_room_name' => $request->bed_room_name,
+                'is_surgery' => $request->is_surgery,
+                'treatment_type_ids' => $request->treatment_type_ids,
+            ];
+            $room->fill($room_update);
+            $room->save();
+            $data->fill($data_update);
+            $data->save();
+            DB::connection('oracle_his')->commit();
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->bed_room_name));
+            return return_data_create_success([$data, $room]);
+        } catch (\Exception $e) {
+            // Rollback transaction nếu có lỗi
+            DB::connection('oracle_his')->rollBack();
+            return return_data_fail_transaction();
+        }
+    }
+
+    public function bed_room_delete(Request $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->bed_room->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        $room = $this->room->find($data->room_id);
+        if ($room == null) {
+            return return_not_record($data->room_id);
+        }
+        // Start transaction
+        DB::connection('oracle_his')->beginTransaction();
+        try {
+            $data->delete();
+            $room->delete();
+            DB::connection('oracle_his')->commit();
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->bed_room_name));
+            return return_data_delete_success();
+        } catch (\Exception $e) {
+            // Rollback transaction nếu có lỗi
+            DB::connection('oracle_his')->rollBack();
+            return return_data_fail_transaction();
+        }
+    }
+
+}

@@ -3,6 +3,12 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\HISController;
+use App\Http\Controllers\Api\CacheControllers\DepartmentController;
+use App\Http\Controllers\Api\CacheControllers\GroupController;
+use App\Http\Controllers\Api\CacheControllers\RoomTypeController;
+use App\Http\Controllers\Api\CacheControllers\RoomGroupController;
+use App\Http\Controllers\Api\CacheControllers\ScreenSaverModuleLinkController;
+use App\Http\Controllers\Api\CacheControllers\BedRoomController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -20,33 +26,35 @@ Route::group([
 
     /// Khoa phòng
     Route::group(['as' => 'HIS.Desktop.Plugins.HisDepartment'], function () {
-        Route::get("v1/department", [HISController::class, "department"]);
-        Route::get("v1/department/{id}", [HISController::class, "department"]);
-        Route::post("v1/department", [HISController::class, "department_create"]);        
-        Route::put("v1/department/{id}", [HISController::class, "department_update"]);       
-        Route::delete("v1/department/{id}", [HISController::class, "department_delete"]);         
+        Route::get("v1/department", [DepartmentController::class, "department"]);
+        Route::get("v1/department/{id}", [DepartmentController::class, "department"])->name('.api.department.index_with_id');
+        // Route::get("v1/department/deleted", [DepartmentController::class, "department"]);
+        // Route::get("v1/department/{id}/restore", [DepartmentController::class, "department_restore"]);
+        Route::post("v1/department", [DepartmentController::class, "department_create"]);        
+        Route::put("v1/department/{id}", [DepartmentController::class, "department_update"]);       
+        Route::delete("v1/department/{id}", [DepartmentController::class, "department_delete"]);         
     });
 
     /// Đơn vị
-    Route::get("v1/group", [HISController::class, "group"]);       
+    Route::get("v1/group", [GroupController::class, "group"]);       
 
     /// Loại phòng
-    Route::get("v1/room-type", [HISController::class, "room_type"]);       
+    Route::get("v1/room-type", [RoomTypeController::class, "room_type"]);       
 
     /// Nhóm phòng
-    Route::get("v1/room-group", [HISController::class, "room_group"]);    
-    Route::post("v1/room-group", [HISController::class, "room_group_create"]);    
+    Route::get("v1/room-group", [RoomGroupController::class, "room_group"]);    
+    Route::post("v1/room-group", [RoomGroupController::class, "room_group_create"]);    
 
     /// Link màn hình chờ
-    Route::get("v1/screen-saver-module-link", [HISController::class, "screen_saver_module_link"]);    
+    Route::get("v1/screen-saver-module-link", [ScreenSaverModuleLinkController::class, "screen_saver_module_link"]);    
 
     /// Buồng bệnh
     Route::group(['as' => 'HIS.Desktop.Plugins.HisBedRoomList'], function () {
-        Route::get("v1/bed-room", [HISController::class, "bed_room"]);
-        Route::get("v1/bed-room/{id}", [HISController::class, "bed_room"]);
-        Route::post("v1/bed-room", [HISController::class, "bed_room_create"]);        
-        Route::put("v1/bed-room/{id}", [HISController::class, "bed_room_update"]);       
-        Route::delete("v1/bed-room/{id}", [HISController::class, "bed_room_delete"]);       
+        Route::get("v1/bed-room", [BedRoomController::class, "bed_room"]);
+        Route::get("v1/bed-room/{id}", [BedRoomController::class, "bed_room"])->name('.api.bed_room.index_with_id');
+        Route::post("v1/bed-room", [BedRoomController::class, "bed_room_create"]);        
+        Route::put("v1/bed-room/{id}", [BedRoomController::class, "bed_room_update"]);       
+        Route::delete("v1/bed-room/{id}", [BedRoomController::class, "bed_room_delete"]);       
     });
 
     /// Loại xét nghiệm

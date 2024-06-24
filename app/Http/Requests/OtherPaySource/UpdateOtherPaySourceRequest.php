@@ -47,26 +47,26 @@ class UpdateOtherPaySourceRequest extends FormRequest
     public function messages()
     {
         return [
-            'other_pay_source_code.required'    => config('keywords')['other_pay_source']['other_pay_source_code'].' không được bỏ trống!',
-            'other_pay_source_code.string'      => config('keywords')['other_pay_source']['other_pay_source_code'].' phải là chuỗi string!',
-            'other_pay_source_code.max'         => config('keywords')['other_pay_source']['other_pay_source_code'].' tối đa 10 kí tự!',
-            'other_pay_source_code.unique'      => config('keywords')['other_pay_source']['other_pay_source_code'].' = '. $this->other_pay_source_code . ' đã tồn tại!',
+            'other_pay_source_code.required'    => config('keywords')['other_pay_source']['other_pay_source_code'].config('keywords')['error']['required'],
+            'other_pay_source_code.string'      => config('keywords')['other_pay_source']['other_pay_source_code'].config('keywords')['error']['string'],
+            'other_pay_source_code.max'         => config('keywords')['other_pay_source']['other_pay_source_code'].config('keywords')['error']['string_max'],
+            'other_pay_source_code.unique'      => config('keywords')['other_pay_source']['other_pay_source_code'].config('keywords')['error']['unique'],
 
-            'other_pay_source_name.required'    => config('keywords')['other_pay_source']['other_pay_source_name'].' không được bỏ trống!',
-            'other_pay_source_name.string'      => config('keywords')['other_pay_source']['other_pay_source_name'].' phải là chuỗi string!',
-            'other_pay_source_name.max'         => config('keywords')['other_pay_source']['other_pay_source_name'].' tối đa 200 kí tự!',
+            'other_pay_source_name.required'    => config('keywords')['other_pay_source']['other_pay_source_name'].config('keywords')['error']['required'],
+            'other_pay_source_name.string'      => config('keywords')['other_pay_source']['other_pay_source_name'].config('keywords')['error']['string'],
+            'other_pay_source_name.max'         => config('keywords')['other_pay_source']['other_pay_source_name'].config('keywords')['error']['string_max'],
 
-            'hein_pay_source_type_id.integer'       => config('keywords')['other_pay_source']['hein_pay_source_type_id'].' phải là số nguyên!',
-            'hein_pay_source_type_id.in'            => config('keywords')['other_pay_source']['hein_pay_source_type_id'].' phải là 1,2 hoặc 3!',
+            'hein_pay_source_type_id.integer'       => config('keywords')['other_pay_source']['hein_pay_source_type_id'].config('keywords')['error']['integer'],
+            'hein_pay_source_type_id.in'            => config('keywords')['other_pay_source']['hein_pay_source_type_id'].config('keywords')['error']['in'],
 
-            'is_not_for_treatment.integer'       => config('keywords')['other_pay_source']['is_not_for_treatment'].' phải là số nguyên!',
-            'is_not_for_treatment.in'            => config('keywords')['other_pay_source']['is_not_for_treatment'].' phải là 0 hoặc 1!',
+            'is_not_for_treatment.integer'       => config('keywords')['other_pay_source']['is_not_for_treatment'].config('keywords')['error']['integer'],
+            'is_not_for_treatment.in'            => config('keywords')['other_pay_source']['is_not_for_treatment'].config('keywords')['error']['in'],
 
-            'is_not_paid_diff.integer'       => config('keywords')['other_pay_source']['is_not_paid_diff'].' phải là số nguyên!',
-            'is_not_paid_diff.in'            => config('keywords')['other_pay_source']['is_not_paid_diff'].' phải là 0 hoặc 1!',
+            'is_not_paid_diff.integer'       => config('keywords')['other_pay_source']['is_not_paid_diff'].config('keywords')['error']['integer'],
+            'is_not_paid_diff.in'            => config('keywords')['other_pay_source']['is_not_paid_diff'].config('keywords')['error']['in'],
 
-            'is_paid_all.integer'       => config('keywords')['other_pay_source']['is_paid_all'].' phải là số nguyên!',
-            'is_paid_all.in'            => config('keywords')['other_pay_source']['is_paid_all'].' phải là 0 hoặc 1!',
+            'is_paid_all.integer'       => config('keywords')['other_pay_source']['is_paid_all'].config('keywords')['error']['integer'],
+            'is_paid_all.in'            => config('keywords')['other_pay_source']['is_paid_all'].config('keywords')['error']['in'],
 
         ];
     }

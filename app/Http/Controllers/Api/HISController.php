@@ -143,23 +143,17 @@ use App\Models\HIS\Care;
 use App\Models\HIS\PatientTypeAlter;
 use App\Models\HIS\TreatmentBedRoom;
 use App\Models\HIS\SereServTein;
-use App\Models\SDA\Group;
 use App\Models\HIS\TestType;
-use App\Models\HIS\RoomGroup;
-use App\Models\HIS\RoomType;
 use App\Models\ACS\ModuleGroup;
 use App\Models\HIS\OtherPaySource;
 use App\Models\HIS\MilitaryRank;
 // use Request
-use App\Http\Requests\Department\CreateDepartmentRequest;
-use App\Http\Requests\Department\UpdateDepartmentRequest;
+
 use App\Http\Requests\Area\CreateAreaRequest;
 use App\Http\Requests\Area\UpdateAreaRequest;
-use App\Http\Requests\BedRoom\CreateBedRoomRequest;
-use App\Http\Requests\BedRoom\UpdateBedRoomRequest;
+
 use App\Http\Requests\ExecuteRoom\CreateExecuteRoomRequest;
 use App\Http\Requests\ExecuteRoom\UpdateExecuteRoomRequest;
-use App\Http\Requests\RoomGroup\CreateRoomGroupRequest;
 use App\Http\Requests\Speciality\CreateSpecialityRequest;
 use App\Http\Requests\Speciality\UpdateSpecialityRequest;
 use App\Http\Requests\TreatmentType\CreateTreatmentTypeRequest;
@@ -485,8 +479,6 @@ class HISController extends Controller
         }
 
         // Khởi tạo các model
-        $this->department = new Department();
-        $this->bed_room = new BedRoom();
         $this->execute_room = new ExecuteRoom();
         $this->room = new Room();
         $this->speciality = new Speciality();
@@ -617,362 +609,22 @@ class HISController extends Controller
         $this->patient_type_alter = new PatientTypeAlter();
         $this->treatment_bed_room = new TreatmentBedRoom();
         $this->sere_serv_tein = new SereServTein();
-        $this->group = new Group();
-        $this->room_type = new RoomType();
         $this->test_type = new TestType();
-        $this->room_group = new RoomGroup();
         $this->module_group = new ModuleGroup();
         $this->other_pay_source = new OtherPaySource();
         $this->military_rank = new MilitaryRank();
     }
 
     /// Department
-    public function department($id = null)
-    {
-        if ($id == null) {
-            $name = $this->department_name;
-            $param = [
-                'branch:id,branch_name,branch_code',
-                'req_surg_treatment_type:id,treatment_type_code,treatment_type_name',
-                'default_instr_patient_type:id,patient_type_code,patient_type_name',
-            ];
-        } else {
-            if (!is_numeric($id)) {
-                return return_id_error($id);
-            }
-            $data = $this->department->find($id);
-            if ($data == null) {
-                return return_not_record($id);
-            }
-            $name = $this->department_name . '_' . $id;
-            $param = [
-                'branch:id,branch_name,branch_code',
-                'req_surg_treatment_type:id,treatment_type_code,treatment_type_name',
-                'default_instr_patient_type:id,patient_type_code,patient_type_name'
-            ];
-        }
-        $data = get_cache_full($this->department, $param, $name, $id, $this->time);
-
-        $count = $data->count();
-        $param_return = [
-            'start' => null,
-            'limit' => null,
-            'count' => $count
-        ];
-        return return_data_success($param_return, $data);
-    }
-
-    public function department_create(CreateDepartmentRequest $request)
-    {
-        $data = $this->department::create([
-            'create_time' => now()->format('Ymdhis'),
-            'modify_time' => now()->format('Ymdhis'),
-            'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
-            'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
-            'app_creator' => $this->app_creator,
-            'app_modifier' => $this->app_modifier,
-            'department_code' => $request->department_code,
-            'department_name' => $request->department_name,
-            'g_code' => $request->g_code,
-            'bhyt_code' => $request->bhyt_code,
-            'branch_id' => $request->branch_id,
-            'default_instr_patient_type_id' => $request->default_instr_patient_type_id,
-            'allow_treatment_type_ids' => $request->allow_treatment_type_ids,
-            'theory_patient_count' => $request->theory_patient_count,
-            'reality_patient_count' => $request->reality_patient_count,
-            'req_surg_treatment_type_id' => $request->req_surg_treatment_type_id,
-            'phone' => $request->phone,
-            'head_loginname' => $request->head_loginname,
-            'head_username' => $request->head_username,
-            'accepted_icd_codes' => $request->accepted_icd_codes,
-            'is_exam' => $request->is_exam,
-            'is_clinical' => $request->is_clinical,
-            'allow_assign_package_price' => $request->allow_assign_package_price,
-            'auto_bed_assign_option' => $request->auto_bed_assign_option,
-            'is_emergency' => $request->is_emergency,
-            'is_auto_receive_patient' => $request->is_auto_receive_patient,
-            'allow_assign_surgery_price' => $request->allow_assign_surgery_price,
-            'is_in_dep_stock_moba' => $request->is_in_dep_stock_moba,
-            'warning_when_is_no_surg' => $request->warning_when_is_no_surg,
-        ]);
-        // Gọi event để xóa cache
-        event(new DeleteCache($this->department_name));
-        return return_data_create_success($data);
-    }
-
-    public function department_update(UpdateDepartmentRequest $request, $id)
-    {
-        if (!is_numeric($id)) {
-            return return_id_error($id);
-        }
-        $data = $this->department->find($id);
-        if ($data == null) {
-            return return_not_record($id);
-        }
-        $data_update = [
-            'modify_time' => now()->format('Ymdhis'),
-            'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
-            'app_modifier' => $this->app_modifier,
-            'department_name' => $request->department_name,
-            'g_code' => $request->g_code,
-            'bhyt_code' => $request->bhyt_code,
-            'default_instr_patient_type_id' => $request->default_instr_patient_type_id,
-            'allow_treatment_type_ids' => $request->allow_treatment_type_ids,
-            'theory_patient_count' => $request->theory_patient_count,
-            'reality_patient_count' => $request->reality_patient_count,
-            'req_surg_treatment_type_id' => $request->req_surg_treatment_type_id,
-            'phone' => $request->phone,
-            'head_loginname' => $request->head_loginname,
-            'head_username' => $request->head_username,
-            'accepted_icd_codes' => $request->accepted_icd_codes,
-            'is_exam' => $request->is_exam,
-            'is_clinical' => $request->is_clinical,
-            'allow_assign_package_price' => $request->allow_assign_package_price,
-            'auto_bed_assign_option' => $request->auto_bed_assign_option,
-            'is_emergency' => $request->is_emergency,
-            'is_auto_receive_patient' => $request->is_auto_receive_patient,
-            'allow_assign_surgery_price' => $request->allow_assign_surgery_price,
-            'is_in_dep_stock_moba' => $request->is_in_dep_stock_moba,
-            'warning_when_is_no_surg' => $request->warning_when_is_no_surg,
-        ];
-        $data->fill($data_update);
-        $data->save();
-        // Gọi event để xóa cache
-        event(new DeleteCache($this->department_name));
-        return return_data_update_success($data);
-    }
-
-    public function department_delete(Request $request, $id)
-    {
-        if (!is_numeric($id)) {
-            return return_id_error($id);
-        }
-        $data = $this->department->find($id);
-        if ($data == null) {
-            return return_not_record($id);
-        }
-        $data->update([
-            'modify_time' => now()->format('Ymdhis'),
-            'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
-            'app_modifier' => $this->app_modifier,
-            'is_delete' => 1
-        ]);
-        // Gọi event để xóa cache
-        event(new DeleteCache($this->department_name));
-        return return_data_delete_success($data);
-    }
 
     /// Group
-    public function group()
-    {
-        $name = $this->group_name;
-        $param = [];
-        $data = get_cache_full($this->group, $param, $name, null, $this->time);
-        $count = $data->count();
-        $param_return = [
-            'start' => null,
-            'limit' => null,
-            'count' => $count
-        ];
-        return return_data_success($param_return, $data);
-    }
+
 
     /// Room Type
-    public function room_type()
-    {
-        $name = $this->room_type_name;
-        $param = [];
-        $data = get_cache_full($this->room_type, $param, $name, null, $this->time);
-        $count = $data->count();
-        $param_return = [
-            'start' => null,
-            'limit' => null,
-            'count' => $count
-        ];
-        return return_data_success($param_return, $data);
-    }
+
 
     /// Bed Room
-    public function bed_room($id = null)
-    {
-        if ($id == null) {
-            $name = $this->bed_room_name;
-            $param = [
-                'room:id,department_id,speciality_id,default_cashier_room_id,default_instr_patient_type_id',
-                'room.department:id,department_name,department_code',
-                'room.department.area:id,area_name',
-                'room.speciality:id,speciality_name,speciality_code',
-                'room.default_cashier_room:id,cashier_room_name',
-                'room.default_instr_patient_type:id,patient_type_name',
-            ];
-        } else {
-            if (!is_numeric($id)) {
-                return return_id_error($id);
-            }
-            $data = $this->bed_room->find($id);
-            if ($data == null) {
-                return return_not_record($id);
-            }
-            $name = $this->bed_room_name . '_' . $id;
-            $param = [
-                'room',
-                'room.department',
-                'room.department.area',
-                'room.speciality',
-                'room.default_cashier_room',
-                'room.default_instr_patient_type',
-            ];
-        }
-        $model = $this->bed_room;
-        $data = get_cache_full($model, $param, $name, $id, $this->time);
-        // foreach ($data as $key => $item) {
-        //     $item->treatment_type = get_cache_1_n_with_ids($this->bed_room, "treatment_type", $this->bed_room_name, $item->id, $this->time);
-        // }
-        $count = $data->count();
-        $param_return = [
-            'start' => null,
-            'limit' => null,
-            'count' => $count
-        ];
-        return return_data_success($param_return, $data);
-    }
 
-    public function bed_room_create(CreateBedRoomRequest $request)
-    {
-        // Start transaction
-        DB::connection('oracle_his')->beginTransaction();
-        try {
-            $room = $this->room::create([
-                'create_time' => now()->format('Ymdhis'),
-                'modify_time' => now()->format('Ymdhis'),
-                'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
-                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
-                'app_creator' => $this->app_creator,
-                'app_modifier' => $this->app_modifier,
-                'department_id' => $request->department_id,
-                'area_id' => $request->area_id,
-                'speciality_id' => $request->speciality_id,
-                'default_cashier_room_id' => $request->default_cashier_room_id,
-                'default_instr_patient_type_id' => $request->default_instr_patient_type_id,
-                'is_restrict_req_service' => $request->is_restrict_req_service,
-                'is_pause' => $request->is_pause,
-                'is_restrict_execute_room' => $request->is_restrict_execute_room,
-                'room_type_id' => $request->room_type_id
-            ]);
-            $data = $this->bed_room::create([
-                'create_time' => now()->format('Ymdhis'),
-                'modify_time' => now()->format('Ymdhis'),
-                'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
-                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
-                'app_creator' => $this->app_creator,
-                'app_modifier' => $this->app_modifier,
-                'bed_room_code' => $request->bed_room_code,
-                'bed_room_name' => $request->bed_room_name,
-                'is_surgery' => $request->is_surgery,
-                'treatment_type_ids' => $request->treatment_type_ids,
-                'room_id' => $room->id,
-            ]);
-            DB::connection('oracle_his')->commit();
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->bed_room_name));
-            return return_data_create_success([$data, $room]);
-        } catch (\Exception $e) {
-            // Rollback transaction nếu có lỗi
-            DB::connection('oracle_his')->rollBack();
-            return return_data_fail_transaction();
-        }
-    }
-
-    public function bed_room_update(UpdateBedRoomRequest $request, $id)
-    {
-        if (!is_numeric($id)) {
-            return return_id_error($id);
-        }
-        $data = $this->bed_room->find($id);
-        if ($data == null) {
-            return return_not_record($id);
-        }
-        $room = $this->room->find($data->room_id);
-        if ($room == null) {
-            return return_not_record($data->room_id);
-        }
-        // Start transaction
-        DB::connection('oracle_his')->beginTransaction();
-        try {
-            $room_update = [
-                'modify_time' => now()->format('Ymdhis'),
-                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
-                'app_modifier' => $this->app_modifier,
-                'area_id' => $request->area_id,
-                'speciality_id' => $request->speciality_id,
-                'default_cashier_room_id' => $request->default_cashier_room_id,
-                'default_instr_patient_type_id' => $request->default_instr_patient_type_id,
-                'is_restrict_req_service' => $request->is_restrict_req_service,
-                'is_pause' => $request->is_pause,
-                'is_restrict_execute_room' => $request->is_restrict_execute_room,
-                'room_type_id' => $request->room_type_id
-            ];
-            $data_update = [
-                'modify_time' => now()->format('Ymdhis'),
-                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
-                'app_modifier' => $this->app_modifier,
-                'bed_room_code' => $request->bed_room_code,
-                'bed_room_name' => $request->bed_room_name,
-                'is_surgery' => $request->is_surgery,
-                'treatment_type_ids' => $request->treatment_type_ids,
-            ];
-            $room->fill($room_update);
-            $room->save();
-            $data->fill($data_update);
-            $data->save();
-            DB::connection('oracle_his')->commit();
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->bed_room_name));
-            return return_data_create_success([$data, $room]);
-        } catch (\Exception $e) {
-            // Rollback transaction nếu có lỗi
-            DB::connection('oracle_his')->rollBack();
-            return return_data_fail_transaction();
-        }
-    }
-
-    public function bed_room_delete(Request $request, $id)
-    {
-        if (!is_numeric($id)) {
-            return return_id_error($id);
-        }
-        $data = $this->bed_room->find($id);
-        if ($data == null) {
-            return return_not_record($id);
-        }
-        $room = $this->room->find($data->room_id);
-        if ($room == null) {
-            return return_not_record($data->room_id);
-        }
-        // Start transaction
-        DB::connection('oracle_his')->beginTransaction();
-        try {
-            $room->update([
-                'modify_time' => now()->format('Ymdhis'),
-                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
-                'is_delete' => 1,
-            ]);
-            $data->update([
-                'modify_time' => now()->format('Ymdhis'),
-                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
-                'app_modifier' => $this->app_modifier,
-                'is_delete' => 1,
-            ]);
-            DB::connection('oracle_his')->commit();
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->bed_room_name));
-            return return_data_create_success([$data, $room]);
-        } catch (\Exception $e) {
-            // Rollback transaction nếu có lỗi
-            DB::connection('oracle_his')->rollBack();
-            return return_data_fail_transaction();
-        }
-    }
 
     /// Test Type
     public function test_type()
@@ -990,55 +642,10 @@ class HISController extends Controller
     }
 
     /// Room Group
-    public function room_group()
-    {
-        $name = $this->room_group_name;
-        $param = [];
-        $data = get_cache_full($this->room_group, $param, $name, null, $this->time);
-        $count = $data->count();
-        $param_return = [
-            'start' => null,
-            'limit' => null,
-            'count' => $count
-        ];
-        return return_data_success($param_return, $data);
-    }
 
-    public function room_group_create(CreateRoomGroupRequest $request)
-    {
-        $data = $this->room_group::create([
-            'create_time' => now()->format('Ymdhis'),
-            'modify_time' => now()->format('Ymdhis'),
-            'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
-            'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
-            'app_creator' => $this->app_creator,
-            'app_modifier' => $this->app_modifier,
-            'group_code' => $request->group_code,
-            'room_group_name' => $request->room_group_name,
-            'room_group_code' => $request->room_group_code,
-        ]);
-        // Gọi event để xóa cache
-        event(new DeleteCache($this->room_group_name));
-        return return_data_create_success($data);
-    }
 
     /// Link màn hình chờ
-    public function screen_saver_module_link()
-    {
-        $name = 'screen_saver_module_link';
-        $data = $this->module::select('acs_module.*')
-            ->join('ACS_MODULE_GROUP', 'ACS_MODULE.module_group_id', '=', 'ACS_MODULE_GROUP.id')
-            ->where('ACS_MODULE_GROUP.module_group_code', 'MHC')
-            ->get();
-        update_cache($name, $data, $this->time);
-        $count = $data->count();
-        $param_return = [
-            'start' => null,
-            'limit' => null,
-            'count' => $count
-        ];
-        return return_data_success($param_return, $data);
-    }
+
 
     /// Execute Room
     public function execute_room($id = null)
@@ -2038,7 +1645,17 @@ class HISController extends Controller
         if ($data == null) {
             return return_not_record($id);
         }
+        $room = $this->room::withDeleted()->find($data->room_id);
+        if ($room == null) {
+            return return_not_record($data->room_id);
+        }
         $data_update = [
+            'modify_time' => now()->format('Ymdhis'),
+            'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+            'app_modifier' => $this->app_modifier,
+            'is_delete' => 0,
+        ];
+        $room_update = [
             'modify_time' => now()->format('Ymdhis'),
             'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
             'app_modifier' => $this->app_modifier,
@@ -2046,6 +1663,8 @@ class HISController extends Controller
         ];
         $data->fill($data_update);
         $data->save();
+        $room->fill($room_update);
+        $room->save();
         // Gọi event để xóa cache
         event(new DeleteCache($this->medi_stock_name));
         return redirect()->route('HIS.Desktop.Plugins.HisMediStock.api.medi_stock.index');

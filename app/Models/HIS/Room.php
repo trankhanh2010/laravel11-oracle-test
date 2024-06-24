@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Models\HIS;
-
+use App\Scopes\IsDeleteScope;
 use App\Traits\dinh_dang_ten_truong;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -17,6 +17,16 @@ class Room extends Model
     protected $guarded = [
         'id',
     ];
+    protected static function booted()
+    {
+        static::addGlobalScope(new IsDeleteScope);
+    }
+
+    /// Lấy ra bản ghi đã xóa mềm is_delete = 1
+    public static function withDeleted()
+    {
+        return with(new static)->newQueryWithoutScope(new IsDeleteScope)->where('is_delete', 1);
+    }
     public function getDefaultDrugStoreIdsAttribute($value)
     {
         if($value != null){

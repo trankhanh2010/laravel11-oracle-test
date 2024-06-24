@@ -34,18 +34,18 @@ class CreateRoomGroupRequest extends FormRequest
     public function messages()
     {
         return [
-            'group_code.string'     => config('keywords')['room_group']['group_code'].' phải là chuỗi string!',
-            'group_code.max'        => config('keywords')['room_group']['group_code'].' tối đa 50 kí tự!',
-            'group_code.exists'     => config('keywords')['room_group']['group_code'].' = '.$this->group_code.' không tồn tại!',
+            'group_code.string'     => config('keywords')['room_group']['group_code'].config('keywords')['error']['string'],
+            'group_code.max'        => config('keywords')['room_group']['group_code'].config('keywords')['error']['string_max'],
+            'group_code.exists'     => config('keywords')['room_group']['group_code'].config('keywords')['error']['exists'],
 
-            'room_group_code.required' => config('keywords')['room_group']['room_group_code'].' không được bỏ trống!',
-            'room_group_code.string'   => config('keywords')['room_group']['room_group_code'].' phải là chuỗi string!',
-            'room_group_code.max'      => config('keywords')['room_group']['room_group_code'].' tối đa 10 kí tự!',
-            'room_group_code.unique'   => config('keywords')['room_group']['room_group_code'].' = '. $this->room_group_code . ' đã tồn tại!',
+            'room_group_code.required' => config('keywords')['room_group']['room_group_code'].config('keywords')['error']['required'],
+            'room_group_code.string'   => config('keywords')['room_group']['room_group_code'].config('keywords')['error']['string'],
+            'room_group_code.max'      => config('keywords')['room_group']['room_group_code'].config('keywords')['error']['string_max'],
+            'room_group_code.unique'   => config('keywords')['room_group']['room_group_code'].config('keywords')['error']['unique'],
 
-            'room_group_name.required'  => config('keywords')['room_group']['room_group_name'].' không được bỏ trống!',
-            'room_group_name.string'    => config('keywords')['room_group']['room_group_name'].' phải là chuỗi string!',
-            'room_group_name.max'       => config('keywords')['room_group']['room_group_name'].' tối đa 200 kí tự!',
+            'room_group_name.required'  => config('keywords')['room_group']['room_group_name'].config('keywords')['error']['required'],
+            'room_group_name.string'    => config('keywords')['room_group']['room_group_name'].config('keywords')['error']['string'],
+            'room_group_name.max'       => config('keywords')['room_group']['room_group_name'].config('keywords')['error']['string_max'],
 
         ];
     }

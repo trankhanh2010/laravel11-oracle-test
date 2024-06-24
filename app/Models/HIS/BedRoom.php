@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
+use App\Scopes\IsDeleteScope;
 
 class BedRoom extends Model
 {
@@ -22,6 +23,16 @@ class BedRoom extends Model
     protected $guarded = [
         'id',
     ];
+    protected static function booted()
+    {
+        static::addGlobalScope(new IsDeleteScope);
+    }
+
+    /// Lấy ra bản ghi đã xóa mềm is_delete = 1
+    public static function withDeleted()
+    {
+        return with(new static)->newQueryWithoutScope(new IsDeleteScope)->where('is_delete', 1);
+    }
     // public function getTreatmentTypeIdsAttribute($value)
     // {
     //     if($value != null){

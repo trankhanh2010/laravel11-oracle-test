@@ -343,12 +343,23 @@ if (!function_exists('return_data_update_success')) {
 }
 
 if (!function_exists('return_data_delete_success')) {
-    function return_data_delete_success($data_return)
+    function return_data_delete_success()
     {
         return response()->json([
             'success' => true,
-            'data' => $data_return,
+            'message' => 'Xóa bản ghi thành công!'
         ], 200);
+
+    }
+}
+
+if (!function_exists('return_data_delete_fail')) {
+    function return_data_delete_fail()
+    {
+        return response()->json([
+            'success' => false,
+            'message' => 'Không thể xóa. Dữ liệu đã được sử dụng!'
+        ], 400);
 
     }
 }

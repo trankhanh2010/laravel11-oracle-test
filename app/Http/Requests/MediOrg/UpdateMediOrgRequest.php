@@ -100,37 +100,37 @@ class UpdateMediOrgRequest extends FormRequest
     public function messages()
     {
         return [
-            'medi_org_code.required'  => config('keywords')['medi_org']['medi_org_code'].' không được bỏ trống!',
-            'medi_org_code.string'    => config('keywords')['medi_org']['medi_org_code'].' phải là chuỗi string!',
-            'medi_org_code.max'       => config('keywords')['medi_org']['medi_org_code'].' tối đa 6 kí tự!',            
-            'medi_org_code.unique'    => config('keywords')['medi_org']['medi_org_code'].' = '.$this->medi_org_code.' đã tồn tại!',
+            'medi_org_code.required'  => config('keywords')['medi_org']['medi_org_code'].config('keywords')['error']['required'],
+            'medi_org_code.string'    => config('keywords')['medi_org']['medi_org_code'].config('keywords')['error']['string'],
+            'medi_org_code.max'       => config('keywords')['medi_org']['medi_org_code'].config('keywords')['error']['string_max'],            
+            'medi_org_code.unique'    => config('keywords')['medi_org']['medi_org_code'].config('keywords')['error']['unique'],
 
-            'medi_org_name.required'  => config('keywords')['medi_org']['medi_org_name'].' không được bỏ trống!',
-            'medi_org_name.string'    => config('keywords')['medi_org']['medi_org_name'].' phải là chuỗi string!',
-            'medi_org_name.max'       => config('keywords')['medi_org']['medi_org_name'].' tối đa 500 kí tự!',   
+            'medi_org_name.required'  => config('keywords')['medi_org']['medi_org_name'].config('keywords')['error']['required'],
+            'medi_org_name.string'    => config('keywords')['medi_org']['medi_org_name'].config('keywords')['error']['string'],
+            'medi_org_name.max'       => config('keywords')['medi_org']['medi_org_name'].config('keywords')['error']['string_max'],   
              
-            'province_code.string'  => config('keywords')['medi_org']['province_code'].' phải là chuỗi string!',
-            'province_code.max'     => config('keywords')['medi_org']['province_code'].' tối đa 4 kí tự!',      
+            'province_code.string'  => config('keywords')['medi_org']['province_code'].config('keywords')['error']['string'],
+            'province_code.max'     => config('keywords')['medi_org']['province_code'].config('keywords')['error']['string_max'],      
             'province_code.exists'  => config('keywords')['medi_org']['province_code'].' = '.$this->province_code.' không tồn tại!', 
 
-            'province_name.string'  => config('keywords')['medi_org']['province_name'].' phải là chuỗi string!',
-            'province_name.max'     => config('keywords')['medi_org']['province_name'].' tối đa 100 kí tự!',      
+            'province_name.string'  => config('keywords')['medi_org']['province_name'].config('keywords')['error']['string'],
+            'province_name.max'     => config('keywords')['medi_org']['province_name'].config('keywords')['error']['string_max'],      
             'province_name.exists'  => config('keywords')['medi_org']['province_name'].' = '.$this->province_name.' không trùng khớp với '.config('keywords')['medi_org']['province_code'].' = '. $this->province_code.'!', 
 
-            'district_code.string'  => config('keywords')['medi_org']['district_code'].' phải là chuỗi string!',
-            'district_code.max'     => config('keywords')['medi_org']['district_code'].' tối đa 4 kí tự!',      
+            'district_code.string'  => config('keywords')['medi_org']['district_code'].config('keywords')['error']['string'],
+            'district_code.max'     => config('keywords')['medi_org']['district_code'].config('keywords')['error']['string_max'],      
             'district_code.exists'  => config('keywords')['medi_org']['district_code'].' = '.$this->district_code.' không tồn tại'.' hoặc không thuộc '.$this->province_name.'!', 
 
-            'district_name.string'  => config('keywords')['medi_org']['district_name'].' phải là chuỗi string!',
-            'district_name.max'     => config('keywords')['medi_org']['district_name'].' tối đa 100 kí tự!',      
+            'district_name.string'  => config('keywords')['medi_org']['district_name'].config('keywords')['error']['string'],
+            'district_name.max'     => config('keywords')['medi_org']['district_name'].config('keywords')['error']['string_max'],      
             'district_name.exists'  => config('keywords')['medi_org']['district_name'].' = '.$this->district_name.' không trùng khớp với '.config('keywords')['medi_org']['district_code'].' = '. $this->district_code.' hoặc không thuộc '.$this->province_name.'!', 
 
-            'commune_code.string'  => config('keywords')['medi_org']['commune_code'].' phải là chuỗi string!',
-            'commune_code.max'     => config('keywords')['medi_org']['commune_code'].' tối đa 6 kí tự!',      
+            'commune_code.string'  => config('keywords')['medi_org']['commune_code'].config('keywords')['error']['string'],
+            'commune_code.max'     => config('keywords')['medi_org']['commune_code'].config('keywords')['error']['string_max'],      
             'commune_code.exists'  => config('keywords')['medi_org']['commune_code'].' = '.$this->commune_code.' không tồn tại'.' hoặc không thuộc '.$this->district_name.'!', 
 
-            'commune_name.string'  => config('keywords')['medi_org']['commune_name'].' phải là chuỗi string!',
-            'commune_name.max'     => config('keywords')['medi_org']['commune_name'].' tối đa 100 kí tự!',      
+            'commune_name.string'  => config('keywords')['medi_org']['commune_name'].config('keywords')['error']['string'],
+            'commune_name.max'     => config('keywords')['medi_org']['commune_name'].config('keywords')['error']['string_max'],      
             'commune_name.exists'  => config('keywords')['medi_org']['commune_name'].' = '.$this->commune_name.' không trùng khớp với '.config('keywords')['medi_org']['commune_code'].' = '. $this->commune_code.' hoặc không thuộc '.$this->district_name.'!', 
         ];
     }

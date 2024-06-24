@@ -116,125 +116,125 @@ class CreateBranchRequest extends FormRequest
     public function messages()
     {
         return [
-            'branch_code.required'  => config('keywords')['branch']['branch_code'].' không được bỏ trống!',
-            'branch_code.string'    => config('keywords')['branch']['branch_code'].' phải là chuỗi string!',
-            'branch_code.max'       => config('keywords')['branch']['branch_code'].' tối đa 20 kí tự!',
-            'branch_code.unique'    => config('keywords')['branch']['branch_code'].' = '. $this->branch_code . ' đã tồn tại!',
+            'branch_code.required'  => config('keywords')['branch']['branch_code'].config('keywords')['error']['required'],
+            'branch_code.string'    => config('keywords')['branch']['branch_code'].config('keywords')['error']['string'],
+            'branch_code.max'       => config('keywords')['branch']['branch_code'].config('keywords')['error']['string_max'],
+            'branch_code.unique'    => config('keywords')['branch']['branch_code'].config('keywords')['error']['unique'],
 
-            'branch_name.required'  => config('keywords')['branch']['branch_name'].' không được bỏ trống!',
-            'branch_name.string'    => config('keywords')['branch']['branch_name'].' phải là chuỗi string!',
-            'branch_name.max'       => config('keywords')['branch']['branch_name'].' tối đa 100 kí tự!',
+            'branch_name.required'  => config('keywords')['branch']['branch_name'].config('keywords')['error']['required'],
+            'branch_name.string'    => config('keywords')['branch']['branch_name'].config('keywords')['error']['string'],
+            'branch_name.max'       => config('keywords')['branch']['branch_name'].config('keywords')['error']['string_max'],
 
-            'hein_medi_org_code.string' => config('keywords')['branch']['hein_medi_org_code'].' phải là chuỗi string!',
-            'hein_medi_org_code.max'    => config('keywords')['branch']['hein_medi_org_code'].' tối đa 6 kí tự!',
+            'hein_medi_org_code.string' => config('keywords')['branch']['hein_medi_org_code'].config('keywords')['error']['string'],
+            'hein_medi_org_code.max'    => config('keywords')['branch']['hein_medi_org_code'].config('keywords')['error']['string_max'],
 
-            'accept_hein_medi_org_code.string'  => config('keywords')['branch']['accept_hein_medi_org_code'].' phải là chuỗi string!',
-            'accept_hein_medi_org_code.max'     => config('keywords')['branch']['accept_hein_medi_org_code'].' tối đa 4000 kí tự!',
+            'accept_hein_medi_org_code.string'  => config('keywords')['branch']['accept_hein_medi_org_code'].config('keywords')['error']['string'],
+            'accept_hein_medi_org_code.max'     => config('keywords')['branch']['accept_hein_medi_org_code'].config('keywords')['error']['string_max'],
 
-            'sys_medi_org_code.string'  => config('keywords')['branch']['sys_medi_org_code'].' phải là chuỗi string!',
-            'sys_medi_org_code.max'     => config('keywords')['branch']['sys_medi_org_code'].' tối đa 2000 kí tự!',
+            'sys_medi_org_code.string'  => config('keywords')['branch']['sys_medi_org_code'].config('keywords')['error']['string'],
+            'sys_medi_org_code.max'     => config('keywords')['branch']['sys_medi_org_code'].config('keywords')['error']['string_max'],
 
  
-            'province_code.string'  => config('keywords')['branch']['province_code'].' phải là chuỗi string!',
-            'province_code.max'     => config('keywords')['branch']['province_code'].' tối đa 4 kí tự!',      
+            'province_code.string'  => config('keywords')['branch']['province_code'].config('keywords')['error']['string'],
+            'province_code.max'     => config('keywords')['branch']['province_code'].config('keywords')['error']['string_max'],      
             'province_code.exists'  => config('keywords')['branch']['province_code'].' = '.$this->province_code.' không tồn tại!', 
 
-            'province_name.string'  => config('keywords')['branch']['province_name'].' phải là chuỗi string!',
-            'province_name.max'     => config('keywords')['branch']['province_name'].' tối đa 100 kí tự!',      
+            'province_name.string'  => config('keywords')['branch']['province_name'].config('keywords')['error']['string'],
+            'province_name.max'     => config('keywords')['branch']['province_name'].config('keywords')['error']['string_max'],      
             'province_name.exists'  => config('keywords')['branch']['province_name'].' = '.$this->province_name.' không trùng khớp với '.config('keywords')['medi_org']['province_code'].' = '. $this->province_code.'!', 
 
-            'district_code.string'  => config('keywords')['branch']['district_code'].' phải là chuỗi string!',
-            'district_code.max'     => config('keywords')['branch']['district_code'].' tối đa 4 kí tự!',      
+            'district_code.string'  => config('keywords')['branch']['district_code'].config('keywords')['error']['string'],
+            'district_code.max'     => config('keywords')['branch']['district_code'].config('keywords')['error']['string_max'],      
             'district_code.exists'  => config('keywords')['branch']['district_code'].' = '.$this->district_code.' không tồn tại'.' hoặc không thuộc '.$this->province_name.'!', 
 
-            'district_name.string'  => config('keywords')['branch']['district_name'].' phải là chuỗi string!',
-            'district_name.max'     => config('keywords')['branch']['district_name'].' tối đa 100 kí tự!',      
+            'district_name.string'  => config('keywords')['branch']['district_name'].config('keywords')['error']['string'],
+            'district_name.max'     => config('keywords')['branch']['district_name'].config('keywords')['error']['string_max'],      
             'district_name.exists'  => config('keywords')['branch']['district_name'].' = '.$this->district_name.' không trùng khớp với '.config('keywords')['medi_org']['district_code'].' = '. $this->district_code.' hoặc không thuộc '.$this->province_name.'!', 
 
-            'commune_code.string'  => config('keywords')['branch']['commune_code'].' phải là chuỗi string!',
-            'commune_code.max'     => config('keywords')['branch']['commune_code'].' tối đa 6 kí tự!',      
+            'commune_code.string'  => config('keywords')['branch']['commune_code'].config('keywords')['error']['string'],
+            'commune_code.max'     => config('keywords')['branch']['commune_code'].config('keywords')['error']['string_max'],      
             'commune_code.exists'  => config('keywords')['branch']['commune_code'].' = '.$this->commune_code.' không tồn tại'.' hoặc không thuộc '.$this->district_name.'!', 
 
-            'commune_name.string'  => config('keywords')['branch']['commune_name'].' phải là chuỗi string!',
-            'commune_name.max'     => config('keywords')['branch']['commune_name'].' tối đa 100 kí tự!',      
+            'commune_name.string'  => config('keywords')['branch']['commune_name'].config('keywords')['error']['string'],
+            'commune_name.max'     => config('keywords')['branch']['commune_name'].config('keywords')['error']['string_max'],      
             'commune_name.exists'  => config('keywords')['branch']['commune_name'].' = '.$this->commune_name.' không trùng khớp với '.config('keywords')['medi_org']['commune_code'].' = '. $this->commune_code.' hoặc không thuộc '.$this->district_name.'!', 
 
-            'address.string'    => config('keywords')['branch']['address'].' phải là chuỗi string!',
-            'address.max'       => config('keywords')['branch']['address'].' tối đa 500 kí tự!',
+            'address.string'    => config('keywords')['branch']['address'].config('keywords')['error']['string'],
+            'address.max'       => config('keywords')['branch']['address'].config('keywords')['error']['string_max'],
 
-            'parent_organization_name.string'   => config('keywords')['branch']['parent_organization_name'].' phải là chuỗi string!',
-            'parent_organization_name.max'      => config('keywords')['branch']['parent_organization_name'].' tối đa 100 kí tự!',
+            'parent_organization_name.string'   => config('keywords')['branch']['parent_organization_name'].config('keywords')['error']['string'],
+            'parent_organization_name.max'      => config('keywords')['branch']['parent_organization_name'].config('keywords')['error']['string_max'],
 
-            'hein_province_code.string'     => config('keywords')['branch']['hein_province_code'].' phải là chuỗi string!',
-            'hein_province_code.max'        => config('keywords')['branch']['hein_province_code'].' tối đa 2 kí tự!',
+            'hein_province_code.string'     => config('keywords')['branch']['hein_province_code'].config('keywords')['error']['string'],
+            'hein_province_code.max'        => config('keywords')['branch']['hein_province_code'].config('keywords')['error']['string_max'],
 
-            'hein_level_code.string'    => config('keywords')['branch']['hein_level_code'].' phải là chuỗi string!',
-            'hein_level_code.max'       => config('keywords')['branch']['hein_level_code'].' tối đa 1 kí tự!',
-            'hein_level_code.in'        => config('keywords')['branch']['hein_level_code'].' phải là 1,2,3 hoặc 4!', 
+            'hein_level_code.string'    => config('keywords')['branch']['hein_level_code'].config('keywords')['error']['string'],
+            'hein_level_code.max'       => config('keywords')['branch']['hein_level_code'].config('keywords')['error']['string_max'],
+            'hein_level_code.in'        => config('keywords')['branch']['hein_level_code'].config('keywords')['error']['in'], 
 
-            'do_not_allow_hein_level_code.string'   => config('keywords')['branch']['do_not_allow_hein_level_code'].' phải là chuỗi string!',
-            'do_not_allow_hein_level_code.max'      => config('keywords')['branch']['do_not_allow_hein_level_code'].' tối đa 100 kí tự!',
+            'do_not_allow_hein_level_code.string'   => config('keywords')['branch']['do_not_allow_hein_level_code'].config('keywords')['error']['string'],
+            'do_not_allow_hein_level_code.max'      => config('keywords')['branch']['do_not_allow_hein_level_code'].config('keywords')['error']['string_max'],
 
-            'tax_code.string'   => config('keywords')['branch']['tax_code'].' phải là chuỗi string!',
-            'tax_code.max'      => config('keywords')['branch']['tax_code'].' tối đa 20 kí tự!',
+            'tax_code.string'   => config('keywords')['branch']['tax_code'].config('keywords')['error']['string'],
+            'tax_code.max'      => config('keywords')['branch']['tax_code'].config('keywords')['error']['string_max'],
 
-            'account_number.string'   => config('keywords')['branch']['account_number'].' phải là chuỗi string!',
-            'account_number.max'      => config('keywords')['branch']['account_number'].' tối đa 50 kí tự!',
+            'account_number.string'   => config('keywords')['branch']['account_number'].config('keywords')['error']['string'],
+            'account_number.max'      => config('keywords')['branch']['account_number'].config('keywords')['error']['string_max'],
 
-            'phone.string'   => config('keywords')['branch']['phone'].' phải là chuỗi string!',
-            'phone.max'      => config('keywords')['branch']['phone'].' tối đa 20 kí tự!',
+            'phone.string'   => config('keywords')['branch']['phone'].config('keywords')['error']['string'],
+            'phone.max'      => config('keywords')['branch']['phone'].config('keywords')['error']['string_max'],
 
-            'representative.string'   => config('keywords')['branch']['representative'].' phải là chuỗi string!',
-            'representative.max'      => config('keywords')['branch']['representative'].' tối đa 200 kí tự!',
+            'representative.string'   => config('keywords')['branch']['representative'].config('keywords')['error']['string'],
+            'representative.max'      => config('keywords')['branch']['representative'].config('keywords')['error']['string_max'],
 
-            'position.string'   => config('keywords')['branch']['position'].' phải là chuỗi string!',
-            'position.max'      => config('keywords')['branch']['position'].' tối đa 100 kí tự!',
+            'position.string'   => config('keywords')['branch']['position'].config('keywords')['error']['string'],
+            'position.max'      => config('keywords')['branch']['position'].config('keywords')['error']['string_max'],
 
-            'representative_hein_code.string'   => config('keywords')['branch']['representative_hein_code'].' phải là chuỗi string!',
-            'representative_hein_code.max'      => config('keywords')['branch']['representative_hein_code'].' tối đa 20 kí tự!',
+            'representative_hein_code.string'   => config('keywords')['branch']['representative_hein_code'].config('keywords')['error']['string'],
+            'representative_hein_code.max'      => config('keywords')['branch']['representative_hein_code'].config('keywords')['error']['string_max'],
 
-            'auth_letter_issue_date.integer'   => config('keywords')['branch']['auth_letter_issue_date'].' phải là số nguyên!',
+            'auth_letter_issue_date.integer'   => config('keywords')['branch']['auth_letter_issue_date'].config('keywords')['error']['integer'],
 
-            'auth_letter_num.string'   => config('keywords')['branch']['auth_letter_num'].' phải là chuỗi string!',
-            'auth_letter_num.max'      => config('keywords')['branch']['auth_letter_num'].' tối đa 50 kí tự!',
+            'auth_letter_num.string'   => config('keywords')['branch']['auth_letter_num'].config('keywords')['error']['string'],
+            'auth_letter_num.max'      => config('keywords')['branch']['auth_letter_num'].config('keywords')['error']['string_max'],
 
-            'bank_info.string'   => config('keywords')['branch']['bank_info'].' phải là chuỗi string!',
-            'bank_info.max'      => config('keywords')['branch']['bank_info'].' tối đa 300 kí tự!',
+            'bank_info.string'   => config('keywords')['branch']['bank_info'].config('keywords')['error']['string'],
+            'bank_info.max'      => config('keywords')['branch']['bank_info'].config('keywords')['error']['string_max'],
 
-            'the_branch_code.string'   => config('keywords')['branch']['the_branch_code'].' phải là chuỗi string!',
-            'the_branch_code.max'      => config('keywords')['branch']['the_branch_code'].' tối đa 20 kí tự!',
+            'the_branch_code.string'   => config('keywords')['branch']['the_branch_code'].config('keywords')['error']['string'],
+            'the_branch_code.max'      => config('keywords')['branch']['the_branch_code'].config('keywords')['error']['string_max'],
 
-            'director_loginname.string'     => config('keywords')['branch']['director_loginname'].' phải là chuỗi string!',
-            'director_loginname.max'        => config('keywords')['branch']['director_loginname'].' tối đa 50 kí tự!', 
-            'director_loginname.exists'     => config('keywords')['branch']['director_loginname'].' = '.$this->director_loginname.' không tồn tại!',  
+            'director_loginname.string'     => config('keywords')['branch']['director_loginname'].config('keywords')['error']['string'],
+            'director_loginname.max'        => config('keywords')['branch']['director_loginname'].config('keywords')['error']['string_max'], 
+            'director_loginname.exists'     => config('keywords')['branch']['director_loginname'].config('keywords')['error']['exists'],  
 
-            'director_username.string'  => config('keywords')['branch']['director_username'].' phải là chuỗi string!',
-            'director_username.max'     => config('keywords')['branch']['director_username'].' tối đa 100 kí tự!', 
-            'director_username.exists'  => config('keywords')['branch']['director_username'].' = '.$this->director_username.' không tồn tại!',  
+            'director_username.string'  => config('keywords')['branch']['director_username'].config('keywords')['error']['string'],
+            'director_username.max'     => config('keywords')['branch']['director_username'].config('keywords')['error']['string_max'], 
+            'director_username.exists'  => config('keywords')['branch']['director_username'].config('keywords')['error']['exists'],  
 
-            'venture.integer'   => config('keywords')['branch']['venture'].' phải là số nguyên!',
-            'venture.in'        => config('keywords')['branch']['venture'].' phải là 1 hoặc 2!',  
+            'venture.integer'   => config('keywords')['branch']['venture'].config('keywords')['error']['integer'],
+            'venture.in'        => config('keywords')['branch']['venture'].config('keywords')['error']['in'],  
 
-            'type.integer'   => config('keywords')['branch']['type'].' phải là số nguyên!',
-            'type.in'        => config('keywords')['branch']['type'].' phải là 1 hoặc 2!',  
+            'type.integer'   => config('keywords')['branch']['type'].config('keywords')['error']['integer'],
+            'type.in'        => config('keywords')['branch']['type'].config('keywords')['error']['in'],  
 
-            'form.integer'   => config('keywords')['branch']['form'].' phải là số nguyên!',
-            'form.in'        => config('keywords')['branch']['form'].' phải là 1, 2, 3, 4, 5, 6, 7, 8, 9 hoặc 10!',  
+            'form.integer'   => config('keywords')['branch']['form'].config('keywords')['error']['integer'],
+            'form.in'        => config('keywords')['branch']['form'].config('keywords')['error']['in'],  
 
-            'bed_approved.integer'     => config('keywords')['branch']['bed_approved'].' phải là số nguyên!',
-            'bed_approved.min'         => config('keywords')['branch']['bed_approved'].' lớn hơn bằng 0!',
+            'bed_approved.integer'     => config('keywords')['branch']['bed_approved'].config('keywords')['error']['integer'],
+            'bed_approved.min'         => config('keywords')['branch']['bed_approved'].config('keywords')['error']['integer_min'],
 
-            'bed_actual.integer'     => config('keywords')['branch']['bed_actual'].' phải là số nguyên!',
-            'bed_actual.min'         => config('keywords')['branch']['bed_actual'].' lớn hơn bằng 0!',
+            'bed_actual.integer'     => config('keywords')['branch']['bed_actual'].config('keywords')['error']['integer'],
+            'bed_actual.min'         => config('keywords')['branch']['bed_actual'].config('keywords')['error']['integer_min'],
 
-            'bed_resuscitation.integer'     => config('keywords')['branch']['bed_resuscitation'].' phải là số nguyên!',
-            'bed_resuscitation.min'         => config('keywords')['branch']['bed_resuscitation'].' lớn hơn bằng 0!',
+            'bed_resuscitation.integer'     => config('keywords')['branch']['bed_resuscitation'].config('keywords')['error']['integer'],
+            'bed_resuscitation.min'         => config('keywords')['branch']['bed_resuscitation'].config('keywords')['error']['integer_min'],
 
-            'bed_resuscitation_emg.integer'     => config('keywords')['branch']['bed_resuscitation_emg'].' phải là số nguyên!',
-            'bed_resuscitation_emg.min'         => config('keywords')['branch']['bed_resuscitation_emg'].' lớn hơn bằng 0!',
+            'bed_resuscitation_emg.integer'     => config('keywords')['branch']['bed_resuscitation_emg'].config('keywords')['error']['integer'],
+            'bed_resuscitation_emg.min'         => config('keywords')['branch']['bed_resuscitation_emg'].config('keywords')['error']['integer_min'],
 
-            'is_use_branch_time.integer'   => config('keywords')['branch']['is_use_branch_time'].' phải là số nguyên!',
-            'is_use_branch_time.in'        => config('keywords')['branch']['is_use_branch_time'].' phải là 0 hoặc 1!',  
+            'is_use_branch_time.integer'   => config('keywords')['branch']['is_use_branch_time'].config('keywords')['error']['integer'],
+            'is_use_branch_time.in'        => config('keywords')['branch']['is_use_branch_time'].config('keywords')['error']['in'],  
 
         ];
     }

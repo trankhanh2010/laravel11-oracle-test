@@ -44,17 +44,17 @@ class UpdateSpecialityRequest extends FormRequest
     public function messages()
     {
         return [
-            'speciality_code.required'    => config('keywords')['speciality']['speciality_code'].' không được bỏ trống!',
-            'speciality_code.string'      => config('keywords')['speciality']['speciality_code'].' phải là chuỗi string!',
-            'speciality_code.max'         => config('keywords')['speciality']['speciality_code'].' tối đa 50 kí tự!',
-            'speciality_code.unique'      => config('keywords')['speciality']['speciality_code'].' = '. $this->speciality_code . ' đã tồn tại!',
+            'speciality_code.required'    => config('keywords')['speciality']['speciality_code'].config('keywords')['error']['required'],
+            'speciality_code.string'      => config('keywords')['speciality']['speciality_code'].config('keywords')['error']['string'],
+            'speciality_code.max'         => config('keywords')['speciality']['speciality_code'].config('keywords')['error']['string_max'],
+            'speciality_code.unique'      => config('keywords')['speciality']['speciality_code'].config('keywords')['error']['unique'],
 
-            'speciality_name.required'    => config('keywords')['speciality']['speciality_name'].' không được bỏ trống!',
-            'speciality_name.string'      => config('keywords')['speciality']['speciality_name'].' phải là chuỗi string!',
-            'speciality_name.max'         => config('keywords')['speciality']['speciality_name'].' tối đa 200 kí tự!',
+            'speciality_name.required'    => config('keywords')['speciality']['speciality_name'].config('keywords')['error']['required'],
+            'speciality_name.string'      => config('keywords')['speciality']['speciality_name'].config('keywords')['error']['string'],
+            'speciality_name.max'         => config('keywords')['speciality']['speciality_name'].config('keywords')['error']['string_max'],
 
-            'bhyt_limit.integer'     => config('keywords')['speciality']['speciality_name'].' phải là số nguyên!',
-            'bhyt_limit.min'         => config('keywords')['speciality']['speciality_name'].' lớn hơn bằng 0!',
+            'bhyt_limit.integer'     => config('keywords')['speciality']['speciality_name'].config('keywords')['error']['integer'],
+            'bhyt_limit.min'         => config('keywords')['speciality']['speciality_name'].config('keywords')['error']['integer_min'],
         ];
     }
 

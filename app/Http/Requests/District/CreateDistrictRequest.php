@@ -36,25 +36,25 @@ class CreateDistrictRequest extends FormRequest
     public function messages()
     {
         return [
-            'district_code.required'    => config('keywords')['district']['district_code'].' không được bỏ trống!',
-            'district_code.string'      => config('keywords')['district']['district_code'].' phải là chuỗi string!',
-            'district_code.max'         => config('keywords')['district']['district_code'].' tối đa 4 kí tự!',
-            'district_code.unique'      => config('keywords')['district']['district_code'].' = '. $this->district_code . ' đã tồn tại!',
+            'district_code.required'    => config('keywords')['district']['district_code'].config('keywords')['error']['required'],
+            'district_code.string'      => config('keywords')['district']['district_code'].config('keywords')['error']['string'],
+            'district_code.max'         => config('keywords')['district']['district_code'].config('keywords')['error']['string_max'],
+            'district_code.unique'      => config('keywords')['district']['district_code'].config('keywords')['error']['unique'],
 
-            'district_name.required'    => config('keywords')['district']['district_name'].' không được bỏ trống!',
-            'district_name.string'      => config('keywords')['district']['district_name'].' phải là chuỗi string!',
-            'district_name.max'         => config('keywords')['district']['district_name'].' tối đa 100 kí tự!',
+            'district_name.required'    => config('keywords')['district']['district_name'].config('keywords')['error']['required'],
+            'district_name.string'      => config('keywords')['district']['district_name'].config('keywords')['error']['string'],
+            'district_name.max'         => config('keywords')['district']['district_name'].config('keywords')['error']['string_max'],
 
-            'initial_name.string'       => config('keywords')['district']['initial_name'].' phải là chuỗi string!',
-            'initial_name.max'          => config('keywords')['district']['initial_name'].' tối đa 20 kí tự!',
-            'initial_name.in'           => config('keywords')['district']['initial_name'].' phải là Huyện, Quận, Thị Xã hoặc Thành Phố!',
+            'initial_name.string'       => config('keywords')['district']['initial_name'].config('keywords')['error']['string'],
+            'initial_name.max'          => config('keywords')['district']['initial_name'].config('keywords')['error']['string_max'],
+            'initial_name.in'           => config('keywords')['district']['initial_name'].config('keywords')['error']['in'],
 
-            'search_code.string'        => config('keywords')['district']['search_code'].' phải là chuỗi string!',
-            'search_code.max'           => config('keywords')['district']['search_code'].' tối đa 10 kí tự!',
+            'search_code.string'        => config('keywords')['district']['search_code'].config('keywords')['error']['string'],
+            'search_code.max'           => config('keywords')['district']['search_code'].config('keywords')['error']['string_max'],
 
-            'province_id.required'      => config('keywords')['district']['province_id'].' không được bỏ trống!',
-            'province_id.integer'       => config('keywords')['district']['province_id'].' phải là số nguyên!',
-            'province_id.exists'        => config('keywords')['district']['province_id'].' = '.$this->province_id.' không tồn tại!',
+            'province_id.required'      => config('keywords')['district']['province_id'].config('keywords')['error']['required'],
+            'province_id.integer'       => config('keywords')['district']['province_id'].config('keywords')['error']['integer'],
+            'province_id.exists'        => config('keywords')['district']['province_id'].config('keywords')['error']['exists'],
 
         ];
     }
