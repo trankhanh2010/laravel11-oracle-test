@@ -97,10 +97,10 @@ class UpdateExecuteRoomRequest extends FormRequest
             'test_type_code.exists'      => config('keywords')['execute_room']['test_type_code'].config('keywords')['error']['exists'],  
 
             'max_request_by_day.integer'     => config('keywords')['execute_room']['max_request_by_day'].config('keywords')['error']['integer'],
-            'max_request_by_day.max'         => config('keywords')['execute_room']['max_request_by_day'].config('keywords')['error']['integer_max'],
+            'max_request_by_day.min'         => config('keywords')['execute_room']['max_request_by_day'].config('keywords')['error']['integer_min'],
 
             'max_appointment_by_day.integer'     => config('keywords')['execute_room']['max_appointment_by_day'].config('keywords')['error']['integer'],
-            'max_appointment_by_day.max'         => config('keywords')['execute_room']['max_appointment_by_day'].config('keywords')['error']['integer_max'],
+            'max_appointment_by_day.min'         => config('keywords')['execute_room']['max_appointment_by_day'].config('keywords')['error']['integer_min'],
 
             'hold_order.integer'     => config('keywords')['execute_room']['hold_order'].config('keywords')['error']['integer'],
 
@@ -111,13 +111,13 @@ class UpdateExecuteRoomRequest extends FormRequest
             'address.max'         => config('keywords')['execute_room']['address'].config('keywords')['error']['string_max'],
 
             'max_req_bhyt_by_day.integer'     => config('keywords')['execute_room']['max_req_bhyt_by_day'].config('keywords')['error']['integer'],
-            'max_req_bhyt_by_day.max'         => config('keywords')['execute_room']['max_req_bhyt_by_day'].config('keywords')['error']['integer_max'],
+            'max_req_bhyt_by_day.min'         => config('keywords')['execute_room']['max_req_bhyt_by_day'].config('keywords')['error']['integer_min'],
 
             'max_patient_by_day.integer'     => config('keywords')['execute_room']['max_patient_by_day'].config('keywords')['error']['integer'],
-            'max_patient_by_day.max'         => config('keywords')['execute_room']['max_patient_by_day'].config('keywords')['error']['integer_max'],
+            'max_patient_by_day.min'         => config('keywords')['execute_room']['max_patient_by_day'].config('keywords')['error']['integer_min'],
 
             'average_eta.integer'     => config('keywords')['execute_room']['average_eta'].config('keywords')['error']['integer'],
-            'average_eta.max'         => config('keywords')['execute_room']['average_eta'].config('keywords')['error']['integer_max'],
+            'average_eta.min'         => config('keywords')['execute_room']['average_eta'].config('keywords')['error']['integer_min'],
 
             'responsible_loginname.string'      => config('keywords')['execute_room']['responsible_loginname'].config('keywords')['error']['string'],
             'responsible_loginname.max'         => config('keywords')['execute_room']['responsible_loginname'].config('keywords')['error']['string_max'],

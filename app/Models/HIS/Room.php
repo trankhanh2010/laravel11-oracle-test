@@ -17,16 +17,16 @@ class Room extends Model
     protected $guarded = [
         'id',
     ];
-    protected static function booted()
-    {
-        static::addGlobalScope(new IsDeleteScope);
-    }
+    // protected static function booted()
+    // {
+    //     static::addGlobalScope(new IsDeleteScope);
+    // }
 
-    /// Lấy ra bản ghi đã xóa mềm is_delete = 1
-    public static function withDeleted()
-    {
-        return with(new static)->newQueryWithoutScope(new IsDeleteScope)->where('is_delete', 1);
-    }
+    // /// Lấy ra bản ghi đã xóa mềm is_delete = 1
+    // public static function withDeleted()
+    // {
+    //     return with(new static)->newQueryWithoutScope(new IsDeleteScope)->where('is_delete', 1);
+    // }
     public function getDefaultDrugStoreIdsAttribute($value)
     {
         if($value != null){

@@ -20,16 +20,16 @@ class MediStock extends Model
         'patient_classifys',
     ];
     /// Chạy Scope để thêm điều kiện is_delete = 0 hoặc null
-    protected static function booted()
-    {
-        static::addGlobalScope(new IsDeleteScope);
-    }
+    // protected static function booted()
+    // {
+    //     static::addGlobalScope(new IsDeleteScope);
+    // }
 
-    /// Lấy ra bản ghi đã xóa mềm is_delete = 1
-    public static function withDeleted()
-    {
-        return with(new static)->newQueryWithoutScope(new IsDeleteScope)->where('is_delete', 1);
-    }
+    // /// Lấy ra bản ghi đã xóa mềm is_delete = 1
+    // public static function withDeleted()
+    // {
+    //     return with(new static)->newQueryWithoutScope(new IsDeleteScope)->where('is_delete', 1);
+    // }
     public function getPatientClassifysAttribute()
     {
         $data = PatientClassify::whereIn('id', explode(',', $this->patient_classify_ids))->get();

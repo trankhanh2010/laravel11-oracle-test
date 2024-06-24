@@ -9,6 +9,8 @@ use App\Http\Controllers\Api\CacheControllers\RoomTypeController;
 use App\Http\Controllers\Api\CacheControllers\RoomGroupController;
 use App\Http\Controllers\Api\CacheControllers\ScreenSaverModuleLinkController;
 use App\Http\Controllers\Api\CacheControllers\BedRoomController;
+use App\Http\Controllers\Api\CacheControllers\TestTypeController;
+use App\Http\Controllers\Api\CacheControllers\ExecuteRoomController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -58,15 +60,15 @@ Route::group([
     });
 
     /// Loại xét nghiệm
-    Route::get("v1/test-type", [HISController::class, "test_type"]);
+    Route::get("v1/test-type", [TestTypeController::class, "test_type"]);
 
     /// Phòng khám/cls/pttt
     Route::group(['as' => 'HIS.Desktop.Plugins.HisExecuteRoom'], function () {
-        Route::get("v1/execute-room", [HISController::class, "execute_room"]);
-        Route::get("v1/execute-room/{id}", [HISController::class, "execute_room"]);
-        Route::post("v1/execute-room", [HISController::class, "execute_room_create"]);        
-        Route::put("v1/execute-room/{id}", [HISController::class, "execute_room_update"]);       
-        Route::delete("v1/execute-room/{id}", [HISController::class, "execute_room_delete"]);  
+        Route::get("v1/execute-room", [ExecuteRoomController::class, "execute_room"]);
+        Route::get("v1/execute-room/{id}", [ExecuteRoomController::class, "execute_room"]);
+        Route::post("v1/execute-room", [ExecuteRoomController::class, "execute_room_create"]);        
+        Route::put("v1/execute-room/{id}", [ExecuteRoomController::class, "execute_room_update"]);       
+        Route::delete("v1/execute-room/{id}", [ExecuteRoomController::class, "execute_room_delete"]);  
     });
 
     /// Chuyên khoa
@@ -130,8 +132,6 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisMediStock'], function () {
         Route::get("v1/medi-stock", [HISController::class, "medi_stock"])->name('.api.medi_stock.index');
         Route::get("v1/medi-stock/{id}", [HISController::class, "medi_stock"]);
-        Route::get("v1/medi-stock/deleted", [HISController::class, "medi_stock"]);
-        Route::get("v1/medi-stock/restore/{id}", [HISController::class, "medi_stock_restore"]);
         Route::post("v1/medi-stock", [HISController::class, "medi_stock_create"]);        
         Route::put("v1/medi-stock/{id}", [HISController::class, "medi_stock_update"]);       
         Route::delete("v1/medi-stock/{id}", [HISController::class, "medi_stock_delete"]);
