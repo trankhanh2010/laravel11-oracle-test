@@ -19,6 +19,14 @@ use App\Http\Controllers\Api\CacheControllers\DistrictController;
 use App\Http\Controllers\Api\CacheControllers\OtherPaySourceController;
 use App\Http\Controllers\Api\CacheControllers\MilitaryRankController;
 use App\Http\Controllers\Api\CacheControllers\MediStockController;
+use App\Http\Controllers\Api\CacheControllers\ReceptionRoomController;
+use App\Http\Controllers\Api\CacheControllers\AreaController;
+use App\Http\Controllers\Api\CacheControllers\PatientClassifyController;
+use App\Http\Controllers\Api\CacheControllers\RefectoryController;
+use App\Http\Controllers\Api\CacheControllers\ExecuteGroupController;
+use App\Http\Controllers\Api\CacheControllers\CashierRoomController;
+use App\Http\Controllers\Api\CacheControllers\NationalController;
+use App\Http\Controllers\Api\CacheControllers\ProvinceController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -147,50 +155,65 @@ Route::group([
 
     /// Khu đón tiếp
     Route::group(['as' => 'HIS.Desktop.Plugins.HisReceptionRoom'], function () {
-        Route::get("v1/reception-room", [HISController::class, "reception_room"]);
-        Route::get("v1/reception-room/{id}", [HISController::class, "reception_room"]);
-        Route::post("v1/reception-room", [HISController::class, "reception_room_create"]);        
-        Route::put("v1/reception-room/{id}", [HISController::class, "reception_room_update"]);       
-        Route::delete("v1/reception-room/{id}", [HISController::class, "reception_room_delete"]);  
+        Route::get("v1/reception-room", [ReceptionRoomController::class, "reception_room"]);
+        Route::get("v1/reception-room/{id}", [ReceptionRoomController::class, "reception_room"]);
+        Route::post("v1/reception-room", [ReceptionRoomController::class, "reception_room_create"]);        
+        Route::put("v1/reception-room/{id}", [ReceptionRoomController::class, "reception_room_update"]);       
+        Route::delete("v1/reception-room/{id}", [ReceptionRoomController::class, "reception_room_delete"]);  
     });
-
+    
     /// Khu vực
     Route::group(['as' => 'HIS.Desktop.Plugins.HisArea'], function () {
-        Route::get("v1/area", [HISController::class, "area"]);
-        Route::get("v1/area/{id}", [HISController::class, "area"]);
-        Route::post("v1/area", [HISController::class, "area_create"]);
-        Route::put("v1/area/{id}", [HISController::class, "area_update"]);
-        Route::delete("v1/area/{id}", [HISController::class, "area_delete"]);
+        Route::get("v1/area", [AreaController::class, "area"]);
+        Route::get("v1/area/{id}", [AreaController::class, "area"]);
+        Route::post("v1/area", [AreaController::class, "area_create"]);
+        Route::put("v1/area/{id}", [AreaController::class, "area_update"]);
+        Route::delete("v1/area/{id}", [AreaController::class, "area_delete"]);
     });
 
     /// Nhà ăn
     Route::group(['as' => 'HIS.Desktop.Plugins.HisRefectory'], function () {
-        Route::get("v1/refectory", [HISController::class, "refectory"]);
-        Route::get("v1/refectory/{id}", [HISController::class, "refectory_id"]);
+        Route::get("v1/refectory", [RefectoryController::class, "refectory"]);
+        Route::get("v1/refectory/{id}", [RefectoryController::class, "refectory"]);
+        Route::post("v1/refectory", [RefectoryController::class, "refectory_create"]);
+        Route::put("v1/refectory/{id}", [RefectoryController::class, "refectory_update"]);
+        Route::delete("v1/refectory/{id}", [RefectoryController::class, "refectory_delete"]);
     });
 
     /// Nhóm thực hiện
     Route::group(['as' => 'HIS.Desktop.Plugins.HisExecuteGroup'], function () {
-        Route::get("v1/execute-group", [HISController::class, "execute_group"]);
-        Route::get("v1/execute-group/{id}", [HISController::class, "execute_group_id"]);
+        Route::get("v1/execute-group", [ExecuteGroupController::class, "execute_group"]);
+        Route::get("v1/execute-group/{id}", [ExecuteGroupController::class, "execute_group"]);
+        Route::post("v1/execute-group", [ExecuteGroupController::class, "execute_group_create"]);
+        Route::put("v1/execute-group/{id}", [ExecuteGroupController::class, "execute_group_update"]);
+        Route::delete("v1/execute-group/{id}", [ExecuteGroupController::class, "execute_group_delete"]);
     });
 
     /// Phòng thu ngân
     Route::group(['as' => 'HIS.Desktop.Plugins.HisCashierRoom'], function () {
-        Route::get("v1/cashier-room", [HISController::class, "cashier_room"]);
-        Route::get("v1/cashier-room/{id}", [HISController::class, "cashier_room"]);
+        Route::get("v1/cashier-room", [CashierRoomController::class, "cashier_room"]);
+        Route::get("v1/cashier-room/{id}", [CashierRoomController::class, "cashier_room"]);
+        Route::post("v1/cashier-room", [CashierRoomController::class, "cashier_room_create"]);
+        Route::put("v1/cashier-room/{id}", [CashierRoomController::class, "cashier_room_update"]);
+        Route::delete("v1/cashier-room/{id}", [CashierRoomController::class, "cashier_room_delete"]);
     });
 
     /// Quốc gia
     Route::group(['as' => 'SDA.Desktop.Plugins.SdaNational'], function () {
-        Route::get("v1/national", [HISController::class, "national"]);
-        Route::get("v1/national/{id}", [HISController::class, "national_id"]);
+        Route::get("v1/national", [NationalController::class, "national"]);
+        Route::get("v1/national/{id}", [NationalController::class, "national"]);
+        Route::post("v1/national", [NationalController::class, "national_create"]);
+        Route::put("v1/national/{id}", [NationalController::class, "national_update"]);
+        Route::delete("v1/national/{id}", [NationalController::class, "national_delete"]);
     });
-
+    
     /// Tỉnh
     Route::group(['as' => 'SDA.Desktop.Plugins.SdaProvince'], function () {
-        Route::get("v1/province", [HISController::class, "province"]);
-        Route::get("v1/province/{id}", [HISController::class, "province"]);
+        Route::get("v1/province", [ProvinceController::class, "province"]);
+        Route::get("v1/province/{id}", [ProvinceController::class, "province"]);
+        Route::post("v1/province", [ProvinceController::class, "province_create"]);
+        Route::put("v1/province/{id}", [ProvinceController::class, "province_update"]);
+        Route::delete("v1/province/{id}", [ProvinceController::class, "province_delete"]);
     });
 
     /// Tủ bệnh án
@@ -381,11 +404,11 @@ Route::group([
 
     /// Phân loại bệnh nhân
     Route::group(['as' => 'HIS.Desktop.Plugins.HisPatientClassify'], function () {
-        Route::get("v1/patient-classify", [HISController::class, "patient_classify"]);
-        Route::get("v1/patient-classify/{id}", [HISController::class, "patient_classify"]);
-        Route::post("v1/patient-classify", [HISController::class, "patient_classify_create"]);        
-        Route::put("v1/patient-classify/{id}", [HISController::class, "patient_classify_update"]);       
-        Route::delete("v1/patient-classify/{id}", [HISController::class, "patient_classify_delete"]);  
+        Route::get("v1/patient-classify", [PatientClassifyController::class, "patient_classify"]);
+        Route::get("v1/patient-classify/{id}", [PatientClassifyController::class, "patient_classify"]);
+        Route::post("v1/patient-classify", [PatientClassifyController::class, "patient_classify_create"]);        
+        Route::put("v1/patient-classify/{id}", [PatientClassifyController::class, "patient_classify_update"]);       
+        Route::delete("v1/patient-classify/{id}", [PatientClassifyController::class, "patient_classify_delete"]);  
     });
 
     /// Tôn giáo

@@ -12,7 +12,10 @@ class Refectory extends Model
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
     protected $table = 'HIS_Refectory';
-
+    public $timestamps = false;
+    protected $guarded = [
+        'id',
+    ];
     public function room()
     {
         return $this->belongsTo(Room::class, 'room_id');

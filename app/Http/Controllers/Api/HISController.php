@@ -13,13 +13,6 @@ use Illuminate\Support\Facades\Gate;
 // use Model
 
 use App\Models\HIS\Room;
-use App\Models\HIS\ReceptionRoom;
-use App\Models\HIS\Area;
-use App\Models\HIS\Refectory;
-use App\Models\HIS\ExecuteGroup;
-use App\Models\HIS\CashierRoom;
-use App\Models\SDA\National;
-use App\Models\SDA\Province;
 use App\Models\HIS\DataStore;
 use App\Models\HIS\ExecuteRole;
 use App\Models\SDA\Commune;
@@ -42,7 +35,6 @@ use App\Models\SDA\Ethnic;
 use App\Models\HIS\PatientType;
 use App\Models\HIS\PriorityType;
 use App\Models\HIS\Career;
-use App\Models\HIS\PatientClassify;
 use App\Models\SDA\Religion;
 use App\Models\HIS\ServiceUnit;
 use App\Models\HIS\ServiceType;
@@ -138,10 +130,8 @@ use App\Models\HIS\SereServTein;
 use App\Models\ACS\ModuleGroup;
 // use Request
 
-use App\Http\Requests\Area\CreateAreaRequest;
-use App\Http\Requests\Area\UpdateAreaRequest;
-use App\Http\Requests\PatientClassify\CreatePatientClassifyRequest;
-use App\Http\Requests\PatientClassify\UpdatePatientClassifyRequest;
+
+
 
 
 
@@ -454,13 +444,6 @@ class HISController extends Controller
 
         // Khởi tạo các model
         $this->room = new Room();
-        $this->reception_room = new ReceptionRoom();
-        $this->area = new Area();
-        $this->refectory = new Refectory();
-        $this->execute_group = new ExecuteGroup();
-        $this->cashier_room = new CashierRoom();
-        $this->national = new National();
-        $this->province = new Province();
         $this->data_store = new DataStore();
         $this->execute_role = new ExecuteRole();
         $this->commune = new Commune();
@@ -483,7 +466,6 @@ class HISController extends Controller
         $this->patient_type = new PatientType();
         $this->priority_type = new PriorityType();
         $this->career = new Career();
-        $this->patient_classify = new PatientClassify();
         $this->religion = new Religion();
         $this->service_unit = new ServiceUnit();
         $this->service_type = new ServiceType();
@@ -579,239 +561,9 @@ class HISController extends Controller
         $this->module_group = new ModuleGroup();
     }
  
- 
-
-    /// Military Rank
 
 
-    /// Medi Stock
 
-    /// Reception Room
-    public function reception_room($id = null)
-    {
-        if ($id == null) {
-            $name = $this->reception_room_name;
-            $param = [
-                'room.department',
-                'room.department.area',
-                'room.default_cashier_room',
-            ];
-        } else {
-            if (!is_numeric($id)) {
-                return return_id_error($id);
-            }
-            $data = $this->reception_room->find($id);
-            if ($data == null) {
-                return return_not_record($id);
-            }
-            $name = $this->reception_room_name . '_' . $id;
-            $param = [
-                'room.department',
-                'room.department.area',
-                'room.default_cashier_room',
-            ];
-        }
-        $data = get_cache_full($this->reception_room, $param, $name, $id, $this->time);
-        $count = $data->count();
-        $param_return = [
-            'start' => null,
-            'limit' => null,
-            'count' => $count
-        ];
-        return return_data_success($param_return, $data);
-    }
-
-    /// Area
-    public function area($id = null)
-    {
-        if ($id == null) {
-            $data = get_cache($this->area, $this->area_name, null, $this->time);
-        } else {
-            if (!is_numeric($id)) {
-                return return_id_error($id);
-            }
-            $data = $this->area->find($id);
-            if ($data == null) {
-                return return_not_record($id);
-            }
-            $data = get_cache($this->area, $this->area_name, $id, $this->time);
-        }
-        $count = $data->count();
-        $param_return = [
-            'start' => null,
-            'limit' => null,
-            'count' => $count
-        ];
-        return return_data_success($param_return, $data);
-    }
-
-    public function area_create(CreateAreaRequest $request)
-    {
-        $data = $this->area::create([
-            'create_time' => now()->format('Ymdhis'),
-            'modify_time' => now()->format('Ymdhis'),
-            'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
-            'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
-            'app_creator' => $this->app_creator,
-            'app_modifier' => $this->app_modifier,
-            'is_active' => 1,
-            'is_delete' => 0,
-            'area_code' => $request->area_code,
-            'area_name' => $request->area_name,
-            'department_id' => $request->department_id
-        ]);
-        // Gọi event để xóa cache
-        event(new DeleteCache($this->area_name));
-        return return_data_create_success($data);
-    }
-
-    public function area_update(UpdateAreaRequest $request, $id)
-    {
-        if (!is_numeric($id)) {
-            return return_id_error($id);
-        }
-        $data = $this->area->find($id);
-        if ($data == null) {
-            return return_not_record($id);
-        }
-        $data->update([
-            'modify_time' => now()->format('Ymdhis'),
-            'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
-            'app_modifier' => $this->app_modifier,
-            'area_code' => $request->area_code,
-            'area_name' => $request->area_name,
-            'department_id' => $request->department_id
-        ]);
-        // Gọi event để xóa cache
-        event(new DeleteCache($this->area_name));
-        return return_data_update_success($data);
-    }
-
-    public function area_delete(Request $request, $id)
-    {
-        if (!is_numeric($id)) {
-            return return_id_error($id);
-        }
-        $data = $this->area->find($id);
-        if ($data == null) {
-            return return_not_record($id);
-        }
-        $data->update([
-            'modify_time' => now()->format('Ymdhis'),
-            'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
-            'app_modifier' => $this->app_modifier,
-            'is_delete' => 1
-        ]);
-        // Gọi event để xóa cache
-        event(new DeleteCache($this->area_name));
-        return return_data_delete_success($data);
-    }
-    /// Refectory
-    public function refectory()
-    {
-        $param = [
-            'room:id,department_id',
-            'room.department:id,department_name'
-        ];
-        $data = get_cache_full($this->refectory, $param, $this->refectory_name, null, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    public function refectory_id($id)
-    {
-        $data = get_cache($this->refectory, $this->refectory_name, $id, $this->time);
-        $data1 = get_cache_1_1_1($this->refectory, "room.department", $this->refectory_name, $id, $this->time);
-        return response()->json(['data' => [
-            'refectory' => $data,
-            'department' => $data1,
-        ]], 200);
-    }
-
-    public function refectory_get_department($id)
-    {
-        $data = get_cache_1_1_1($this->refectory, "room.department", $this->refectory_name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    /// Execute Group
-    public function execute_group()
-    {
-        $data = get_cache($this->execute_group, $this->execute_group_name, null, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    public function execute_group_id($id)
-    {
-        $data = get_cache($this->execute_group, $this->execute_group_name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    /// Cashier Room
-    public function cashier_room($id = null)
-    {
-        if ($id == null) {
-            $name = $this->cashier_room_name;
-            $param = [
-                'room:id,department_id',
-                'room.department:id,department_name,department_code',
-                'room.department.area'
-            ];
-        } else {
-            $name = $this->cashier_room_name . '_' . $id;
-            $param = [
-                'room',
-                'room.department',
-                'room.department.area'
-            ];
-        }
-        $data = get_cache_full($this->cashier_room, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    /// National 
-    public function national()
-    {
-        $data = get_cache($this->national, $this->national_name, null, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    public function national_id($id)
-    {
-        $data = get_cache($this->national, $this->national_name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    /// Province
-    public function province($id = null)
-    {
-        if ($id == null) {
-            $name = $this->province_name;
-            $param = [
-                'national:id,national_name,national_code'
-            ];
-        } else {
-            if (!is_numeric($id)) {
-                return return_id_error($id);
-            }
-            $data = $this->province->find($id);
-            if ($data == null) {
-                return return_not_record($id);
-            }
-            $name = $this->province_name . '_' . $id;
-            $param = [
-                'national',
-                'districts'
-            ];
-        }
-        $data = get_cache_full($this->province, $param, $name, $id, $this->time);
-        $count = $data->count();
-        $param_return = [
-            'start' => null,
-            'limit' => null,
-            'count' => $count
-        ];
-        return return_data_success($param_return, $data);
-    }
 
 
     /// DataStore
@@ -1722,114 +1474,7 @@ class HISController extends Controller
         ]], 200);
     }
 
-    /// Patient Classify
-    public function patient_classify($id = null)
-    {
-        if ($id == null) {
-            $name = $this->patient_classify_name;
-            $param = [
-                'patient_type',
-                'other_pay_source',
-            ];
-        } else {
-            if (!is_numeric($id)) {
-                return return_id_error($id);
-            }
-            $data = $this->patient_classify->find($id);
-            if ($data == null) {
-                return return_not_record($id);
-            }
-            $name = $this->patient_classify_name . '_' . $id;
-            $param = [
-                'patient_type',
-                'other_pay_source',
-            ];
-        }
-        $data = get_cache_full($this->patient_classify, $param, $name, $id, $this->time);
-        $count = $data->count();
-        $param_return = [
-            'start' => null,
-            'limit' => null,
-            'count' => $count
-        ];
-        return return_data_success($param_return, $data);
-    }
-    public function patient_classify_create(CreatePatientClassifyRequest $request)
-    {
-        $data = $this->patient_classify::create([
-            'create_time' => now()->format('Ymdhis'),
-            'modify_time' => now()->format('Ymdhis'),
-            'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
-            'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
-            'app_creator' => $this->app_creator,
-            'app_modifier' => $this->app_modifier,
-            'is_active' => 1,
-            'is_delete' => 0,
-            'patient_classify_code' => $request->patient_classify_code,
-            'patient_classify_name' => $request->patient_classify_name,
-            'display_color' => $request->display_color,
-            'patient_type_id' => $request->patient_type_id,
-            'other_pay_source_id' => $request->other_pay_source_id,
-            'bhyt_whitelist_ids' => $request->bhyt_whitelist_ids,
-            'military_rank_ids' => $request->military_rank_ids,
-            'is_police' => $request->is_police
 
-        ]);
-        // Gọi event để xóa cache
-        event(new DeleteCache($this->patient_classify_name));
-        return return_data_create_success($data);
-    }
-
-    public function patient_classify_update(UpdatePatientClassifyRequest $request, $id)
-    {
-        if (!is_numeric($id)) {
-            return return_id_error($id);
-        }
-        $data = $this->patient_classify->find($id);
-        if ($data == null) {
-            return return_not_record($id);
-        }
-        $data_update = [
-            'modify_time' => now()->format('Ymdhis'),
-            'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
-            'app_modifier' => $this->app_modifier,
-            'is_active' => 1,
-            'is_delete' => 0,
-            'patient_classify_code' => $request->patient_classify_code,
-            'patient_classify_name' => $request->patient_classify_name,
-            'display_color' => $request->display_color,
-            'patient_type_id' => $request->patient_type_id,
-            'other_pay_source_id' => $request->other_pay_source_id,
-            'bhyt_whitelist_ids' => $request->bhyt_whitelist_ids,
-            'military_rank_ids' => $request->military_rank_ids,
-            'is_police' => $request->is_police
-        ];
-        $data->fill($data_update);
-        $data->save();
-        // Gọi event để xóa cache
-        event(new DeleteCache($this->patient_classify_name));
-        return return_data_update_success($data);
-    }
-
-    public function patient_classify_delete(Request $request, $id)
-    {
-        if (!is_numeric($id)) {
-            return return_id_error($id);
-        }
-        $data = $this->patient_classify->find($id);
-        if ($data == null) {
-            return return_not_record($id);
-        }
-        $data->update([
-            'modify_time' => now()->format('Ymdhis'),
-            'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
-            'app_modifier' => $this->app_modifier,
-            'is_delete' => 1
-        ]);
-        // Gọi event để xóa cache
-        event(new DeleteCache($this->patient_classify_name));
-        return return_data_delete_success($data);
-    }
     /// Religion
     public function religion()
     {

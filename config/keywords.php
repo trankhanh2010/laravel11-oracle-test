@@ -262,5 +262,54 @@ return [
         'is_auto_execute' => 'Trường tự động xuất',
         
     ],
-    
+    // Khu tiếp đón
+    'reception_room' => [
+        'reception_room_code' => 'Mã khu tiếp đón',
+        'reception_room_name' => 'Tên khu tiếp đón',
+        'department_id' => 'Id khoa phòng',
+        'area_id' => 'Id khu vực',
+        'patient_type_ids' => 'Id các đối tượng cho phép tiếp đón',
+        'default_cashier_room_id' => 'Id phòng thu ngân',
+        'deposit_account_book_id' => 'Id sổ tạm ứng',
+        'screen_saver_module_link' => 'Link module màn hình chờ',
+        'is_pause' => 'Trường tạm dừng',
+        'is_allow_no_icd' => 'Trường không cho phép nhập Icd',
+        'is_restrict_execute_room' => 'Trường giới hạn phòng thực hiện',
+        'room_type_id' => 'Id loại phòng',
+    ],
+    // Nhà ăn
+    'refectory' => [
+        'refectory_code' => 'Mã nhà ăn',
+        'refectory_name' => 'Tên nhà ăn',
+        'department_id' => 'Id khoa phòng',
+        'room_type_id' => 'Id loại phòng',
+    ],
+    // Nhóm thực hiện
+    'execute_group' => [
+        'execute_group_code' => 'Mã nhóm thực hiện',
+        'execute_group_name' => 'Tên nhóm thực hiện',
+    ],
+    // Phòng thu ngân
+    'cashier_room' => [
+        'cashier_room_code' => 'Mã phòng thu ngân',
+        'cashier_room_name' => 'Tên phòng thu ngân',
+        'department_id' => 'Id khoa phòng',
+        'room_type_id' => 'Id loại phòng',
+        'area_id' => 'Id khu vực',
+        'einvoice_room_code' => 'Mã địa điểm',
+        'einvoice_room_name' => 'Tên địa điểm',
+    ],
+    // Quốc gia
+    'national' => [
+        'nationnal_code' => 'Mã quốc gia',
+        'national_name' => 'Tên quốc gia',
+        'mps_national_code' => 'Mã quốc gia theo bộ công an',
+    ],
+    // Tỉnh
+    'province' => [
+        'province_code' => 'Mã tỉnh',
+        'province_name' => 'Tên tỉnh',
+        'national_id' => 'Id quốc gia',
+        'search_code' => 'Tên viết tắt',
+    ],
 ];

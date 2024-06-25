@@ -25,7 +25,7 @@ class ExecuteRoomController extends BaseApiCacheController
             $param = [
                 'room',
                 'room.department:id,department_name,department_code',
-                'room.department.area:id,area_name,area_code',
+                'room.area:id,area_name,area_code',
                 'room.room_group:id,room_group_name,room_group_code',
                 'room.room_type:id,room_type_name,room_type_code',
                 'room.speciality:id,speciality_name,speciality_code',
@@ -47,7 +47,7 @@ class ExecuteRoomController extends BaseApiCacheController
             $param = [
                 'room',
                 'room.department',
-                'room.department.area',
+                'room.area',
                 'room.room_group',
                 'room.room_type',
                 'room.speciality',

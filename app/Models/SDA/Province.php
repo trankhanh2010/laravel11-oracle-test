@@ -11,8 +11,9 @@ class Province extends Model
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_sda'; 
     protected $table = 'SDA_Province';
-    protected $fillable = [
-        'national_id'
+    public $timestamps = false;
+    protected $guarded = [
+        'id',
     ];
     public function national()
     {

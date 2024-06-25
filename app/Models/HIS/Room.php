@@ -115,4 +115,8 @@ class Room extends Model
     {
         return $this->belongsTo(RoomGroup::class);
     }
+    public function area()
+    {
+        return $this->belongsTo(Area::class);
+    }
 }
