@@ -11,6 +11,14 @@ use App\Http\Controllers\Api\CacheControllers\ScreenSaverModuleLinkController;
 use App\Http\Controllers\Api\CacheControllers\BedRoomController;
 use App\Http\Controllers\Api\CacheControllers\TestTypeController;
 use App\Http\Controllers\Api\CacheControllers\ExecuteRoomController;
+use App\Http\Controllers\Api\CacheControllers\SpecialityController;
+use App\Http\Controllers\Api\CacheControllers\TreatmentTypeController;
+use App\Http\Controllers\Api\CacheControllers\MediOrgController;
+use App\Http\Controllers\Api\CacheControllers\BranchController;
+use App\Http\Controllers\Api\CacheControllers\DistrictController;
+use App\Http\Controllers\Api\CacheControllers\OtherPaySourceController;
+use App\Http\Controllers\Api\CacheControllers\MilitaryRankController;
+use App\Http\Controllers\Api\CacheControllers\MediStockController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -73,68 +81,68 @@ Route::group([
 
     /// Chuyên khoa
     Route::group(['as' => 'HIS.Desktop.Plugins.HisSpeciality'], function () {
-        Route::get("v1/speciality", [HISController::class, "speciality"]);
-        Route::get("v1/speciality/{id}", [HISController::class, "speciality"]);
-        Route::post("v1/speciality", [HISController::class, "speciality_create"]);        
-        Route::put("v1/speciality/{id}", [HISController::class, "speciality_update"]);       
-        Route::delete("v1/speciality/{id}", [HISController::class, "speciality_delete"]);  
+        Route::get("v1/speciality", [SpecialityController::class, "speciality"]);
+        Route::get("v1/speciality/{id}", [SpecialityController::class, "speciality"]);
+        Route::post("v1/speciality", [SpecialityController::class, "speciality_create"]);        
+        Route::put("v1/speciality/{id}", [SpecialityController::class, "speciality_update"]);       
+        Route::delete("v1/speciality/{id}", [SpecialityController::class, "speciality_delete"]);  
     });
 
     /// Diện điều trị
     Route::group(['as' => 'HIS.Desktop.Plugins.TreatmentType'], function () {
-        Route::get("v1/treatment-type", [HISController::class, "treatment_type"]);
-        Route::get("v1/treatment-type/{id}", [HISController::class, "treatment_type"]);
-        Route::post("v1/treatment-type", [HISController::class, "treatment_type_create"]);        
-        Route::put("v1/treatment-type/{id}", [HISController::class, "treatment_type_update"]);       
-        Route::delete("v1/treatment-type/{id}", [HISController::class, "treatment_type_delete"]);  
+        Route::get("v1/treatment-type", [TreatmentTypeController::class, "treatment_type"]);
+        Route::get("v1/treatment-type/{id}", [TreatmentTypeController::class, "treatment_type"]);
+        Route::post("v1/treatment-type", [TreatmentTypeController::class, "treatment_type_create"]);        
+        Route::put("v1/treatment-type/{id}", [TreatmentTypeController::class, "treatment_type_update"]);       
+        Route::delete("v1/treatment-type/{id}", [TreatmentTypeController::class, "treatment_type_delete"]);  
     });
 
     /// Cơ sở khám chữa bệnh ban đầu
     Route::group(['as' => 'HIS.Desktop.Plugins.HisMediOrg'], function () {
-        Route::get("v1/medi-org", [HISController::class, "medi_org"]);
-        Route::get("v1/medi-org/{id}", [HISController::class, "medi_org"]);
-        Route::post("v1/medi-org", [HISController::class, "medi_org_create"]);        
-        Route::put("v1/medi-org/{id}", [HISController::class, "medi_org_update"]);       
-        Route::delete("v1/medi-org/{id}", [HISController::class, "medi_org_delete"]);  
+        Route::get("v1/medi-org", [MediOrgController::class, "medi_org"]);
+        Route::get("v1/medi-org/{id}", [MediOrgController::class, "medi_org"]);
+        Route::post("v1/medi-org", [MediOrgController::class, "medi_org_create"]);        
+        Route::put("v1/medi-org/{id}", [MediOrgController::class, "medi_org_update"]);       
+        Route::delete("v1/medi-org/{id}", [MediOrgController::class, "medi_org_delete"]);  
     });
 
     /// Cơ sở/Xã phường
     Route::group(['as' => 'HIS.Desktop.Plugins.HisBranch'], function () {
-        Route::get("v1/branch", [HISController::class, "branch"]);
-        Route::get("v1/branch/{id}", [HISController::class, "branch"]);
-        Route::post("v1/branch", [HISController::class, "branch_create"]);        
-        Route::put("v1/branch/{id}", [HISController::class, "branch_update"]);       
-        Route::delete("v1/branch/{id}", [HISController::class, "branch_delete"]);  
+        Route::get("v1/branch", [BranchController::class, "branch"]);
+        Route::get("v1/branch/{id}", [BranchController::class, "branch"]);
+        Route::post("v1/branch", [BranchController::class, "branch_create"]);        
+        Route::put("v1/branch/{id}", [BranchController::class, "branch_update"]);       
+        Route::delete("v1/branch/{id}", [BranchController::class, "branch_delete"]);  
     });
 
     /// Huyện
     Route::group(['as' => 'SDA.Desktop.Plugins.SdaDistrict'], function () {
-        Route::get("v1/district", [HISController::class, "district"]);
-        Route::get("v1/district/{id}", [HISController::class, "district"]);
-        Route::post("v1/district", [HISController::class, "district_create"]);        
-        Route::put("v1/district/{id}", [HISController::class, "district_update"]);       
-        Route::delete("v1/district/{id}", [HISController::class, "district_delete"]);  
+        Route::get("v1/district", [DistrictController::class, "district"]);
+        Route::get("v1/district/{id}", [DistrictController::class, "district"]);
+        Route::post("v1/district", [DistrictController::class, "district_create"]);        
+        Route::put("v1/district/{id}", [DistrictController::class, "district_update"]);       
+        Route::delete("v1/district/{id}", [DistrictController::class, "district_delete"]);  
     });    
 
     /// Nguồn chi trả khác
     Route::group(['as' => 'HIS.Desktop.Plugins.HisOtherPaySource'], function () {
-        Route::get("v1/other-pay-source", [HISController::class, "other_pay_source"]);
-        Route::get("v1/other-pay-source/{id}", [HISController::class, "other_pay_source"]);
-        Route::post("v1/other-pay-source", [HISController::class, "other_pay_source_create"]);        
-        Route::put("v1/other-pay-source/{id}", [HISController::class, "other_pay_source_update"]);       
-        Route::delete("v1/other-pay-source/{id}", [HISController::class, "other_pay_source_delete"]);  
+        Route::get("v1/other-pay-source", [OtherPaySourceController::class, "other_pay_source"]);
+        Route::get("v1/other-pay-source/{id}", [OtherPaySourceController::class, "other_pay_source"]);
+        Route::post("v1/other-pay-source", [OtherPaySourceController::class, "other_pay_source_create"]);        
+        Route::put("v1/other-pay-source/{id}", [OtherPaySourceController::class, "other_pay_source_update"]);       
+        Route::delete("v1/other-pay-source/{id}", [OtherPaySourceController::class, "other_pay_source_delete"]);  
     });
 
     /// Quân hàm
-    Route::get("v1/military-rank", [HISController::class, "military_rank"]);
+    Route::get("v1/military-rank", [MilitaryRankController::class, "military_rank"]);
 
     /// Kho
     Route::group(['as' => 'HIS.Desktop.Plugins.HisMediStock'], function () {
-        Route::get("v1/medi-stock", [HISController::class, "medi_stock"])->name('.api.medi_stock.index');
-        Route::get("v1/medi-stock/{id}", [HISController::class, "medi_stock"]);
-        Route::post("v1/medi-stock", [HISController::class, "medi_stock_create"]);        
-        Route::put("v1/medi-stock/{id}", [HISController::class, "medi_stock_update"]);       
-        Route::delete("v1/medi-stock/{id}", [HISController::class, "medi_stock_delete"]);
+        Route::get("v1/medi-stock", [MediStockController::class, "medi_stock"])->name('.api.medi_stock.index');
+        Route::get("v1/medi-stock/{id}", [MediStockController::class, "medi_stock"]);
+        Route::post("v1/medi-stock", [MediStockController::class, "medi_stock_create"]);        
+        Route::put("v1/medi-stock/{id}", [MediStockController::class, "medi_stock_update"]);       
+        Route::delete("v1/medi-stock/{id}", [MediStockController::class, "medi_stock_delete"]);
     });
 
     /// Khu đón tiếp

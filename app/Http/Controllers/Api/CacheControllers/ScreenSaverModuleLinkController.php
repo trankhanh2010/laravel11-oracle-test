@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api\CacheControllers;
 
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
-use App\Http\Controllers\Controller;
 use App\Models\ACS\Module;
 use Illuminate\Http\Request;
 

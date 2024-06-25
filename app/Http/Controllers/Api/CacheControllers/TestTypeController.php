@@ -2,9 +2,7 @@
 
 namespace App\Http\Controllers\Api\CacheControllers;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Events\Cache\DeleteCache;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
 use App\Models\HIS\TestType;
 

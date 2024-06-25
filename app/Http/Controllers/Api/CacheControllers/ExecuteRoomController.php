@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Api\CacheControllers;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\HIS\ExecuteRoom;
 use App\Events\Cache\DeleteCache;
