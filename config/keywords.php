@@ -324,4 +324,27 @@ return [
         'treatment_end_type_ids' => 'Danh sách id loại kết thúc điều trị',
         'treatment_type_ids' => 'Danh sách id điện điều trị',
     ],
+    // Vai trò thực hiện
+    'execute_role' => [
+        'execute_role_code' => 'Mã vai trò thực hiện',
+        'execute_role_name' => 'Tên vai trò thực hiện',
+        'is_title' => 'Trường là chức danh',
+        'is_surgry' => 'Trường là vai trò dùng trong PTTT',
+        'is_stock' => 'Trường là vai trò dược',
+        'is_position' => 'Trường là chức vụ',
+        'is_surg_main' => 'Trường là phẫu thuật viên chính',
+        'is_subclinical' => 'Trường là kỹ thuật viên',
+        'is_subclinical_result' => 'Trường là người đọc kết quả',
+        'allow_simultaneity' => 'Trường không chặn thực hiện cùng lúc',
+        'is_single_in_ekip' => 'Trường chỉ cho phép 1 người trong kíp thực hiện',
+        'is_disable_in_ekip' => 'Trường không hiển thị ở kíp thực hiện'
+    ],
+    // Xã
+    'commune' => [
+        'commune_code' => 'Mã',
+        'commune_name' => 'Tên',
+        'search_code' => 'Tên viết tắt',
+        'initial_name' => 'Tên đơn vị',
+        'district_id' => 'Id quận / huyện',
+    ],
 ];

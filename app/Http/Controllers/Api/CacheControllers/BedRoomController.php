@@ -20,7 +20,7 @@ class BedRoomController extends BaseApiCacheController
     public function bed_room($id = null)
     {
         if ($id == null) {
-            $name = $this->bed_room_name;
+            $name = $this->bed_room_name.'_'.$this->patient_type_name;
             $param = [
                 'room:id,department_id,area_id,speciality_id,default_cashier_room_id,default_instr_patient_type_id',
                 'room.department:id,department_name,department_code',
@@ -37,7 +37,7 @@ class BedRoomController extends BaseApiCacheController
                 if ($data == null) {
                     return return_not_record($id);
                 }
-            $name = $this->bed_room_name . '_' . $id;
+            $name =  $this->bed_room_name.'_'.$this->patient_type_name.'_'. $id;
             $param = [
                 'room',
                 'room.department',

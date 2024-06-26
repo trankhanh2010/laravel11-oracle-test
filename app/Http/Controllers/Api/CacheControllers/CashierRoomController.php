@@ -28,6 +28,13 @@ class CashierRoomController extends BaseApiCacheController
                 'room.area'
             ];
         } else {
+            if (!is_numeric($id)) {
+                return return_id_error($id);
+            }
+            $data = $this->cashier_room->find($id);
+            if ($data == null) {
+                return return_not_record($id);
+            }
             $name = $this->cashier_room_name . '_' . $id;
             $param = [
                 'room',

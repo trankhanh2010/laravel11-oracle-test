@@ -12,7 +12,10 @@ class ExecuteRole extends Model
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
     protected $table = 'HIS_Execute_Role';
-
+    protected $guarded = [
+        'id',
+    ];
+    public $timestamps = false;
     public function employees()
     {
         return $this->belongsToMany(Employee::class, ExecuteRoleUser::class, 'execute_role_id', 'loginname','id','loginname');

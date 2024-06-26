@@ -13,8 +13,6 @@ use Illuminate\Support\Facades\Gate;
 // use Model
 
 use App\Models\HIS\Room;
-use App\Models\HIS\ExecuteRole;
-use App\Models\SDA\Commune;
 use App\Models\HIS\Service;
 use App\Models\HIS\ServicePaty;
 use App\Models\HIS\ServiceMachine;
@@ -443,8 +441,6 @@ class HISController extends Controller
 
         // Khởi tạo các model
         $this->room = new Room();
-        $this->execute_role = new ExecuteRole();
-        $this->commune = new Commune();
         $this->service = new Service();
         $this->service_paty = new ServicePaty();
         $this->service_machine = new ServiceMachine();
@@ -564,108 +560,10 @@ class HISController extends Controller
 
 
 
-    /// DataStore
 
-    /// ExecuteRole
-    public function execute_role($id = null)
-    {
-        if ($id == null) {
-            $name = $this->execute_role_name;
-            $param = [
-                'debate_ekip_users:id,debate_id,loginname,username,execute_role_id,department_id',
-                'debate_ekip_users.execute_role:id,execute_role_name,execute_role_code',
-                'debate_ekip_users.department:id,department_name,department_code',
-                'debate_invite_users:id,debate_id,loginname,username,execute_role_id',
-                'debate_invite_users.execute_role:id,execute_role_name,execute_role_code',
-                'debate_users:id,debate_id,loginname,username,execute_role_id',
-                'debate_users.execute_role:id,execute_role_name,execute_role_code',
-                'ekip_plan_users:id,execute_role_id,loginname,username',
-                'ekip_temp_users:id,execute_role_id,loginname,username',
-                'execute_role_users:id,execute_role_id,loginname',
-                'exp_mest_users:id,execute_role_id,loginname,username',
-                'imp_mest_users:id,execute_role_id,loginname,username',
-                'imp_user_temp_dts:id,execute_role_id,loginname,username',
-                'mest_inve_users:id,execute_role_id,loginname,username',
-                'remunerations:id,execute_role_id,service_id,price,execute_loginname,execute_username',
-                'surg_remu_details:id,execute_role_id,group_code,price,surg_remuneration_id',
-                'user_group_temp_dts:id,execute_role_id,group_code,user_group_temp_id,loginname,username,description'
-            ];
-        } else {
-            $name = $this->execute_role_name . '_' . $id;
-            $param = [
-                'debate_ekip_users:id,debate_id,loginname,username,execute_role_id,department_id',
-                'debate_ekip_users.execute_role:id,execute_role_name,execute_role_code',
-                'debate_ekip_users.department:id,department_name,department_code',
-                'debate_invite_users:id,debate_id,loginname,username,execute_role_id',
-                'debate_invite_users.execute_role:id,execute_role_name,execute_role_code',
-                'debate_users:id,debate_id,loginname,username,execute_role_id',
-                'debate_users.execute_role:id,execute_role_name,execute_role_code',
-                'ekip_plan_users:id,execute_role_id,loginname,username',
-                'ekip_temp_users:id,execute_role_id,loginname,username',
-                'execute_role_users:id,execute_role_id,loginname',
-                'exp_mest_users:id,execute_role_id,loginname,username',
-                'imp_mest_users:id,execute_role_id,loginname,username',
-                'imp_user_temp_dts:id,execute_role_id,loginname,username',
-                'mest_inve_users:id,execute_role_id,loginname,username',
-                'remunerations:id,execute_role_id,service_id,price,execute_loginname,execute_username',
-                'surg_remu_details:id,execute_role_id,group_code,price,surg_remuneration_id',
-                'user_group_temp_dts:id,execute_role_id,group_code,user_group_temp_id,loginname,username,description'
-            ];
-        }
-        $select = [
-            'id',
-            'create_time',
-            'modify_time',
-            'creator',
-            'modifier',
-            'app_creator',
-            'app_modifier',
-            'is_active',
-            'is_delete',
-            'execute_role_code',
-            'execute_role_name',
-            'is_surg_main',
-            'is_surgry',
-            'is_stock',
-            'is_position',
-            'is_title',
-            'allow_simultaneity'
-        ];
-        $data = get_cache_full_select($this->execute_role, $param, $select, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
+
 
     /// Commune
-    public function commune($id = null)
-    {
-
-        if ($id == null) {
-            $name = $this->commune_name;
-            $param = [
-                'district:id,district_name,district_code'
-            ];
-        } else {
-            if (!is_numeric($id)) {
-                return return_id_error($id);
-            }
-            $data = $this->commune->find($id);
-            if ($data == null) {
-                return return_not_record($id);
-            }
-            $name = $this->commune_name . '_' . $id;
-            $param = [
-                'district'
-            ];
-        }
-        $data = get_cache_full($this->commune, $param, $name, $id, $this->time);
-        $count = $data->count();
-        $param_return = [
-            'start' => null,
-            'limit' => null,
-            'count' => $count
-        ];
-        return return_data_success($param_return, $data);
-    }
 
     /// Service
     public function service()

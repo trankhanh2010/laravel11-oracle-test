@@ -29,6 +29,8 @@ use App\Http\Controllers\Api\CacheControllers\NationalController;
 use App\Http\Controllers\Api\CacheControllers\ProvinceController;
 use App\Http\Controllers\Api\CacheControllers\DataStoreController;
 use App\Http\Controllers\Api\CacheControllers\RoomController;
+use App\Http\Controllers\Api\CacheControllers\ExecuteRoleController;
+use App\Http\Controllers\Api\CacheControllers\CommuneController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -229,14 +231,20 @@ Route::group([
 
     /// Vai trò thực hiện
     Route::group(['as' => 'HIS.Desktop.Plugins.HisExecuteRole'], function () {
-        Route::get("v1/execute-role", [HISController::class, "execute_role"]);
-        Route::get("v1/execute-role/{id}", [HISController::class, "execute_role"]);
+        Route::get("v1/execute-role", [ExecuteRoleController::class, "execute_role"]);
+        Route::get("v1/execute-role/{id}", [ExecuteRoleController::class, "execute_role"]);
+        Route::post("v1/execute-role", [ExecuteRoleController::class, "execute_role_create"]);
+        Route::put("v1/execute-role/{id}", [ExecuteRoleController::class, "execute_role_update"]);
+        Route::delete("v1/execute-role/{id}", [ExecuteRoleController::class, "execute_role_delete"]);
     });
 
     /// Xã
     Route::group(['as' => 'SDA.Desktop.Plugins.SdaCommune'], function () {
-        Route::get("v1/commune", [HISController::class, "commune"]);
-        Route::get("v1/commune/{id}", [HISController::class, "commune"]);
+        Route::get("v1/commune", [CommuneController::class, "commune"]);
+        Route::get("v1/commune/{id}", [CommuneController::class, "commune"]);
+        Route::post("v1/commune", [CommuneController::class, "commune_create"]);
+        Route::put("v1/commune/{id}", [CommuneController::class, "commune_update"]);
+        Route::delete("v1/commune/{id}", [CommuneController::class, "commune_delete"]);
     });
 
     /// Dịch vụ kỹ thuật
