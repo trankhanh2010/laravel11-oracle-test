@@ -13,7 +13,6 @@ use Illuminate\Support\Facades\Gate;
 // use Model
 
 use App\Models\HIS\Room;
-use App\Models\HIS\DataStore;
 use App\Models\HIS\ExecuteRole;
 use App\Models\SDA\Commune;
 use App\Models\HIS\Service;
@@ -444,7 +443,6 @@ class HISController extends Controller
 
         // Khởi tạo các model
         $this->room = new Room();
-        $this->data_store = new DataStore();
         $this->execute_role = new ExecuteRole();
         $this->commune = new Commune();
         $this->service = new Service();
@@ -567,37 +565,6 @@ class HISController extends Controller
 
 
     /// DataStore
-    public function data_store()
-    {
-        $param = [
-            'room:id,department_id',
-            'room.department:id,department_name,department_code',
-            'stored_room:id',
-            'stored_department:id,department_name,department_code'
-        ];
-        $data = get_cache_full($this->data_store, $param, $this->data_store_name, null, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    public function data_store_id($id)
-    {
-        $data = get_cache($this->data_store, $this->data_store_name, $id, $this->time);
-        $data1 = get_cache_1_1_1($this->data_store, "room.department", $this->data_store_name, $id, $this->time);
-        $data2 = get_cache_1_1($this->data_store, "stored_department", $this->data_store_name, $id, $this->time);
-        $data3 = get_cache_1_n_with_ids($this->data_store, "treatment_type", $this->data_store_name, $id, $this->time);
-        $data4 = get_cache_1_n_with_ids($this->data_store, "treatment_end_type", $this->data_store_name, $id, $this->time);
-        $data5 = get_cache_1_1($this->data_store, "stored_room", $this->data_store_name, $id, $this->time);
-        $data6 = get_cache_1_1($this->data_store, "parent", $this->data_store_name, $id, $this->time);
-        return response()->json(['data' => [
-            'data_store' => $data,
-            'department' => $data1,
-            'stored_department' => $data2,
-            'treatment_type' => $data3,
-            'treatment_end_type' => $data4,
-            'stored_room' => $data5,
-            'parent' => $data6
-        ]], 200);
-    }
 
     /// ExecuteRole
     public function execute_role($id = null)
@@ -1009,26 +976,7 @@ class HISController extends Controller
     }
 
     /// Room
-    public function room($id = null)
-    {
-        if ($id == null) {
-            $name = $this->room_name;
-            $param = [
-                'department:id,department_name,department_code',
-                'room_type:id,room_type_name,room_type_code',
-                'execute_room:id,room_id,execute_room_name,execute_room_code'
-            ];
-        } else {
-            $name = $this->room_name . '_' . $id;
-            $param = [
-                'department',
-                'room_type',
-                'execute_room'
-            ];
-        }
-        $data = get_cache_full($this->room, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
+
 
     /// Service Follow
     public function service_follow()

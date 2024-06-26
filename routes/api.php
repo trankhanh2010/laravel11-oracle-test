@@ -27,6 +27,8 @@ use App\Http\Controllers\Api\CacheControllers\ExecuteGroupController;
 use App\Http\Controllers\Api\CacheControllers\CashierRoomController;
 use App\Http\Controllers\Api\CacheControllers\NationalController;
 use App\Http\Controllers\Api\CacheControllers\ProvinceController;
+use App\Http\Controllers\Api\CacheControllers\DataStoreController;
+use App\Http\Controllers\Api\CacheControllers\RoomController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -218,8 +220,11 @@ Route::group([
 
     /// Tủ bệnh án
     Route::group(['as' => 'HIS.Desktop.Plugins.HisDataStore'], function () {
-        Route::get("v1/data-store", [HISController::class, "data_store"]);
-        Route::get("v1/data-store/{id}", [HISController::class, "data_store_id"]);
+        Route::get("v1/data-store", [DataStoreController::class, "data_store"]);
+        Route::get("v1/data-store/{id}", [DataStoreController::class, "data_store"]);
+        Route::post("v1/data-store", [DataStoreController::class, "data_store_create"]);
+        Route::put("v1/data-store/{id}", [DataStoreController::class, "data_store_update"]);
+        Route::delete("v1/data-store/{id}", [DataStoreController::class, "data_store_delete"]);
     });
 
     /// Vai trò thực hiện
@@ -287,8 +292,8 @@ Route::group([
     });
 
     /// Phòng
-    Route::get("v1/room", [HISController::class, "room"]);
-    Route::get("v1/room/{id}", [HISController::class, "room"]);
+    Route::get("v1/room", [RoomController::class, "room"]);
+    Route::get("v1/room/department/{id}", [RoomController::class, "room_with_department"]);
 
     /// Dịch vụ đi kèm
     Route::group(['as' => 'HIS.Desktop.Plugins.HisServiceFollow'], function () {

@@ -86,7 +86,7 @@ class Room extends Model
         return $this->belongsTo(Speciality::class);
     }
 
-    public function bedRoom()
+    public function bed_room()
     {
         return $this->hasOne(BedRoom::class);
     }

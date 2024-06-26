@@ -312,4 +312,16 @@ return [
         'national_id' => 'Id quốc gia',
         'search_code' => 'Tên viết tắt',
     ],
+    // Tủ bệnh án
+    'data_store' => [
+        'data_store_code' => 'Mã tủ bệnh án',
+        'data_store_name' => 'Tên tủ bệnh án',
+        'department_id' => 'Id khoa phòng quản lý',
+        'room_type_id' => 'Id loại phòng',
+        'parent_id' => 'Id tủ bệnh án cha',
+        'stored_department_id' => 'Id khoa có hồ sơ được lưu',
+        'stored_room_id' => 'Id phòng có hồ sơ được lưu',
+        'treatment_end_type_ids' => 'Danh sách id loại kết thúc điều trị',
+        'treatment_type_ids' => 'Danh sách id điện điều trị',
+    ],
 ];

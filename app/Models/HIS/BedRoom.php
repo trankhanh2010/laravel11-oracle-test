@@ -23,16 +23,16 @@ class BedRoom extends Model
     protected $guarded = [
         'id',
     ];
-    protected static function booted()
-    {
-        static::addGlobalScope(new IsDeleteScope);
-    }
+    // protected static function booted()
+    // {
+    //     static::addGlobalScope(new IsDeleteScope);
+    // }
 
-    /// Lấy ra bản ghi đã xóa mềm is_delete = 1
-    public static function withDeleted()
-    {
-        return with(new static)->newQueryWithoutScope(new IsDeleteScope)->where('is_delete', 1);
-    }
+    // /// Lấy ra bản ghi đã xóa mềm is_delete = 1
+    // public static function withDeleted()
+    // {
+    //     return with(new static)->newQueryWithoutScope(new IsDeleteScope)->where('is_delete', 1);
+    // }
     // public function getTreatmentTypeIdsAttribute($value)
     // {
     //     if($value != null){
@@ -46,10 +46,13 @@ class BedRoom extends Model
     //         return $value;
     //     }
     // }
+
     public function getTreatmentTypesAttribute()
     {
-        $data = TreatmentType::whereIn('id', explode(',', $this->treatment_type_ids))->get();
-        return $data;
+        $treatment_type_ids = $this->treatment_type_ids;
+        return Cache::remember('treatment_type_ids_' . $treatment_type_ids, $this->time, function () use ( $treatment_type_ids) {
+            return TreatmentType::select('id', 'treatment_type_code', 'treatment_type_name')->whereIn('id', explode(',', $treatment_type_ids))->get();
+        });
     }
 
     // protected $fillable = [

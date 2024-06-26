@@ -6,20 +6,34 @@ use App\Traits\dinh_dang_ten_truong;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 
 class DataStore extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
-    protected $connection = 'oracle_his'; 
+    protected $connection = 'oracle_his';
     protected $table = 'HIS_Data_Store';
-    protected $fillable = [
-        'treatment_type_ids',
-        'treatment_end_type_ids',
-        'parent_id',
-        'stored_department_id',
-        'stored_room_id'
+    protected $guarded = [
+        'id',
     ];
+    public $timestamps = false;
+    protected $appends = [
+        'treatment_types',
+        'treatment_end_types',
+    ];
+    public function getTreatmentTypesAttribute()
+    {
+        $treatment_type_ids = $this->treatment_type_ids;
+        return Cache::remember('treatment_type_ids_' . $treatment_type_ids, $this->time, function () use ( $treatment_type_ids) {
+            return TreatmentType::select('id', 'treatment_type_code', 'treatment_type_name')->whereIn('id', explode(',', $treatment_type_ids))->get();
+        });
+    }
 
+    public function getTreatmentEndTypesAttribute()
+    {
+        $data = TreatmentEndType::select('id', 'treatment_end_type_code', 'treatment_end_type_name')->whereIn('id', explode(',', $this->treatment_end_type_ids))->get();
+        return $data;
+    }
     public function room()
     {
         return $this->belongsTo(Room::class, 'room_id');
@@ -44,7 +58,7 @@ class DataStore extends Model
     {
         return TreatmentEndType::whereIn('id', explode(',', $this->treatment_type_end_ids))->get();
     }
-    
+
     public function department_room($id)
     {
         $department = DB::connection('oracle_his')->table('his_data_store')
@@ -59,5 +73,4 @@ class DataStore extends Model
     {
         return $this->belongsTo(Department::class, 'stored_department_id');
     }
-
 }

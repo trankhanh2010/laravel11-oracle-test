@@ -87,7 +87,7 @@ class ReceptionRoomController extends BaseApiCacheController
             DB::connection('oracle_his')->commit();
             // Gọi event để xóa cache
             event(new DeleteCache($this->reception_room_name));
-            return return_data_create_success([$data, $room]);
+            return return_data_create_success(['data' => $data, 'room' => $room]);
         } catch (\Exception $e) {
             // Rollback transaction nếu có lỗi
             DB::connection('oracle_his')->rollBack();
