@@ -347,4 +347,15 @@ return [
         'initial_name' => 'Tên đơn vị',
         'district_id' => 'Id quận / huyện',
     ],
+    // ICD - CM
+    'icd_cm' => [
+        'icd_cm_code' => 'Mã',
+        'icd_cm_name' => 'Tên',
+        'icd_cm_chapter_code' => 'Mã chương',
+        'icd_cm_chapter_name' => 'Tên chương',
+        'icd_cm_group_code' => 'Mã nhóm',
+        'icd_cm_group_name' => 'Tên nhóm',
+        'icd_cm_sub_group_code' => 'Mã nhóm phụ',
+        'icd_cm_sub_group_name' => 'Tên nhóm phụ',
+    ],
 ];

@@ -31,6 +31,19 @@ use App\Http\Controllers\Api\CacheControllers\DataStoreController;
 use App\Http\Controllers\Api\CacheControllers\RoomController;
 use App\Http\Controllers\Api\CacheControllers\ExecuteRoleController;
 use App\Http\Controllers\Api\CacheControllers\CommuneController;
+use App\Http\Controllers\Api\CacheControllers\ServiceController;
+use App\Http\Controllers\Api\CacheControllers\ServiceTypeController;
+use App\Http\Controllers\Api\CacheControllers\ServiceUnitController;
+use App\Http\Controllers\Api\CacheControllers\PatientTypeController;
+use App\Http\Controllers\Api\CacheControllers\PtttMethodController;
+use App\Http\Controllers\Api\CacheControllers\PtttGroupController;
+use App\Http\Controllers\Api\CacheControllers\IcdCmController;
+use App\Http\Controllers\Api\CacheControllers\RationGroupController;
+use App\Http\Controllers\Api\CacheControllers\DiimTypeController;
+use App\Http\Controllers\Api\CacheControllers\FuexTypeController;
+use App\Http\Controllers\Api\CacheControllers\TestSampleTypeController;
+use App\Http\Controllers\Api\CacheControllers\FilmSizeController;
+use App\Http\Controllers\Api\CacheControllers\GenderController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -247,11 +260,39 @@ Route::group([
         Route::delete("v1/commune/{id}", [CommuneController::class, "commune_delete"]);
     });
 
+    /// Icd - Cm
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisIcdCm'], function () {
+        Route::get("v1/icd-cm", [IcdCmController::class, "icd_cm"]);
+        Route::get("v1/icd-cm/{id}", [IcdCmController::class, "icd_cm"]);
+        Route::post("v1/icd-cm", [IcdCmController::class, "icd_cm_create"]);
+        Route::put("v1/icd-cm/{id}", [IcdCmController::class, "icd_cm_update"]);
+        Route::delete("v1/icd-cm/{id}", [IcdCmController::class, "icd_cm_delete"]);
+    });
+
+    /// Loại chẩn đoán hình ảnh
+    Route::get("v1/diim-type", [DiimTypeController::class, "diim_type"]);
+    Route::get("v1/diim-type/{id}", [DiimTypeController::class, "diim_type"]);
+
+    /// Loại thăm dò chức năng
+    Route::get("v1/fuex-type", [FuexTypeController::class, "fuex_type"]);
+    Route::get("v1/fuex-type/{id}", [FuexTypeController::class, "fuex_type"]);
+
+    /// Cỡ phim
+    Route::get("v1/film-size", [FilmSizeController::class, "film_size"]);
+    Route::get("v1/film-size/{id}", [FilmSizeController::class, "film_size"]);
+
+    /// Giới tính
+    Route::get("v1/gender", [GenderController::class, "gender"]);
+    Route::get("v1/gender/{id}", [GenderController::class, "gender"]);
+
     /// Dịch vụ kỹ thuật
     Route::group(['as' => 'HIS.Desktop.Plugins.HisService'], function () {
-        Route::get("v1/service", [HISController::class, "service"]);
-        Route::get("v1/service/{id}", [HISController::class, "service_id"]);
-        Route::get("v1/service/by-code/{type_id}", [HISController::class, "service_by_code"]);
+        Route::get("v1/service/{id}", [ServiceController::class, "service"]);
+        // Route::get("v1/service/by-code/{type_id}", [ServiceController::class, "service_by_code"]);
+        Route::get("v1/service/service-type/{id}", [ServiceController::class, "service_by_service_type"]);
+        Route::post("v1/service", [ServiceController::class, "service_create"]);
+        Route::put("v1/service/{id}", [ServiceController::class, "service_update"]);
+        Route::delete("v1/service/{id}", [ServiceController::class, "service_delete"]);
     });
 
     /// Chính sách dịch vụ
@@ -393,8 +434,9 @@ Route::group([
 
     /// Đối tượng bệnh nhân
     Route::group(['as' => 'HIS.Desktop.Plugins.HisPatientType'], function () {
-        Route::get("v1/patient-type", [HISController::class, "patient_type"]);
-        Route::get("v1/patient-type/{id}", [HISController::class, "patient_type"]);
+        Route::get("v1/patient-type", [PatientTypeController::class, "patient_type"]);
+        Route::get("v1/patient-type/is-addition", [PatientTypeController::class, "patient_type_is_addition"]);
+        Route::get("v1/patient-type/{id}", [PatientTypeController::class, "patient_type"]);
     });
 
     /// Đối tượng ưu tiên
@@ -432,20 +474,20 @@ Route::group([
 
     /// Đơn vị tính
     Route::group(['as' => 'HIS.Desktop.Plugins.HisServiceUnitEdit'], function () {
-        Route::get("v1/service-unit", [HISController::class, "service_unit"]);
-        Route::get("v1/service-unit/{id}", [HISController::class, "service_unit"]);
+        Route::get("v1/service-unit", [ServiceUnitController::class, "service_unit"]);
+        Route::get("v1/service-unit/{id}", [ServiceUnitController::class, "service_unit"]);
     });
 
     /// Loại dịch vụ
     Route::group(['as' => 'HIS.Desktop.Plugins.HisServiceType'], function () {
-        Route::get("v1/service-type", [HISController::class, "service_type"]);
-        Route::get("v1/service-type/{id}", [HISController::class, "service_type"]);
+        Route::get("v1/service-type", [ServiceTypeController::class, "service_type"]);
+        Route::get("v1/service-type/{id}", [ServiceTypeController::class, "service_type"]);
     });
 
     /// Nhóm xuất ăn
     Route::group(['as' => 'HIS.Desktop.Plugins.HisRationGroup'], function () {
-        Route::get("v1/ration-group", [HISController::class, "ration_group"]);
-        Route::get("v1/ration-group/{id}", [HISController::class, "ration_group_id"]);
+        Route::get("v1/ration-group", [RationGroupController::class, "ration_group"]);
+        Route::get("v1/ration-group/{id}", [RationGroupController::class, "ration_group"]);
     });
 
     /// Loại y lệnh 
@@ -763,15 +805,15 @@ Route::group([
     /// Nhóm PTTT
     Route::group(['as' => 'HIS.Desktop.Plugins.HisPtttGroup'], function () {
         //Trả về tất cả nhóm pttt cùng nhóm dịch vụ 
-        Route::get("v1/pttt-group", [HISController::class, "pttt_group"]);
-        Route::get("v1/pttt-group/{id}", [HISController::class, "pttt_group"]);
+        Route::get("v1/pttt-group", [PtttGroupController::class, "pttt_group"]);
+        Route::get("v1/pttt-group/{id}", [PtttGroupController::class, "pttt_group"]);
     });
 
     /// Phương pháp PTTT
     Route::group(['as' => 'HIS.Desktop.Plugins.HisPtttMethod'], function () {
         //Trả về tất cả nhóm pttt cùng nhóm dịch vụ 
-        Route::get("v1/pttt-method", [HISController::class, "pttt_method"]);
-        Route::get("v1/pttt-method/{id}", [HISController::class, "pttt_method"]);
+        Route::get("v1/pttt-method", [PtttMethodController::class, "pttt_method"]);
+        Route::get("v1/pttt-method/{id}", [PtttMethodController::class, "pttt_method"]);
     });
 
     /// Phương pháp vô cảm
@@ -867,8 +909,8 @@ Route::group([
 
     /// Loại mẫu bệnh phẩm
     Route::group(['as' => 'HIS.Desktop.Plugins.HisTestSampleType'], function () {
-        Route::get("v1/test-sample-type", [HISController::class, "test_sample_type"]);
-        Route::get("v1/test-sample-type/{id}", [HISController::class, "test_sample_type"]);
+        Route::get("v1/test-sample-type", [TestSampleTypeController::class, "test_sample_type"]);
+        Route::get("v1/test-sample-type/{id}", [TestSampleTypeController::class, "test_sample_type"]);
     });
 
     /// Nhân viên - Phòng

@@ -296,7 +296,16 @@ class BaseApiCacheController extends Controller
     protected $other_pay_source_name = 'other_pay_source';
     protected $military_rank;
     protected $military_rank_name = 'military_rank';
-
+    protected $icd_cm;
+    protected $icd_cm_name = 'icd_cm';
+    protected $diim_type;
+    protected $diim_type_name = 'diim_type';
+    protected $fuex_type;
+    protected $fuex_type_name = 'fuex_type';
+    protected $film_size;
+    protected $film_size_name = 'film_size';
+    protected $gender;
+    protected $gender_name = 'gender';
     public function __construct(Request $request)
     {
         // Khai báo các biến

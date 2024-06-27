@@ -13,7 +13,6 @@ use Illuminate\Support\Facades\Gate;
 // use Model
 
 use App\Models\HIS\Room;
-use App\Models\HIS\Service;
 use App\Models\HIS\ServicePaty;
 use App\Models\HIS\ServiceMachine;
 use App\Models\HIS\Machine;
@@ -441,7 +440,6 @@ class HISController extends Controller
 
         // Khởi tạo các model
         $this->room = new Room();
-        $this->service = new Service();
         $this->service_paty = new ServicePaty();
         $this->service_machine = new ServiceMachine();
         $this->machine = new Machine();
@@ -566,77 +564,6 @@ class HISController extends Controller
     /// Commune
 
     /// Service
-    public function service()
-    {
-        $data = get_cache($this->service, $this->service_name, null, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    public function service_id($id)
-    {
-        $data = get_cache($this->service, $this->service_name, $id, $this->time);
-        $data1 = get_cache_1_1($this->service, "service_type", $this->service_name, $id, $this->time);
-        $data2 = get_cache_1_1($this->service, "parent", $this->service_name, $id, $this->time);
-        $data3 = get_cache_1_1($this->service, "service_unit", $this->service_name, $id, $this->time);
-        $data4 = get_cache_1_1($this->service, "hein_service_type", $this->service_name, $id, $this->time);
-        $data5 = get_cache_1_1($this->service, "bill_patient_type", $this->service_name, $id, $this->time);
-        $data6 = get_cache_1_1($this->service, "pttt_group", $this->service_name, $id, $this->time);
-        $data7 = get_cache_1_1($this->service, "pttt_method", $this->service_name, $id, $this->time);
-        $data8 = get_cache_1_1($this->service, "icd_cm", $this->service_name, $id, $this->time);
-        $data9 = get_cache_1_1($this->service, "revenue_department", $this->service_name, $id, $this->time);
-        $data10 = get_cache_1_1($this->service, "package", $this->service_name, $id, $this->time);
-        $data11 = get_cache_1_1($this->service, "exe_service_module", $this->service_name, $id, $this->time);
-        $data12 = get_cache_1_1($this->service, "gender", $this->service_name, $id, $this->time);
-        $data13 = get_cache_1_1($this->service, "ration_group", $this->service_name, $id, $this->time);
-        $data14 = get_cache_1_1($this->service, "diim_type", $this->service_name, $id, $this->time);
-        $data15 = get_cache_1_1($this->service, "fuex_type", $this->service_name, $id, $this->time);
-        $data16 = get_cache_1_1($this->service, "test_type", $this->service_name, $id, $this->time);
-        $data17 = get_cache_1_1($this->service, "other_pay_source", $this->service_name, $id, $this->time);
-        $data18 = get_cache_1_n_with_ids($this->service, "body_part", $this->service_name, $id, $this->time);
-        $data19 = get_cache_1_1($this->service, "film_size", $this->service_name, $id, $this->time);
-        $data20 = get_cache_1_n_with_ids($this->service, "applied_patient_type", $this->service_name, $id, $this->time);
-        $data21 = get_cache_1_1($this->service, "default_patient_type", $this->service_name, $id, $this->time);
-        $data22 = get_cache_1_n_with_ids($this->service, "applied_patient_classify", $this->service_name, $id, $this->time);
-        $data23 = get_cache_1_n_with_ids($this->service, "min_proc_time_except_paty", $this->service_name, $id, $this->time);
-        $data24 = get_cache_1_n_with_ids($this->service, "max_proc_time_except_paty", $this->service_name, $id, $this->time);
-        $data25 = get_cache_1_n_with_ids($this->service, "total_time_except_paty", $this->service_name, $id, $this->time);
-        return response()->json(['data' => [
-            'service' => $data,
-            'service_type' => $data1,
-            'parent' => $data2,
-            'service_unit' => $data3,
-            'hein_service_type' => $data4,
-            'bill_patient_type' => $data5,
-            'pttt_group' => $data6,
-            'pttt_method' => $data7,
-            'icd_cm' => $data8,
-            'revenue_department' => $data9,
-            'package' => $data10,
-            'exe_service_module' => $data11,
-            'gender' => $data12,
-            'ration_group' => $data13,
-            'diim_type' => $data14,
-            'fuex_type' => $data15,
-            'test_type' => $data16,
-            'other_pay_source' => $data17,
-            'body_part' => $data18,
-            'film_size' => $data19,
-            'applied_patient_type' => $data20,
-            'default_patient_type' => $data21,
-            'applied_patient_classify' => $data22,
-            'min_proc_time_except_paty' => $data23,
-            'max_proc_time_except_paty' => $data24,
-            'total_time_except_paty' => $data25
-        ]], 200);
-    }
-
-
-    public function service_by_code($type_id)
-    {
-        $param = [];
-        $data = get_cache_by_code($this->service, $this->service_name, $param, 'service_code', $type_id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
 
     /// Service Paty
     public function service_paty()
@@ -1257,39 +1184,8 @@ class HISController extends Controller
         ]], 200);
     }
 
-    /// Patient Type
-    public function patient_type($id = null)
-    {
-        if ($id == null) {
-            $name = $this->patient_type_name;
-            $param = [
-                'base_patient_type',
-                'other_pay_source'
-            ];
-        } else {
-            if (!is_numeric($id)) {
-                return return_id_error($id);
-            }
-            $data = $this->patient_type->find($id);
-            if ($data == null) {
-                return return_not_record($id);
-            }
-            $name = $this->patient_type_name . '_' . $id;
-            $param = [
-                'base_patient_type',
-                'other_pay_source'
-            ];
-        }
-        $data = get_cache_full($this->patient_type, $param, $name, $id, $this->time);
-        $count = $data->count();
-        $param_return = [
-            'start' => null,
-            'limit' => null,
-            'count' => $count
-        ];
-        return return_data_success($param_return, $data);
-    }
 
+    
     /// Priority Type
     public function priority_type()
     {
@@ -1319,8 +1215,8 @@ class HISController extends Controller
             'career' => $data
         ]], 200);
     }
-
-
+    
+    
     /// Religion
     public function religion()
     {
@@ -1336,56 +1232,7 @@ class HISController extends Controller
         ]], 200);
     }
 
-    /// Service Unit
-    public function service_unit($id = null)
-    {
-        if ($id == null) {
-            $name = $this->service_unit_name;
-            $param = [
-                'convert:id,service_unit_name',
-            ];
-        } else {
-            $name = $this->service_unit_name . '_' . $id;
-            $param = [
-                'convert',
-            ];
-        }
-        $data = get_cache_full($this->service_unit, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
 
-    /// Service Type
-    public function service_type($id = null)
-    {
-        if ($id == null) {
-            $name = $this->service_type_name;
-            $param = [
-                'exe_service_module:id,exe_service_module_name,module_link',
-            ];
-        } else {
-            $name = $this->service_type_name . '_' . $id;
-            $param = [
-                'exe_service_module',
-            ];
-        }
-        $data = get_cache_full($this->service_type, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    /// Ration Group
-    public function ration_group()
-    {
-        $data = get_cache($this->ration_group, $this->ration_group_name, null, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    public function ration_group_id($id)
-    {
-        $data = get_cache($this->ration_group, $this->ration_group_name, $id, $this->time);
-        return response()->json(['data' => [
-            'ration_group' => $data,
-        ]], 200);
-    }
 
     /// ServiceReq Type
     public function service_req_type()
@@ -2394,48 +2241,9 @@ class HISController extends Controller
         $data = get_cache_full($this->pttt_table, $param, $name, $id, $this->time);
         return response()->json(['data' => $data], 200);
     }
+    
 
-    /// Pttt Group
-    public function pttt_group($id = null)
-    {
-        if ($id == null) {
-            $name = $this->pttt_group_name;
-            $param = [
-                'serv_segrs:id,service_id,service_group_id',
-                'serv_segrs.service:id,service_name,service_type_id',
-                'serv_segrs.service.service_type:id,service_type_name,service_type_code',
-                'serv_segrs.service_group:id,service_group_name',
-            ];
-        } else {
-            $name = $this->pttt_group_name . '_' . $id;
-            $param = [
-                'serv_segrs',
-                'serv_segrs.service',
-                'serv_segrs.service.service_type',
-                'serv_segrs.service_group',
-            ];
-        }
-        $data = get_cache_full($this->pttt_group, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
 
-    /// Pttt Method
-    public function pttt_method($id = null)
-    {
-        if ($id == null) {
-            $name = $this->pttt_method_name;
-            $param = [
-                'pttt_group:id,pttt_group_name,pttt_group_name'
-            ];
-        } else {
-            $name = $this->pttt_method_name . '_' . $id;
-            $param = [
-                'pttt_group'
-            ];
-        }
-        $data = get_cache_full($this->pttt_method, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
 
     /// Emotionless Method
     public function emotionless_method($id = null)
@@ -2684,19 +2492,7 @@ class HISController extends Controller
         return response()->json(['data' => $data], 200);
     }
 
-    /// Test Sample Type
-    public function test_sample_type($id = null)
-    {
-        if ($id == null) {
-            $name = $this->test_sample_type_name;
-            $param = [];
-        } else {
-            $name = $this->test_sample_type_name . '_' . $id;
-            $param = [];
-        }
-        $data = get_cache_full($this->test_sample_type, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
+
 
     /// User Room
     public function user_with_room()
