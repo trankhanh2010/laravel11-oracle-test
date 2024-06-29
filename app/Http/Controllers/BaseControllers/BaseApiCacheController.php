@@ -306,6 +306,14 @@ class BaseApiCacheController extends Controller
     protected $film_size_name = 'film_size';
     protected $gender;
     protected $gender_name = 'gender';
+    protected $body_part;
+    protected $body_part_name = 'body_part';
+    protected $exe_service_module;
+    protected $exe_service_module_name = 'exe_service_module';
+    protected $suim_index;
+    protected $suim_index_name = 'suim_index';
+    protected $package;
+    protected $package_name = 'package';
     public function __construct(Request $request)
     {
         // Khai báo các biến

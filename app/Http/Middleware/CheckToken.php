@@ -35,9 +35,9 @@ class CheckToken
                 'message' => 'Token không hợp lệ'], 401);
         }
         // dd(date("Y-m-d H:i:s", $token->expire_time));
-        $date = Carbon::createFromTimestamp($token->expire_time);
+        // $date = Carbon::createFromTimestamp($token->expire_time);
         // Kiểm tra xem ngày hiện tại có lớn hơn ngày hết hạn hay không
-        $is_expire = Carbon::now()->greaterThan($date);
+        $is_expire = now()->format('Ymdhis') >= $token->expire_time;
         // Nếu token không hợp lệ, trả về lỗi 401 Unauthorized
         if (!$token || (!$token->is_active) || ($token->is_delete) || ($is_expire)) {
             return response()->json([

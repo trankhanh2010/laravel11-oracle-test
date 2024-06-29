@@ -44,6 +44,11 @@ use App\Http\Controllers\Api\CacheControllers\FuexTypeController;
 use App\Http\Controllers\Api\CacheControllers\TestSampleTypeController;
 use App\Http\Controllers\Api\CacheControllers\FilmSizeController;
 use App\Http\Controllers\Api\CacheControllers\GenderController;
+use App\Http\Controllers\Api\CacheControllers\BodyPartController;
+use App\Http\Controllers\Api\CacheControllers\ExeServiceModuleController;
+use App\Http\Controllers\Api\CacheControllers\HeinServiceTypeController;
+use App\Http\Controllers\Api\CacheControllers\SuimIndexController;
+use App\Http\Controllers\Api\CacheControllers\PackageController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -284,6 +289,25 @@ Route::group([
     /// Giới tính
     Route::get("v1/gender", [GenderController::class, "gender"]);
     Route::get("v1/gender/{id}", [GenderController::class, "gender"]);
+
+    /// Bộ phận cơ thể
+    Route::get("v1/body-part", [BodyPartController::class, "body_part"]);
+    Route::get("v1/body-part/{id}", [BodyPartController::class, "body_part"]);
+    Route::post("v1/body-part", [BodyPartController::class, "body_part_create"]);
+    Route::put("v1/body-part/{id}", [BodyPartController::class, "body_part_update"]);
+    Route::delete("v1/body-part/{id}", [BodyPartController::class, "body_part_delete"]);
+
+    /// Module xử lý dịch vụ
+    Route::get("v1/exe-service-module", [ExeServiceModuleController::class, "exe_service_module"]);
+    Route::get("v1/exe-service-module/{id}", [ExeServiceModuleController::class, "exe_service_module"]);
+
+    /// Chỉ số
+    Route::get("v1/suim-index", [SuimIndexController::class, "suim_index"]);
+    Route::get("v1/suim-index/{id}", [SuimIndexController::class, "suim_index"]);
+
+    /// Gói
+    Route::get("v1/package", [PackageController::class, "package"]);
+    Route::get("v1/package/{id}", [PackageController::class, "package"]);
 
     /// Dịch vụ kỹ thuật
     Route::group(['as' => 'HIS.Desktop.Plugins.HisService'], function () {
@@ -624,8 +648,8 @@ Route::group([
 
     /// Nhóm dịch vụ BHYT
     Route::group(['as' => 'HIS.Desktop.Plugins.HisHeinServiceType'], function () {
-        Route::get("v1/hein-service-type", [HISController::class, "hein_service_type"]);
-        Route::get("v1/hein-service-type/{id}", [HISController::class, "hein_service_type"]);
+        Route::get("v1/hein-service-type", [HeinServiceTypeController::class, "hein_service_type"]);
+        Route::get("v1/hein-service-type/{id}", [HeinServiceTypeController::class, "hein_service_type"]);
     });
 
     /// Tham số BHYT

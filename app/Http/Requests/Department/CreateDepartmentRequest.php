@@ -80,8 +80,8 @@ class CreateDepartmentRequest extends FormRequest
             'default_instr_patient_type_id.integer'     => config('keywords')['department']['default_instr_patient_type_id'].config('keywords')['error']['integer'],
             'default_instr_patient_type_id.exists'      => config('keywords')['department']['default_instr_patient_type_id'].config('keywords')['error']['exists'], 
 
-            'allow_treatment_type_ids.string' => config('keywords')['department']['allow_treatment_type_ids'].config('keywords')['error']['string'],
-            'allow_treatment_type_ids.max' => config('keywords')['department']['allow_treatment_type_ids'].config('keywords')['error']['string_max'],
+            'allow_treatment_type_ids.string'   => config('keywords')['department']['allow_treatment_type_ids'].config('keywords')['error']['string'],
+            'allow_treatment_type_ids.max'      => config('keywords')['department']['allow_treatment_type_ids'].config('keywords')['error']['string_max'],
 
             'theory_patient_count.integer'  => config('keywords')['department']['theory_patient_count'].config('keywords')['error']['integer'],
             'theory_patient_count.min'      => config('keywords')['department']['theory_patient_count'].config('keywords')['error']['integer_min'],

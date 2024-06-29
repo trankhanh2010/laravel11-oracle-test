@@ -63,8 +63,8 @@ class CreateExecuteRoomRequest extends FormRequest
             'is_vaccine' =>                     'nullable|integer|in:0,1',
             'is_restrict_req_service' =>        'nullable|integer|in:0,1',
             'allow_not_choose_service' =>       'nullable|integer|in:0,1',
-            'is_kidney' =>                      'nullable|integer|in:0,1',
-            'kidney_shift_count' =>             'required_with:is_kidney|nullable|integer|in:0,1',
+            'is_kidney' =>                      'required|integer|in:0,1',
+            'kidney_shift_count' =>             'required_if:is_kidney,1|nullable|integer|min:0',
             'is_surgery' =>                     'nullable|integer|in:0,1',
             'is_auto_expend_add_exam' =>        'nullable|integer|in:0,1',
             'is_allow_no_icd' =>                'nullable|integer|in:0,1',
@@ -195,9 +195,9 @@ class CreateExecuteRoomRequest extends FormRequest
             'is_kidney.integer'    => config('keywords')['execute_room']['is_kidney'].config('keywords')['error']['integer'],
             'is_kidney.in'         => config('keywords')['execute_room']['is_kidney'].config('keywords')['error']['in'], 
 
-            'kidney_shift_count.required_with'      => config('keywords')['execute_room']['kidney_shift_count'].' chỉ được nhập khi '.config('keywords')['execute_room']['is_kidney'].' được chọn!',
-            'kidney_shift_count.integer'            => config('keywords')['execute_room']['kidney_shift_count'].config('keywords')['error']['integer'],
-            'kidney_shift_count.in'                 => config('keywords')['execute_room']['kidney_shift_count'].config('keywords')['error']['in'], 
+            'kidney_shift_count.required_if'                => config('keywords')['execute_room']['kidney_shift_count'].' phải được nhập khi '.config('keywords')['execute_room']['is_kidney'].' được chọn!',
+            'kidney_shift_count.integer'                    => config('keywords')['execute_room']['kidney_shift_count'].config('keywords')['error']['integer'],
+            'kidney_shift_count.min'                        => config('keywords')['execute_room']['kidney_shift_count'].config('keywords')['error']['integer_min'],
             
             'is_surgery.integer'    => config('keywords')['execute_room']['is_surgery'].config('keywords')['error']['integer'],
             'is_surgery.in'         => config('keywords')['execute_room']['is_surgery'].config('keywords')['error']['in'], 

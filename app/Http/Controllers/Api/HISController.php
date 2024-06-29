@@ -1763,19 +1763,6 @@ class HISController extends Controller
         return response()->json(['data' => $data], 200);
     }
 
-    /// Hein Service Type
-    public function hein_service_type($id = null)
-    {
-        if ($id == null) {
-            $name = $this->hein_service_type_name;
-            $param = [];
-        } else {
-            $name = $this->hein_service_type_name . '_' . $id;
-            $param = [];
-        }
-        $data = get_cache_full($this->hein_service_type, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
 
     /// BHYT Whitelist
     public function bhyt_whitelist($id = null)
