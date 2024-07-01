@@ -20,30 +20,47 @@ class CashierRoomController extends BaseApiCacheController
     }
     public function cashier_room($id = null)
     {
-        if ($id == null) {
-            $name = $this->cashier_room_name;
-            $param = [
-                'room:id,department_id,area_id',
-                'room.department:id,department_name,department_code',
-                'room.area'
-            ];
+        $keyword = mb_strtolower($this->keyword, 'UTF-8');
+        if ($keyword != null) {
+            $data = $this->cashier_room
+                ->where(DB::connection('oracle_his')->raw('lower(cashier_room_code)'), 'like', '%' . $keyword . '%')
+                ->orWhere(DB::connection('oracle_his')->raw('lower(cashier_room_name)'), 'like', '%' . $keyword . '%');
+            $count = $data->count();
+            $data = $data
+                ->skip($this->start)
+                ->take($this->limit)
+                ->get();
         } else {
-            if (!is_numeric($id)) {
-                return return_id_error($id);
+            if ($id == null) {
+                $name = $this->cashier_room_name. '_start_' . $this->start . '_limit_' . $this->limit;
+                $param = [
+                    'room:id,department_id,area_id',
+                    'room.department:id,department_name,department_code',
+                    'room.area'
+                ];
+            } else {
+                if (!is_numeric($id)) {
+                    return return_id_error($id);
+                }
+                $data = $this->cashier_room->find($id);
+                if ($data == null) {
+                    return return_not_record($id);
+                }
+                $name = $this->cashier_room_name . '_' . $id;
+                $param = [
+                    'room',
+                    'room.department',
+                    'room.area'
+                ];
             }
-            $data = $this->cashier_room->find($id);
-            if ($data == null) {
-                return return_not_record($id);
-            }
-            $name = $this->cashier_room_name . '_' . $id;
-            $param = [
-                'room',
-                'room.department',
-                'room.area'
-            ];
+            $data = get_cache_full($this->cashier_room, $param, $name, $id, $this->time, $this->start, $this->limit);
         }
-        $data = get_cache_full($this->cashier_room, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
+        $param_return = [
+            'start' => $this->start,
+            'limit' => $this->limit,
+            'count' => $count ?? $data['count']
+        ];
+        return return_data_success($param_return, $data ?? $data['data']);
     }
     public function cashier_room_create(CreateCashierRoomRequest $request)
     {

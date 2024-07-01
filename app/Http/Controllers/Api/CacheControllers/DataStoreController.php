@@ -21,8 +21,8 @@ class DataStoreController extends BaseApiCacheController
     
     public function data_store($id = null)
     {
-        if ($id == null) {
-            $name = $this->data_store_name;
+        $keyword = mb_strtolower($this->keyword, 'UTF-8');
+        if ($keyword != null) {
             $param = [
                 'room:id,department_id',
                 'room.department:id,department_name,department_code',
@@ -30,31 +30,50 @@ class DataStoreController extends BaseApiCacheController
                 'stored_department:id,department_name,department_code',
                 'parent:id,data_store_code,data_store_name',
             ];
+            $data = $this->data_store
+                ->where(DB::connection('oracle_his')->raw('lower(data_store_code)'), 'like', '%' . $keyword . '%')
+                ->orWhere(DB::connection('oracle_his')->raw('lower(data_store_name)'), 'like', '%' . $keyword . '%');
+            $count = $data->count();
+            $data = $data
+                ->skip($this->start)
+                ->take($this->limit)
+                ->with($param)
+                ->get();
         } else {
-            if (!is_numeric($id)) {
-                return return_id_error($id);
+            if ($id == null) {
+                $name = $this->data_store_name. '_start_' . $this->start . '_limit_' . $this->limit;
+                $param = [
+                    'room:id,department_id',
+                    'room.department:id,department_name,department_code',
+                    'stored_room:id',
+                    'stored_department:id,department_name,department_code',
+                    'parent:id,data_store_code,data_store_name',
+                ];
+            } else {
+                if (!is_numeric($id)) {
+                    return return_id_error($id);
+                }
+                $data = $this->data_store->find($id);
+                if ($data == null) {
+                    return return_not_record($id);
+                }
+                $name = $this->data_store_name . '_' . $id;
+                $param = [
+                    'room',
+                    'room.department',
+                    'stored_room',
+                    'stored_department',
+                    'parent',
+                ];
             }
-            $data = $this->data_store->find($id);
-            if ($data == null) {
-                return return_not_record($id);
-            }
-            $name = $this->data_store_name . '_' . $id;
-            $param = [
-                'room',
-                'room.department',
-                'stored_room',
-                'stored_department',
-                'parent',
-            ];
+            $data = get_cache_full($this->data_store, $param, $name, $id, $this->time, $this->start, $this->limit);
         }
-        $data = get_cache_full($this->data_store, $param, $name, $id, $this->time);
-        $count = $data->count();
         $param_return = [
-            'start' => null,
-            'limit' => null,
-            'count' => $count
+            'start' => $this->start,
+            'limit' => $this->limit,
+            'count' => $count ?? $data['count']
         ];
-        return return_data_success($param_return, $data);
+        return return_data_success($param_return, $data ?? $data['data']);
     }
 
     public function data_store_create(CreateDataStoreRequest $request)

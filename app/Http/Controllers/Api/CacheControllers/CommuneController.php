@@ -18,44 +18,67 @@ class CommuneController extends BaseApiCacheController
     }
     public function commune($id = null)
     {
-        if ($id == null) {
-            $data = Cache::remember($this->commune_name, $this->time, function (){
-                return DB::connection('oracle_sda')->table('sda_commune as commune')
-                ->leftJoin('sda_district as district', 'district.id', '=', 'commune.district_id')
-                ->select(
-                    'commune.*',
-                    'district.district_name as district_name',
-                    'district.district_code as district_code',
-                )
-                ->get();
-            });
-        } else {
-            if (!is_numeric($id)) {
-                return return_id_error($id);
-            }
-            $data = $this->commune->find($id);
-            if ($data == null) {
-                return return_not_record($id);
-            }
-            $data = Cache::remember($this->commune_name.'_'.$id, $this->time, function () use ($id){
-                return DB::connection('oracle_sda')->table('sda_commune as commune')
-                ->leftJoin('sda_district as district', 'district.id', '=', 'commune.district_id')
-                ->select(
-                    'commune.*',
-                    'district.district_name as district_name',
-                    'district.district_code as district_code',
-                )
-                ->where('commune.id', $id)
-                ->get();
-            });
-        }  
-        $count = $data->count();
+        $keyword = mb_strtolower($this->keyword, 'UTF-8');
+        if($keyword != null){
+            $data = DB::connection('oracle_sda')->table('sda_commune as commune')
+                    ->leftJoin('sda_district as district', 'district.id', '=', 'commune.district_id')
+                    ->select(
+                        'commune.*',
+                        'district.district_name as district_name',
+                        'district.district_code as district_code',
+                    )
+                    ->where(DB::connection('oracle_his')->raw('lower(commune_code)'), 'like', '%' . $keyword . '%')
+                    ->orWhere(DB::connection('oracle_his')->raw('lower(commune_name)'), 'like', '%' . $keyword . '%')
+                    ->orWhere(DB::connection('oracle_his')->raw('lower(commune.search_code)'), 'like', '%' . $keyword . '%');
+                    $count = $data->count();
+                    $data = $data    
+                        ->skip($this->start)
+                        ->take($this->limit)
+                        ->get();
+        }else{
+            if ($id == null) {
+                $data = Cache::remember($this->commune_name. '_start_' . $this->start . '_limit_' . $this->limit, $this->time, function (){
+                    $data = DB::connection('oracle_sda')->table('sda_commune as commune')
+                    ->leftJoin('sda_district as district', 'district.id', '=', 'commune.district_id')
+                    ->select(
+                        'commune.*',
+                        'district.district_name as district_name',
+                        'district.district_code as district_code',
+                    );
+                    $count = $data->count();
+                    $data = $data    
+                        ->skip($this->start)
+                        ->take($this->limit)
+                        ->get();
+                    return ['data' => $data, 'count' => $count];
+                });
+            } else {
+                if (!is_numeric($id)) {
+                    return return_id_error($id);
+                }
+                $data = $this->commune->find($id);
+                if ($data == null) {
+                    return return_not_record($id);
+                }
+                $data = Cache::remember($this->commune_name.'_'.$id, $this->time, function () use ($id){
+                    return DB::connection('oracle_sda')->table('sda_commune as commune')
+                    ->leftJoin('sda_district as district', 'district.id', '=', 'commune.district_id')
+                    ->select(
+                        'commune.*',
+                        'district.district_name as district_name',
+                        'district.district_code as district_code',
+                    )
+                    ->where('commune.id', $id)
+                    ->get();
+                });
+            }  
+        }
         $param_return = [
-            'start' => null,
-            'limit' => null,
-            'count' => $count
+            'start' => $this->start,
+            'limit' => $this->limit,
+            'count' => $count ?? $data['count']
         ];
-        return return_data_success($param_return, $data);
+        return return_data_success($param_return, $data ?? $data['data']);
     }
     public function commune_create(CreateCommuneRequest $request)
     {

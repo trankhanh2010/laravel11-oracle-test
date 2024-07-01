@@ -8,6 +8,8 @@ use App\Models\HIS\Branch;
 use App\Events\Cache\DeleteCache;
 use App\Http\Requests\Branch\CreateBranchRequest;
 use App\Http\Requests\Branch\UpdateBranchRequest;
+use Illuminate\Support\Facades\DB;
+
 class BranchController extends BaseApiCacheController
 {
     public function __construct(Request $request){
@@ -16,28 +18,39 @@ class BranchController extends BaseApiCacheController
     }
     public function branch($id = null)
     {
-        if ($id == null) {
-            $name = $this->branch_name;
-            $param = [];
+        $keyword = mb_strtolower($this->keyword, 'UTF-8');
+        if ($keyword != null) {
+            $data = $this->branch
+                ->where(DB::connection('oracle_his')->raw('lower(branch_code)'), 'like', '%' . $keyword . '%')
+                ->orWhere(DB::connection('oracle_his')->raw('lower(branch_name)'), 'like', '%' . $keyword . '%');
+            $count = $data->count();
+            $data = $data
+                ->skip($this->start)
+                ->take($this->limit)
+                ->get();
         } else {
-            if (!is_numeric($id)) {
-                return return_id_error($id);
+            if ($id == null) {
+                $name = $this->branch_name. '_start_' . $this->start . '_limit_' . $this->limit;
+                $param = [];
+            } else {
+                if (!is_numeric($id)) {
+                    return return_id_error($id);
+                }
+                $data = $this->branch->find($id);
+                if ($data == null) {
+                    return return_not_record($id);
+                }
+                $name = $this->branch_name . '_' . $id;
+                $param = [];
             }
-            $data = $this->branch->find($id);
-            if ($data == null) {
-                return return_not_record($id);
-            }
-            $name = $this->branch_name . '_' . $id;
-            $param = [];
+            $data = get_cache_full($this->branch, $param, $name, $id, $this->time, $this->start, $this->limit);
         }
-        $data = get_cache_full($this->branch, $param, $name, $id, $this->time);
-        $count = $data->count();
         $param_return = [
-            'start' => null,
-            'limit' => null,
-            'count' => $count
+            'start' => $this->start,
+            'limit' => $this->limit,
+            'count' => $count ?? $data['count']
         ];
-        return return_data_success($param_return, $data);
+        return return_data_success($param_return, $data ?? $data['data']);
     }
 
     public function branch_create(CreateBranchRequest $request)

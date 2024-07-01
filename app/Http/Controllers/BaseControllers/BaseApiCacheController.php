@@ -11,6 +11,7 @@ class BaseApiCacheController extends Controller
     protected $time;
     protected $start;
     protected $limit;
+    protected $keyword;
     protected $per_page;
     protected $page;
     protected $param_request;
@@ -321,15 +322,23 @@ class BaseApiCacheController extends Controller
         $this->time = now()->addMinutes(10080);
         // Param json gửi từ client
         $this->param_request = json_decode(base64_decode($request->input('param')), true);
-        $this->per_page = $request->query('perPage', 50);
+        $this->per_page = $request->query('perPage', 10);
         $this->page = $request->query('page', 1);
-        $this->start = $this->param_request['CommonParam']['Start'] ?? 0;
-        $this->limit = $this->param_request['CommonParam']['Limit'] ?? 100;
-        if ($this->start < 0) {
-            $this->start = 0;
+        $this->start = $this->param_request['CommonParam']['Start'] ?? intval($request->start) ?? 0;
+        $this->limit = $this->param_request['CommonParam']['Limit'] ?? intval($request->limit) ?? 10;
+        if($this->limit <= 10){
+            $this->limit = 10;
         }
-        if ($this->limit > 100) {
-            $this->limit = 100;
+        $this->keyword = $this->param_request['ApiData']['KeyWord'] ?? $request->keyword;
+        if($this->start != null){
+            if ((!is_numeric($this->start)) || (!is_int($this->start)) || ($this->start < 0)) {
+                $this->start = 0;
+            }
+        }
+        if(($this->limit != null) || ($this->start != null)){
+            if ((!is_numeric($this->limit)) || (!is_int($this->limit)) || ($this->limit > 100) || ($this->limit <= 0)) {
+                $this->limit = 100;
+            } 
         }
     }
 }

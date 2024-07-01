@@ -8,6 +8,7 @@ use App\Models\HIS\Department;
 use App\Events\Cache\DeleteCache;
 use App\Http\Requests\Department\CreateDepartmentRequest;
 use App\Http\Requests\Department\UpdateDepartmentRequest;
+use Illuminate\Support\Facades\DB;
 
 class DepartmentController extends BaseApiCacheController
 {
@@ -18,39 +19,56 @@ class DepartmentController extends BaseApiCacheController
     }
     public function department($id = null)
     {
-        if ($id == null) {
-            $name = $this->department_name;
+        $keyword = mb_strtolower($this->keyword, 'UTF-8');
+        if ($keyword != null) {
             $param = [
                 'branch:id,branch_name,branch_code',
                 'req_surg_treatment_type:id,treatment_type_code,treatment_type_name',
                 'default_instr_patient_type:id,patient_type_code,patient_type_name',
             ];
+            $data = $this->department
+                ->where(DB::connection('oracle_his')->raw('lower(department_code)'), 'like', '%' . $keyword . '%')
+                ->orWhere(DB::connection('oracle_his')->raw('lower(department_name)'), 'like', '%' . $keyword . '%');
+            $count = $data->count();
+            $data = $data
+                ->skip($this->start)
+                ->take($this->limit)
+                ->with($param)
+                ->get();
         } else {
-            // if ($id != 'deleted') {
-            if (!is_numeric($id)) {
-                return return_id_error($id);
+            if ($id == null) {
+                $name = $this->department_name. '_start_' . $this->start . '_limit_' . $this->limit;
+                $param = [
+                    'branch:id,branch_name,branch_code',
+                    'req_surg_treatment_type:id,treatment_type_code,treatment_type_name',
+                    'default_instr_patient_type:id,patient_type_code,patient_type_name',
+                ];
+            } else {
+                // if ($id != 'deleted') {
+                if (!is_numeric($id)) {
+                    return return_id_error($id);
+                }
+                $data = $this->department->find($id);
+                if ($data == null) {
+                    return return_not_record($id);
+                }
+                // }
+                $name = $this->department_name . '_' . $id;
+                $param = [
+                    'branch:id,branch_name,branch_code',
+                    'req_surg_treatment_type:id,treatment_type_code,treatment_type_name',
+                    'default_instr_patient_type:id,patient_type_code,patient_type_name'
+                ];
             }
-            $data = $this->department->find($id);
-            if ($data == null) {
-                return return_not_record($id);
-            }
-            // }
-            $name = $this->department_name . '_' . $id;
-            $param = [
-                'branch:id,branch_name,branch_code',
-                'req_surg_treatment_type:id,treatment_type_code,treatment_type_name',
-                'default_instr_patient_type:id,patient_type_code,patient_type_name'
-            ];
+            $data = get_cache_full($this->department, $param, $name, $id, $this->time, $this->start, $this->limit);
         }
-        $data = get_cache_full($this->department, $param, $name, $id, $this->time);
 
-        $count = $data->count();
         $param_return = [
-            'start' => null,
-            'limit' => null,
-            'count' => $count
+            'start' => $this->start,
+            'limit' => $this->limit,
+            'count' => $count ?? $data['count']
         ];
-        return return_data_success($param_return, $data);
+        return return_data_success($param_return, $data ?? $data['data']);
     }
 
     public function department_create(CreateDepartmentRequest $request)

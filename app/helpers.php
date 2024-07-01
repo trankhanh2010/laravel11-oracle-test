@@ -48,6 +48,32 @@ if (!function_exists('get_cache')) {
         }
     }
 }
+    function get_cache($model, $name, $id = null, $time, $start, $limit)
+    {
+        if (!$id) {
+            $data = Cache::remember($name, $time, function () use ($model, $start, $limit) {
+                $data = $model;
+                $count = $data->count();
+                $data = $data    
+                    ->skip($start)
+                    ->take($limit)
+                    ->get();
+            return ['data' => $data, 'count' => $count];
+            });
+            return $data;
+        } else {
+            if (!is_numeric($id)) {
+                return response()->json(['error' => 'Id không hợp lệ'], 400)->original;
+            }
+            $data = Cache::remember($name . '_id_' . $id, $time, function () use ($model, $id) {
+                return $model->find($id);
+            });
+            // Xóa Cache nếu không có dữ liệu
+            if (!$data) Cache::forget($name . '_id_' . $id);
+            return $data;
+        }
+    }
+
 
 if (!function_exists('get_cache_full')) {
     function get_cache_full($model, $relation_ship, $name, $id = null, $time)
@@ -70,6 +96,34 @@ if (!function_exists('get_cache_full')) {
             }
             return $data;
         }
+    }
+}
+
+function get_cache_full($model, $relation_ship, $name, $id = null, $time, $start, $limit)
+{
+    if (!$id) {
+        $data = Cache::remember($name, $time, function () use ($model, $relation_ship, $start, $limit) {
+            $data = $model::with($relation_ship);
+            $count = $data->count();
+            $data = $data    
+                ->skip($start)
+                ->take($limit)
+                ->get();
+        return ['data' => $data, 'count' => $count];
+        });
+        return $data;
+    } else {
+        if($id == 'deleted'){
+            $data = Cache::remember($name, $time, function () use ($model, $relation_ship, $id) {
+                return $model::withDeleted()->with($relation_ship)->get();
+            });
+        }
+        else{
+            $data = Cache::remember($name, $time, function () use ($model, $relation_ship, $id) {
+                return $model::where('id', $id)->with($relation_ship)->first();
+            });
+        }
+        return $data;
     }
 }
 
