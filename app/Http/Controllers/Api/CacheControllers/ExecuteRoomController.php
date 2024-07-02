@@ -20,8 +20,8 @@ class ExecuteRoomController extends BaseApiCacheController
     }
     public function execute_room($id = null)
     {
-        if ($id == null) {
-            $name = $this->execute_room_name;
+        $keyword = mb_strtolower($this->keyword, 'UTF-8');
+        if ($keyword != null) {
             $param = [
                 'room',
                 'room.department:id,department_name,department_code',
@@ -35,40 +35,65 @@ class ExecuteRoomController extends BaseApiCacheController
                 'room.deposit_account_book',
                 'room.bill_account_book'
             ];
+            $data = $this->execute_room
+                ->where(DB::connection('oracle_his')->raw('lower(execute_room_code)'), 'like', '%' . $keyword . '%')
+                ->orWhere(DB::connection('oracle_his')->raw('lower(execute_room_name)'), 'like', '%' . $keyword . '%');
+            $count = $data->count();
+            $data = $data
+                ->skip($this->start)
+                ->take($this->limit)
+                ->with($param)
+                ->get();
         } else {
-            if (!is_numeric($id)) {
-                return return_id_error($id);
+            if ($id == null) {
+                $name = $this->execute_room_name. '_start_' . $this->start . '_limit_' . $this->limit;
+                $param = [
+                    'room',
+                    'room.department:id,department_name,department_code',
+                    'room.area:id,area_name,area_code',
+                    'room.room_group:id,room_group_name,room_group_code',
+                    'room.room_type:id,room_type_name,room_type_code',
+                    'room.speciality:id,speciality_name,speciality_code',
+                    'room.default_cashier_room:id,cashier_room_name,cashier_room_code',
+                    'room.default_instr_patient_type',
+                    'room.default_service:id,service_name,service_code',
+                    'room.deposit_account_book',
+                    'room.bill_account_book'
+                ];
+            } else {
+                if (!is_numeric($id)) {
+                    return return_id_error($id);
+                }
+                $data = $this->execute_room->find($id);
+                if ($data == null) {
+                    return return_not_record($id);
+                }
+                $name = $this->execute_room_name . '_' . $id;
+                $param = [
+                    'room',
+                    'room.department',
+                    'room.area',
+                    'room.room_group',
+                    'room.room_type',
+                    'room.speciality',
+                    'room.default_cashier_room',
+                    'room.default_instr_patient_type',
+                    'room.default_service',
+                    'room.deposit_account_book',
+                    'room.bill_account_book'
+                ];
             }
-            $data = $this->execute_room->find($id);
-            if ($data == null) {
-                return return_not_record($id);
-            }
-            $name = $this->execute_room_name . '_' . $id;
-            $param = [
-                'room',
-                'room.department',
-                'room.area',
-                'room.room_group',
-                'room.room_type',
-                'room.speciality',
-                'room.default_cashier_room',
-                'room.default_instr_patient_type',
-                'room.default_service',
-                'room.deposit_account_book',
-                'room.bill_account_book'
-            ];
+            $data = get_cache_full($this->execute_room, $param, $name, $id, $this->time, $this->start, $this->limit);
+            // foreach ($data as $key => $item) {
+            //     $item->default_drug_store = get_cache_1_1_n_with_ids($this->execute_room, "room.default_drug_store", $this->execute_room_name, $item->id, $this->time);
+            // }
         }
-        $data = get_cache_full($this->execute_room, $param, $name, $id, $this->time);
-        // foreach ($data as $key => $item) {
-        //     $item->default_drug_store = get_cache_1_1_n_with_ids($this->execute_room, "room.default_drug_store", $this->execute_room_name, $item->id, $this->time);
-        // }
-        $count = $data->count();
         $param_return = [
-            'start' => null,
-            'limit' => null,
-            'count' => $count
+            'start' => $this->start,
+            'limit' => $this->limit,
+            'count' => $count ?? $data['count']
         ];
-        return return_data_success($param_return, $data);
+        return return_data_success($param_return, $data ?? $data['data']);
     }
 
     public function execute_room_create(CreateExecuteRoomRequest $request)

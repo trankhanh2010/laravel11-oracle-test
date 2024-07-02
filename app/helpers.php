@@ -7,6 +7,49 @@ use App\Models\ACS\User;
 use App\Models\HIS\UserRoom;
 use Illuminate\Support\Facades\Request;
 
+function create_slug($string)
+    {
+        $search = array(
+            '#(à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ)#',
+            '#(è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ)#',
+            '#(ì|í|ị|ỉ|ĩ)#',
+            '#(ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ)#',
+            '#(ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ)#',
+            '#(ỳ|ý|ỵ|ỷ|ỹ)#',
+            '#(đ)#',
+            '#(À|Á|Ạ|Ả|Ã|Â|Ầ|Ấ|Ậ|Ẩ|Ẫ|Ă|Ằ|Ắ|Ặ|Ẳ|Ẵ)#',
+            '#(È|É|Ẹ|Ẻ|Ẽ|Ê|Ề|Ế|Ệ|Ể|Ễ)#',
+            '#(Ì|Í|Ị|Ỉ|Ĩ)#',
+            '#(Ò|Ó|Ọ|Ỏ|Õ|Ô|Ồ|Ố|Ộ|Ổ|Ỗ|Ơ|Ờ|Ớ|Ợ|Ở|Ỡ)#',
+            '#(Ù|Ú|Ụ|Ủ|Ũ|Ư|Ừ|Ứ|Ự|Ử|Ữ)#',
+            '#(Ỳ|Ý|Ỵ|Ỷ|Ỹ)#',
+            '#(Đ)#',
+            "/[^a-zA-Z0-9\-\_]/",
+        );
+        $replace = array(
+            'a',
+            'e',
+            'i',
+            'o',
+            'u',
+            'y',
+            'd',
+            'A',
+            'E',
+            'I',
+            'O',
+            'U',
+            'Y',
+            'D',
+            '-',
+        );
+        $string = preg_replace($search, $replace, $string);
+        $string = preg_replace('/(-)+/', ' ', $string);
+        $string = strtolower($string);
+        return $string;
+    }
+
+
 if (!function_exists('get_user_with_loginname')) {
     function get_user_with_loginname($loginname)
     {
@@ -76,30 +119,28 @@ if (!function_exists('get_cache')) {
 
 
 if (!function_exists('get_cache_full')) {
-    function get_cache_full($model, $relation_ship, $name, $id = null, $time)
-    {
-        if (!$id) {
-            $data = Cache::remember($name, $time, function () use ($model, $relation_ship) {
-                return $model::with($relation_ship)->get();
-            });
-            return $data;
-        } else {
-            if($id == 'deleted'){
-                $data = Cache::remember($name, $time, function () use ($model, $relation_ship, $id) {
-                    return $model::withDeleted()->with($relation_ship)->get();
-                });
-            }
-            else{
-                $data = Cache::remember($name, $time, function () use ($model, $relation_ship, $id) {
-                    return $model::where('id', $id)->with($relation_ship)->first();
-                });
-            }
-            return $data;
-        }
-    }
-}
-
-function get_cache_full($model, $relation_ship, $name, $id = null, $time, $start, $limit)
+    // function get_cache_full($model, $relation_ship, $name, $id = null, $time)
+    // {
+    //     if (!$id) {
+    //         $data = Cache::remember($name, $time, function () use ($model, $relation_ship) {
+    //             return $model::with($relation_ship)->get();
+    //         });
+    //         return $data;
+    //     } else {
+    //         if($id == 'deleted'){
+    //             $data = Cache::remember($name, $time, function () use ($model, $relation_ship, $id) {
+    //                 return $model::withDeleted()->with($relation_ship)->get();
+    //             });
+    //         }
+    //         else{
+    //             $data = Cache::remember($name, $time, function () use ($model, $relation_ship, $id) {
+    //                 return $model::where('id', $id)->with($relation_ship)->first();
+    //             });
+    //         }
+    //         return $data;
+    //     }
+    // }
+    function get_cache_full($model, $relation_ship, $name, $id = null, $time, $start, $limit)
 {
     if (!$id) {
         $data = Cache::remember($name, $time, function () use ($model, $relation_ship, $start, $limit) {
@@ -126,21 +167,44 @@ function get_cache_full($model, $relation_ship, $name, $id = null, $time, $start
         return $data;
     }
 }
+}
+
+
 
 if (!function_exists('get_cache_full_select')) {
-    function get_cache_full_select($model, $relation_ship, $select, $name, $id = null, $time)
+    // function get_cache_full_select($model, $relation_ship, $select, $name, $id = null, $time)
+    // {
+    //     if (!$id) {
+    //         $data = Cache::remember($name, $time, function () use ($model, $relation_ship, $select) {
+    //             return $model::select($select)->with($relation_ship)->get();
+    //         });
+    //         return $data;
+    //     } else {
+    //         $data = Cache::remember($name, $time, function () use ($model, $relation_ship, $id, $select) {
+    //             return $model::select($select)->where('id', $id)->with($relation_ship)->get();
+    //         });
+    //         return $data;
+    //     }
+    // }
+    function get_cache_full_select($model, $relation_ship, $select, $name, $id = null, $time, $start, $limit)
     {
         if (!$id) {
-            $data = Cache::remember($name, $time, function () use ($model, $relation_ship, $select) {
-                return $model::select($select)->with($relation_ship)->get();
+            $data = Cache::remember($name, $time, function () use ($model, $relation_ship, $select, $start, $limit) {
+                $data=  $model::select($select)->with($relation_ship);
+                
+                $count = $data->count();
+                $data = $data    
+                    ->skip($start)
+                    ->take($limit)
+                    ->get();
+            return ['data' => $data, 'count' => $count];
             });
-            return $data;
         } else {
             $data = Cache::remember($name, $time, function () use ($model, $relation_ship, $id, $select) {
                 return $model::select($select)->where('id', $id)->with($relation_ship)->get();
             });
-            return $data;
         }
+        return $data;
     }
 }
 

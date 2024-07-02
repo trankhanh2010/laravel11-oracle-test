@@ -12,68 +12,101 @@ use App\Http\Requests\ExecuteRole\UpdateExecuteRoleRequest;
 
 class ExecuteRoleController extends BaseApiCacheController
 {
-    public function __construct(Request $request){
+    public function __construct(Request $request)
+    {
         parent::__construct($request); // Gọi constructor của BaseController
         $this->execute_role = new ExecuteRole();
     }
     public function execute_role($id = null)
     {
-        if ($id == null) {
-            $name = $this->execute_role_name;
+        $keyword = mb_strtolower($this->keyword, 'UTF-8');
+        if ($keyword != null) {
             $param = [
             ];
+            $select = [
+                'id',
+                'create_time',
+                'modify_time',
+                'creator',
+                'modifier',
+                'app_creator',
+                'app_modifier',
+                'is_active',
+                'is_delete',
+                'execute_role_code',
+                'execute_role_name',
+                'is_surg_main',
+                'is_surgry',
+                'is_stock',
+                'is_position',
+                'is_title',
+                'allow_simultaneity'
+            ];
+            $data = $this->execute_role
+                ->where(DB::connection('oracle_his')->raw('lower(execute_role_code)'), 'like', '%' . $keyword . '%')
+                ->orWhere(DB::connection('oracle_his')->raw('lower(execute_role_name)'), 'like', '%' . $keyword . '%');
+            $count = $data->count();
+            $data = $data
+                ->skip($this->start)
+                ->take($this->limit)
+                ->with($param)
+                ->get();
         } else {
-            if (!is_numeric($id)) {
-                return return_id_error($id);
+            if ($id == null) {
+                $name = $this->execute_role_name . '_start_' . $this->start . '_limit_' . $this->limit;
+                $param = [];
+            } else {
+                if (!is_numeric($id)) {
+                    return return_id_error($id);
+                }
+                $data = $this->execute_role->find($id);
+                if ($data == null) {
+                    return return_not_record($id);
+                }
+                $name = $this->execute_role_name . '_' . $id;
+                $param = [
+                    'debate_ekip_users:id,debate_id,loginname,username,execute_role_id',
+                    'debate_invite_users:id,debate_id,loginname,username',
+                    'debate_users:id,debate_id,loginname,username',
+                    'ekip_plan_users:id,execute_role_id,loginname,username',
+                    'ekip_temp_users:id,execute_role_id,loginname,username',
+                    'execute_role_users:id,execute_role_id,loginname',
+                    'exp_mest_users:id,execute_role_id,loginname,username',
+                    'imp_mest_users:id,execute_role_id,loginname,username',
+                    'imp_user_temp_dts:id,execute_role_id,loginname,username',
+                    'mest_inve_users:id,execute_role_id,loginname,username',
+                    'remunerations:id,execute_role_id,service_id,price,execute_loginname,execute_username',
+                    'surg_remu_details:id,execute_role_id,group_code,price,surg_remuneration_id',
+                    'user_group_temp_dts:id,execute_role_id,group_code,user_group_temp_id,loginname,username,description'
+                ];
             }
-            $data = $this->execute_role->find($id);
-            if ($data == null) {
-                return return_not_record($id);
-            }
-            $name = $this->execute_role_name . '_' . $id;
-            $param = [
-                'debate_ekip_users:id,debate_id,loginname,username,execute_role_id',
-                'debate_invite_users:id,debate_id,loginname,username',
-                'debate_users:id,debate_id,loginname,username',
-                'ekip_plan_users:id,execute_role_id,loginname,username',
-                'ekip_temp_users:id,execute_role_id,loginname,username',
-                'execute_role_users:id,execute_role_id,loginname',
-                'exp_mest_users:id,execute_role_id,loginname,username',
-                'imp_mest_users:id,execute_role_id,loginname,username',
-                'imp_user_temp_dts:id,execute_role_id,loginname,username',
-                'mest_inve_users:id,execute_role_id,loginname,username',
-                'remunerations:id,execute_role_id,service_id,price,execute_loginname,execute_username',
-                'surg_remu_details:id,execute_role_id,group_code,price,surg_remuneration_id',
-                'user_group_temp_dts:id,execute_role_id,group_code,user_group_temp_id,loginname,username,description'
+            $select = [
+                'id',
+                'create_time',
+                'modify_time',
+                'creator',
+                'modifier',
+                'app_creator',
+                'app_modifier',
+                'is_active',
+                'is_delete',
+                'execute_role_code',
+                'execute_role_name',
+                'is_surg_main',
+                'is_surgry',
+                'is_stock',
+                'is_position',
+                'is_title',
+                'allow_simultaneity'
             ];
+            $data = get_cache_full_select($this->execute_role, $param, $select, $name, $id, $this->time, $this->start, $this->limit);
         }
-        $select = [
-            'id',
-            'create_time',
-            'modify_time',
-            'creator',
-            'modifier',
-            'app_creator',
-            'app_modifier',
-            'is_active',
-            'is_delete',
-            'execute_role_code',
-            'execute_role_name',
-            'is_surg_main',
-            'is_surgry',
-            'is_stock',
-            'is_position',
-            'is_title',
-            'allow_simultaneity'
-        ];
-        $data = get_cache_full_select($this->execute_role, $param, $select, $name, $id, $this->time);
-        $count = $data->count();
         $param_return = [
-            'start' => null,
-            'limit' => null,
-            'count' => $count
+            'start' => $this->start,
+            'limit' => $this->limit,
+            'count' => $count ?? $data['count'] ?? null
         ];
-        return return_data_success($param_return, $data); 
+        return return_data_success($param_return, $data ?? $data['data']);
     }
 
     public function execute_role_create(CreateExecuteRoleRequest $request)

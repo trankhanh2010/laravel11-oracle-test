@@ -326,7 +326,7 @@ class BaseApiCacheController extends Controller
         $this->page = $request->query('page', 1);
         $this->start = $this->param_request['CommonParam']['Start'] ?? intval($request->start) ?? 0;
         $this->limit = $this->param_request['CommonParam']['Limit'] ?? intval($request->limit) ?? 10;
-        if($this->limit <= 10){
+        if(($this->limit <= 10) || (!in_array($this->limit,[10,20,50,100,500,1000,2000]))){
             $this->limit = 10;
         }
         $this->keyword = $this->param_request['ApiData']['KeyWord'] ?? $request->keyword;
@@ -336,7 +336,7 @@ class BaseApiCacheController extends Controller
             }
         }
         if(($this->limit != null) || ($this->start != null)){
-            if ((!is_numeric($this->limit)) || (!is_int($this->limit)) || ($this->limit > 100) || ($this->limit <= 0)) {
+            if ((!is_numeric($this->limit)) || (!is_int($this->limit)) || ($this->limit > 4000) || ($this->limit <= 0)) {
                 $this->limit = 100;
             } 
         }
