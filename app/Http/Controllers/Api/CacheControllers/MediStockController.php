@@ -22,8 +22,8 @@ class MediStockController extends BaseApiCacheController
     }
     public function medi_stock($id = null)
     {
-        if ($id == null) {
-            $name = $this->medi_stock_name;
+        $keyword = mb_strtolower($this->keyword, 'UTF-8');
+        if ($keyword != null) {
             $param = [
                 'room:id,department_id,room_type_id',
                 'room.department:id,department_name,department_code',
@@ -32,34 +32,54 @@ class MediStockController extends BaseApiCacheController
                 'exp_mest_types',
                 'imp_mest_types',
             ];
+            $data = $this->medi_stock
+                ->where(DB::connection('oracle_his')->raw('lower(medi_stock_code)'), 'like', '%' . $keyword . '%')
+                ->orWhere(DB::connection('oracle_his')->raw('lower(medi_stock_name)'), 'like', '%' . $keyword . '%');
+            $count = $data->count();
+            $data = $data
+                ->skip($this->start)
+                ->take($this->limit)
+                ->with($param)
+                ->get();
         } else {
-            if ($id != 'deleted') {
-                if (!is_numeric($id)) {
-                    return return_id_error($id);
+            if ($id == null) {
+                $name = $this->medi_stock_name. '_start_' . $this->start . '_limit_' . $this->limit;
+                $param = [
+                    'room:id,department_id,room_type_id',
+                    'room.department:id,department_name,department_code',
+                    'room.room_type:id,room_type_name,room_type_code',
+                    'parent:id,medi_stock_name,medi_stock_code',
+                    'exp_mest_types',
+                    'imp_mest_types',
+                ];
+            } else {
+                if ($id != 'deleted') {
+                    if (!is_numeric($id)) {
+                        return return_id_error($id);
+                    }
+                    $data = $this->medi_stock->find($id);
+                    if ($data == null) {
+                        return return_not_record($id);
+                    }
                 }
-                $data = $this->medi_stock->find($id);
-                if ($data == null) {
-                    return return_not_record($id);
-                }
+                $name = $this->medi_stock_name . '_' . $id;
+                $param = [
+                    'room',
+                    'room.department',
+                    'room.room_type',
+                    'parent',
+                    'exp_mest_types',
+                    'imp_mest_types',
+                ];
             }
-            $name = $this->medi_stock_name . '_' . $id;
-            $param = [
-                'room',
-                'room.department',
-                'room.room_type',
-                'parent',
-                'exp_mest_types',
-                'imp_mest_types',
-            ];
+            $data = get_cache_full($this->medi_stock, $param, $name, $id, $this->time, $this->start, $this->limit);
         }
-        $data = get_cache_full($this->medi_stock, $param, $name, $id, $this->time);
-        $count = $data->count();
         $param_return = [
-            'start' => null,
-            'limit' => null,
-            'count' => $count
+            'start' => $this->start,
+            'limit' => $this->limit,
+            'count' => $count ?? $data['count']
         ];
-        return return_data_success($param_return, $data);
+        return return_data_success($param_return, $data ?? $data['data']);
     }
 
     public function medi_stock_restore($id = null, Request $request)

@@ -8,6 +8,7 @@ use App\Models\HIS\MediOrg;
 use App\Http\Requests\MediOrg\CreateMediOrgRequest;
 use App\Http\Requests\MediOrg\UpdateMediOrgRequest;
 use App\Events\Cache\DeleteCache;
+use Illuminate\Support\Facades\DB;
 
 class MediOrgController extends BaseApiCacheController
 {
@@ -17,28 +18,42 @@ class MediOrgController extends BaseApiCacheController
     }
     public function medi_org($id = null)
     {
-        if ($id == null) {
-            $name = $this->medi_org_name;
-            $param = [];
+        $keyword = mb_strtolower($this->keyword, 'UTF-8');
+        if ($keyword != null) {
+            $param = [
+            ];
+            $data = $this->medi_org
+                ->where(DB::connection('oracle_his')->raw('lower(medi_org_code)'), 'like', '%' . $keyword . '%')
+                ->orWhere(DB::connection('oracle_his')->raw('lower(medi_org_name)'), 'like', '%' . $keyword . '%');
+            $count = $data->count();
+            $data = $data
+                ->skip($this->start)
+                ->take($this->limit)
+                ->with($param)
+                ->get();
         } else {
-            if (!is_numeric($id)) {
-                return return_id_error($id);
+            if ($id == null) {
+                $name = $this->medi_org_name. '_start_' . $this->start . '_limit_' . $this->limit;
+                $param = [];
+            } else {
+                if (!is_numeric($id)) {
+                    return return_id_error($id);
+                }
+                $data = $this->medi_org->find($id);
+                if ($data == null) {
+                    return return_not_record($id);
+                }
+                $name = $this->medi_org_name . '_' . $id;
+                $param = [];
             }
-            $data = $this->medi_org->find($id);
-            if ($data == null) {
-                return return_not_record($id);
-            }
-            $name = $this->medi_org_name . '_' . $id;
-            $param = [];
+            $data = get_cache_full($this->medi_org, $param, $name, $id, $this->time, $this->start, $this->limit);
         }
-        $data = get_cache_full($this->medi_org, $param, $name, $id, $this->time);
-        $count = $data->count();
         $param_return = [
-            'start' => null,
-            'limit' => null,
-            'count' => $count
+            'start' => $this->start,
+            'limit' => $this->limit,
+            'count' => $count ?? $data['count']
         ];
-        return return_data_success($param_return, $data);
+        return return_data_success($param_return, $data ?? $data['data']);
     }
 
     public function medi_org_create(CreateMediOrgRequest $request)

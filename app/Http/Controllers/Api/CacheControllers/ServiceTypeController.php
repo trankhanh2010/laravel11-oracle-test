@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\CacheControllers;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
 use App\Models\HIS\ServiceType;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ServiceTypeController extends BaseApiCacheController
 {
@@ -14,31 +15,46 @@ class ServiceTypeController extends BaseApiCacheController
     }
     public function service_type($id = null)
     {
-        if ($id == null) {
-            $name = $this->service_type_name;
+        $keyword = mb_strtolower($this->keyword, 'UTF-8');
+        if ($keyword != null) {
             $param = [
                 'exe_service_module:id,exe_service_module_name,module_link',
             ];
+            $data = $this->service_type
+                ->where(DB::connection('oracle_his')->raw('lower(service_type_code)'), 'like', '%' . $keyword . '%')
+                ->orWhere(DB::connection('oracle_his')->raw('lower(service_type_name)'), 'like', '%' . $keyword . '%');
+            $count = $data->count();
+            $data = $data
+                ->skip($this->start)
+                ->take($this->limit)
+                ->with($param)
+                ->get();
         } else {
-            if (!is_numeric($id)) {
-                return return_id_error($id);
+            if ($id == null) {
+                $name = $this->service_type_name. '_start_' . $this->start . '_limit_' . $this->limit;
+                $param = [
+                    'exe_service_module:id,exe_service_module_name,module_link',
+                ];
+            } else {
+                if (!is_numeric($id)) {
+                    return return_id_error($id);
+                }
+                $data = $this->service_type->find($id);
+                if ($data == null) {
+                    return return_not_record($id);
+                }
+                $name = $this->service_type_name . '_' . $id;
+                $param = [
+                    'exe_service_module',
+                ];
             }
-            $data = $this->service_type->find($id);
-            if ($data == null) {
-                return return_not_record($id);
-            }
-            $name = $this->service_type_name . '_' . $id;
-            $param = [
-                'exe_service_module',
-            ];
+            $data = get_cache_full($this->service_type, $param, $name, $id, $this->time, $this->start, $this->limit);
         }
-        $data = get_cache_full($this->service_type, $param, $name, $id, $this->time);
-        $count = $data->count();
         $param_return = [
-            'start' => null,
-            'limit' => null,
-            'count' => $count
+            'start' => $this->start,
+            'limit' => $this->limit,
+            'count' => $count ?? $data['count']
         ];
-        return return_data_success($param_return, $data);
+        return return_data_success($param_return, $data ?? $data['data']);
     }
 }

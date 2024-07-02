@@ -19,36 +19,53 @@ class ReceptionRoomController extends BaseApiCacheController
     }
     public function reception_room($id = null)
     {
-        if ($id == null) {
-            $name = $this->reception_room_name;
+        $keyword = mb_strtolower($this->keyword, 'UTF-8');
+        if ($keyword != null) {
             $param = [
                 'room.department',
                 'room.area',
                 'room.default_cashier_room',
             ];
+            $data = $this->reception_room
+                ->where(DB::connection('oracle_his')->raw('lower(reception_room_code)'), 'like', '%' . $keyword . '%')
+                ->orWhere(DB::connection('oracle_his')->raw('lower(reception_room_name)'), 'like', '%' . $keyword . '%');
+            $count = $data->count();
+            $data = $data
+                ->skip($this->start)
+                ->take($this->limit)
+                ->with($param)
+                ->get();
         } else {
-            if (!is_numeric($id)) {
-                return return_id_error($id);
+            if ($id == null) {
+                $name = $this->reception_room_name. '_start_' . $this->start . '_limit_' . $this->limit;
+                $param = [
+                    'room.department',
+                    'room.area',
+                    'room.default_cashier_room',
+                ];
+            } else {
+                if (!is_numeric($id)) {
+                    return return_id_error($id);
+                }
+                $data = $this->reception_room->find($id);
+                if ($data == null) {
+                    return return_not_record($id);
+                }
+                $name = $this->reception_room_name . '_' . $id;
+                $param = [
+                    'room.department',
+                    'room.area',
+                    'room.default_cashier_room',
+                ];
             }
-            $data = $this->reception_room->find($id);
-            if ($data == null) {
-                return return_not_record($id);
-            }
-            $name = $this->reception_room_name . '_' . $id;
-            $param = [
-                'room.department',
-                'room.area',
-                'room.default_cashier_room',
-            ];
+            $data = get_cache_full($this->reception_room, $param, $name, $id, $this->time, $this->start, $this->limit);
         }
-        $data = get_cache_full($this->reception_room, $param, $name, $id, $this->time);
-        $count = $data->count();
         $param_return = [
-            'start' => null,
-            'limit' => null,
-            'count' => $count
+            'start' => $this->start,
+            'limit' => $this->limit,
+            'count' => $count ?? $data['count']
         ];
-        return return_data_success($param_return, $data);
+        return return_data_success($param_return, $data ?? $data['data']);
     }
     public function reception_room_create(CreateReceptionRoomRequest $request)
     {

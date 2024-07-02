@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Events\Cache\DeleteCache;
 use App\Http\Requests\IcdCm\CreateIcdCmRequest;
 use App\Http\Requests\IcdCm\UpdateIcdCmRequest;
+use Illuminate\Support\Facades\DB;
 
 class IcdCmController extends BaseApiCacheController
 {
@@ -19,30 +20,44 @@ class IcdCmController extends BaseApiCacheController
 
     public function icd_cm($id = null)
     {
-        if ($id == null) {
-            $name = $this->icd_cm_name;
+        $keyword = mb_strtolower($this->keyword, 'UTF-8');
+        if ($keyword != null) {
             $param = [
             ];
+            $data = $this->icd_cm
+                ->where(DB::connection('oracle_his')->raw('lower(icd_cm_code)'), 'like', '%' . $keyword . '%')
+                ->orWhere(DB::connection('oracle_his')->raw('lower(icd_cm_name)'), 'like', '%' . $keyword . '%');
+            $count = $data->count();
+            $data = $data
+                ->skip($this->start)
+                ->take($this->limit)
+                ->with($param)
+                ->get();
         } else {
-            if (!is_numeric($id)) {
-                return return_id_error($id);
+            if ($id == null) {
+                $name = $this->icd_cm_name. '_start_' . $this->start . '_limit_' . $this->limit;
+                $param = [
+                ];
+            } else {
+                if (!is_numeric($id)) {
+                    return return_id_error($id);
+                }
+                $data = $this->icd_cm->find($id);
+                if ($data == null) {
+                    return return_not_record($id);
+                }
+                $name = $this->icd_cm_name . '_' . $id;
+                $param = [
+                ];
             }
-            $data = $this->icd_cm->find($id);
-            if ($data == null) {
-                return return_not_record($id);
-            }
-            $name = $this->icd_cm_name . '_' . $id;
-            $param = [
-            ];
+            $data = get_cache_full($this->icd_cm, $param, $name, $id, $this->time, $this->start, $this->limit);
         }
-        $data = get_cache_full($this->icd_cm, $param, $name, $id, $this->time);
-        $count = $data->count();
         $param_return = [
-            'start' => null,
-            'limit' => null,
-            'count' => $count
+            'start' => $this->start,
+            'limit' => $this->limit,
+            'count' => $count ?? $data['count']
         ];
-        return return_data_success($param_return, $data);
+        return return_data_success($param_return, $data ?? $data['data']);
     }
     public function icd_cm_create(CreateIcdCmRequest $request)
     {

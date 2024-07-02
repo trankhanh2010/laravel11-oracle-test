@@ -355,15 +355,42 @@ if (!function_exists('get_cache_1_1_1_1_1')) {
 }
 
 if (!function_exists('get_cache_by_code')) {
-    function get_cache_by_code($model, $name, $param, $type_name, $type, $time)
+    // function get_cache_by_code($model, $name, $param, $type_name, $type, $time)
+    // {
+    //     if ($type == null) {
+    //         $data = Cache::remember($name . '_by_' . $type_name . '_' . $type, $time, function () use ($model, $param, $type_name, $type) {
+    //             return $model::with($param)->get();
+    //         });
+    //     } else {
+    //         $data = Cache::remember($name . '_by_' . $type_name . '_' . $type, $time, function () use ($model, $param, $type_name, $type) {
+    //             return $model::with($param)->where($type_name, 'LIKE', $type . '%')->get();
+    //         });
+    //     }
+    //     return $data;
+    // }
+    function get_cache_by_code($model, $name, $param, $type_name, $type, $time, $start, $limit)
     {
         if ($type == null) {
-            $data = Cache::remember($name . '_by_' . $type_name . '_' . $type, $time, function () use ($model, $param, $type_name, $type) {
-                return $model::with($param)->get();
+            $data = Cache::remember($name . '_by_' . $type_name . '_' . $type. '_start_' . $start . '_limit_' . $limit, $time, function () use ($model, $param, $type_name, $type, $start, $limit) {
+                $data=  $model->with($param);
+                
+                $count = $data->count();
+                $data = $data    
+                    ->skip($start)
+                    ->take($limit)
+                    ->get();
+            return ['data' => $data, 'count' => $count];
             });
         } else {
-            $data = Cache::remember($name . '_by_' . $type_name . '_' . $type, $time, function () use ($model, $param, $type_name, $type) {
-                return $model::with($param)->where($type_name, 'LIKE', $type . '%')->get();
+            $data = Cache::remember($name . '_by_' . $type_name . '_' . $type. '_start_' . $start . '_limit_' . $limit, $time, function () use ($model, $param, $type_name, $type, $start, $limit) {
+                $data=  $model->with($param)
+                ->where($type_name, 'LIKE', $type . '%');
+                $count = $data->count();
+                $data = $data    
+                    ->skip($start)
+                    ->take($limit)
+                    ->get();
+            return ['data' => $data, 'count' => $count];
             });
         }
         return $data;

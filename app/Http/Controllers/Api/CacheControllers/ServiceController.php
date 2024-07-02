@@ -31,7 +31,7 @@ class ServiceController extends BaseApiCacheController
             return return_not_record($id);
         }
 
-        $data = get_cache($this->service, $this->service_name, $id, $this->time);
+        $data = get_cache($this->service, $this->service_name, $id, $this->time, $this->start, $this->limit);
         $data1 = get_cache_1_1($this->service, "service_type", $this->service_name, $id, $this->time);
         $data2 = get_cache_1_1($this->service, "parent", $this->service_name, $id, $this->time);
         $data3 = get_cache_1_1($this->service, "service_unit", $this->service_name, $id, $this->time);
@@ -57,11 +57,11 @@ class ServiceController extends BaseApiCacheController
         $data23 = get_cache_1_n_with_ids($this->service, "min_proc_time_except_paty", $this->service_name, $id, $this->time);
         $data24 = get_cache_1_n_with_ids($this->service, "max_proc_time_except_paty", $this->service_name, $id, $this->time);
         $data25 = get_cache_1_n_with_ids($this->service, "total_time_except_paty", $this->service_name, $id, $this->time);
-        $count = $data->count();
+        // $count = $data->count();
         $param_return = [
             'start' => null,
             'limit' => null,
-            'count' => $count
+            'count' => null
         ];
         $param_data = [
             'service' => $data,
@@ -110,16 +110,33 @@ class ServiceController extends BaseApiCacheController
         if ($data == null) {
             return return_not_record($id);
         }
-        $param =[];
-        $data = get_cache_by_code($this->service, $this->service_name, $param, 'service_type_id', $id, $this->time);
 
-        $count = $data->count();
+
+        $keyword = mb_strtolower($this->keyword, 'UTF-8');
+        if ($keyword != null) {
+            $param = [
+            ];
+            $data = $this->service
+                ->where('service_type_id', '=', $id)
+                ->where(DB::connection('oracle_his')->raw('lower(service_code)'), 'like', '%' . $keyword . '%')
+                ->orWhere(DB::connection('oracle_his')->raw('lower(service_name)'), 'like', '%' . $keyword . '%');
+            $count = $data->count();
+            $data = $data
+                ->skip($this->start)
+                ->take($this->limit)
+                ->with($param)
+                ->get();
+        } else {
+            $param =[];
+            $data = get_cache_by_code($this->service, $this->service_name, $param, 'service_type_id', $id, $this->time, $this->start, $this->limit);
+        }
+
         $param_return = [
-            'start' => null,
-            'limit' => null,
-            'count' => $count
+            'start' => $this->start,
+            'limit' => $this->limit,
+            'count' => $count ?? $data['count'] ?? null
         ];
-        return return_data_success($param_return, $data);
+        return return_data_success($param_return, $data ?? $data['data']);
     }
     
 
