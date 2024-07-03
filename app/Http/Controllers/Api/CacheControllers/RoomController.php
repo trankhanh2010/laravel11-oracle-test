@@ -21,7 +21,7 @@ class RoomController extends BaseApiCacheController
     {
         $keyword = mb_strtolower($this->keyword, 'UTF-8');
         if($keyword != null){
-            $data = DB::connection('oracle_his')->table('his_room')
+            $data = $this->room
                     ->leftJoin('his_bed_room as bed', 'his_room.id', '=', 'bed.room_id')
                     ->leftJoin('his_cashier_room as cashier', 'his_room.id', '=', 'cashier.room_id')
                     ->leftJoin('his_execute_room as execute', 'his_room.id', '=', 'execute.room_id')
@@ -49,16 +49,15 @@ class RoomController extends BaseApiCacheController
                               ->orWhere(DB::connection('oracle_his')->raw('lower(cashier.cashier_room_code)'), 'like', '%' . $keyword . '%')
                               ->orWhere(DB::connection('oracle_his')->raw('lower(execute.execute_room_code)'), 'like', '%' . $keyword . '%')
                               ->orWhere(DB::connection('oracle_his')->raw('lower(reception.reception_room_code)'), 'like', '%' . $keyword . '%');
-                    })
-                    ->orderBy(DB::connection('oracle_his')->raw('"room_name"'), 'asc');
+                    });
                 $count = $data->count();
                 $data = $data    
                     ->skip($this->start)
                     ->take($this->limit)
                     ->get();
         }else{
-            $data = Cache::remember('room_name_code_with_bed_room_bed_room_execute_room_reception_room' . '_start_' . $this->start . '_limit_' . $this->limit, $this->time, function () {
-                $data = DB::connection('oracle_his')->table('his_room')
+            $data = Cache::remember('room_name_code_with_bed_room_bed_room_execute_room_reception_room' . '_start_' . $this->start . '_limit_' . $this->limit. $this->order_by_tring, $this->time, function () {
+                $data = $this->room
                     ->leftJoin('his_bed_room as bed', 'his_room.id', '=', 'bed.room_id')
                     ->leftJoin('his_cashier_room as cashier', 'his_room.id', '=', 'cashier.room_id')
                     ->leftJoin('his_execute_room as execute', 'his_room.id', '=', 'execute.room_id')
@@ -91,7 +90,9 @@ class RoomController extends BaseApiCacheController
         $param_return = [
             'start' => $this->start,
             'limit' => $this->limit,
-            'count' => $count ?? $data['count']
+            'count' => $count ?? $data['count'],
+            'keyword' => $this->keyword,
+            'order_by' => $this->order_by_request
         ];
         return return_data_success($param_return, $data ?? $data['data']);
     }
@@ -105,7 +106,7 @@ class RoomController extends BaseApiCacheController
             return return_not_record($id);
         }
         $data = Cache::remember('room_name_code_with_bed_room_bed_room_execute_room_reception_room_with_department_id_' . $id, $this->time, function () use ($id) {
-            return DB::connection('oracle_his')->table('his_room')
+            return $this->room
                 ->leftJoin('his_bed_room as bed', 'his_room.id', '=', 'bed.room_id')
                 ->leftJoin('his_cashier_room as cashier', 'his_room.id', '=', 'cashier.room_id')
                 ->leftJoin('his_execute_room as execute', 'his_room.id', '=', 'execute.room_id')

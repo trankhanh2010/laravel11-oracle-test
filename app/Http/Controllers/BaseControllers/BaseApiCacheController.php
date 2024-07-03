@@ -11,6 +11,10 @@ class BaseApiCacheController extends Controller
     protected $time;
     protected $start;
     protected $limit;
+    protected $order_by;
+    protected $order_by_tring;
+    protected $order_by_request;
+    protected $only_active;
     protected $keyword;
     protected $per_page;
     protected $page;
@@ -321,15 +325,23 @@ class BaseApiCacheController extends Controller
         // Thời gian tồn tại của cache
         $this->time = now()->addMinutes(10080);
         // Param json gửi từ client
-        $this->param_request = json_decode(base64_decode($request->input('param')), true);
+        $this->param_request = json_decode(base64_decode($request->input('param')), true) ?? null;
+
         $this->per_page = $request->query('perPage', 10);
         $this->page = $request->query('page', 1);
         $this->start = $this->param_request['CommonParam']['Start'] ?? intval($request->start) ?? 0;
         $this->limit = $this->param_request['CommonParam']['Limit'] ?? intval($request->limit) ?? 10;
+
         if(($this->limit <= 10) || (!in_array($this->limit,[10,20,50,100,500,1000,2000]))){
             $this->limit = 10;
         }
         $this->keyword = $this->param_request['ApiData']['KeyWord'] ?? $request->keyword;
+        $this->order_by = $this->param_request['ApiData']['OrderBy'] ?? null;
+        $this->order_by_request = $this->param_request['ApiData']['OrderBy'] ?? null;
+        if($this->order_by != null){
+            $this->order_by = convertArrayKeysToSnakeCase($this->order_by);
+        }
+        $this->only_active = $this->param_request['ApiData']['OnlyActive'] ?? 0;
         if($this->start != null){
             if ((!is_numeric($this->start)) || (!is_int($this->start)) || ($this->start < 0)) {
                 $this->start = 0;

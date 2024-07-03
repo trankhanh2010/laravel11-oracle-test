@@ -17,6 +17,16 @@ class RefectoryController extends BaseApiCacheController
         parent::__construct($request); // Gọi constructor của BaseController
         $this->refectory = new Refectory();
         $this->room = new Room();
+        // Kiểm tra tên trường trong bảng
+        if ($this->order_by != null) {
+            foreach ($this->order_by as $key => $item) {
+                if (!$this->refectory->getConnection()->getSchemaBuilder()->hasColumn($this->refectory->getTable(), $key)) {
+                    unset($this->order_by_request[camelCaseFromUnderscore($key)]);       
+                    unset($this->order_by[$key]);               
+                }
+            }
+            $this->order_by_tring = arrayToCustomString($this->order_by);
+        }
     }
 
     
@@ -31,6 +41,11 @@ class RefectoryController extends BaseApiCacheController
                 ->where(DB::connection('oracle_his')->raw('lower(refectory_code)'), 'like', '%' . $keyword . '%')
                 ->orWhere(DB::connection('oracle_his')->raw('lower(refectory_name)'), 'like', '%' . $keyword . '%');
             $count = $data->count();
+            if ($this->order_by != null) {
+                foreach ($this->order_by as $key => $item) {
+                    $data->orderBy($key, $item);
+                }
+            }
             $data = $data
                 ->skip($this->start)
                 ->take($this->limit)
@@ -38,7 +53,7 @@ class RefectoryController extends BaseApiCacheController
                 ->get();
         } else {
             if ($id == null) {
-                $name = $this->refectory_name. '_start_' . $this->start . '_limit_' . $this->limit;
+                $name = $this->refectory_name. '_start_' . $this->start . '_limit_' . $this->limit. $this->order_by_tring;
                 $param = [
                     'room.department',
                 ];
@@ -55,12 +70,14 @@ class RefectoryController extends BaseApiCacheController
                     'room.department',
                 ];
             }
-            $data = get_cache_full($this->refectory, $param, $name, $id, $this->time, $this->start, $this->limit);
+            $data = get_cache_full($this->refectory, $param, $name, $id, $this->time, $this->start, $this->limit, $this->order_by);
         }
         $param_return = [
             'start' => $this->start,
             'limit' => $this->limit,
-            'count' => $count ?? $data['count']
+            'count' => $count ?? $data['count'],
+            'keyword' => $this->keyword,
+            'order_by' => $this->order_by_request
         ];
         return return_data_success($param_return, $data ?? $data['data']);
     }

@@ -17,6 +17,17 @@ class ExecuteRoomController extends BaseApiCacheController
         parent::__construct($request); // Gọi constructor của BaseController
         $this->execute_room = new ExecuteRoom();
         $this->room = new Room();
+
+        // Kiểm tra tên trường trong bảng
+        if ($this->order_by != null) {
+            foreach ($this->order_by as $key => $item) {
+                if (!$this->execute_room->getConnection()->getSchemaBuilder()->hasColumn($this->execute_room->getTable(), $key)) {
+                    unset($this->order_by_request[camelCaseFromUnderscore($key)]);       
+                    unset($this->order_by[$key]);               
+                }
+            }
+            $this->order_by_tring = arrayToCustomString($this->order_by);
+        }
     }
     public function execute_room($id = null)
     {
@@ -39,6 +50,11 @@ class ExecuteRoomController extends BaseApiCacheController
                 ->where(DB::connection('oracle_his')->raw('lower(execute_room_code)'), 'like', '%' . $keyword . '%')
                 ->orWhere(DB::connection('oracle_his')->raw('lower(execute_room_name)'), 'like', '%' . $keyword . '%');
             $count = $data->count();
+            if ($this->order_by != null) {
+                foreach ($this->order_by as $key => $item) {
+                    $data->orderBy($key, $item);
+                }
+            }
             $data = $data
                 ->skip($this->start)
                 ->take($this->limit)
@@ -46,7 +62,7 @@ class ExecuteRoomController extends BaseApiCacheController
                 ->get();
         } else {
             if ($id == null) {
-                $name = $this->execute_room_name. '_start_' . $this->start . '_limit_' . $this->limit;
+                $name = $this->execute_room_name. '_start_' . $this->start . '_limit_' . $this->limit. $this->order_by_tring;
                 $param = [
                     'room',
                     'room.department:id,department_name,department_code',
@@ -83,7 +99,7 @@ class ExecuteRoomController extends BaseApiCacheController
                     'room.bill_account_book'
                 ];
             }
-            $data = get_cache_full($this->execute_room, $param, $name, $id, $this->time, $this->start, $this->limit);
+            $data = get_cache_full($this->execute_room, $param, $name, $id, $this->time, $this->start, $this->limit, $this->order_by);
             // foreach ($data as $key => $item) {
             //     $item->default_drug_store = get_cache_1_1_n_with_ids($this->execute_room, "room.default_drug_store", $this->execute_room_name, $item->id, $this->time);
             // }
@@ -91,7 +107,9 @@ class ExecuteRoomController extends BaseApiCacheController
         $param_return = [
             'start' => $this->start,
             'limit' => $this->limit,
-            'count' => $count ?? $data['count']
+            'count' => $count ?? $data['count'],
+            'keyword' => $this->keyword,
+            'order_by' => $this->order_by_request
         ];
         return return_data_success($param_return, $data ?? $data['data']);
     }

@@ -18,6 +18,17 @@ class ServiceController extends BaseApiCacheController
         parent::__construct($request); // Gọi constructor của BaseController
         $this->service = new Service();
         $this->service_type = new ServiceType();
+
+        // Kiểm tra tên trường trong bảng
+        if ($this->order_by != null) {
+            foreach ($this->order_by as $key => $item) {
+                if (!$this->service->getConnection()->getSchemaBuilder()->hasColumn($this->service->getTable(), $key)) {
+                    unset($this->order_by_request[camelCaseFromUnderscore($key)]);       
+                    unset($this->order_by[$key]);               
+                }
+            }
+            $this->order_by_tring = arrayToCustomString($this->order_by);
+        }
     }
 
     
@@ -31,7 +42,7 @@ class ServiceController extends BaseApiCacheController
             return return_not_record($id);
         }
 
-        $data = get_cache($this->service, $this->service_name, $id, $this->time, $this->start, $this->limit);
+        $data = get_cache($this->service, $this->service_name, $id, $this->time,$this->start, $this->limit, $this->order_by);
         $data1 = get_cache_1_1($this->service, "service_type", $this->service_name, $id, $this->time);
         $data2 = get_cache_1_1($this->service, "parent", $this->service_name, $id, $this->time);
         $data3 = get_cache_1_1($this->service, "service_unit", $this->service_name, $id, $this->time);
@@ -121,6 +132,11 @@ class ServiceController extends BaseApiCacheController
                 ->where(DB::connection('oracle_his')->raw('lower(service_code)'), 'like', '%' . $keyword . '%')
                 ->orWhere(DB::connection('oracle_his')->raw('lower(service_name)'), 'like', '%' . $keyword . '%');
             $count = $data->count();
+            if ($this->order_by != null) {
+                foreach ($this->order_by as $key => $item) {
+                    $data->orderBy('his_service.'.$key, $item);
+                }
+            }
             $data = $data
                 ->skip($this->start)
                 ->take($this->limit)
@@ -128,13 +144,15 @@ class ServiceController extends BaseApiCacheController
                 ->get();
         } else {
             $param =[];
-            $data = get_cache_by_code($this->service, $this->service_name, $param, 'service_type_id', $id, $this->time, $this->start, $this->limit);
+            $data = get_cache_by_code($this->service, $this->service_name. $this->order_by_tring, $param, 'service_type_id', $id, $this->time, $this->start, $this->limit);
         }
 
         $param_return = [
             'start' => $this->start,
             'limit' => $this->limit,
-            'count' => $count ?? $data['count'] ?? null
+            'count' => $count ?? $data['count'] ?? null,
+            'keyword' => $this->keyword,
+            'order_by' => $this->order_by_request
         ];
         return return_data_success($param_return, $data ?? $data['data']);
     }

@@ -18,6 +18,17 @@ class BedRoomController extends BaseApiCacheController
         parent::__construct($request); // Gọi constructor của BaseController
         $this->bed_room = new BedRoom();
         $this->room = new Room();
+
+        // Kiểm tra tên trường trong bảng
+        if ($this->order_by != null) {
+            foreach ($this->order_by as $key => $item) {
+                if (!$this->bed_room->getConnection()->getSchemaBuilder()->hasColumn($this->bed_room->getTable(), $key)) {
+                    unset($this->order_by_request[camelCaseFromUnderscore($key)]);       
+                    unset($this->order_by[$key]);               
+                }
+            }
+            $this->order_by_tring = arrayToCustomString($this->order_by);
+        }
     }
     public function bed_room($id = null)
     {
@@ -35,6 +46,11 @@ class BedRoomController extends BaseApiCacheController
                 ->where(DB::connection('oracle_his')->raw('lower(bed_room_code)'), 'like', '%' . $keyword . '%')
                 ->orWhere(DB::connection('oracle_his')->raw('lower(bed_room_name)'), 'like', '%' . $keyword . '%');
             $count = $data->count();
+            if ($this->order_by != null) {
+                foreach ($this->order_by as $key => $item) {
+                    $data->orderBy($key, $item);
+                }
+            }
             $data = $data
                 ->skip($this->start)
                 ->take($this->limit)
@@ -42,7 +58,7 @@ class BedRoomController extends BaseApiCacheController
                 ->get();
         } else {
             if ($id == null) {
-                $name = $this->bed_room_name . '_' . $this->patient_type_name. '_start_' . $this->start . '_limit_' . $this->limit;
+                $name = $this->bed_room_name . '_' . $this->patient_type_name . '_start_' . $this->start . '_limit_' . $this->limit . $this->order_by_tring;
                 $param = [
                     'room:id,department_id,area_id,speciality_id,default_cashier_room_id,default_instr_patient_type_id',
                     'room.department:id,department_name,department_code',
@@ -70,12 +86,14 @@ class BedRoomController extends BaseApiCacheController
                 ];
             }
             $model = $this->bed_room;
-            $data = get_cache_full($model, $param, $name, $id, $this->time, $this->start, $this->limit);
+            $data = get_cache_full($model, $param, $name, $id, $this->time, $this->start, $this->limit, $this->order_by);
         }
         $param_return = [
             'start' => $this->start,
             'limit' => $this->limit,
-            'count' => $count ?? $data['count']
+            'count' => $count ?? $data['count'],
+            'keyword' => $this->keyword,
+            'order_by' => $this->order_by_request
         ];
         return return_data_success($param_return, $data ?? $data['data']);
     }

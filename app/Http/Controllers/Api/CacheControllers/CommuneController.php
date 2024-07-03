@@ -15,37 +15,58 @@ class CommuneController extends BaseApiCacheController
     public function __construct(Request $request){
         parent::__construct($request); // Gọi constructor của BaseController
         $this->commune = new Commune();
+
+        // Kiểm tra tên trường trong bảng
+        if ($this->order_by != null) {
+            foreach ($this->order_by as $key => $item) {
+                if (!$this->commune->getConnection()->getSchemaBuilder()->hasColumn($this->commune->getTable(), $key)) {
+                    unset($this->order_by_request[camelCaseFromUnderscore($key)]);       
+                    unset($this->order_by[$key]);               
+                }
+            }
+            $this->order_by_tring = arrayToCustomString($this->order_by);
+        }
     }
     public function commune($id = null)
     {
         $keyword = mb_strtolower($this->keyword, 'UTF-8');
         if($keyword != null){
-            $data = DB::connection('oracle_sda')->table('sda_commune as commune')
-                    ->leftJoin('sda_district as district', 'district.id', '=', 'commune.district_id')
+            $data = $this->commune
+                    ->leftJoin('sda_district as district', 'district.id', '=', 'sda_commune.district_id')
                     ->select(
-                        'commune.*',
+                        'sda_commune.*',
                         'district.district_name as district_name',
                         'district.district_code as district_code',
                     )
-                    ->where(DB::connection('oracle_his')->raw('lower(commune_code)'), 'like', '%' . $keyword . '%')
-                    ->orWhere(DB::connection('oracle_his')->raw('lower(commune_name)'), 'like', '%' . $keyword . '%')
-                    ->orWhere(DB::connection('oracle_his')->raw('lower(commune.search_code)'), 'like', '%' . $keyword . '%');
+                    ->where(DB::connection('oracle_his')->raw('lower(sda_commune.commune_code)'), 'like', '%' . $keyword . '%')
+                    ->orWhere(DB::connection('oracle_his')->raw('lower(sda_commune.commune_name)'), 'like', '%' . $keyword . '%')
+                    ->orWhere(DB::connection('oracle_his')->raw('lower(sda_commune.search_code)'), 'like', '%' . $keyword . '%');
                     $count = $data->count();
+                    if ($this->order_by != null) {
+                        foreach ($this->order_by as $key => $item) {
+                            $data->orderBy('sda_commune.'.$key, $item);
+                        }
+                    }
                     $data = $data    
                         ->skip($this->start)
                         ->take($this->limit)
                         ->get();
         }else{
             if ($id == null) {
-                $data = Cache::remember($this->commune_name. '_start_' . $this->start . '_limit_' . $this->limit, $this->time, function (){
-                    $data = DB::connection('oracle_sda')->table('sda_commune as commune')
-                    ->leftJoin('sda_district as district', 'district.id', '=', 'commune.district_id')
+                $data = Cache::remember($this->commune_name. '_start_' . $this->start . '_limit_' . $this->limit. $this->order_by_tring, $this->time, function (){
+                    $data = $this->commune
+                    ->leftJoin('sda_district as district', 'district.id', '=', 'sda_commune.district_id')
                     ->select(
-                        'commune.*',
+                        'sda_commune.*',
                         'district.district_name as district_name',
                         'district.district_code as district_code',
                     );
                     $count = $data->count();
+                    if ($this->order_by != null) {
+                        foreach ($this->order_by as $key => $item) {
+                            $data->orderBy('sda_commune.'.$key, $item);
+                        }
+                    }
                     $data = $data    
                         ->skip($this->start)
                         ->take($this->limit)
@@ -76,7 +97,9 @@ class CommuneController extends BaseApiCacheController
         $param_return = [
             'start' => $this->start,
             'limit' => $this->limit,
-            'count' => $count ?? $data['count']
+            'count' => $count ?? $data['count'],
+            'keyword' => $this->keyword,
+            'order_by' => $this->order_by_request
         ];
         return return_data_success($param_return, $data ?? $data['data']);
     }

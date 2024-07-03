@@ -16,6 +16,17 @@ class AreaController extends BaseApiCacheController
     {
         parent::__construct($request); // Gọi constructor của BaseController
         $this->area = new Area();
+
+        // Kiểm tra tên trường trong bảng
+        if ($this->order_by != null) {
+            foreach ($this->order_by as $key => $item) {
+                if (!$this->area->getConnection()->getSchemaBuilder()->hasColumn($this->area->getTable(), $key)) {
+                    unset($this->order_by_request[camelCaseFromUnderscore($key)]);       
+                    unset($this->order_by[$key]);               
+                }
+            }
+            $this->order_by_tring = arrayToCustomString($this->order_by);
+        }
     }
     public function area($id = null)
     {
@@ -25,13 +36,18 @@ class AreaController extends BaseApiCacheController
                 ->where(DB::connection('oracle_his')->raw('lower(area_code)'), 'like', '%' . $keyword . '%')
                 ->orWhere(DB::connection('oracle_his')->raw('lower(area_name)'), 'like', '%' . $keyword . '%');
             $count = $data->count();
+            if ($this->order_by != null) {
+                foreach ($this->order_by as $key => $item) {
+                    $data->orderBy($key, $item);
+                }
+            }
             $data = $data
                 ->skip($this->start)
                 ->take($this->limit)
                 ->get();
         } else {
             if ($id == null) {
-                $data = get_cache($this->area, $this->area_name . '_start_' . $this->start . '_limit_' . $this->limit, null, $this->time, $this->start, $this->limit);
+                $data = get_cache($this->area, $this->area_name . '_start_' . $this->start . '_limit_' . $this->limit. $this->order_by_tring, null, $this->time, $this->start, $this->limit, $this->order_by);
             } else {
                 if (!is_numeric($id)) {
                     return return_id_error($id);
@@ -40,13 +56,15 @@ class AreaController extends BaseApiCacheController
                 if ($data == null) {
                     return return_not_record($id);
                 }
-                $data = get_cache($this->area, $this->area_name, $id, $this->time, $this->start, $this->limit);
+                $data = get_cache($this->area, $this->area_name, $id, $this->time, $this->start, $this->limit, $this->order_by);
             }
         }
         $param_return = [
             'start' => $this->start,
             'limit' => $this->limit,
-            'count' => $count ?? $data['count']
+            'count' => $count ?? $data['count'],
+            'keyword' => $this->keyword,
+            'order_by' => $this->order_by_request
         ];
         return return_data_success($param_return, $data ?? $data['data']);
     }

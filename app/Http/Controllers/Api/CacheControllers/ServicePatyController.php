@@ -18,13 +18,13 @@ class ServicePatyController extends BaseApiCacheController
     {
         $keyword = mb_strtolower($this->keyword, 'UTF-8');
         if ($keyword != null) {
-            $data = DB::connection('oracle_his')->table('his_service_paty as service_paty')
-            ->leftJoin('his_service as service', 'service.id', '=', 'service_paty.service_id')
-            ->leftJoin('his_patient_type as patient_type', 'patient_type.id', '=', 'service_paty.patient_type_id')
-            ->leftJoin('his_branch as branch', 'branch.id', '=', 'service_paty.branch_id')
-            ->leftJoin('his_package as package', 'package.id', '=', 'service_paty.package_id')
+            $data = $this->service_paty
+            ->leftJoin('his_service as service', 'service.id', '=', 'his_service_paty.service_id')
+            ->leftJoin('his_patient_type as patient_type', 'patient_type.id', '=', 'his_service_paty.patient_type_id')
+            ->leftJoin('his_branch as branch', 'branch.id', '=', 'his_service_paty.branch_id')
+            ->leftJoin('his_package as package', 'package.id', '=', 'his_service_paty.package_id')
             ->select(
-                'service_paty.*',
+                'his_service_paty.*',
                 'service.service_name as service_name',
                 'service.service_code as service_code',
                 'patient_type.patient_type_name as patient_type_name',
@@ -48,13 +48,13 @@ class ServicePatyController extends BaseApiCacheController
         } else {
             if($id == null){
                 $data = Cache::remember('service_paty' . '_start_' . $this->start . '_limit_' . $this->limit, $this->time, function () {
-                    $data = DB::connection('oracle_his')->table('his_service_paty as service_paty')
-                    ->leftJoin('his_service as service', 'service.id', '=', 'service_paty.service_id')
-                    ->leftJoin('his_patient_type as patient_type', 'patient_type.id', '=', 'service_paty.patient_type_id')
-                    ->leftJoin('his_branch as branch', 'branch.id', '=', 'service_paty.branch_id')
-                    ->leftJoin('his_package as package', 'package.id', '=', 'service_paty.package_id')
+                    $data = $this->service_paty
+                    ->leftJoin('his_service as service', 'service.id', '=', 'his_service_paty.service_id')
+                    ->leftJoin('his_patient_type as patient_type', 'patient_type.id', '=', 'his_service_paty.patient_type_id')
+                    ->leftJoin('his_branch as branch', 'branch.id', '=', 'his_service_paty.branch_id')
+                    ->leftJoin('his_package as package', 'package.id', '=', 'his_service_paty.package_id')
                     ->select(
-                        'service_paty.*',
+                        'his_service_paty.*',
                         'service.service_name as service_name',
                         'service.service_code as service_code',
                         'patient_type.patient_type_name as patient_type_name',

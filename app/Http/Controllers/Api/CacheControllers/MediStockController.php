@@ -19,6 +19,17 @@ class MediStockController extends BaseApiCacheController
         $this->medi_stock = new MediStock();
         $this->room = new Room();
 
+        // Kiểm tra tên trường trong bảng
+        if ($this->order_by != null) {
+            foreach ($this->order_by as $key => $item) {
+                if (!$this->medi_stock->getConnection()->getSchemaBuilder()->hasColumn($this->medi_stock->getTable(), $key)) {
+                    unset($this->order_by_request[camelCaseFromUnderscore($key)]);       
+                    unset($this->order_by[$key]);               
+                }
+            }
+            $this->order_by_tring = arrayToCustomString($this->order_by);
+        }
+
     }
     public function medi_stock($id = null)
     {
@@ -36,6 +47,11 @@ class MediStockController extends BaseApiCacheController
                 ->where(DB::connection('oracle_his')->raw('lower(medi_stock_code)'), 'like', '%' . $keyword . '%')
                 ->orWhere(DB::connection('oracle_his')->raw('lower(medi_stock_name)'), 'like', '%' . $keyword . '%');
             $count = $data->count();
+            if ($this->order_by != null) {
+                foreach ($this->order_by as $key => $item) {
+                    $data->orderBy($key, $item);
+                }
+            }
             $data = $data
                 ->skip($this->start)
                 ->take($this->limit)
@@ -43,7 +59,7 @@ class MediStockController extends BaseApiCacheController
                 ->get();
         } else {
             if ($id == null) {
-                $name = $this->medi_stock_name. '_start_' . $this->start . '_limit_' . $this->limit;
+                $name = $this->medi_stock_name. '_start_' . $this->start . '_limit_' . $this->limit. $this->order_by_tring;
                 $param = [
                     'room:id,department_id,room_type_id',
                     'room.department:id,department_name,department_code',
@@ -72,12 +88,14 @@ class MediStockController extends BaseApiCacheController
                     'imp_mest_types',
                 ];
             }
-            $data = get_cache_full($this->medi_stock, $param, $name, $id, $this->time, $this->start, $this->limit);
+            $data = get_cache_full($this->medi_stock, $param, $name, $id, $this->time, $this->start, $this->limit, $this->order_by);
         }
         $param_return = [
             'start' => $this->start,
             'limit' => $this->limit,
-            'count' => $count ?? $data['count']
+            'count' => $count ?? $data['count'],
+            'keyword' => $this->keyword,
+            'order_by' => $this->order_by_request
         ];
         return return_data_success($param_return, $data ?? $data['data']);
     }

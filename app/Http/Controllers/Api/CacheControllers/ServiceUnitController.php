@@ -12,6 +12,17 @@ class ServiceUnitController extends BaseApiCacheController
     public function __construct(Request $request){
         parent::__construct($request); // Gọi constructor của BaseController
         $this->service_unit = new ServiceUnit();
+
+        // Kiểm tra tên trường trong bảng
+        if ($this->order_by != null) {
+            foreach ($this->order_by as $key => $item) {
+                if (!$this->service_unit->getConnection()->getSchemaBuilder()->hasColumn($this->service_unit->getTable(), $key)) {
+                    unset($this->order_by_request[camelCaseFromUnderscore($key)]);       
+                    unset($this->order_by[$key]);               
+                }
+            }
+            $this->order_by_tring = arrayToCustomString($this->order_by);
+        }
     }
     public function service_unit($id = null)
     {
@@ -24,6 +35,11 @@ class ServiceUnitController extends BaseApiCacheController
                 ->where(DB::connection('oracle_his')->raw('lower(service_unit_code)'), 'like', '%' . $keyword . '%')
                 ->orWhere(DB::connection('oracle_his')->raw('lower(service_unit_name)'), 'like', '%' . $keyword . '%');
             $count = $data->count();
+            if ($this->order_by != null) {
+                foreach ($this->order_by as $key => $item) {
+                    $data->orderBy($key, $item);
+                }
+            }
             $data = $data
                 ->skip($this->start)
                 ->take($this->limit)
@@ -31,7 +47,7 @@ class ServiceUnitController extends BaseApiCacheController
                 ->get();
         } else {
             if ($id == null) {
-                $name = $this->service_unit_name. '_start_' . $this->start . '_limit_' . $this->limit;
+                $name = $this->service_unit_name. '_start_' . $this->start . '_limit_' . $this->limit. $this->order_by_tring;
                 $param = [
                     'convert:id,service_unit_name',
                 ];
@@ -48,12 +64,14 @@ class ServiceUnitController extends BaseApiCacheController
                     'convert',
                 ];
             }
-            $data = get_cache_full($this->service_unit, $param, $name, $id, $this->time, $this->start, $this->limit);
+            $data = get_cache_full($this->service_unit, $param, $name, $id, $this->time, $this->start, $this->limit, $this->order_by);
         }
         $param_return = [
             'start' => $this->start,
             'limit' => $this->limit,
-            'count' => $count ?? $data['count']
+            'count' => $count ?? $data['count'],
+            'keyword' => $this->keyword,
+            'order_by' => $this->order_by_request
         ];
         return return_data_success($param_return, $data ?? $data['data']);
     }

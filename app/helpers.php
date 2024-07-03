@@ -48,7 +48,35 @@ function create_slug($string)
         $string = strtolower($string);
         return $string;
     }
+    function camelToSnake($input) {
+        $pattern = '/([a-z])([A-Z])/';
+        $snake = strtolower(preg_replace($pattern, '$1_$2', $input));
+        return $snake;
+    }
 
+    function camelCaseFromUnderscore($string)
+    {
+        return lcfirst(preg_replace_callback('/(?:^|_)([a-z])/', function($matches) {
+            return strtoupper($matches[1]);
+        }, $string));
+    }
+    
+    function convertArrayKeysToSnakeCase(array $array) {
+        $result = [];
+        foreach ($array as $key => $value) {
+            $newKey = camelToSnake($key);
+            $result[$newKey] = $value;
+        }
+        return $result;
+    }
+
+    function arrayToCustomString(array $array) {
+        $result = '';
+        foreach ($array as $key => $value) {
+            $result .= '_' . $key . '_' . $value;
+        }
+        return $result;
+    }
 
 if (!function_exists('get_user_with_loginname')) {
     function get_user_with_loginname($loginname)
@@ -91,12 +119,17 @@ if (!function_exists('get_cache')) {
         }
     }
 }
-    function get_cache($model, $name, $id = null, $time, $start, $limit)
+    function get_cache($model, $name, $id = null, $time, $start, $limit, $order_by)
     {
         if (!$id) {
-            $data = Cache::remember($name, $time, function () use ($model, $start, $limit) {
+            $data = Cache::remember($name, $time, function () use ($model, $start, $limit, $order_by) {
                 $data = $model;
                 $count = $data->count();
+                if($order_by != null){
+                    foreach($order_by as $key => $item){
+                        $data->orderBy($key, $item);
+                    }
+                }
                 $data = $data    
                     ->skip($start)
                     ->take($limit)
@@ -140,12 +173,17 @@ if (!function_exists('get_cache_full')) {
     //         return $data;
     //     }
     // }
-    function get_cache_full($model, $relation_ship, $name, $id = null, $time, $start, $limit)
+    function get_cache_full($model, $relation_ship, $name, $id = null, $time, $start, $limit, $order_by)
 {
     if (!$id) {
-        $data = Cache::remember($name, $time, function () use ($model, $relation_ship, $start, $limit) {
+        $data = Cache::remember($name, $time, function () use ($model, $relation_ship, $start, $limit, $order_by) {
             $data = $model::with($relation_ship);
             $count = $data->count();
+            if($order_by != null){
+                foreach($order_by as $key => $item){
+                    $data->orderBy($key, $item);
+                }
+            }
             $data = $data    
                 ->skip($start)
                 ->take($limit)
@@ -186,13 +224,18 @@ if (!function_exists('get_cache_full_select')) {
     //         return $data;
     //     }
     // }
-    function get_cache_full_select($model, $relation_ship, $select, $name, $id = null, $time, $start, $limit)
+    function get_cache_full_select($model, $relation_ship, $select, $name, $id = null, $time, $start, $limit, $order_by)
     {
         if (!$id) {
-            $data = Cache::remember($name, $time, function () use ($model, $relation_ship, $select, $start, $limit) {
+            $data = Cache::remember($name, $time, function () use ($model, $relation_ship, $select, $start, $limit, $order_by) {
                 $data=  $model::select($select)->with($relation_ship);
                 
                 $count = $data->count();
+                if($order_by != null){
+                    foreach($order_by as $key => $item){
+                        $data->orderBy($key, $item);
+                    }
+                }
                 $data = $data    
                     ->skip($start)
                     ->take($limit)
@@ -432,6 +475,7 @@ if (!function_exists('return_id_error')) {
     function return_id_error($id)
     {
         return response()->json([
+            'status'    => 422,
             'success'   => false,
             'message'   => 'Id = '.$id.' không hợp lệ!',
         ], 422);
@@ -442,6 +486,7 @@ if (!function_exists('return_not_record')) {
     function return_not_record($id)
     {
         return response()->json([
+            'status'    => 422,
             'success'   => false,
             'message'   => 'Không tìm thấy bản ghi với id = '.$id.'!',
         ], 422);
@@ -451,13 +496,19 @@ if (!function_exists('return_not_record')) {
 if (!function_exists('return_data_success')) {
     function return_data_success($param_return, $data_return)
     {
+        if(is_array($data_return)) 
+        {
+            $data_return = $data_return['data'] ?? $data_return;
+        }
         if($param_return == null){
             return response()->json([
+                'status'    => 200,
                 'success' => true,
                 'data' => $data_return,
             ], 200)->original;
         }else{
             return response()->json([
+                'status'    => 200,
                 'success' => true,
                 'param' => $param_return,
                 'data' => $data_return,
@@ -470,6 +521,7 @@ if (!function_exists('return_data_create_success')) {
     function return_data_create_success($data_return)
     {
         return response()->json([
+            'status'    => 201,
             'success' => true,
             'data' => $data_return,
         ], 201);
@@ -481,6 +533,7 @@ if (!function_exists('return_data_update_success')) {
     function return_data_update_success($data_return)
     {
         return response()->json([
+            'status'    => 200,
             'success' => true,
             'data' => $data_return,
         ], 200);
@@ -492,6 +545,7 @@ if (!function_exists('return_data_delete_success')) {
     function return_data_delete_success()
     {
         return response()->json([
+            'status'    => 200,
             'success' => true,
             'message' => 'Xóa bản ghi thành công!'
         ], 200);
@@ -503,6 +557,7 @@ if (!function_exists('return_data_delete_fail')) {
     function return_data_delete_fail()
     {
         return response()->json([
+            'status'    => 400,
             'success' => false,
             'message' => 'Không thể xóa. Dữ liệu đã được sử dụng!'
         ], 400);
@@ -514,6 +569,7 @@ if (!function_exists('return_data_fail_transaction')) {
     function return_data_fail_transaction()
     {
         return response()->json([
+            'status'    => 500,
             'success' => false,
         ], 500);
     }
