@@ -49,6 +49,7 @@ use App\Http\Controllers\Api\CacheControllers\ExeServiceModuleController;
 use App\Http\Controllers\Api\CacheControllers\HeinServiceTypeController;
 use App\Http\Controllers\Api\CacheControllers\SuimIndexController;
 use App\Http\Controllers\Api\CacheControllers\PackageController;
+use App\Http\Controllers\Api\CacheControllers\ServicePatyController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -322,14 +323,14 @@ Route::group([
     /// Chính sách dịch vụ
     Route::group(['as' => 'HIS.Desktop.Plugins.HisServicePatyList'], function () {
         // Trả về tất cả mối quan hệ
-        Route::get("v1/service-paty", [HISController::class, "service_paty"]);
-        Route::get("v1/service-paty/{id}", [HISController::class, "service_paty_id"]);
+        Route::get("v1/service-paty", [ServicePatyController::class, "service_paty"]);
+        Route::get("v1/service-paty/{id}", [ServicePatyController::class, "service_paty"]);
         // Trả về tất cả dịch vụ cùng loại bệnh nhân
-        Route::get("v1/service/all/patient-type", [HISController::class, "service_with_patient_type"]);
-        Route::get("v1/service/{id}/patient-type", [HISController::class, "service_with_patient_type"]);
+        Route::get("v1/service/all/patient-type", [ServicePatyController::class, "service_with_patient_type"]);
+        Route::get("v1/service/{id}/patient-type", [ServicePatyController::class, "service_with_patient_type"]);
         // Trả về tất cả loại bệnh nhân cùng dịch vụ
-        Route::get("v1/patient-type/all/service", [HISController::class, "patient_type_with_service"]);
-        Route::get("v1/patient-type/{id}/service", [HISController::class, "patient_type_with_service"]);
+        Route::get("v1/patient-type/all/service", [ServicePatyController::class, "patient_type_with_service"]);
+        Route::get("v1/patient-type/{id}/service", [ServicePatyController::class, "patient_type_with_service"]);
     });
 
     /// Dịch vụ máy
