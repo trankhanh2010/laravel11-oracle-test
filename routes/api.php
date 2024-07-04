@@ -55,6 +55,7 @@ use App\Http\Controllers\Api\CacheControllers\ServicePatyController;
 
 
 use App\Http\Controllers\Api\DataControllers\DebateController;
+use App\Http\Controllers\Api\DataControllers\DebateUserController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -952,7 +953,7 @@ Route::group([
     Route::get("v1/debate/get-view", [DebateController::class, "debate_get_view"]);
 
     // Debate User
-    Route::get("v1/debate-user/get", [HISController::class, "debate_user"]);
+    Route::get("v1/debate-user/get", [DebateUserController::class, "debate_user"]);
 
     // Debate Ekip User
     Route::get("v1/debate-ekip-user/get", [HISController::class, "debate_ekip_user"]);

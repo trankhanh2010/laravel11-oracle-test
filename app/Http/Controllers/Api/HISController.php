@@ -2458,21 +2458,6 @@ class HISController extends Controller
   
 
     /// Debate User
-    public function debate_user($id = null)
-    {
-        $request_debate_id = $this->param_request['ApiData']['DEBATE_ID'] ?? null;
-        $request_is_include_deleted = $this->param_request['ApiData']['IS_INCLUDE_DELETED'] ?? null;
-
-        $model = $this->debate_user::select();
-        if ($request_debate_id != null) {
-            $model->where('debate_id', $request_debate_id);
-        }
-        if (!$request_is_include_deleted) {
-            $model->where('is_delete', 0);
-        }
-        $data = $model->get();
-        return response()->json(['data' => $data], 200);
-    }
 
     /// Debate Ekip User
     public function debate_ekip_user($id = null)

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\BaseControllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\HIS\Debate;
+use App\Models\HIS\DebateUser;
 use App\Models\HIS\Department;
 use App\Models\HIS\Treatment;
 use Illuminate\Http\Request;
@@ -38,6 +39,8 @@ class BaseApiDataController extends Controller
     protected $app_modifier = "MOS_v2";
     // Khai báo các biến model
     protected $debate;
+    protected $debate_user;
+    protected $debate_user_id;
     public function __construct(Request $request)
     {
         // Khai báo các biến
@@ -118,6 +121,18 @@ class BaseApiDataController extends Controller
                     if (!Department::where('id', $item)->exists()) {
                         unset($this->department_ids[$key]);
                     }
+                }
+            }
+        }
+
+        $this->debate_user_id = $this->param_request['ApiData']['DebateUserId'] ?? null;
+        if ($this->debate_user_id != null) {
+            // Kiểm tra xem ID có tồn tại trong bảng  hay không
+            if (!is_numeric($this->debate_user_id)) {
+                $this->debate_user_id = null;
+            } else {
+                if (!DebateUser::where('id', $this->debate_user_id)->exists()) {
+                    $this->debate_user_id = null;
                 }
             }
         }
