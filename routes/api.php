@@ -50,6 +50,11 @@ use App\Http\Controllers\Api\CacheControllers\HeinServiceTypeController;
 use App\Http\Controllers\Api\CacheControllers\SuimIndexController;
 use App\Http\Controllers\Api\CacheControllers\PackageController;
 use App\Http\Controllers\Api\CacheControllers\ServicePatyController;
+
+
+
+
+use App\Http\Controllers\Api\DataControllers\DebateController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -943,8 +948,8 @@ Route::group([
     Route::get("v1/user-room/get-view", [HISController::class, "user_with_room"]);
 
     // Debate
-    Route::get("v1/debate/get", [HISController::class, "debate_get"]);
-    Route::get("v1/debate/get-view", [HISController::class, "debate_get_view"]);
+    Route::get("v1/debate/get", [DebateController::class, "debate_get"]);
+    Route::get("v1/debate/get-view", [DebateController::class, "debate_get_view"]);
 
     // Debate User
     Route::get("v1/debate-user/get", [HISController::class, "debate_user"]);

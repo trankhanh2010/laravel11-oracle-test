@@ -5,6 +5,7 @@ namespace App\Models\HIS;
 use App\Traits\dinh_dang_ten_truong;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Scopes\IsDeleteScope;
 
 class Debate extends Model
 {
@@ -14,6 +15,18 @@ class Debate extends Model
     protected $fillable = [
 
     ];
+
+    // // Chạy Scope để thêm điều kiện is_delete = 0 hoặc null
+    // protected static function booted()
+    // {
+    //     static::addGlobalScope(new IsDeleteScope);
+    // }
+
+    // /// Lấy ra bản ghi bao gồm đã xóa mềm is_delete = 1
+    // public static function withDeleted()
+    // {
+    //     return with(new static)->newQueryWithoutScope(new IsDeleteScope)->whereIn('is_delete', [0, 1, null]);
+    // }
 
     public function treatment()
     {

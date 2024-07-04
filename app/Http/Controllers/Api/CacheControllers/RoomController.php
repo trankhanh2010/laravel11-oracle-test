@@ -16,11 +16,25 @@ class RoomController extends BaseApiCacheController
         parent::__construct($request); // Gọi constructor của BaseController
         $this->room = new Room();
         $this->department = new Department();
+
+        // Kiểm tra tên trường trong bảng
+        $this->order_by_join = ['room_name', 'room_code'];
+        if ($this->order_by != null) {
+            foreach ($this->order_by as $key => $item) {
+                if(!in_array($key, $this->order_by_join)){
+                    if (!$this->room->getConnection()->getSchemaBuilder()->hasColumn($this->room->getTable(), $key)) {
+                        unset($this->order_by_request[camelCaseFromUnderscore($key)]);       
+                        unset($this->order_by[$key]);               
+                    }
+                }
+            }
+            $this->order_by_tring = arrayToCustomString($this->order_by);
+        }
     }
     public function room()
     {
         $keyword = mb_strtolower($this->keyword, 'UTF-8');
-        if($keyword != null){
+        if(($keyword != null) || ($this->department_id != null)){
             $data = $this->room
                     ->leftJoin('his_bed_room as bed', 'his_room.id', '=', 'bed.room_id')
                     ->leftJoin('his_cashier_room as cashier', 'his_room.id', '=', 'cashier.room_id')
@@ -37,20 +51,36 @@ class RoomController extends BaseApiCacheController
                         NVL(cashier.cashier_room_code, 
                         NVL(execute.execute_room_code, 
                         reception.reception_room_code))) AS "room_code"')
-                    )
-                    ->where(function ($query) use ($keyword) {
-                        $query->where(DB::connection('oracle_his')->raw('lower(bed.bed_room_name)'), 'like', '%' . $keyword . '%')
-                              ->orWhere(DB::connection('oracle_his')->raw('lower(cashier.cashier_room_name)'), 'like', '%' . $keyword . '%')
-                              ->orWhere(DB::connection('oracle_his')->raw('lower(execute.execute_room_name)'), 'like', '%' . $keyword . '%')
-                              ->orWhere(DB::connection('oracle_his')->raw('lower(reception.reception_room_name)'), 'like', '%' . $keyword . '%');
-                    })
-                    ->orWhere(function ($query) use ($keyword) {
-                        $query->where(DB::connection('oracle_his')->raw('lower(bed.bed_room_code)'), 'like', '%' . $keyword . '%')
-                              ->orWhere(DB::connection('oracle_his')->raw('lower(cashier.cashier_room_code)'), 'like', '%' . $keyword . '%')
-                              ->orWhere(DB::connection('oracle_his')->raw('lower(execute.execute_room_code)'), 'like', '%' . $keyword . '%')
-                              ->orWhere(DB::connection('oracle_his')->raw('lower(reception.reception_room_code)'), 'like', '%' . $keyword . '%');
-                    });
+                    );
+                    if ($this->department_id != null) {
+                        $data = $data->where(function ($query) {
+                            $query = $query->where(DB::connection('oracle_his')->raw('his_room.department_id'), $this->department_id);
+                        });
+                    }
+                    if($keyword != null){
+                        $data = $data->where(function ($query) use ($keyword) {
+                            $query->where(DB::connection('oracle_his')->raw('lower(bed.bed_room_name)'), 'like', '%' . $keyword . '%')
+                                  ->orWhere(DB::connection('oracle_his')->raw('lower(cashier.cashier_room_name)'), 'like', '%' . $keyword . '%')
+                                  ->orWhere(DB::connection('oracle_his')->raw('lower(execute.execute_room_name)'), 'like', '%' . $keyword . '%')
+                                  ->orWhere(DB::connection('oracle_his')->raw('lower(reception.reception_room_name)'), 'like', '%' . $keyword . '%');
+                        })
+                        ->orWhere(function ($query) use ($keyword) {
+                            $query->where(DB::connection('oracle_his')->raw('lower(bed.bed_room_code)'), 'like', '%' . $keyword . '%')
+                                  ->orWhere(DB::connection('oracle_his')->raw('lower(cashier.cashier_room_code)'), 'like', '%' . $keyword . '%')
+                                  ->orWhere(DB::connection('oracle_his')->raw('lower(execute.execute_room_code)'), 'like', '%' . $keyword . '%')
+                                  ->orWhere(DB::connection('oracle_his')->raw('lower(reception.reception_room_code)'), 'like', '%' . $keyword . '%');
+                        });
+                    }
                 $count = $data->count();
+                if ($this->order_by != null) {
+                    foreach ($this->order_by as $key => $item) {
+                        if (!in_array($key, $this->order_by_join)) {
+                            $data->orderBy(DB::connection('oracle_his')->raw('his_room.' . $key . ''), $item);
+                        } else {
+                            $data->orderBy(DB::connection('oracle_his')->raw('"'.$key.'"'), $item);
+                        }
+                    }
+                }
                 $data = $data    
                     ->skip($this->start)
                     ->take($this->limit)
@@ -77,9 +107,17 @@ class RoomController extends BaseApiCacheController
                     ->whereNotNull('bed.bed_room_name')
                     ->orWhereNotNull('cashier.cashier_room_name')
                     ->orWhereNotNull('execute.execute_room_name')
-                    ->orWhereNotNull('reception.reception_room_name')
-                    ->orderBy(DB::connection('oracle_his')->raw('"room_name"'), 'asc');
+                    ->orWhereNotNull('reception.reception_room_name');
                     $count = $data->count();
+                    if ($this->order_by != null) {
+                        foreach ($this->order_by as $key => $item) {
+                            if (!in_array($key, $this->order_by_join)) {
+                                $data->orderBy(DB::connection('oracle_his')->raw('his_room.' . $key . ''), $item);
+                            } else {
+                                $data->orderBy(DB::connection('oracle_his')->raw('"'.$key.'"'), $item);
+                            }
+                        }
+                    }
                     $data = $data    
                         ->skip($this->start)
                         ->take($this->limit)
@@ -92,7 +130,8 @@ class RoomController extends BaseApiCacheController
             'limit' => $this->limit,
             'count' => $count ?? $data['count'],
             'keyword' => $this->keyword,
-            'order_by' => $this->order_by_request
+            'order_by' => $this->order_by_request,
+            'department_id' => $this->department_id ?? null
         ];
         return return_data_success($param_return, $data ?? $data['data']);
     }

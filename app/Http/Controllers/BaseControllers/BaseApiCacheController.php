@@ -3,7 +3,12 @@
 namespace App\Http\Controllers\BaseControllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\HIS\Department;
+use App\Models\HIS\Package;
+use App\Models\HIS\PatientType;
+use App\Models\HIS\Service;
 use Illuminate\Http\Request;
+use App\Models\HIS\ServiceType;
 
 class BaseApiCacheController extends Controller
 {
@@ -14,7 +19,13 @@ class BaseApiCacheController extends Controller
     protected $order_by;
     protected $order_by_tring;
     protected $order_by_request;
+    protected $order_by_join;
     protected $only_active;
+    protected $service_type_ids;
+    protected $patient_type_ids;
+    protected $service_id;
+    protected $package_id;
+    protected $department_id;
     protected $keyword;
     protected $per_page;
     protected $page;
@@ -332,25 +343,86 @@ class BaseApiCacheController extends Controller
         $this->start = $this->param_request['CommonParam']['Start'] ?? intval($request->start) ?? 0;
         $this->limit = $this->param_request['CommonParam']['Limit'] ?? intval($request->limit) ?? 10;
 
-        if(($this->limit <= 10) || (!in_array($this->limit,[10,20,50,100,500,1000,2000]))){
+        if (($this->limit <= 10) || (!in_array($this->limit, [10, 20, 50, 100, 500, 1000, 2000, 4000]))) {
             $this->limit = 10;
         }
-        $this->keyword = $this->param_request['ApiData']['KeyWord'] ?? $request->keyword;
-        $this->order_by = $this->param_request['ApiData']['OrderBy'] ?? null;
-        $this->order_by_request = $this->param_request['ApiData']['OrderBy'] ?? null;
-        if($this->order_by != null){
-            $this->order_by = convertArrayKeysToSnakeCase($this->order_by);
-        }
-        $this->only_active = $this->param_request['ApiData']['OnlyActive'] ?? 0;
-        if($this->start != null){
+        if ($this->start != null) {
             if ((!is_numeric($this->start)) || (!is_int($this->start)) || ($this->start < 0)) {
                 $this->start = 0;
             }
         }
-        if(($this->limit != null) || ($this->start != null)){
+        if (($this->limit != null) || ($this->start != null)) {
             if ((!is_numeric($this->limit)) || (!is_int($this->limit)) || ($this->limit > 4000) || ($this->limit <= 0)) {
                 $this->limit = 100;
-            } 
+            }
         }
+        $this->keyword = $this->param_request['ApiData']['KeyWord'] ?? $request->keyword;
+        $this->order_by = $this->param_request['ApiData']['OrderBy'] ?? null;
+        $this->order_by_request = $this->param_request['ApiData']['OrderBy'] ?? null;
+        if ($this->order_by != null) {
+            $this->order_by = convertArrayKeysToSnakeCase($this->order_by);
+        }
+        $this->only_active = $this->param_request['ApiData']['OnlyActive'] ?? 0;
+        $this->service_type_ids = $this->param_request['ApiData']['ServiceTypeIs'] ?? null;
+        if ($this->service_type_ids != null) {
+            foreach ($this->service_type_ids as $key => $item) {
+                // Kiểm tra xem ID có tồn tại trong bảng  hay không
+                if (!is_numeric($item)) {
+                    unset($this->service_type_ids[$key]);
+                } else {
+                    if (!ServiceType::where('id', $item)->exists()) {
+                        unset($this->service_type_ids[$key]);
+                    }
+                }
+            }
+        }
+        $this->patient_type_ids = $this->param_request['ApiData']['PatientTypeIs'] ?? null;
+        if ($this->patient_type_ids != null) {
+            foreach ($this->patient_type_ids as $key => $item) {
+                // Kiểm tra xem ID có tồn tại trong bảng  hay không
+                if (!is_numeric($item)) {
+                    unset($this->patient_type_ids[$key]);
+                } else {
+                    if (!PatientType::where('id', $item)->exists()) {
+                        unset($this->patient_type_ids[$key]);
+                    }
+                }
+            }
+        }
+        $this->service_id = $this->param_request['ApiData']['ServiceId'] ?? null;
+        if ($this->service_id != null) {
+            // Kiểm tra xem ID có tồn tại trong bảng  hay không
+            if (!is_numeric($this->service_id)) {
+                $this->service_id = null;
+            } else {
+                if (!Service::where('id', $this->service_id)->exists()) {
+                    $this->service_id = null;
+                }
+            }
+        }
+        $this->package_id = $this->param_request['ApiData']['PackageId'] ?? null;
+        if ($this->package_id != null) {
+            // Kiểm tra xem ID có tồn tại trong bảng  hay không
+            if (!is_numeric($this->package_id)) {
+                $this->package_id = null;
+            } else {
+                if (!Package::where('id', $this->package_id)->exists()) {
+                    $this->package_id = null;
+                }
+            }
+        }
+        $this->department_id = $this->param_request['ApiData']['DepartmentId'] ?? null;
+        if ($this->department_id != null) {
+            // Kiểm tra xem ID có tồn tại trong bảng  hay không
+            if (!is_numeric($this->department_id)) {
+                $this->department_id = null;
+            } else {
+                if (!Department::where('id', $this->department_id)->exists()) {
+                    $this->department_id = null;
+                }
+            }
+        }
+
+
     }
 }

@@ -25,6 +25,16 @@ class PatientTypeController extends BaseApiCacheController
             $this->order_by_tring = arrayToCustomString($this->order_by);
         }
     }
+
+
+
+
+    /// Kiểm tra lại trong model appends, bỏ appends, dùng join, không nhận được id do có parent cùng loại 
+
+
+
+
+
     public function patient_type($id = null)
     {
         $keyword = mb_strtolower($this->keyword, 'UTF-8');
