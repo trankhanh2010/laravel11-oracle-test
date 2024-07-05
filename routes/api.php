@@ -56,6 +56,10 @@ use App\Http\Controllers\Api\CacheControllers\ServicePatyController;
 
 use App\Http\Controllers\Api\DataControllers\DebateController;
 use App\Http\Controllers\Api\DataControllers\DebateUserController;
+use App\Http\Controllers\Api\DataControllers\DebateEkipUserController;
+use App\Http\Controllers\Api\DataControllers\DhstController;
+use App\Http\Controllers\Api\DataControllers\PatientTypeAlterController;
+use App\Http\Controllers\Api\DataControllers\SereServController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -956,7 +960,7 @@ Route::group([
     Route::get("v1/debate-user/get", [DebateUserController::class, "debate_user"]);
 
     // Debate Ekip User
-    Route::get("v1/debate-ekip-user/get", [HISController::class, "debate_ekip_user"]);
+    Route::get("v1/debate-ekip-user/get", [DebateEkipUserController::class, "debate_ekip_user"]);
 
     // Debate Type
     Route::get("v1/debate-type", [HISController::class, "debate_type"]);
@@ -970,10 +974,10 @@ Route::group([
     Route::get("v1/tracking/get-data", [HISController::class, "tracking_get_data"]);
 
     // Sere Serv
-    Route::get("v1/sere-serv/get", [HISController::class, "sere_serv"]);
+    Route::get("v1/sere-serv/get", [SereServController::class, "sere_serv_get"]);
 
     // Patient Type Alter
-    Route::get("v1/patient-type-alter/get-view", [HISController::class, "patient_type_alter_get_view"]);
+    Route::get("v1/patient-type-alter/get-view", [PatientTypeAlterController::class, "patient_type_alter_get_view"]);
 
     // Treatment
     Route::get("v1/treatment/get-L-view", [HISController::class, "treatment_get_L_view"]);
@@ -983,7 +987,7 @@ Route::group([
     Route::get("v1/treatment-bed-room/get-L-view", [HISController::class, "treatment_bed_room_get_L_view"]);
 
     // DHST
-    Route::get("v1/dhst/get", [HISController::class, "dhst_get"]);
+    Route::get("v1/dhst/get", [DhstController::class, "dhst_get"]);
 
     // Sere Serv Ext
     Route::get("v1/sere-serv-ext/get", [HISController::class, "sere_serv_ext"]);

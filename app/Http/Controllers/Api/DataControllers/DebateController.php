@@ -136,7 +136,7 @@ class DebateController extends BaseApiDataController
             $data = $data
                 ->skip($this->start)
                 ->take($this->limit)
-                ->get();
+                ->first();
         }
 
         $param_return = [
@@ -279,7 +279,7 @@ class DebateController extends BaseApiDataController
                     $query = $query->where(DB::connection('oracle_his')->raw('his_debate.id'), $this->debate_id);
                 });
             }
-            $data = $data->get();
+            $data = $data->first();
         }
 
         $param_return = [

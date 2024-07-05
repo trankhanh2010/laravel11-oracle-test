@@ -14,9 +14,9 @@ class Dhst extends Model
     protected $fillable = [
 
     ];
-    public function antibiotic_requests()
+    public function antibiotic_request()
     {
-        return $this->hasMany(AntibioticRequest::class);
+        return $this->belongsTo(AntibioticRequest::class);
     }
     public function cares()
     {
