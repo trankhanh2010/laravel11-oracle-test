@@ -62,20 +62,25 @@ class DhstController extends BaseApiDataController
             'service_reqs',
         ];
         $keyword = mb_strtolower($this->keyword, 'UTF-8');
-        if (($this->dhst_id == null) && (($keyword != null) || (!$this->is_include_deleted))) {
-            $data = $this->dhst
-            ->select($select);
-            if ($keyword != null) {
-                $data = $data->where(function ($query) use ($keyword) {
-                    $query = $query->where(DB::connection('oracle_his')->raw('lower(his_dhst.execute_loginname)'), 'like', '%' . $keyword . '%')
-                        ->orWhere(DB::connection('oracle_his')->raw('lower(his_dhst.execute_username)'), 'like', '%' . $keyword . '%');
-                });
-            }
-            if (!$this->is_include_deleted) {
-                $data = $data->where(function ($query) {
-                    $query = $query->where(DB::connection('oracle_his')->raw('his_dhst.is_delete'), 0);
-                });
-            }
+        $data = $this->dhst
+        ->select($select);
+        if ($keyword != null) {
+            $data = $data->where(function ($query) use ($keyword) {
+                $query = $query->where(DB::connection('oracle_his')->raw('lower(his_dhst.execute_loginname)'), 'like', '%' . $keyword . '%')
+                    ->orWhere(DB::connection('oracle_his')->raw('lower(his_dhst.execute_username)'), 'like', '%' . $keyword . '%');
+            });
+        }
+        if (!$this->is_include_deleted) {
+            $data = $data->where(function ($query) {
+                $query = $query->where(DB::connection('oracle_his')->raw('his_dhst.is_delete'), 0);
+            });
+        }
+        if ($this->is_active !== null) {
+            $data = $data->where(function ($query) {
+                $query = $query->where(DB::connection('oracle_his')->raw('his_dhst.is_active'), $this->is_active);
+            });
+        }
+        if ($this->dhst_id == null) {
             $count = $data->count();
             if ($this->order_by != null) {
                 foreach ($this->order_by as $key => $item) {
@@ -88,12 +93,9 @@ class DhstController extends BaseApiDataController
                 ->take($this->limit)
                 ->get();
         }else{
-            $data = $this->dhst;
-            if ($this->dhst_id != null) {
             $data = $data->where(function ($query) {
                 $query = $query->where(DB::connection('oracle_his')->raw('his_dhst.id'), $this->dhst_id);
                 });
-            }
             $data = $data->with($param);
             $data = $data
             ->first();
@@ -102,7 +104,8 @@ class DhstController extends BaseApiDataController
             'start' => $this->start,
             'limit' => $this->limit,
             'count' => $count ?? null,
-            'is_include_deleted' => $this->is_include_deleted,
+            'is_include_deleted' => $this->is_include_deleted ?? false,
+            'is_active' => $this->is_active,
             'dhst_id' => $this->dhst_id,
             'keyword' => $this->keyword,
             'order_by' => $this->order_by_request

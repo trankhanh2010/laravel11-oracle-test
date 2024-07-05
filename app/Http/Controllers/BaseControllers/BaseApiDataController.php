@@ -12,10 +12,13 @@ use App\Models\HIS\ExecuteRoom;
 use App\Models\HIS\PatientType;
 use App\Models\HIS\PatientTypeAlter;
 use App\Models\HIS\SereServ;
+use App\Models\HIS\SereServExt;
+use App\Models\HIS\SereServTein;
 use App\Models\HIS\ServiceReq;
 use App\Models\HIS\ServiceReqStt;
 use App\Models\HIS\ServiceReqType;
 use App\Models\HIS\ServiceType;
+use App\Models\HIS\TestIndex;
 use App\Models\HIS\Treatment;
 use Illuminate\Http\Request;
 
@@ -40,6 +43,7 @@ class BaseApiDataController extends Controller
     protected $page;
     protected $param_request;
     protected $is_include_deleted;
+    protected $is_active;
     protected $debate_id;
     protected $treatment_id;
     protected $treatment_code;
@@ -61,6 +65,11 @@ class BaseApiDataController extends Controller
     protected $has_execute;
     protected $is_not_ksk_requried_aproval__or__is_ksk_approve;
     protected $service_req_id;
+    protected $sere_serv_ext_id;
+    protected $sere_serv_ids;
+    protected $sere_serv_tein_id;
+    protected $test_index_ids;
+    protected $tdl_treatment_id;
 
     // Khai báo các biến mặc định model
     protected $app_creator = "MOS_v2";
@@ -73,6 +82,8 @@ class BaseApiDataController extends Controller
     protected $patient_type_alter;
     protected $sere_serv;
     protected $service_req;
+    protected $sere_serv_ext;
+    protected $sere_serv_tein;
     public function __construct(Request $request)
     {
         // Khai báo các biến
@@ -107,11 +118,17 @@ class BaseApiDataController extends Controller
             $this->order_by = convertArrayKeysToSnakeCase($this->order_by);
         }
 
+        $this->is_active = $this->param_request['ApiData']['IsActive'] ?? null;
+        if($this->is_active !== null){
+            if (!in_array ($this->is_active, [0,1])) {
+                $this->is_active = 1;
+            }
+        }
+
         $this->only_active = $this->param_request['ApiData']['OnlyActive'] ?? false;
         if (!is_bool ($this->only_active)) {
             $this->only_active = false;
         }
-
         $this->is_include_deleted = $this->param_request['ApiData']['IsIncludeDeleted'] ?? false;
         if (!is_bool ($this->is_include_deleted)) {
             $this->is_include_deleted = false;
@@ -337,6 +354,70 @@ class BaseApiDataController extends Controller
             } else {
                 if (!ServiceReq::where('id', $this->service_req_id)->exists()) {
                     $this->service_req_id = null;
+                }
+            }
+        }
+
+        $this->sere_serv_ext_id = $this->param_request['ApiData']['SereServExtId'] ?? null;
+        if ($this->sere_serv_ext_id != null) {
+            // Kiểm tra xem ID có tồn tại trong bảng  hay không
+            if (!is_numeric($this->sere_serv_ext_id)) {
+                $this->sere_serv_ext_id = null;
+            } else {
+                if (!SereServExt::where('id', $this->sere_serv_ext_id)->exists()) {
+                    $this->sere_serv_ext_id = null;
+                }
+            }
+        }
+
+        $this->sere_serv_ids = $this->param_request['ApiData']['SereServIds'] ?? null;
+        if ($this->sere_serv_ids != null) {
+            foreach ($this->sere_serv_ids as $key => $item) {
+                // Kiểm tra xem ID có tồn tại trong bảng  hay không
+                if (!is_numeric($item)) {
+                    unset($this->sere_serv_ids[$key]);
+                } else {
+                    if (!SereServ::where('id', $item)->exists()) {
+                        unset($this->sere_serv_ids[$key]);
+                    }
+                }
+            }
+        }
+
+        $this->sere_serv_tein_id = $this->param_request['ApiData']['SereServTeinId'] ?? null;
+        if ($this->sere_serv_tein_id != null) {
+            // Kiểm tra xem ID có tồn tại trong bảng  hay không
+            if (!is_numeric($this->sere_serv_tein_id)) {
+                $this->sere_serv_tein_id = null;
+            } else {
+                if (!SereServTein::where('id', $this->sere_serv_tein_id)->exists()) {
+                    $this->sere_serv_tein_id = null;
+                }
+            }
+        }
+
+        $this->test_index_ids = $this->param_request['ApiData']['TestIndexIds'] ?? null;
+        if ($this->test_index_ids != null) {
+            foreach ($this->test_index_ids as $key => $item) {
+                // Kiểm tra xem ID có tồn tại trong bảng  hay không
+                if (!is_numeric($item)) {
+                    unset($this->test_index_ids[$key]);
+                } else {
+                    if (!TestIndex::where('id', $item)->exists()) {
+                        unset($this->test_index_ids[$key]);
+                    }
+                }
+            }
+        }
+
+        $this->tdl_treatment_id = $this->param_request['ApiData']['TdlTreatmentId'] ?? null;
+        if ($this->tdl_treatment_id != null) {
+            // Kiểm tra xem ID có tồn tại trong bảng  hay không
+            if (!is_numeric($this->tdl_treatment_id)) {
+                $this->tdl_treatment_id = null;
+            } else {
+                if (!Treatment::where('id', $this->tdl_treatment_id)->exists()) {
+                    $this->tdl_treatment_id = null;
                 }
             }
         }

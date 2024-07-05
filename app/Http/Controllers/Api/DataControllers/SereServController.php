@@ -109,36 +109,40 @@ class SereServController extends BaseApiDataController
         ];
 
         $keyword = mb_strtolower($this->keyword, 'UTF-8');
-        if (($this->sere_serv_id == null) && (($keyword != null) || (!$this->is_include_deleted) || ($this->service_req_ids != null) || ($this->service_type_id != null) || ($this->treatment_id != null))) {
-            $data = $this->sere_serv
-            ->select($select);
-            if ($keyword != null) {
-                $data = $data->where(function ($query) use ($keyword) {
-                    $query = $query->where(DB::connection('oracle_his')->raw('lower(his_sere_serv.tdl_Service_Code)'), 'like', '%' . $keyword . '%')
-                        ->orWhere(DB::connection('oracle_his')->raw('lower(his_sere_serv.tdl_Service_name)'), 'like', '%' . $keyword . '%');
-                });
-            }
-            if (!$this->is_include_deleted) {
-                $data = $data->where(function ($query) {
-                    $query = $query->where(DB::connection('oracle_his')->raw('his_sere_serv.is_delete'), 0);
-                });
-            }
-            if ($this->service_req_ids != null) {
-                $data = $data->where(function ($query) {
-                    $query = $query->whereIn(DB::connection('oracle_his')->raw('his_sere_serv.service_req_id'), $this->service_req_ids);
-                });
-            }
-            if ($this->service_type_id != null) {
-                $data = $data->where(function ($query) {
-                    $query = $query->where(DB::connection('oracle_his')->raw('his_sere_serv.tdl_service_type_id'), $this->service_type_id);
-                });
-            }
-            if ($this->treatment_id != null) {
-                $data = $data->where(function ($query) {
-                    $query = $query->where(DB::connection('oracle_his')->raw('his_sere_serv.tdl_treatment_id'), $this->treatment_id);
-                });
-            }
-
+        $data = $this->sere_serv
+        ->select($select);
+        if ($keyword != null) {
+            $data = $data->where(function ($query) use ($keyword) {
+                $query = $query->where(DB::connection('oracle_his')->raw('lower(his_sere_serv.tdl_Service_Code)'), 'like', '%' . $keyword . '%')
+                    ->orWhere(DB::connection('oracle_his')->raw('lower(his_sere_serv.tdl_Service_name)'), 'like', '%' . $keyword . '%');
+            });
+        }
+        if (!$this->is_include_deleted) {
+            $data = $data->where(function ($query) {
+                $query = $query->where(DB::connection('oracle_his')->raw('his_sere_serv.is_delete'), 0);
+            });
+        }
+        if ($this->is_active !== null) {
+            $data = $data->where(function ($query) {
+                $query = $query->where(DB::connection('oracle_his')->raw('his_sere_serv.is_active'), $this->is_active);
+            });
+        }
+        if ($this->service_req_ids != null) {
+            $data = $data->where(function ($query) {
+                $query = $query->whereIn(DB::connection('oracle_his')->raw('his_sere_serv.service_req_id'), $this->service_req_ids);
+            });
+        }
+        if ($this->service_type_id != null) {
+            $data = $data->where(function ($query) {
+                $query = $query->where(DB::connection('oracle_his')->raw('his_sere_serv.tdl_service_type_id'), $this->service_type_id);
+            });
+        }
+        if ($this->treatment_id != null) {
+            $data = $data->where(function ($query) {
+                $query = $query->where(DB::connection('oracle_his')->raw('his_sere_serv.tdl_treatment_id'), $this->treatment_id);
+            });
+        }
+        if ($this->sere_serv_id == null) {
             $count = $data->count();
             if ($this->order_by != null) {
                 foreach ($this->order_by as $key => $item) {
@@ -151,13 +155,9 @@ class SereServController extends BaseApiDataController
                 ->take($this->limit)
                 ->get();
         }else{
-            $data = $this->sere_serv
-            ->select($select);
-            if ($this->sere_serv_id != null) {
             $data = $data->where(function ($query) {
                 $query = $query->where(DB::connection('oracle_his')->raw('his_sere_serv.id'), $this->sere_serv_id);
                 });
-            }
             $data = $data->with($param);
             $data = $data
             ->first();
@@ -166,7 +166,8 @@ class SereServController extends BaseApiDataController
             'start' => $this->start,
             'limit' => $this->limit,
             'count' => $count ?? null,
-            'is_include_deleted' => $this->is_include_deleted,
+            'is_include_deleted' => $this->is_include_deleted ?? false,
+            'is_active' => $this->is_active,
             'service_req_ids' => $this->service_req_ids,
             'service_type_id' => $this->service_type_id,
             'treatment_id' => $this->treatment_id,

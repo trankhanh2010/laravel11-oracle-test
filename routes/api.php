@@ -61,6 +61,8 @@ use App\Http\Controllers\Api\DataControllers\DhstController;
 use App\Http\Controllers\Api\DataControllers\PatientTypeAlterController;
 use App\Http\Controllers\Api\DataControllers\SereServController;
 use App\Http\Controllers\Api\DataControllers\ServiceReqController;
+use App\Http\Controllers\Api\DataControllers\SereServExtController;
+use App\Http\Controllers\Api\DataControllers\SereServTeinController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -991,10 +993,10 @@ Route::group([
     Route::get("v1/dhst/get", [DhstController::class, "dhst_get"]);
 
     // Sere Serv Ext
-    Route::get("v1/sere-serv-ext/get", [HISController::class, "sere_serv_ext"]);
+    Route::get("v1/sere-serv-ext/get", [SereServExtController::class, "sere_serv_ext"]);
 
     // Sere Serv Tein
-    Route::get("v1/sere-serv-tein/get", [HISController::class, "sere_serv_tein_get"]);
-    Route::get("v1/sere-serv-tein/get-view", [HISController::class, "sere_serv_tein_get_view"]);
+    Route::get("v1/sere-serv-tein/get", [SereServTeinController::class, "sere_serv_tein_get"]);
+    Route::get("v1/sere-serv-tein/get-view", [SereServTeinController::class, "sere_serv_tein_get_view"]);
 
 });

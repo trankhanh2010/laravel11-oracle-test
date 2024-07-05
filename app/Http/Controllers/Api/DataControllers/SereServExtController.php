@@ -3,22 +3,23 @@
 namespace App\Http\Controllers\Api\DataControllers;
 
 use App\Http\Controllers\BaseControllers\BaseApiDataController;
-use App\Models\HIS\DebateUser;
+use App\Http\Controllers\Controller;
+use App\Models\HIS\SereServExt;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class DebateUserController extends BaseApiDataController
+class SereServExtController extends BaseApiDataController
 {
     public function __construct(Request $request)
     {
         parent::__construct($request); // Gọi constructor của BaseController
-        $this->debate_user = new DebateUser();
+        $this->sere_serv_ext = new SereServExt();
         $this->order_by_join = [];
         // Kiểm tra tên trường trong bảng
         if ($this->order_by != null) {
             foreach ($this->order_by as $key => $item) {
                 if (!in_array($key, $this->order_by_join)) {
-                    if (!$this->debate_user->getConnection()->getSchemaBuilder()->hasColumn($this->debate_user->getTable(), $key)) {
+                    if (!$this->sere_serv_ext->getConnection()->getSchemaBuilder()->hasColumn($this->sere_serv_ext->getTable(), $key)) {
                         unset($this->order_by_request[camelCaseFromUnderscore($key)]);
                         unset($this->order_by[$key]);
                     }
@@ -27,62 +28,89 @@ class DebateUserController extends BaseApiDataController
             $this->order_by_tring = arrayToCustomString($this->order_by);
         }
     }
-    public function debate_user()
+    public function sere_serv_ext(Request $request)
     {
-        $param = [];
+        $select = [
+            "ID",
+            "CREATE_TIME",
+            "MODIFY_TIME",
+            "MODIFIER",
+            "APP_MODIFIER",
+            "IS_ACTIVE",
+            "IS_DELETE",
+            "SERE_SERV_ID",
+            "CONCLUDE",
+            "JSON_PRINT_ID",
+            "DESCRIPTION_SAR_PRINT_ID",
+            "MACHINE_CODE",
+            "MACHINE_ID",
+            "NUMBER_OF_FILM",
+            "BEGIN_TIME",
+            "END_TIME",
+            "TDL_SERVICE_REQ_ID",
+            "TDL_TREATMENT_ID",
+            "FILM_SIZE_ID",
+            "SUBCLINICAL_PRES_USERNAME",
+            "SUBCLINICAL_PRES_LOGINNAME",
+            "SUBCLINICAL_RESULT_USERNAME",
+            "SUBCLINICAL_RESULT_LOGINNAME",
+            "SUBCLINICAL_PRES_ID",
+            "DESCRIPTION",
+        ];
         $keyword = mb_strtolower($this->keyword, 'UTF-8');
-        $data = $this->debate_user;
+        $data = $this->sere_serv_ext
+            ->select($select);
         if ($keyword != null) {
             $data = $data->where(function ($query) use ($keyword) {
-                $query = $query->where(DB::connection('oracle_his')->raw('lower(his_debate_user.loginname)'), 'like', '%' . $keyword . '%')
-                    ->orWhere(DB::connection('oracle_his')->raw('lower(his_debate_user.username)'), 'like', '%' . $keyword . '%');
+                $query = $query->where(DB::connection('oracle_his')->raw('lower(his_sere_serv_ext.SUBCLINICAL_RESULT_USERNAME)'), 'like', '%' . $keyword . '%')
+                    ->orWhere(DB::connection('oracle_his')->raw('lower(his_sere_serv_ext.SUBCLINICAL_RESULT_LOGINNAME)'), 'like', '%' . $keyword . '%');
             });
         }
         if (!$this->is_include_deleted) {
             $data = $data->where(function ($query) {
-                $query = $query->where(DB::connection('oracle_his')->raw('his_debate_user.is_delete'), 0);
+                $query = $query->where(DB::connection('oracle_his')->raw('his_sere_serv_ext.is_delete'), 0);
             });
         }
         if ($this->is_active !== null) {
             $data = $data->where(function ($query) {
-                $query = $query->where(DB::connection('oracle_his')->raw('his_debate_user.is_active'), $this->is_active);
+                $query = $query->where(DB::connection('oracle_his')->raw('his_sere_serv_ext.is_active'), $this->is_active);
             });
         }
-        if ($this->debate_id != null) {
+        if ($this->sere_serv_ids != null) {
             $data = $data->where(function ($query) {
-                $query = $query->where(DB::connection('oracle_his')->raw('his_debate_user.debate_id'), $this->debate_id);
+                $query = $query->whereIn(DB::connection('oracle_his')->raw('his_sere_serv_ext.sere_serv_id'), $this->sere_serv_ids);
             });
         }
-        if ($this->debate_user_id == null) {
+
+        if ($this->sere_serv_ext_id == null) {
             $count = $data->count();
             if ($this->order_by != null) {
                 foreach ($this->order_by as $key => $item) {
-                    $data->orderBy('his_debate_user.' . $key, $item);
+                    $data->orderBy('his_sere_serv_ext.' . $key, $item);
                 }
             }
-            $data = $data->with($param);
             $data = $data
                 ->skip($this->start)
                 ->take($this->limit)
                 ->get();
         } else {
             $data = $data->where(function ($query) {
-                $query = $query->where(DB::connection('oracle_his')->raw('his_debate_user.id'), $this->debate_user_id);
+                $query = $query->where(DB::connection('oracle_his')->raw('his_sere_serv_ext.id'), $this->sere_serv_ext_id);
             });
-            $data = $data->with($param);
             $data = $data
                 ->skip($this->start)
                 ->take($this->limit)
                 ->first();
         }
+
         $param_return = [
             'start' => $this->start,
             'limit' => $this->limit,
             'count' => $count ?? null,
             'is_include_deleted' => $this->is_include_deleted ?? false,
             'is_active' => $this->is_active,
-            'debate_user_id' => $this->debate_user_id,
-            'debate_id' => $this->debate_id,
+            'sere_serv_ext_id' => $this->sere_serv_ext_id,
+            'sere_serv_ids' => $this->sere_serv_ids,
             'keyword' => $this->keyword,
             'order_by' => $this->order_by_request
         ];

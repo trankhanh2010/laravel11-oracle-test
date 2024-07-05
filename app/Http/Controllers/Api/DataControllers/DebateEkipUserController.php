@@ -6,6 +6,7 @@ use App\Http\Controllers\BaseControllers\BaseApiDataController;
 use App\Models\HIS\DebateEkipUser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+
 class DebateEkipUserController extends BaseApiDataController
 {
     public function __construct(Request $request)
@@ -40,28 +41,32 @@ class DebateEkipUserController extends BaseApiDataController
             'department:id,department_name,department_code'
         ];
         $keyword = mb_strtolower($this->keyword, 'UTF-8');
-        if (($this->debate_ekip_user_id == null) && (($keyword != null) || (!$this->is_include_deleted) || ($this->debate_id != null))) {
-            $data = $this->debate_ekip_user
+        $data = $this->debate_ekip_user
             ->leftJoin('his_execute_role as execute_role', 'execute_role.id', '=', 'his_debate_ekip_user.execute_role_id')
             ->leftJoin('his_department as department', 'department.id', '=', 'his_debate_ekip_user.department_id')
             ->select($select);
-            if ($keyword != null) {
-                $data = $data->where(function ($query) use ($keyword) {
-                    $query = $query->where(DB::connection('oracle_his')->raw('lower(his_debate_ekip_user.loginname)'), 'like', '%' . $keyword . '%')
-                        ->orWhere(DB::connection('oracle_his')->raw('lower(his_debate_ekip_user.username)'), 'like', '%' . $keyword . '%');
-                });
-            }
-            if (!$this->is_include_deleted) {
-                $data = $data->where(function ($query) {
-                    $query = $query->where(DB::connection('oracle_his')->raw('his_debate_ekip_user.is_delete'), 0);
-                });
-            }
-            if ($this->debate_id != null) {
-                $data = $data->where(function ($query) {
-                    $query = $query->where(DB::connection('oracle_his')->raw('his_debate_ekip_user.debate_id'), $this->debate_id);
-                });
-            }
-
+        if ($keyword != null) {
+            $data = $data->where(function ($query) use ($keyword) {
+                $query = $query->where(DB::connection('oracle_his')->raw('lower(his_debate_ekip_user.loginname)'), 'like', '%' . $keyword . '%')
+                    ->orWhere(DB::connection('oracle_his')->raw('lower(his_debate_ekip_user.username)'), 'like', '%' . $keyword . '%');
+            });
+        }
+        if (!$this->is_include_deleted) {
+            $data = $data->where(function ($query) {
+                $query = $query->where(DB::connection('oracle_his')->raw('his_debate_ekip_user.is_delete'), 0);
+            });
+        }
+        if ($this->is_active !== null) {
+            $data = $data->where(function ($query) {
+                $query = $query->where(DB::connection('oracle_his')->raw('his_debate_ekip_user.is_active'), $this->is_active);
+            });
+        }
+        if ($this->debate_id != null) {
+            $data = $data->where(function ($query) {
+                $query = $query->where(DB::connection('oracle_his')->raw('his_debate_ekip_user.debate_id'), $this->debate_id);
+            });
+        }
+        if ($this->debate_ekip_user_id == null) {
             $count = $data->count();
             if ($this->order_by != null) {
                 foreach ($this->order_by as $key => $item) {
@@ -72,29 +77,24 @@ class DebateEkipUserController extends BaseApiDataController
                 ->skip($this->start)
                 ->take($this->limit)
                 ->get();
-        }else{
-            $data = $this->debate_ekip_user;
-            if ($this->debate_ekip_user_id != null) {
+        } else {
             $data = $data->where(function ($query) {
                 $query = $query->where(DB::connection('oracle_his')->raw('his_debate_ekip_user.id'), $this->debate_ekip_user_id);
-                });
-            }
-            $data = $data->with($param);
+            });
             $data = $data
-            ->first();
+                ->first();
         }
         $param_return = [
             'start' => $this->start,
             'limit' => $this->limit,
             'count' => $count ?? null,
-            'is_include_deleted' => $this->is_include_deleted,
+            'is_include_deleted' => $this->is_include_deleted ?? false,
+            'is_active' => $this->is_active,
             'debate_ekip_user_id' => $this->debate_ekip_user_id,
             'debate_id' => $this->debate_id,
             'keyword' => $this->keyword,
             'order_by' => $this->order_by_request
         ];
         return return_data_success($param_return, $data);
-
     }
-
 }

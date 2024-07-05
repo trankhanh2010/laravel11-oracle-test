@@ -1,0 +1,221 @@
+<?php
+
+namespace App\Http\Controllers\Api\DataControllers;
+
+use App\Http\Controllers\BaseControllers\BaseApiDataController;
+use App\Models\HIS\SereServTein;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+
+class SereServTeinController extends BaseApiDataController
+{
+    public function __construct(Request $request)
+    {
+        parent::__construct($request); // Gọi constructor của BaseController
+        $this->sere_serv_tein = new SereServTein();
+        $this->order_by_join = [];
+        // Kiểm tra tên trường trong bảng
+        if ($this->order_by != null) {
+            foreach ($this->order_by as $key => $item) {
+                if (!in_array($key, $this->order_by_join)) {
+                    if (!$this->sere_serv_tein->getConnection()->getSchemaBuilder()->hasColumn($this->sere_serv_tein->getTable(), $key)) {
+                        unset($this->order_by_request[camelCaseFromUnderscore($key)]);
+                        unset($this->order_by[$key]);
+                    }
+                }
+            }
+            $this->order_by_tring = arrayToCustomString($this->order_by);
+        }
+    }
+    public function sere_serv_tein_get(Request $request)
+    {
+        $select = [
+            "ID",
+            "CREATE_TIME",
+            "MODIFY_TIME",
+            "CREATOR",
+            "MODIFIER",
+            "APP_CREATOR",
+            "APP_MODIFIER",
+            "IS_ACTIVE",
+            "IS_DELETE",
+            "SERE_SERV_ID",
+            "TEST_INDEX_ID",
+            "VALUE",
+            "RESULT_CODE",
+            "TDL_TREATMENT_ID",
+            "TDL_SERVICE_REQ_ID",
+            "RESULT_DESCRIPTION",
+        ];
+        $keyword = mb_strtolower($this->keyword, 'UTF-8');
+        $data = $this->sere_serv_tein
+            ->select($select);
+        if ($keyword != null) {
+            $data = $data->where(function ($query) use ($keyword) {
+                $query = $query->where(DB::connection('oracle_his')->raw('lower(his_sere_serv_tein.value)'), 'like', '%' . $keyword . '%')
+                    ->orWhere(DB::connection('oracle_his')->raw('lower(his_sere_serv_tein.result_code)'), 'like', '%' . $keyword . '%');
+            });
+        }
+        if (!$this->is_include_deleted) {
+            $data = $data->where(function ($query) {
+                $query = $query->where(DB::connection('oracle_his')->raw('his_sere_serv_tein.is_delete'), 0);
+            });
+        }
+        if ($this->is_active !== null) {
+            $data = $data->where(function ($query) {
+                $query = $query->where(DB::connection('oracle_his')->raw('his_sere_serv_tein.is_active'), $this->is_active);
+            });
+        }
+        if ($this->test_index_ids != null) {
+            $data = $data->where(function ($query) {
+                $query = $query->whereIn(DB::connection('oracle_his')->raw('his_sere_serv_tein.test_index_id'), $this->test_index_ids);
+            });
+        }
+        if ($this->tdl_treatment_id != null) {
+            $data = $data->where(function ($query) {
+                $query = $query->where(DB::connection('oracle_his')->raw('his_sere_serv_tein.tdl_treatment_id'), $this->tdl_treatment_id);
+            });
+        }
+
+
+        if ($this->sere_serv_tein_id == null) {
+            $count = $data->count();
+            if ($this->order_by != null) {
+                foreach ($this->order_by as $key => $item) {
+                    $data->orderBy('his_sere_serv_tein.' . $key, $item);
+                }
+            }
+            $data = $data
+                ->skip($this->start)
+                ->take($this->limit)
+                ->get();
+        } else {
+            $data = $data->where(function ($query) {
+                $query = $query->where(DB::connection('oracle_his')->raw('his_sere_serv_tein.id'), $this->sere_serv_tein_id);
+            });
+            $data = $data
+                ->skip($this->start)
+                ->take($this->limit)
+                ->first();
+        }
+
+        $param_return = [
+            'start' => $this->start,
+            'limit' => $this->limit,
+            'count' => $count ?? null,
+            'is_include_deleted' => $this->is_include_deleted ?? false,
+            'is_active' => $this->is_active,
+            'sere_serv_tein_id' => $this->sere_serv_tein_id,
+            'test_index_ids' => $this->test_index_ids,
+            'tdl_treatment_id' => $this->tdl_treatment_id,
+            'keyword' => $this->keyword,
+            'order_by' => $this->order_by_request
+        ];
+        return return_data_success($param_return, $data);
+    }
+
+    public function sere_serv_tein_get_view(Request $request)
+    {
+        $select = [
+            "his_sere_serv_tein.ID",
+            "his_sere_serv_tein.CREATE_TIME",
+            "his_sere_serv_tein.MODIFY_TIME",
+            "his_sere_serv_tein.CREATOR",
+            "his_sere_serv_tein.MODIFIER",
+            "his_sere_serv_tein.APP_CREATOR",
+            "his_sere_serv_tein.APP_MODIFIER",
+            "his_sere_serv_tein.IS_ACTIVE",
+            "his_sere_serv_tein.IS_DELETE",
+            "his_sere_serv_tein.SERE_SERV_ID",
+            "his_sere_serv_tein.TEST_INDEX_ID",
+            "his_sere_serv_tein.VALUE",
+            "his_sere_serv_tein.TDL_TREATMENT_ID",
+            "his_sere_serv_tein.MACHINE_ID",
+            "his_sere_serv_tein.NOTE",
+            "his_sere_serv_tein.LEAVEN",
+            "his_sere_serv_tein.TDL_SERVICE_REQ_ID",
+
+            "machine.machine_group_code",
+            "machine.source_code",
+            "machine.serial_number",
+            "machine.MACHINE_NAME",
+            "machine.MACHINE_CODE",
+
+            "test_index.test_index_unit_id",
+            "test_index.TEST_INDEX_NAME",
+            "test_index.TEST_INDEX_CODE",
+            "test_index.IS_NOT_SHOW_SERVICE",
+
+            "test_index_unit.test_index_unit_code",
+            "test_index_unit.test_index_unit_name",
+        ];
+        $param = [
+            'machine:id,machine_group_code,source_code,serial_number,MACHINE_NAME,MACHINE_CODE',
+            'test_index:id,test_index_unit_id,TEST_INDEX_NAME,TEST_INDEX_CODE,IS_NOT_SHOW_SERVICE',
+            'test_index.test_index_unit:id,TEST_INDEX_UNIT_NAME,TEST_INDEX_UNIT_CODE',
+        ];
+
+        $keyword = mb_strtolower($this->keyword, 'UTF-8');
+        $data = $this->sere_serv_tein
+            ->leftJoin('his_machine as machine', 'machine.id', '=', 'his_sere_serv_tein.machine_id')
+            ->leftJoin('his_test_index as test_index', 'test_index.id', '=', 'his_sere_serv_tein.test_index_id')
+            ->leftJoin('his_test_index_unit as test_index_unit', 'test_index_unit.id', '=', 'test_index.test_index_unit_id')
+            ->select($select);
+        if ($keyword != null) {
+            $data = $data->where(function ($query) use ($keyword) {
+                $query = $query->where(DB::connection('oracle_his')->raw('lower(his_sere_serv_tein.value)'), 'like', '%' . $keyword . '%')
+                    ->orWhere(DB::connection('oracle_his')->raw('lower(his_sere_serv_tein.result_code)'), 'like', '%' . $keyword . '%');
+            });
+        }
+        if (!$this->is_include_deleted) {
+            $data = $data->where(function ($query) {
+                $query = $query->where(DB::connection('oracle_his')->raw('his_sere_serv_tein.is_delete'), 0);
+            });
+        }
+        if ($this->is_active !== null) {
+            $data = $data->where(function ($query) {
+                $query = $query->where(DB::connection('oracle_his')->raw('his_sere_serv_tein.is_active'), $this->is_active);
+            });
+        }
+        if ($this->sere_serv_ids != null) {
+            $data = $data->where(function ($query) {
+                $query = $query->whereIn(DB::connection('oracle_his')->raw('his_sere_serv_tein.sere_serv_id'), $this->sere_serv_ids);
+            });
+        }
+
+
+        if ($this->sere_serv_tein_id == null) {
+            $count = $data->count();
+            if ($this->order_by != null) {
+                foreach ($this->order_by as $key => $item) {
+                    $data->orderBy('his_sere_serv_tein.' . $key, $item);
+                }
+            }
+            $data = $data
+                ->skip($this->start)
+                ->take($this->limit)
+                ->get();
+        } else {
+            $data = $data->where(function ($query) {
+                $query = $query->where(DB::connection('oracle_his')->raw('his_sere_serv_tein.id'), $this->sere_serv_tein_id);
+            });
+            $data = $data
+                ->skip($this->start)
+                ->take($this->limit)
+                ->first();
+        }
+
+        $param_return = [
+            'start' => $this->start,
+            'limit' => $this->limit,
+            'count' => $count ?? null,
+            'is_include_deleted' => $this->is_include_deleted ?? false,
+            'is_active' => $this->is_active,
+            'sere_serv_tein_id' => $this->sere_serv_tein_id,
+            'sere_serv_ids' => $this->sere_serv_ids,
+            'keyword' => $this->keyword,
+            'order_by' => $this->order_by_request
+        ];
+        return return_data_success($param_return, $data);
+    }
+}

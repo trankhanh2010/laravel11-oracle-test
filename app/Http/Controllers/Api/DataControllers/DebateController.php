@@ -92,27 +92,33 @@ class DebateController extends BaseApiDataController
             'debate_users.execute_role:id,execute_role_name,execute_role_code'
         ];
         $keyword = mb_strtolower($this->keyword, 'UTF-8');
-        if (($this->debate_id == null) && (($keyword != null) || (!$this->is_include_deleted) || ($this->treatment_id != null))) {
-            $data = $this->debate
-                ->select($select);
-            if ($keyword != null) {
-                $data = $data->where(function ($query) use ($keyword) {
-                    $query = $query->where(DB::connection('oracle_his')->raw('lower(his_debate.icd_code)'), 'like', '%' . $keyword . '%')
-                        ->orWhere(DB::connection('oracle_his')->raw('lower(his_debate.icd_name)'), 'like', '%' . $keyword . '%')
-                        ->orWhere(DB::connection('oracle_his')->raw('lower(his_debate.icd_sub_code)'), 'like', '%' . $keyword . '%');
-                });
-            }
-            if (!$this->is_include_deleted) {
-                $data = $data->where(function ($query) {
-                    $query = $query->where(DB::connection('oracle_his')->raw('his_debate.is_delete'), 0);
-                });
-            }
-            if ($this->treatment_id != null) {
-                $data = $data->where(function ($query) {
-                    $query = $query->where(DB::connection('oracle_his')->raw('his_debate.treatment_id'), $this->treatment_id);
-                });
-            }
+        $data = $this->debate
+            ->select($select);
+        if ($keyword != null) {
+            $data = $data->where(function ($query) use ($keyword) {
+                $query = $query->where(DB::connection('oracle_his')->raw('lower(his_debate.icd_code)'), 'like', '%' . $keyword . '%')
+                    ->orWhere(DB::connection('oracle_his')->raw('lower(his_debate.icd_name)'), 'like', '%' . $keyword . '%')
+                    ->orWhere(DB::connection('oracle_his')->raw('lower(his_debate.icd_sub_code)'), 'like', '%' . $keyword . '%');
+            });
+        }
+        if (!$this->is_include_deleted) {
+            $data = $data->where(function ($query) {
+                $query = $query->where(DB::connection('oracle_his')->raw('his_debate.is_delete'), 0);
+            });
+        }
+        if ($this->is_active !== null) {
+            $data = $data->where(function ($query) {
+                $query = $query->where(DB::connection('oracle_his')->raw('his_debate.is_active'), $this->is_active);
+            });
+        }
+        if ($this->treatment_id != null) {
+            $data = $data->where(function ($query) {
+                $query = $query->where(DB::connection('oracle_his')->raw('his_debate.treatment_id'), $this->treatment_id);
+            });
+        }
 
+
+        if ($this->debate_id == null) {
             $count = $data->count();
             if ($this->order_by != null) {
                 foreach ($this->order_by as $key => $item) {
@@ -125,13 +131,9 @@ class DebateController extends BaseApiDataController
                 ->take($this->limit)
                 ->get();
         } else {
-            $data = $this->debate
-                ->select($select);
-            if ($this->debate_id != null) {
-                $data = $data->where(function ($query) {
-                    $query = $query->where(DB::connection('oracle_his')->raw('his_debate.id'), $this->debate_id);
-                });
-            }
+            $data = $data->where(function ($query) {
+                $query = $query->where(DB::connection('oracle_his')->raw('his_debate.id'), $this->debate_id);
+            });
             $data = $data->with($param);
             $data = $data
                 ->skip($this->start)
@@ -143,7 +145,8 @@ class DebateController extends BaseApiDataController
             'start' => $this->start,
             'limit' => $this->limit,
             'count' => $count ?? null,
-            'is_include_deleted' => $this->is_include_deleted,
+            'is_include_deleted' => $this->is_include_deleted ?? false,
+            'is_active' => $this->is_active,
             'debate_id' => $this->debate_id,
             'treatment_id' => $this->treatment_id,
             'keyword' => $this->keyword,
@@ -218,43 +221,48 @@ class DebateController extends BaseApiDataController
         ];
 
         $keyword = mb_strtolower($this->keyword, 'UTF-8');
-        if (($this->debate_id == null) && (($keyword != null) || (!$this->is_include_deleted) || ($this->treatment_id != null))) {
-            $data = $this->debate
-                ->leftJoin('his_treatment as treatment', 'treatment.id', '=', 'his_debate.treatment_id')
-                ->leftJoin('his_department as department', 'department.id', '=', 'his_debate.department_id')
-                ->leftJoin('his_debate_type as debate_type', 'debate_type.id', '=', 'his_debate.debate_type_id')
-                ->leftJoin('his_emotionless_method as emotionless_method', 'emotionless_method.id', '=', 'his_debate.emotionless_method_id')
-                ->leftJoin('his_debate_reason as debate_reason', 'debate_reason.id', '=', 'his_debate.debate_reason_id')
+        $data = $this->debate
+            ->leftJoin('his_treatment as treatment', 'treatment.id', '=', 'his_debate.treatment_id')
+            ->leftJoin('his_department as department', 'department.id', '=', 'his_debate.department_id')
+            ->leftJoin('his_debate_type as debate_type', 'debate_type.id', '=', 'his_debate.debate_type_id')
+            ->leftJoin('his_emotionless_method as emotionless_method', 'emotionless_method.id', '=', 'his_debate.emotionless_method_id')
+            ->leftJoin('his_debate_reason as debate_reason', 'debate_reason.id', '=', 'his_debate.debate_reason_id')
 
-                ->select($select);
-            if ($keyword != null) {
-                $data = $data->where(function ($query) use ($keyword) {
-                    $query = $query->where(DB::connection('oracle_his')->raw('lower(his_debate.icd_code)'), 'like', '%' . $keyword . '%')
-                        ->orWhere(DB::connection('oracle_his')->raw('lower(his_debate.icd_name)'), 'like', '%' . $keyword . '%')
-                        ->orWhere(DB::connection('oracle_his')->raw('lower(his_debate.icd_sub_code)'), 'like', '%' . $keyword . '%');
-                });
-            }
-            if (!$this->is_include_deleted) {
-                $data = $data->where(function ($query) {
-                    $query = $query->where(DB::connection('oracle_his')->raw('his_debate.is_delete'), 0);
-                });
-            }
-            if ($this->treatment_id != null) {
-                $data = $data->where(function ($query) {
-                    $query = $query->where(DB::connection('oracle_his')->raw('his_debate.treatment_id'), $this->treatment_id);
-                });
-            }
-            if ($this->treatment_code != null) {
-                $data = $data->where(function ($query) {
-                    $query = $query->where(DB::connection('oracle_his')->raw('treatment.treatment_code'), $this->treatment_code);
-                });
-            }
-            if ($this->department_ids != null) {
-                $data = $data->where(function ($query) {
-                    $query = $query->whereIn(DB::connection('oracle_his')->raw('his_debate.department_id'), $this->department_ids);
-                });
-            }
+            ->select($select);
+        if ($keyword != null) {
+            $data = $data->where(function ($query) use ($keyword) {
+                $query = $query->where(DB::connection('oracle_his')->raw('lower(his_debate.icd_code)'), 'like', '%' . $keyword . '%')
+                    ->orWhere(DB::connection('oracle_his')->raw('lower(his_debate.icd_name)'), 'like', '%' . $keyword . '%')
+                    ->orWhere(DB::connection('oracle_his')->raw('lower(his_debate.icd_sub_code)'), 'like', '%' . $keyword . '%');
+            });
+        }
+        if (!$this->is_include_deleted) {
+            $data = $data->where(function ($query) {
+                $query = $query->where(DB::connection('oracle_his')->raw('his_debate.is_delete'), 0);
+            });
+        }
+        if ($this->is_active !== null) {
+            $data = $data->where(function ($query) {
+                $query = $query->where(DB::connection('oracle_his')->raw('his_debate.is_active'), $this->is_active);
+            });
+        }
+        if ($this->treatment_id != null) {
+            $data = $data->where(function ($query) {
+                $query = $query->where(DB::connection('oracle_his')->raw('his_debate.treatment_id'), $this->treatment_id);
+            });
+        }
+        if ($this->treatment_code != null) {
+            $data = $data->where(function ($query) {
+                $query = $query->where(DB::connection('oracle_his')->raw('treatment.treatment_code'), $this->treatment_code);
+            });
+        }
+        if ($this->department_ids != null) {
+            $data = $data->where(function ($query) {
+                $query = $query->whereIn(DB::connection('oracle_his')->raw('his_debate.department_id'), $this->department_ids);
+            });
+        }
 
+        if ($this->debate_id == null) {
             $count = $data->count();
             if ($this->order_by != null) {
                 foreach ($this->order_by as $key => $item) {
@@ -266,19 +274,9 @@ class DebateController extends BaseApiDataController
                 ->take($this->limit)
                 ->get();
         } else {
-            $data = $this->debate
-                ->leftJoin('his_treatment as treatment', 'treatment.id', '=', 'his_debate.treatment_id')
-                ->leftJoin('his_department as department', 'department.id', '=', 'his_debate.department_id')
-                ->leftJoin('his_debate_type as debate_type', 'debate_type.id', '=', 'his_debate.debate_type_id')
-                ->leftJoin('his_emotionless_method as emotionless_method', 'emotionless_method.id', '=', 'his_debate.emotionless_method_id')
-                ->leftJoin('his_debate_reason as debate_reason', 'debate_reason.id', '=', 'his_debate.debate_reason_id')
-
-                ->select($select);
-            if ($this->debate_id != null) {
-                $data = $data->where(function ($query) {
-                    $query = $query->where(DB::connection('oracle_his')->raw('his_debate.id'), $this->debate_id);
-                });
-            }
+            $data = $data->where(function ($query) {
+                $query = $query->where(DB::connection('oracle_his')->raw('his_debate.id'), $this->debate_id);
+            });
             $data = $data->first();
         }
 
@@ -286,7 +284,8 @@ class DebateController extends BaseApiDataController
             'start' => $this->start,
             'limit' => $this->limit,
             'count' => $count ?? null,
-            'is_include_deleted' => $this->is_include_deleted,
+            'is_include_deleted' => $this->is_include_deleted ?? false,
+            'is_active' => $this->is_active ?? null,
             'debate_id' => $this->debate_id,
             'treatment_id' => $this->treatment_id,
             'treatment_code' => $this->treatment_code,

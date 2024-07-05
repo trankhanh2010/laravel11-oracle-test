@@ -89,65 +89,67 @@ class ServiceReqController extends BaseApiDataController
         ];
 
         $keyword = mb_strtolower($this->keyword, 'UTF-8');
-        if (($this->service_req_id == null) && (($keyword != null) || (!$this->is_include_deleted) || ($this->service_req_stt_ids != null) || ($this->not_in_service_req_type_ids != null) 
-        || ($this->tdl_patient_type_ids != null) || ($this->execute_room_id != null) || ($this->intruction_time_from != null) || ($this->intruction_time_to != null)
-        || (!$this->has_execute) || (!$this->is_not_ksk_requried_aproval__or__is_ksk_approve) )) {
-            $data = $this->service_req
-            ->select($select);
-            if ($keyword != null) {
-                $data = $data->where(function ($query) use ($keyword) {
-                    $query = $query->where(DB::connection('oracle_his')->raw('lower(his_service_req.service_req_code)'), 'like', '%' . $keyword . '%')
-                        ->orWhere(DB::connection('oracle_his')->raw('lower(his_service_req.tdl_patient_code)'), 'like', '%' . $keyword . '%');
-                });
-            }
-            if (!$this->is_include_deleted) {
-                $data = $data->where(function ($query) {
-                    $query = $query->where(DB::connection('oracle_his')->raw('his_service_req.is_delete'), 0);
-                });
-            }
-            if ($this->service_req_stt_ids != null) {
-                $data = $data->where(function ($query) {
-                    $query = $query->whereIn(DB::connection('oracle_his')->raw('his_service_req.service_req_stt_id'), $this->service_req_stt_ids);
-                });
-            }
-            if ($this->not_in_service_req_type_ids != null) {
-                $data = $data->where(function ($query) {
-                    $query = $query->whereNotIn(DB::connection('oracle_his')->raw('his_service_req.service_req_type_id'), $this->not_in_service_req_type_ids);
-                });
-            }
-            if ($this->tdl_patient_type_ids != null) {
-                $data = $data->where(function ($query) {
-                    $query = $query->whereIn(DB::connection('oracle_his')->raw('his_service_req.tdl_patient_type_id'), $this->tdl_patient_type_ids);
-                });
-            }
-            if ($this->execute_room_id != null) {
-                $data = $data->where(function ($query) {
-                    $query = $query->where(DB::connection('oracle_his')->raw('his_service_req.execute_room_id'), $this->execute_room_id);
-                });
-            }
-            if ($this->intruction_time_from != null) {
-                $data = $data->where(function ($query) {
-                    $query = $query->where(DB::connection('oracle_his')->raw('his_service_req.intruction_time'), '>=', $this->intruction_time_from);
-                });
-            }
-            if ($this->intruction_time_to != null) {
-                $data = $data->where(function ($query) {
-                    $query = $query->where(DB::connection('oracle_his')->raw('his_service_req.intruction_time'), '<=', $this->intruction_time_to);
-                });
-            }
-            if (!$this->has_execute) {
-                $data = $data->where(function ($query) {
-                    $query = $query->where(DB::connection('oracle_his')->raw('his_service_req.is_no_execute'), 1);
-                });
-            }
-            if ($this->is_not_ksk_requried_aproval__or__is_ksk_approve) {
-                $data = $data->where(function ($query) {
-                    $query = $query->where(DB::connection('oracle_his')->raw('his_service_req.TDL_KSK_IS_REQUIRED_APPROVAL'), null);
-                    $query = $query->orWhere(DB::connection('oracle_his')->raw('his_service_req.TDL_IS_KSK_APPROVE'), 0);
-                    $query = $query->orwhere(DB::connection('oracle_his')->raw('his_service_req.TDL_IS_KSK_APPROVE'), 1);
-                });
-            }
-
+        $data = $this->service_req
+        ->select($select);
+        if ($keyword != null) {
+            $data = $data->where(function ($query) use ($keyword) {
+                $query = $query->where(DB::connection('oracle_his')->raw('lower(his_service_req.service_req_code)'), 'like', '%' . $keyword . '%')
+                    ->orWhere(DB::connection('oracle_his')->raw('lower(his_service_req.tdl_patient_code)'), 'like', '%' . $keyword . '%');
+            });
+        }
+        if (!$this->is_include_deleted) {
+            $data = $data->where(function ($query) {
+                $query = $query->where(DB::connection('oracle_his')->raw('his_service_req.is_delete'), 0);
+            });
+        }
+        if ($this->is_active !== null) {
+            $data = $data->where(function ($query) {
+                $query = $query->where(DB::connection('oracle_his')->raw('his_service_req.is_active'), $this->is_active);
+            });
+        }
+        if ($this->service_req_stt_ids != null) {
+            $data = $data->where(function ($query) {
+                $query = $query->whereIn(DB::connection('oracle_his')->raw('his_service_req.service_req_stt_id'), $this->service_req_stt_ids);
+            });
+        }
+        if ($this->not_in_service_req_type_ids != null) {
+            $data = $data->where(function ($query) {
+                $query = $query->whereNotIn(DB::connection('oracle_his')->raw('his_service_req.service_req_type_id'), $this->not_in_service_req_type_ids);
+            });
+        }
+        if ($this->tdl_patient_type_ids != null) {
+            $data = $data->where(function ($query) {
+                $query = $query->whereIn(DB::connection('oracle_his')->raw('his_service_req.tdl_patient_type_id'), $this->tdl_patient_type_ids);
+            });
+        }
+        if ($this->execute_room_id != null) {
+            $data = $data->where(function ($query) {
+                $query = $query->where(DB::connection('oracle_his')->raw('his_service_req.execute_room_id'), $this->execute_room_id);
+            });
+        }
+        if ($this->intruction_time_from != null) {
+            $data = $data->where(function ($query) {
+                $query = $query->where(DB::connection('oracle_his')->raw('his_service_req.intruction_time'), '>=', $this->intruction_time_from);
+            });
+        }
+        if ($this->intruction_time_to != null) {
+            $data = $data->where(function ($query) {
+                $query = $query->where(DB::connection('oracle_his')->raw('his_service_req.intruction_time'), '<=', $this->intruction_time_to);
+            });
+        }
+        if (!$this->has_execute) {
+            $data = $data->where(function ($query) {
+                $query = $query->where(DB::connection('oracle_his')->raw('his_service_req.is_no_execute'), 1);
+            });
+        }
+        if ($this->is_not_ksk_requried_aproval__or__is_ksk_approve) {
+            $data = $data->where(function ($query) {
+                $query = $query->where(DB::connection('oracle_his')->raw('his_service_req.TDL_KSK_IS_REQUIRED_APPROVAL'), null);
+                $query = $query->orWhere(DB::connection('oracle_his')->raw('his_service_req.TDL_IS_KSK_APPROVE'), 0);
+                $query = $query->orwhere(DB::connection('oracle_his')->raw('his_service_req.TDL_IS_KSK_APPROVE'), 1);
+            });
+        }
+        if ($this->service_req_id == null) {
             $count = $data->count();
             if ($this->order_by != null) {
                 foreach ($this->order_by as $key => $item) {
@@ -159,13 +161,9 @@ class ServiceReqController extends BaseApiDataController
                 ->take($this->limit)
                 ->get();
         }else{
-            $data = $this->service_req
-            ->select($select);
-            if ($this->service_req_id != null) {
             $data = $data->where(function ($query) {
                 $query = $query->where(DB::connection('oracle_his')->raw('his_service_req.id'), $this->service_req_id);
                 });
-            }
             $data = $data
             ->first();
         }
@@ -173,6 +171,8 @@ class ServiceReqController extends BaseApiDataController
             'start' => $this->start,
             'limit' => $this->limit,
             'count' => $count ?? null,
+            'is_iclude_deleted' => $this->is_include_deleted ?? false,
+            'is_active' => $this->is_active,
             'service_req_stt_ids' => $this->service_req_stt_ids,
             'not_in_service_req_type_ids' => $this->not_in_service_req_type_ids,
             'tdl_patient_type_ids' => $this->tdl_patient_type_ids,
