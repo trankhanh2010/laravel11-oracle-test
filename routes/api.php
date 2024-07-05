@@ -60,6 +60,7 @@ use App\Http\Controllers\Api\DataControllers\DebateEkipUserController;
 use App\Http\Controllers\Api\DataControllers\DhstController;
 use App\Http\Controllers\Api\DataControllers\PatientTypeAlterController;
 use App\Http\Controllers\Api\DataControllers\SereServController;
+use App\Http\Controllers\Api\DataControllers\ServiceReqController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -967,7 +968,7 @@ Route::group([
     Route::get("v1/debate-type/{id}", [HISController::class, "debate_type"]);
 
     // Service Req
-    Route::get("v1/service-req/get-L-view", [HISController::class, "service_req_get_L_view"]);
+    Route::get("v1/service-req/get-L-view", [ServiceReqController::class, "service_req_get_L_view"]);
 
     // Tracking
     Route::get("v1/tracking/get", [HISController::class, "tracking"]);

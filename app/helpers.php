@@ -574,3 +574,27 @@ if (!function_exists('return_data_fail_transaction')) {
         ], 500);
     }
 }
+
+if (!function_exists('return_403')) {
+    function return_403()
+    {
+        return response()->json([
+            'status'    => 403,
+            'success' => false,
+            'message' => 'Không có quyền truy cập!'
+        ], 403);
+
+    }
+}
+
+if (!function_exists('return_400')) {
+    function return_400($mess)
+    {
+        return response()->json([
+            'status'    => 400,
+            'success' => false,
+            'message' => $mess
+        ], 400);
+
+    }
+}
