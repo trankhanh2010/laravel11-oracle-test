@@ -19,6 +19,7 @@ use App\Models\HIS\ServiceReqStt;
 use App\Models\HIS\ServiceReqType;
 use App\Models\HIS\ServiceType;
 use App\Models\HIS\TestIndex;
+use App\Models\HIS\Tracking;
 use App\Models\HIS\Treatment;
 use Illuminate\Http\Request;
 
@@ -70,6 +71,12 @@ class BaseApiDataController extends Controller
     protected $sere_serv_tein_id;
     protected $test_index_ids;
     protected $tdl_treatment_id;
+    protected $treatment_ids;
+    protected $create_time_to;
+    protected $tracking_id;
+    protected $include_material;
+    protected $include_blood_pres;
+    protected $patient_code__exact;
 
     // Khai báo các biến mặc định model
     protected $app_creator = "MOS_v2";
@@ -84,6 +91,14 @@ class BaseApiDataController extends Controller
     protected $service_req;
     protected $sere_serv_ext;
     protected $sere_serv_tein;
+    protected $tracking;
+    protected $treatment;
+    protected $exp_mest;
+    protected $imp_mest;
+    protected $exp_mest_medicine;
+    protected $care;
+    protected $exp_mest_material;
+
     public function __construct(Request $request)
     {
         // Khai báo các biến
@@ -129,9 +144,20 @@ class BaseApiDataController extends Controller
         if (!is_bool ($this->only_active)) {
             $this->only_active = false;
         }
+
         $this->is_include_deleted = $this->param_request['ApiData']['IsIncludeDeleted'] ?? false;
         if (!is_bool ($this->is_include_deleted)) {
             $this->is_include_deleted = false;
+        }
+
+        $this->include_material = $this->param_request['ApiData']['IncludeMaterial'] ?? true;
+        if (!is_bool ($this->include_material)) {
+            $this->include_material = true;
+        }
+
+        $this->include_blood_pres = $this->param_request['ApiData']['IncludeBloodPres'] ?? true;
+        if (!is_bool ($this->include_blood_pres)) {
+            $this->include_blood_pres = true;
         }
 
         $this->has_execute = $this->param_request['ApiData']['HasExecute'] ?? true;
@@ -419,6 +445,46 @@ class BaseApiDataController extends Controller
                 if (!Treatment::where('id', $this->tdl_treatment_id)->exists()) {
                     $this->tdl_treatment_id = null;
                 }
+            }
+        }
+
+        $this->treatment_ids = $this->param_request['ApiData']['TreatmentIds'] ?? null;
+        if ($this->treatment_ids != null) {
+            foreach ($this->treatment_ids as $key => $item) {
+                // Kiểm tra xem ID có tồn tại trong bảng  hay không
+                if (!is_numeric($item)) {
+                    unset($this->treatment_ids[$key]);
+                } else {
+                    if (!Treatment::where('id', $item)->exists()) {
+                        unset($this->treatment_ids[$key]);
+                    }
+                }
+            }
+        }
+
+        $this->create_time_to = $this->param_request['ApiData']['CreateTimeTo'] ?? null;
+        if($this->create_time_to != null){
+            if(!preg_match('/^\d{14}$/',  $this->create_time_to)){
+                $this->create_time_to = null;
+            }
+        }
+
+        $this->tracking_id = $this->param_request['ApiData']['TrackingId'] ?? null;
+        if ($this->tracking_id != null) {
+            // Kiểm tra xem ID có tồn tại trong bảng  hay không
+            if (!is_numeric($this->tracking_id)) {
+                $this->tracking_id = null;
+            } else {
+                if (!Tracking::where('id', $this->tracking_id)->exists()) {
+                    $this->tracking_id = null;
+                }
+            }
+        }
+
+        $this->patient_code__exact = $this->param_request['ApiData']['PatientCode_Exact'] ?? null;
+        if($this->patient_code__exact != null){
+            if(!preg_match('/^.{0,10}$/',  $this->patient_code__exact)){
+                $this->patient_code__exact = null;
             }
         }
 

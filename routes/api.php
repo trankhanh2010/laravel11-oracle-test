@@ -63,6 +63,8 @@ use App\Http\Controllers\Api\DataControllers\SereServController;
 use App\Http\Controllers\Api\DataControllers\ServiceReqController;
 use App\Http\Controllers\Api\DataControllers\SereServExtController;
 use App\Http\Controllers\Api\DataControllers\SereServTeinController;
+use App\Http\Controllers\Api\DataControllers\TrackingController;
+use App\Http\Controllers\Api\DataControllers\TreatmentController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -973,8 +975,8 @@ Route::group([
     Route::get("v1/service-req/get-L-view", [ServiceReqController::class, "service_req_get_L_view"]);
 
     // Tracking
-    Route::get("v1/tracking/get", [HISController::class, "tracking"]);
-    Route::get("v1/tracking/get-data", [HISController::class, "tracking_get_data"]);
+    Route::get("v1/tracking/get", [TrackingController::class, "tracking_get"]);
+    Route::get("v1/tracking/get-data", [TrackingController::class, "tracking_get_data"]);
 
     // Sere Serv
     Route::get("v1/sere-serv/get", [SereServController::class, "sere_serv_get"]);
@@ -983,8 +985,8 @@ Route::group([
     Route::get("v1/patient-type-alter/get-view", [PatientTypeAlterController::class, "patient_type_alter_get_view"]);
 
     // Treatment
-    Route::get("v1/treatment/get-L-view", [HISController::class, "treatment_get_L_view"]);
-    Route::get("v1/treatment/get-treatment-with-patient-type-info-sdo", [HISController::class, "treatment_get_treatment_with_patient_type_info_sdo"]);
+    Route::get("v1/treatment/get-L-view", [TreatmentController::class, "treatment_get_L_view"]);
+    Route::get("v1/treatment/get-treatment-with-patient-type-info-sdo", [TreatmentController::class, "treatment_get_treatment_with_patient_type_info_sdo"]);
 
     // Treatment Bed Room
     Route::get("v1/treatment-bed-room/get-L-view", [HISController::class, "treatment_bed_room_get_L_view"]);
