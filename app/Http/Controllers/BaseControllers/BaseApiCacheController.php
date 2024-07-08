@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\HIS\Department;
 use App\Models\HIS\Package;
 use App\Models\HIS\PatientType;
+use App\Models\HIS\RoomType;
 use App\Models\HIS\Service;
 use Illuminate\Http\Request;
 use App\Models\HIS\ServiceType;
@@ -31,6 +32,8 @@ class BaseApiCacheController extends Controller
     protected $page;
     protected $param_request;
     protected $is_active;
+    protected $effective;
+    protected $room_type_id;
 
     // Khai báo các biến mặc định model
     protected $app_creator = "MOS_v2";
@@ -430,7 +433,20 @@ class BaseApiCacheController extends Controller
                 $this->is_active = 1;
             }
         }
-
-
+        $this->effective = $this->param_request['ApiData']['Effective'] ?? false;
+        if (!is_bool ($this->effective)) {
+            $this->effective = false;
+        }
+        $this->room_type_id = $this->param_request['ApiData']['RoomTypeId'] ?? null;
+        if ($this->room_type_id != null) {
+            // Kiểm tra xem ID có tồn tại trong bảng  hay không
+            if (!is_numeric($this->room_type_id)) {
+                $this->room_type_id = null;
+            } else {
+                if (!RoomType::where('id', $this->room_type_id)->exists()) {
+                    $this->room_type_id = null;
+                }
+            }
+        }
     }
 }

@@ -31,7 +31,7 @@ class ServicePatyController extends BaseApiCacheController
     public function service_paty($id = null)
     {
         $keyword = mb_strtolower($this->keyword, 'UTF-8');
-        if (($keyword != null) || ($this->service_type_ids != null) || ($this->patient_type_ids != null) || ($this->service_id != null) || ($this->package_id != null)) {
+        if (($keyword != null) || ($this->service_type_ids != null) || ($this->patient_type_ids != null) || ($this->service_id != null) || ($this->package_id != null) || ($this->effective !== null)) {
             $data = $this->service_paty
                 ->leftJoin('his_service as service', 'service.id', '=', 'his_service_paty.service_id')
                 ->leftJoin('his_patient_type as patient_type', 'patient_type.id', '=', 'his_service_paty.patient_type_id')
@@ -100,6 +100,13 @@ class ServicePatyController extends BaseApiCacheController
             if ($this->is_active !== null) {
                 $data = $data->where(function ($query) {
                     $query = $query->where(DB::connection('oracle_his')->raw('his_service_paty.is_active'), $this->is_active);
+                });
+            } 
+            $now = now()->format('Ymdhis');
+            if ($this->effective) {
+                $data = $data->where(function ($query) use ($now) {
+                    $query = $query->where(DB::connection('oracle_his')->raw('his_service_paty.to_time'), '>=', $now)
+                    ->orWhere(DB::connection('oracle_his')->raw('his_service_paty.to_time'), null);
                 });
             } 
             $count = $data->count();
