@@ -27,16 +27,24 @@ class PtttMethodController extends BaseApiCacheController
     public function pttt_method($id = null)
     {
         $keyword = mb_strtolower($this->keyword, 'UTF-8');
-        if($keyword != null){
+        if($keyword !== null){
             $data = $this->pttt_method
                     ->leftJoin('his_pttt_group as pttt_group', 'pttt_group.id', '=', 'his_pttt_method.pttt_group_id')
                     ->select(
                         'his_pttt_method.*',
                         'pttt_group.pttt_group_name',
                         'pttt_group.pttt_group_code',
-                    )
+                    );
+                    $data = $data->where(function ($query) use ($keyword){
+                        $query = $query
                     ->where(DB::connection('oracle_his')->raw('lower(his_pttt_method.pttt_method_code)'), 'like', '%' . $keyword . '%')
                     ->orWhere(DB::connection('oracle_his')->raw('lower(his_pttt_method.pttt_method_name)'), 'like', '%' . $keyword . '%');
+                    });
+        if ($this->is_active !== null) {
+            $data = $data->where(function ($query) {
+                $query = $query->where(DB::connection('oracle_his')->raw('his_pttt_method.is_active'), $this->is_active);
+            });
+        } 
                 $count = $data->count();
                 if ($this->order_by != null) {
                     foreach ($this->order_by as $key => $item) {

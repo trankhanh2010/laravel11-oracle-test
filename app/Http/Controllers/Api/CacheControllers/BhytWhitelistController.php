@@ -31,9 +31,17 @@ class BhytWhitelistController extends BaseApiCacheController
     public function bhyt_whitelist($id = null)
     {
         $keyword = mb_strtolower($this->keyword, 'UTF-8');
-        if ($keyword != null) {
-            $data = $this->bhyt_whitelist
+        if ($keyword !== null) {
+            $data = $this->bhyt_whitelist;
+            $data = $data->where(function ($query) use ($keyword){
+                $query = $query
                 ->where(DB::connection('oracle_his')->raw('lower(bhyt_whitelist_code)'), 'like', '%' . $keyword . '%');
+            });
+        if ($this->is_active !== null) {
+            $data = $data->where(function ($query) {
+                $query = $query->where(DB::connection('oracle_his')->raw('his_bhyt_whitelist.is_active'), $this->is_active);
+            });
+        } 
             $count = $data->count();
             if ($this->order_by != null) {
                 foreach ($this->order_by as $key => $item) {

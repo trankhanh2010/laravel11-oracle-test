@@ -26,16 +26,24 @@ class PtttGroupController extends BaseApiCacheController
     public function pttt_group($id = null)
     {
         $keyword = mb_strtolower($this->keyword, 'UTF-8');
-        if ($keyword != null) {
+        if ($keyword !== null) {
             $param = [
                 'serv_segrs:id,service_id,service_group_id',
                 'serv_segrs.service:id,service_name,service_type_id',
                 'serv_segrs.service.service_type:id,service_type_name,service_type_code',
                 'serv_segrs.service_group:id,service_group_name',
             ];
-            $data = $this->pttt_group
+            $data = $this->pttt_group;
+            $data = $data->where(function ($query) use ($keyword){
+                $query = $query
                 ->where(DB::connection('oracle_his')->raw('lower(pttt_group_code)'), 'like', '%' . $keyword . '%')
                 ->orWhere(DB::connection('oracle_his')->raw('lower(pttt_group_name)'), 'like', '%' . $keyword . '%');
+            });
+        if ($this->is_active !== null) {
+            $data = $data->where(function ($query) {
+                $query = $query->where(DB::connection('oracle_his')->raw('is_active'), $this->is_active);
+            });
+        } 
             $count = $data->count();
             if ($this->order_by != null) {
                 foreach ($this->order_by as $key => $item) {

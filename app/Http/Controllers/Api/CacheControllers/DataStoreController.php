@@ -33,7 +33,7 @@ class DataStoreController extends BaseApiCacheController
     public function data_store($id = null)
     {
         $keyword = mb_strtolower($this->keyword, 'UTF-8');
-        if ($keyword != null) {
+        if ($keyword !== null) {
             $param = [
                 'room:id,department_id',
                 'room.department:id,department_name,department_code',
@@ -41,9 +41,17 @@ class DataStoreController extends BaseApiCacheController
                 'stored_department:id,department_name,department_code',
                 'parent:id,data_store_code,data_store_name',
             ];
-            $data = $this->data_store
+            $data = $this->data_store;
+            $data = $data->where(function ($query) use ($keyword){
+                $query = $query
                 ->where(DB::connection('oracle_his')->raw('lower(data_store_code)'), 'like', '%' . $keyword . '%')
                 ->orWhere(DB::connection('oracle_his')->raw('lower(data_store_name)'), 'like', '%' . $keyword . '%');
+            });
+        if ($this->is_active !== null) {
+            $data = $data->where(function ($query) {
+                $query = $query->where(DB::connection('oracle_his')->raw('his_data_store.is_active'), $this->is_active);
+            });
+        } 
             $count = $data->count();
             if ($this->order_by != null) {
                 foreach ($this->order_by as $key => $item) {

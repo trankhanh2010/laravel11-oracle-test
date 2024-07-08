@@ -31,15 +31,23 @@ class DepartmentController extends BaseApiCacheController
     public function department($id = null)
     {
         $keyword = mb_strtolower($this->keyword, 'UTF-8');
-        if ($keyword != null) {
+        if ($keyword !== null) {
             $param = [
                 'branch:id,branch_name,branch_code',
                 'req_surg_treatment_type:id,treatment_type_code,treatment_type_name',
                 'default_instr_patient_type:id,patient_type_code,patient_type_name',
             ];
-            $data = $this->department
+            $data = $this->department;
+            $data = $data->where(function ($query) use ($keyword){
+                $query = $query
                 ->where(DB::connection('oracle_his')->raw('lower(department_code)'), 'like', '%' . $keyword . '%')
                 ->orWhere(DB::connection('oracle_his')->raw('lower(department_name)'), 'like', '%' . $keyword . '%');
+            });
+        if ($this->is_active !== null) {
+            $data = $data->where(function ($query) {
+                $query = $query->where(DB::connection('oracle_his')->raw('his_department.is_active'), $this->is_active);
+            });
+        } 
             $count = $data->count();
             if ($this->order_by != null) {
                 foreach ($this->order_by as $key => $item) {

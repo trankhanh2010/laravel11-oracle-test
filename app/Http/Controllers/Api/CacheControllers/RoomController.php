@@ -34,7 +34,7 @@ class RoomController extends BaseApiCacheController
     public function room()
     {
         $keyword = mb_strtolower($this->keyword, 'UTF-8');
-        if(($keyword != null) || ($this->department_id != null)){
+        if(($keyword !== null) || ($this->department_id != null)){
             $data = $this->room
                     ->leftJoin('his_bed_room as bed', 'his_room.id', '=', 'bed.room_id')
                     ->leftJoin('his_cashier_room as cashier', 'his_room.id', '=', 'cashier.room_id')
@@ -71,6 +71,11 @@ class RoomController extends BaseApiCacheController
                                   ->orWhere(DB::connection('oracle_his')->raw('lower(reception.reception_room_code)'), 'like', '%' . $keyword . '%');
                         });
                     }
+        if ($this->is_active !== null) {
+            $data = $data->where(function ($query) {
+                $query = $query->where(DB::connection('oracle_his')->raw('his_room.is_active'), $this->is_active);
+            });
+        } 
                 $count = $data->count();
                 if ($this->order_by != null) {
                     foreach ($this->order_by as $key => $item) {

@@ -31,7 +31,7 @@ class ExecuteRoleController extends BaseApiCacheController
     public function execute_role($id = null)
     {
         $keyword = mb_strtolower($this->keyword, 'UTF-8');
-        if ($keyword != null) {
+        if ($keyword !== null) {
             $param = [
             ];
             $select = [
@@ -53,9 +53,17 @@ class ExecuteRoleController extends BaseApiCacheController
                 'is_title',
                 'allow_simultaneity'
             ];
-            $data = $this->execute_role
+            $data = $this->execute_role;
+            $data = $data->where(function ($query) use ($keyword){
+                $query = $query
                 ->where(DB::connection('oracle_his')->raw('lower(execute_role_code)'), 'like', '%' . $keyword . '%')
                 ->orWhere(DB::connection('oracle_his')->raw('lower(execute_role_name)'), 'like', '%' . $keyword . '%');
+            });
+        if ($this->is_active !== null) {
+            $data = $data->where(function ($query) {
+                $query = $query->where(DB::connection('oracle_his')->raw('is_active'), $this->is_active);
+            });
+        } 
             $count = $data->count();
             if ($this->order_by != null) {
                 foreach ($this->order_by as $key => $item) {

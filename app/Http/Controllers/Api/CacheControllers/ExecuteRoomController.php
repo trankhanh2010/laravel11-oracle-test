@@ -32,7 +32,7 @@ class ExecuteRoomController extends BaseApiCacheController
     public function execute_room($id = null)
     {
         $keyword = mb_strtolower($this->keyword, 'UTF-8');
-        if ($keyword != null) {
+        if ($keyword !== null) {
             $param = [
                 'room',
                 'room.department:id,department_name,department_code',
@@ -46,9 +46,17 @@ class ExecuteRoomController extends BaseApiCacheController
                 'room.deposit_account_book',
                 'room.bill_account_book'
             ];
-            $data = $this->execute_room
+            $data = $this->execute_room;
+            $data = $data->where(function ($query) use ($keyword){
+                $query = $query
                 ->where(DB::connection('oracle_his')->raw('lower(execute_room_code)'), 'like', '%' . $keyword . '%')
                 ->orWhere(DB::connection('oracle_his')->raw('lower(execute_room_name)'), 'like', '%' . $keyword . '%');
+            });
+        if ($this->is_active !== null) {
+            $data = $data->where(function ($query) {
+                $query = $query->where(DB::connection('oracle_his')->raw('is_active'), $this->is_active);
+            });
+        } 
             $count = $data->count();
             if ($this->order_by != null) {
                 foreach ($this->order_by as $key => $item) {

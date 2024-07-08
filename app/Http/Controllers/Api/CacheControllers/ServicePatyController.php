@@ -49,7 +49,7 @@ class ServicePatyController extends BaseApiCacheController
                     'package.package_name as package_name',
                     'package.package_code as package_code',
                 );
-            if ($keyword != null) {
+            if ($keyword !== null) {
                 $data = $data->where(function ($query) use ($keyword) {
                     $query->where(DB::connection('oracle_his')->raw('lower(service.service_name)'), 'like', '%' . $keyword . '%')
                         ->orWhere(DB::connection('oracle_his')->raw('lower(service.service_code)'), 'like', '%' . $keyword . '%')
@@ -97,6 +97,11 @@ class ServicePatyController extends BaseApiCacheController
                     $query = $query->where(DB::connection('oracle_his')->raw('his_service_paty.package_id'), $this->package_id);
                 });
             }
+            if ($this->is_active !== null) {
+                $data = $data->where(function ($query) {
+                    $query = $query->where(DB::connection('oracle_his')->raw('his_service_paty.is_active'), $this->is_active);
+                });
+            } 
             $count = $data->count();
             if ($this->order_by != null) {
                 foreach ($this->order_by as $key => $item) {

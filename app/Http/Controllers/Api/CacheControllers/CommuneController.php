@@ -30,17 +30,25 @@ class CommuneController extends BaseApiCacheController
     public function commune($id = null)
     {
         $keyword = mb_strtolower($this->keyword, 'UTF-8');
-        if($keyword != null){
+        if($keyword !== null){
             $data = $this->commune
-                    ->leftJoin('sda_district as district', 'district.id', '=', 'sda_commune.district_id')
-                    ->select(
-                        'sda_commune.*',
-                        'district.district_name as district_name',
-                        'district.district_code as district_code',
-                    )
+            ->leftJoin('sda_district as district', 'district.id', '=', 'sda_commune.district_id')
+            ->select(
+                'sda_commune.*',
+                'district.district_name as district_name',
+                'district.district_code as district_code',
+            );
+            $data = $data->where(function ($query) use ($keyword){
+                $query = $query
                     ->where(DB::connection('oracle_his')->raw('lower(sda_commune.commune_code)'), 'like', '%' . $keyword . '%')
                     ->orWhere(DB::connection('oracle_his')->raw('lower(sda_commune.commune_name)'), 'like', '%' . $keyword . '%')
                     ->orWhere(DB::connection('oracle_his')->raw('lower(sda_commune.search_code)'), 'like', '%' . $keyword . '%');
+            });
+        if ($this->is_active !== null) {
+            $data = $data->where(function ($query) {
+                $query = $query->where(DB::connection('oracle_his')->raw('sda_commune.is_active'), $this->is_active);
+            });
+        } 
                     $count = $data->count();
                     if ($this->order_by != null) {
                         foreach ($this->order_by as $key => $item) {

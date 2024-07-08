@@ -31,10 +31,13 @@ class AreaController extends BaseApiCacheController
     public function area($id = null)
     {
         $keyword = mb_strtolower($this->keyword, 'UTF-8');
-        if ($keyword != null) {
-            $data = $this->area
+        if ($keyword !== null) {
+            $data = $this->area;
+            $data = $data->where(function ($query) use ($keyword){
+                $query = $query
                 ->where(DB::connection('oracle_his')->raw('lower(area_code)'), 'like', '%' . $keyword . '%')
                 ->orWhere(DB::connection('oracle_his')->raw('lower(area_name)'), 'like', '%' . $keyword . '%');
+            });
         if ($this->is_active !== null) {
             $data = $data->where(function ($query) {
                 $query = $query->where(DB::connection('oracle_his')->raw('his_area.is_active'), $this->is_active);
