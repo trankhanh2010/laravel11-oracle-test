@@ -34,6 +34,7 @@ class CreateDepartmentRequest extends FormRequest
             'bhyt_code' =>                      'nullable|string|max:50',
             'branch_id' =>                      'required|integer|exists:App\Models\HIS\Branch,id',
             'default_instr_patient_type_id' =>  'nullable|integer|exists:App\Models\HIS\PatientType,id',
+            'num_order' =>                      'nullable|integer',
             'allow_treatment_type_ids' =>       'nullable|string|max:20',
             'theory_patient_count' =>           'nullable|integer|min:0',
             'reality_patient_count' =>          'nullable|integer|min:0',
@@ -79,6 +80,8 @@ class CreateDepartmentRequest extends FormRequest
 
             'default_instr_patient_type_id.integer'     => config('keywords')['department']['default_instr_patient_type_id'].config('keywords')['error']['integer'],
             'default_instr_patient_type_id.exists'      => config('keywords')['department']['default_instr_patient_type_id'].config('keywords')['error']['exists'], 
+
+            'num_order.integer'     => config('keywords')['department']['num_order'].config('keywords')['error']['integer'],
 
             'allow_treatment_type_ids.string'   => config('keywords')['department']['allow_treatment_type_ids'].config('keywords')['error']['string'],
             'allow_treatment_type_ids.max'      => config('keywords')['department']['allow_treatment_type_ids'].config('keywords')['error']['string_max'],

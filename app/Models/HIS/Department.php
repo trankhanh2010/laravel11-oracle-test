@@ -16,38 +16,8 @@ class Department extends Model
     // public $time = 604800;
     protected $connection = 'oracle_his'; // Kết nối CSDL mặc định
     protected $table = 'HIS_DEPARTMENT';
-    protected $fillable = [
-        'create_time',
-        'modify_time',
-        'creator',
-        'modifier',
-        'app_creator',
-        'app_modifier',
-        'is_active',
-        'is_delete',
-        'department_code',
-        'department_name',
-        'g_code',
-        'bhyt_code',
-        'branch_id',
-        'allow_treatment_type_ids',
-        'default_instr_patient_type_id',
-        'theory_patient_count',
-        'reality_patient_count',
-        'req_surg_treatment_type_id',
-        'phone' ,
-        'head_loginname' ,
-        'head_username',
-        'accepted_icd_codes',
-        'is_exam' ,
-        'is_clinical',
-        'allow_assign_package_price' ,
-        'auto_bed_assign_option',
-        'is_emergency' ,
-        'is_auto_receive_patient' ,
-        'allow_assign_surgery_price' ,
-        'is_in_dep_stock_moba' ,
-        'warning_when_is_no_surg' ,
+    protected $guarded = [
+        'id'
     ];
     public function getAllowTreatmentTypeIdsAttribute($value)
     {

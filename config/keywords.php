@@ -48,6 +48,7 @@ return [
         'g_code' => 'Mã đơn vị',
         'bhyt_code' => 'Mã BHYT',
         'branch_id' => 'Id chi nhánh',
+        'num_order' => 'Trường sắp xếp',
     ],
     // Khu vực - Area
     'area' => [
