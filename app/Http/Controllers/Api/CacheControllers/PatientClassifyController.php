@@ -120,8 +120,6 @@ class PatientClassifyController extends BaseApiCacheController
             'modify_time' => now()->format('Ymdhis'),
             'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
             'app_modifier' => $this->app_modifier,
-            'is_active' => 1,
-            'is_delete' => 0,
             'patient_classify_code' => $request->patient_classify_code,
             'patient_classify_name' => $request->patient_classify_name,
             'display_color' => $request->display_color,
@@ -129,7 +127,9 @@ class PatientClassifyController extends BaseApiCacheController
             'other_pay_source_id' => $request->other_pay_source_id,
             'bhyt_whitelist_ids' => $request->bhyt_whitelist_ids,
             'military_rank_ids' => $request->military_rank_ids,
-            'is_police' => $request->is_police
+            'is_police' => $request->is_police,
+            'is_active' => $request->is_active,
+
         ];
         $data->fill($data_update);
         $data->save();

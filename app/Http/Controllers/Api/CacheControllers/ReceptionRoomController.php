@@ -158,6 +158,8 @@ class ReceptionRoomController extends BaseApiCacheController
                 'is_restrict_execute_room' => $request->is_restrict_execute_room,
                 'is_allow_no_icd' => $request->is_allow_no_icd,
                 'is_pause' => $request->is_pause,
+                'is_active' => $request->is_active,
+
             ];
             $data_update = [
                 'modify_time' => now()->format('Ymdhis'),
@@ -165,6 +167,8 @@ class ReceptionRoomController extends BaseApiCacheController
                 'app_modifier' => $this->app_modifier,
                 'reception_room_name' => $request->reception_room_name,
                 'patient_type_ids' => $request->patient_type_ids,
+                'is_active' => $request->is_active,
+
             ];
             $room->fill($room_update);
             $room->save();

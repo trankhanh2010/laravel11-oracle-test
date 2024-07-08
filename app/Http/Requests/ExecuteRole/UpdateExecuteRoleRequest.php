@@ -48,6 +48,8 @@ class UpdateExecuteRoleRequest extends FormRequest
             'allow_simultaneity' =>     'nullable|integer|in:0,1',
             'is_single_in_ekip' =>      'nullable|integer|in:0,1',
             'is_disable_in_ekip' =>     'nullable|integer|in:0,1',
+            'is_active' =>              'required|integer|in:0,1'
+
 
         ];
     }
@@ -92,6 +94,10 @@ class UpdateExecuteRoleRequest extends FormRequest
 
             'is_disable_in_ekip.integer'    => config('keywords')['execute_role']['is_disable_in_ekip'].config('keywords')['error']['integer'],
             'is_disable_in_ekip.in'         => config('keywords')['execute_role']['is_disable_in_ekip'].config('keywords')['error']['in'],
+
+            'is_active.required'    => config('keywords')['all']['is_active'].config('keywords')['error']['required'],            
+            'is_active.integer'     => config('keywords')['all']['is_active'].config('keywords')['error']['integer'], 
+            'is_active.in'          => config('keywords')['all']['is_active'].config('keywords')['error']['in'], 
         ];
     }
 

@@ -369,6 +369,8 @@ class ServiceController extends BaseApiCacheController
             'tax_rate_type' => $request->tax_rate_type,
 
             'process_code' => $request->process_code,
+            'is_active' => $request->is_active,
+
         ];
         $data->fill($data_update);
         $data->save();

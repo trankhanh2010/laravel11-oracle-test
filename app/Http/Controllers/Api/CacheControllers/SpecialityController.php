@@ -107,7 +107,9 @@ class SpecialityController extends BaseApiCacheController
             'app_modifier' => $this->app_modifier,
             'speciality_code' => $request->speciality_code,
             'speciality_name' => $request->speciality_name,
-            'bhyt_limit' => $request->bhyt_limit
+            'bhyt_limit' => $request->bhyt_limit,
+            'is_active' => $request->is_active,
+
         ];
         $data->fill($data_update);
         $data->save();

@@ -140,6 +140,7 @@ class HISController extends Controller
     protected $per_page;
     protected $page;
     protected $param_request;
+    protected $order_by;
     // Khai báo các biến mặc định model
     protected $app_creator = "MOS_v2";
     protected $app_modifier = "MOS_v2";
@@ -1684,35 +1685,7 @@ class HISController extends Controller
 
 
     /// BHYT Whitelist
-    public function bhyt_whitelist($id = null)
-    {
-        if ($id == null) {
-            $name = $this->bhyt_whitelist_name;
-            $param = [
-                'career'
-            ];
-        } else {
-            if (!is_numeric($id)) {
-                return return_id_error($id);
-            }
-            $data = $this->bhyt_whitelist->find($id);
-            if ($data == null) {
-                return return_not_record($id);
-            }
-            $name = $this->bhyt_whitelist_name . '_' . $id;
-            $param = [
-                'career'
-            ];
-        }
-        $data = get_cache_full($this->bhyt_whitelist, $param, $name, $id, $this->time);
-        $count = $data->count();
-        $param_return = [
-            'start' => null,
-            'limit' => null,
-            'count' => $count
-        ];
-        return return_data_success($param_return, $data);
-    }
+
 
     /// BHYT Param
     public function bhyt_param($id = null)

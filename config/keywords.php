@@ -17,6 +17,10 @@ return [
         'numeric' => ' phải là số!',
         'prohibited_unless_service_type' => ' chỉ được nhập khi mã loại dịch vụ thuộc '
     ],
+    // Dùng chung
+    'all' => [
+        'is_active' => 'Trường trạng thái',
+    ],
     // Khoa phòng - Department
     'department' => [
         'department' => 'Khoa phòng',

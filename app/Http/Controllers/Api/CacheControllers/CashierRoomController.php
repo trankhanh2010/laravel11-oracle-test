@@ -144,6 +144,8 @@ class CashierRoomController extends BaseApiCacheController
                 'room_type_id' => $request->room_type_id,
                 'area_id' => $request->area_id,
                 'is_pause' => $request->is_pause,
+                'is_active' => $request->is_active,
+
             ];
             $data_update = [
                 'modify_time' => now()->format('Ymdhis'),
@@ -152,6 +154,8 @@ class CashierRoomController extends BaseApiCacheController
                 'cashier_room_name' => $request->cashier_room_name,
                 'einvoice_room_code' => $request->einvoice_room_code,
                 'einvoice_room_name' => $request->einvoice_room_name,
+                'is_active' => $request->is_active
+
             ];
             $room->fill($room_update);
             $room->save();

@@ -156,7 +156,9 @@ class DataStoreController extends BaseApiCacheController
                 'modify_time' => now()->format('Ymdhis'),
                 'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
                 'app_modifier' => $this->app_modifier,
-                'room_type_id' => $request->room_type_id
+                'room_type_id' => $request->room_type_id,
+                'is_active' => $request->is_active,
+
             ];
             $data_update = [
                 'modify_time' => now()->format('Ymdhis'),
@@ -168,6 +170,8 @@ class DataStoreController extends BaseApiCacheController
                 'stored_room_id' => $request->stored_room_id,
                 'treatment_end_type_ids' => $request->treatment_end_type_ids,
                 'treatment_type_ids' => $request->treatment_type_ids,
+                'is_active' => $request->is_active,
+
             ];
             $room->fill($room_update);
             $room->save();

@@ -35,6 +35,7 @@ class UpdateReceptionRoomRequest extends FormRequest
             'is_pause' =>                       'nullable|integer|in:0,1',
             'is_allow_no_icd' =>                'nullable|integer|in:0,1',
             'is_restrict_execute_room' =>       'nullable|integer|in:0,1',
+            'is_active' =>                      'required|integer|in:0,1'
 
 
         ];
@@ -74,6 +75,10 @@ class UpdateReceptionRoomRequest extends FormRequest
 
             'is_restrict_execute_room.integer'    => config('keywords')['reception_room']['is_restrict_execute_room'].config('keywords')['error']['integer'],
             'is_restrict_execute_room.in'         => config('keywords')['reception_room']['is_restrict_execute_room'].config('keywords')['error']['in'], 
+
+            'is_active.required'    => config('keywords')['all']['is_active'].config('keywords')['error']['required'],            
+            'is_active.integer'     => config('keywords')['all']['is_active'].config('keywords')['error']['integer'], 
+            'is_active.in'          => config('keywords')['all']['is_active'].config('keywords')['error']['in'], 
         ];
     }
 

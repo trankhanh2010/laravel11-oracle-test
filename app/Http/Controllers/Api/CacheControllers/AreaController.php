@@ -35,6 +35,11 @@ class AreaController extends BaseApiCacheController
             $data = $this->area
                 ->where(DB::connection('oracle_his')->raw('lower(area_code)'), 'like', '%' . $keyword . '%')
                 ->orWhere(DB::connection('oracle_his')->raw('lower(area_name)'), 'like', '%' . $keyword . '%');
+        if ($this->is_active !== null) {
+            $data = $data->where(function ($query) {
+                $query = $query->where(DB::connection('oracle_his')->raw('his_area.is_active'), $this->is_active);
+            });
+        }  
             $count = $data->count();
             if ($this->order_by != null) {
                 foreach ($this->order_by as $key => $item) {
@@ -104,7 +109,8 @@ class AreaController extends BaseApiCacheController
             'app_modifier' => $this->app_modifier,
             'area_code' => $request->area_code,
             'area_name' => $request->area_name,
-            'department_id' => $request->department_id
+            'department_id' => $request->department_id,
+            'is_active' => $request->is_active
         ]);
         // Gọi event để xóa cache
         event(new DeleteCache($this->area_name));

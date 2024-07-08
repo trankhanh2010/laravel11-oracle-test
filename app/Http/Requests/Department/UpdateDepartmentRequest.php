@@ -47,6 +47,8 @@ class UpdateDepartmentRequest extends FormRequest
             'allow_assign_surgery_price' =>     'nullable|integer|in:0,1',
             'is_in_dep_stock_moba' =>           'nullable|integer|in:0,1',
             'warning_when_is_no_surg' =>        'nullable|integer|in:0,1',
+            'is_active' =>                      'required|integer|in:0,1'
+
         ];
     }
     public function messages()
@@ -120,6 +122,9 @@ class UpdateDepartmentRequest extends FormRequest
             'warning_when_is_no_surg.integer'   => config('keywords')['department']['warning_when_is_no_surg'].config('keywords')['error']['integer'],
             'warning_when_is_no_surg.in'        => config('keywords')['department']['warning_when_is_no_surg'].config('keywords')['error']['in'],
 
+            'is_active.required'    => config('keywords')['all']['is_active'].config('keywords')['error']['required'],            
+            'is_active.integer'     => config('keywords')['all']['is_active'].config('keywords')['error']['integer'], 
+            'is_active.in'          => config('keywords')['all']['is_active'].config('keywords')['error']['in'], 
         ];
     }
     protected function prepareForValidation()

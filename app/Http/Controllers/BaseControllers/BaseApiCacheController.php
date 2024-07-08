@@ -30,6 +30,8 @@ class BaseApiCacheController extends Controller
     protected $per_page;
     protected $page;
     protected $param_request;
+    protected $is_active;
+
     // Khai báo các biến mặc định model
     protected $app_creator = "MOS_v2";
     protected $app_modifier = "MOS_v2";
@@ -420,6 +422,12 @@ class BaseApiCacheController extends Controller
                 if (!Department::where('id', $this->department_id)->exists()) {
                     $this->department_id = null;
                 }
+            }
+        }
+        $this->is_active = $this->param_request['ApiData']['IsActive'] ?? null;
+        if($this->is_active !== null){
+            if (!in_array ($this->is_active, [0,1])) {
+                $this->is_active = 1;
             }
         }
 

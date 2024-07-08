@@ -108,6 +108,8 @@ class ExecuteGroupController extends BaseApiCacheController
             'app_modifier' => $this->app_modifier,
             'execute_group_code' => $request->execute_group_code,
             'execute_group_name' => $request->execute_group_name,
+            'is_active' => $request->is_active,
+
         ];
         $data->fill($data_update);
         $data->save();

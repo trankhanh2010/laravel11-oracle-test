@@ -43,7 +43,9 @@ class UpdatePatientClassifyRequest extends FormRequest
             'other_pay_source_id' =>        'nullable|integer|exists:App\Models\HIS\OtherPaySource,id',
             'bhyt_whitelist_ids' =>         'nullable|string|max:500',
             'military_rank_ids' =>          'nullable|string|max:500',
-            'is_police' =>                  'nullable|integer|in:0,1'
+            'is_police' =>                  'nullable|integer|in:0,1',
+            'is_active' =>                  'required|integer|in:0,1'
+
         ];
     }
     public function messages()
@@ -77,6 +79,10 @@ class UpdatePatientClassifyRequest extends FormRequest
 
             'military_rank_ids.string'      => config('keywords')['patient_classify']['military_rank_ids'].config('keywords')['error']['string'],
             'military_rank_ids.max'         => config('keywords')['patient_classify']['military_rank_ids'].config('keywords')['error']['string_max'],
+
+            'is_active.required'    => config('keywords')['all']['is_active'].config('keywords')['error']['required'],            
+            'is_active.integer'     => config('keywords')['all']['is_active'].config('keywords')['error']['integer'], 
+            'is_active.in'          => config('keywords')['all']['is_active'].config('keywords')['error']['in'], 
         ];
     }
 

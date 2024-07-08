@@ -141,6 +141,8 @@ class CommuneController extends BaseApiCacheController
             'search_code' => $request->search_code,
             'initial_name' => $request->initial_name,
             'district_id' => $request->district_id,
+            'is_active' => $request->is_active,
+
         ];
         $data->fill($data_update);
         $data->save();

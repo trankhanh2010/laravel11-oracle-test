@@ -169,7 +169,9 @@ class BranchController extends BaseApiCacheController
             'bed_actual' => $request->bed_actual,
             'bed_resuscitation' => $request->bed_resuscitation,
             'bed_resuscitation_emg' => $request->bed_resuscitation_emg,
-            'is_use_branch_time' => $request->is_use_branch_time
+            'is_use_branch_time' => $request->is_use_branch_time,
+            'is_active' => $request->is_active
+
         ];
         $data->fill($data_update);
         $data->save();

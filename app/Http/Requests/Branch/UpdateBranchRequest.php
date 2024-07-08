@@ -109,7 +109,9 @@ class UpdateBranchRequest extends FormRequest
             'bed_actual' =>                     'nullable|integer|min:0',
             'bed_resuscitation' =>              'nullable|integer|min:0',
             'bed_resuscitation_emg' =>          'nullable|integer|min:0',
-            'is_use_branch_time' =>             'nullable|integer|in:0,1'
+            'is_use_branch_time' =>             'nullable|integer|in:0,1',
+            'is_active' =>                      'required|integer|in:0,1'
+
         ];
     }
     public function messages()
@@ -231,6 +233,9 @@ class UpdateBranchRequest extends FormRequest
             'is_use_branch_time.integer'   => config('keywords')['branch']['is_use_branch_time'].config('keywords')['error']['integer'],
             'is_use_branch_time.in'        => config('keywords')['branch']['is_use_branch_time'].config('keywords')['error']['in'],  
 
+            'is_active.required'    => config('keywords')['all']['is_active'].config('keywords')['error']['required'],            
+            'is_active.integer'     => config('keywords')['all']['is_active'].config('keywords')['error']['integer'], 
+            'is_active.in'          => config('keywords')['all']['is_active'].config('keywords')['error']['in'], 
         ];
     }
 

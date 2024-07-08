@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\BaseControllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\HIS\BedRoom;
 use App\Models\HIS\Debate;
 use App\Models\HIS\DebateEkipUser;
 use App\Models\HIS\DebateUser;
@@ -21,6 +22,7 @@ use App\Models\HIS\ServiceType;
 use App\Models\HIS\TestIndex;
 use App\Models\HIS\Tracking;
 use App\Models\HIS\Treatment;
+use App\Models\HIS\TreatmentBedRoom;
 use Illuminate\Http\Request;
 
 class BaseApiDataController extends Controller
@@ -77,6 +79,11 @@ class BaseApiDataController extends Controller
     protected $include_material;
     protected $include_blood_pres;
     protected $patient_code__exact;
+    protected $is_in_room;
+    protected $add_time_to;
+    protected $add_time_from;
+    protected $bed_room_ids;
+    protected $treatment_bed_room_id;
 
     // Khai báo các biến mặc định model
     protected $app_creator = "MOS_v2";
@@ -98,6 +105,8 @@ class BaseApiDataController extends Controller
     protected $exp_mest_medicine;
     protected $care;
     protected $exp_mest_material;
+    protected $treatment_bed_room;
+    protected $bhyt_whiteList;
 
     public function __construct(Request $request)
     {
@@ -488,5 +497,54 @@ class BaseApiDataController extends Controller
             }
         }
 
+        $this->is_in_room = $this->param_request['ApiData']['IsInRoom'] ?? false;
+        if (!is_bool ($this->is_in_room)) {
+            $this->is_in_room = false;
+        }
+
+        $this->add_time_to = $this->param_request['ApiData']['AddTimeTo'] ?? null;
+        if($this->add_time_to != null){
+            if(!preg_match('/^\d{14}$/',  $this->add_time_to)){
+                $this->add_time_to = null;
+            }
+        }
+
+        $this->add_time_from = $this->param_request['ApiData']['AddTimeFrom'] ?? null;
+        if($this->add_time_from != null){
+            if(!preg_match('/^\d{14}$/',  $this->add_time_from)){
+                $this->add_time_from = null;
+            }
+            if($this->is_in_room){
+                $this->add_time_from = null;
+            }
+        }
+
+        $this->bed_room_ids = $this->param_request['ApiData']['BedRoomIds'] ?? null;
+        if ($this->bed_room_ids != null) {
+            foreach ($this->bed_room_ids as $key => $item) {
+                // Kiểm tra xem ID có tồn tại trong bảng  hay không
+                if (!is_numeric($item)) {
+                    unset($this->bed_room_ids[$key]);
+                } else {
+                    if (!BedRoom::where('id', $item)->exists()) {
+                        unset($this->bed_room_ids[$key]);
+                    }
+                }
+            }
+        }
+
+        $this->treatment_bed_room_id = $this->param_request['ApiData']['TreatmentBedRoomId'] ?? null;
+        if ($this->treatment_bed_room_id != null) {
+            // Kiểm tra xem ID có tồn tại trong bảng  hay không
+            if (!is_numeric($this->treatment_bed_room_id)) {
+                $this->treatment_bed_room_id = null;
+            } else {
+                if (!TreatmentBedRoom::where('id', $this->treatment_bed_room_id)->exists()) {
+                    $this->treatment_bed_room_id = null;
+                }
+            }
+        }
+
+        
     }
 }

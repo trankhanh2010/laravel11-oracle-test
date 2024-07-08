@@ -121,6 +121,8 @@ class IcdCmController extends BaseApiCacheController
             'icd_cm_group_name' => $request->icd_cm_group_name,
             'icd_cm_sub_group_code' => $request->icd_cm_sub_group_code,
             'icd_cm_sub_group_name' => $request->icd_cm_sub_group_name,
+            'is_active' => $request->is_active,
+
         ];
         $data->fill($data_update);
         $data->save();

@@ -114,6 +114,8 @@ class OtherPaySourceController extends BaseApiCacheController
             'is_not_for_treatment' => $request->is_not_for_treatment,
             'is_not_paid_diff' => $request->is_not_paid_diff,
             'is_paid_all' => $request->is_paid_all,
+            'is_active' => $request->is_active,
+
         ];
         $data->fill($data_update);
         $data->save();

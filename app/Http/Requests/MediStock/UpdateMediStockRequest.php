@@ -69,6 +69,8 @@ class UpdateMediStockRequest extends FormRequest
             'cabinet_manage_option' =>          'nullable|integer|in:1,2,3',
             'medi_stock_exty' =>                'nullable',
             'medi_stock_imty' =>                'nullable',
+            'is_active' =>                      'required|integer|in:0,1'
+
         ];
     }
     public function messages()
@@ -168,6 +170,10 @@ class UpdateMediStockRequest extends FormRequest
 
             'patient_classify_ids.string'    => config('keywords')['medi_stock']['patient_classify_ids'].config('keywords')['error']['string'],
             'patient_classify_ids.max'       => config('keywords')['medi_stock']['patient_classify_ids'].config('keywords')['error']['string_max'],  
+
+            'is_active.required'    => config('keywords')['all']['is_active'].config('keywords')['error']['required'],            
+            'is_active.integer'     => config('keywords')['all']['is_active'].config('keywords')['error']['integer'], 
+            'is_active.in'          => config('keywords')['all']['is_active'].config('keywords')['error']['in'], 
 
         ];
     }

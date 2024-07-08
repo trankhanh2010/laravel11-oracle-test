@@ -39,6 +39,8 @@ class UpdateSpecialityRequest extends FormRequest
             ],
             'speciality_name' =>              'required|string|max:200',
             'bhyt_limit' =>                   'nullable|integer|min:0',
+            'is_active' =>                    'required|integer|in:0,1'
+
         ];
     }
     public function messages()
@@ -55,6 +57,10 @@ class UpdateSpecialityRequest extends FormRequest
 
             'bhyt_limit.integer'     => config('keywords')['speciality']['speciality_name'].config('keywords')['error']['integer'],
             'bhyt_limit.min'         => config('keywords')['speciality']['speciality_name'].config('keywords')['error']['integer_min'],
+
+            'is_active.required'    => config('keywords')['all']['is_active'].config('keywords')['error']['required'],            
+            'is_active.integer'     => config('keywords')['all']['is_active'].config('keywords')['error']['integer'], 
+            'is_active.in'          => config('keywords')['all']['is_active'].config('keywords')['error']['in'], 
         ];
     }
 

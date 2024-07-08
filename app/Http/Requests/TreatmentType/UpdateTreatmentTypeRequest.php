@@ -39,6 +39,8 @@ class UpdateTreatmentTypeRequest extends FormRequest
             'unsign_doc_finish_option' =>           'nullable|integer|in:1,2',
             'trans_time_out_time_option' =>         'nullable|integer|in:1,2',
             'fee_debt_option' =>                    'nullable|integer|in:1,2',
+            'is_active' =>                          'required|integer|in:0,1'
+
         ];
     }
     public function messages()
@@ -89,6 +91,10 @@ class UpdateTreatmentTypeRequest extends FormRequest
 
             'fee_debt_option.integer'        => config('keywords')['treatment_type']['fee_debt_option'].config('keywords')['error']['integer'],
             'fee_debt_option.in'             => config('keywords')['treatment_type']['fee_debt_option'].config('keywords')['error']['in'], 
+
+            'is_active.required'    => config('keywords')['all']['is_active'].config('keywords')['error']['required'],            
+            'is_active.integer'     => config('keywords')['all']['is_active'].config('keywords')['error']['integer'], 
+            'is_active.in'          => config('keywords')['all']['is_active'].config('keywords')['error']['in'], 
         ];
     }
 

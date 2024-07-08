@@ -32,6 +32,8 @@ class UpdateDataStoreRequest extends FormRequest
             'stored_room_id' =>             'nullable|integer|exists:App\Models\HIS\Room,id',
             'treatment_end_type_ids' =>     'nullable|string|max:50',
             'treatment_type_ids' =>         'nullable|string|max:50',
+            'is_active' =>                  'required|integer|in:0,1'
+
         ];
     }
     public function messages()
@@ -59,6 +61,10 @@ class UpdateDataStoreRequest extends FormRequest
 
             'treatment_type_ids.string'      => config('keywords')['data_store']['treatment_type_ids'].config('keywords')['error']['string'],
             'treatment_type_ids.max'         => config('keywords')['data_store']['treatment_type_ids'].config('keywords')['error']['string_max'],
+
+            'is_active.required'    => config('keywords')['all']['is_active'].config('keywords')['error']['required'],            
+            'is_active.integer'     => config('keywords')['all']['is_active'].config('keywords')['error']['integer'], 
+            'is_active.in'          => config('keywords')['all']['is_active'].config('keywords')['error']['in'], 
 
         ];
     }

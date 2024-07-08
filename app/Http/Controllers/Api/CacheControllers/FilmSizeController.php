@@ -27,12 +27,20 @@ class FilmSizeController extends BaseApiCacheController
     public function film_size($id = null)
     {
         $keyword = mb_strtolower($this->keyword, 'UTF-8');
-        if ($keyword != null) {
+        if ($keyword !== null) {
             $param = [
             ];
-            $data = $this->film_size
+            $data = $this->film_size;
+            $data = $data->where(function ($query) use ($keyword){
+                $query = $query
                 ->where(DB::connection('oracle_his')->raw('lower(film_size_code)'), 'like', '%' . $keyword . '%')
                 ->orWhere(DB::connection('oracle_his')->raw('lower(film_size_name)'), 'like', '%' . $keyword . '%');
+            });
+        if ($this->is_active !== null) {
+            $data = $data->where(function ($query) {
+                $query = $query->where(DB::connection('oracle_his')->raw('his_film_size.is_active'), $this->is_active);
+            });
+        }
             $count = $data->count();
             if ($this->order_by != null) {
                 foreach ($this->order_by as $key => $item) {

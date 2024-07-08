@@ -37,6 +37,8 @@ class UpdateBedRoomRequest extends FormRequest
             'is_pause' =>                       'nullable|integer|in:0,1',
             'is_restrict_execute_room' =>       'nullable|integer|in:0,1',
             'room_type_id' =>                   'required|integer|exists:App\Models\HIS\RoomType,id',
+            'is_active' =>                      'required|integer|in:0,1'
+
         ];
     }
     public function messages()
@@ -77,6 +79,10 @@ class UpdateBedRoomRequest extends FormRequest
             'room_type_id.required'    => config('keywords')['bed_room']['room_type_id'].config('keywords')['error']['required'],            
             'room_type_id.integer'     => config('keywords')['bed_room']['room_type_id'].config('keywords')['error']['integer'],
             'room_type_id.exists'      => config('keywords')['bed_room']['room_type_id'].config('keywords')['error']['exists'],  
+
+            'is_active.required'    => config('keywords')['all']['is_active'].config('keywords')['error']['required'],            
+            'is_active.integer'     => config('keywords')['all']['is_active'].config('keywords')['error']['integer'], 
+            'is_active.in'          => config('keywords')['all']['is_active'].config('keywords')['error']['in'], 
 
         ];
     }

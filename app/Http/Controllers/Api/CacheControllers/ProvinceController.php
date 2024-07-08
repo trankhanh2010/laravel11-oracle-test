@@ -114,6 +114,8 @@ class ProvinceController extends BaseApiCacheController
             'province_name' => $request->province_name,
             'national_id' => $request->national_id,
             'search_code' => $request->search_code,
+            'is_active' => $request->is_active,
+
         ];
         $data->fill($data_update);
         $data->save();

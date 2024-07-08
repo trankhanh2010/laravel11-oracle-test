@@ -124,6 +124,8 @@ class MediOrgController extends BaseApiCacheController
             'address' => $request->address,
             'rank_code' => $request->rank_code,
             'level_code' => $request->level_code,
+            'is_active' => $request->is_active,
+
         ];
         $data->fill($data_update);
         $data->save();

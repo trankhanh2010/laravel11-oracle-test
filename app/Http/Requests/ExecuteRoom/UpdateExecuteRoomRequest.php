@@ -71,6 +71,8 @@ class UpdateExecuteRoomRequest extends FormRequest
             'is_restrict_patient_type' =>       'nullable|integer|in:0,1',
             'is_block_num_order' =>             'nullable|integer|in:0,1',
             'default_service_id' =>             'nullable|integer|exists:App\Models\HIS\Service,id',
+            'is_active' =>                      'required|integer|in:0,1'
+
         ];
     }
     public function messages()
@@ -215,6 +217,10 @@ class UpdateExecuteRoomRequest extends FormRequest
 
             'default_service_id.integer'     => config('keywords')['execute_room']['default_service_id'].config('keywords')['error']['integer'],
             'default_service_id.exists'      => config('keywords')['execute_room']['default_service_id'].config('keywords')['error']['exists'],  
+
+            'is_active.required'    => config('keywords')['all']['is_active'].config('keywords')['error']['required'],            
+            'is_active.integer'     => config('keywords')['all']['is_active'].config('keywords')['error']['integer'], 
+            'is_active.in'          => config('keywords')['all']['is_active'].config('keywords')['error']['in'], 
         ];
     }
 

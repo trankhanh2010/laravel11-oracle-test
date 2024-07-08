@@ -44,6 +44,8 @@ class UpdateIcdCmRequest extends FormRequest
             'icd_cm_group_name' =>            'nullable|string|max:500',
             'icd_cm_sub_group_code' =>        'nullable|string|max:10',
             'icd_cm_sub_group_name' =>        'nullable|string|max:500',
+            'is_active' =>                    'required|integer|in:0,1'
+
         ];
     }
     public function messages()
@@ -69,6 +71,10 @@ class UpdateIcdCmRequest extends FormRequest
 
             'icd_cm_sub_group_name.string'      => config('keywords')['icd_cm']['icd_cm_sub_group_name'].config('keywords')['error']['string'],
             'icd_cm_sub_group_name.max'         => config('keywords')['icd_cm']['icd_cm_sub_group_name'].config('keywords')['error']['string_max'],
+
+            'is_active.required'    => config('keywords')['all']['is_active'].config('keywords')['error']['required'],            
+            'is_active.integer'     => config('keywords')['all']['is_active'].config('keywords')['error']['integer'], 
+            'is_active.in'          => config('keywords')['all']['is_active'].config('keywords')['error']['in'], 
 
         ];
     }

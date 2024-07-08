@@ -41,6 +41,8 @@ class UpdateOtherPaySourceRequest extends FormRequest
             'is_not_for_treatment' =>       'nullable|integer|in:0,1',
             'is_not_paid_diff' =>           'nullable|integer|in:0,1',
             'is_paid_all' =>                'nullable|integer|in:0,1',
+            'is_active' =>                  'required|integer|in:0,1'
+
 
         ];
     }
@@ -68,6 +70,9 @@ class UpdateOtherPaySourceRequest extends FormRequest
             'is_paid_all.integer'       => config('keywords')['other_pay_source']['is_paid_all'].config('keywords')['error']['integer'],
             'is_paid_all.in'            => config('keywords')['other_pay_source']['is_paid_all'].config('keywords')['error']['in'],
 
+            'is_active.required'    => config('keywords')['all']['is_active'].config('keywords')['error']['required'],            
+            'is_active.integer'     => config('keywords')['all']['is_active'].config('keywords')['error']['integer'], 
+            'is_active.in'          => config('keywords')['all']['is_active'].config('keywords')['error']['in'], 
         ];
     }
 

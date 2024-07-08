@@ -106,7 +106,9 @@ class NationalController extends BaseApiCacheController
             'app_modifier' => $this->app_modifier,
             'national_code' => $request->national_code,
             'national_name' => $request->national_name,
-            'mps_national_code' => $request->mps_national_code
+            'mps_national_code' => $request->mps_national_code,
+            'is_active' => $request->is_active,
+
         ];
         $data->fill($data_update);
         $data->save();

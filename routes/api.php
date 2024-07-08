@@ -50,7 +50,7 @@ use App\Http\Controllers\Api\CacheControllers\HeinServiceTypeController;
 use App\Http\Controllers\Api\CacheControllers\SuimIndexController;
 use App\Http\Controllers\Api\CacheControllers\PackageController;
 use App\Http\Controllers\Api\CacheControllers\ServicePatyController;
-
+use App\Http\Controllers\Api\CacheControllers\BhytWhitelistController;
 
 
 
@@ -65,6 +65,7 @@ use App\Http\Controllers\Api\DataControllers\SereServExtController;
 use App\Http\Controllers\Api\DataControllers\SereServTeinController;
 use App\Http\Controllers\Api\DataControllers\TrackingController;
 use App\Http\Controllers\Api\DataControllers\TreatmentController;
+use App\Http\Controllers\Api\DataControllers\TreatmentBedRoomController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -335,7 +336,7 @@ Route::group([
         Route::delete("v1/service/{id}", [ServiceController::class, "service_delete"]);
     });
 
-    /// Chính sách dịch vụ
+    /// Chính sách giá dịch vụ
     Route::group(['as' => 'HIS.Desktop.Plugins.HisServicePatyList'], function () {
         // Trả về tất cả mối quan hệ
         Route::get("v1/service-paty", [ServicePatyController::class, "service_paty"]);
@@ -658,8 +659,8 @@ Route::group([
 
     /// Đầu mã thẻ BHYT
     Route::group(['as' => 'BHYT HIS.Desktop.Plugins.HisBhytWhitelist'], function () {
-        Route::get("v1/bhyt-whitelist", [HISController::class, "bhyt_whitelist"]);
-        Route::get("v1/bhyt-whitelist/{id}", [HISController::class, "bhyt_whitelist"]);
+        Route::get("v1/bhyt-whitelist", [BhytWhitelistController::class, "bhyt_whitelist"]);
+        Route::get("v1/bhyt-whitelist/{id}", [BhytWhitelistController::class, "bhyt_whitelist"]);
     });
 
     /// Nhóm dịch vụ BHYT
@@ -989,7 +990,7 @@ Route::group([
     Route::get("v1/treatment/get-treatment-with-patient-type-info-sdo", [TreatmentController::class, "treatment_get_treatment_with_patient_type_info_sdo"]);
 
     // Treatment Bed Room
-    Route::get("v1/treatment-bed-room/get-L-view", [HISController::class, "treatment_bed_room_get_L_view"]);
+    Route::get("v1/treatment-bed-room/get-L-view", [TreatmentBedRoomController::class, "treatment_bed_room_get_L_view"]);
 
     // DHST
     Route::get("v1/dhst/get", [DhstController::class, "dhst_get"]);

@@ -39,6 +39,8 @@ class UpdateProvinceRequest extends FormRequest
             'province_name' =>                  'required|string|max:100',
             'search_code' =>                    'nullable|string|max:10',
             'national_id' =>                    'required|integer|exists:App\Models\SDA\National,id',
+            'is_active' =>                      'required|integer|in:0,1'
+
         ];
     }
     public function messages()
@@ -59,6 +61,10 @@ class UpdateProvinceRequest extends FormRequest
             'national_id.required'   => config('keywords')['province']['national_id'].config('keywords')['error']['required'],            
             'national_id.integer'    => config('keywords')['province']['national_id'].config('keywords')['error']['integer'],
             'national_id.exists'     => config('keywords')['province']['national_id'].config('keywords')['error']['exists'], 
+
+            'is_active.required'    => config('keywords')['all']['is_active'].config('keywords')['error']['required'],            
+            'is_active.integer'     => config('keywords')['all']['is_active'].config('keywords')['error']['integer'], 
+            'is_active.in'          => config('keywords')['all']['is_active'].config('keywords')['error']['in'], 
         ];
     }
 

@@ -340,6 +340,7 @@ class UpdateServiceRequest extends FormRequest
             'notice' =>                         'nullable|string|max:4000',
             'tax_rate_type' =>                  'nullable|integer|in:1,2,3,4,5,6',
             'process_code' =>                   'nullable|string|max:50',
+            'is_active' =>                      'required|integer|in:0,1'
 
 
         ];
@@ -624,6 +625,10 @@ class UpdateServiceRequest extends FormRequest
 
             'process_code.string'              => config('keywords')['service']['process_code'].config('keywords')['error']['string'],
             'process_code.max'                 => config('keywords')['service']['process_code'].config('keywords')['error']['string_max'], 
+
+            'is_active.required'    => config('keywords')['all']['is_active'].config('keywords')['error']['required'],            
+            'is_active.integer'     => config('keywords')['all']['is_active'].config('keywords')['error']['integer'], 
+            'is_active.in'          => config('keywords')['all']['is_active'].config('keywords')['error']['in'], 
         ];
     }
 

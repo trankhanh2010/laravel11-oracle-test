@@ -30,6 +30,8 @@ class UpdateCashierRoomRequest extends FormRequest
             'room_type_id'  =>                  'required|integer|exists:App\Models\HIS\RoomType,id',
             'einvoice_room_code' =>             'nullable|string|max:10',
             'einvoice_room_name' =>             'nullable|string|max:100',
+            'is_active' =>                      'required|integer|in:0,1'
+
         ];
     }
     public function messages()
@@ -51,6 +53,10 @@ class UpdateCashierRoomRequest extends FormRequest
 
             'einvoice_room_name.string'      => config('keywords')['cashier_room']['einvoice_room_name'].config('keywords')['error']['string'],
             'einvoice_room_name.max'         => config('keywords')['cashier_room']['einvoice_room_name'].config('keywords')['error']['string_max'],
+
+            'is_active.required'    => config('keywords')['all']['is_active'].config('keywords')['error']['required'],            
+            'is_active.integer'     => config('keywords')['all']['is_active'].config('keywords')['error']['integer'], 
+            'is_active.in'          => config('keywords')['all']['is_active'].config('keywords')['error']['in'], 
         ];
     }
 

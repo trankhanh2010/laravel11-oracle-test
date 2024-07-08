@@ -38,6 +38,8 @@ class UpdateNationalRequest extends FormRequest
             ],
             'national_name' =>                  'required|string|max:100',
             'mps_national_code' =>              'nullable|string|max:3',
+            'is_active' =>                      'required|integer|in:0,1'
+
         ];
     }
     public function messages()
@@ -54,6 +56,10 @@ class UpdateNationalRequest extends FormRequest
 
             'mps_national_code.string'      => config('keywords')['national']['mps_national_code'].config('keywords')['error']['string'],
             'mps_national_code.max'         => config('keywords')['national']['mps_national_code'].config('keywords')['error']['string_max'],
+
+            'is_active.required'    => config('keywords')['all']['is_active'].config('keywords')['error']['required'],            
+            'is_active.integer'     => config('keywords')['all']['is_active'].config('keywords')['error']['integer'], 
+            'is_active.in'          => config('keywords')['all']['is_active'].config('keywords')['error']['in'], 
         ];
     }
 

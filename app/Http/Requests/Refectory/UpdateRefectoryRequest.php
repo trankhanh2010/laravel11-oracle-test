@@ -25,7 +25,36 @@ class UpdateRefectoryRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'refectory_name' =>              'required|string|max:100',
+            'room_type_id'  =>               'required|integer|exists:App\Models\HIS\RoomType,id',
+            'is_active' =>                  'required|integer|in:0,1'
+
         ];
+    }
+
+    public function messages()
+    {
+        return [
+            'refectory_name.required'    => config('keywords')['refectory']['refectory_name'].config('keywords')['error']['required'],
+            'refectory_name.string'      => config('keywords')['refectory']['refectory_name'].config('keywords')['error']['string'],
+            'refectory_name.max'         => config('keywords')['refectory']['refectory_name'].config('keywords')['error']['string_max'],
+
+            'room_type_id.required'    => config('keywords')['refectory']['room_type_id'].config('keywords')['error']['required'],            
+            'room_type_id.integer'     => config('keywords')['refectory']['room_type_id'].config('keywords')['error']['integer'],
+            'room_type_id.exists'      => config('keywords')['refectory']['room_type_id'].config('keywords')['error']['exists'],  
+
+            'is_active.required'    => config('keywords')['all']['is_active'].config('keywords')['error']['required'],            
+            'is_active.integer'     => config('keywords')['all']['is_active'].config('keywords')['error']['integer'], 
+            'is_active.in'          => config('keywords')['all']['is_active'].config('keywords')['error']['in'], 
+        ];
+    }
+
+    public function failedValidation(Validator $validator)
+    {
+        throw new HttpResponseException(response()->json([
+            'success'   => false,
+            'message'   => 'Dữ liệu không hợp lệ!',
+            'data'      => $validator->errors()
+        ], 422));
     }
 }

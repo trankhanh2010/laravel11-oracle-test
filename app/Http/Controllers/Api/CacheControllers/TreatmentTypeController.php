@@ -138,6 +138,8 @@ class TreatmentTypeController extends BaseApiCacheController
             'unsign_doc_finish_option' => $request->unsign_doc_finish_option,
             'trans_time_out_time_option' => $request->trans_time_out_time_option,
             'fee_debt_option' => $request->fee_debt_option,
+            'is_active' => $request->is_active,
+
         ];
         $data->fill($data_update);
         $data->save();

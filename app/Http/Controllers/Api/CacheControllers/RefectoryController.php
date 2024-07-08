@@ -141,12 +141,16 @@ class RefectoryController extends BaseApiCacheController
                 'app_modifier' => $this->app_modifier,
                 'department_id' => $request->department_id,
                 'room_type_id' => $request->room_type_id,
+                'is_active' => $request->is_active,
+
             ];
             $data_update = [
                 'modify_time' => now()->format('Ymdhis'),
                 'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
                 'app_modifier' => $this->app_modifier,
                 'refectory_name' => $request->refectory_name,
+                'is_active' => $request->is_active,
+
             ];
             $room->fill($room_update);
             $room->save();

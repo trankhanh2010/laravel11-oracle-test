@@ -105,6 +105,8 @@ class BodyPartController extends BaseApiCacheController
             'app_modifier' => $this->app_modifier,
             'body_part_code' => $request->body_part_code,
             'body_part_name' => $request->body_part_name,
+            'is_active' => $request->is_active
+
         ];
         $data->fill($data_update);
         $data->save();

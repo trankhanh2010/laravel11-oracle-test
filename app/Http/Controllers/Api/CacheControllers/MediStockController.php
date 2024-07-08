@@ -252,6 +252,8 @@ class MediStockController extends BaseApiCacheController
                 'app_modifier' => $this->app_modifier,
                 'department_id' => $request->department_id,
                 'room_type_id' => $request->room_type_id,
+                'is_active' => $request->is_active,
+
             ];
             $data_update = [
                 'modify_time' => now()->format('Ymdhis'),
@@ -285,6 +287,8 @@ class MediStockController extends BaseApiCacheController
                 'is_expend' => $request->is_expend,
                 'patient_classify_ids' => $request->patient_classify_ids,
                 'cabinet_manage_option' => $request->cabinet_manage_option,
+                'is_active' => $request->is_active,
+
             ];
             $room->fill($room_update);
             $room->save();

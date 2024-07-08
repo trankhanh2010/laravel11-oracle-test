@@ -94,7 +94,9 @@ class UpdateMediOrgRequest extends FormRequest
                                                 ],            
             'address' =>                        'nullable|string|max:500',
             'rank_code' =>                      'nullable|string|max:2',
-            'level_code' =>                     'nullable|string|max:2|in:1,2,3,4'
+            'level_code' =>                     'nullable|string|max:2|in:1,2,3,4',
+            'is_active' =>                      'required|integer|in:0,1'
+
         ];
     }
     public function messages()
@@ -132,6 +134,10 @@ class UpdateMediOrgRequest extends FormRequest
             'commune_name.string'  => config('keywords')['medi_org']['commune_name'].config('keywords')['error']['string'],
             'commune_name.max'     => config('keywords')['medi_org']['commune_name'].config('keywords')['error']['string_max'],      
             'commune_name.exists'  => config('keywords')['medi_org']['commune_name'].' = '.$this->commune_name.' không trùng khớp với '.config('keywords')['medi_org']['commune_code'].' = '. $this->commune_code.' hoặc không thuộc '.$this->district_name.'!', 
+        
+            'is_active.required'    => config('keywords')['all']['is_active'].config('keywords')['error']['required'],            
+            'is_active.integer'     => config('keywords')['all']['is_active'].config('keywords')['error']['integer'], 
+            'is_active.in'          => config('keywords')['all']['is_active'].config('keywords')['error']['in'], 
         ];
     }
 

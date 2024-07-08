@@ -37,10 +37,12 @@ class UpdateCommuneRequest extends FormRequest
                 'max:6',
                 Rule::unique('App\Models\SDA\Commune')->ignore($this->id),
             ],
-            'commune_name' =>                  'required|string|max:100',
-            'search_code' =>                   'nullable|string|max:10',
-            'initial_name' =>                  'nullable|string|max:20',
-            'district_id' =>                   'required|integer|exists:App\Models\SDA\District,id',
+            'commune_name' =>                   'required|string|max:100',
+            'search_code' =>                    'nullable|string|max:10',
+            'initial_name' =>                   'nullable|string|max:20',
+            'district_id' =>                    'required|integer|exists:App\Models\SDA\District,id',
+            'is_active' =>                      'required|integer|in:0,1'
+
         ];
     }
     public function messages()
@@ -64,6 +66,10 @@ class UpdateCommuneRequest extends FormRequest
             'district_id.required'   => config('keywords')['commune']['district_id'].config('keywords')['error']['required'],            
             'district_id.integer'    => config('keywords')['commune']['district_id'].config('keywords')['error']['integer'],
             'district_id.exists'     => config('keywords')['commune']['district_id'].config('keywords')['error']['exists'], 
+
+            'is_active.required'    => config('keywords')['all']['is_active'].config('keywords')['error']['required'],            
+            'is_active.integer'     => config('keywords')['all']['is_active'].config('keywords')['error']['integer'], 
+            'is_active.in'          => config('keywords')['all']['is_active'].config('keywords')['error']['in'], 
         ];
     }
 

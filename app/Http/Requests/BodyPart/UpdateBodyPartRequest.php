@@ -36,7 +36,9 @@ class UpdateBodyPartRequest extends FormRequest
                 'max:10',
                 Rule::unique('App\Models\HIS\BodyPart')->ignore($this->id),
             ],
-            'body_part_name' =>      'required|string|max:200',
+            'body_part_name' =>     'required|string|max:200',
+            'is_active' =>          'required|integer|in:0,1'
+
         ];
     }
     public function messages()
@@ -51,7 +53,9 @@ class UpdateBodyPartRequest extends FormRequest
             'body_part_name.string'      => config('keywords')['body_part']['body_part_name'].config('keywords')['error']['string'],
             'body_part_name.max'         => config('keywords')['body_part']['body_part_name'].config('keywords')['error']['string_max'],
 
-
+            'is_active.required'    => config('keywords')['all']['is_active'].config('keywords')['error']['required'],            
+            'is_active.integer'     => config('keywords')['all']['is_active'].config('keywords')['error']['integer'], 
+            'is_active.in'          => config('keywords')['all']['is_active'].config('keywords')['error']['in'], 
         ];
     }
 

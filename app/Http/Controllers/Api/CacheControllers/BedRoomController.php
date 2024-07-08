@@ -171,7 +171,9 @@ class BedRoomController extends BaseApiCacheController
                 'is_restrict_req_service' => $request->is_restrict_req_service,
                 'is_pause' => $request->is_pause,
                 'is_restrict_execute_room' => $request->is_restrict_execute_room,
-                'room_type_id' => $request->room_type_id
+                'room_type_id' => $request->room_type_id,
+                'is_active' => $request->is_active,
+
             ];
             $data_update = [
                 'modify_time' => now()->format('Ymdhis'),
@@ -181,6 +183,8 @@ class BedRoomController extends BaseApiCacheController
                 'bed_room_name' => $request->bed_room_name,
                 'is_surgery' => $request->is_surgery,
                 'treatment_type_ids' => $request->treatment_type_ids,
+                'is_active' => $request->is_active
+
             ];
             $room->fill($room_update);
             $room->save();

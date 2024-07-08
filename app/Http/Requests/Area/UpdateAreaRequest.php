@@ -39,6 +39,7 @@ class UpdateAreaRequest extends FormRequest
             ],
             'area_name' =>      'required|string|max:100',
             'department_id' =>  'required|integer|exists:App\Models\HIS\Department,id',
+            'is_active' =>      'required|integer|in:0,1'
         ];
     }
     public function messages()
@@ -56,6 +57,10 @@ class UpdateAreaRequest extends FormRequest
             'department_id.required'    => config('keywords')['area']['department_id'].config('keywords')['error']['required'],
             'department_id.integer'     => config('keywords')['area']['department_id'].config('keywords')['error']['integer'],
             'department_id.exists'      => config('keywords')['area']['department_id'].config('keywords')['error']['exists'],
+
+            'is_active.required'    => config('keywords')['all']['is_active'].config('keywords')['error']['required'],            
+            'is_active.integer'     => config('keywords')['all']['is_active'].config('keywords')['error']['integer'], 
+            'is_active.in'          => config('keywords')['all']['is_active'].config('keywords')['error']['in'], 
 
         ];
     }

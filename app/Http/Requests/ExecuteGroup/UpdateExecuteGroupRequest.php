@@ -36,7 +36,9 @@ class UpdateExecuteGroupRequest extends FormRequest
                 'max:10',
                 Rule::unique('App\Models\HIS\ExecuteGroup')->ignore($this->id),
             ],
-            'execute_group_name' =>              'required|string|max:100',
+            'execute_group_name' =>             'required|string|max:100',
+            'is_active' =>                      'required|integer|in:0,1'
+
         ];
     }
     public function messages()
@@ -50,6 +52,10 @@ class UpdateExecuteGroupRequest extends FormRequest
             'execute_group_name.required'    => config('keywords')['execute_group']['execute_group_name'].config('keywords')['error']['required'],
             'execute_group_name.string'      => config('keywords')['execute_group']['execute_group_name'].config('keywords')['error']['string'],
             'execute_group_name.max'         => config('keywords')['execute_group']['execute_group_name'].config('keywords')['error']['string_max'],
+
+            'is_active.required'    => config('keywords')['all']['is_active'].config('keywords')['error']['required'],            
+            'is_active.integer'     => config('keywords')['all']['is_active'].config('keywords')['error']['integer'], 
+            'is_active.in'          => config('keywords')['all']['is_active'].config('keywords')['error']['in'], 
         ];
     }
 

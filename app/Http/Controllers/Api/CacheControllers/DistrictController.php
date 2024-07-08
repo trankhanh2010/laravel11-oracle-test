@@ -119,6 +119,8 @@ class DistrictController extends BaseApiCacheController
             'initial_name' => $request->initial_name,
             'search_code' => $request->search_code,
             'province_id' => $request->province_id,
+            'is_active' => $request->is_active,
+
         ];
         $data->fill($data_update);
         $data->save();

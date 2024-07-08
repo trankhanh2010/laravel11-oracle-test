@@ -169,8 +169,6 @@ class ExecuteRoleController extends BaseApiCacheController
             'modify_time' => now()->format('Ymdhis'),
             'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
             'app_modifier' => $this->app_modifier,
-            'is_active' => 1,
-            'is_delete' => 0,
             'execute_role_code' => $request->execute_role_code,
             'execute_role_name' => $request->execute_role_name,
             'is_title' => $request->is_title,
@@ -183,6 +181,7 @@ class ExecuteRoleController extends BaseApiCacheController
             'allow_simultaneity' => $request->allow_simultaneity,
             'is_single_in_ekip' => $request->is_single_in_ekip,
             'is_disable_in_ekip' => $request->is_disable_in_ekip,
+            
         ]);
         // Gọi event để xóa cache
         event(new DeleteCache($this->execute_role_name));

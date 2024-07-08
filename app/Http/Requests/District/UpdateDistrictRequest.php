@@ -42,6 +42,8 @@ class UpdateDistrictRequest extends FormRequest
             'initial_name' =>       'nullable|string|max:20|in:Huyện,Quận,Thị Xã,Thành Phố',
             'search_code' =>        'nullable|string|max:10',
             'province_id' =>        'required|integer|exists:App\Models\SDA\Province,id',
+            'is_active' =>          'required|integer|in:0,1'
+
         ];
     }
     public function messages()
@@ -66,6 +68,10 @@ class UpdateDistrictRequest extends FormRequest
             'province_id.required'      => config('keywords')['district']['province_id'].config('keywords')['error']['required'],
             'province_id.integer'       => config('keywords')['district']['province_id'].config('keywords')['error']['integer'],
             'province_id.exists'        => config('keywords')['district']['province_id'].config('keywords')['error']['exists'],
+
+            'is_active.required'    => config('keywords')['all']['is_active'].config('keywords')['error']['required'],            
+            'is_active.integer'     => config('keywords')['all']['is_active'].config('keywords')['error']['integer'], 
+            'is_active.in'          => config('keywords')['all']['is_active'].config('keywords')['error']['in'], 
 
         ];
     }

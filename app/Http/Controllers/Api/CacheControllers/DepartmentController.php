@@ -161,6 +161,8 @@ class DepartmentController extends BaseApiCacheController
             'allow_assign_surgery_price' => $request->allow_assign_surgery_price,
             'is_in_dep_stock_moba' => $request->is_in_dep_stock_moba,
             'warning_when_is_no_surg' => $request->warning_when_is_no_surg,
+            'is_active' => $request->is_active,
+
         ];
         $data->fill($data_update);
         $data->save();

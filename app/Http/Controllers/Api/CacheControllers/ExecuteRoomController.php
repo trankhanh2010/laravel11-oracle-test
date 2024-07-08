@@ -239,7 +239,9 @@ class ExecuteRoomController extends BaseApiCacheController
                 'is_restrict_medicine_type' => $request->is_restrict_medicine_type,
                 'is_restrict_patient_type' => $request->is_restrict_patient_type,
                 'is_block_num_order' => $request->is_block_num_order,
-                'default_service_id' => $request->default_service_id
+                'default_service_id' => $request->default_service_id,
+                'is_active' => $request->is_active,
+
             ];
             $data_update = [
                 'modify_time' => now()->format('Ymdhis'),
@@ -264,6 +266,8 @@ class ExecuteRoomController extends BaseApiCacheController
                 'is_auto_expend_add_exam' => $request->is_auto_expend_add_exam,
                 'is_pause_enclitic' => $request->is_pause_enclitic,
                 'is_vitamin_a' => $request->is_vitamin_a,
+                'is_active' => $request->is_active,
+
             ];
             $room->fill($room_update);
             $room->save();
