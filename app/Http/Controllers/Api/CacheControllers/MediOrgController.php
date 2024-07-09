@@ -30,7 +30,7 @@ class MediOrgController extends BaseApiCacheController
     public function medi_org($id = null)
     {
         $keyword = mb_strtolower($this->keyword, 'UTF-8');
-        if ($keyword !== null) {
+        if ($keyword != null) {
             $param = [
             ];
             $data = $this->medi_org;

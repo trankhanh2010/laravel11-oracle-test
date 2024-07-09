@@ -30,7 +30,7 @@ class OtherPaySourceController extends BaseApiCacheController
     public function other_pay_source($id = null)
     {
         $keyword = mb_strtolower($this->keyword, 'UTF-8');
-        if ($keyword !== null) {
+        if ($keyword != null) {
             $param = [
             ];
             $data = $this->other_pay_source;

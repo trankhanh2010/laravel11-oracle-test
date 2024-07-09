@@ -31,12 +31,13 @@ class ServicePatyController extends BaseApiCacheController
     public function service_paty($id = null)
     {
         $keyword = mb_strtolower($this->keyword, 'UTF-8');
-        if (($keyword != null) || ($this->service_type_ids != null) || ($this->patient_type_ids != null) || ($this->service_id != null) || ($this->package_id != null) || ($this->effective !== null)) {
+        if (($id == null) && ($keyword != null) || ($this->service_type_ids !== null) || ($this->patient_type_ids !== null) || ($this->service_id !== null) || ($this->package_id !== null) || ($this->effective)) {
             $data = $this->service_paty
                 ->leftJoin('his_service as service', 'service.id', '=', 'his_service_paty.service_id')
                 ->leftJoin('his_patient_type as patient_type', 'patient_type.id', '=', 'his_service_paty.patient_type_id')
                 ->leftJoin('his_branch as branch', 'branch.id', '=', 'his_service_paty.branch_id')
                 ->leftJoin('his_package as package', 'package.id', '=', 'his_service_paty.package_id')
+                ->leftJoin('his_service_type as service_type', 'service_type.id', '=', 'service.service_type_id')
                 ->select(
                     'his_service_paty.*',
                     'service.service_name as service_name',
@@ -48,6 +49,8 @@ class ServicePatyController extends BaseApiCacheController
                     'branch.branch_code as branch_code',
                     'package.package_name as package_name',
                     'package.package_code as package_code',
+                    'service_type.service_type_name as service_type_name'
+
                 );
             if ($keyword !== null) {
                 $data = $data->where(function ($query) use ($keyword) {
@@ -56,10 +59,12 @@ class ServicePatyController extends BaseApiCacheController
                         ->orWhere(DB::connection('oracle_his')->raw('lower(patient_type.patient_type_name)'), 'like', '%' . $keyword . '%')
                         ->orWhere(DB::connection('oracle_his')->raw('lower(patient_type.patient_type_code)'), 'like', '%' . $keyword . '%')
                         ->orWhere(DB::connection('oracle_his')->raw('lower(package.package_name)'), 'like', '%' . $keyword . '%')
-                        ->orWhere(DB::connection('oracle_his')->raw('lower(package.package_code)'), 'like', '%' . $keyword . '%');
+                        ->orWhere(DB::connection('oracle_his')->raw('lower(package.package_code)'), 'like', '%' . $keyword . '%')
+                        ->orWhere(DB::connection('oracle_his')->raw('lower(service_type.service_type_name)'), 'like', '%' . $keyword . '%');
+                        
                 });
             }
-            if ($this->service_type_ids != null) {
+            if ($this->service_type_ids !== null) {
                 $data = $data->where(function ($query) {
                     // Khởi tạo biến cờ
                     $isFirst = true;
@@ -73,7 +78,7 @@ class ServicePatyController extends BaseApiCacheController
                     }
                 });
             }
-            if ($this->patient_type_ids != null) {
+            if ($this->patient_type_ids !== null) {
                 $data = $data->where(function ($query) {
                     // Khởi tạo biến cờ
                     $isFirst = true;
@@ -87,12 +92,12 @@ class ServicePatyController extends BaseApiCacheController
                     }
                 });
             }
-            if ($this->service_id != null) {
+            if ($this->service_id !== null) {
                 $data = $data->where(function ($query) {
                     $query = $query->where(DB::connection('oracle_his')->raw('service_id'), $this->service_id);
                 });
             }
-            if ($this->package_id != null) {
+            if ($this->package_id !== null) {
                 $data = $data->where(function ($query) {
                     $query = $query->where(DB::connection('oracle_his')->raw('his_service_paty.package_id'), $this->package_id);
                 });
@@ -131,6 +136,7 @@ class ServicePatyController extends BaseApiCacheController
                         ->leftJoin('his_patient_type as patient_type', 'patient_type.id', '=', 'his_service_paty.patient_type_id')
                         ->leftJoin('his_branch as branch', 'branch.id', '=', 'his_service_paty.branch_id')
                         ->leftJoin('his_package as package', 'package.id', '=', 'his_service_paty.package_id')
+                        ->leftJoin('his_service_type as service_type', 'service_type.id', '=', 'service.service_type_id')
                         ->select(
                             'his_service_paty.*',
                             'service.service_name as service_name',
@@ -142,6 +148,7 @@ class ServicePatyController extends BaseApiCacheController
                             'branch.branch_code as branch_code',
                             'package.package_name as package_name',
                             'package.package_code as package_code',
+                            'service_type.service_type_name as service_type_name'
                         );
                     $count = $data->count();
                     if ($this->order_by != null) {

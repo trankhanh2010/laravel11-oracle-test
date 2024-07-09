@@ -30,7 +30,7 @@ class PatientClassifyController extends BaseApiCacheController
     public function patient_classify($id = null)
     {
         $keyword = mb_strtolower($this->keyword, 'UTF-8');
-        if ($keyword !== null) {
+        if ($keyword != null) {
             $param = [
                 'patient_type',
                 'other_pay_source',

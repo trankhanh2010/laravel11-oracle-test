@@ -34,7 +34,7 @@ class MediStockController extends BaseApiCacheController
     public function medi_stock($id = null)
     {
         $keyword = mb_strtolower($this->keyword, 'UTF-8');
-        if ($keyword !== null) {
+        if ($keyword != null) {
             $param = [
                 'room:id,department_id,room_type_id',
                 'room.department:id,department_name,department_code',

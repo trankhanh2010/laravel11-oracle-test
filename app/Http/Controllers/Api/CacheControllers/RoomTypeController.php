@@ -28,7 +28,7 @@ class RoomTypeController extends BaseApiCacheController
     public function room_type()
     {
         $keyword = mb_strtolower($this->keyword, 'UTF-8');
-        if ($keyword !== null) {
+        if ($keyword != null) {
             $param = [
             ];
             $data = $this->room_type;

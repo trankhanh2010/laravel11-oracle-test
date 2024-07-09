@@ -27,7 +27,7 @@ class PtttMethodController extends BaseApiCacheController
     public function pttt_method($id = null)
     {
         $keyword = mb_strtolower($this->keyword, 'UTF-8');
-        if($keyword !== null){
+        if($keyword != null){
             $data = $this->pttt_method
                     ->leftJoin('his_pttt_group as pttt_group', 'pttt_group.id', '=', 'his_pttt_method.pttt_group_id')
                     ->select(

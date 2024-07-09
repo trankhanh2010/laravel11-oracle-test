@@ -28,7 +28,7 @@ class GroupController extends BaseApiCacheController
     public function group()
     {
         $keyword = mb_strtolower($this->keyword, 'UTF-8');
-        if ($keyword !== null) {
+        if ($keyword != null) {
             $param = [
             ];
             $data = $this->group;

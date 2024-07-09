@@ -32,7 +32,7 @@ class CashierRoomController extends BaseApiCacheController
     public function cashier_room($id = null)
     {
         $keyword = mb_strtolower($this->keyword, 'UTF-8');
-        if ($keyword !== null) {
+        if ($keyword != null) {
             $data = $this->cashier_room;
             $data = $data->where(function ($query) use ($keyword){
                 $query = $query

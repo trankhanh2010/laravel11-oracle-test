@@ -31,7 +31,7 @@ class AreaController extends BaseApiCacheController
     public function area($id = null)
     {
         $keyword = mb_strtolower($this->keyword, 'UTF-8');
-        if ($keyword !== null) {
+        if ($keyword != null) {
             $data = $this->area;
             $data = $data->where(function ($query) use ($keyword){
                 $query = $query

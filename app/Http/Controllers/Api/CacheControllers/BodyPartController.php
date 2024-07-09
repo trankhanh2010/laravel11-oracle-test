@@ -30,7 +30,7 @@ class BodyPartController extends BaseApiCacheController
     public function body_part($id = null)
     {
         $keyword = mb_strtolower($this->keyword, 'UTF-8');
-        if ($keyword !== null) {
+        if ($keyword != null) {
             $data = $this->body_part;
             $data = $data->where(function ($query) use ($keyword){
                 $query = $query

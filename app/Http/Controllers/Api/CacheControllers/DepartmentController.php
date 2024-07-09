@@ -31,7 +31,7 @@ class DepartmentController extends BaseApiCacheController
     public function department($id = null)
     {
         $keyword = mb_strtolower($this->keyword, 'UTF-8');
-        if ($keyword !== null) {
+        if ($keyword != null) {
             $param = [
                 'branch:id,branch_name,branch_code',
                 'req_surg_treatment_type:id,treatment_type_code,treatment_type_name',

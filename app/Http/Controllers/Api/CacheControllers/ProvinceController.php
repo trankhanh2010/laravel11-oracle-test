@@ -29,7 +29,7 @@ class ProvinceController extends BaseApiCacheController
     public function province($id = null)
     {
         $keyword = mb_strtolower($this->keyword, 'UTF-8');
-        if ($keyword !== null) {
+        if ($keyword != null) {
             $param = [
                 'national:id,national_name,national_code'
             ];

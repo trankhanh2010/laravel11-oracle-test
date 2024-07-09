@@ -33,7 +33,7 @@ class BedRoomController extends BaseApiCacheController
     public function bed_room($id = null)
     {
         $keyword = mb_strtolower($this->keyword, 'UTF-8');
-        if ($keyword !== null) {
+        if ($keyword != null) {
             $param = [
                 'room:id,department_id,area_id,speciality_id,default_cashier_room_id,default_instr_patient_type_id,is_pause',
                 'room.department:id,department_name,department_code',

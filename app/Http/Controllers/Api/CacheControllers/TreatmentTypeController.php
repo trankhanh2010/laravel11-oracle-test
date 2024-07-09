@@ -30,7 +30,7 @@ class TreatmentTypeController extends BaseApiCacheController
     public function treatment_type($id = null)
     {
         $keyword = mb_strtolower($this->keyword, 'UTF-8');
-        if ($keyword !== null) {
+        if ($keyword != null) {
             $param = [
                 'required_service'
             ];

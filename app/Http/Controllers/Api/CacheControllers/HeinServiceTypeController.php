@@ -27,7 +27,7 @@ class HeinServiceTypeController extends BaseApiCacheController
     public function hein_service_type($id = null)
     {
         $keyword = mb_strtolower($this->keyword, 'UTF-8');
-        if ($keyword !== null) {
+        if ($keyword != null) {
             $param = [
             ];
             $data = $this->hein_service_type;

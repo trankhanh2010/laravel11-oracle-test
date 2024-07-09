@@ -26,7 +26,7 @@ class PtttGroupController extends BaseApiCacheController
     public function pttt_group($id = null)
     {
         $keyword = mb_strtolower($this->keyword, 'UTF-8');
-        if ($keyword !== null) {
+        if ($keyword != null) {
             $param = [
                 'serv_segrs:id,service_id,service_group_id',
                 'serv_segrs.service:id,service_name,service_type_id',

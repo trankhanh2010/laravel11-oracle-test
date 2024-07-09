@@ -27,7 +27,7 @@ class MilitaryRankController extends BaseApiCacheController
     public function military_rank($id = null)
     {
         $keyword = mb_strtolower($this->keyword, 'UTF-8');
-        if ($keyword !== null) {
+        if ($keyword != null) {
             $param = [
             ];
             $data = $this->military_rank;

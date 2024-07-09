@@ -27,7 +27,7 @@ class ServiceUnitController extends BaseApiCacheController
     public function service_unit($id = null)
     {
         $keyword = mb_strtolower($this->keyword, 'UTF-8');
-        if ($keyword !== null) {
+        if ($keyword != null) {
             $param = [
                 'convert:id,service_unit_name',
             ];

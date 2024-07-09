@@ -27,7 +27,7 @@ class RationGroupController extends BaseApiCacheController
     public function ration_group($id = null)
     {
         $keyword = mb_strtolower($this->keyword, 'UTF-8');
-        if ($keyword !== null) {
+        if ($keyword != null) {
             $param = [
             ];
             $data = $this->ration_group;

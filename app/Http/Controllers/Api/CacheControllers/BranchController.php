@@ -30,7 +30,7 @@ class BranchController extends BaseApiCacheController
     public function branch($id = null)
     {
         $keyword = mb_strtolower($this->keyword, 'UTF-8');
-        if ($keyword !== null) {
+        if ($keyword != null) {
             $data = $this->branch;
             $data = $data->where(function ($query) use ($keyword){
                 $query = $query

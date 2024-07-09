@@ -28,7 +28,7 @@ class RoomGroupController extends BaseApiCacheController
     public function room_group()
     {
         $keyword = mb_strtolower($this->keyword, 'UTF-8');
-        if ($keyword !== null) {
+        if ($keyword != null) {
             $param = [
             ];
             $data = $this->room_group;

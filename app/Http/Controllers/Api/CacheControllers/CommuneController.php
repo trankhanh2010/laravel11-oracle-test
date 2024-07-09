@@ -30,7 +30,7 @@ class CommuneController extends BaseApiCacheController
     public function commune($id = null)
     {
         $keyword = mb_strtolower($this->keyword, 'UTF-8');
-        if($keyword !== null){
+        if($keyword != null){
             $data = $this->commune
             ->leftJoin('sda_district as district', 'district.id', '=', 'sda_commune.district_id')
             ->select(

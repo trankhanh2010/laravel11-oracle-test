@@ -27,7 +27,7 @@ class ServiceTypeController extends BaseApiCacheController
     public function service_type($id = null)
     {
         $keyword = mb_strtolower($this->keyword, 'UTF-8');
-        if ($keyword !== null) {
+        if ($keyword != null) {
             $param = [
                 'exe_service_module:id,exe_service_module_name,module_link',
             ];

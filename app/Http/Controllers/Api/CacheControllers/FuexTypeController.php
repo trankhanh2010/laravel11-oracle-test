@@ -27,7 +27,7 @@ class FuexTypeController extends BaseApiCacheController
     public function fuex_type($id = null)
     {
         $keyword = mb_strtolower($this->keyword, 'UTF-8');
-        if ($keyword !== null) {
+        if ($keyword != null) {
             $param = [
             ];
             $data = $this->fuex_type;

@@ -26,7 +26,7 @@ class TestSampleTypeController extends BaseApiCacheController
     public function test_sample_type($id = null)
     {
         $keyword = mb_strtolower($this->keyword, 'UTF-8');
-        if ($keyword !== null) {
+        if ($keyword != null) {
             $param = [
             ];
             $data = $this->test_sample_type;

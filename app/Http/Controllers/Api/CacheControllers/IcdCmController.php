@@ -32,7 +32,7 @@ class IcdCmController extends BaseApiCacheController
     public function icd_cm($id = null)
     {
         $keyword = mb_strtolower($this->keyword, 'UTF-8');
-        if ($keyword !== null) {
+        if ($keyword != null) {
             $param = [
             ];
             $data = $this->icd_cm;

@@ -30,7 +30,7 @@ class DistrictController extends BaseApiCacheController
     public function district($id = null)
     {
         $keyword = mb_strtolower($this->keyword, 'UTF-8');
-        if ($keyword !== null) {
+        if ($keyword != null) {
             $param = [
                 'province:id,province_name,province_code',
             ];

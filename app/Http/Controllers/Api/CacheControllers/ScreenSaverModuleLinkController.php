@@ -19,7 +19,7 @@ class ScreenSaverModuleLinkController extends BaseApiCacheController
     public function screen_saver_module_link()
     {
         $keyword = mb_strtolower($this->keyword, 'UTF-8');
-        if ($keyword !== null) {
+        if ($keyword != null) {
             $data = $this->module::select('acs_module.*')
                 ->join('ACS_MODULE_GROUP', 'ACS_MODULE.module_group_id', '=', 'ACS_MODULE_GROUP.id')
                 ->where('ACS_MODULE_GROUP.module_group_code', 'MHC');
