@@ -1169,20 +1169,6 @@ class HISController extends Controller
         ]], 200);
     }
 
-    /// ServiceReq Type
-    public function ration_time()
-    {
-        $data = get_cache($this->ration_time, $this->ration_time_name, null, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    public function ration_time_id($id)
-    {
-        $data = get_cache($this->ration_time, $this->ration_time_name, $id, $this->time);
-        return response()->json(['data' => [
-            'ration_time' => $data,
-        ]], 200);
-    }
 
     /// ServiceReq Type
     public function relation_list()

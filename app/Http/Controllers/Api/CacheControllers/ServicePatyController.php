@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers\Api\CacheControllers;
 
+use App\Events\Cache\DeleteCache;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
+use App\Http\Requests\ServicePaty\CreateServicePatyRequest;
+use App\Http\Requests\ServicePaty\UpdateServicePatyRequest;
 use App\Models\HIS\ServicePaty;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -216,7 +219,67 @@ class ServicePatyController extends BaseApiCacheController
         return return_data_success($param_return, $data_param ?? $data ?? $data['data']);
     }
 
+    public function service_paty_create(CreateServicePatyRequest $request)
+    {
+        $data = $this->service_paty::create([
+            'create_time' => now()->format('Ymdhis'),
+            'modify_time' => now()->format('Ymdhis'),
+            'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
+            'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+            'app_creator' => $this->app_creator,
+            'app_modifier' => $this->app_modifier,
+            'is_active' => 1,
+            'is_delete' => 0,
+            'area_code' => $request->area_code,
+            'area_name' => $request->area_name,
+            'department_id' => $request->department_id
+        ]);
+        // Gọi event để xóa cache
+        event(new DeleteCache($this->service_paty_name));
+        return return_data_create_success($data);
+    }
 
+    public function service_paty_update(UpdateServicePatyRequest $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->service_paty->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        $data->update([
+            'modify_time' => now()->format('Ymdhis'),
+            'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+            'app_modifier' => $this->app_modifier,
+            'area_code' => $request->area_code,
+            'area_name' => $request->area_name,
+            'department_id' => $request->department_id,
+            'is_active' => $request->is_active
+        ]);
+        // Gọi event để xóa cache
+        event(new DeleteCache($this->service_paty_name));
+        return return_data_update_success($data);
+    }
+
+    public function service_paty_delete(Request $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->service_paty->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        try {
+            $data->delete();
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->service_paty_name));
+            return return_data_delete_success();
+        } catch (\Exception $e) {
+            return return_data_delete_fail();
+        }
+    }                   
     // public function service_with_patient_type($id = null)
     // {
     //     if ($id == null) {

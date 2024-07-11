@@ -3,6 +3,8 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\HISController;
+
+// Cache Controllers
 use App\Http\Controllers\Api\CacheControllers\DepartmentController;
 use App\Http\Controllers\Api\CacheControllers\GroupController;
 use App\Http\Controllers\Api\CacheControllers\RoomTypeController;
@@ -51,9 +53,9 @@ use App\Http\Controllers\Api\CacheControllers\SuimIndexController;
 use App\Http\Controllers\Api\CacheControllers\PackageController;
 use App\Http\Controllers\Api\CacheControllers\ServicePatyController;
 use App\Http\Controllers\Api\CacheControllers\BhytWhitelistController;
+use App\Http\Controllers\Api\CacheControllers\RationTimeController;
 
-
-
+// Data Controllers
 use App\Http\Controllers\Api\DataControllers\DebateController;
 use App\Http\Controllers\Api\DataControllers\DebateUserController;
 use App\Http\Controllers\Api\DataControllers\DebateEkipUserController;
@@ -66,6 +68,32 @@ use App\Http\Controllers\Api\DataControllers\SereServTeinController;
 use App\Http\Controllers\Api\DataControllers\TrackingController;
 use App\Http\Controllers\Api\DataControllers\TreatmentController;
 use App\Http\Controllers\Api\DataControllers\TreatmentBedRoomController;
+
+// Validate Controllers
+use App\Http\Controllers\Api\ValidateControllers\CheckBedRoomController;
+use App\Http\Controllers\Api\ValidateControllers\CheckAreaController;
+use App\Http\Controllers\Api\ValidateControllers\CheckBranchController;
+use App\Http\Controllers\Api\ValidateControllers\CheckBodyPartController;
+use App\Http\Controllers\Api\ValidateControllers\CheckCashierRoomController;
+use App\Http\Controllers\Api\ValidateControllers\CheckCommuneController;
+use App\Http\Controllers\Api\ValidateControllers\CheckDepartmentController;
+use App\Http\Controllers\Api\ValidateControllers\CheckDistrictController;
+use App\Http\Controllers\Api\ValidateControllers\CheckDataStoreController;
+use App\Http\Controllers\Api\ValidateControllers\CheckExecuteRoomController;
+use App\Http\Controllers\Api\ValidateControllers\CheckExecuteGroupController;
+use App\Http\Controllers\Api\ValidateControllers\CheckExecuteRoleController;
+use App\Http\Controllers\Api\ValidateControllers\CheckIcdCmController;
+use App\Http\Controllers\Api\ValidateControllers\CheckMediStockController;
+use App\Http\Controllers\Api\ValidateControllers\CheckMediOrgController;
+use App\Http\Controllers\Api\ValidateControllers\CheckNationalController;
+use App\Http\Controllers\Api\ValidateControllers\CheckOtherPaySourceController;
+use App\Http\Controllers\Api\ValidateControllers\CheckPatientClassifyController;
+use App\Http\Controllers\Api\ValidateControllers\CheckProvinceController;
+use App\Http\Controllers\Api\ValidateControllers\CheckReceptionRoomController;
+use App\Http\Controllers\Api\ValidateControllers\CheckRefectoryController;
+use App\Http\Controllers\Api\ValidateControllers\CheckSpecialityController;
+use App\Http\Controllers\Api\ValidateControllers\CheckServiceController;
+use App\Http\Controllers\Api\ValidateControllers\CheckTreatmentTypeController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -78,13 +106,14 @@ use App\Http\Controllers\Api\DataControllers\TreatmentBedRoomController;
 */
 
 Route::group([
-    "middleware" => ["check_module:api"]
+    // "middleware" => ["check_module:api"]
 ], function () {
 
     /// Khoa phòng
     Route::group(['as' => 'HIS.Desktop.Plugins.HisDepartment'], function () {
         Route::get("v1/department", [DepartmentController::class, "department"]);
         Route::get("v1/department/{id}", [DepartmentController::class, "department"])->name('.api.department.index_with_id');
+        Route::get("v1/department-check", [CheckDepartmentController::class, "check_code"]);
         // Route::get("v1/department/deleted", [DepartmentController::class, "department"]);
         // Route::get("v1/department/{id}/restore", [DepartmentController::class, "department_restore"]);
         Route::post("v1/department", [DepartmentController::class, "department_create"]);        
@@ -109,6 +138,7 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisBedRoomList'], function () {
         Route::get("v1/bed-room", [BedRoomController::class, "bed_room"]);
         Route::get("v1/bed-room/{id}", [BedRoomController::class, "bed_room"])->name('.api.bed_room.index_with_id');
+        Route::get("v1/bed-room-check", [CheckBedRoomController::class, "check_code"]);
         Route::post("v1/bed-room", [BedRoomController::class, "bed_room_create"]);        
         Route::put("v1/bed-room/{id}", [BedRoomController::class, "bed_room_update"]);       
         Route::delete("v1/bed-room/{id}", [BedRoomController::class, "bed_room_delete"]);       
@@ -121,6 +151,7 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisExecuteRoom'], function () {
         Route::get("v1/execute-room", [ExecuteRoomController::class, "execute_room"]);
         Route::get("v1/execute-room/{id}", [ExecuteRoomController::class, "execute_room"]);
+        Route::get("v1/execute-room-check", [CheckExecuteRoomController::class, "check_code"]);
         Route::post("v1/execute-room", [ExecuteRoomController::class, "execute_room_create"]);        
         Route::put("v1/execute-room/{id}", [ExecuteRoomController::class, "execute_room_update"]);       
         Route::delete("v1/execute-room/{id}", [ExecuteRoomController::class, "execute_room_delete"]);  
@@ -130,6 +161,7 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisSpeciality'], function () {
         Route::get("v1/speciality", [SpecialityController::class, "speciality"]);
         Route::get("v1/speciality/{id}", [SpecialityController::class, "speciality"]);
+        Route::get("v1/speciality-check", [CheckSpecialityController::class, "check_code"]);
         Route::post("v1/speciality", [SpecialityController::class, "speciality_create"]);        
         Route::put("v1/speciality/{id}", [SpecialityController::class, "speciality_update"]);       
         Route::delete("v1/speciality/{id}", [SpecialityController::class, "speciality_delete"]);  
@@ -139,6 +171,7 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.TreatmentType'], function () {
         Route::get("v1/treatment-type", [TreatmentTypeController::class, "treatment_type"]);
         Route::get("v1/treatment-type/{id}", [TreatmentTypeController::class, "treatment_type"]);
+        Route::get("v1/treatment-type-check", [CheckTreatmentTypeController::class, "check_code"]);
         Route::post("v1/treatment-type", [TreatmentTypeController::class, "treatment_type_create"]);        
         Route::put("v1/treatment-type/{id}", [TreatmentTypeController::class, "treatment_type_update"]);       
         Route::delete("v1/treatment-type/{id}", [TreatmentTypeController::class, "treatment_type_delete"]);  
@@ -148,6 +181,7 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisMediOrg'], function () {
         Route::get("v1/medi-org", [MediOrgController::class, "medi_org"]);
         Route::get("v1/medi-org/{id}", [MediOrgController::class, "medi_org"]);
+        Route::get("v1/medi-org-check", [CheckMediOrgController::class, "check_code"]);
         Route::post("v1/medi-org", [MediOrgController::class, "medi_org_create"]);        
         Route::put("v1/medi-org/{id}", [MediOrgController::class, "medi_org_update"]);       
         Route::delete("v1/medi-org/{id}", [MediOrgController::class, "medi_org_delete"]);  
@@ -157,6 +191,7 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisBranch'], function () {
         Route::get("v1/branch", [BranchController::class, "branch"]);
         Route::get("v1/branch/{id}", [BranchController::class, "branch"]);
+        Route::get("v1/branch-check", [CheckBranchController::class, "check_code"]);
         Route::post("v1/branch", [BranchController::class, "branch_create"]);        
         Route::put("v1/branch/{id}", [BranchController::class, "branch_update"]);       
         Route::delete("v1/branch/{id}", [BranchController::class, "branch_delete"]);  
@@ -166,6 +201,7 @@ Route::group([
     Route::group(['as' => 'SDA.Desktop.Plugins.SdaDistrict'], function () {
         Route::get("v1/district", [DistrictController::class, "district"]);
         Route::get("v1/district/{id}", [DistrictController::class, "district"]);
+        Route::get("v1/district-check", [CheckDistrictController::class, "check_code"]);
         Route::post("v1/district", [DistrictController::class, "district_create"]);        
         Route::put("v1/district/{id}", [DistrictController::class, "district_update"]);       
         Route::delete("v1/district/{id}", [DistrictController::class, "district_delete"]);  
@@ -175,6 +211,7 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisOtherPaySource'], function () {
         Route::get("v1/other-pay-source", [OtherPaySourceController::class, "other_pay_source"]);
         Route::get("v1/other-pay-source/{id}", [OtherPaySourceController::class, "other_pay_source"]);
+        Route::get("v1/other-pay-source-check", [CheckOtherPaySourceController::class, "check_code"]);
         Route::post("v1/other-pay-source", [OtherPaySourceController::class, "other_pay_source_create"]);        
         Route::put("v1/other-pay-source/{id}", [OtherPaySourceController::class, "other_pay_source_update"]);       
         Route::delete("v1/other-pay-source/{id}", [OtherPaySourceController::class, "other_pay_source_delete"]);  
@@ -187,6 +224,7 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisMediStock'], function () {
         Route::get("v1/medi-stock", [MediStockController::class, "medi_stock"])->name('.api.medi_stock.index');
         Route::get("v1/medi-stock/{id}", [MediStockController::class, "medi_stock"]);
+        Route::get("v1/medi-stock-check", [CheckMediStockController::class, "check_code"]);
         Route::post("v1/medi-stock", [MediStockController::class, "medi_stock_create"]);        
         Route::put("v1/medi-stock/{id}", [MediStockController::class, "medi_stock_update"]);       
         Route::delete("v1/medi-stock/{id}", [MediStockController::class, "medi_stock_delete"]);
@@ -196,6 +234,7 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisReceptionRoom'], function () {
         Route::get("v1/reception-room", [ReceptionRoomController::class, "reception_room"]);
         Route::get("v1/reception-room/{id}", [ReceptionRoomController::class, "reception_room"]);
+        Route::get("v1/reception-room-check", [CheckReceptionRoomController::class, "check_code"]);
         Route::post("v1/reception-room", [ReceptionRoomController::class, "reception_room_create"]);        
         Route::put("v1/reception-room/{id}", [ReceptionRoomController::class, "reception_room_update"]);       
         Route::delete("v1/reception-room/{id}", [ReceptionRoomController::class, "reception_room_delete"]);  
@@ -205,6 +244,7 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisArea'], function () {
         Route::get("v1/area", [AreaController::class, "area"]);
         Route::get("v1/area/{id}", [AreaController::class, "area"]);
+        Route::get("v1/area-check", [CheckAreaController::class, "check_code"]);
         Route::post("v1/area", [AreaController::class, "area_create"]);
         Route::put("v1/area/{id}", [AreaController::class, "area_update"]);
         Route::delete("v1/area/{id}", [AreaController::class, "area_delete"]);
@@ -214,6 +254,7 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisRefectory'], function () {
         Route::get("v1/refectory", [RefectoryController::class, "refectory"]);
         Route::get("v1/refectory/{id}", [RefectoryController::class, "refectory"]);
+        Route::get("v1/refectory-check", [CheckRefectoryController::class, "check_code"]);
         Route::post("v1/refectory", [RefectoryController::class, "refectory_create"]);
         Route::put("v1/refectory/{id}", [RefectoryController::class, "refectory_update"]);
         Route::delete("v1/refectory/{id}", [RefectoryController::class, "refectory_delete"]);
@@ -223,6 +264,7 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisExecuteGroup'], function () {
         Route::get("v1/execute-group", [ExecuteGroupController::class, "execute_group"]);
         Route::get("v1/execute-group/{id}", [ExecuteGroupController::class, "execute_group"]);
+        Route::get("v1/execute-group-check", [CheckExecuteGroupController::class, "check_code"]);
         Route::post("v1/execute-group", [ExecuteGroupController::class, "execute_group_create"]);
         Route::put("v1/execute-group/{id}", [ExecuteGroupController::class, "execute_group_update"]);
         Route::delete("v1/execute-group/{id}", [ExecuteGroupController::class, "execute_group_delete"]);
@@ -232,6 +274,7 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisCashierRoom'], function () {
         Route::get("v1/cashier-room", [CashierRoomController::class, "cashier_room"]);
         Route::get("v1/cashier-room/{id}", [CashierRoomController::class, "cashier_room"]);
+        Route::get("v1/cashier-room-check", [CheckCashierRoomController::class, "check_code"]);
         Route::post("v1/cashier-room", [CashierRoomController::class, "cashier_room_create"]);
         Route::put("v1/cashier-room/{id}", [CashierRoomController::class, "cashier_room_update"]);
         Route::delete("v1/cashier-room/{id}", [CashierRoomController::class, "cashier_room_delete"]);
@@ -241,6 +284,7 @@ Route::group([
     Route::group(['as' => 'SDA.Desktop.Plugins.SdaNational'], function () {
         Route::get("v1/national", [NationalController::class, "national"]);
         Route::get("v1/national/{id}", [NationalController::class, "national"]);
+        Route::get("v1/national-check", [CheckNationalController::class, "check_code"]);
         Route::post("v1/national", [NationalController::class, "national_create"]);
         Route::put("v1/national/{id}", [NationalController::class, "national_update"]);
         Route::delete("v1/national/{id}", [NationalController::class, "national_delete"]);
@@ -250,6 +294,7 @@ Route::group([
     Route::group(['as' => 'SDA.Desktop.Plugins.SdaProvince'], function () {
         Route::get("v1/province", [ProvinceController::class, "province"]);
         Route::get("v1/province/{id}", [ProvinceController::class, "province"]);
+        Route::get("v1/province-check", [CheckProvinceController::class, "check_code"]);
         Route::post("v1/province", [ProvinceController::class, "province_create"]);
         Route::put("v1/province/{id}", [ProvinceController::class, "province_update"]);
         Route::delete("v1/province/{id}", [ProvinceController::class, "province_delete"]);
@@ -259,6 +304,7 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisDataStore'], function () {
         Route::get("v1/data-store", [DataStoreController::class, "data_store"]);
         Route::get("v1/data-store/{id}", [DataStoreController::class, "data_store"]);
+        Route::get("v1/data-store-check", [CheckDataStoreController::class, "check_code"]);
         Route::post("v1/data-store", [DataStoreController::class, "data_store_create"]);
         Route::put("v1/data-store/{id}", [DataStoreController::class, "data_store_update"]);
         Route::delete("v1/data-store/{id}", [DataStoreController::class, "data_store_delete"]);
@@ -268,6 +314,7 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisExecuteRole'], function () {
         Route::get("v1/execute-role", [ExecuteRoleController::class, "execute_role"]);
         Route::get("v1/execute-role/{id}", [ExecuteRoleController::class, "execute_role"]);
+        Route::get("v1/execute-role-check", [CheckExecuteRoleController::class, "check_code"]);
         Route::post("v1/execute-role", [ExecuteRoleController::class, "execute_role_create"]);
         Route::put("v1/execute-role/{id}", [ExecuteRoleController::class, "execute_role_update"]);
         Route::delete("v1/execute-role/{id}", [ExecuteRoleController::class, "execute_role_delete"]);
@@ -277,6 +324,7 @@ Route::group([
     Route::group(['as' => 'SDA.Desktop.Plugins.SdaCommune'], function () {
         Route::get("v1/commune", [CommuneController::class, "commune"]);
         Route::get("v1/commune/{id}", [CommuneController::class, "commune"]);
+        Route::get("v1/commune-check", [CheckCommuneController::class, "check_code"]);
         Route::post("v1/commune", [CommuneController::class, "commune_create"]);
         Route::put("v1/commune/{id}", [CommuneController::class, "commune_update"]);
         Route::delete("v1/commune/{id}", [CommuneController::class, "commune_delete"]);
@@ -286,6 +334,7 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisIcdCm'], function () {
         Route::get("v1/icd-cm", [IcdCmController::class, "icd_cm"]);
         Route::get("v1/icd-cm/{id}", [IcdCmController::class, "icd_cm"]);
+        Route::get("v1/icd-cm-check", [CheckIcdCmController::class, "check_code"]);
         Route::post("v1/icd-cm", [IcdCmController::class, "icd_cm_create"]);
         Route::put("v1/icd-cm/{id}", [IcdCmController::class, "icd_cm_update"]);
         Route::delete("v1/icd-cm/{id}", [IcdCmController::class, "icd_cm_delete"]);
@@ -310,6 +359,7 @@ Route::group([
     /// Bộ phận cơ thể
     Route::get("v1/body-part", [BodyPartController::class, "body_part"]);
     Route::get("v1/body-part/{id}", [BodyPartController::class, "body_part"]);
+    Route::get("v1/body-part-check", [CheckBodyPartController::class, "check_code"]);
     Route::post("v1/body-part", [BodyPartController::class, "body_part_create"]);
     Route::put("v1/body-part/{id}", [BodyPartController::class, "body_part_update"]);
     Route::delete("v1/body-part/{id}", [BodyPartController::class, "body_part_delete"]);
@@ -331,6 +381,7 @@ Route::group([
         Route::get("v1/service/{id}", [ServiceController::class, "service"]);
         // Route::get("v1/service/by-code/{type_id}", [ServiceController::class, "service_by_code"]);
         Route::get("v1/service/service-type/{id}", [ServiceController::class, "service_by_service_type"]);
+        Route::get("v1/service-check", [CheckServiceController::class, "check_code"]);
         Route::post("v1/service", [ServiceController::class, "service_create"]);
         Route::put("v1/service/{id}", [ServiceController::class, "service_update"]);
         Route::delete("v1/service/{id}", [ServiceController::class, "service_delete"]);
@@ -341,12 +392,16 @@ Route::group([
         // Trả về tất cả mối quan hệ
         Route::get("v1/service-paty", [ServicePatyController::class, "service_paty"]);
         Route::get("v1/service-paty/{id}", [ServicePatyController::class, "service_paty"]);
-        // Trả về tất cả dịch vụ cùng loại bệnh nhân
-        Route::get("v1/service/all/patient-type", [ServicePatyController::class, "service_with_patient_type"]);
-        Route::get("v1/service/{id}/patient-type", [ServicePatyController::class, "service_with_patient_type"]);
-        // Trả về tất cả loại bệnh nhân cùng dịch vụ
-        Route::get("v1/patient-type/all/service", [ServicePatyController::class, "patient_type_with_service"]);
-        Route::get("v1/patient-type/{id}/service", [ServicePatyController::class, "patient_type_with_service"]);
+        Route::post("v1/service-paty", [ServicePatyController::class, "service_paty_create"]);
+        Route::put("v1/service-paty/{id}", [ServicePatyController::class, "service_paty_update"]);
+        Route::delete("v1/service-paty/{id}", [ServicePatyController::class, "service_paty_delete"]);
+        // // Trả về tất cả dịch vụ cùng loại bệnh nhân
+        // Route::get("v1/service/all/patient-type", [ServicePatyController::class, "service_with_patient_type"]);
+        // Route::get("v1/service/{id}/patient-type", [ServicePatyController::class, "service_with_patient_type"]);
+        // // Trả về tất cả loại bệnh nhân cùng dịch vụ
+        // Route::get("v1/patient-type/all/service", [ServicePatyController::class, "patient_type_with_service"]);
+        // Route::get("v1/patient-type/{id}/service", [ServicePatyController::class, "patient_type_with_service"]);
+
     });
 
     /// Dịch vụ máy
@@ -502,6 +557,7 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisPatientClassify'], function () {
         Route::get("v1/patient-classify", [PatientClassifyController::class, "patient_classify"]);
         Route::get("v1/patient-classify/{id}", [PatientClassifyController::class, "patient_classify"]);
+        Route::get("v1/patient-classify-check", [CheckPatientClassifyController::class, "check_code"]);
         Route::post("v1/patient-classify", [PatientClassifyController::class, "patient_classify_create"]);        
         Route::put("v1/patient-classify/{id}", [PatientClassifyController::class, "patient_classify_update"]);       
         Route::delete("v1/patient-classify/{id}", [PatientClassifyController::class, "patient_classify_delete"]);  
@@ -539,8 +595,8 @@ Route::group([
 
     /// Bữa ăn
     Route::group(['as' => 'HIS.Desktop.Plugins.HisRationTime'], function () {
-        Route::get("v1/ration-time", [HISController::class, "ration_time"]);
-        Route::get("v1/ration-time/{id}", [HISController::class, "ration_time_id"]);
+        Route::get("v1/ration-time", [RationTimeController::class, "ration_time"]);
+        Route::get("v1/ration-time/{id}", [RationTimeController::class, "ration_time"]);
     });
 
     /// Kho - Đối tượng
