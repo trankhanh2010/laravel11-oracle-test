@@ -100,6 +100,7 @@ class BedRoomController extends BaseApiCacheController
             'start' => $this->start,
             'limit' => $this->limit,
             'count' => $count ?? $data['count'],
+            'is_active' => $this->is_active,
             'keyword' => $this->keyword,
             'order_by' => $this->order_by_request
         ];

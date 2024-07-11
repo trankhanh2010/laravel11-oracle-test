@@ -54,6 +54,18 @@ use App\Http\Controllers\Api\CacheControllers\PackageController;
 use App\Http\Controllers\Api\CacheControllers\ServicePatyController;
 use App\Http\Controllers\Api\CacheControllers\BhytWhitelistController;
 use App\Http\Controllers\Api\CacheControllers\RationTimeController;
+use App\Http\Controllers\Api\CacheControllers\MachineController;
+use App\Http\Controllers\Api\CacheControllers\BedController;
+use App\Http\Controllers\Api\CacheControllers\BedTypeController;
+use App\Http\Controllers\Api\CacheControllers\EmpUserController;
+use App\Http\Controllers\Api\CacheControllers\RoleController;
+use App\Http\Controllers\Api\CacheControllers\EthnicController;
+use App\Http\Controllers\Api\CacheControllers\PriorityTypeController;
+use App\Http\Controllers\Api\CacheControllers\RelationController;
+use App\Http\Controllers\Api\CacheControllers\CareerController;
+use App\Http\Controllers\Api\CacheControllers\ReligionController;
+use App\Http\Controllers\Api\CacheControllers\ServiceReqTypeController;
+use App\Http\Controllers\Api\CacheControllers\SaleProfitCfgController;
 
 // Data Controllers
 use App\Http\Controllers\Api\DataControllers\DebateController;
@@ -419,8 +431,8 @@ Route::group([
 
     /// Máy / Máy cận lâm sàn
     Route::group(['as' => 'HIS.Desktop.Plugins.HisMachine'], function () {
-        Route::get("v1/machine", [HISController::class, "machine"]);
-        Route::get("v1/machine/{id}", [HISController::class, "machine_id"]);
+        Route::get("v1/machine", [MachineController::class, "machine"]);
+        Route::get("v1/machine/{id}", [MachineController::class, "machine"]);
     });
 
     /// Dịch vụ phòng
@@ -438,7 +450,7 @@ Route::group([
 
     /// Phòng
     Route::get("v1/room", [RoomController::class, "room"]);
-    Route::get("v1/room/department/{id}", [RoomController::class, "room_with_department"]);
+    // Route::get("v1/room/department/{id}", [RoomController::class, "room_with_department"]);
 
     /// Dịch vụ đi kèm
     Route::group(['as' => 'HIS.Desktop.Plugins.HisServiceFollow'], function () {
@@ -455,8 +467,8 @@ Route::group([
 
     /// Giường
     Route::group(['as' => 'HIS.Desktop.Plugins.HisBed'], function () {
-        Route::get("v1/bed", [HISController::class, "bed"]);
-        Route::get("v1/bed/{id}", [HISController::class, "bed"]);
+        Route::get("v1/bed", [BedController::class, "bed"]);
+        Route::get("v1/bed/{id}", [BedController::class, "bed"]);
     });
 
     /// Giường - Dịch vụ giường
@@ -474,8 +486,8 @@ Route::group([
 
     /// Loại giường
     Route::group(['as' => 'HIS.Desktop.Plugins.HisBedTypeList'], function () {
-        Route::get("v1/bed-type", [HISController::class, "bed_type"]);
-        Route::get("v1/bed-type/{id}", [HISController::class, "bed_type"]);
+        Route::get("v1/bed-type", [BedTypeController::class, "bed_type"]);
+        Route::get("v1/bed-type/{id}", [BedTypeController::class, "bed_type"]);
     });
 
     /// Nhóm dịch vụ
@@ -488,8 +500,8 @@ Route::group([
 
     /// Tài khoản nhân viên
     Route::group(['as' => 'HIS.Desktop.Plugins.EmpUser'], function () {
-        Route::get("v1/emp-user", [HISController::class, "emp_user"]);
-        Route::get("v1/emp-user/{id}", [HISController::class, "emp_user_id"]);
+        Route::get("v1/emp-user", [EmpUserController::class, "emp_user"]);
+        Route::get("v1/emp-user/{id}", [EmpUserController::class, "emp_user"]);
     });
 
     /// Thông tin tài khoản
@@ -512,8 +524,8 @@ Route::group([
 
     /// Vai trò
     Route::group(['as' => 'ACS.Desktop.Plugins.AcsRole'], function () {
-        Route::get("v1/role", [HISController::class, "role"]);
-        Route::get("v1/role/{id}", [HISController::class, "role"]);
+        Route::get("v1/role", [RoleController::class, "role"]);
+        Route::get("v1/role/{id}", [RoleController::class, "role"]);
     });
 
     /// Vai trò - Chức năng 
@@ -524,8 +536,8 @@ Route::group([
 
     /// Dân tộc
     Route::group(['as' => 'SDA.Desktop.Plugins.SdaEthnic'], function () {
-        Route::get("v1/ethnic", [HISController::class, "ethnic"]);
-        Route::get("v1/ethnic/{id}", [HISController::class, "ethnic_id"]);
+        Route::get("v1/ethnic", [EthnicController::class, "ethnic"]);
+        Route::get("v1/ethnic/{id}", [EthnicController::class, "ethnic"]);
     });
 
     /// Đối tượng bệnh nhân
@@ -537,20 +549,20 @@ Route::group([
 
     /// Đối tượng ưu tiên
     Route::group(['as' => 'HIS.Desktop.Plugins.HisPriorityType'], function () {
-        Route::get("v1/priority-type", [HISController::class, "priority_type"]);
-        Route::get("v1/priority-type/{id}", [HISController::class, "priority_type_id"]);
+        Route::get("v1/priority-type", [PriorityTypeController::class, "priority_type"]);
+        Route::get("v1/priority-type/{id}", [PriorityTypeController::class, "priority_type"]);
     });
 
     /// Mối quan hệ
     Route::group(['as' => 'HIS.Desktop.Plugins.EmrRelationList'], function () {
-        Route::get("v1/relation-list", [HISController::class, "relation_list"]);
-        Route::get("v1/relation-list/{id}", [HISController::class, "relation_list_id"]);
+        Route::get("v1/relation-list", [RelationController::class, "relation_list"]);
+        Route::get("v1/relation-list/{id}", [RelationController::class, "relation_list"]);
     });
 
     /// Nghề nghiệp
     Route::group(['as' => 'HIS.Desktop.Plugins.HisCareer'], function () {
-        Route::get("v1/career", [HISController::class, "career"]);
-        Route::get("v1/career/{id}", [HISController::class, "career_id"]);
+        Route::get("v1/career", [CareerController::class, "career"]);
+        Route::get("v1/career/{id}", [CareerController::class, "career"]);
     });
 
     /// Phân loại bệnh nhân
@@ -565,8 +577,8 @@ Route::group([
 
     /// Tôn giáo
     Route::group(['as' => 'SDA.Desktop.Plugins.SdaReligion'], function () {
-        Route::get("v1/religion", [HISController::class, "religion"]);
-        Route::get("v1/religion/{id}", [HISController::class, "religion_id"]);
+        Route::get("v1/religion", [ReligionController::class, "religion"]);
+        Route::get("v1/religion/{id}", [ReligionController::class, "religion"]);
     });
 
     /// Đơn vị tính
@@ -589,8 +601,8 @@ Route::group([
 
     /// Loại y lệnh 
     Route::group(['as' => 'HIS.Desktop.Plugins.ServiceReqType'], function () {
-        Route::get("v1/service-req-type", [HISController::class, "service_req_type"]);
-        Route::get("v1/service-req-type/{id}", [HISController::class, "service_req_type_id"]);
+        Route::get("v1/service-req-type", [ServiceReqTypeController::class, "service_req_type"]);
+        Route::get("v1/service-req-type/{id}", [ServiceReqTypeController::class, "service_req_type"]);
     });
 
     /// Bữa ăn
@@ -679,8 +691,8 @@ Route::group([
 
     /// Thiết lập lợi nhuận xuất bán
     Route::group(['as' => 'HIS.Desktop.Plugins.EstablishSaleProfitCFG'], function () {
-        Route::get("v1/sale-profit-cfg", [HISController::class, "sale_profit_cfg"]);
-        Route::get("v1/sale-profit-cfg/{id}", [HISController::class, "sale_profit_cfg"]);
+        Route::get("v1/sale-profit-cfg", [SaleProfitCfgController::class, "sale_profit_cfg"]);
+        Route::get("v1/sale-profit-cfg/{id}", [SaleProfitCfgController::class, "sale_profit_cfg"]);
     });
 
     /// Chuyển đổi đối tượng

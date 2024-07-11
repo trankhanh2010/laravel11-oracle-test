@@ -622,26 +622,7 @@ class HISController extends Controller
         return response()->json(['data' => $data], 200);
     }
 
-    /// Machine
-    public function machine()
-    {
-        $param = [
-            'department:id,department_name',
 
-        ];
-        $data = get_cache_full($this->machine, $param, $this->machine_name, null, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    public function machine_id($id)
-    {
-        $data = get_cache($this->machine, $this->machine_name, $id, $this->time);
-        $data1 = get_cache_1_n_with_ids($this->machine, "room", $this->machine_name, $id, $this->time);
-        return response()->json(['data' => [
-            'machine' => $data,
-            'rooms' => $data1,
-        ]], 200);
-    }
 
     /// Service Room
     public function service_room($id = null)
@@ -790,30 +771,6 @@ class HISController extends Controller
     }
 
 
-    /// Bed
-    public function bed($id = null)
-    {
-        if ($id == null) {
-            $name = $this->bed_name;
-            $param = [
-                'bed_type:id,bed_type_name',
-                'bed_room:id,bed_room_name,room_id',
-                'bed_room.room:id,department_id',
-                'bed_room.room.department:id,department_name'
-            ];
-        } else {
-            $name = $this->bed_name . '_' . $id;
-            $param = [
-                'bed_type',
-                'bed_room',
-                'bed_room.room',
-                'bed_room.room.department'
-            ];
-        }
-        $data = get_cache_full($this->bed, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
     /// BedBsty
     public function bed_bsty($id = null)
     {
@@ -886,22 +843,6 @@ class HISController extends Controller
         return response()->json(['data' => $data], 200);
     }
 
-    /// Bed Type List
-    public function bed_type()
-    {
-        $data = get_cache($this->bed_type, $this->bed_type_name, null, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    public function bed_type_id($id)
-    {
-        $data = get_cache($this->bed_type, $this->bed_type_name, $id, $this->time);
-
-        return response()->json(['data' => [
-            'bed_type' => $data
-
-        ]], 200);
-    }
 
     /// Serv Segr
     public function serv_segr($id = null)
@@ -940,37 +881,7 @@ class HISController extends Controller
         ]], 200);
     }
 
-    /// Employee User
-    public function emp_user()
-    {
-        $param = [
-            'department:id,department_name',
-            'gender:id,gender_name',
-            'career_title:id,career_title_name,career_title_code'
-        ];
-        $data = get_cache_full($this->emp_user, $param, $this->emp_user_name, null, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
 
-    public function emp_user_id($id)
-    {
-        $data = get_cache($this->emp_user, $this->emp_user_name, $id, $this->time);
-        $data1 = get_cache_1_1($this->emp_user, "department", $this->emp_user_name, $id, $this->time);
-        $data2 = get_cache_1_1($this->emp_user, "gender", $this->emp_user_name, $id, $this->time);
-        $data3 = get_cache_1_1($this->emp_user, "branch", $this->emp_user_name, $id, $this->time);
-        $data4 = get_cache_1_1($this->emp_user, "career_title", $this->emp_user_name, $id, $this->time);
-        $data5 = get_cache_1_n_with_ids($this->emp_user, "default_medi_stock", $this->emp_user_name, $id, $this->time);
-
-        return response()->json(['data' => [
-            'emp_user' => $data,
-            'department' => $data1,
-            'genderr' => $data2,
-            'branch' => $data3,
-            'career_title' => $data4,
-            'default_medi_stock' => $data5,
-
-        ]], 200);
-    }
 
     /// Info User
     public function info_user_id($id)
@@ -1049,24 +960,6 @@ class HISController extends Controller
         return response()->json(['data' => $data], 200);
     }
 
-    /// Role
-    public function role($id = null)
-    {
-        if ($id == null) {
-            $name = $this->role_name;
-            $param = [
-                'modules:id,module_name'
-            ];
-        } else {
-            $name = $this->role_name . '_' . $id;
-            $param = [
-                'modules'
-            ];
-        }
-        $data = get_cache_full($this->role, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
 
     /// Module
     public function module_role($id = null)
@@ -1086,103 +979,6 @@ class HISController extends Controller
         }
         $data = get_cache_full($this->module_role, $param, $name, $id, $this->time);
         return response()->json(['data' => $data], 200);
-    }
-
-
-    /// Ethnic
-    public function ethnic()
-    {
-        $data = get_cache($this->ethnic, $this->ethnic_name, null, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    public function ethnic_id($id)
-    {
-        $data = get_cache($this->module, $this->ethnic_name, $id, $this->time);
-        return response()->json(['data' => [
-            'ethnic' => $data
-        ]], 200);
-    }
-
-
-    
-    /// Priority Type
-    public function priority_type()
-    {
-        $data = get_cache($this->priority_type, $this->priority_type_name, null, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    public function priority_type_id($id)
-    {
-        $data = get_cache($this->priority_type, $this->priority_type_name, $id, $this->time);
-        return response()->json(['data' => [
-            'patient_type' => $data
-        ]], 200);
-    }
-
-    /// Career
-    public function career()
-    {
-        $data = get_cache($this->career, $this->career_name, null, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    public function career_id($id)
-    {
-        $data = get_cache($this->career, $this->career_name, $id, $this->time);
-        return response()->json(['data' => [
-            'career' => $data
-        ]], 200);
-    }
-    
-    
-    /// Religion
-    public function religion()
-    {
-        $data = get_cache($this->religion, $this->religion_name, null, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    public function religion_id($id)
-    {
-        $data = get_cache($this->religion, $this->religion_name, $id, $this->time);
-        return response()->json(['data' => [
-            'religion' => $data
-        ]], 200);
-    }
-
-
-
-    /// ServiceReq Type
-    public function service_req_type()
-    {
-        $data = get_cache($this->service_req_type, $this->service_req_type_name, null, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    public function service_req_type_id($id)
-    {
-        $data = get_cache($this->service_req_type, $this->service_req_type_name, $id, $this->time);
-        return response()->json(['data' => [
-            'service_req_type' => $data,
-        ]], 200);
-    }
-
-
-    /// ServiceReq Type
-    public function relation_list()
-    {
-        $data = get_cache($this->relation_list, $this->relation_list_name, null, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    public function relation_list_id($id)
-    {
-        $data = get_cache($this->relation_list, $this->relation_list_name, $id, $this->time);
-        return response()->json(['data' => [
-            'relation_list' => $data,
-        ]], 200);
     }
 
     /// Mest Patient Type
@@ -1575,20 +1371,6 @@ class HISController extends Controller
             ];
         }
         $data = get_cache_full($this->room, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    /// Sale Profit CFG
-    public function sale_profit_cfg($id = null)
-    {
-        if ($id == null) {
-            $name = $this->sale_profit_cfg_name;
-            $param = [];
-        } else {
-            $name = $this->sale_profit_cfg_name . '_' . $id;
-            $param = [];
-        }
-        $data = get_cache_full($this->sale_profit_cfg, $param, $name, $id, $this->time);
         return response()->json(['data' => $data], 200);
     }
 

@@ -3,43 +3,43 @@
 namespace App\Http\Controllers\Api\CacheControllers;
 
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
-use App\Models\HIS\BHYTWhitelist;
+use App\Models\HIS\BedType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class BhytWhitelistController extends BaseApiCacheController
+class BedTypeController extends BaseApiCacheController
 {
     public function __construct(Request $request)
     {
         parent::__construct($request); // Gọi constructor của BaseController
-        $this->bhyt_whitelist = new BHYTWhitelist();
-        $this->order_by_join = [];
+        $this->bed_type = new BedType();
+
         // Kiểm tra tên trường trong bảng
         if ($this->order_by != null) {
             foreach ($this->order_by as $key => $item) {
-                if (!in_array($key, $this->order_by_join)) {
-                    if (!$this->bhyt_whitelist->getConnection()->getSchemaBuilder()->hasColumn($this->bhyt_whitelist->getTable(), $key)) {
-                        unset($this->order_by_request[camelCaseFromUnderscore($key)]);
-                        unset($this->order_by[$key]);
-                    }
+                if (!$this->bed_type->getConnection()->getSchemaBuilder()->hasColumn($this->bed_type->getTable(), $key)) {
+                    unset($this->order_by_request[camelCaseFromUnderscore($key)]);       
+                    unset($this->order_by[$key]);               
                 }
             }
             $this->order_by_tring = arrayToCustomString($this->order_by);
         }
-
     }
-    public function bhyt_whitelist($id = null)
+    public function bed_type($id = null)
     {
         $keyword = mb_strtolower($this->keyword, 'UTF-8');
         if ($keyword != null) {
-            $data = $this->bhyt_whitelist;
+            $param = [
+            ];
+            $data = $this->bed_type;
             $data = $data->where(function ($query) use ($keyword){
                 $query = $query
-                ->where(DB::connection('oracle_his')->raw('lower(bhyt_whitelist_code)'), 'like', '%' . $keyword . '%');
+                ->where(DB::connection('oracle_his')->raw('lower(bed_type_code)'), 'like', '%' . $keyword . '%')
+                ->orWhere(DB::connection('oracle_his')->raw('lower(bed_type_name)'), 'like', '%' . $keyword . '%');
             });
         if ($this->is_active !== null) {
             $data = $data->where(function ($query) {
-                $query = $query->where(DB::connection('oracle_his')->raw('his_bhyt_whitelist.is_active'), $this->is_active);
+                $query = $query->where(DB::connection('oracle_his')->raw('his_bed_type.is_active'), $this->is_active);
             });
         } 
             $count = $data->count();
@@ -51,20 +51,27 @@ class BhytWhitelistController extends BaseApiCacheController
             $data = $data
                 ->skip($this->start)
                 ->take($this->limit)
+                ->with($param)
                 ->get();
         } else {
             if ($id == null) {
-                $data = get_cache($this->bhyt_whitelist, $this->bhyt_whitelist_name . '_start_' . $this->start . '_limit_' . $this->limit. $this->order_by_tring, null, $this->time, $this->start, $this->limit, $this->order_by);
+                $name = $this->bed_type_name . '_start_' . $this->start . '_limit_' . $this->limit . $this->order_by_tring;
+                $param = [
+                ];
             } else {
                 if (!is_numeric($id)) {
                     return return_id_error($id);
                 }
-                $data = $this->bhyt_whitelist->find($id);
+                $data = $this->bed_type->find($id);
                 if ($data == null) {
                     return return_not_record($id);
                 }
-                $data = get_cache($this->bhyt_whitelist, $this->bhyt_whitelist_name, $id, $this->time, $this->start, $this->limit, $this->order_by);
+                $name =  $this->bed_type_name . '_' . $id;
+                $param = [
+                ];
             }
+            $model = $this->bed_type;
+            $data = get_cache_full($model, $param, $name, $id, $this->time, $this->start, $this->limit, $this->order_by);
         }
         $param_return = [
             'start' => $this->start,
