@@ -34,6 +34,7 @@ class BaseApiCacheController extends Controller
     protected $is_active;
     protected $effective;
     protected $room_type_id;
+    protected $is_addition;
 
     // Khai báo các biến mặc định model
     protected $app_creator = "MOS_v2";
@@ -446,6 +447,12 @@ class BaseApiCacheController extends Controller
                 if (!RoomType::where('id', $this->room_type_id)->exists()) {
                     $this->room_type_id = null;
                 }
+            }
+        }
+        $this->is_addition = $this->param_request['ApiData']['IsAddition'] ?? null;
+        if($this->is_addition !== null){
+            if (!in_array ($this->is_addition, [0,1])) {
+                $this->is_addition = 1;
             }
         }
     }

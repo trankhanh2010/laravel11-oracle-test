@@ -232,6 +232,8 @@ Route::group([
 
     /// Quân hàm
     Route::get("v1/military-rank", [MilitaryRankController::class, "military_rank"]);
+    Route::get("v1/military-rank/{id}", [MilitaryRankController::class, "military_rank"]);
+
 
     /// Kho
     Route::group(['as' => 'HIS.Desktop.Plugins.HisMediStock'], function () {
@@ -544,7 +546,7 @@ Route::group([
     /// Đối tượng bệnh nhân
     Route::group(['as' => 'HIS.Desktop.Plugins.HisPatientType'], function () {
         Route::get("v1/patient-type", [PatientTypeController::class, "patient_type"]);
-        Route::get("v1/patient-type/is-addition", [PatientTypeController::class, "patient_type_is_addition"]);
+        // Route::get("v1/patient-type/is-addition", [PatientTypeController::class, "patient_type_is_addition"]);
         Route::get("v1/patient-type/{id}", [PatientTypeController::class, "patient_type"]);
     });
 

@@ -58,7 +58,8 @@ class PtttMethodController extends BaseApiCacheController
         }else{
             if ($id == null) {
                 $his_pttt_method = $this->pttt_method;
-                $data = Cache::remember($this->pttt_method_name. '_start_' . $this->start . '_limit_' . $this->limit. $this->order_by_tring, $this->time, function () use ($his_pttt_method){
+                $is_active = $this->is_active;
+                $data = Cache::remember($this->pttt_method_name. '_start_' . $this->start . '_limit_' . $this->limit. $this->order_by_tring. '_is_active_' . $this->is_active, $this->time, function () use ($his_pttt_method, $is_active){
                     $data = $his_pttt_method
                     ->leftJoin('his_pttt_group as pttt_group', 'pttt_group.id', '=', 'his_pttt_method.pttt_group_id')
                     ->select(
@@ -66,6 +67,11 @@ class PtttMethodController extends BaseApiCacheController
                         'pttt_group.pttt_group_name',
                         'pttt_group.pttt_group_code',
                     );
+                    if ($is_active !== null) {
+                        $data = $data->where(function ($query) use ($is_active) {
+                            $query = $query->where(DB::connection('oracle_his')->raw("his_pttt_method.is_active"), $is_active);
+                        });
+                    } 
                     $count = $data->count();
                     if ($this->order_by != null) {
                         foreach ($this->order_by as $key => $item) {
@@ -86,17 +92,18 @@ class PtttMethodController extends BaseApiCacheController
                 if ($data == null) {
                     return return_not_record($id);
                 }
-                $name = $this->pttt_method_name . '_' . $id;
+                $name = $this->pttt_method_name . '_' . $id. '_is_active_' . $this->is_active;
                 $param = [
                     'pttt_group'
                 ];
-                $data = get_cache_full($this->pttt_method, $param, $name, $id, $this->time, $this->start, $this->limit, $this->order_by);
+                $data = get_cache_full($this->pttt_method, $param, $name, $id, $this->time, $this->start, $this->limit, $this->order_by, $this->is_active);
             }
         }
         $param_return = [
             'start' => $this->start,
             'limit' => $this->limit,
             'count' => $count ?? $data['count'],
+            'is_active' => $this->is_active,
             'keyword' => $this->keyword,
             'order_by' => $this->order_by_request
         ];

@@ -57,7 +57,7 @@ class PtttGroupController extends BaseApiCacheController
                 ->get();
         } else {
             if ($id == null) {
-                $name = $this->pttt_group_name. '_start_' . $this->start . '_limit_' . $this->limit. $this->order_by_tring;
+                $name = $this->pttt_group_name. '_start_' . $this->start . '_limit_' . $this->limit. $this->order_by_tring. '_is_active_' . $this->is_active;
                 $param = [
                     'serv_segrs:id,service_id,service_group_id',
                     'serv_segrs.service:id,service_name,service_type_id',
@@ -72,7 +72,7 @@ class PtttGroupController extends BaseApiCacheController
                 if ($data == null) {
                     return return_not_record($id);
                 }
-                $name = $this->pttt_group_name . '_' . $id;
+                $name = $this->pttt_group_name . '_' . $id. '_is_active_' . $this->is_active;
                 $param = [
                     'serv_segrs',
                     'serv_segrs.service',
@@ -80,12 +80,13 @@ class PtttGroupController extends BaseApiCacheController
                     'serv_segrs.service_group',
                 ];
             }
-            $data = get_cache_full($this->pttt_group, $param, $name, $id, $this->time, $this->start, $this->limit, $this->order_by);
+            $data = get_cache_full($this->pttt_group, $param, $name, $id, $this->time, $this->start, $this->limit, $this->order_by, $this->is_active);
         }
         $param_return = [
             'start' => $this->start,
             'limit' => $this->limit,
             'count' => $count ?? $data['count'],
+            'is_active' => $this->is_active,
             'keyword' => $this->keyword,
             'order_by' => $this->order_by_request
         ];

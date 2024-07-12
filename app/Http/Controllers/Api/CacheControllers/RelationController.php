@@ -40,7 +40,7 @@ class RelationController extends BaseApiCacheController
             });
         if ($this->is_active !== null) {
             $data = $data->where(function ($query) {
-                $query = $query->where(DB::connection('oracle_his')->raw('his_relation.is_active'), $this->is_active);
+                $query = $query->where(DB::connection('oracle_his')->raw('emr_relation.is_active'), $this->is_active);
             });
         } 
             $count = $data->count();
@@ -56,7 +56,7 @@ class RelationController extends BaseApiCacheController
                 ->get();
         } else {
             if ($id == null) {
-                $name = $this->relation_list_name . '_start_' . $this->start . '_limit_' . $this->limit . $this->order_by_tring;
+                $name = $this->relation_list_name . '_start_' . $this->start . '_limit_' . $this->limit . $this->order_by_tring. '_is_active_' . $this->is_active;
                 $param = [
                 ];
             } else {
@@ -67,17 +67,18 @@ class RelationController extends BaseApiCacheController
                 if ($data == null) {
                     return return_not_record($id);
                 }
-                $name =  $this->relation_list_name . '_' . $id;
+                $name =  $this->relation_list_name . '_' . $id. '_is_active_' . $this->is_active;
                 $param = [
                 ];
             }
             $model = $this->relation_list;
-            $data = get_cache_full($model, $param, $name, $id, $this->time, $this->start, $this->limit, $this->order_by);
+            $data = get_cache_full($model, $param, $name, $id, $this->time, $this->start, $this->limit, $this->order_by, $this->is_active);
         }
         $param_return = [
             'start' => $this->start,
             'limit' => $this->limit,
             'count' => $count ?? $data['count'],
+            'is_active' => $this->is_active,
             'keyword' => $this->keyword,
             'order_by' => $this->order_by_request
         ];

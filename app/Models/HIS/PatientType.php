@@ -10,7 +10,7 @@ class PatientType extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_patient_type ';
+    protected $table = 'HIS_patient_type';
     protected $guarded = [
         'id',
     ];
