@@ -70,7 +70,7 @@ class ExecuteRoomController extends BaseApiCacheController
                 ->get();
         } else {
             if ($id == null) {
-                $name = $this->execute_room_name. '_start_' . $this->start . '_limit_' . $this->limit. $this->order_by_tring;
+                $name = $this->execute_room_name. '_start_' . $this->start . '_limit_' . $this->limit. $this->order_by_tring. '_is_active_' . $this->is_active;
                 $param = [
                     'room',
                     'room.department:id,department_name,department_code',
@@ -92,7 +92,7 @@ class ExecuteRoomController extends BaseApiCacheController
                 if ($data == null) {
                     return return_not_record($id);
                 }
-                $name = $this->execute_room_name . '_' . $id;
+                $name = $this->execute_room_name . '_' . $id. '_is_active_' . $this->is_active;
                 $param = [
                     'room',
                     'room.department',
@@ -107,7 +107,7 @@ class ExecuteRoomController extends BaseApiCacheController
                     'room.bill_account_book'
                 ];
             }
-            $data = get_cache_full($this->execute_room, $param, $name, $id, $this->time, $this->start, $this->limit, $this->order_by);
+            $data = get_cache_full($this->execute_room, $param, $name, $id, $this->time, $this->start, $this->limit, $this->order_by, $this->is_active);
             // foreach ($data as $key => $item) {
             //     $item->default_drug_store = get_cache_1_1_n_with_ids($this->execute_room, "room.default_drug_store", $this->execute_room_name, $item->id, $this->time);
             // }
@@ -116,6 +116,7 @@ class ExecuteRoomController extends BaseApiCacheController
             'start' => $this->start,
             'limit' => $this->limit,
             'count' => $count ?? $data['count'],
+            'is_active' => $this->is_active,
             'keyword' => $this->keyword,
             'order_by' => $this->order_by_request
         ];

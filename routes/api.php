@@ -135,6 +135,7 @@ Route::group([
 
     /// Đơn vị
     Route::get("v1/group", [GroupController::class, "group"]);       
+    Route::get("v1/group/{id}", [GroupController::class, "group"]);       
 
     /// Loại phòng
     Route::get("v1/room-type", [RoomTypeController::class, "room_type"]);       

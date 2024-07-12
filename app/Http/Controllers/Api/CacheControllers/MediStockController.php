@@ -67,7 +67,7 @@ class MediStockController extends BaseApiCacheController
                 ->get();
         } else {
             if ($id == null) {
-                $name = $this->medi_stock_name. '_start_' . $this->start . '_limit_' . $this->limit. $this->order_by_tring;
+                $name = $this->medi_stock_name. '_start_' . $this->start . '_limit_' . $this->limit. $this->order_by_tring. '_is_active_' . $this->is_active;
                 $param = [
                     'room:id,department_id,room_type_id',
                     'room.department:id,department_name,department_code',
@@ -86,7 +86,7 @@ class MediStockController extends BaseApiCacheController
                         return return_not_record($id);
                     }
                 }
-                $name = $this->medi_stock_name . '_' . $id;
+                $name = $this->medi_stock_name . '_' . $id. '_is_active_' . $this->is_active;
                 $param = [
                     'room',
                     'room.department',
@@ -96,12 +96,13 @@ class MediStockController extends BaseApiCacheController
                     'imp_mest_types',
                 ];
             }
-            $data = get_cache_full($this->medi_stock, $param, $name, $id, $this->time, $this->start, $this->limit, $this->order_by);
+            $data = get_cache_full($this->medi_stock, $param, $name, $id, $this->time, $this->start, $this->limit, $this->order_by, $this->is_active);
         }
         $param_return = [
             'start' => $this->start,
             'limit' => $this->limit,
             'count' => $count ?? $data['count'],
+            'is_active' => $this->is_active,
             'keyword' => $this->keyword,
             'order_by' => $this->order_by_request
         ];

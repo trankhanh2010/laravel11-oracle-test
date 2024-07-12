@@ -54,7 +54,7 @@ class FuexTypeController extends BaseApiCacheController
                 ->get();
         } else {
             if ($id == null) {
-                $name = $this->fuex_type_name. '_start_' . $this->start . '_limit_' . $this->limit. $this->order_by_tring;
+                $name = $this->fuex_type_name. '_start_' . $this->start . '_limit_' . $this->limit. $this->order_by_tring. '_is_active_' . $this->is_active;
                 $param = [
                 ];
             } else {
@@ -65,16 +65,17 @@ class FuexTypeController extends BaseApiCacheController
                 if ($data == null) {
                     return return_not_record($id);
                 }
-                $name = $this->fuex_type_name . '_' . $id;
+                $name = $this->fuex_type_name . '_' . $id. '_is_active_' . $this->is_active;
                 $param = [
                 ];
             }
-            $data = get_cache_full($this->fuex_type, $param, $name, $id, $this->time, $this->start, $this->limit, $this->order_by);
+            $data = get_cache_full($this->fuex_type, $param, $name, $id, $this->time, $this->start, $this->limit, $this->order_by, $this->is_active);
         }
         $param_return = [
             'start' => $this->start,
             'limit' => $this->limit,
             'count' => $count ?? $data['count'],
+            'is_active' => $this->is_active,
             'keyword' => $this->keyword,
             'order_by' => $this->order_by_request
         ];
