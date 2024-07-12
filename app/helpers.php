@@ -173,11 +173,14 @@ if (!function_exists('get_cache_full')) {
     //         return $data;
     //     }
     // }
-    function get_cache_full($model, $relation_ship, $name, $id = null, $time, $start, $limit, $order_by)
+    function get_cache_full($model, $relation_ship, $name, $id = null, $time, $start, $limit, $order_by, $is_active)
 {
     if (!$id) {
-        $data = Cache::remember($name, $time, function () use ($model, $relation_ship, $start, $limit, $order_by) {
+        $data = Cache::remember($name, $time, function () use ($model, $relation_ship, $start, $limit, $order_by, $is_active) {
             $data = $model::with($relation_ship);
+            if($is_active !== null){
+                $data = $data->where('is_active', $is_active);
+            }
             $count = $data->count();
             if($order_by != null){
                 foreach($order_by as $key => $item){
@@ -198,8 +201,12 @@ if (!function_exists('get_cache_full')) {
             });
         }
         else{
-            $data = Cache::remember($name, $time, function () use ($model, $relation_ship, $id) {
-                return $model::where('id', $id)->with($relation_ship)->first();
+            $data = Cache::remember($name, $time, function () use ($model, $relation_ship, $id, $is_active) {
+                if($is_active !== null){
+                    return $model::where('id', $id)->where('is_active', $is_active)->with($relation_ship)->first();
+                }else{
+                    return $model::where('id', $id)->with($relation_ship)->first();
+                }
             });
         }
         return $data;

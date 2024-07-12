@@ -30,12 +30,10 @@ class BedController extends BaseApiCacheController
         $keyword = mb_strtolower($this->keyword, 'UTF-8');
         if ($keyword != null) {
             $param = [
-                'room:id,department_id,area_id,speciality_id,default_cashier_room_id,default_instr_patient_type_id,is_pause',
-                'room.department:id,department_name,department_code',
-                'room.area:id,area_name',
-                'room.speciality:id,speciality_name,speciality_code',
-                'room.default_cashier_room:id,cashier_room_name',
-                'room.default_instr_patient_type:id,patient_type_name',
+                'bed_type:id,bed_type_name',
+                'bed_room:id,bed_room_name,room_id',
+                'bed_room.room:id,department_id',
+                'bed_room.room.department:id,department_name'
             ];
             $data = $this->bed;
             $data = $data->where(function ($query) use ($keyword){
@@ -61,7 +59,7 @@ class BedController extends BaseApiCacheController
                 ->get();
         } else {
             if ($id == null) {
-                $name = $this->bed_name . '_start_' . $this->start . '_limit_' . $this->limit . $this->order_by_tring;
+                $name = $this->bed_name . '_start_' . $this->start . '_limit_' . $this->limit . $this->order_by_tring. '_is_active_' . $this->is_active;
                 $param = [
                     'bed_type:id,bed_type_name',
                     'bed_room:id,bed_room_name,room_id',
@@ -76,7 +74,7 @@ class BedController extends BaseApiCacheController
                 if ($data == null) {
                     return return_not_record($id);
                 }
-                $name =  $this->bed_name . '_' . $id;
+                $name =  $this->bed_name . '_' . $id. '_is_active_' . $this->is_active;
                 $param = [
                     'bed_type',
                     'bed_room',
@@ -85,7 +83,7 @@ class BedController extends BaseApiCacheController
                 ];
             }
             $model = $this->bed;
-            $data = get_cache_full($model, $param, $name, $id, $this->time, $this->start, $this->limit, $this->order_by);
+            $data = get_cache_full($model, $param, $name, $id, $this->time, $this->start, $this->limit, $this->order_by,$this->is_active);
         }
         $param_return = [
             'start' => $this->start,

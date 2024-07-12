@@ -55,7 +55,7 @@ class BedTypeController extends BaseApiCacheController
                 ->get();
         } else {
             if ($id == null) {
-                $name = $this->bed_type_name . '_start_' . $this->start . '_limit_' . $this->limit . $this->order_by_tring;
+                $name = $this->bed_type_name . '_start_' . $this->start . '_limit_' . $this->limit . $this->order_by_tring. '_is_active_' . $this->is_active;
                 $param = [
                 ];
             } else {
@@ -66,12 +66,12 @@ class BedTypeController extends BaseApiCacheController
                 if ($data == null) {
                     return return_not_record($id);
                 }
-                $name =  $this->bed_type_name . '_' . $id;
+                $name =  $this->bed_type_name . '_' . $id. '_is_active_' . $this->is_active;
                 $param = [
                 ];
             }
             $model = $this->bed_type;
-            $data = get_cache_full($model, $param, $name, $id, $this->time, $this->start, $this->limit, $this->order_by);
+            $data = get_cache_full($model, $param, $name, $id, $this->time, $this->start, $this->limit, $this->order_by, $this->is_active);
         }
         $param_return = [
             'start' => $this->start,

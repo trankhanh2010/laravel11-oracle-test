@@ -61,7 +61,7 @@ class CommuneController extends BaseApiCacheController
                         ->get();
         }else{
             if ($id == null) {
-                $data = Cache::remember($this->commune_name. '_start_' . $this->start . '_limit_' . $this->limit. $this->order_by_tring, $this->time, function (){
+                $data = Cache::remember($this->commune_name. '_start_' . $this->start . '_limit_' . $this->limit. $this->order_by_tring. '_is_active_' . $this->is_active, $this->time, function (){
                     $data = $this->commune
                     ->leftJoin('sda_district as district', 'district.id', '=', 'sda_commune.district_id')
                     ->select(
@@ -69,6 +69,11 @@ class CommuneController extends BaseApiCacheController
                         'district.district_name as district_name',
                         'district.district_code as district_code',
                     );
+                    if ($this->is_active !== null) {
+                        $data = $data->where(function ($query) {
+                            $query = $query->where(DB::connection('oracle_his')->raw('sda_commune.is_active'), $this->is_active);
+                        });
+                    } 
                     $count = $data->count();
                     if ($this->order_by != null) {
                         foreach ($this->order_by as $key => $item) {
@@ -89,23 +94,30 @@ class CommuneController extends BaseApiCacheController
                 if ($data == null) {
                     return return_not_record($id);
                 }
-                $data = Cache::remember($this->commune_name.'_'.$id, $this->time, function () use ($id){
-                    return DB::connection('oracle_sda')->table('sda_commune as commune')
+                $data = Cache::remember($this->commune_name.'_'.$id. '_is_active_' . $this->is_active, $this->time, function () use ($id){
+                    $data = DB::connection('oracle_sda')->table('sda_commune as commune')
                     ->leftJoin('sda_district as district', 'district.id', '=', 'commune.district_id')
                     ->select(
                         'commune.*',
                         'district.district_name as district_name',
                         'district.district_code as district_code',
                     )
-                    ->where('commune.id', $id)
-                    ->get();
+                    ->where('commune.id', $id);
+                    if ($this->is_active !== null) {
+                        $data = $data->where(function ($query) {
+                            $query = $query->where(DB::connection('oracle_his')->raw("commune.is_active"), $this->is_active);
+                        });
+                    } 
+                    $data = $data->first();
+                    return $data;
                 });
             }  
         }
         $param_return = [
             'start' => $this->start,
             'limit' => $this->limit,
-            'count' => $count ?? $data['count'],
+            'count' => $count ?? (is_array($data) ? $data['count'] : null  ),
+            'is_active' => $this->is_active,
             'keyword' => $this->keyword,
             'order_by' => $this->order_by_request
         ];

@@ -31,7 +31,7 @@ class BedRoomController extends BaseApiCacheController
         }
     }
     public function bed_room($id = null)
-    {
+    {      
         $keyword = mb_strtolower($this->keyword, 'UTF-8');
         if ($keyword != null) {
             $param = [
@@ -66,7 +66,7 @@ class BedRoomController extends BaseApiCacheController
                 ->get();
         } else {
             if ($id == null) {
-                $name = $this->bed_room_name . '_' . $this->patient_type_name . '_start_' . $this->start . '_limit_' . $this->limit . $this->order_by_tring;
+                $name = $this->bed_room_name  . '_start_' . $this->start . '_limit_' . $this->limit . $this->order_by_tring. '_is_active_' . $this->is_active;
                 $param = [
                     'room:id,department_id,area_id,speciality_id,default_cashier_room_id,default_instr_patient_type_id,is_pause',
                     'room.department:id,department_name,department_code',
@@ -83,7 +83,7 @@ class BedRoomController extends BaseApiCacheController
                 if ($data == null) {
                     return return_not_record($id);
                 }
-                $name =  $this->bed_room_name . '_' . $this->patient_type_name . '_' . $id;
+                $name =  $this->bed_room_name . '_' . $id. '_is_active_' . $this->is_active;
                 $param = [
                     'room',
                     'room.department',
@@ -94,7 +94,7 @@ class BedRoomController extends BaseApiCacheController
                 ];
             }
             $model = $this->bed_room;
-            $data = get_cache_full($model, $param, $name, $id, $this->time, $this->start, $this->limit, $this->order_by);
+            $data = get_cache_full($model, $param, $name, $id, $this->time, $this->start, $this->limit, $this->order_by, $this->is_active);
         }
         $param_return = [
             'start' => $this->start,

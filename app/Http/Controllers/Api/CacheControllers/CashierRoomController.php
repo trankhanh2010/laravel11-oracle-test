@@ -56,7 +56,7 @@ class CashierRoomController extends BaseApiCacheController
                 ->get();
         } else {
             if ($id == null) {
-                $name = $this->cashier_room_name. '_start_' . $this->start . '_limit_' . $this->limit. $this->order_by_tring;
+                $name = $this->cashier_room_name. '_start_' . $this->start . '_limit_' . $this->limit. $this->order_by_tring. '_is_active_' . $this->is_active;
                 $param = [
                     'room:id,department_id,area_id',
                     'room.department:id,department_name,department_code',
@@ -70,14 +70,14 @@ class CashierRoomController extends BaseApiCacheController
                 if ($data == null) {
                     return return_not_record($id);
                 }
-                $name = $this->cashier_room_name . '_' . $id;
+                $name = $this->cashier_room_name . '_' . $id. '_is_active_' . $this->is_active;
                 $param = [
                     'room',
                     'room.department',
                     'room.area'
                 ];
             }
-            $data = get_cache_full($this->cashier_room, $param, $name, $id, $this->time, $this->start, $this->limit, $this->order_by);
+            $data = get_cache_full($this->cashier_room, $param, $name, $id, $this->time, $this->start, $this->limit, $this->order_by, $this->is_active);
         }
         $param_return = [
             'start' => $this->start,

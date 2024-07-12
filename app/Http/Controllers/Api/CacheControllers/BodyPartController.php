@@ -54,7 +54,7 @@ class BodyPartController extends BaseApiCacheController
                 ->get();
         } else {
             if ($id == null) {
-                $name = $this->body_part_name. '_start_' . $this->start . '_limit_' . $this->limit. $this->order_by_tring;
+                $name = $this->body_part_name. '_start_' . $this->start . '_limit_' . $this->limit. $this->order_by_tring. '_is_active_' . $this->is_active;
                 $param = [
                 ];
             } else {
@@ -65,11 +65,11 @@ class BodyPartController extends BaseApiCacheController
                 if ($data == null) {
                     return return_not_record($id);
                 }
-                $name = $this->body_part_name . '_' . $id;
+                $name = $this->body_part_name . '_' . $id. '_is_active_' . $this->is_active;
                 $param = [
                 ];
             }
-            $data = get_cache_full($this->body_part, $param, $name, $id, $this->time, $this->start, $this->limit, $this->order_by);
+            $data = get_cache_full($this->body_part, $param, $name, $id, $this->time, $this->start, $this->limit, $this->order_by,$this->is_active);
         }
         $param_return = [
             'start' => $this->start,

@@ -55,7 +55,7 @@ class AreaController extends BaseApiCacheController
                 ->get();
         } else {
             if ($id == null) {
-                $data = get_cache($this->area, $this->area_name . '_start_' . $this->start . '_limit_' . $this->limit. $this->order_by_tring, null, $this->time, $this->start, $this->limit, $this->order_by);
+                $data = get_cache_full($this->area,[], $this->area_name . '_start_' . $this->start . '_limit_' . $this->limit. $this->order_by_tring. '_is_active_' . $this->is_active, null, $this->time, $this->start, $this->limit, $this->order_by, $this->is_active);
             } else {
                 if (!is_numeric($id)) {
                     return return_id_error($id);
@@ -64,7 +64,7 @@ class AreaController extends BaseApiCacheController
                 if ($data == null) {
                     return return_not_record($id);
                 }
-                $data = get_cache($this->area, $this->area_name, $id, $this->time, $this->start, $this->limit, $this->order_by);
+                $data = get_cache_full($this->area, [], $this->area_name.'_'.$id. '_is_active_' . $this->is_active, $id, $this->time, $this->start, $this->limit, $this->order_by, $this->is_active);
             }
         }
         $param_return = [
