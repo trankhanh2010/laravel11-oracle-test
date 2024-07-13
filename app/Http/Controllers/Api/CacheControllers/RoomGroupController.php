@@ -25,7 +25,7 @@ class RoomGroupController extends BaseApiCacheController
             $this->order_by_tring = arrayToCustomString($this->order_by);
         }
     }
-    public function room_group()
+    public function room_group($id = null)
     {
         $keyword = mb_strtolower($this->keyword, 'UTF-8');
         if ($keyword != null) {
@@ -54,14 +54,30 @@ class RoomGroupController extends BaseApiCacheController
                 ->with($param)
                 ->get();
         } else {
-            $name = $this->room_group_name. '_start_' . $this->start . '_limit_' . $this->limit. $this->order_by_tring;
-            $param = [];
-            $data = get_cache_full($this->room_group, $param, $name, null, $this->time, $this->start, $this->limit, $this->order_by);
+            if ($id == null) {
+                $name = $this->room_group_name . '_start_' . $this->start . '_limit_' . $this->limit . $this->order_by_tring. '_is_active_' . $this->is_active;
+                $param = [
+                ];
+            } else {
+                if (!is_numeric($id)) {
+                    return return_id_error($id);
+                }
+                $data = $this->room_group->find($id);
+                if ($data == null) {
+                    return return_not_record($id);
+                }
+                $name =  $this->room_group_name . '_' . $id. '_is_active_' . $this->is_active;
+                $param = [
+                ];
+            }
+            $model = $this->room_group;
+            $data = get_cache_full($model, $param, $name, $id, $this->time, $this->start, $this->limit, $this->order_by, $this->is_active);
         }
         $param_return = [
             'start' => $this->start,
             'limit' => $this->limit,
             'count' => $count ?? $data['count'],
+            'is_active' => $this->is_active,
             'keyword' => $this->keyword,
             'order_by' => $this->order_by_request
         ];

@@ -138,10 +138,12 @@ Route::group([
     Route::get("v1/group/{id}", [GroupController::class, "group"]);       
 
     /// Loại phòng
-    Route::get("v1/room-type", [RoomTypeController::class, "room_type"]);       
+    Route::get("v1/room-type", [RoomTypeController::class, "room_type"]);    
+    Route::get("v1/room-type/{id}", [RoomTypeController::class, "room_type"]);          
 
     /// Nhóm phòng
     Route::get("v1/room-group", [RoomGroupController::class, "room_group"]);    
+    Route::get("v1/room-group/{id}", [RoomGroupController::class, "room_group"]);    
     Route::post("v1/room-group", [RoomGroupController::class, "room_group_create"]);    
 
     /// Link màn hình chờ
@@ -393,6 +395,7 @@ Route::group([
 
     /// Dịch vụ kỹ thuật
     Route::group(['as' => 'HIS.Desktop.Plugins.HisService'], function () {
+        Route::get("v1/service", [ServiceController::class, "service"]);
         Route::get("v1/service/{id}", [ServiceController::class, "service"]);
         // Route::get("v1/service/by-code/{type_id}", [ServiceController::class, "service_by_code"]);
         Route::get("v1/service/service-type/{id}", [ServiceController::class, "service_by_service_type"]);

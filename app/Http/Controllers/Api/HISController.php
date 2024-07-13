@@ -562,1668 +562,1662 @@ class HISController extends Controller
    
 
     /// Service Machine
-    public function service_machine()
-    {
-        $param = [
-            'service:id,service_name,service_type_id',
-            'service.service_type:id,service_type_name,service_type_code',
-            'machine:id,machine_name,machine_code,machine_group_code',
-        ];
-        $data = get_cache_full($this->service_machine, $param, $this->service_machine_name, null, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    public function service_machine_id($id)
-    {
-        $data = get_cache($this->service_machine, $this->service_machine_name, $id, $this->time);
-        $data1 = get_cache_1_1($this->service_machine, "service", $this->service_machine_name, $id, $this->time);
-        $data2 = get_cache_1_1_1($this->service_machine, "service.service_type", $this->service_machine_name, $id, $this->time);
-        $data3 = get_cache_1_1($this->service_machine, "machine", $this->service_machine_name, $id, $this->time);
-
-        return response()->json(['data' => [
-            'service_machine' => $data,
-            'service' => $data1,
-            'service_type' => $data2,
-            'machine' => $data3
-        ]], 200);
-    }
-
-    public function service_with_machine($id = null)
-    {
-        if ($id == null) {
-            $name = $this->service_name . '_with_' . $this->machine_name;
-            $param = [
-                'machines:id,machine_name,machine_code',
-            ];
-        } else {
-            $name = $this->service_name . '_' . $id . '_with_' . $this->machine_name;
-            $param = [
-                'machines',
-            ];
-        }
-        $data = get_cache_full($this->service, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    public function machine_with_service($id = null)
-    {
-        if ($id == null) {
-            $name = $this->machine_name . '_with_' . $this->service_name;
-            $param = [
-                'services:id,service_name,service_code',
-            ];
-        } else {
-            $name = $this->machine_name . '_' . $id . '_with_' . $this->service_name;
-            $param = [
-                'services',
-            ];
-        }
-        $data = get_cache_full($this->machine, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-
-
-    /// Service Room
-    public function service_room($id = null)
-    {
-        if ($id == null) {
-            $name = $this->service_room_name;
-            $param = [
-                'service:id,service_name,service_type_id',
-                'service.service_type:id,service_type_name,service_type_code',
-                'room:id,room_type_id,department_id',
-                'room.execute_room:id,room_id,execute_room_name,execute_room_code',
-                'room.room_type:id,room_type_name',
-                'room.department:id,department_name',
-            ];
-        } else {
-            $name = $this->service_room_name . '_' . $id;
-            $param = [
-                'service',
-                'service.service_type',
-                'room',
-                'room.execute_room',
-                'room.room_type',
-                'room.department',
-            ];
-        }
-        $data = get_cache_full($this->service_room, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-
-    public function service_with_room($id = null)
-    {
-        if ($id == null) {
-            $name = $this->service_name . '_with_' . $this->execute_room_name;
-            $param = [
-                'execute_rooms:id,room_id,execute_room_name,execute_room_code',
-                'execute_rooms.room:id,department_id,room_type_id',
-                'execute_rooms.room.department:id,department_name,department_code',
-                'execute_rooms.room.room_type:id,room_type_name,room_type_code'
-            ];
-        } else {
-            $name = $this->service_name . '_' . $id . '_with_' . $this->execute_room_name;
-            $param = [
-                'execute_rooms',
-                'execute_rooms.room:id,department_id,room_type_id',
-                'execute_rooms.room.department',
-                'execute_rooms.room.room_type'
-            ];
-        }
-        $data = get_cache_full($this->service, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    public function room_with_service($id = null)
-    {
-        if ($id == null) {
-            $name = $this->execute_room_name . '_with_' . $this->service_name;
-            $param = [
-                'services:id,service_name,service_code',
-                'room:id,department_id,room_type_id',
-                'room.department:id,department_name,department_code',
-                'room.room_type:id,room_type_name,room_type_code',
-                'room.execute_room:id,room_id,execute_room_name,execute_room_code'
-            ];
-        } else {
-            $name = $this->execute_room_name . '_' . $id . '_with_' . $this->service_name;
-            $param = [
-                'services',
-                'room:id,department_id,room_type_id',
-                'room.department:id,department_name,department_code',
-                'room.room_type:id,room_type_name,room_type_code',
-                'room.execute_room'
-            ];
-        }
-        $data = get_cache_full($this->execute_room, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    /// Room
-
-
-    /// Service Follow
-    public function service_follow()
-    {
-        $param = [
-            'service:id,service_name,service_type_id',
-            'service.service_type:id,service_type_name,service_type_code',
-            'follow:id,service_name,service_type_id',
-            'follow.service_type:id,service_type_name,service_type_code',
-        ];
-        $data = get_cache_full($this->service_follow, $param, $this->service_follow_name, null, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    public function service_follow_id($id)
-    {
-        $data = get_cache($this->service_follow, $this->service_follow_name, $id, $this->time);
-        $data1 = get_cache_1_1($this->service_follow, "service", $this->service_follow_name, $id, $this->time);
-        $data2 = get_cache_1_1_1($this->service_follow, "service.service_type", $this->service_follow_name, $id, $this->time);
-        $data3 = get_cache_1_1($this->service_follow, "follow", $this->service_follow_name, $id, $this->time);
-        $data4 = get_cache_1_1_1($this->service_follow, "follow.service_type", $this->service_follow_name, $id, $this->time);
-        $data5 = get_cache_1_n_with_ids($this->service_follow, "treatment_type", $this->service_follow_name, $id, $this->time);
-
-        return response()->json(['data' => [
-            'service_follow' => $data,
-            'service' => $data1,
-            'service_type' => $data2,
-            'follow' => $data3,
-            'follow_type' => $data4,
-            'treatment_type' => $data5
-        ]], 200);
-    }
-
-    public function service_with_follow($id = null)
-    {
-        if ($id == null) {
-            $name = $this->service_name . '_with_follow' . $this->service_name;
-            $param = [
-                'follows:id,service_name,service_code',
-            ];
-        } else {
-            $name = $this->service_name . '_' . $id . '_with_' . $this->machine_name;
-            $param = [
-                'follows',
-            ];
-        }
-        $data = get_cache_full($this->service, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    public function follow_with_service($id = null)
-    {
-        if ($id == null) {
-            $name = $this->service_name . '_follow_with_' . $this->service_name;
-            $param = [
-                'services:id,service_name,service_code',
-            ];
-        } else {
-            $name = $this->service_name . '_' . $id . '_with_' . $this->service_name;
-            $param = [
-                'services',
-            ];
-        }
-        $data = get_cache_full($this->service, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-
-    /// BedBsty
-    public function bed_bsty($id = null)
-    {
-        if ($id == null) {
-            $name = $this->bed_bsty_name;
-            $param = [
-                'bed:id,bed_name,bed_room_id',
-                'bed.bed_room:id,bed_room_name',
-                'bed.bed_room.room:id,department_id',
-                'bed.bed_room.room.department:id,department_name',
-                'bed_service_type:id,service_name,service_code'
-            ];
-        } else {
-            $name = $this->bed_bsty_name . '_' . $id;
-            $param = [
-                'bed',
-                'bed.bed_room',
-                'bed.bed_room.room',
-                'bed.bed_room.room.department',
-                'bed_service_type'
-            ];
-        }
-        $data = get_cache_full($this->bed_bsty, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    public function service_with_bed($id = null)
-    {
-        if ($id == null) {
-            $name = $this->service_name . '_with_' . $this->bed_name;
-            $param = [
-                'beds:id,bed_name,bed_room_id',
-                'beds.bed_room:id,bed_room_name,room_id',
-                'beds.bed_room.room:id,department_id',
-                'beds.bed_room.room.department:id,department_name,department_code',
-            ];
-        } else {
-            $name = $this->service_name . '_' . $id . '_with_' . $this->bed_name;
-            $param = [
-                'beds',
-                'beds.bed_room:id,bed_room_name,room_id',
-                'beds.bed_room.room:id,department_id',
-                'beds.bed_room.room.department:id,department_name,department_code',
-            ];
-        }
-        $data = get_cache_full($this->service, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    public function bed_with_service($id = null)
-    {
-        if ($id == null) {
-            $name = $this->bed_name . '_with_' . $this->service_name;
-            $param = [
-                'bed_room:id,bed_room_name,room_id',
-                'bed_room.room:id,department_id',
-                'bed_room.room.department:id,department_name,department_code',
-                'services:id,service_name,service_code'
-            ];
-        } else {
-            $name = $this->bed_name . '_' . $id . '_with_' . $this->service_name;
-            $param = [
-                'bed_room',
-                'bed_room.room:id,department_id',
-                'bed_room.room.department:id,department_name,department_code',
-                'services'
-            ];
-        }
-        $data = get_cache_full($this->bed, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-
-    /// Serv Segr
-    public function serv_segr($id = null)
-    {
-        if ($id == null) {
-            $name = $this->serv_segr_name;
-            $param = [
-                'service:id,service_name,service_type_id',
-                'service.service_type:id,service_type_name,service_type_code',
-                'service_group:id,service_group_name',
-            ];
-        } else {
-            $name = $this->serv_segr_name . '_' . $id;
-            $param = [
-                'service',
-                'service.service_type',
-                'service_group',
-            ];
-        }
-        $data = get_cache_full($this->serv_segr, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    /// Service Group
-    public function service_group()
-    {
-        $data = get_cache($this->service_group, $this->service_group_name, null, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    public function service_group_id($id)
-    {
-        $data = get_cache($this->service_group, $this->service_group_name, $id, $this->time);
-        return response()->json(['data' => [
-            'service_group' => $data
-        ]], 200);
-    }
-
-
-
-    /// Info User
-    public function info_user_id($id)
-    {
-        $data = get_cache($this->emp_user, $this->emp_user_name, $id, $this->time);
-        $data1 = get_cache_1_1($this->emp_user, "department", $this->emp_user_name, $id, $this->time);
-        $data2 = get_cache_1_1($this->emp_user, "gender", $this->emp_user_name, $id, $this->time);
-        $data3 = get_cache_1_1($this->emp_user, "branch", $this->emp_user_name, $id, $this->time);
-        $data4 = get_cache_1_1($this->emp_user, "career_title", $this->emp_user_name, $id, $this->time);
-        $data5 = get_cache_1_n_with_ids($this->emp_user, "default_medi_stock", $this->emp_user_name, $id, $this->time);
-
-        return response()->json(['data' => [
-            'info_user' => $data,
-            'department' => $data1,
-            'genderr' => $data2,
-            'branch' => $data3,
-            'career_title' => $data4,
-            'default_medi_stock' => $data5,
-
-        ]], 200);
-    }
-
-    /// Execute Role User
-    public function execute_role_user($id = null)
-    {
-        if ($id == null) {
-            $name = $this->execute_role_user_name;
-            $param = [
-                'execute_role:id,execute_role_name',
-            ];
-        } else {
-            $name = $this->execute_role_user_name . '_' . $id;
-            $param = [
-                'execute_role',
-            ];
-        }
-        $data = get_cache_full($this->execute_role_user, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    public function execute_role_with_user($id = null)
-    {
-        if ($id == null) {
-            $name = $this->execute_role_name . '_with_' . $this->emp_user_name;
-            $param = [
-                'employees:id,loginname,tdl_username,department_id',
-                'employees.department:id,department_name,department_code'
-            ];
-        } else {
-            $name = $this->execute_role_name . '_' . $id . '_with_' . $this->emp_user_name;
-            $param = [
-                'employees',
-                'employees.department'
-            ];
-        }
-        $data = get_cache_full($this->execute_role, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    public function user_with_execute_role($id = null)
-    {
-        if ($id == null) {
-            $name = $this->emp_user_name . '_with_' . $this->execute_role_name;
-            $param = [
-                'execute_roles:id,execute_role_name,execute_role_code',
-                'department:id,department_code,department_name'
-            ];
-        } else {
-            $name = $this->emp_user_name . '_' . $id . '_with_' . $this->execute_role_name;
-            $param = [
-                'execute_roles',
-                'department'
-            ];
-        }
-        $data = get_cache_full($this->emp_user, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-
-    /// Module
-    public function module_role($id = null)
-    {
-        if ($id == null) {
-            $name = $this->module_role_name;
-            $param = [
-                'module:id,module_name',
-                'role:id,role_name,role_code',
-            ];
-        } else {
-            $name = $this->module_role_name . '_' . $id;
-            $param = [
-                'module',
-                'role',
-            ];
-        }
-        $data = get_cache_full($this->module_role, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    /// Mest Patient Type
-
-    public function mest_patient_type($id = null)
-    {
-        if ($id == null) {
-            $name = $this->mest_patient_type_name;
-            $param = [
-                'medi_stock:id,medi_stock_name,medi_stock_code',
-                'patient_type:id,patient_type_name,patient_type_code'
-            ];
-        } else {
-            $name = $this->mest_patient_type_name . '_' . $id;
-            $param = [
-                'medi_stock',
-                'patient_type'
-            ];
-        }
-        $data = get_cache_full($this->mest_patient_type, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    public function medi_stock_with_patient_type($id = null)
-    {
-        if ($id == null) {
-            $name = $this->medi_stock_name . '_with_' . $this->patient_type_name;
-            $param = [
-                'patient_types:id,patient_type_name,patient_type_code'
-            ];
-        } else {
-            $name = $this->medi_stock_name . '_' . $id . '_with_' . $this->patient_type_name;
-            $param = [
-                'patient_types'
-            ];
-        }
-        $data = get_cache_full($this->medi_stock, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    public function patient_type_with_medi_stock($id = null)
-    {
-        if ($id == null) {
-            $name = $this->patient_type_name . '_with_' . $this->medi_stock_name;
-            $param = [
-                'medi_stocks:id,medi_stock_name,medi_stock_code'
-            ];
-        } else {
-            $name = $this->patient_type_name . '_' . $id . '_with_' . $this->medi_stock_name;
-            $param = [
-                'medi_stocks'
-            ];
-        }
-        $data = get_cache_full($this->patient_type, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    /// Medi Stock Mety List
-
-    public function medi_stock_mety_list($id = null)
-    {
-        if ($id == null) {
-            $name = $this->medi_stock_mety_list_name;
-            $param = [
-                'medi_stock:id,medi_stock_name,medi_stock_code',
-                'medicine_type:id,medicine_type_name,medicine_type_code',
-                'exp_medi_stock:id,medi_stock_name,medi_stock_code'
-            ];
-        } else {
-            $name = $this->medi_stock_mety_list_name . '_' . $id;
-            $param = [
-                'medi_stock',
-                'medicine_type',
-                'exp_medi_stock'
-            ];
-        }
-        $data = get_cache_full($this->medi_stock_mety_list, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    public function medi_stock_with_medicine_type($id = null)
-    {
-        if ($id == null) {
-            $name = $this->medi_stock_name . '_with_' . $this->medicine_type_name;
-            $param = [
-                'medicine_types:id,medicine_type_name,medicine_type_code,tdl_service_unit_id',
-                'medicine_types.service_unit:id,service_unit_name,service_unit_code'
-            ];
-        } else {
-            $name = $this->medi_stock_name . '_' . $id . '_with_' . $this->medicine_type_name;
-            $param = [
-                'medicine_types',
-                'medicine_types.service_unit'
-
-            ];
-        }
-        $data = get_cache_full($this->medi_stock, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    public function medicine_type_with_medi_stock($id = null)
-    {
-        if ($id == null) {
-            $name = $this->medicine_type_name . '_with_' . $this->medi_stock_name;
-            $param = [
-                'medi_stocks:id,medi_stock_name,medi_stock_code',
-                'service_unit:id,service_unit_name,service_unit_code'
-            ];
-        } else {
-            $name = $this->medicine_type_name . '_' . $id . '_with_' . $this->medi_stock_name;
-            $param = [
-                'medi_stocks',
-                'service_unit'
-            ];
-        }
-        $data = get_cache_full($this->medicine_type, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    /// Medi Stock Maty List
-    public function medi_stock_maty_list($id = null)
-    {
-        if ($id == null) {
-            $name = $this->medi_stock_maty_list_name;
-            $param = [
-                'medi_stock:id,medi_stock_name,medi_stock_code',
-                'material_type:id,material_type_name,material_type_code',
-                'exp_medi_stock:id,medi_stock_name,medi_stock_code'
-            ];
-        } else {
-            $name = $this->medi_stock_maty_list_name . '_' . $id;
-            $param = [
-                'medi_stock',
-                'material_type',
-                'exp_medi_stock'
-            ];
-        }
-        $data = get_cache_full($this->medi_stock_maty_list, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    public function medi_stock_with_material_type($id = null)
-    {
-        if ($id == null) {
-            $name = $this->medi_stock_name . '_with_' . $this->material_type_name;
-            $param = [
-                'material_types:id,material_type_name,material_type_code,tdl_service_unit_id',
-                'material_types.service_unit:id,service_unit_name,service_unit_code'
-            ];
-        } else {
-            $name = $this->medi_stock_name . '_' . $id . '_with_' . $this->material_type_name;
-            $param = [
-                'material_types',
-                'material_types.service_unit'
-            ];
-        }
-        $data = get_cache_full($this->medi_stock, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    public function material_type_with_medi_stock($id = null)
-    {
-        if ($id == null) {
-            $name = $this->material_type_name . '_with_' . $this->medi_stock_name;
-            $param = [
-                'medi_stocks:id,medi_stock_name,medi_stock_code',
-                'service_unit:id,service_unit_name,service_unit_code',
-            ];
-        } else {
-            $name = $this->material_type_name . '_' . $id . '_with_' . $this->medi_stock_name;
-            $param = [
-                'medi_stocks',
-                'service_unit',
-            ];
-        }
-        $data = get_cache_full($this->material_type, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    /// Mest Export Room
-    public function mest_export_room($id = null)
-    {
-        if ($id == null) {
-            $name = $this->mest_export_room_name;
-            $param = [
-                'medi_stock:id,medi_stock_name,medi_stock_code,is_active,is_delete,creator,modifier',
-                'room:id,department_id',
-                'room.execute_room:id,room_id,execute_room_name,execute_room_code',
-                'room.department:id,department_name,department_code'
-            ];
-        } else {
-            $name = $this->mest_export_room_name . '_' . $id;
-            $param = [
-                'medi_stock',
-                'room',
-                'room.execute_room',
-                'room.department'
-            ];
-        }
-        $data = get_cache_full($this->mest_export_room, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    public function medi_stock_with_room($id = null)
-    {
-        if ($id == null) {
-            $name = $this->medi_stock_name . '_with_' . $this->room_name;
-            $param = [
-                'rooms:id,department_id,room_type_id',
-                'rooms.execute_room:id,room_id,execute_room_name,execute_room_code'
-            ];
-        } else {
-            $name = $this->medi_stock_name . '_' . $id . '_with_' . $this->room_name;
-            $param = [
-                'rooms',
-                'rooms.execute_room',
-                'rooms.department',
-                'rooms.room_type'
-            ];
-        }
-        $data = get_cache_full($this->medi_stock, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    public function room_with_medi_stock($id = null)
-    {
-        if ($id == null) {
-            $name = $this->room_name . '_with_' . $this->medi_stock_name;
-            $param = [
-                'execute_room:id,room_id,execute_room_name,execute_room_code',
-                'department:id,department_name,department_code',
-                'room_type:id,room_type_name,room_type_code',
-                'medi_stocks:id,medi_stock_name,medi_stock_code'
-            ];
-        } else {
-            $name = $this->room_name . '_' . $id . '_with_' . $this->medi_stock_name;
-            $param = [
-                'execute_room',
-                'department',
-                'room_type',
-                'medi_stocks'
-            ];
-        }
-        $data = get_cache_full($this->room, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    /// Exro Room
-    public function exro_room($id = null)
-    {
-        if ($id == null) {
-            $name = $this->exro_room_name;
-            $param = [
-                'room:id,department_id',
-                'room.execute_room:id,room_id,execute_room_name',
-                'room.department:id,department_name,department_code',
-                'execute_room:id,room_id,execute_room_name,execute_room_code',
-                'execute_room.room:id,department_id',
-                'execute_room.room.department:id,department_name,department_code'
-            ];
-        } else {
-            $name = $this->exro_room_name . '_' . $id;
-            $param = [
-                'room',
-                'room.execute_room',
-                'room.department',
-                'execute_room',
-                'execute_room.room',
-                'execute_room.room.department'
-            ];
-        }
-        $data = get_cache_full($this->exro_room, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    public function execute_room_with_room($id = null)
-    {
-        if ($id == null) {
-            $name = $this->execute_room_name . '_with_' . $this->room_name;
-            $param = [
-                'rooms:id,department_id',
-                'rooms.execute_room:id,room_id,execute_room_name',
-                'rooms.department:id,department_name,department_code',
-                'room.department:id,department_name,department_code',
-            ];
-        } else {
-            $name = $this->execute_room_name . '_' . $id . '_with_' . $this->room_name;
-            $param = [
-                'rooms',
-                'rooms.execute_room',
-                'rooms.department',
-                'room.department',
-            ];
-        }
-        $data = get_cache_full($this->execute_room, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    public function room_with_execute_room($id = null)
-    {
-        if ($id == null) {
-            $name = $this->room_name . '_with_' . $this->execute_room_name;
-            $param = [
-                'department:id,department_name,department_code',
-                'execute_room:id,room_id,execute_room_name,execute_room_code',
-                'execute_rooms:id,room_id,execute_room_name,execute_room_code',
-                'execute_rooms.room:id,department_id',
-                'execute_rooms.room.department:id,department_name,department_code',
-            ];
-        } else {
-            $name = $this->room_name . '_' . $id . '_with_' . $this->execute_room_name;
-            $param = [
-                'department',
-                'execute_room',
-                'execute_rooms',
-                'execute_room.rooms',
-                'execute_room.room.departments',
-            ];
-        }
-        $data = get_cache_full($this->room, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    /// Patient Type Room
-    public function patient_type_room($id = null)
-    {
-        if ($id == null) {
-            $name = $this->patient_type_room_name;
-            $param = [
-                'room:id,department_id,room_type_id',
-                'room.execute_room:id,room_id,execute_room_name,execute_room_code',
-                'room.department:id,department_name,department_code',
-                'room.room_type:id,room_type_name,room_type_code',
-                'patient_type:id,patient_type_name,patient_type_code'
-            ];
-        } else {
-            $name = $this->patient_type_room_name . '_' . $id;
-            $param = [
-                'room',
-                'room.execute_room',
-                'room.department',
-                'room.room_type',
-                'patient_type'
-            ];
-        }
-        $data = get_cache_full($this->patient_type_room, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    public function patient_type_with_room($id = null)
-    {
-        if ($id == null) {
-            $name = $this->patient_type_name . '_with_' . $this->room_name;
-            $param = [
-                'rooms:id,department_id,room_type_id',
-                'rooms.execute_room:id,room_id,execute_room_name,execute_room_code',
-                'rooms.department:id,department_name,department_code',
-                'rooms.room_type:id,room_type_name,room_type_code',
-            ];
-        } else {
-            $name = $this->patient_type_name . '_' . $id . '_with_' . $this->room_name;
-            $param = [
-                'rooms',
-                'rooms.execute_room',
-                'rooms.department',
-                'rooms.room_type',
-            ];
-        }
-        $data = get_cache_full($this->patient_type, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    public function room_with_patient_type($id = null)
-    {
-        if ($id == null) {
-            $name = $this->room_name . '_with_' . $this->patient_type_name;
-            $param = [
-                'execute_room:id,room_id,execute_room_name,execute_room_code',
-                'department:id,department_name,department_code',
-                'room_type:id,room_type_name,room_type_code',
-                'patient_types:id,patient_type_name,patient_type_code'
-            ];
-        } else {
-            $name = $this->room_name . '_' . $id . '_with_' . $this->patient_type_name;
-            $param = [
-                'execute_room',
-                'department',
-                'room_type',
-                'patient_types'
-            ];
-        }
-        $data = get_cache_full($this->room, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    /// Patient Type Allow
-    public function patient_type_allow($id = null)
-    {
-        if ($id == null) {
-            $name = $this->patient_type_allow_name;
-            $param = [
-                'patient_type',
-                'patient_type_allow'
-            ];
-        } else {
-            $name = $this->patient_type_allow_name . '_' . $id;
-            $param = [
-                'patient_type',
-                'patient_type_allow'
-            ];
-        }
-        $data = get_cache_full($this->patient_type_allow, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    /// Position
-    public function position($id = null)
-    {
-        if ($id == null) {
-            $name = $this->position_name;
-            $param = [];
-        } else {
-            $name = $this->position_name . '_' . $id;
-            $param = [];
-        }
-        $data = get_cache_full($this->position, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-
-    /// Work Place
-    public function work_place($id = null)
-    {
-        if ($id == null) {
-            $name = $this->work_place_name;
-            $param = [];
-        } else {
-            $name = $this->work_place_name . '_' . $id;
-            $param = [];
-        }
-        $data = get_cache_full($this->work_place, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    /// Born Position
-    public function born_position($id = null)
-    {
-        if ($id == null) {
-            $name = $this->born_position_name;
-            $param = [];
-        } else {
-            $name = $this->born_position_name . '_' . $id;
-            $param = [];
-        }
-        $data = get_cache_full($this->born_position, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    /// Born Position
-    public function patient_case($id = null)
-    {
-        if ($id == null) {
-            $name = $this->patient_case_name;
-            $param = [];
-        } else {
-            $name = $this->patient_case_name . '_' . $id;
-            $param = [];
-        }
-        $data = get_cache_full($this->patient_case, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-
-    /// BHYT Whitelist
-
-
-    /// BHYT Param
-    public function bhyt_param($id = null)
-    {
-        if ($id == null) {
-            $name = $this->bhyt_param_name;
-            $param = [];
-        } else {
-            $name = $this->bhyt_param_name . '_' . $id;
-            $param = [];
-        }
-        $data = get_cache_full($this->bhyt_param, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    /// BHYT Blacklist
-    public function bhyt_blacklist($id = null)
-    {
-        if ($id == null) {
-            $name = $this->bhyt_blacklist_name;
-            $param = [];
-        } else {
-            $name = $this->bhyt_blacklist_name . '_' . $id;
-            $param = [];
-        }
-        $data = get_cache_full($this->bhyt_blacklist, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    /// Medicine Paty
-    public function medicine_paty($id = null)
-    {
-        if ($id == null) {
-            $name = $this->medicine_paty_name;
-            $param = [
-                'medicine',
-                'medicine.medicine_type:id,medicine_type_name,medicine_type_code',
-                'patient_type'
-            ];
-        } else {
-            $name = $this->medicine_paty_name . '_' . $id;
-            $param = [
-                'medicine',
-                'medicine.medicine_type',
-                'patient_type'
-            ];
-        }
-        $data = get_cache_full($this->medicine_paty, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    /// Accident Body Part
-    public function accident_body_part($id = null)
-    {
-        if ($id == null) {
-            $name = $this->accident_body_part_name;
-            $param = [];
-        } else {
-            $name = $this->accident_body_part_name . '_' . $id;
-            $param = [];
-        }
-        $data = get_cache_full($this->accident_body_part, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    /// Preparations Blood
-    public function preparations_blood($id = null)
-    {
-        if ($id == null) {
-            $name = $this->preparations_blood_name;
-            $param = [];
-        } else {
-            $name = $this->preparations_blood_name . '_' . $id;
-            $param = [];
-        }
-        $data = get_cache_full($this->preparations_blood, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    /// Contraindication
-    public function contraindication($id = null)
-    {
-        if ($id == null) {
-            $name = $this->contraindication_name;
-            $param = [];
-        } else {
-            $name = $this->contraindication_name . '_' . $id;
-            $param = [];
-        }
-        $data = get_cache_full($this->contraindication, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    /// Dosage Form
-    public function dosage_form($id = null)
-    {
-        if ($id == null) {
-            $name = $this->dosage_form_name;
-            $param = [];
-        } else {
-            $name = $this->dosage_form_name . '_' . $id;
-            $param = [];
-        }
-        $data = get_cache_full($this->dosage_form, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    /// Accident Location
-    public function accident_location($id = null)
-    {
-        if ($id == null) {
-            $name = $this->accident_location_name;
-            $param = [];
-        } else {
-            $name = $this->accident_location_name . '_' . $id;
-            $param = [];
-        }
-        $data = get_cache_full($this->accident_location, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    /// License Class
-    public function license_class($id = null)
-    {
-        if ($id == null) {
-            $name = $this->license_class_name;
-            $param = [];
-        } else {
-            $name = $this->license_class_name . '_' . $id;
-            $param = [];
-        }
-        $data = get_cache_full($this->license_class, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    /// Manufacturer
-    public function manufacturer($id = null)
-    {
-        if ($id == null) {
-            $name = $this->manufacturer_name;
-            $param = [];
-        } else {
-            $name = $this->manufacturer_name . '_' . $id;
-            $param = [];
-        }
-        $data = get_cache_full($this->manufacturer, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    /// ICD
-    public function icd($id = null)
-    {
-        if ($id == null) {
-            $name = $this->icd_name;
-            $param = [
-                'icd_group',
-                'icd_chapter',
-                'gender',
-                'age_type'
-            ];
-        } else {
-            $name = $this->icd_name . '_' . $id;
-            $param = [
-                'icd_group',
-                'icd_chapter',
-                'gender',
-                'age_type'
-            ];
-        }
-        $data = get_cache_full($this->icd, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    /// Medi Record Type
-    public function medi_record_type($id = null)
-    {
-        if ($id == null) {
-            $name = $this->medi_record_type_name;
-            $param = [];
-        } else {
-            $name = $this->medi_record_type_name . '_' . $id;
-            $param = [];
-        }
-        $data = get_cache_full($this->medi_record_type, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    /// File Type
-    public function file_type($id = null)
-    {
-        if ($id == null) {
-            $name = $this->file_type_name;
-            $param = [];
-        } else {
-            $name = $this->file_type_name . '_' . $id;
-            $param = [];
-        }
-        $data = get_cache_full($this->file_type, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    /// Treatment End Type
-    public function treatment_end_type($id = null)
-    {
-        if ($id == null) {
-            $name = $this->treatment_end_type_name;
-            $param = [];
-        } else {
-            $name = $this->treatment_end_type_name . '_' . $id;
-            $param = [];
-        }
-        $data = get_cache_full($this->treatment_end_type, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    /// Tran Pati Tech
-    public function tran_pati_tech($id = null)
-    {
-        if ($id == null) {
-            $name = $this->tran_pati_tech_name;
-            $param = [];
-        } else {
-            $name = $this->tran_pati_tech_name . '_' . $id;
-            $param = [];
-        }
-        $data = get_cache_full($this->tran_pati_tech, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    /// Debate Reason
-    public function debate_reason($id = null)
-    {
-        if ($id == null) {
-            $name = $this->debate_reason_name;
-            $param = [
-                'debates:id,debate_reason_id,icd_name,icd_code,icd_sub_code'
-            ];
-        } else {
-            $name = $this->debate_reason_name . '_' . $id;
-            $param = [
-                'debates'
-            ];
-        }
-        $data = get_cache_full($this->debate_reason, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    /// Cancel Reason
-    public function cancel_reason($id = null)
-    {
-        if ($id == null) {
-            $name = $this->cancel_reason_name;
-            $param = [];
-        } else {
-            $name = $this->cancel_reason_name . '_' . $id;
-            $param = [];
-        }
-        $data = get_cache_full($this->cancel_reason, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    /// Interaction Reason
-    public function interaction_reason($id = null)
-    {
-        if ($id == null) {
-            $name = $this->interaction_reason_name;
-            $param = [];
-        } else {
-            $name = $this->interaction_reason_name . '_' . $id;
-            $param = [];
-        }
-        $data = get_cache_full($this->interaction_reason, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    /// Unlimit Reason
-    public function unlimit_reason($id = null)
-    {
-        if ($id == null) {
-            $name = $this->unlimit_reason_name;
-            $param = [];
-        } else {
-            $name = $this->unlimit_reason_name . '_' . $id;
-            $param = [];
-        }
-        $data = get_cache_full($this->unlimit_reason, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    /// Hospitalize Reason
-    public function hospitalize_reason($id = null)
-    {
-        if ($id == null) {
-            $name = $this->hospitalize_reason_name;
-            $param = [];
-        } else {
-            $name = $this->hospitalize_reason_name . '_' . $id;
-            $param = [];
-        }
-        $data = get_cache_full($this->hospitalize_reason, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    /// Exp Mest Reason
-    public function exp_mest_reason($id = null)
-    {
-        if ($id == null) {
-            $name = $this->exp_mest_reason_name;
-            $param = [];
-        } else {
-            $name = $this->exp_mest_reason_name . '_' . $id;
-            $param = [];
-        }
-        $data = get_cache_full($this->exp_mest_reason, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-
-    /// Career Title
-    public function career_title($id = null)
-    {
-        if ($id == null) {
-            $name = $this->career_title_name;
-            $param = [];
-        } else {
-            $name = $this->career_title_name . '_' . $id;
-            $param = [];
-        }
-        $data = get_cache_full($this->career_title, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    /// Accident Hurt Type
-    public function accident_hurt_type($id = null)
-    {
-        if ($id == null) {
-            $name = $this->accident_hurt_type_name;
-            $param = [];
-        } else {
-            $name = $this->accident_hurt_type_name . '_' . $id;
-            $param = [];
-        }
-        $data = get_cache_full($this->accident_hurt_type, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-
-    /// Supplier
-    public function supplier($id = null)
-    {
-        if ($id == null) {
-            $name = $this->supplier_name;
-            $param = [];
-        } else {
-            $name = $this->supplier_name . '_' . $id;
-            $param = [];
-        }
-        $data = get_cache_full($this->supplier, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    /// Processing
-    public function processing_method($id = null)
-    {
-        if ($id == null) {
-            $name = $this->processing_method_name;
-            $param = [];
-        } else {
-            $name = $this->processing_method_name . '_' . $id;
-            $param = [];
-        }
-        $data = get_cache_full($this->processing_method, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    /// Death Within
-    public function death_within($id = null)
-    {
-        if ($id == null) {
-            $name = $this->death_within_name;
-            $param = [];
-        } else {
-            $name = $this->death_within_name . '_' . $id;
-            $param = [];
-        }
-        $data = get_cache_full($this->death_within, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    /// Location Treatment
-    public function location_treatment($id = null)
-    {
-        if ($id == null) {
-            $name = $this->location_store_name;
-            $param = [];
-        } else {
-            $name = $this->location_store_name . '_' . $id;
-            $param = [];
-        }
-        $data = get_cache_full($this->location_store, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    /// Accident Care
-    public function accident_care($id = null)
-    {
-        if ($id == null) {
-            $name = $this->accident_care_name;
-            $param = [];
-        } else {
-            $name = $this->accident_care_name . '_' . $id;
-            $param = [];
-        }
-        $data = get_cache_full($this->accident_care, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    /// Pttt Table
-    public function pttt_table($id = null)
-    {
-        if ($id == null) {
-            $name = $this->pttt_table_name;
-            $param = [
-                'execute_room:id,execute_room_name,execute_room_code'
-            ];
-        } else {
-            $name = $this->pttt_table_name . '_' . $id;
-            $param = [
-                'execute_room'
-            ];
-        }
-        $data = get_cache_full($this->pttt_table, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
+    // public function service_machine()
+    // {
+    //     $param = [
+    //         'service:id,service_name,service_type_id',
+    //         'service.service_type:id,service_type_name,service_type_code',
+    //         'machine:id,machine_name,machine_code,machine_group_code',
+    //     ];
+    //     $data = get_cache_full($this->service_machine, $param, $this->service_machine_name, null, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
+
+    // public function service_machine_id($id)
+    // {
+    //     $data = get_cache($this->service_machine, $this->service_machine_name, $id, $this->time);
+    //     $data1 = get_cache_1_1($this->service_machine, "service", $this->service_machine_name, $id, $this->time);
+    //     $data2 = get_cache_1_1_1($this->service_machine, "service.service_type", $this->service_machine_name, $id, $this->time);
+    //     $data3 = get_cache_1_1($this->service_machine, "machine", $this->service_machine_name, $id, $this->time);
+
+    //     return response()->json(['data' => [
+    //         'service_machine' => $data,
+    //         'service' => $data1,
+    //         'service_type' => $data2,
+    //         'machine' => $data3
+    //     ]], 200);
+    // }
+
+    // public function service_with_machine($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->service_name . '_with_' . $this->machine_name;
+    //         $param = [
+    //             'machines:id,machine_name,machine_code',
+    //         ];
+    //     } else {
+    //         $name = $this->service_name . '_' . $id . '_with_' . $this->machine_name;
+    //         $param = [
+    //             'machines',
+    //         ];
+    //     }
+    //     $data = get_cache_full($this->service, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
+
+    // public function machine_with_service($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->machine_name . '_with_' . $this->service_name;
+    //         $param = [
+    //             'services:id,service_name,service_code',
+    //         ];
+    //     } else {
+    //         $name = $this->machine_name . '_' . $id . '_with_' . $this->service_name;
+    //         $param = [
+    //             'services',
+    //         ];
+    //     }
+    //     $data = get_cache_full($this->machine, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
+
+
+
+    // /// Service Room
+    // public function service_room($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->service_room_name;
+    //         $param = [
+    //             'service:id,service_name,service_type_id',
+    //             'service.service_type:id,service_type_name,service_type_code',
+    //             'room:id,room_type_id,department_id',
+    //             'room.execute_room:id,room_id,execute_room_name,execute_room_code',
+    //             'room.room_type:id,room_type_name',
+    //             'room.department:id,department_name',
+    //         ];
+    //     } else {
+    //         $name = $this->service_room_name . '_' . $id;
+    //         $param = [
+    //             'service',
+    //             'service.service_type',
+    //             'room',
+    //             'room.execute_room',
+    //             'room.room_type',
+    //             'room.department',
+    //         ];
+    //     }
+    //     $data = get_cache_full($this->service_room, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
+
+
+    // public function service_with_room($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->service_name . '_with_' . $this->execute_room_name;
+    //         $param = [
+    //             'execute_rooms:id,room_id,execute_room_name,execute_room_code',
+    //             'execute_rooms.room:id,department_id,room_type_id',
+    //             'execute_rooms.room.department:id,department_name,department_code',
+    //             'execute_rooms.room.room_type:id,room_type_name,room_type_code'
+    //         ];
+    //     } else {
+    //         $name = $this->service_name . '_' . $id . '_with_' . $this->execute_room_name;
+    //         $param = [
+    //             'execute_rooms',
+    //             'execute_rooms.room:id,department_id,room_type_id',
+    //             'execute_rooms.room.department',
+    //             'execute_rooms.room.room_type'
+    //         ];
+    //     }
+    //     $data = get_cache_full($this->service, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
+
+    // public function room_with_service($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->execute_room_name . '_with_' . $this->service_name;
+    //         $param = [
+    //             'services:id,service_name,service_code',
+    //             'room:id,department_id,room_type_id',
+    //             'room.department:id,department_name,department_code',
+    //             'room.room_type:id,room_type_name,room_type_code',
+    //             'room.execute_room:id,room_id,execute_room_name,execute_room_code'
+    //         ];
+    //     } else {
+    //         $name = $this->execute_room_name . '_' . $id . '_with_' . $this->service_name;
+    //         $param = [
+    //             'services',
+    //             'room:id,department_id,room_type_id',
+    //             'room.department:id,department_name,department_code',
+    //             'room.room_type:id,room_type_name,room_type_code',
+    //             'room.execute_room'
+    //         ];
+    //     }
+    //     $data = get_cache_full($this->execute_room, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
+
+    // /// Room
+
+
+    // /// Service Follow
+    // public function service_follow()
+    // {
+    //     $param = [
+    //         'service:id,service_name,service_type_id',
+    //         'service.service_type:id,service_type_name,service_type_code',
+    //         'follow:id,service_name,service_type_id',
+    //         'follow.service_type:id,service_type_name,service_type_code',
+    //     ];
+    //     $data = get_cache_full($this->service_follow, $param, $this->service_follow_name, null, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
+
+    // public function service_follow_id($id)
+    // {
+    //     $data = get_cache($this->service_follow, $this->service_follow_name, $id, $this->time);
+    //     $data1 = get_cache_1_1($this->service_follow, "service", $this->service_follow_name, $id, $this->time);
+    //     $data2 = get_cache_1_1_1($this->service_follow, "service.service_type", $this->service_follow_name, $id, $this->time);
+    //     $data3 = get_cache_1_1($this->service_follow, "follow", $this->service_follow_name, $id, $this->time);
+    //     $data4 = get_cache_1_1_1($this->service_follow, "follow.service_type", $this->service_follow_name, $id, $this->time);
+    //     $data5 = get_cache_1_n_with_ids($this->service_follow, "treatment_type", $this->service_follow_name, $id, $this->time);
+
+    //     return response()->json(['data' => [
+    //         'service_follow' => $data,
+    //         'service' => $data1,
+    //         'service_type' => $data2,
+    //         'follow' => $data3,
+    //         'follow_type' => $data4,
+    //         'treatment_type' => $data5
+    //     ]], 200);
+    // }
+
+    // public function service_with_follow($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->service_name . '_with_follow' . $this->service_name;
+    //         $param = [
+    //             'follows:id,service_name,service_code',
+    //         ];
+    //     } else {
+    //         $name = $this->service_name . '_' . $id . '_with_' . $this->machine_name;
+    //         $param = [
+    //             'follows',
+    //         ];
+    //     }
+    //     $data = get_cache_full($this->service, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
+
+    // public function follow_with_service($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->service_name . '_follow_with_' . $this->service_name;
+    //         $param = [
+    //             'services:id,service_name,service_code',
+    //         ];
+    //     } else {
+    //         $name = $this->service_name . '_' . $id . '_with_' . $this->service_name;
+    //         $param = [
+    //             'services',
+    //         ];
+    //     }
+    //     $data = get_cache_full($this->service, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
+
+
+    // /// BedBsty
+    // public function bed_bsty($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->bed_bsty_name;
+    //         $param = [
+    //             'bed:id,bed_name,bed_room_id',
+    //             'bed.bed_room:id,bed_room_name',
+    //             'bed.bed_room.room:id,department_id',
+    //             'bed.bed_room.room.department:id,department_name',
+    //             'bed_service_type:id,service_name,service_code'
+    //         ];
+    //     } else {
+    //         $name = $this->bed_bsty_name . '_' . $id;
+    //         $param = [
+    //             'bed',
+    //             'bed.bed_room',
+    //             'bed.bed_room.room',
+    //             'bed.bed_room.room.department',
+    //             'bed_service_type'
+    //         ];
+    //     }
+    //     $data = get_cache_full($this->bed_bsty, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
+
+    // public function service_with_bed($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->service_name . '_with_' . $this->bed_name;
+    //         $param = [
+    //             'beds:id,bed_name,bed_room_id',
+    //             'beds.bed_room:id,bed_room_name,room_id',
+    //             'beds.bed_room.room:id,department_id',
+    //             'beds.bed_room.room.department:id,department_name,department_code',
+    //         ];
+    //     } else {
+    //         $name = $this->service_name . '_' . $id . '_with_' . $this->bed_name;
+    //         $param = [
+    //             'beds',
+    //             'beds.bed_room:id,bed_room_name,room_id',
+    //             'beds.bed_room.room:id,department_id',
+    //             'beds.bed_room.room.department:id,department_name,department_code',
+    //         ];
+    //     }
+    //     $data = get_cache_full($this->service, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
+
+    // public function bed_with_service($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->bed_name . '_with_' . $this->service_name;
+    //         $param = [
+    //             'bed_room:id,bed_room_name,room_id',
+    //             'bed_room.room:id,department_id',
+    //             'bed_room.room.department:id,department_name,department_code',
+    //             'services:id,service_name,service_code'
+    //         ];
+    //     } else {
+    //         $name = $this->bed_name . '_' . $id . '_with_' . $this->service_name;
+    //         $param = [
+    //             'bed_room',
+    //             'bed_room.room:id,department_id',
+    //             'bed_room.room.department:id,department_name,department_code',
+    //             'services'
+    //         ];
+    //     }
+    //     $data = get_cache_full($this->bed, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
+
+
+    // /// Serv Segr
+    // public function serv_segr($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->serv_segr_name;
+    //         $param = [
+    //             'service:id,service_name,service_type_id',
+    //             'service.service_type:id,service_type_name,service_type_code',
+    //             'service_group:id,service_group_name',
+    //         ];
+    //     } else {
+    //         $name = $this->serv_segr_name . '_' . $id;
+    //         $param = [
+    //             'service',
+    //             'service.service_type',
+    //             'service_group',
+    //         ];
+    //     }
+    //     $data = get_cache_full($this->serv_segr, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
+
+    // /// Service Group
+    // public function service_group()
+    // {
+    //     $data = get_cache($this->service_group, $this->service_group_name, null, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
+
+    // public function service_group_id($id)
+    // {
+    //     $data = get_cache($this->service_group, $this->service_group_name, $id, $this->time);
+    //     return response()->json(['data' => [
+    //         'service_group' => $data
+    //     ]], 200);
+    // }
+
+
+
+    // /// Info User
+    // public function info_user_id($id)
+    // {
+    //     $data = get_cache($this->emp_user, $this->emp_user_name, $id, $this->time);
+    //     $data1 = get_cache_1_1($this->emp_user, "department", $this->emp_user_name, $id, $this->time);
+    //     $data2 = get_cache_1_1($this->emp_user, "gender", $this->emp_user_name, $id, $this->time);
+    //     $data3 = get_cache_1_1($this->emp_user, "branch", $this->emp_user_name, $id, $this->time);
+    //     $data4 = get_cache_1_1($this->emp_user, "career_title", $this->emp_user_name, $id, $this->time);
+    //     $data5 = get_cache_1_n_with_ids($this->emp_user, "default_medi_stock", $this->emp_user_name, $id, $this->time);
+
+    //     return response()->json(['data' => [
+    //         'info_user' => $data,
+    //         'department' => $data1,
+    //         'genderr' => $data2,
+    //         'branch' => $data3,
+    //         'career_title' => $data4,
+    //         'default_medi_stock' => $data5,
+
+    //     ]], 200);
+    // }
+
+    // /// Execute Role User
+    // public function execute_role_user($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->execute_role_user_name;
+    //         $param = [
+    //             'execute_role:id,execute_role_name',
+    //         ];
+    //     } else {
+    //         $name = $this->execute_role_user_name . '_' . $id;
+    //         $param = [
+    //             'execute_role',
+    //         ];
+    //     }
+    //     $data = get_cache_full($this->execute_role_user, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
+
+    // public function execute_role_with_user($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->execute_role_name . '_with_' . $this->emp_user_name;
+    //         $param = [
+    //             'employees:id,loginname,tdl_username,department_id',
+    //             'employees.department:id,department_name,department_code'
+    //         ];
+    //     } else {
+    //         $name = $this->execute_role_name . '_' . $id . '_with_' . $this->emp_user_name;
+    //         $param = [
+    //             'employees',
+    //             'employees.department'
+    //         ];
+    //     }
+    //     $data = get_cache_full($this->execute_role, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
+
+    // public function user_with_execute_role($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->emp_user_name . '_with_' . $this->execute_role_name;
+    //         $param = [
+    //             'execute_roles:id,execute_role_name,execute_role_code',
+    //             'department:id,department_code,department_name'
+    //         ];
+    //     } else {
+    //         $name = $this->emp_user_name . '_' . $id . '_with_' . $this->execute_role_name;
+    //         $param = [
+    //             'execute_roles',
+    //             'department'
+    //         ];
+    //     }
+    //     $data = get_cache_full($this->emp_user, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
+
+
+    // /// Module
+    // public function module_role($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->module_role_name;
+    //         $param = [
+    //             'module:id,module_name',
+    //             'role:id,role_name,role_code',
+    //         ];
+    //     } else {
+    //         $name = $this->module_role_name . '_' . $id;
+    //         $param = [
+    //             'module',
+    //             'role',
+    //         ];
+    //     }
+    //     $data = get_cache_full($this->module_role, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
+
+    // /// Mest Patient Type
+
+    // public function mest_patient_type($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->mest_patient_type_name;
+    //         $param = [
+    //             'medi_stock:id,medi_stock_name,medi_stock_code',
+    //             'patient_type:id,patient_type_name,patient_type_code'
+    //         ];
+    //     } else {
+    //         $name = $this->mest_patient_type_name . '_' . $id;
+    //         $param = [
+    //             'medi_stock',
+    //             'patient_type'
+    //         ];
+    //     }
+    //     $data = get_cache_full($this->mest_patient_type, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
+
+    // public function medi_stock_with_patient_type($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->medi_stock_name . '_with_' . $this->patient_type_name;
+    //         $param = [
+    //             'patient_types:id,patient_type_name,patient_type_code'
+    //         ];
+    //     } else {
+    //         $name = $this->medi_stock_name . '_' . $id . '_with_' . $this->patient_type_name;
+    //         $param = [
+    //             'patient_types'
+    //         ];
+    //     }
+    //     $data = get_cache_full($this->medi_stock, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
+
+    // public function patient_type_with_medi_stock($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->patient_type_name . '_with_' . $this->medi_stock_name;
+    //         $param = [
+    //             'medi_stocks:id,medi_stock_name,medi_stock_code'
+    //         ];
+    //     } else {
+    //         $name = $this->patient_type_name . '_' . $id . '_with_' . $this->medi_stock_name;
+    //         $param = [
+    //             'medi_stocks'
+    //         ];
+    //     }
+    //     $data = get_cache_full($this->patient_type, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
+
+    // /// Medi Stock Mety List
+
+    // public function medi_stock_mety_list($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->medi_stock_mety_list_name;
+    //         $param = [
+    //             'medi_stock:id,medi_stock_name,medi_stock_code',
+    //             'medicine_type:id,medicine_type_name,medicine_type_code',
+    //             'exp_medi_stock:id,medi_stock_name,medi_stock_code'
+    //         ];
+    //     } else {
+    //         $name = $this->medi_stock_mety_list_name . '_' . $id;
+    //         $param = [
+    //             'medi_stock',
+    //             'medicine_type',
+    //             'exp_medi_stock'
+    //         ];
+    //     }
+    //     $data = get_cache_full($this->medi_stock_mety_list, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
+
+    // public function medi_stock_with_medicine_type($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->medi_stock_name . '_with_' . $this->medicine_type_name;
+    //         $param = [
+    //             'medicine_types:id,medicine_type_name,medicine_type_code,tdl_service_unit_id',
+    //             'medicine_types.service_unit:id,service_unit_name,service_unit_code'
+    //         ];
+    //     } else {
+    //         $name = $this->medi_stock_name . '_' . $id . '_with_' . $this->medicine_type_name;
+    //         $param = [
+    //             'medicine_types',
+    //             'medicine_types.service_unit'
+
+    //         ];
+    //     }
+    //     $data = get_cache_full($this->medi_stock, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
+
+    // public function medicine_type_with_medi_stock($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->medicine_type_name . '_with_' . $this->medi_stock_name;
+    //         $param = [
+    //             'medi_stocks:id,medi_stock_name,medi_stock_code',
+    //             'service_unit:id,service_unit_name,service_unit_code'
+    //         ];
+    //     } else {
+    //         $name = $this->medicine_type_name . '_' . $id . '_with_' . $this->medi_stock_name;
+    //         $param = [
+    //             'medi_stocks',
+    //             'service_unit'
+    //         ];
+    //     }
+    //     $data = get_cache_full($this->medicine_type, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
+
+    // /// Medi Stock Maty List
+    // public function medi_stock_maty_list($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->medi_stock_maty_list_name;
+    //         $param = [
+    //             'medi_stock:id,medi_stock_name,medi_stock_code',
+    //             'material_type:id,material_type_name,material_type_code',
+    //             'exp_medi_stock:id,medi_stock_name,medi_stock_code'
+    //         ];
+    //     } else {
+    //         $name = $this->medi_stock_maty_list_name . '_' . $id;
+    //         $param = [
+    //             'medi_stock',
+    //             'material_type',
+    //             'exp_medi_stock'
+    //         ];
+    //     }
+    //     $data = get_cache_full($this->medi_stock_maty_list, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
+
+    // public function medi_stock_with_material_type($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->medi_stock_name . '_with_' . $this->material_type_name;
+    //         $param = [
+    //             'material_types:id,material_type_name,material_type_code,tdl_service_unit_id',
+    //             'material_types.service_unit:id,service_unit_name,service_unit_code'
+    //         ];
+    //     } else {
+    //         $name = $this->medi_stock_name . '_' . $id . '_with_' . $this->material_type_name;
+    //         $param = [
+    //             'material_types',
+    //             'material_types.service_unit'
+    //         ];
+    //     }
+    //     $data = get_cache_full($this->medi_stock, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
+
+    // public function material_type_with_medi_stock($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->material_type_name . '_with_' . $this->medi_stock_name;
+    //         $param = [
+    //             'medi_stocks:id,medi_stock_name,medi_stock_code',
+    //             'service_unit:id,service_unit_name,service_unit_code',
+    //         ];
+    //     } else {
+    //         $name = $this->material_type_name . '_' . $id . '_with_' . $this->medi_stock_name;
+    //         $param = [
+    //             'medi_stocks',
+    //             'service_unit',
+    //         ];
+    //     }
+    //     $data = get_cache_full($this->material_type, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
+
+    // /// Mest Export Room
+    // public function mest_export_room($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->mest_export_room_name;
+    //         $param = [
+    //             'medi_stock:id,medi_stock_name,medi_stock_code,is_active,is_delete,creator,modifier',
+    //             'room:id,department_id',
+    //             'room.execute_room:id,room_id,execute_room_name,execute_room_code',
+    //             'room.department:id,department_name,department_code'
+    //         ];
+    //     } else {
+    //         $name = $this->mest_export_room_name . '_' . $id;
+    //         $param = [
+    //             'medi_stock',
+    //             'room',
+    //             'room.execute_room',
+    //             'room.department'
+    //         ];
+    //     }
+    //     $data = get_cache_full($this->mest_export_room, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
+
+    // public function medi_stock_with_room($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->medi_stock_name . '_with_' . $this->room_name;
+    //         $param = [
+    //             'rooms:id,department_id,room_type_id',
+    //             'rooms.execute_room:id,room_id,execute_room_name,execute_room_code'
+    //         ];
+    //     } else {
+    //         $name = $this->medi_stock_name . '_' . $id . '_with_' . $this->room_name;
+    //         $param = [
+    //             'rooms',
+    //             'rooms.execute_room',
+    //             'rooms.department',
+    //             'rooms.room_type'
+    //         ];
+    //     }
+    //     $data = get_cache_full($this->medi_stock, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
+
+    // public function room_with_medi_stock($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->room_name . '_with_' . $this->medi_stock_name;
+    //         $param = [
+    //             'execute_room:id,room_id,execute_room_name,execute_room_code',
+    //             'department:id,department_name,department_code',
+    //             'room_type:id,room_type_name,room_type_code',
+    //             'medi_stocks:id,medi_stock_name,medi_stock_code'
+    //         ];
+    //     } else {
+    //         $name = $this->room_name . '_' . $id . '_with_' . $this->medi_stock_name;
+    //         $param = [
+    //             'execute_room',
+    //             'department',
+    //             'room_type',
+    //             'medi_stocks'
+    //         ];
+    //     }
+    //     $data = get_cache_full($this->room, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
+
+    // /// Exro Room
+    // public function exro_room($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->exro_room_name;
+    //         $param = [
+    //             'room:id,department_id',
+    //             'room.execute_room:id,room_id,execute_room_name',
+    //             'room.department:id,department_name,department_code',
+    //             'execute_room:id,room_id,execute_room_name,execute_room_code',
+    //             'execute_room.room:id,department_id',
+    //             'execute_room.room.department:id,department_name,department_code'
+    //         ];
+    //     } else {
+    //         $name = $this->exro_room_name . '_' . $id;
+    //         $param = [
+    //             'room',
+    //             'room.execute_room',
+    //             'room.department',
+    //             'execute_room',
+    //             'execute_room.room',
+    //             'execute_room.room.department'
+    //         ];
+    //     }
+    //     $data = get_cache_full($this->exro_room, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
+
+    // public function execute_room_with_room($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->execute_room_name . '_with_' . $this->room_name;
+    //         $param = [
+    //             'rooms:id,department_id',
+    //             'rooms.execute_room:id,room_id,execute_room_name',
+    //             'rooms.department:id,department_name,department_code',
+    //             'room.department:id,department_name,department_code',
+    //         ];
+    //     } else {
+    //         $name = $this->execute_room_name . '_' . $id . '_with_' . $this->room_name;
+    //         $param = [
+    //             'rooms',
+    //             'rooms.execute_room',
+    //             'rooms.department',
+    //             'room.department',
+    //         ];
+    //     }
+    //     $data = get_cache_full($this->execute_room, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
+
+    // public function room_with_execute_room($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->room_name . '_with_' . $this->execute_room_name;
+    //         $param = [
+    //             'department:id,department_name,department_code',
+    //             'execute_room:id,room_id,execute_room_name,execute_room_code',
+    //             'execute_rooms:id,room_id,execute_room_name,execute_room_code',
+    //             'execute_rooms.room:id,department_id',
+    //             'execute_rooms.room.department:id,department_name,department_code',
+    //         ];
+    //     } else {
+    //         $name = $this->room_name . '_' . $id . '_with_' . $this->execute_room_name;
+    //         $param = [
+    //             'department',
+    //             'execute_room',
+    //             'execute_rooms',
+    //             'execute_room.rooms',
+    //             'execute_room.room.departments',
+    //         ];
+    //     }
+    //     $data = get_cache_full($this->room, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
+
+    // /// Patient Type Room
+    // public function patient_type_room($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->patient_type_room_name;
+    //         $param = [
+    //             'room:id,department_id,room_type_id',
+    //             'room.execute_room:id,room_id,execute_room_name,execute_room_code',
+    //             'room.department:id,department_name,department_code',
+    //             'room.room_type:id,room_type_name,room_type_code',
+    //             'patient_type:id,patient_type_name,patient_type_code'
+    //         ];
+    //     } else {
+    //         $name = $this->patient_type_room_name . '_' . $id;
+    //         $param = [
+    //             'room',
+    //             'room.execute_room',
+    //             'room.department',
+    //             'room.room_type',
+    //             'patient_type'
+    //         ];
+    //     }
+    //     $data = get_cache_full($this->patient_type_room, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
+
+    // public function patient_type_with_room($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->patient_type_name . '_with_' . $this->room_name;
+    //         $param = [
+    //             'rooms:id,department_id,room_type_id',
+    //             'rooms.execute_room:id,room_id,execute_room_name,execute_room_code',
+    //             'rooms.department:id,department_name,department_code',
+    //             'rooms.room_type:id,room_type_name,room_type_code',
+    //         ];
+    //     } else {
+    //         $name = $this->patient_type_name . '_' . $id . '_with_' . $this->room_name;
+    //         $param = [
+    //             'rooms',
+    //             'rooms.execute_room',
+    //             'rooms.department',
+    //             'rooms.room_type',
+    //         ];
+    //     }
+    //     $data = get_cache_full($this->patient_type, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
+
+    // public function room_with_patient_type($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->room_name . '_with_' . $this->patient_type_name;
+    //         $param = [
+    //             'execute_room:id,room_id,execute_room_name,execute_room_code',
+    //             'department:id,department_name,department_code',
+    //             'room_type:id,room_type_name,room_type_code',
+    //             'patient_types:id,patient_type_name,patient_type_code'
+    //         ];
+    //     } else {
+    //         $name = $this->room_name . '_' . $id . '_with_' . $this->patient_type_name;
+    //         $param = [
+    //             'execute_room',
+    //             'department',
+    //             'room_type',
+    //             'patient_types'
+    //         ];
+    //     }
+    //     $data = get_cache_full($this->room, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
+
+    // /// Patient Type Allow
+    // public function patient_type_allow($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->patient_type_allow_name;
+    //         $param = [
+    //             'patient_type',
+    //             'patient_type_allow'
+    //         ];
+    //     } else {
+    //         $name = $this->patient_type_allow_name . '_' . $id;
+    //         $param = [
+    //             'patient_type',
+    //             'patient_type_allow'
+    //         ];
+    //     }
+    //     $data = get_cache_full($this->patient_type_allow, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
+
+    // /// Position
+    // public function position($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->position_name;
+    //         $param = [];
+    //     } else {
+    //         $name = $this->position_name . '_' . $id;
+    //         $param = [];
+    //     }
+    //     $data = get_cache_full($this->position, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
+
+
+    // /// Work Place
+    // public function work_place($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->work_place_name;
+    //         $param = [];
+    //     } else {
+    //         $name = $this->work_place_name . '_' . $id;
+    //         $param = [];
+    //     }
+    //     $data = get_cache_full($this->work_place, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
+
+    // /// Born Position
+    // public function born_position($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->born_position_name;
+    //         $param = [];
+    //     } else {
+    //         $name = $this->born_position_name . '_' . $id;
+    //         $param = [];
+    //     }
+    //     $data = get_cache_full($this->born_position, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
+
+    // /// Born Position
+    // public function patient_case($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->patient_case_name;
+    //         $param = [];
+    //     } else {
+    //         $name = $this->patient_case_name . '_' . $id;
+    //         $param = [];
+    //     }
+    //     $data = get_cache_full($this->patient_case, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
+
+
+    // /// BHYT Whitelist
+
+
+    // /// BHYT Param
+    // public function bhyt_param($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->bhyt_param_name;
+    //         $param = [];
+    //     } else {
+    //         $name = $this->bhyt_param_name . '_' . $id;
+    //         $param = [];
+    //     }
+    //     $data = get_cache_full($this->bhyt_param, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
+
+    // /// BHYT Blacklist
+    // public function bhyt_blacklist($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->bhyt_blacklist_name;
+    //         $param = [];
+    //     } else {
+    //         $name = $this->bhyt_blacklist_name . '_' . $id;
+    //         $param = [];
+    //     }
+    //     $data = get_cache_full($this->bhyt_blacklist, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
+
+    // /// Medicine Paty
+    // public function medicine_paty($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->medicine_paty_name;
+    //         $param = [
+    //             'medicine',
+    //             'medicine.medicine_type:id,medicine_type_name,medicine_type_code',
+    //             'patient_type'
+    //         ];
+    //     } else {
+    //         $name = $this->medicine_paty_name . '_' . $id;
+    //         $param = [
+    //             'medicine',
+    //             'medicine.medicine_type',
+    //             'patient_type'
+    //         ];
+    //     }
+    //     $data = get_cache_full($this->medicine_paty, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
+
+    // /// Accident Body Part
+    // public function accident_body_part($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->accident_body_part_name;
+    //         $param = [];
+    //     } else {
+    //         $name = $this->accident_body_part_name . '_' . $id;
+    //         $param = [];
+    //     }
+    //     $data = get_cache_full($this->accident_body_part, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
+
+    // /// Preparations Blood
+    // public function preparations_blood($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->preparations_blood_name;
+    //         $param = [];
+    //     } else {
+    //         $name = $this->preparations_blood_name . '_' . $id;
+    //         $param = [];
+    //     }
+    //     $data = get_cache_full($this->preparations_blood, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
+
+    // /// Contraindication
+    // public function contraindication($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->contraindication_name;
+    //         $param = [];
+    //     } else {
+    //         $name = $this->contraindication_name . '_' . $id;
+    //         $param = [];
+    //     }
+    //     $data = get_cache_full($this->contraindication, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
+
+    // /// Dosage Form
+    // public function dosage_form($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->dosage_form_name;
+    //         $param = [];
+    //     } else {
+    //         $name = $this->dosage_form_name . '_' . $id;
+    //         $param = [];
+    //     }
+    //     $data = get_cache_full($this->dosage_form, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
+
+    // /// Accident Location
+    // public function accident_location($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->accident_location_name;
+    //         $param = [];
+    //     } else {
+    //         $name = $this->accident_location_name . '_' . $id;
+    //         $param = [];
+    //     }
+    //     $data = get_cache_full($this->accident_location, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
+
+    // /// License Class
+    // public function license_class($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->license_class_name;
+    //         $param = [];
+    //     } else {
+    //         $name = $this->license_class_name . '_' . $id;
+    //         $param = [];
+    //     }
+    //     $data = get_cache_full($this->license_class, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
+
+    // /// Manufacturer
+    // public function manufacturer($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->manufacturer_name;
+    //         $param = [];
+    //     } else {
+    //         $name = $this->manufacturer_name . '_' . $id;
+    //         $param = [];
+    //     }
+    //     $data = get_cache_full($this->manufacturer, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
+
+    // /// ICD
+    // public function icd($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->icd_name;
+    //         $param = [
+    //             'icd_group',
+    //             'icd_chapter',
+    //             'gender',
+    //             'age_type'
+    //         ];
+    //     } else {
+    //         $name = $this->icd_name . '_' . $id;
+    //         $param = [
+    //             'icd_group',
+    //             'icd_chapter',
+    //             'gender',
+    //             'age_type'
+    //         ];
+    //     }
+    //     $data = get_cache_full($this->icd, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
+
+    // /// Medi Record Type
+    // public function medi_record_type($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->medi_record_type_name;
+    //         $param = [];
+    //     } else {
+    //         $name = $this->medi_record_type_name . '_' . $id;
+    //         $param = [];
+    //     }
+    //     $data = get_cache_full($this->medi_record_type, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
+
+    // /// File Type
+    // public function file_type($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->file_type_name;
+    //         $param = [];
+    //     } else {
+    //         $name = $this->file_type_name . '_' . $id;
+    //         $param = [];
+    //     }
+    //     $data = get_cache_full($this->file_type, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
+
+    // /// Treatment End Type
+    // public function treatment_end_type($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->treatment_end_type_name;
+    //         $param = [];
+    //     } else {
+    //         $name = $this->treatment_end_type_name . '_' . $id;
+    //         $param = [];
+    //     }
+    //     $data = get_cache_full($this->treatment_end_type, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
+
+    // /// Tran Pati Tech
+    // public function tran_pati_tech($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->tran_pati_tech_name;
+    //         $param = [];
+    //     } else {
+    //         $name = $this->tran_pati_tech_name . '_' . $id;
+    //         $param = [];
+    //     }
+    //     $data = get_cache_full($this->tran_pati_tech, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
+
+    // /// Debate Reason
+    // public function debate_reason($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->debate_reason_name;
+    //         $param = [
+    //             'debates:id,debate_reason_id,icd_name,icd_code,icd_sub_code'
+    //         ];
+    //     } else {
+    //         $name = $this->debate_reason_name . '_' . $id;
+    //         $param = [
+    //             'debates'
+    //         ];
+    //     }
+    //     $data = get_cache_full($this->debate_reason, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
+
+    // /// Cancel Reason
+    // public function cancel_reason($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->cancel_reason_name;
+    //         $param = [];
+    //     } else {
+    //         $name = $this->cancel_reason_name . '_' . $id;
+    //         $param = [];
+    //     }
+    //     $data = get_cache_full($this->cancel_reason, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
+
+    // /// Interaction Reason
+    // public function interaction_reason($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->interaction_reason_name;
+    //         $param = [];
+    //     } else {
+    //         $name = $this->interaction_reason_name . '_' . $id;
+    //         $param = [];
+    //     }
+    //     $data = get_cache_full($this->interaction_reason, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
+
+    // /// Unlimit Reason
+    // public function unlimit_reason($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->unlimit_reason_name;
+    //         $param = [];
+    //     } else {
+    //         $name = $this->unlimit_reason_name . '_' . $id;
+    //         $param = [];
+    //     }
+    //     $data = get_cache_full($this->unlimit_reason, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
+
+    // /// Hospitalize Reason
+    // public function hospitalize_reason($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->hospitalize_reason_name;
+    //         $param = [];
+    //     } else {
+    //         $name = $this->hospitalize_reason_name . '_' . $id;
+    //         $param = [];
+    //     }
+    //     $data = get_cache_full($this->hospitalize_reason, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
+
+    // /// Exp Mest Reason
+    // public function exp_mest_reason($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->exp_mest_reason_name;
+    //         $param = [];
+    //     } else {
+    //         $name = $this->exp_mest_reason_name . '_' . $id;
+    //         $param = [];
+    //     }
+    //     $data = get_cache_full($this->exp_mest_reason, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
+
+
+    // /// Career Title
+    // public function career_title($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->career_title_name;
+    //         $param = [];
+    //     } else {
+    //         $name = $this->career_title_name . '_' . $id;
+    //         $param = [];
+    //     }
+    //     $data = get_cache_full($this->career_title, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
+
+    // /// Accident Hurt Type
+    // public function accident_hurt_type($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->accident_hurt_type_name;
+    //         $param = [];
+    //     } else {
+    //         $name = $this->accident_hurt_type_name . '_' . $id;
+    //         $param = [];
+    //     }
+    //     $data = get_cache_full($this->accident_hurt_type, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
+
+
+    // /// Supplier
+    // public function supplier($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->supplier_name;
+    //         $param = [];
+    //     } else {
+    //         $name = $this->supplier_name . '_' . $id;
+    //         $param = [];
+    //     }
+    //     $data = get_cache_full($this->supplier, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
+
+    // /// Processing
+    // public function processing_method($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->processing_method_name;
+    //         $param = [];
+    //     } else {
+    //         $name = $this->processing_method_name . '_' . $id;
+    //         $param = [];
+    //     }
+    //     $data = get_cache_full($this->processing_method, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
+
+    // /// Death Within
+    // public function death_within($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->death_within_name;
+    //         $param = [];
+    //     } else {
+    //         $name = $this->death_within_name . '_' . $id;
+    //         $param = [];
+    //     }
+    //     $data = get_cache_full($this->death_within, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
+
+    // /// Location Treatment
+    // public function location_treatment($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->location_store_name;
+    //         $param = [];
+    //     } else {
+    //         $name = $this->location_store_name . '_' . $id;
+    //         $param = [];
+    //     }
+    //     $data = get_cache_full($this->location_store, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
+
+    // /// Accident Care
+    // public function accident_care($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->accident_care_name;
+    //         $param = [];
+    //     } else {
+    //         $name = $this->accident_care_name . '_' . $id;
+    //         $param = [];
+    //     }
+    //     $data = get_cache_full($this->accident_care, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
+
+    // /// Pttt Table
+    // public function pttt_table($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->pttt_table_name;
+    //         $param = [
+    //             'execute_room:id,execute_room_name,execute_room_code'
+    //         ];
+    //     } else {
+    //         $name = $this->pttt_table_name . '_' . $id;
+    //         $param = [
+    //             'execute_room'
+    //         ];
+    //     }
+    //     $data = get_cache_full($this->pttt_table, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
     
 
 
 
-    /// Emotionless Method
-    public function emotionless_method($id = null)
-    {
-        if ($id == null) {
-            $name = $this->emotionless_method_name;
-            $param = [];
-        } else {
-            $name = $this->emotionless_method_name . '_' . $id;
-            $param = [];
-        }
-        $data = get_cache_full($this->emotionless_method, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
+    // /// Emotionless Method
+    // public function emotionless_method($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->emotionless_method_name;
+    //         $param = [];
+    //     } else {
+    //         $name = $this->emotionless_method_name . '_' . $id;
+    //         $param = [];
+    //     }
+    //     $data = get_cache_full($this->emotionless_method, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
 
-    /// Pttt Catastrophe
-    public function pttt_catastrophe($id = null)
-    {
-        if ($id == null) {
-            $name = $this->pttt_catastrophe_name;
-            $param = [];
-        } else {
-            $name = $this->pttt_catastrophe_name . '_' . $id;
-            $param = [];
-        }
-        $data = get_cache_full($this->pttt_catastrophe, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
+    // /// Pttt Catastrophe
+    // public function pttt_catastrophe($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->pttt_catastrophe_name;
+    //         $param = [];
+    //     } else {
+    //         $name = $this->pttt_catastrophe_name . '_' . $id;
+    //         $param = [];
+    //     }
+    //     $data = get_cache_full($this->pttt_catastrophe, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
 
-    /// Pttt Condition
-    public function pttt_condition($id = null)
-    {
-        if ($id == null) {
-            $name = $this->pttt_condition_name;
-            $param = [];
-        } else {
-            $name = $this->pttt_condition_name . '_' . $id;
-            $param = [];
-        }
-        $data = get_cache_full($this->pttt_condition, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
+    // /// Pttt Condition
+    // public function pttt_condition($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->pttt_condition_name;
+    //         $param = [];
+    //     } else {
+    //         $name = $this->pttt_condition_name . '_' . $id;
+    //         $param = [];
+    //     }
+    //     $data = get_cache_full($this->pttt_condition, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
 
-    /// Awareness
-    public function awareness($id = null)
-    {
-        if ($id == null) {
-            $name = $this->awareness_name;
-            $param = [];
-        } else {
-            $name = $this->awareness_name . '_' . $id;
-            $param = [];
-        }
-        $data = get_cache_full($this->awareness, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
+    // /// Awareness
+    // public function awareness($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->awareness_name;
+    //         $param = [];
+    //     } else {
+    //         $name = $this->awareness_name . '_' . $id;
+    //         $param = [];
+    //     }
+    //     $data = get_cache_full($this->awareness, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
 
-    /// Medicine Line
-    public function medicine_line($id = null)
-    {
-        if ($id == null) {
-            $name = $this->medicine_line_name;
-            $param = [];
-        } else {
-            $name = $this->medicine_line_name . '_' . $id;
-            $param = [];
-        }
-        $data = get_cache_full($this->medicine_line, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
+    // /// Medicine Line
+    // public function medicine_line($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->medicine_line_name;
+    //         $param = [];
+    //     } else {
+    //         $name = $this->medicine_line_name . '_' . $id;
+    //         $param = [];
+    //     }
+    //     $data = get_cache_full($this->medicine_line, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
 
-    /// Blood Volume
-    public function blood_volume($id = null)
-    {
-        if ($id == null) {
-            $name = $this->blood_volume_name;
-            $param = [];
-        } else {
-            $name = $this->blood_volume_name . '_' . $id;
-            $param = [];
-        }
-        $data = get_cache_full($this->blood_volume, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
+    // /// Blood Volume
+    // public function blood_volume($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->blood_volume_name;
+    //         $param = [];
+    //     } else {
+    //         $name = $this->blood_volume_name . '_' . $id;
+    //         $param = [];
+    //     }
+    //     $data = get_cache_full($this->blood_volume, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
 
-    /// Medicine Use Form
-    public function medicine_use_form($id = null)
-    {
-        if ($id == null) {
-            $name = $this->medicine_use_form_name;
-            $param = [];
-        } else {
-            $name = $this->medicine_use_form_name . '_' . $id;
-            $param = [];
-        }
-        $data = get_cache_full($this->medicine_use_form, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
+    // /// Medicine Use Form
+    // public function medicine_use_form($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->medicine_use_form_name;
+    //         $param = [];
+    //     } else {
+    //         $name = $this->medicine_use_form_name . '_' . $id;
+    //         $param = [];
+    //     }
+    //     $data = get_cache_full($this->medicine_use_form, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
 
-    /// Bid Type
-    public function bid_type($id = null)
-    {
-        if ($id == null) {
-            $name = $this->bid_type_name;
-            $param = [];
-        } else {
-            $name = $this->bid_type_name . '_' . $id;
-            $param = [];
-        }
-        $data = get_cache_full($this->bid_type, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
+    // /// Bid Type
+    // public function bid_type($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->bid_type_name;
+    //         $param = [];
+    //     } else {
+    //         $name = $this->bid_type_name . '_' . $id;
+    //         $param = [];
+    //     }
+    //     $data = get_cache_full($this->bid_type, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
 
-    /// Medicine Type Active Ingredient
-    public function medicine_type_acin($id = null)
-    {
-        if ($id == null) {
-            $name = $this->medicine_type_acin_name;
-            $param = [
-                'medicine_type:id,medicine_type_name,medicine_type_code',
-                'active_ingredient:id,active_ingredient_name,active_ingredient_code'
-            ];
-        } else {
-            $name = $this->medicine_type_acin_name . '_' . $id;
-            $param = [
-                'medicine_type',
-                'active_ingredient'
-            ];
-        }
-        $data = get_cache_full($this->medicine_type_acin, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
+    // /// Medicine Type Active Ingredient
+    // public function medicine_type_acin($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->medicine_type_acin_name;
+    //         $param = [
+    //             'medicine_type:id,medicine_type_name,medicine_type_code',
+    //             'active_ingredient:id,active_ingredient_name,active_ingredient_code'
+    //         ];
+    //     } else {
+    //         $name = $this->medicine_type_acin_name . '_' . $id;
+    //         $param = [
+    //             'medicine_type',
+    //             'active_ingredient'
+    //         ];
+    //     }
+    //     $data = get_cache_full($this->medicine_type_acin, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
 
-    public function medicine_type_with_active_ingredient($id = null)
-    {
-        if ($id == null) {
-            $name = $this->medicine_type_name . '_with_' . $this->active_ingredient_name;
-            $param = [
-                'active_ingredients:id,active_ingredient_name,active_ingredient_code'
-            ];
-        } else {
-            $name = $this->medicine_type_name . '_' . $id . '_with_' . $this->active_ingredient_name;
-            $param = [
-                'active_ingredients'
-            ];
-        }
-        $data = get_cache_full($this->medicine_type, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
+    // public function medicine_type_with_active_ingredient($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->medicine_type_name . '_with_' . $this->active_ingredient_name;
+    //         $param = [
+    //             'active_ingredients:id,active_ingredient_name,active_ingredient_code'
+    //         ];
+    //     } else {
+    //         $name = $this->medicine_type_name . '_' . $id . '_with_' . $this->active_ingredient_name;
+    //         $param = [
+    //             'active_ingredients'
+    //         ];
+    //     }
+    //     $data = get_cache_full($this->medicine_type, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
 
-    public function active_ingredient_with_medicine_type($id = null)
-    {
-        if ($id == null) {
-            $name = $this->active_ingredient_name . '_with_' . $this->medicine_type_name;
-            $param = [
-                'medicine_types:id,medicine_type_name,medicine_type_code'
-            ];
-        } else {
-            $name = $this->active_ingredient_name . '_' . $id . '_with_' . $this->medicine_type_name;
-            $param = [
-                'medicine_types'
-            ];
-        }
-        $data = get_cache_full($this->active_ingredient, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
+    // public function active_ingredient_with_medicine_type($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->active_ingredient_name . '_with_' . $this->medicine_type_name;
+    //         $param = [
+    //             'medicine_types:id,medicine_type_name,medicine_type_code'
+    //         ];
+    //     } else {
+    //         $name = $this->active_ingredient_name . '_' . $id . '_with_' . $this->medicine_type_name;
+    //         $param = [
+    //             'medicine_types'
+    //         ];
+    //     }
+    //     $data = get_cache_full($this->active_ingredient, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
 
-    /// Atc Group
-    public function atc_group($id = null)
-    {
-        if ($id == null) {
-            $name = $this->atc_group_name;
-            $param = [];
-        } else {
-            $name = $this->atc_group_name . '_' . $id;
-            $param = [];
-        }
-        $data = get_cache_full($this->atc_group, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
+    // /// Atc Group
+    // public function atc_group($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->atc_group_name;
+    //         $param = [];
+    //     } else {
+    //         $name = $this->atc_group_name . '_' . $id;
+    //         $param = [];
+    //     }
+    //     $data = get_cache_full($this->atc_group, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
 
-    /// Blood Group
-    public function blood_group($id = null)
-    {
-        if ($id == null) {
-            $name = $this->blood_group_name;
-            $param = [];
-        } else {
-            $name = $this->blood_group_name . '_' . $id;
-            $param = [];
-        }
-        $data = get_cache_full($this->blood_group, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-
-    /// Medicine Group
-    public function medicine_group($id = null)
-    {
-        if ($id == null) {
-            $name = $this->medicine_group_name;
-            $param = [];
-        } else {
-            $name = $this->medicine_group_name . '_' . $id;
-            $param = [];
-        }
-        $data = get_cache_full($this->medicine_group, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    /// Test Index
-    public function test_index($id = null)
-    {
-        if ($id == null) {
-            $name = $this->test_index_name;
-            $param = [
-                'test_service_type:id,service_name,service_code',
-                'test_index_unit:id,test_index_unit_name,test_index_unit_code',
-                'test_index_group:id,test_index_group_name,test_index_group_code',
-                'material_type:id,material_type_name,material_type_code'
-            ];
-        } else {
-            $name = $this->test_index_name . '_' . $id;
-            $param = [
-                'test_service_type',
-                'test_index_unit',
-                'test_index_group',
-                'material_type'
-            ];
-        }
-        $data = get_cache_full($this->test_index, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
-
-    /// Test Index Unit
-    public function test_index_unit($id = null)
-    {
-        if ($id == null) {
-            $name = $this->test_index_unit_name;
-            $param = [];
-        } else {
-            $name = $this->test_index_unit_name . '_' . $id;
-            $param = [];
-        }
-        $data = get_cache_full($this->test_index_unit, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
+    // /// Blood Group
+    // public function blood_group($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->blood_group_name;
+    //         $param = [];
+    //     } else {
+    //         $name = $this->blood_group_name . '_' . $id;
+    //         $param = [];
+    //     }
+    //     $data = get_cache_full($this->blood_group, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
 
 
+    // /// Medicine Group
+    // public function medicine_group($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->medicine_group_name;
+    //         $param = [];
+    //     } else {
+    //         $name = $this->medicine_group_name . '_' . $id;
+    //         $param = [];
+    //     }
+    //     $data = get_cache_full($this->medicine_group, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
 
-    /// User Room
-    public function user_with_room()
-    {
-        // Khai báo các biến lấy từ json param
-        $request_loginname = $this->param_request['ApiData']['LOGINNAME'] ?? null;
+    // /// Test Index
+    // public function test_index($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->test_index_name;
+    //         $param = [
+    //             'test_service_type:id,service_name,service_code',
+    //             'test_index_unit:id,test_index_unit_name,test_index_unit_code',
+    //             'test_index_group:id,test_index_group_name,test_index_group_code',
+    //             'material_type:id,material_type_name,material_type_code'
+    //         ];
+    //     } else {
+    //         $name = $this->test_index_name . '_' . $id;
+    //         $param = [
+    //             'test_service_type',
+    //             'test_index_unit',
+    //             'test_index_group',
+    //             'material_type'
+    //         ];
+    //     }
+    //     $data = get_cache_full($this->test_index, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
 
-        // Khai báo các trường cần select
-        $select = [
-            "id",
-            "create_Time",
-            "modify_Time",
-            "creator",
-            "modifier",
-            "app_Creator",
-            "app_Modifier",
-            "is_Active",
-            "is_Delete",
-            "group_Code",
-            "loginname",
-            "room_Id",
-        ];
+    // /// Test Index Unit
+    // public function test_index_unit($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->test_index_unit_name;
+    //         $param = [];
+    //     } else {
+    //         $name = $this->test_index_unit_name . '_' . $id;
+    //         $param = [];
+    //     }
+    //     $data = get_cache_full($this->test_index_unit, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
 
-        // Khởi tạo, gán các model vào các biến 
-        $model = $this->user_room::select($select);
 
-        // Kiểm tra các điều kiện từ json param
-        if ($request_loginname != null) {
-            $model->where('loginname', $request_loginname);
-        }
 
-        // Khai báo các bảng liên kết dùng cho with()
-        $param = [
-            'room:id,department_id,room_type_id',
-            'room.execute_room:id,room_id,execute_room_name,execute_room_code',
-            'room.room_type:id,room_type_name,room_type_code',
-            'room.department:id,branch_id,department_name,department_code',
-            'room.department.branch:id,branch_name,branch_code',
-        ];
+    // /// User Room
+    // public function user_with_room()
+    // {
+    //     // Khai báo các biến lấy từ json param
+    //     $request_loginname = $this->param_request['ApiData']['LOGINNAME'] ?? null;
 
-        // Lấy dữ liệu
-        $count = $model->count();
-        $data = $model->skip($this->start)->take($this->limit)->with($param)->get();
-        // Trả về dữ liệu
-        return response()->json([
-            'data' =>
-            $data,
-            'Param' => [
-                'Start' => $this->start,
-                'Limit' => $this->limit,
-                'Count' => $count
-            ]
-        ], 200);
-    }
+    //     // Khai báo các trường cần select
+    //     $select = [
+    //         "id",
+    //         "create_Time",
+    //         "modify_Time",
+    //         "creator",
+    //         "modifier",
+    //         "app_Creator",
+    //         "app_Modifier",
+    //         "is_Active",
+    //         "is_Delete",
+    //         "group_Code",
+    //         "loginname",
+    //         "room_Id",
+    //     ];
 
-    /// Debate
+    //     // Khởi tạo, gán các model vào các biến 
+    //     $model = $this->user_room::select($select);
+
+    //     // Kiểm tra các điều kiện từ json param
+    //     if ($request_loginname != null) {
+    //         $model->where('loginname', $request_loginname);
+    //     }
+
+    //     // Khai báo các bảng liên kết dùng cho with()
+    //     $param = [
+    //         'room:id,department_id,room_type_id',
+    //         'room.execute_room:id,room_id,execute_room_name,execute_room_code',
+    //         'room.room_type:id,room_type_name,room_type_code',
+    //         'room.department:id,branch_id,department_name,department_code',
+    //         'room.department.branch:id,branch_name,branch_code',
+    //     ];
+
+    //     // Lấy dữ liệu
+    //     $count = $model->count();
+    //     $data = $model->skip($this->start)->take($this->limit)->with($param)->get();
+    //     // Trả về dữ liệu
+    //     return response()->json([
+    //         'data' =>
+    //         $data,
+    //         'Param' => [
+    //             'Start' => $this->start,
+    //             'Limit' => $this->limit,
+    //             'Count' => $count
+    //         ]
+    //     ], 200);
+    // }
+
+    // /// Debate
   
 
-    /// Debate User
+    // /// Debate User
 
-    /// Debate Ekip User
-    /// Debate Type
-    public function debate_type($id = null)
-    {
-        if ($id == null) {
-            $name = $this->debate_type_name;
-            $param = [
-                'debates:id,debate_type_id,icd_name,icd_code,icd_sub_code'
-            ];
-        } else {
-            $name = $this->debate_type_name . '_' . $id;
-            $param = [
-                'debates'
-            ];
-        }
-        $data = get_cache_full($this->debate_type, $param, $name, $id, $this->time);
-        return response()->json(['data' => $data], 200);
-    }
+    // /// Debate Ekip User
+    // /// Debate Type
+    // public function debate_type($id = null)
+    // {
+    //     if ($id == null) {
+    //         $name = $this->debate_type_name;
+    //         $param = [
+    //             'debates:id,debate_type_id,icd_name,icd_code,icd_sub_code'
+    //         ];
+    //     } else {
+    //         $name = $this->debate_type_name . '_' . $id;
+    //         $param = [
+    //             'debates'
+    //         ];
+    //     }
+    //     $data = get_cache_full($this->debate_type, $param, $name, $id, $this->time);
+    //     return response()->json(['data' => $data], 200);
+    // }
 
-
-
-
- 
-
-  
   
 }

@@ -31,79 +31,223 @@ class ServiceController extends BaseApiCacheController
         }
     }
 
-    
-    public function service($id)
+    public function service($id = null)
     {
-        if (!is_numeric($id)) {
-            return return_id_error($id);
+        $param = [
+        ];
+        $keyword = mb_strtolower($this->keyword, 'UTF-8');
+        if ($keyword != null) {
+            $data = $this->service;
+            $data = $data->where(function ($query) use ($keyword){
+                $query = $query
+                ->where(DB::connection('oracle_his')->raw('lower(service_code)'), 'like', '%' . $keyword . '%')
+                ->orWhere(DB::connection('oracle_his')->raw('lower(service_name)'), 'like', '%' . $keyword . '%');
+            });
+        if ($this->is_active !== null) {
+            $data = $data->where(function ($query) {
+                $query = $query->where(DB::connection('oracle_his')->raw('his_service.is_active'), $this->is_active);
+            });
+        } 
+        if ($this->service_type_id != null) {
+            $data = $data->where(function ($query) {
+                $query = $query->where(DB::connection('oracle_his')->raw('his_service.service_type_id'), $this->service_type_id);
+            });
+        }  
+            $count = $data->count();
+            if ($this->order_by != null) {
+                foreach ($this->order_by as $key => $item) {
+                    $data->orderBy($key, $item);
+                }
+            }
+            $data = $data->with($param)
+                ->skip($this->start)
+                ->take($this->limit)
+                ->get();
+        } else {
+            if ($id == null) {
+                $data = Cache::remember($this->service_name . '_service_type_'.$this->service_type_id. '_start_' . $this->start . '_limit_' . $this->limit. $this->order_by_tring. '_is_active_' . $this->is_active, $this->time, function () {
+                    $data = $this->service;
+                    if ($this->is_active !== null) {
+                        $data = $data->where(function ($query) {
+                            $query = $query->where(DB::connection('oracle_his')->raw("his_service.is_active"), $this->is_active);
+                        });
+                    }
+                    if ($this->service_type_id != null) {
+                        $data = $data->where(function ($query) {
+                            $query = $query->where(DB::connection('oracle_his')->raw('his_service.service_type_id'), $this->service_type_id);
+                        });
+                    } 
+                        $count = $data->count();
+                        if ($this->order_by != null) {
+                            foreach ($this->order_by as $key => $item) {
+                                $data = $data->orderBy(DB::connection('oracle_his')->raw('his_service.' . $key . ''), $item);
+                            }
+                        }
+                        $data = $data    
+                            ->skip($this->start)
+                            ->take($this->limit)
+                            ->get();
+                    return ['data' => $data, 'count' => $count];
+                });
+            } else {
+                if (!is_numeric($id)) {
+                    return return_id_error($id);
+                }
+                $data = $this->service->find($id);
+                if ($data == null) {
+                    return return_not_record($id);
+                }
+                $data = get_cache_full($this->service, [], $this->service_name. '_start_' . $this->start . '_limit_' . $this->limit . $this->order_by_tring. '_is_active_' . $this->is_active, $id, $this->time,$this->start, $this->limit, $this->order_by, $this->is_active);
+                if($data != null){
+                    $data1 = get_cache_1_1($this->service, "service_type", $this->service_name, $id, $this->time);
+                    $data2 = get_cache_1_1($this->service, "parent", $this->service_name, $id, $this->time);
+                    $data3 = get_cache_1_1($this->service, "service_unit", $this->service_name, $id, $this->time);
+                    $data4 = get_cache_1_1($this->service, "hein_service_type", $this->service_name, $id, $this->time);
+                    $data5 = get_cache_1_1($this->service, "bill_patient_type", $this->service_name, $id, $this->time);
+                    $data6 = get_cache_1_1($this->service, "pttt_group", $this->service_name, $id, $this->time);
+                    $data7 = get_cache_1_1($this->service, "pttt_method", $this->service_name, $id, $this->time);
+                    $data8 = get_cache_1_1($this->service, "icd_cm", $this->service_name, $id, $this->time);
+                    $data9 = get_cache_1_1($this->service, "revenue_department", $this->service_name, $id, $this->time);
+                    $data10 = get_cache_1_1($this->service, "package", $this->service_name, $id, $this->time);
+                    $data11 = get_cache_1_1($this->service, "exe_service_module", $this->service_name, $id, $this->time);
+                    $data12 = get_cache_1_1($this->service, "gender", $this->service_name, $id, $this->time);
+                    $data13 = get_cache_1_1($this->service, "ration_group", $this->service_name, $id, $this->time);
+                    $data14 = get_cache_1_1($this->service, "diim_type", $this->service_name, $id, $this->time);
+                    $data15 = get_cache_1_1($this->service, "fuex_type", $this->service_name, $id, $this->time);
+                    $data16 = get_cache_1_1($this->service, "test_type", $this->service_name, $id, $this->time);
+                    $data17 = get_cache_1_1($this->service, "other_pay_source", $this->service_name, $id, $this->time);
+                    $data18 = get_cache_1_n_with_ids($this->service, "body_part", $this->service_name, $id, $this->time);
+                    $data19 = get_cache_1_1($this->service, "film_size", $this->service_name, $id, $this->time);
+                    $data20 = get_cache_1_n_with_ids($this->service, "applied_patient_type", $this->service_name, $id, $this->time);
+                    $data21 = get_cache_1_1($this->service, "default_patient_type", $this->service_name, $id, $this->time);
+                    $data22 = get_cache_1_n_with_ids($this->service, "applied_patient_classify", $this->service_name, $id, $this->time);
+                    $data23 = get_cache_1_n_with_ids($this->service, "min_proc_time_except_paty", $this->service_name, $id, $this->time);
+                    $data24 = get_cache_1_n_with_ids($this->service, "max_proc_time_except_paty", $this->service_name, $id, $this->time);
+                    $data25 = get_cache_1_n_with_ids($this->service, "total_time_except_paty", $this->service_name, $id, $this->time);
+                }
+                // $count = $data->count();
+                $param_return = [
+                    'start' => $this->start,
+                    'limit' => $this->limit,
+                    'count' => null,
+                    'is_active' => $this->is_active,
+                    'keyword' => $this->keyword,
+                    'order_by' => $this->order_by_request
+                ];
+                $param_data = [
+                    'service' => $data,
+                    'service_type' => $data1 ?? null,
+                    'parent' => $data2 ?? null,
+                    'service_unit' => $data3 ?? null,
+                    'hein_service_type' => $data4 ?? null,
+                    'bill_patient_type' => $data5 ?? null,
+                    'pttt_group' => $data6 ?? null,
+                    'pttt_method' => $data7 ?? null,
+                    'icd_cm' => $data8 ?? null,
+                    'revenue_department' => $data9 ?? null,
+                    'package' => $data10 ?? null,
+                    'exe_service_module' => $data11 ?? null,
+                    'gender' => $data12 ?? null,
+                    'ration_group' => $data13 ?? null,
+                    'diim_type' => $data14 ?? null,
+                    'fuex_type' => $data15 ?? null,
+                    'test_type' => $data16 ?? null,
+                    'other_pay_source' => $data17 ?? null,
+                    'body_parts' => $data18 ?? null,
+                    'film_size' => $data19 ?? null,
+                    'applied_patient_types' => $data20 ?? null,
+                    'default_patient_type' => $data21 ?? null,
+                    'applied_patient_classifys' => $data22 ?? null,
+                    'min_proc_time_except_patys' => $data23 ?? null,
+                    'max_proc_time_except_patys' => $data24 ?? null,
+                    'total_time_except_patys' => $data25 ?? null
+                ];
+                return return_data_success($param_return, $param_data);
+            }
         }
-        $data = $this->service->find($id);
-        if ($data == null) {
-            return return_not_record($id);
-        }
-
-        $data = get_cache($this->service, $this->service_name, $id, $this->time,$this->start, $this->limit, $this->order_by);
-        $data1 = get_cache_1_1($this->service, "service_type", $this->service_name, $id, $this->time);
-        $data2 = get_cache_1_1($this->service, "parent", $this->service_name, $id, $this->time);
-        $data3 = get_cache_1_1($this->service, "service_unit", $this->service_name, $id, $this->time);
-        $data4 = get_cache_1_1($this->service, "hein_service_type", $this->service_name, $id, $this->time);
-        $data5 = get_cache_1_1($this->service, "bill_patient_type", $this->service_name, $id, $this->time);
-        $data6 = get_cache_1_1($this->service, "pttt_group", $this->service_name, $id, $this->time);
-        $data7 = get_cache_1_1($this->service, "pttt_method", $this->service_name, $id, $this->time);
-        $data8 = get_cache_1_1($this->service, "icd_cm", $this->service_name, $id, $this->time);
-        $data9 = get_cache_1_1($this->service, "revenue_department", $this->service_name, $id, $this->time);
-        $data10 = get_cache_1_1($this->service, "package", $this->service_name, $id, $this->time);
-        $data11 = get_cache_1_1($this->service, "exe_service_module", $this->service_name, $id, $this->time);
-        $data12 = get_cache_1_1($this->service, "gender", $this->service_name, $id, $this->time);
-        $data13 = get_cache_1_1($this->service, "ration_group", $this->service_name, $id, $this->time);
-        $data14 = get_cache_1_1($this->service, "diim_type", $this->service_name, $id, $this->time);
-        $data15 = get_cache_1_1($this->service, "fuex_type", $this->service_name, $id, $this->time);
-        $data16 = get_cache_1_1($this->service, "test_type", $this->service_name, $id, $this->time);
-        $data17 = get_cache_1_1($this->service, "other_pay_source", $this->service_name, $id, $this->time);
-        $data18 = get_cache_1_n_with_ids($this->service, "body_part", $this->service_name, $id, $this->time);
-        $data19 = get_cache_1_1($this->service, "film_size", $this->service_name, $id, $this->time);
-        $data20 = get_cache_1_n_with_ids($this->service, "applied_patient_type", $this->service_name, $id, $this->time);
-        $data21 = get_cache_1_1($this->service, "default_patient_type", $this->service_name, $id, $this->time);
-        $data22 = get_cache_1_n_with_ids($this->service, "applied_patient_classify", $this->service_name, $id, $this->time);
-        $data23 = get_cache_1_n_with_ids($this->service, "min_proc_time_except_paty", $this->service_name, $id, $this->time);
-        $data24 = get_cache_1_n_with_ids($this->service, "max_proc_time_except_paty", $this->service_name, $id, $this->time);
-        $data25 = get_cache_1_n_with_ids($this->service, "total_time_except_paty", $this->service_name, $id, $this->time);
-        // $count = $data->count();
         $param_return = [
-            'start' => null,
-            'limit' => null,
-            'count' => null
+            'start' => $this->start,
+            'limit' => $this->limit,
+            'count' => $count ?? $data['count'],
+            'is_active' => $this->is_active,
+            'service_type_id' => $this->service_type_id,
+            'keyword' => $this->keyword,
+            'order_by' => $this->order_by_request
         ];
-        $param_data = [
-            'service' => $data,
-            'service_type' => $data1,
-            'parent' => $data2,
-            'service_unit' => $data3,
-            'hein_service_type' => $data4,
-            'bill_patient_type' => $data5,
-            'pttt_group' => $data6,
-            'pttt_method' => $data7,
-            'icd_cm' => $data8,
-            'revenue_department' => $data9,
-            'package' => $data10,
-            'exe_service_module' => $data11,
-            'gender' => $data12,
-            'ration_group' => $data13,
-            'diim_type' => $data14,
-            'fuex_type' => $data15,
-            'test_type' => $data16,
-            'other_pay_source' => $data17,
-            'body_parts' => $data18,
-            'film_size' => $data19,
-            'applied_patient_types' => $data20,
-            'default_patient_type' => $data21,
-            'applied_patient_classifys' => $data22,
-            'min_proc_time_except_patys' => $data23,
-            'max_proc_time_except_patys' => $data24,
-            'total_time_except_patys' => $data25
-        ];
-        return return_data_success($param_return, $param_data);
-    }
+        return return_data_success($param_return, $data ?? $data['data']);
+    } 
+    // public function service($id)
+    // {
+    //     if (!is_numeric($id)) {
+    //         return return_id_error($id);
+    //     }
+    //     $data = $this->service->find($id);
+    //     if ($data == null) {
+    //         return return_not_record($id);
+    //     }
+
+    //     $data = get_cache($this->service, $this->service_name, $id, $this->time,$this->start, $this->limit, $this->order_by);
+    //     $data1 = get_cache_1_1($this->service, "service_type", $this->service_name, $id, $this->time);
+    //     $data2 = get_cache_1_1($this->service, "parent", $this->service_name, $id, $this->time);
+    //     $data3 = get_cache_1_1($this->service, "service_unit", $this->service_name, $id, $this->time);
+    //     $data4 = get_cache_1_1($this->service, "hein_service_type", $this->service_name, $id, $this->time);
+    //     $data5 = get_cache_1_1($this->service, "bill_patient_type", $this->service_name, $id, $this->time);
+    //     $data6 = get_cache_1_1($this->service, "pttt_group", $this->service_name, $id, $this->time);
+    //     $data7 = get_cache_1_1($this->service, "pttt_method", $this->service_name, $id, $this->time);
+    //     $data8 = get_cache_1_1($this->service, "icd_cm", $this->service_name, $id, $this->time);
+    //     $data9 = get_cache_1_1($this->service, "revenue_department", $this->service_name, $id, $this->time);
+    //     $data10 = get_cache_1_1($this->service, "package", $this->service_name, $id, $this->time);
+    //     $data11 = get_cache_1_1($this->service, "exe_service_module", $this->service_name, $id, $this->time);
+    //     $data12 = get_cache_1_1($this->service, "gender", $this->service_name, $id, $this->time);
+    //     $data13 = get_cache_1_1($this->service, "ration_group", $this->service_name, $id, $this->time);
+    //     $data14 = get_cache_1_1($this->service, "diim_type", $this->service_name, $id, $this->time);
+    //     $data15 = get_cache_1_1($this->service, "fuex_type", $this->service_name, $id, $this->time);
+    //     $data16 = get_cache_1_1($this->service, "test_type", $this->service_name, $id, $this->time);
+    //     $data17 = get_cache_1_1($this->service, "other_pay_source", $this->service_name, $id, $this->time);
+    //     $data18 = get_cache_1_n_with_ids($this->service, "body_part", $this->service_name, $id, $this->time);
+    //     $data19 = get_cache_1_1($this->service, "film_size", $this->service_name, $id, $this->time);
+    //     $data20 = get_cache_1_n_with_ids($this->service, "applied_patient_type", $this->service_name, $id, $this->time);
+    //     $data21 = get_cache_1_1($this->service, "default_patient_type", $this->service_name, $id, $this->time);
+    //     $data22 = get_cache_1_n_with_ids($this->service, "applied_patient_classify", $this->service_name, $id, $this->time);
+    //     $data23 = get_cache_1_n_with_ids($this->service, "min_proc_time_except_paty", $this->service_name, $id, $this->time);
+    //     $data24 = get_cache_1_n_with_ids($this->service, "max_proc_time_except_paty", $this->service_name, $id, $this->time);
+    //     $data25 = get_cache_1_n_with_ids($this->service, "total_time_except_paty", $this->service_name, $id, $this->time);
+    //     // $count = $data->count();
+    //     $param_return = [
+    //         'start' => null,
+    //         'limit' => null,
+    //         'count' => null
+    //     ];
+    //     $param_data = [
+    //         'service' => $data,
+    //         'service_type' => $data1,
+    //         'parent' => $data2,
+    //         'service_unit' => $data3,
+    //         'hein_service_type' => $data4,
+    //         'bill_patient_type' => $data5,
+    //         'pttt_group' => $data6,
+    //         'pttt_method' => $data7,
+    //         'icd_cm' => $data8,
+    //         'revenue_department' => $data9,
+    //         'package' => $data10,
+    //         'exe_service_module' => $data11,
+    //         'gender' => $data12,
+    //         'ration_group' => $data13,
+    //         'diim_type' => $data14,
+    //         'fuex_type' => $data15,
+    //         'test_type' => $data16,
+    //         'other_pay_source' => $data17,
+    //         'body_parts' => $data18,
+    //         'film_size' => $data19,
+    //         'applied_patient_types' => $data20,
+    //         'default_patient_type' => $data21,
+    //         'applied_patient_classifys' => $data22,
+    //         'min_proc_time_except_patys' => $data23,
+    //         'max_proc_time_except_patys' => $data24,
+    //         'total_time_except_patys' => $data25
+    //     ];
+    //     return return_data_success($param_return, $param_data);
+    // }
 
 
     // public function service_by_code($type_id)
@@ -112,58 +256,58 @@ class ServiceController extends BaseApiCacheController
     //     $data = get_cache_by_code($this->service, $this->service_name, $param, 'service_code', $type_id, $this->time);
     //     return response()->json(['data' => $data], 200);
     // }
-    public function service_by_service_type($id)
-    {
-        if (!is_numeric($id)) {
-            return return_id_error($id);
-        }
-        $data = $this->service_type->find($id);
-        if ($data == null) {
-            return return_not_record($id);
-        }
+    // public function service_by_service_type($id)
+    // {
+    //     if (!is_numeric($id)) {
+    //         return return_id_error($id);
+    //     }
+    //     $data = $this->service_type->find($id);
+    //     if ($data == null) {
+    //         return return_not_record($id);
+    //     }
 
 
-        $keyword = mb_strtolower($this->keyword, 'UTF-8');
-        if ($keyword != null) {
-            $param = [
-            ];
-            $data = $this->service
-                ->where('service_type_id', '=', $id);
-                $data = $data->where(function ($query) use ($keyword){
-                    $query = $query
-                    ->where(DB::connection('oracle_his')->raw('lower(service_code)'), 'like', '%' . $keyword . '%')
-                    ->orWhere(DB::connection('oracle_his')->raw('lower(service_name)'), 'like', '%' . $keyword . '%');
-                });
-        if ($this->is_active !== null) {
-            $data = $data->where(function ($query) {
-                $query = $query->where(DB::connection('oracle_his')->raw('is_active'), $this->is_active);
-            });
-        } 
-            $count = $data->count();
-            if ($this->order_by != null) {
-                foreach ($this->order_by as $key => $item) {
-                    $data->orderBy('his_service.'.$key, $item);
-                }
-            }
-            $data = $data
-                ->skip($this->start)
-                ->take($this->limit)
-                ->with($param)
-                ->get();
-        } else {
-            $param =[];
-            $data = get_cache_by_code($this->service, $this->service_name. $this->order_by_tring, $param, 'service_type_id', $id, $this->time, $this->start, $this->limit);
-        }
+    //     $keyword = mb_strtolower($this->keyword, 'UTF-8');
+    //     if ($keyword != null) {
+    //         $param = [
+    //         ];
+    //         $data = $this->service
+    //             ->where('service_type_id', '=', $id);
+    //             $data = $data->where(function ($query) use ($keyword){
+    //                 $query = $query
+    //                 ->where(DB::connection('oracle_his')->raw('lower(service_code)'), 'like', '%' . $keyword . '%')
+    //                 ->orWhere(DB::connection('oracle_his')->raw('lower(service_name)'), 'like', '%' . $keyword . '%');
+    //             });
+    //     if ($this->is_active !== null) {
+    //         $data = $data->where(function ($query) {
+    //             $query = $query->where(DB::connection('oracle_his')->raw('is_active'), $this->is_active);
+    //         });
+    //     } 
+    //         $count = $data->count();
+    //         if ($this->order_by != null) {
+    //             foreach ($this->order_by as $key => $item) {
+    //                 $data->orderBy('his_service.'.$key, $item);
+    //             }
+    //         }
+    //         $data = $data
+    //             ->skip($this->start)
+    //             ->take($this->limit)
+    //             ->with($param)
+    //             ->get();
+    //     } else {
+    //         $param =[];
+    //         $data = get_cache_by_code($this->service, $this->service_name. $this->order_by_tring, $param, 'service_type_id', $id, $this->time, $this->start, $this->limit);
+    //     }
 
-        $param_return = [
-            'start' => $this->start,
-            'limit' => $this->limit,
-            'count' => $count ?? $data['count'] ?? null,
-            'keyword' => $this->keyword,
-            'order_by' => $this->order_by_request
-        ];
-        return return_data_success($param_return, $data ?? $data['data']);
-    }
+    //     $param_return = [
+    //         'start' => $this->start,
+    //         'limit' => $this->limit,
+    //         'count' => $count ?? $data['count'] ?? null,
+    //         'keyword' => $this->keyword,
+    //         'order_by' => $this->order_by_request
+    //     ];
+    //     return return_data_success($param_return, $data ?? $data['data']);
+    // }
     
 
     public function service_create(CreateServiceRequest $request)

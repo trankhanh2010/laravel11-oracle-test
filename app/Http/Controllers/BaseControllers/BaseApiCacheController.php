@@ -35,6 +35,9 @@ class BaseApiCacheController extends Controller
     protected $effective;
     protected $room_type_id;
     protected $is_addition;
+    protected $service_type_id;
+    protected $patient_type_ids_string;
+    protected $service_type_ids_string;
 
     // Khai báo các biến mặc định model
     protected $app_creator = "MOS_v2";
@@ -382,6 +385,9 @@ class BaseApiCacheController extends Controller
                 }
             }
         }
+        if($this->service_type_ids != null){
+            $this->service_type_ids_string = arrayToCustomString($this->service_type_ids);
+        }
         $this->patient_type_ids = $this->param_request['ApiData']['PatientTypeIs'] ?? null;
         if ($this->patient_type_ids != null) {
             foreach ($this->patient_type_ids as $key => $item) {
@@ -395,8 +401,11 @@ class BaseApiCacheController extends Controller
                 }
             }
         }
+        if($this->patient_type_ids !=  null){
+            $this->patient_type_ids_string = arrayToCustomString($this->patient_type_ids); 
+        }
         $this->service_id = $this->param_request['ApiData']['ServiceId'] ?? null;
-        if ($this->service_id != null) {
+        if ($this->service_id !== null) {
             // Kiểm tra xem ID có tồn tại trong bảng  hay không
             if (!is_numeric($this->service_id)) {
                 $this->service_id = null;
@@ -407,7 +416,7 @@ class BaseApiCacheController extends Controller
             }
         }
         $this->package_id = $this->param_request['ApiData']['PackageId'] ?? null;
-        if ($this->package_id != null) {
+        if ($this->package_id !== null) {
             // Kiểm tra xem ID có tồn tại trong bảng  hay không
             if (!is_numeric($this->package_id)) {
                 $this->package_id = null;
@@ -418,7 +427,7 @@ class BaseApiCacheController extends Controller
             }
         }
         $this->department_id = $this->param_request['ApiData']['DepartmentId'] ?? null;
-        if ($this->department_id != null) {
+        if ($this->department_id !== null) {
             // Kiểm tra xem ID có tồn tại trong bảng  hay không
             if (!is_numeric($this->department_id)) {
                 $this->department_id = null;
@@ -439,7 +448,7 @@ class BaseApiCacheController extends Controller
             $this->effective = false;
         }
         $this->room_type_id = $this->param_request['ApiData']['RoomTypeId'] ?? null;
-        if ($this->room_type_id != null) {
+        if ($this->room_type_id !== null) {
             // Kiểm tra xem ID có tồn tại trong bảng  hay không
             if (!is_numeric($this->room_type_id)) {
                 $this->room_type_id = null;
@@ -453,6 +462,17 @@ class BaseApiCacheController extends Controller
         if($this->is_addition !== null){
             if (!in_array ($this->is_addition, [0,1])) {
                 $this->is_addition = 1;
+            }
+        }
+        $this->service_type_id = $this->param_request['ApiData']['ServiceTypeId'] ?? null;
+        if ($this->service_type_id !== null) {
+            // Kiểm tra xem ID có tồn tại trong bảng  hay không
+            if (!is_numeric($this->service_type_id)) {
+                $this->service_type_id = null;
+            } else {
+                if (!ServiceType::where('id', $this->service_type_id)->exists()) {
+                    $this->service_type_id = null;
+                }
             }
         }
     }
