@@ -161,6 +161,7 @@ Route::group([
 
     /// Loại xét nghiệm
     Route::get("v1/test-type", [TestTypeController::class, "test_type"]);
+    Route::get("v1/test-type/{id}", [TestTypeController::class, "test_type"]);
 
     /// Phòng khám/cls/pttt
     Route::group(['as' => 'HIS.Desktop.Plugins.HisExecuteRoom'], function () {
