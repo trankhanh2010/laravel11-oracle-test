@@ -18,6 +18,7 @@ return [
         'regex_hhmm' => ' phải được định dạng hhmm trong đó hh có giá trị từ 01 đến 23, mm có giá trị 00, 15 ,30 hoặc 45!',
         'numeric' => ' phải là số!',
         'prohibited_unless_service_type' => ' chỉ được nhập khi mã loại dịch vụ thuộc ',
+        'declined_if'=> ' chỉ được nhập khi ',
         'lte' => ' phải bé hơn hoặc bằng :value!',
         'gte' => ' phải lớn hơn hoặc bằng :value!',
 
@@ -473,6 +474,8 @@ return [
         'actual_price' => 'Giá thực tế',
         'priority' => 'Trường độ ưu tiên',
         'ration_time_id' => 'Id bữa ăn',
+        'package_id' => 'Id gói dịch vụ',
+        'service_condition_id' => 'Id điều kiện dịch vụ',
         'intruction_number_from' => 'Trường từ lần chỉ định thứ',
         'intruction_number_to' => 'Trường đến lần chỉ định thứ',
         'instr_num_by_type_from' => 'Trường từ lần chỉ định thứ (tính theo loại DV)',

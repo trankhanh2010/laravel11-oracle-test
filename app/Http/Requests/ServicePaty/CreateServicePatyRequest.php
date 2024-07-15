@@ -59,6 +59,9 @@ class CreateServicePatyRequest extends FormRequest
             'actual_price' =>                   'nullable|numeric|regex:/^\d{1,15}(\.\d{1,4})?$/|min:0',
             'priority' =>                       'nullable|numeric',
             'ration_time_id' =>                 'nullable|integer|exists:App\Models\HIS\RationTime,id|prohibited_unless:service_type_id,'.$this->ration_time_id_check_id,
+            'package_id' =>                     'nullable|integer|exists:App\Models\HIS\Package,id', 
+            'service_condition_id' =>           'nullable|integer|exists:App\Models\HIS\ServiceCondition,id|declined_if:service_id,null', 
+
             'intruction_number_from' =>         'nullable|integer|min:0',
             'intruction_number_to' =>           'nullable|integer|min:0',
             'instr_num_by_type_from' =>         'nullable|integer|min:0|prohibited_unless:service_type_id,'.$this->instr_num_by_type_from_check_id,
@@ -82,6 +85,11 @@ class CreateServicePatyRequest extends FormRequest
                                                     'max:4',
                                                     'regex:/^(0[0-9]|1[0-9]|2[0-3])(00|15|30|45)$/'
                                                 ],
+
+            'execute_room_ids' =>               'nullable|string|max:4000',  
+            'request_deparment_ids' =>          'nullable|string|max:4000',                    
+            'request_room_ids' =>               'nullable|string|max:4000',                    
+                  
 
         ];
     }
@@ -135,6 +143,13 @@ class CreateServicePatyRequest extends FormRequest
             'ration_time_id.integer'            => config('keywords')['service_paty']['ration_time_id'].config('keywords')['error']['integer'],
             'ration_time_id.exists'             => config('keywords')['service_paty']['ration_time_id'].config('keywords')['error']['exists'], 
             'ration_time_id.prohibited_unless'  => config('keywords')['service_paty']['ration_time_id'].config('keywords')['error']['prohibited_unless_service_type'].$this->ration_time_id_check_string,
+
+            'package_id.integer'            => config('keywords')['service_paty']['package_id'].config('keywords')['error']['integer'],
+            'package_id.exists'             => config('keywords')['service_paty']['package_id'].config('keywords')['error']['exists'], 
+
+            'service_condition_id.integer'            => config('keywords')['service_paty']['service_condition_id'].config('keywords')['error']['integer'],
+            'service_condition_id.exists'             => config('keywords')['service_paty']['service_condition_id'].config('keywords')['error']['exists'], 
+            'service_condition_id.declined_if'        => config('keywords')['service_paty']['service_condition_id'].config('keywords')['error']['declined_if'].config('keywords')['service_paty']['service_id'].' đã được nhập!', 
 
             'intruction_number_from.integer'        => config('keywords')['service_paty']['intruction_number_from'].config('keywords')['error']['integer'],
             'intruction_number_from.min'            => config('keywords')['service_paty']['intruction_number_from'].config('keywords')['error']['integer_min'], 
@@ -193,6 +208,21 @@ class CreateServicePatyRequest extends FormRequest
                 'patient_type_ids_list' => explode(',', $this->patient_type_ids),
             ]);
         }
+        if ($this->has('request_room_ids')) {
+            $this->merge([
+                'request_room_ids_list' => explode(',', $this->request_room_ids),
+            ]);
+        }
+        if ($this->has('request_deparment_ids')) {
+            $this->merge([
+                'request_deparment_ids_list' => explode(',', $this->request_deparment_ids),
+            ]);
+        }
+        if ($this->has('execute_room_ids')) {
+            $this->merge([
+                'execute_room_ids_list' => explode(',', $this->execute_room_ids),
+            ]);
+        }
     }
      
     public function withValidator($validator)
@@ -209,6 +239,27 @@ class CreateServicePatyRequest extends FormRequest
                 foreach ($this->patient_type_ids_list as $id) {
                     if (!is_numeric($id) || !\App\Models\HIS\PatientType::find($id)) {
                         $validator->errors()->add('patient_type_ids', 'Đối tượng thanh toán với id = ' . $id . ' trong danh sách đối tượng thanh toán không tồn tại!');
+                    }
+                }
+            }
+            if ($this->has('request_room_ids_list') && ($this->request_room_ids_list[0] != null)) {
+                foreach ($this->request_room_ids_list as $id) {
+                    if (!is_numeric($id) || !\App\Models\HIS\Room::find($id)) {
+                        $validator->errors()->add('request_room_ids', 'Phòng yêu cầu với id = ' . $id . ' trong danh sách không tồn tại!');
+                    }
+                }
+            }
+            if ($this->has('request_deparment_ids_list') && ($this->request_deparment_ids_list[0] != null)) {
+                foreach ($this->request_deparment_ids_list as $id) {
+                    if (!is_numeric($id) || !\App\Models\HIS\Department::find($id)) {
+                        $validator->errors()->add('request_deparment_ids', 'Khoa yêu cầu với id = ' . $id . ' trong danh sách không tồn tại!');
+                    }
+                }
+            }
+            if ($this->has('execute_room_ids_list') && ($this->execute_room_ids_list[0] != null)) {
+                foreach ($this->execute_room_ids_list as $id) {
+                    if (!is_numeric($id) || !\App\Models\HIS\Room::find($id)) {
+                        $validator->errors()->add('execute_room_ids', 'Phòng thực hiện với id = ' . $id . ' trong danh sách không tồn tại!');
                     }
                 }
             }

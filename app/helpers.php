@@ -78,6 +78,14 @@ function create_slug($string)
         return $result;
     }
 
+    function arrayToCustomStringNotKey(array $array) {
+        $result = '';
+        foreach ($array as $key => $value) {
+            $result .= '_' . $value;
+        }
+        return $result;
+    }
+
 if (!function_exists('get_user_with_loginname')) {
     function get_user_with_loginname($loginname)
     {

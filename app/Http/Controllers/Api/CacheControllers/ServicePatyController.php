@@ -6,6 +6,8 @@ use App\Events\Cache\DeleteCache;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
 use App\Http\Requests\ServicePaty\CreateServicePatyRequest;
 use App\Http\Requests\ServicePaty\UpdateServicePatyRequest;
+use App\Models\HIS\Department;
+use App\Models\HIS\Room;
 use App\Models\HIS\ServicePaty;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -17,6 +19,8 @@ class ServicePatyController extends BaseApiCacheController
     {
         parent::__construct($request); // Gọi constructor của BaseController
         $this->service_paty = new ServicePaty();
+        $this->room = new Room();
+        $this->department = new Department();
         $this->order_by_join = ['service_name', 'service_code', 'patient_type_name', 'patient_type_code', 'branch_name', 'branch_code', 'package_name', 'package_code'];
         // Kiểm tra tên trường trong bảng
         if ($this->order_by != null) {
@@ -34,7 +38,7 @@ class ServicePatyController extends BaseApiCacheController
     public function service_paty($id = null)
     {
         $keyword = mb_strtolower($this->keyword, 'UTF-8');
-        if (($id == null) && ($keyword != null) || ($this->service_type_ids !== null) || ($this->patient_type_ids !== null) || ($this->service_id !== null) || ($this->package_id !== null) || ($this->effective)) {
+        if ($keyword != null) {
             $data = $this->service_paty
                 ->leftJoin('his_service as service', 'service.id', '=', 'his_service_paty.service_id')
                 ->leftJoin('his_patient_type as patient_type', 'patient_type.id', '=', 'his_service_paty.patient_type_id')
@@ -133,7 +137,7 @@ class ServicePatyController extends BaseApiCacheController
                 ->get();
         } else {
             if ($id == null) {
-                $data = Cache::remember('service_paty' . '_start_' . $this->start . '_limit_' . $this->limit . $this->order_by_tring, $this->time, function () {
+                $data = Cache::remember('service_paty' .'_effective_'.$this->effective.'_package_id_'.$this->package_id.'_service_id_'.$this->service_id.'_patient_type_ids_'.$this->patient_type_ids_string.'_service_type_ids_'.$this->service_type_ids_string. '_start_' . $this->start . '_limit_' . $this->limit . $this->order_by_tring. '_is_active_' . $this->is_active, $this->time, function () {
                     $data = $this->service_paty
                         ->leftJoin('his_service as service', 'service.id', '=', 'his_service_paty.service_id')
                         ->leftJoin('his_patient_type as patient_type', 'patient_type.id', '=', 'his_service_paty.patient_type_id')
@@ -153,6 +157,56 @@ class ServicePatyController extends BaseApiCacheController
                             'package.package_code as package_code',
                             'service_type.service_type_name as service_type_name'
                         );
+                        if ($this->service_type_ids !== null) {
+                            $data = $data->where(function ($query) {
+                                // Khởi tạo biến cờ
+                                $isFirst = true;
+                                foreach ($this->service_type_ids as $key => $item) {
+                                    if ($isFirst) {
+                                        $query = $query->where(DB::connection('oracle_his')->raw('service_type_id'), $item);
+                                        $isFirst = false; // Đặt cờ thành false sau lần đầu tiên
+                                    } else {
+                                        $query = $query->orWhere(DB::connection('oracle_his')->raw('service_type_id'), $item);
+                                    }
+                                }
+                            });
+                        }
+                        if ($this->patient_type_ids !== null) {
+                            $data = $data->where(function ($query) {
+                                // Khởi tạo biến cờ
+                                $isFirst = true;
+                                foreach ($this->patient_type_ids as $key => $item) {
+                                    if ($isFirst) {
+                                        $query = $query->where(DB::connection('oracle_his')->raw('patient_type_id'), $item);
+                                        $isFirst = false; // Đặt cờ thành false sau lần đầu tiên
+                                    } else {
+                                        $query = $query->orWhere(DB::connection('oracle_his')->raw('patient_type_id'), $item);
+                                    }
+                                }
+                            });
+                        }
+                        if ($this->service_id !== null) {
+                            $data = $data->where(function ($query) {
+                                $query = $query->where(DB::connection('oracle_his')->raw('service_id'), $this->service_id);
+                            });
+                        }
+                        if ($this->package_id !== null) {
+                            $data = $data->where(function ($query) {
+                                $query = $query->where(DB::connection('oracle_his')->raw('his_service_paty.package_id'), $this->package_id);
+                            });
+                        }
+                        if ($this->is_active !== null) {
+                            $data = $data->where(function ($query) {
+                                $query = $query->where(DB::connection('oracle_his')->raw('his_service_paty.is_active'), $this->is_active);
+                            });
+                        } 
+                        $now = now()->format('Ymdhis');
+                        if ($this->effective) {
+                            $data = $data->where(function ($query) use ($now) {
+                                $query = $query->where(DB::connection('oracle_his')->raw('his_service_paty.to_time'), '>=', $now)
+                                ->orWhere(DB::connection('oracle_his')->raw('his_service_paty.to_time'), null);
+                            });
+                        } 
                     $count = $data->count();
                     if ($this->order_by != null) {
                         foreach ($this->order_by as $key => $item) {
@@ -177,31 +231,141 @@ class ServicePatyController extends BaseApiCacheController
                 if ($data == null) {
                     return return_not_record($id);
                 }
-                $data = get_cache($this->service_paty, $this->service_paty_name, $id, $this->time, $this->start, $this->limit, $this->order_by);
-                $data1 = get_cache_1_1($this->service_paty, "service", $this->service_paty_name, $id, $this->time);
-                $data2 = get_cache_1_1($this->service_paty, "patient_type", $this->service_paty_name, $id, $this->time);
-                $data3 = get_cache_1_1($this->service_paty, "branch", $this->service_paty_name, $id, $this->time);
-                $data4 = get_cache_1_n_with_ids($this->service_paty, "request_room", $this->service_paty_name, $id, $this->time);
-                $data5 = get_cache_1_n_with_ids($this->service_paty, "execute_room", $this->service_paty_name, $id, $this->time);
-                $data6 = get_cache_1_n_with_ids($this->service_paty, "request_deparment", $this->service_paty_name, $id, $this->time);
-                $data7 = get_cache_1_1($this->service_paty, "package", $this->service_paty_name, $id, $this->time);
-                $data8 = get_cache_1_1($this->service_paty, "service_condition", $this->service_paty_name, $id, $this->time);
-                $data9 = get_cache_1_1($this->service_paty, "patient_classify", $this->service_paty_name, $id, $this->time);
-                $data10 = get_cache_1_1($this->service_paty, "ration_time", $this->service_paty_name, $id, $this->time);
-                $data11 = get_cache_1_1_1($this->service_paty, "service.service_type", $this->service_paty_name, $id, $this->time);
+                $data = get_cache_full($this->service_paty, [], $this->service_paty_name.'_id_'. $id. '_is_active_'. $this->is_active, $id, $this->time, $this->start, $this->limit, $this->order_by, $this->is_active);
+                if($data != null){
+                    $data_a = $data;
+                    $data1 = get_cache_1_1($this->service_paty, "service", $this->service_paty_name, $id, $this->time);
+                    $data2 = get_cache_1_1($this->service_paty, "patient_type", $this->service_paty_name, $id, $this->time);
+                    $data3 = get_cache_1_1($this->service_paty, "branch", $this->service_paty_name, $id, $this->time);
+                    // $data4 = get_cache_1_n_with_ids($this->service_paty, "request_room", $this->service_paty_name, $id, $this->time);
+                    // $data5 = get_cache_1_n_with_ids($this->service_paty, "execute_room", $this->service_paty_name, $id, $this->time);
+                    $data6 = get_cache_1_n_with_ids($this->service_paty, "request_deparment", $this->service_paty_name, $id, $this->time);
+                    $data7 = get_cache_1_1($this->service_paty, "package", $this->service_paty_name, $id, $this->time);
+                    $data8 = get_cache_1_1($this->service_paty, "service_condition", $this->service_paty_name, $id, $this->time);
+                    $data9 = get_cache_1_1($this->service_paty, "patient_classify", $this->service_paty_name, $id, $this->time);
+                    $data10 = get_cache_1_1($this->service_paty, "ration_time", $this->service_paty_name, $id, $this->time);
+                    $data11 = get_cache_1_1_1($this->service_paty, "service.service_type", $this->service_paty_name, $id, $this->time);
+                    $data12 = Cache::remember('request_room_' .$this->service_paty_name. $id, $this->time, function () use ($id, $data_a) {
+                        $data = $this->room
+                        ->leftJoin('his_bed_room as bed', 'his_room.id', '=', 'bed.room_id')
+                        ->leftJoin('his_cashier_room as cashier', 'his_room.id', '=', 'cashier.room_id')
+                        ->leftJoin('his_execute_room as execute', 'his_room.id', '=', 'execute.room_id')
+                        ->leftJoin('his_reception_room as reception', 'his_room.id', '=', 'reception.room_id')
+                        ->leftJoin('his_refectory as refectory', 'his_room.id', '=', 'refectory.room_id')
+                        ->leftJoin('his_sample_room as sample_room', 'his_room.id', '=', 'sample_room.room_id')
+                        ->leftJoin('his_medi_stock as medi_stock', 'his_room.id', '=', 'medi_stock.room_id')
+                        ->leftJoin('his_data_store as data_store', 'his_room.id', '=', 'data_store.room_id')
+                        ->leftJoin('his_station as station', 'his_room.id', '=', 'station.room_id')
+        
+                        ->select(
+                            'his_room.id',
+                            'his_room.department_id',
+                            'his_room.room_type_id',
+                            DB::connection('oracle_his')->raw('NVL(bed.bed_room_name, 
+                            NVL(cashier.cashier_room_name, 
+                            NVL(execute.execute_room_name, 
+                            NVL(reception.reception_room_name,
+                            NVL(refectory.refectory_name,
+                            NVL(sample_room.sample_room_name,
+                            NVL(medi_stock.medi_stock_name,
+                            NVL(data_store.data_store_name,
+                            station.station_name)))))))) AS "room_name"'),
+                            DB::connection('oracle_his')->raw('NVL(bed.bed_room_code, 
+                            NVL(cashier.cashier_room_code, 
+                            NVL(execute.execute_room_code, 
+                            NVL(reception.reception_room_code,
+                            NVL(refectory.refectory_code,
+                            NVL(sample_room.sample_room_code,
+                            NVL(medi_stock.medi_stock_code,
+                            NVL(data_store.data_store_code,
+                            station.station_code)))))))) AS "room_code"')
+                        )
+                        ->whereNotNull(DB::connection('oracle_his')->raw('NVL(bed.bed_room_name, 
+                        NVL(cashier.cashier_room_name, 
+                        NVL(execute.execute_room_name, 
+                        NVL(reception.reception_room_name,
+                        NVL(refectory.refectory_name,
+                        NVL(sample_room.sample_room_name,
+                        NVL(medi_stock.medi_stock_name,
+                        NVL(data_store.data_store_name,
+                        station.station_name))))))))'));
+                        if ($id !== null) {
+                            $data = $data->where(function ($query) use ($data_a) {
+                                $query = $query->whereIn(DB::connection('oracle_his')->raw("his_room.id"), explode(",",$data_a->request_room_ids));
+                            });
+                        } 
+                            $data = $data    
+                            ->get();
+                        return $data;
+                    });
+                    $data13 = Cache::remember('execute_room_' .$this->service_paty_name. $id, $this->time, function () use ($id, $data_a) {
+                        $data = $this->room
+                        ->leftJoin('his_bed_room as bed', 'his_room.id', '=', 'bed.room_id')
+                        ->leftJoin('his_cashier_room as cashier', 'his_room.id', '=', 'cashier.room_id')
+                        ->leftJoin('his_execute_room as execute', 'his_room.id', '=', 'execute.room_id')
+                        ->leftJoin('his_reception_room as reception', 'his_room.id', '=', 'reception.room_id')
+                        ->leftJoin('his_refectory as refectory', 'his_room.id', '=', 'refectory.room_id')
+                        ->leftJoin('his_sample_room as sample_room', 'his_room.id', '=', 'sample_room.room_id')
+                        ->leftJoin('his_medi_stock as medi_stock', 'his_room.id', '=', 'medi_stock.room_id')
+                        ->leftJoin('his_data_store as data_store', 'his_room.id', '=', 'data_store.room_id')
+                        ->leftJoin('his_station as station', 'his_room.id', '=', 'station.room_id')
+        
+                        ->select(
+                            'his_room.id',
+                            'his_room.department_id',
+                            'his_room.room_type_id',
+                            DB::connection('oracle_his')->raw('NVL(bed.bed_room_name, 
+                            NVL(cashier.cashier_room_name, 
+                            NVL(execute.execute_room_name, 
+                            NVL(reception.reception_room_name,
+                            NVL(refectory.refectory_name,
+                            NVL(sample_room.sample_room_name,
+                            NVL(medi_stock.medi_stock_name,
+                            NVL(data_store.data_store_name,
+                            station.station_name)))))))) AS "room_name"'),
+                            DB::connection('oracle_his')->raw('NVL(bed.bed_room_code, 
+                            NVL(cashier.cashier_room_code, 
+                            NVL(execute.execute_room_code, 
+                            NVL(reception.reception_room_code,
+                            NVL(refectory.refectory_code,
+                            NVL(sample_room.sample_room_code,
+                            NVL(medi_stock.medi_stock_code,
+                            NVL(data_store.data_store_code,
+                            station.station_code)))))))) AS "room_code"')
+                        )
+                        ->whereNotNull(DB::connection('oracle_his')->raw('NVL(bed.bed_room_name, 
+                        NVL(cashier.cashier_room_name, 
+                        NVL(execute.execute_room_name, 
+                        NVL(reception.reception_room_name,
+                        NVL(refectory.refectory_name,
+                        NVL(sample_room.sample_room_name,
+                        NVL(medi_stock.medi_stock_name,
+                        NVL(data_store.data_store_name,
+                        station.station_name))))))))'));
+                        if ($id !== null) {
+                            $data = $data->where(function ($query) use ($data_a) {
+                                $query = $query->whereIn(DB::connection('oracle_his')->raw("his_room.id"), explode(",",$data_a->execute_room_ids));
+                            });
+                        } 
+                            $data = $data    
+                            ->get();
+                        return $data;
+                    });
+                }
+
                 $data_param = [
                     'service_paty' => $data,
-                    'service' => $data1,
-                    'service_type' => $data11,
-                    'patient_type' => $data2,
-                    'branch' => $data3,
-                    'request_room' => $data4,
-                    'execute_room' => $data5,
-                    'request_deparment' => $data6,
-                    'package' => $data7,
-                    'service_condition' => $data8,
-                    'patient_classify' => $data9,
-                    'ration_time' => $data10
+                    'service' => $data1 ?? null,
+                    'service_type' => $data11 ?? null,
+                    'patient_type' => $data2 ?? null,
+                    'branch' => $data3 ?? null,
+                    'request_room' => $data12 ?? null,
+                    'execute_room' => $data13 ?? null,
+                    'request_deparment' => $data6 ?? null,
+                    'package' => $data7 ?? null,
+                    'service_condition' => $data8 ?? null,
+                    'patient_classify' => $data9 ?? null,
+                    'ration_time' => $data10 ?? null
                 ];
             }
         }

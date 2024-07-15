@@ -339,6 +339,8 @@ class BaseApiCacheController extends Controller
     protected $suim_index_name = 'suim_index';
     protected $package;
     protected $package_name = 'package';
+    protected $service_condition;
+    protected $service_condition_name = 'service_condition';
     public function __construct(Request $request)
     {
         // Khai báo các biến
@@ -372,7 +374,7 @@ class BaseApiCacheController extends Controller
             $this->order_by = convertArrayKeysToSnakeCase($this->order_by);
         }
         $this->only_active = $this->param_request['ApiData']['OnlyActive'] ?? 0;
-        $this->service_type_ids = $this->param_request['ApiData']['ServiceTypeIs'] ?? null;
+        $this->service_type_ids = $this->param_request['ApiData']['ServiceTypeIds'] ?? null;
         if ($this->service_type_ids != null) {
             foreach ($this->service_type_ids as $key => $item) {
                 // Kiểm tra xem ID có tồn tại trong bảng  hay không
@@ -386,9 +388,9 @@ class BaseApiCacheController extends Controller
             }
         }
         if($this->service_type_ids != null){
-            $this->service_type_ids_string = arrayToCustomString($this->service_type_ids);
+            $this->service_type_ids_string = arrayToCustomStringNotKey($this->service_type_ids);
         }
-        $this->patient_type_ids = $this->param_request['ApiData']['PatientTypeIs'] ?? null;
+        $this->patient_type_ids = $this->param_request['ApiData']['PatientTypeIds'] ?? null;
         if ($this->patient_type_ids != null) {
             foreach ($this->patient_type_ids as $key => $item) {
                 // Kiểm tra xem ID có tồn tại trong bảng  hay không
@@ -402,7 +404,7 @@ class BaseApiCacheController extends Controller
             }
         }
         if($this->patient_type_ids !=  null){
-            $this->patient_type_ids_string = arrayToCustomString($this->patient_type_ids); 
+            $this->patient_type_ids_string = arrayToCustomStringNotKey($this->patient_type_ids); 
         }
         $this->service_id = $this->param_request['ApiData']['ServiceId'] ?? null;
         if ($this->service_id !== null) {

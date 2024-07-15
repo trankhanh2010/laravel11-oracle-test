@@ -66,7 +66,7 @@ use App\Http\Controllers\Api\CacheControllers\CareerController;
 use App\Http\Controllers\Api\CacheControllers\ReligionController;
 use App\Http\Controllers\Api\CacheControllers\ServiceReqTypeController;
 use App\Http\Controllers\Api\CacheControllers\SaleProfitCfgController;
-
+use App\Http\Controllers\Api\CacheControllers\ServiceConditionController;
 // Data Controllers
 use App\Http\Controllers\Api\DataControllers\DebateController;
 use App\Http\Controllers\Api\DataControllers\DebateUserController;
@@ -422,6 +422,10 @@ Route::group([
         // Route::get("v1/patient-type/{id}/service", [ServicePatyController::class, "patient_type_with_service"]);
 
     });
+
+    /// Điều kiện dịch vụ
+    Route::get("v1/service-condition", [ServiceConditionController::class, "service_condition"]);
+    Route::get("v1/service-condition/{id}", [ServiceConditionController::class, "service_condition"]);
 
     /// Dịch vụ máy
     Route::group(['as' => 'HIS.Desktop.Plugins.ServiceMachine'], function () {
