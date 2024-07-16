@@ -5,6 +5,8 @@ namespace App\Http\Requests\DataStore;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
 class UpdateDataStoreRequest extends FormRequest
 {
     /**
@@ -24,12 +26,47 @@ class UpdateDataStoreRequest extends FormRequest
      */
     public function rules()
     {
+        // Ép kiểu giá trị sang int nếu nó là số, nếu không thì thành 0
+        $stored_department_id = is_numeric($this->stored_department_id) ? (int) $this->stored_department_id : 0;
         return [
             'data_store_name' =>            'required|string|max:100',
-            'room_type_id'  =>              'required|integer|exists:App\Models\HIS\RoomType,id',
-            'parent_id' =>                  'nullable|integer|exists:App\Models\HIS\DataStore,id',
-            'stored_department_id' =>       'nullable|integer|exists:App\Models\HIS\Department,id',
-            'stored_room_id' =>             'nullable|integer|exists:App\Models\HIS\Room,id',
+            'room_type_id'  =>              [
+                                                'required',
+                                                'integer',
+                                                Rule::exists('App\Models\HIS\RoomType', 'id')
+                                                ->where(function ($query) {
+                                                    $query = $query
+                                                    ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                                                }),
+                                            ],
+            'parent_id' =>                  [
+                                                'nullable',
+                                                'integer',
+                                                Rule::exists('App\Models\HIS\DataStore', 'id')
+                                                ->where(function ($query) {
+                                                    $query = $query
+                                                    ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                                                }),
+                                            ],
+            'stored_department_id' =>       [
+                                                'nullable',
+                                                'integer',
+                                                Rule::exists('App\Models\HIS\Department', 'id')
+                                                ->where(function ($query) {
+                                                    $query = $query
+                                                    ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                                                }),
+                                            ],
+            'stored_room_id' =>             [
+                                                'nullable',
+                                                'integer',
+                                                Rule::exists('App\Models\HIS\Room', 'id')
+                                                ->where(function ($query) use ($stored_department_id){
+                                                    $query = $query
+                                                    ->where(DB::connection('oracle_his')->raw("is_active"), 1)
+                                                    ->where(DB::connection('oracle_his')->raw("department_id"), $stored_department_id);
+                                                }),
+                                            ],
             'treatment_end_type_ids' =>     'nullable|string|max:50',
             'treatment_type_ids' =>         'nullable|string|max:50',
             'is_active' =>                  'required|integer|in:0,1'
@@ -89,16 +126,16 @@ class UpdateDataStoreRequest extends FormRequest
         $validator->after(function ($validator) {
             if ($this->has('treatment_end_type_ids_list') && ($this->treatment_end_type_ids_list[0] != null)) {
                 foreach ($this->treatment_end_type_ids_list as $id) {
-                    if (!is_numeric($id) || !\App\Models\HIS\TreatmentEndType::find($id)) {
-                        $validator->errors()->add('treatment_end_type_ids', 'Loại kết thúc điều trị với id = ' . $id . ' trong danh sách loại kết thúc điều trị không tồn tại!');
+                    if (!is_numeric($id) || !\App\Models\HIS\TreatmentEndType::where('id', $id)->where('is_active', 1)->first()) {
+                        $validator->errors()->add('treatment_end_type_ids', 'Loại kết thúc điều trị với id = ' . $id . config('keywords')['error']['not_find_or_not_active_in_list']);
                     }
                 }
             }
             //////////
             if ($this->has('treatment_type_ids_list') && ($this->treatment_type_ids_list[0] != null)) {
                 foreach ($this->treatment_type_ids_list as $id) {
-                    if (!is_numeric($id) || !\App\Models\HIS\TreatmentType::find($id)) {
-                        $validator->errors()->add('treatment_type_ids', 'Diện điều trị với id = ' . $id . ' trong danh sách diện điều trị không tồn tại!');
+                    if (!is_numeric($id) || !\App\Models\HIS\TreatmentType::where('id', $id)->where('is_active', 1)->first()) {
+                        $validator->errors()->add('treatment_type_ids', 'Diện điều trị với id = ' . $id . config('keywords')['error']['not_find_or_not_active_in_list']);
                     }
                 }
             }

@@ -8,6 +8,8 @@ use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Database\Query\Builder;
+use Illuminate\Support\Facades\DB;
+
 class CreateServicePatyRequest extends FormRequest
 {
     /**
@@ -46,21 +48,77 @@ class CreateServicePatyRequest extends FormRequest
 
         $this->instr_num_by_type_to_check_id = ServiceType::select('id')->whereIn('service_type_code', $this->instr_num_by_type_to_check)->pluck('id')->implode(',');
         $this->instr_num_by_type_to_check_string = implode(", ", $this->instr_num_by_type_to_check);
+
+         // Ép kiểu giá trị sang int nếu nó là số, nếu không thì thành 0
+        $service_type_id = is_numeric($this->service_type_id) ? (int) $this->service_type_id : 0;
+        $service_id = is_numeric($this->service_id) ? (int) $this->service_id : 0;
         return [
-            'service_type_id' =>                'required|integer|exists:App\Models\HIS\ServiceType,id', 
-            'service_id' =>                     'required|integer|exists:App\Models\HIS\Service,id', 
+            'service_type_id' =>                 [
+                                                    'required',
+                                                    'integer',
+                                                    Rule::exists('App\Models\HIS\ServiceType', 'id')
+                                                    ->where(function ($query) {
+                                                        $query = $query
+                                                        ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                                                    }),
+                                                ], 
+            'service_id' =>                     [
+                                                    'required',
+                                                    'integer',
+                                                    Rule::exists('App\Models\HIS\Service', 'id')
+                                                    ->where(function ($query) use($service_type_id){
+                                                        $query = $query
+                                                        ->where(DB::connection('oracle_his')->raw("is_active"), 1)
+                                                        ->where(DB::connection('oracle_his')->raw("service_type_id"), $service_type_id);
+                                                    }),
+                                                ],
             'branch_ids' =>                     'required|string', 
             'patient_type_ids' =>               'required|string', 
-            'patient_classify_id' =>            'nullable|integer|exists:App\Models\HIS\PatientClassify,id', 
+            'patient_classify_id' =>            [
+                                                    'nullable',
+                                                    'integer',
+                                                    Rule::exists('App\Models\HIS\PatientClassify', 'id')
+                                                    ->where(function ($query) {
+                                                        $query = $query
+                                                        ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                                                    }),
+                                                ], 
             'price' =>                          'required|numeric|regex:/^\d{1,15}(\.\d{1,4})?$/|min:0',
             'vat_ratio' =>                      'required|numeric|regex:/^\d{1,15}(\.\d{1,4})?$/|min:0|max:1',
 
             'overtime_price' =>                 'nullable|numeric|regex:/^\d{1,15}(\.\d{1,4})?$/|min:0|lte:price',
             'actual_price' =>                   'nullable|numeric|regex:/^\d{1,15}(\.\d{1,4})?$/|min:0',
             'priority' =>                       'nullable|numeric',
-            'ration_time_id' =>                 'nullable|integer|exists:App\Models\HIS\RationTime,id|prohibited_unless:service_type_id,'.$this->ration_time_id_check_id,
-            'package_id' =>                     'nullable|integer|exists:App\Models\HIS\Package,id', 
-            'service_condition_id' =>           'nullable|integer|exists:App\Models\HIS\ServiceCondition,id|declined_if:service_id,null', 
+            'ration_time_id' =>                 [
+                                                    'nullable',
+                                                    'integer',
+                                                    Rule::exists('App\Models\HIS\RationTime', 'id')
+                                                    ->where(function ($query) {
+                                                        $query = $query
+                                                        ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                                                    }),
+                                                    'prohibited_unless:service_type_id,'.$this->ration_time_id_check_id
+                                                ], 
+            'package_id' =>                     [
+                                                    'nullable',
+                                                    'integer',
+                                                    Rule::exists('App\Models\HIS\Package', 'id')
+                                                    ->where(function ($query) {
+                                                        $query = $query
+                                                        ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                                                    })
+                                                ], 
+            'service_condition_id' =>           [
+                                                    'nullable',
+                                                    'integer',
+                                                    Rule::exists('App\Models\HIS\ServiceCondition', 'id')
+                                                    ->where(function ($query) use ($service_id){
+                                                        $query = $query
+                                                        ->where(DB::connection('oracle_his')->raw("is_active"), 1)
+                                                        ->where(DB::connection('oracle_his')->raw("service_id"), $service_id);
+                                                    }),
+                                                    'declined_if:service_id,null'
+                                                ], 
 
             'intruction_number_from' =>         'nullable|integer|min:0',
             'intruction_number_to' =>           'nullable|integer|min:0',
@@ -86,7 +144,7 @@ class CreateServicePatyRequest extends FormRequest
                                                     'regex:/^(0[0-9]|1[0-9]|2[0-3])(00|15|30|45)$/'
                                                 ],
 
-            'execute_room_ids' =>               'nullable|string|max:4000',  
+            'execute_room_ids' =>               'nullable|string|max:4',  
             'request_deparment_ids' =>          'nullable|string|max:4000',                    
             'request_room_ids' =>               'nullable|string|max:4000',                    
                   
@@ -103,7 +161,7 @@ class CreateServicePatyRequest extends FormRequest
             
             'service_id.required'      => config('keywords')['service_paty']['service_id'].config('keywords')['error']['required'],
             'service_id.integer'       => config('keywords')['service_paty']['service_id'].config('keywords')['error']['integer'],
-            'service_id.exists'        => config('keywords')['service_paty']['service_id'].config('keywords')['error']['exists'], 
+            'service_id.exists'        => config('keywords')['service_paty']['service_id'].config('keywords')['error']['exists'].config('keywords')['error']['not_in_service_type_id'], 
 
             'branch_ids.required'       => config('keywords')['service_paty']['branch_ids'].config('keywords')['error']['required'],
             'branch_ids.string'         => config('keywords')['service_paty']['branch_ids'].config('keywords')['error']['string'],
@@ -148,7 +206,7 @@ class CreateServicePatyRequest extends FormRequest
             'package_id.exists'             => config('keywords')['service_paty']['package_id'].config('keywords')['error']['exists'], 
 
             'service_condition_id.integer'            => config('keywords')['service_paty']['service_condition_id'].config('keywords')['error']['integer'],
-            'service_condition_id.exists'             => config('keywords')['service_paty']['service_condition_id'].config('keywords')['error']['exists'], 
+            'service_condition_id.exists'             => config('keywords')['service_paty']['service_condition_id'].config('keywords')['error']['exists'].config('keywords')['error']['not_in_service_id'], 
             'service_condition_id.declined_if'        => config('keywords')['service_paty']['service_condition_id'].config('keywords')['error']['declined_if'].config('keywords')['service_paty']['service_id'].' đã được nhập!', 
 
             'intruction_number_from.integer'        => config('keywords')['service_paty']['intruction_number_from'].config('keywords')['error']['integer'],
@@ -193,6 +251,15 @@ class CreateServicePatyRequest extends FormRequest
             'hour_to.string'                  => config('keywords')['service_paty']['hour_to'].config('keywords')['error']['string'],
             'hour_to.max'                     => config('keywords')['service_paty']['hour_to'].config('keywords')['error']['string_max'],
             'hour_to.regex'                   => config('keywords')['service_paty']['hour_to'].config('keywords')['error']['regex_hhmm'],
+
+            'request_deparment_ids.string'                  => config('keywords')['service_paty']['request_deparment_ids'].config('keywords')['error']['string'],
+            'request_deparment_ids.max'                     => config('keywords')['service_paty']['request_deparment_ids'].config('keywords')['error']['string_max'],
+
+            'request_room_ids.string'                  => config('keywords')['service_paty']['request_room_ids'].config('keywords')['error']['string'],
+            'request_room_ids.max'                     => config('keywords')['service_paty']['request_room_ids'].config('keywords')['error']['string_max'],
+
+            'execute_room_ids.string'                  => config('keywords')['service_paty']['execute_room_ids'].config('keywords')['error']['string'],
+            'execute_room_ids.max'                     => config('keywords')['service_paty']['execute_room_ids'].config('keywords')['error']['string_max'],
         ];
     }
 
@@ -230,36 +297,36 @@ class CreateServicePatyRequest extends FormRequest
         $validator->after(function ($validator) {
             if ($this->has('branch_ids_list') && ($this->branch_ids_list[0] != null)) {
                 foreach ($this->branch_ids_list as $id) {
-                    if (!is_numeric($id) || !\App\Models\HIS\Branch::find($id)) {
-                        $validator->errors()->add('branch_ids', 'Chi nhánh với id = ' . $id . ' trong danh sách chi nhánh không tồn tại!');
+                    if (!is_numeric($id) || !\App\Models\HIS\Branch::where('id', $id)->where('is_active', 1)->first()) {
+                        $validator->errors()->add('branch_ids', 'Chi nhánh với id = ' . $id . config('keywords')['error']['not_find_or_not_active_in_list']);
                     }
                 }
             }
             if ($this->has('patient_type_ids_list') && ($this->patient_type_ids_list[0] != null)) {
                 foreach ($this->patient_type_ids_list as $id) {
-                    if (!is_numeric($id) || !\App\Models\HIS\PatientType::find($id)) {
-                        $validator->errors()->add('patient_type_ids', 'Đối tượng thanh toán với id = ' . $id . ' trong danh sách đối tượng thanh toán không tồn tại!');
+                    if (!is_numeric($id) || !\App\Models\HIS\PatientType::where('id', $id)->where('is_active', 1)->first()) {
+                        $validator->errors()->add('patient_type_ids', 'Đối tượng thanh toán với id = ' . $id . config('keywords')['error']['not_find_or_not_active_in_list']);
                     }
                 }
             }
             if ($this->has('request_room_ids_list') && ($this->request_room_ids_list[0] != null)) {
                 foreach ($this->request_room_ids_list as $id) {
-                    if (!is_numeric($id) || !\App\Models\HIS\Room::find($id)) {
-                        $validator->errors()->add('request_room_ids', 'Phòng yêu cầu với id = ' . $id . ' trong danh sách không tồn tại!');
+                    if (!is_numeric($id) || !\App\Models\HIS\Room::where('id', $id)->where('is_active', 1)->first()) {
+                        $validator->errors()->add('request_room_ids', 'Phòng yêu cầu với id = ' . $id . config('keywords')['error']['not_find_or_not_active_in_list']);
                     }
                 }
             }
             if ($this->has('request_deparment_ids_list') && ($this->request_deparment_ids_list[0] != null)) {
                 foreach ($this->request_deparment_ids_list as $id) {
-                    if (!is_numeric($id) || !\App\Models\HIS\Department::find($id)) {
-                        $validator->errors()->add('request_deparment_ids', 'Khoa yêu cầu với id = ' . $id . ' trong danh sách không tồn tại!');
+                    if (!is_numeric($id) || !\App\Models\HIS\Department::where('id', $id)->where('is_active', 1)->first()) {
+                        $validator->errors()->add('request_deparment_ids', 'Khoa yêu cầu với id = ' . $id . config('keywords')['error']['not_find_or_not_active_in_list']);
                     }
                 }
             }
             if ($this->has('execute_room_ids_list') && ($this->execute_room_ids_list[0] != null)) {
                 foreach ($this->execute_room_ids_list as $id) {
-                    if (!is_numeric($id) || !\App\Models\HIS\Room::find($id)) {
-                        $validator->errors()->add('execute_room_ids', 'Phòng thực hiện với id = ' . $id . ' trong danh sách không tồn tại!');
+                    if (!is_numeric($id) || !\App\Models\HIS\Room::where('id', $id)->where('is_active', 1)->first()) {
+                        $validator->errors()->add('execute_room_ids', 'Phòng thực hiện với id = ' . $id . config('keywords')['error']['not_find_or_not_active_in_list']);
                     }
                 }
             }

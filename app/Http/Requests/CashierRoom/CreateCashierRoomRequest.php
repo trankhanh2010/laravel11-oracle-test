@@ -5,6 +5,8 @@ namespace App\Http\Requests\CashierRoom;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
 class CreateCashierRoomRequest extends FormRequest
 {
     /**
@@ -27,9 +29,33 @@ class CreateCashierRoomRequest extends FormRequest
         return [
             'cashier_room_code' =>              'required|string|max:10|unique:App\Models\HIS\CashierRoom,cashier_room_code',
             'cashier_room_name' =>              'required|string|max:100',
-            'department_id' =>                  'required|integer|exists:App\Models\HIS\Department,id',
-            'area_id' =>                        'nullable|integer|exists:App\Models\HIS\Area,id',
-            'room_type_id'  =>                  'required|integer|exists:App\Models\HIS\RoomType,id',
+            'department_id' =>                  [
+                                                    'required',
+                                                    'integer',
+                                                    Rule::exists('App\Models\HIS\Department', 'id')
+                                                    ->where(function ($query) {
+                                                        $query = $query
+                                                        ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                                                    }),
+                                                ], 
+            'area_id' =>                        [
+                                                    'nullable',
+                                                    'integer',
+                                                    Rule::exists('App\Models\HIS\Area', 'id')
+                                                    ->where(function ($query) {
+                                                        $query = $query
+                                                        ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                                                    }),
+                                                ],
+            'room_type_id'  =>                  [
+                                                    'required',
+                                                    'integer',
+                                                    Rule::exists('App\Models\HIS\RoomType', 'id')
+                                                    ->where(function ($query) {
+                                                        $query = $query
+                                                        ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                                                    }),
+                                                ],
             'einvoice_room_code' =>             'nullable|string|max:10',
             'einvoice_room_name' =>             'nullable|string|max:100',
         ];

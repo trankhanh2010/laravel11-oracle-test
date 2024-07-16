@@ -5,6 +5,7 @@ namespace App\Http\Requests\Area;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
 class UpdateAreaRequest extends FormRequest
@@ -38,7 +39,15 @@ class UpdateAreaRequest extends FormRequest
                 Rule::unique('App\Models\HIS\Area')->ignore($this->id),
             ],
             'area_name' =>      'required|string|max:100',
-            'department_id' =>  'required|integer|exists:App\Models\HIS\Department,id',
+            'department_id' =>  [
+                                    'required',
+                                    'integer',
+                                    Rule::exists('App\Models\HIS\Department', 'id')
+                                    ->where(function ($query) {
+                                        $query = $query
+                                        ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                                    }),
+                                ], 
             'is_active' =>      'required|integer|in:0,1'
         ];
     }

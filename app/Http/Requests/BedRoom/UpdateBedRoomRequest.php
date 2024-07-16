@@ -6,6 +6,8 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
 use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
 class UpdateBedRoomRequest extends FormRequest
 {
     /**
@@ -27,16 +29,56 @@ class UpdateBedRoomRequest extends FormRequest
     {
         return [
             'bed_room_name' =>                  'required|string|max:100',
-            'area_id' =>                        'nullable|integer|exists:App\Models\HIS\Area,id',
-            'speciality_id' =>                  'nullable|integer|exists:App\Models\HIS\Speciality,id',
+            'area_id' =>                        [
+                                                    'nullable',
+                                                    'integer',
+                                                    Rule::exists('App\Models\HIS\Area', 'id')
+                                                    ->where(function ($query) {
+                                                        $query = $query
+                                                        ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                                                    }),
+                                                ],
+            'speciality_id' =>                  [
+                                                    'nullable',
+                                                    'integer',
+                                                    Rule::exists('App\Models\HIS\Speciality', 'id')
+                                                    ->where(function ($query) {
+                                                        $query = $query
+                                                        ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                                                    }),
+                                                ],
             'treatment_type_ids' =>             'nullable|string|max:200',
-            'default_cashier_room_id' =>        'nullable|integer|exists:App\Models\HIS\CashierRoom,id',
-            'default_instr_patient_type_id'  => 'nullable|integer|exists:App\Models\HIS\PatientType,id',
+            'default_cashier_room_id' =>        [
+                                                    'nullable',
+                                                    'integer',
+                                                    Rule::exists('App\Models\HIS\CashierRoom', 'id')
+                                                    ->where(function ($query) {
+                                                        $query = $query
+                                                        ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                                                    }),
+                                                ],
+            'default_instr_patient_type_id'  => [
+                                                    'nullable',
+                                                    'integer',
+                                                    Rule::exists('App\Models\HIS\PatientType', 'id')
+                                                    ->where(function ($query) {
+                                                        $query = $query
+                                                        ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                                                    }),
+                                                ],
             'is_surgery'  =>                    'nullable|integer|in:0,1',
             'is_restrict_req_service' =>        'nullable|integer|in:0,1',
             'is_pause' =>                       'nullable|integer|in:0,1',
             'is_restrict_execute_room' =>       'nullable|integer|in:0,1',
-            'room_type_id' =>                   'required|integer|exists:App\Models\HIS\RoomType,id',
+            'room_type_id' =>                   [
+                                                    'required',
+                                                    'integer',
+                                                    Rule::exists('App\Models\HIS\RoomType', 'id')
+                                                    ->where(function ($query) {
+                                                        $query = $query
+                                                        ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                                                    }),
+                                                ],
             'is_active' =>                      'required|integer|in:0,1'
 
         ];

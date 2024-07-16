@@ -7,7 +7,8 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
 use Illuminate\Contracts\Validation\Validator;
-
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
 class CreateDepartmentRequest extends FormRequest
 {
     /**
@@ -27,21 +28,74 @@ class CreateDepartmentRequest extends FormRequest
      */
     public function rules()
     {
+        $head_loginname = $this->head_loginname ?? "";
         return [
             'department_code' =>                'required|string|max:20|unique:App\Models\HIS\Department,department_code',
             'department_name' =>                'required|string|max:100',
-            'g_code' =>                         'required|string|max:20|exists:App\Models\SDA\Group,g_code',
+            'g_code' =>                         [
+                'required',
+                'string',
+                'max:20',
+                Rule::exists('App\Models\SDA\Group', 'g_code')
+                ->where(function ($query) {
+                    $query = $query
+                    ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                }),
+            ],
             'bhyt_code' =>                      'nullable|string|max:50',
-            'branch_id' =>                      'required|integer|exists:App\Models\HIS\Branch,id',
-            'default_instr_patient_type_id' =>  'nullable|integer|exists:App\Models\HIS\PatientType,id',
+            'branch_id' =>                      [
+                'required',
+                'integer',
+                Rule::exists('App\Models\HIS\Branch', 'id')
+                ->where(function ($query) {
+                    $query = $query
+                    ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                }),
+            ],
+            'default_instr_patient_type_id' =>  [
+                'nullable',
+                'integer',
+                Rule::exists('App\Models\HIS\PatientType', 'id')
+                ->where(function ($query) {
+                    $query = $query
+                    ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                }),
+            ],
             'num_order' =>                      'nullable|integer',
             'allow_treatment_type_ids' =>       'nullable|string|max:20',
             'theory_patient_count' =>           'nullable|integer|min:0',
             'reality_patient_count' =>          'nullable|integer|min:0',
-            'req_surg_treatment_type_id' =>     'nullable|integer|exists:App\Models\HIS\TreatmentType,id',
+            'req_surg_treatment_type_id' =>     [
+                'nullable',
+                'integer',
+                Rule::exists('App\Models\HIS\TreatmentType', 'id')
+                ->where(function ($query) {
+                    $query = $query
+                    ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                }),
+            ],
             'phone' =>                          'nullable|string|max:50',
-            'head_loginname' =>                 'nullable|string|max:50|exists:App\Models\HIS\Employee,loginname',
-            'head_username' =>                  'nullable|string|max:100|exists:App\Models\HIS\Employee,tdl_username',
+            'head_loginname' =>                 [
+                'nullable',
+                'string',
+                'max:50',
+                Rule::exists('App\Models\HIS\Employee', 'loginname')
+                ->where(function ($query) {
+                    $query = $query
+                    ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                }),
+            ],
+            'head_username' =>                  [
+                'nullable',
+                'string',
+                'max:100',
+                Rule::exists('App\Models\HIS\Employee', 'tdl_username')
+                ->where(function ($query) use ($head_loginname){
+                    $query = $query
+                    ->where(DB::connection('oracle_his')->raw("is_active"), 1)
+                    ->where(DB::connection('oracle_his')->raw("loginname"), $head_loginname);
+                }),
+            ],
             'accepted_icd_codes' =>             'nullable|string|max:4000',
             'is_exam' =>                        'nullable|integer|in:0,1',
             'is_clinical' =>                    'nullable|integer|in:0,1',
@@ -104,7 +158,7 @@ class CreateDepartmentRequest extends FormRequest
 
             'head_username.string'  => config('keywords')['department']['head_username'].config('keywords')['error']['string'],
             'head_username.max'     => config('keywords')['department']['head_username'].config('keywords')['error']['string_max'], 
-            'head_username.exists'  => config('keywords')['department']['head_username'].config('keywords')['error']['exists'],  
+            'head_username.exists'  => config('keywords')['department']['head_username'].config('keywords')['error']['exists'].config('keywords')['error']['not_in_loginname'],  
 
             'accepted_icd_codes.string' => config('keywords')['department']['accepted_icd_codes'].config('keywords')['error']['string'],
             'accepted_icd_codes.max'    => config('keywords')['department']['accepted_icd_codes'].config('keywords')['error']['string_max'],
@@ -157,7 +211,7 @@ class CreateDepartmentRequest extends FormRequest
         $validator->after(function ($validator) {
             if ($this->has('allow_treatment_type_ids_list') && ($this->allow_treatment_type_ids_list[0] != null)) {
                 foreach ($this->allow_treatment_type_ids_list as $id) {
-                    if (!is_numeric($id) || !\App\Models\HIS\TreatmentType::find($id)) {
+                    if (!is_numeric($id) || !\App\Models\HIS\TreatmentType::where('id', $id)->where('is_active', 1)->first()) {
                         $validator->errors()->add('allow_treatment_type_ids', 'Diện điều trị với id = ' . $id . ' trong danh sách diện điều trị không tồn tại!');
                     }
                 }
@@ -165,7 +219,7 @@ class CreateDepartmentRequest extends FormRequest
             ///////////////////////////////////////////////////////////////////////////////////////////////////////
             if ($this->has('accepted_icd_codes_list') && ($this->accepted_icd_codes_list[0] != null)) {
                 foreach ($this->accepted_icd_codes_list as $icd_code) {
-                    if (!\App\Models\HIS\Icd::where('icd_code', $icd_code)->exists()) {
+                    if (!\App\Models\HIS\Icd::where('icd_code', $icd_code)->where('is_active', 1)->exists()) {
                         $validator->errors()->add('accepted_icd_codes', 'Chẩn đoán nhập viện với icd code = ' . $icd_code . ' trong danh sách chẩn đoán nhập viện không tồn tại!');
                     }
                 }

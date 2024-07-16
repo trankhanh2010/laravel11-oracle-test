@@ -9,6 +9,8 @@ use Illuminate\Validation\Rule;
 use Illuminate\Database\Query\Builder;
 use App\Models\SDA\District;
 use App\Models\SDA\Province;
+use Illuminate\Support\Facades\DB;
+
 class UpdateBranchRequest extends FormRequest
 {
     /**
@@ -28,19 +30,30 @@ class UpdateBranchRequest extends FormRequest
      */
     public function rules()
     {
+        $director_loginname = $this->director_loginname ?? "";
         return [
             'branch_name' =>                    'required|string|max:100',
             'hein_medi_org_code' =>             'nullable|string|max:6',
             'accept_hein_medi_org_code' =>      'nullable|string|max:4000',
             'sys_medi_org_code' =>              'nullable|string|max:2000',
-            'province_code' =>                  'nullable|string|max:4|exists:App\Models\SDA\Province,province_code',
+            'province_code' =>                  [
+                                                    'nullable',
+                                                    'string',
+                                                    'max:4',
+                                                    Rule::exists('App\Models\SDA\Province', 'province_code')
+                                                    ->where(function ($query) {
+                                                        $query = $query
+                                                        ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                                                    }),
+                                                ], 
             'province_name' =>                  [
                                                     'nullable',
                                                     'string',
                                                     'max:100',
                                                     Rule::exists('App\Models\SDA\Province','province_name')
                                                     ->where(function (Builder $query) {
-                                                        return $query->where('province_code', $this->province_code);
+                                                        return $query->where('province_code', $this->province_code)
+                                                        ->where(DB::connection('oracle_his')->raw("is_active"), 1);
                                                     })
                                                 ],
             'district_code' =>                  [
@@ -49,7 +62,8 @@ class UpdateBranchRequest extends FormRequest
                                                     'max:4',
                                                     Rule::exists('App\Models\SDA\District','district_code')
                                                     ->where(function (Builder $query) {
-                                                        return $query->where('province_id', Province::select('id')->where('province_code', $this->province_code)->value('id'));
+                                                        return $query->where('province_id', Province::select('id')->where('province_code', $this->province_code)->value('id'))
+                                                        ->where(DB::connection('oracle_his')->raw("is_active"), 1);
                                                     })
                                                 ],
             'district_name' =>                  [
@@ -58,7 +72,8 @@ class UpdateBranchRequest extends FormRequest
                                                     'max:100',
                                                     Rule::exists('App\Models\SDA\District','district_name')
                                                     ->where(function (Builder $query) {
-                                                        return $query->where('district_code', $this->district_code);
+                                                        return $query->where('district_code', $this->district_code)
+                                                        ->where(DB::connection('oracle_his')->raw("is_active"), 1);
                                                     })
                                                     ->where(function (Builder $query) {
                                                         return $query->where('province_id', Province::select('id')->where('province_code', $this->province_code)->value('id'));
@@ -70,7 +85,8 @@ class UpdateBranchRequest extends FormRequest
                                                     'max:6',
                                                     Rule::exists('App\Models\SDA\Commune','commune_code')
                                                     ->where(function (Builder $query) {
-                                                        return $query->where('district_id', District::select('id')->where('district_code', $this->district_code)->value('id'));
+                                                        return $query->where('district_id', District::select('id')->where('district_code', $this->district_code)->value('id'))
+                                                        ->where(DB::connection('oracle_his')->raw("is_active"), 1);
                                                     })                                                                                        
                                                 ],
             'commune_name' =>                   [
@@ -79,7 +95,8 @@ class UpdateBranchRequest extends FormRequest
                                                     'max:100',
                                                     Rule::exists('App\Models\SDA\Commune','commune_name')
                                                     ->where(function (Builder $query) {
-                                                        return $query->where('commune_code', $this->commune_code);
+                                                        return $query->where('commune_code', $this->commune_code)
+                                                        ->where(DB::connection('oracle_his')->raw("is_active"), 1);
                                                     })
                                                     ->where(function (Builder $query) {
                                                         return $query->where('district_id', District::select('id')->where('district_code', $this->district_code)->value('id'));
@@ -100,8 +117,27 @@ class UpdateBranchRequest extends FormRequest
             'auth_letter_num' =>                'nullable|string|max:50',
             'bank_info' =>                      'nullable|string|max:300',
             'the_branch_code' =>                'nullable|string|max:20',
-            'director_loginname' =>             'nullable|string|max:50|exists:App\Models\HIS\Employee,loginname',
-            'director_username' =>              'nullable|string|max:100|exists:App\Models\HIS\Employee,tdl_username',      
+            'director_loginname' =>             [
+                                                    'nullable',
+                                                    'string',
+                                                    'max:50',
+                                                    Rule::exists('App\Models\HIS\Employee', 'loginname')
+                                                    ->where(function ($query) {
+                                                        $query = $query
+                                                        ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                                                    }),
+                                                ],
+            'director_username' =>              [
+                                                    'nullable',
+                                                    'string',
+                                                    'max:100',
+                                                    Rule::exists('App\Models\HIS\Employee', 'tdl_username')
+                                                    ->where(function ($query) use ($director_loginname){
+                                                        $query = $query
+                                                        ->where(DB::connection('oracle_his')->raw("is_active"), 1)
+                                                        ->where(DB::connection('oracle_his')->raw("loginname"), $director_loginname);
+                                                    }),
+                                                ],
             'venture' =>                        'nullable|integer|in:1,2',
             'type' =>                           'nullable|integer|in:1,2',
             'form' =>                           'nullable|integer|in:1,2,3,4,5,6,7,8,9,10',
@@ -134,27 +170,27 @@ class UpdateBranchRequest extends FormRequest
  
             'province_code.string'  => config('keywords')['branch']['province_code'].config('keywords')['error']['string'],
             'province_code.max'     => config('keywords')['branch']['province_code'].config('keywords')['error']['string_max'],      
-            'province_code.exists'  => config('keywords')['branch']['province_code'].' = '.$this->province_code.' không tồn tại!', 
+            'province_code.exists'  => config('keywords')['branch']['province_code'].' = '.$this->province_code.' không tồn tại!'.config('keywords')['error']['not_active'], 
 
             'province_name.string'  => config('keywords')['branch']['province_name'].config('keywords')['error']['string'],
             'province_name.max'     => config('keywords')['branch']['province_name'].config('keywords')['error']['string_max'],      
-            'province_name.exists'  => config('keywords')['branch']['province_name'].' = '.$this->province_name.' không trùng khớp với '.config('keywords')['medi_org']['province_code'].' = '. $this->province_code.'!', 
+            'province_name.exists'  => config('keywords')['branch']['province_name'].' = '.$this->province_name.' không trùng khớp với '.config('keywords')['medi_org']['province_code'].' = '. $this->province_code.'!'.config('keywords')['error']['not_active'], 
 
             'district_code.string'  => config('keywords')['branch']['district_code'].config('keywords')['error']['string'],
             'district_code.max'     => config('keywords')['branch']['district_code'].config('keywords')['error']['string_max'],      
-            'district_code.exists'  => config('keywords')['branch']['district_code'].' = '.$this->district_code.' không tồn tại'.' hoặc không thuộc '.$this->province_name.'!', 
+            'district_code.exists'  => config('keywords')['branch']['district_code'].' = '.$this->district_code.' không tồn tại'.' hoặc không thuộc '.$this->province_name.'!'.config('keywords')['error']['not_active'], 
 
             'district_name.string'  => config('keywords')['branch']['district_name'].config('keywords')['error']['string'],
             'district_name.max'     => config('keywords')['branch']['district_name'].config('keywords')['error']['string_max'],      
-            'district_name.exists'  => config('keywords')['branch']['district_name'].' = '.$this->district_name.' không trùng khớp với '.config('keywords')['medi_org']['district_code'].' = '. $this->district_code.' hoặc không thuộc '.$this->province_name.'!', 
+            'district_name.exists'  => config('keywords')['branch']['district_name'].' = '.$this->district_name.' không trùng khớp với '.config('keywords')['medi_org']['district_code'].' = '. $this->district_code.' hoặc không thuộc '.$this->province_name.'!'.config('keywords')['error']['not_active'], 
 
             'commune_code.string'  => config('keywords')['branch']['commune_code'].config('keywords')['error']['string'],
             'commune_code.max'     => config('keywords')['branch']['commune_code'].config('keywords')['error']['string_max'],      
-            'commune_code.exists'  => config('keywords')['branch']['commune_code'].' = '.$this->commune_code.' không tồn tại'.' hoặc không thuộc '.$this->district_name.'!', 
+            'commune_code.exists'  => config('keywords')['branch']['commune_code'].' = '.$this->commune_code.' không tồn tại'.' hoặc không thuộc '.$this->district_name.'!'.config('keywords')['error']['not_active'], 
 
             'commune_name.string'  => config('keywords')['branch']['commune_name'].config('keywords')['error']['string'],
             'commune_name.max'     => config('keywords')['branch']['commune_name'].config('keywords')['error']['string_max'],      
-            'commune_name.exists'  => config('keywords')['branch']['commune_name'].' = '.$this->commune_name.' không trùng khớp với '.config('keywords')['medi_org']['commune_code'].' = '. $this->commune_code.' hoặc không thuộc '.$this->district_name.'!', 
+            'commune_name.exists'  => config('keywords')['branch']['commune_name'].' = '.$this->commune_name.' không trùng khớp với '.config('keywords')['medi_org']['commune_code'].' = '. $this->commune_code.' hoặc không thuộc '.$this->district_name.'!'.config('keywords')['error']['not_active'], 
 
             'address.string'    => config('keywords')['branch']['address'].config('keywords')['error']['string'],
             'address.max'       => config('keywords')['branch']['address'].config('keywords')['error']['string_max'],
@@ -207,7 +243,7 @@ class UpdateBranchRequest extends FormRequest
 
             'director_username.string'  => config('keywords')['branch']['director_username'].config('keywords')['error']['string'],
             'director_username.max'     => config('keywords')['branch']['director_username'].config('keywords')['error']['string_max'], 
-            'director_username.exists'  => config('keywords')['branch']['director_username'].config('keywords')['error']['exists'],  
+            'director_username.exists'  => config('keywords')['branch']['director_username'].config('keywords')['error']['exists'].config('keywords')['error']['not_in_loginname'],  
 
             'venture.integer'   => config('keywords')['branch']['venture'].config('keywords')['error']['integer'],
             'venture.in'        => config('keywords')['branch']['venture'].config('keywords')['error']['in'],  

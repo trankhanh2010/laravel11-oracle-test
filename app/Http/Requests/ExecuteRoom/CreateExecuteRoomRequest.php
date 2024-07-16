@@ -2,11 +2,12 @@
 
 namespace App\Http\Requests\ExecuteRoom;
 
+use App\Models\ACS\ModuleGroup;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Validation\Rule;
-use Illuminate\Database\Query\Builder;
+use Illuminate\Support\Facades\DB;
 
 class CreateExecuteRoomRequest extends FormRequest
 {
@@ -27,33 +28,145 @@ class CreateExecuteRoomRequest extends FormRequest
      */
     public function rules()
     {
+        $responsible_loginname = $this->responsible_loginname ?? "";
+        $module_group_id_mhc = ModuleGroup::select('id')->where('module_group_code', 'MHC')->pluck('id')->implode(',');
         return [
             'execute_room_code' =>              'required|string|max:20|unique:App\Models\HIS\ExecuteRoom,execute_room_code',
             'execute_room_name' =>              'required|string|max:100',
-            'department_id' =>                  'required|integer|exists:App\Models\HIS\Department,id',
-            'room_group_id' =>                  'nullable|integer|exists:App\Models\HIS\RoomGroup,id',
-            'room_type_id'  =>                  'required|integer|exists:App\Models\HIS\RoomType,id',
+            'department_id' =>                  [
+                                                    'required',
+                                                    'integer',
+                                                    Rule::exists('App\Models\HIS\Department', 'id')
+                                                    ->where(function ($query) {
+                                                        $query = $query
+                                                        ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                                                    }),
+                                                ],
+            'room_group_id' =>                  [
+                                                    'nullable',
+                                                    'integer',
+                                                    Rule::exists('App\Models\HIS\RoomGroup', 'id')
+                                                    ->where(function ($query) {
+                                                        $query = $query
+                                                        ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                                                    }),
+                                                ],
+            'room_type_id'  =>                  [
+                                                    'required',
+                                                    'integer',
+                                                    Rule::exists('App\Models\HIS\RoomType', 'id')
+                                                    ->where(function ($query) {
+                                                        $query = $query
+                                                        ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                                                    }),
+                                                ],
             'order_issue_code' =>               'nullable|string|max:10',
             'num_order' =>                      'nullable|integer',
-            'test_type_code' =>                 'nullable|string|max:20|exists:App\Models\HIS\TestType,test_type_code',
+            'test_type_code' =>                 [
+                                                    'nullable',
+                                                    'string',
+                                                    'max:20',
+                                                    Rule::exists('App\Models\HIS\TestType', 'test_type_code')
+                                                    ->where(function ($query) {
+                                                        $query = $query
+                                                        ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                                                    }),
+                                                ],
             'max_request_by_day' =>             'nullable|integer|min:0',
             'max_appointment_by_day' =>         'nullable|integer|min:0',
             'hold_order' =>                     'nullable|integer',
-            'speciality_id' =>                  'nullable|integer|exists:App\Models\HIS\Speciality,id',
+            'speciality_id' =>                  [
+                                                    'nullable',
+                                                    'integer',
+                                                    Rule::exists('App\Models\HIS\Speciality', 'id')
+                                                    ->where(function ($query) {
+                                                        $query = $query
+                                                        ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                                                    }),
+                                                ],
             'address' =>                        'nullable|string|max:200',
             'max_req_bhyt_by_day' =>            'nullable|integer|min:0',
             'max_patient_by_day' =>             'nullable|integer|min:0',
             'average_eta' =>                    'nullable|integer|min:0',
-            'responsible_loginname' =>          'nullable|string|max:50|exists:App\Models\HIS\Employee,loginname',
-            'responsible_username' =>           'nullable|string|max:100|exists:App\Models\HIS\Employee,tdl_username',
-            'default_instr_patient_type_id' =>  'nullable|integer|exists:App\Models\HIS\PatientType,id',
+            'responsible_loginname' =>          [
+                                                    'nullable',
+                                                    'string',
+                                                    'max:50',
+                                                    Rule::exists('App\Models\HIS\Employee', 'loginname')
+                                                    ->where(function ($query) {
+                                                        $query = $query
+                                                        ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                                                    }),
+                                                ],
+            'responsible_username' =>           [
+                                                    'nullable',
+                                                    'string',
+                                                    'max:100',
+                                                    Rule::exists('App\Models\HIS\Employee', 'tdl_username')
+                                                    ->where(function ($query) use ($responsible_loginname){
+                                                        $query = $query
+                                                        ->where(DB::connection('oracle_his')->raw("is_active"), 1)
+                                                        ->where(DB::connection('oracle_his')->raw("loginname"), $responsible_loginname);
+                                                    }),
+                                                ],
+            'default_instr_patient_type_id' =>  [
+                                                    'nullable',
+                                                    'integer',
+                                                    Rule::exists('App\Models\HIS\PatientType', 'id')
+                                                    ->where(function ($query) {
+                                                        $query = $query
+                                                        ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                                                    }),
+                                                ],
             'default_drug_store_ids' =>         'nullable|string|max:100',
-            'default_cashier_room_id' =>        'nullable|integer|exists:App\Models\HIS\CashierRoom,id',
-            'area_id' =>                        'nullable|integer|exists:App\Models\HIS\Area,id',
-            'screen_saver_module_link' =>       'nullable|string|max:200|exists:App\Models\ACS\Module,module_link',
+            'default_cashier_room_id' =>        [
+                                                    'nullable',
+                                                    'integer',
+                                                    Rule::exists('App\Models\HIS\CashierRoom', 'id')
+                                                    ->where(function ($query) {
+                                                        $query = $query
+                                                        ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                                                    }),
+                                                ],
+            'area_id' =>                        [
+                                                    'nullable',
+                                                    'integer',
+                                                    Rule::exists('App\Models\HIS\Area', 'id')
+                                                    ->where(function ($query) {
+                                                        $query = $query
+                                                        ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                                                    }),
+                                                ],
+            'screen_saver_module_link' =>       [
+                                                    'nullable',
+                                                    'string',
+                                                    'max:200',
+                                                    Rule::exists('App\Models\ACS\Module', 'module_link')
+                                                    ->where(function ($query) use ($module_group_id_mhc){
+                                                        $query = $query
+                                                        ->where(DB::connection('oracle_his')->raw("is_active"), 1)
+                                                        ->where(DB::connection('oracle_his')->raw("module_group_id"), $module_group_id_mhc);
+                                                    }),
+                                                ],
             'bhyt_code' =>                      'nullable|string|max:50',
-            'deposit_account_book_id' =>        'nullable|integer|exists:App\Models\HIS\AccountBook,id',
-            'bill_account_book_id' =>           'nullable|integer|exists:App\Models\HIS\AccountBook,id',
+            'deposit_account_book_id' =>        [
+                                                    'nullable',
+                                                    'integer',
+                                                    Rule::exists('App\Models\HIS\AccountBook', 'id')
+                                                    ->where(function ($query) {
+                                                        $query = $query
+                                                        ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                                                    }),
+                                                ],
+            'bill_account_book_id' =>           [
+                                                    'nullable',
+                                                    'integer',
+                                                    Rule::exists('App\Models\HIS\AccountBook', 'id')
+                                                    ->where(function ($query) {
+                                                        $query = $query
+                                                        ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                                                    }),
+                                                ],
             'is_emergency' =>                   'nullable|integer|in:0,1',
             'is_exam' =>                        'nullable|integer|in:0,1',
             'is_speciality' =>                  'nullable|integer|in:0,1',
@@ -74,7 +187,15 @@ class CreateExecuteRoomRequest extends FormRequest
             'is_vitamin_a' =>                   'nullable|integer|in:0,1',
             'is_restrict_patient_type' =>       'nullable|integer|in:0,1',
             'is_block_num_order' =>             'nullable|integer|in:0,1',
-            'default_service_id' =>             'nullable|integer|exists:App\Models\HIS\Service,id',
+            'default_service_id' =>             [
+                                                    'nullable',
+                                                    'integer',
+                                                    Rule::exists('App\Models\HIS\Service', 'id')
+                                                    ->where(function ($query) {
+                                                        $query = $query
+                                                        ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                                                    }),
+                                                ],
         ];
     }
     public function messages()
@@ -138,7 +259,7 @@ class CreateExecuteRoomRequest extends FormRequest
 
             'responsible_username.string'      => config('keywords')['execute_room']['responsible_username'].config('keywords')['error']['string'],
             'responsible_username.max'         => config('keywords')['execute_room']['responsible_username'].config('keywords')['error']['string_max'],
-            'responsible_username.exists'      => config('keywords')['execute_room']['responsible_username'].config('keywords')['error']['exists'],  
+            'responsible_username.exists'      => config('keywords')['execute_room']['responsible_username'].config('keywords')['error']['exists'].config('keywords')['error']['not_in_loginname'],  
 
             'default_instr_patient_type_id.integer'     => config('keywords')['execute_room']['default_instr_patient_type_id'].config('keywords')['error']['integer'],
             'default_instr_patient_type_id.exists'      => config('keywords')['execute_room']['default_instr_patient_type_id'].config('keywords')['error']['exists'],  
@@ -154,7 +275,7 @@ class CreateExecuteRoomRequest extends FormRequest
             
             'screen_saver_module_link.string'      => config('keywords')['execute_room']['screen_saver_module_link'].config('keywords')['error']['string'],
             'screen_saver_module_link.max'         => config('keywords')['execute_room']['screen_saver_module_link'].config('keywords')['error']['string_max'],
-            'screen_saver_module_link.exists'      => config('keywords')['execute_room']['screen_saver_module_link'].config('keywords')['error']['exists'],  
+            'screen_saver_module_link.exists'      => config('keywords')['execute_room']['screen_saver_module_link'].config('keywords')['error']['exists'].config('keywords')['error']['not_in_module_group_mhc'],  
 
             'bhyt_code.string'      => config('keywords')['execute_room']['bhyt_code'].config('keywords')['error']['string'],
             'bhyt_code.max'         => config('keywords')['execute_room']['bhyt_code'].config('keywords')['error']['string_max'],
@@ -245,8 +366,8 @@ class CreateExecuteRoomRequest extends FormRequest
         $validator->after(function ($validator) {
             if ($this->has('default_drug_store_ids_list') && ($this->default_drug_store_ids_list[0] != null)) {
                 foreach ($this->default_drug_store_ids_list as $id) {
-                    if (!is_numeric($id) || !\App\Models\HIS\MediStock::find($id)) {
-                        $validator->errors()->add('default_drug_store_ids', 'Nhà thuốc với id = ' . $id . ' trong danh sách nhà thuốc không tồn tại!');
+                    if (!is_numeric($id) || !\App\Models\HIS\MediStock::where('id', $id)->where('is_active', 1)->first()) {
+                        $validator->errors()->add('default_drug_store_ids', 'Nhà thuốc với id = ' . $id . config('keywords')['error']['not_find_or_not_active_in_list']);
                     }
                 }
             }

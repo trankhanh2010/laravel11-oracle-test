@@ -5,6 +5,9 @@ namespace App\Http\Requests\Area;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Validation\Rule;
+use Illuminate\Database\Query\Builder;
+use Illuminate\Support\Facades\DB;
 class CreateAreaRequest extends FormRequest
 {
     /**
@@ -27,7 +30,15 @@ class CreateAreaRequest extends FormRequest
         return [
             'area_code' =>      'required|string|max:2|unique:App\Models\HIS\Area,area_code',
             'area_name' =>      'required|string|max:100',
-            'department_id' =>  'required|integer|exists:App\Models\HIS\Department,id',
+            'department_id' =>  [
+                                    'required',
+                                    'integer',
+                                    Rule::exists('App\Models\HIS\Department', 'id')
+                                    ->where(function ($query) {
+                                        $query = $query
+                                        ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                                    }),
+                                ], 
         ];
     }
     public function messages()

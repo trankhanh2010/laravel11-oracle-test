@@ -385,6 +385,9 @@ class ServicePatyController extends BaseApiCacheController
 
     public function service_paty_create(CreateServicePatyRequest $request)
     {
+        foreach($request->branch_ids as $branch => $branch_id){
+            dd($branch_id);
+        }
         $data = $this->service_paty::create([
             'create_time' => now()->format('Ymdhis'),
             'modify_time' => now()->format('Ymdhis'),
@@ -394,9 +397,7 @@ class ServicePatyController extends BaseApiCacheController
             'app_modifier' => $this->app_modifier,
             'is_active' => 1,
             'is_delete' => 0,
-            'area_code' => $request->area_code,
-            'area_name' => $request->area_name,
-            'department_id' => $request->department_id
+
         ]);
         // Gọi event để xóa cache
         event(new DeleteCache($this->service_paty_name));

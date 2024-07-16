@@ -5,6 +5,8 @@ namespace App\Http\Requests\Commune;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
 class CreateCommuneRequest extends FormRequest
 {
     /**
@@ -29,7 +31,15 @@ class CreateCommuneRequest extends FormRequest
             'commune_name' =>                  'required|string|max:100',
             'search_code' =>                   'nullable|string|max:10',
             'initial_name' =>                  'nullable|string|max:20',
-            'district_id' =>                   'required|integer|exists:App\Models\SDA\District,id',
+            'district_id' =>                   [
+                                                    'required',
+                                                    'integer',
+                                                    Rule::exists('App\Models\SDA\District', 'id')
+                                                    ->where(function ($query) {
+                                                        $query = $query
+                                                        ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                                                    }),
+                                                ],
         ];
     }
     public function messages()

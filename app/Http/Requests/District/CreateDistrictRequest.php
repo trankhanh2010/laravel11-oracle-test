@@ -5,7 +5,8 @@ namespace App\Http\Requests\District;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Contracts\Validation\Validator;
-
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
 class CreateDistrictRequest extends FormRequest
 {
     /**
@@ -30,7 +31,15 @@ class CreateDistrictRequest extends FormRequest
             'district_name' =>      'required|string|max:100',
             'initial_name' =>       'nullable|string|max:20|in:Huyện,Quận,Thị Xã,Thành Phố',
             'search_code' =>        'nullable|string|max:10',
-            'province_id' =>        'required|integer|exists:App\Models\SDA\Province,id',
+            'province_id' =>        [
+                                        'required',
+                                        'integer',
+                                        Rule::exists('App\Models\SDA\Province', 'id')
+                                        ->where(function ($query) {
+                                            $query = $query
+                                            ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                                        }),
+                                    ],
         ];
     }
     public function messages()

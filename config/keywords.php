@@ -7,7 +7,7 @@ return [
         'string' => ' phải là chuỗi tring!',
         'string_max' => ' có số kí tự tối đa là :max!',
         'unique' => ' = :input đã tồn tại!',
-        'exists' => ' = :input không tồn tại!',
+        'exists' => ' = :input không tồn tại hoặc đang bị tạm khóa!',
         'integer' => ' phải là số nguyên!',
         'integer_min' => ' phải lớn hơn hoặc bằng :min!',
         'integer_max' => ' phải bé hơn hoặc bằng :max!',
@@ -21,6 +21,14 @@ return [
         'declined_if'=> ' chỉ được nhập khi ',
         'lte' => ' phải bé hơn hoặc bằng :value!',
         'gte' => ' phải lớn hơn hoặc bằng :value!',
+
+        /// Err logic db
+        'not_in_service_type_id' => ' Hoặc không thuộc nhóm dịch vụ đã chọn!',
+        'not_in_service_id' => ' Hoặc không thuộc dịch vụ đã chọn!',
+        'not_in_loginname' => ' Hoặc không khớp với loginname',
+        'not_in_module_group_mhc' => ' Hoặc không phải là link màn hình chờ!',
+        'not_active' => ' Hoặc bị tạm khóa!',
+        'not_find_or_not_active_in_list' => ' trong danh sách không tồn tại hoặc đang bị tạm khóa!',
 
     ],
     // Dùng chung
