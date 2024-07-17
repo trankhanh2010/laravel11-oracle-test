@@ -5,6 +5,7 @@ namespace App\Http\Requests\PatientClassify;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
 class UpdatePatientClassifyRequest extends FormRequest
@@ -39,8 +40,24 @@ class UpdatePatientClassifyRequest extends FormRequest
                                             ],
             'patient_classify_name' =>      'required|string|max:100',
             'display_color' =>              'required|string|max:20|rgb_color',
-            'patient_type_id' =>            'nullable|integer|exists:App\Models\HIS\PatientType,id',
-            'other_pay_source_id' =>        'nullable|integer|exists:App\Models\HIS\OtherPaySource,id',
+            'patient_type_id' =>            [
+                                                'nullable',
+                                                'integer',
+                                                Rule::exists('App\Models\HIS\PatientType', 'id')
+                                                ->where(function ($query) {
+                                                    $query = $query
+                                                    ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                                                }),
+                                            ],
+            'other_pay_source_id' =>        [
+                                                'nullable',
+                                                'integer',
+                                                Rule::exists('App\Models\HIS\OtherPaySource', 'id')
+                                                ->where(function ($query) {
+                                                    $query = $query
+                                                    ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                                                }),
+                                            ],
             'bhyt_whitelist_ids' =>         'nullable|string|max:500',
             'military_rank_ids' =>          'nullable|string|max:500',
             'is_police' =>                  'nullable|integer|in:0,1',
@@ -105,16 +122,16 @@ class UpdatePatientClassifyRequest extends FormRequest
         $validator->after(function ($validator) {
             if ($this->has('bhyt_whitelist_ids_list') && ($this->bhyt_whitelist_ids_list[0] != null)) {
                 foreach ($this->bhyt_whitelist_ids_list as $id) {
-                    if (!is_numeric($id) || !\App\Models\HIS\BHYTWhitelist::find($id)) {
-                        $validator->errors()->add('bhyt_whitelist_ids', 'Đầu mã BHYT với id = ' . $id . ' trong danh sách đầu mã BHYT không tồn tại!');
+                    if (!is_numeric($id) || !\App\Models\HIS\BHYTWhitelist::where('id', $id)->where('is_active', 1)->first()) {
+                        $validator->errors()->add('bhyt_whitelist_ids', 'Đầu mã BHYT với id = ' . $id . config('keywords')['error']['not_find_or_not_active_in_list']);
                     }
                 }
             }
             ///////////////////////////////////////////////////////////////////////////////////////////////////////
             if ($this->has('military_rank_ids_list') && ($this->military_rank_ids_list[0] != null)) {
                 foreach ($this->military_rank_ids_list as $id) {
-                    if (!is_numeric($id) || !\App\Models\HIS\MilitaryRank::find($id)) {
-                        $validator->errors()->add('military_rank_ids', 'Quân hàm với id = ' . $id . ' trong danh sách quân hàm không tồn tại!');
+                    if (!is_numeric($id) || !\App\Models\HIS\MilitaryRank::where('id', $id)->where('is_active', 1)->first()) {
+                        $validator->errors()->add('military_rank_ids', 'Quân hàm với id = ' . $id . config('keywords')['error']['not_find_or_not_active_in_list']);
                     }
                 }
             }

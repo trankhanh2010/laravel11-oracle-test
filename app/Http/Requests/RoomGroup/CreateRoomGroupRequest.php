@@ -6,6 +6,8 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
 use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
 class CreateRoomGroupRequest extends FormRequest
 {
     /**
@@ -26,7 +28,16 @@ class CreateRoomGroupRequest extends FormRequest
     public function rules()
     {
         return [
-            'group_code' =>             'nullable|string|max:50|exists:App\Models\SDA\Group,group_code',
+            'group_code' =>             [
+                                            'nullable',
+                                            'string',
+                                            'max:50',
+                                            Rule::exists('App\Models\SDA\Group', 'group_code')
+                                            ->where(function ($query) {
+                                                $query = $query
+                                                ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                                            }),
+                                        ],'|||exists:,',
             'room_group_code' =>        'required|string|max:10|unique:App\Models\HIS\RoomGroup,room_group_code',
             'room_group_name' =>        'required|string|max:200',
         ];

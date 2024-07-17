@@ -7,7 +7,6 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Validation\Rule;
-use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
 
 class CreateServicePatyRequest extends FormRequest
@@ -53,7 +52,7 @@ class CreateServicePatyRequest extends FormRequest
         $service_type_id = is_numeric($this->service_type_id) ? (int) $this->service_type_id : 0;
         $service_id = is_numeric($this->service_id) ? (int) $this->service_id : 0;
         return [
-            'service_type_id' =>                 [
+            'service_type_id' =>                [
                                                     'required',
                                                     'integer',
                                                     Rule::exists('App\Models\HIS\ServiceType', 'id')

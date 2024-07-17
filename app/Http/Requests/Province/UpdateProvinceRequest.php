@@ -6,6 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
 
 class UpdateProvinceRequest extends FormRequest
 {
@@ -38,7 +39,15 @@ class UpdateProvinceRequest extends FormRequest
             ],
             'province_name' =>                  'required|string|max:100',
             'search_code' =>                    'nullable|string|max:10',
-            'national_id' =>                    'required|integer|exists:App\Models\SDA\National,id',
+            'national_id' =>                    [
+                                                    'required',
+                                                    'integer',
+                                                    Rule::exists('App\Models\SDA\National', 'id')
+                                                    ->where(function ($query) {
+                                                        $query = $query
+                                                        ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                                                    }),
+                                                ],
             'is_active' =>                      'required|integer|in:0,1'
 
         ];

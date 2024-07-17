@@ -5,6 +5,8 @@ namespace App\Http\Requests\Refectory;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
 class CreateRefectoryRequest extends FormRequest
 {
     /**
@@ -27,8 +29,24 @@ class CreateRefectoryRequest extends FormRequest
         return [
             'refectory_code' =>              'required|string|max:10|unique:App\Models\HIS\Refectory,refectory_code',
             'refectory_name' =>              'required|string|max:100',
-            'department_id' =>               'required|integer|exists:App\Models\HIS\Department,id',
-            'room_type_id'  =>               'required|integer|exists:App\Models\HIS\RoomType,id',
+            'department_id' =>               [
+                                                'required',
+                                                'integer',
+                                                Rule::exists('App\Models\HIS\Department', 'id')
+                                                ->where(function ($query) {
+                                                    $query = $query
+                                                    ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                                                }),
+                                            ],
+            'room_type_id'  =>               [
+                                                'required',
+                                                'integer',
+                                                Rule::exists('App\Models\HIS\RoomType', 'id')
+                                                ->where(function ($query) {
+                                                    $query = $query
+                                                    ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                                                }),
+                                            ],
         ];
     }
     public function messages()

@@ -97,7 +97,7 @@ class ServiceController extends BaseApiCacheController
                 if ($data == null) {
                     return return_not_record($id);
                 }
-                $data = get_cache_full($this->service, [], $this->service_name. '_start_' . $this->start . '_limit_' . $this->limit . $this->order_by_tring. '_is_active_' . $this->is_active, $id, $this->time,$this->start, $this->limit, $this->order_by, $this->is_active);
+                $data = get_cache_full($this->service, [], $this->service_name.'_id_'.$id. '_start_' . $this->start . '_limit_' . $this->limit . $this->order_by_tring. '_is_active_' . $this->is_active, $id, $this->time,$this->start, $this->limit, $this->order_by, $this->is_active);
                 if($data != null){
                     $data1 = get_cache_1_1($this->service, "service_type", $this->service_name, $id, $this->time);
                     $data2 = get_cache_1_1($this->service, "parent", $this->service_name, $id, $this->time);

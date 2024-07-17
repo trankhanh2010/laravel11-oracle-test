@@ -5,6 +5,8 @@ namespace App\Http\Requests\TreatmentType;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
 class UpdateTreatmentTypeRequest extends FormRequest
 {
     /**
@@ -27,7 +29,15 @@ class UpdateTreatmentTypeRequest extends FormRequest
         return [
             'hein_treatment_type_code' =>           'required|string|max:2|in:KH,DT',
             'end_code_prefix' =>                    'nullable|string|max:5',
-            'required_service_id' =>                'nullable|integer|exists:App\Models\HIS\Service,id',
+            'required_service_id' =>                [
+                                                        'nullable',
+                                                        'integer',
+                                                        Rule::exists('App\Models\HIS\Service', 'id')
+                                                        ->where(function ($query) {
+                                                            $query = $query
+                                                            ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                                                        }),
+                                                    ],
             'is_allow_reception' =>                 'required|integer|in:0,1',
             'is_not_allow_unpause' =>               'nullable|integer|in:0,1',
             'allow_hospitalize_when_pres' =>        'nullable|integer|in:0,1',

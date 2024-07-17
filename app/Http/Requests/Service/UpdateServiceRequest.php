@@ -8,6 +8,8 @@ use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Database\Query\Builder;
+use Illuminate\Support\Facades\DB;
+
 class UpdateServiceRequest extends FormRequest
 {
     protected $package_price_check = ['AN'];
@@ -150,8 +152,19 @@ class UpdateServiceRequest extends FormRequest
         $this->allow_send_pacs_check_id = ServiceType::select('id')->whereIn('service_type_code', $this->allow_send_pacs_check)->pluck('id')->implode(',');
         $this->allow_send_pacs_check_string = implode(", ", $this->allow_send_pacs_check);
         
+        // Nếu id không phải số thì là số 0
+        $service_type_id = is_numeric($this->service_type_id) ? (int) $this->service_type_id : 0;
+
         return [
-            'service_type_id' =>                'required|integer|exists:App\Models\HIS\ServiceType,id', 
+           'service_type_id' =>                [
+                                                    'required',
+                                                    'integer',
+                                                    Rule::exists('App\Models\HIS\ServiceType', 'id')
+                                                    ->where(function ($query) {
+                                                        $query = $query
+                                                        ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                                                    }),
+                                                ], 
             'service_code' =>                   [
                                                     'required',
                                                     'string',
@@ -159,16 +172,60 @@ class UpdateServiceRequest extends FormRequest
                                                     Rule::unique('App\Models\HIS\Service')->ignore($this->id),
                                                 ],
             'service_name' =>                   'required|string|max:1500',
-            'service_unit_id' =>                'required|integer|exists:App\Models\HIS\ServiceUnit,id', 
-            'speciality_code' =>                'nullable|string|max:3|exists:App\Models\HIS\Speciality,speciality_code|prohibited_unless:service_type_id,'.$this->speciality_code_check_id, 
-            'hein_service_type_id' =>           'nullable|integer|exists:App\Models\HIS\HeinServiceType,id', 
+            'service_unit_id' =>                [
+                                                    'required',
+                                                    'integer',
+                                                    Rule::exists('App\Models\HIS\ServiceUnit', 'id')
+                                                    ->where(function ($query) {
+                                                        $query = $query
+                                                        ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                                                    }),
+                                                ], 
+            'speciality_code' =>                [
+                                                    'nullable',
+                                                    'string',
+                                                    'max:3',
+                                                    Rule::exists('App\Models\HIS\Speciality', 'speciality_code')
+                                                    ->where(function ($query) {
+                                                        $query = $query
+                                                        ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                                                    }),
+                                                    'prohibited_unless:service_type_id,'.$this->speciality_code_check_id
+                                                ], 
+            'hein_service_type_id' =>           [
+                                                    'nullable',
+                                                    'integer',
+                                                    Rule::exists('App\Models\HIS\HeinServiceType', 'id')
+                                                    ->where(function ($query) {
+                                                        $query = $query
+                                                        ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                                                    }),
+                                                ],  
 
 
             'hein_service_bhyt_code' =>         'nullable|string|max:100',
             'hein_service_bhyt_name' =>         'nullable|string|max:1500',
             'hein_order' =>                     'nullable|string|max:20',
-            'parent_id' =>                      'nullable|integer|exists:App\Models\HIS\Service,id', 
-            'package_id' =>                     'nullable|integer|exists:App\Models\HIS\Package,id', 
+            'parent_id' =>                      [
+                                                    'nullable',
+                                                    'integer',
+                                                    Rule::exists('App\Models\HIS\Service', 'id')
+                                                    ->where(function ($query) use ($service_type_id) {
+                                                        $query = $query
+                                                        ->where(DB::connection('oracle_his')->raw("is_active"), 1)
+                                                        ->where(DB::connection('oracle_his')->raw("service_type_id"), $service_type_id);
+                                                    }),
+                                                    'not_in:'.$this->id,
+                                                ], 
+            'package_id' =>                     [
+                                                    'nullable',
+                                                    'integer',
+                                                    Rule::exists('App\Models\HIS\Package', 'id')
+                                                    ->where(function ($query) {
+                                                        $query = $query
+                                                        ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                                                    }),
+                                                ], 
             'package_price' =>                  [
                                                     'nullable',
                                                     'numeric',
@@ -178,16 +235,50 @@ class UpdateServiceRequest extends FormRequest
                                                 ],
 
             'bill_option' =>                    'nullable|integer|in:0,1,2',
-            'bill_patient_type_id' =>           'nullable|integer|exists:App\Models\HIS\PatientType,id',
-            'pttt_method_id' =>                 'nullable|integer|exists:App\Models\HIS\PtttMethod,id|prohibited_unless:service_type_id,'.$this->pttt_method_id_check_id,      
+            'bill_patient_type_id' =>           [
+                                                    'nullable',
+                                                    'integer',
+                                                    Rule::exists('App\Models\HIS\PatientType', 'id')
+                                                    ->where(function ($query) {
+                                                        $query = $query
+                                                        ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                                                    }),
+                                                ],
+            'pttt_method_id' =>                 [
+                                                    'nullable',
+                                                    'integer',
+                                                    Rule::exists('App\Models\HIS\PtttMethod', 'id')
+                                                    ->where(function ($query) {
+                                                        $query = $query
+                                                        ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                                                    }),
+                                                    'prohibited_unless:service_type_id,'.$this->pttt_method_id_check_id
+                                                ], 
             'is_not_change_bill_paty' =>        'nullable|integer|in:0,1',
             'applied_patient_classify_ids' =>   'prohibited_if:bill_patient_type_id,null|nullable|string|max:500',
             'applied_patient_type_ids' =>       'prohibited_if:bill_patient_type_id,null|nullable|string|max:100',
             
 
             'testing_technique' =>              'nullable|string|max:500',
-            'default_patient_type_id' =>        'nullable|integer|exists:App\Models\HIS\PatientType,id',      
-            'pttt_group_id' =>                  'nullable|integer|exists:App\Models\HIS\PtttGroup,id|prohibited_unless:service_type_id,'.$this->pttt_group_id_check_id,      
+            'default_patient_type_id' =>        [
+                                                    'nullable',
+                                                    'integer',
+                                                    Rule::exists('App\Models\HIS\PatientType', 'id')
+                                                    ->where(function ($query) {
+                                                        $query = $query
+                                                        ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                                                    }),
+                                                ], 
+            'pttt_group_id' =>                  [
+                                                    'nullable',
+                                                    'integer',
+                                                    Rule::exists('App\Models\HIS\PtttGroup', 'id')
+                                                    ->where(function ($query) {
+                                                        $query = $query
+                                                        ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                                                    }),
+                                                    'prohibited_unless:service_type_id,'.$this->pttt_group_id_check_id
+                                                ], 
             'hein_limit_price_old' =>           [
                                                     'nullable',
                                                     'numeric',
@@ -195,10 +286,14 @@ class UpdateServiceRequest extends FormRequest
                                                     'regex:/^\d{1,15}(\.\d{1,4})?$/',
                                                     'prohibited_unless:service_type_id,'.$this->hein_limit_price_old_check_id
                                                 ],
-            'icd_cm_id' =>                      [
+           'icd_cm_id' =>                      [
                                                     'nullable',
                                                     'integer',
-                                                    'exists:App\Models\HIS\IcdCm,id',
+                                                    Rule::exists('App\Models\HIS\IcdCm', 'id')
+                                                    ->where(function ($query) {
+                                                        $query = $query
+                                                        ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                                                    }),
                                                     'prohibited_unless:service_type_id,'.$this->icd_cm_id_check_id
                                                 ],
             'hein_limit_price_in_time' =>       [
@@ -229,7 +324,11 @@ class UpdateServiceRequest extends FormRequest
             'ration_group_id' =>                [
                                                     'nullable',
                                                     'integer',
-                                                    'exists:App\Models\HIS\RationGroup,id',
+                                                    Rule::exists('App\Models\HIS\RationGroup', 'id')
+                                                    ->where(function ($query) {
+                                                        $query = $query
+                                                        ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                                                    }),
                                                     'prohibited_unless:service_type_id,'.$this->ration_group_id_check_id
                                                 ],
             'num_order' =>                      'nullable|integer',
@@ -245,19 +344,31 @@ class UpdateServiceRequest extends FormRequest
             'diim_type_id' =>                   [
                                                     'nullable',
                                                     'integer',
-                                                    'exists:App\Models\HIS\DiimType,id',
+                                                    Rule::exists('App\Models\HIS\DiimType', 'id')
+                                                    ->where(function ($query) {
+                                                        $query = $query
+                                                        ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                                                    }),
                                                     'prohibited_unless:service_type_id,'.$this->diim_type_id_check_id
                                                 ],
             'fuex_type_id' =>                   [
                                                     'nullable',
                                                     'integer',
-                                                    'exists:App\Models\HIS\FuexType,id',
+                                                    Rule::exists('App\Models\HIS\FuexType', 'id')
+                                                    ->where(function ($query) {
+                                                        $query = $query
+                                                        ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                                                    }),
                                                     'prohibited_unless:service_type_id,'.$this->fuex_type_id_check_id
                                                 ],
             'test_type_id' =>                   [
                                                     'nullable',
                                                     'integer',
-                                                    'exists:App\Models\HIS\TestType,id',
+                                                    Rule::exists('App\Models\HIS\TestType', 'id')
+                                                    ->where(function ($query) {
+                                                        $query = $query
+                                                        ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                                                    }),
                                                     'prohibited_unless:service_type_id,'.$this->test_type_id_check_id
                                                 ],
             'sample_type_code' =>               'nullable|string|max:100',
@@ -279,7 +390,11 @@ class UpdateServiceRequest extends FormRequest
             'film_size_id' =>                   [
                                                     'nullable',
                                                     'integer',
-                                                    'exists:App\Models\HIS\FilmSize,id',
+                                                    Rule::exists('App\Models\HIS\FilmSize', 'id')
+                                                    ->where(function ($query) {
+                                                        $query = $query
+                                                        ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                                                    }),
                                                     'prohibited_unless:service_type_id,'.$this->film_size_id_check_id
                                                 ],
             'min_process_time' =>               'nullable|integer|min:0',
@@ -297,15 +412,39 @@ class UpdateServiceRequest extends FormRequest
             'age_to' =>                         'nullable|integer|min:0',
             'max_total_process_time' =>         'nullable|integer|min:0',
             'total_time_except_paty_ids' =>     'nullable|string|max:230',
-            'gender_id' =>                      'nullable|integer|exists:App\Models\HIS\Gender,id', 
+            'gender_id' =>                      [
+                                                    'nullable',
+                                                    'integer',
+                                                    Rule::exists('App\Models\HIS\Gender', 'id')
+                                                    ->where(function ($query) {
+                                                        $query = $query
+                                                        ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                                                    }),
+                                                ], 
             'min_duration' =>                   'nullable|integer|min:0',
             'max_amount' =>                     'nullable|integer|min:0',
 
             'body_part_ids' =>                  'nullable|string|max:200',
             'capacity' =>                       'nullable|integer|min:0',
             'warning_sampling_time' =>          'nullable|integer|min:0',
-            'exe_service_module_id' =>          'nullable|integer|exists:App\Models\HIS\ExeServiceModule,id', 
-            'suim_index_id' =>                  'nullable|integer|exists:App\Models\HIS\SuimIndex,id', 
+            'exe_service_module_id' =>          [
+                                                    'nullable',
+                                                    'integer',
+                                                    Rule::exists('App\Models\HIS\ExeServiceModule', 'id')
+                                                    ->where(function ($query) {
+                                                        $query = $query
+                                                        ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                                                    }),
+                                                ], 
+            'suim_index_id' =>                  [
+                                                    'nullable',
+                                                    'integer',
+                                                    Rule::exists('App\Models\HIS\SuimIndex', 'id')
+                                                    ->where(function ($query) {
+                                                        $query = $query
+                                                        ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                                                    }),
+                                                ],
             'is_kidney' =>                      'nullable|integer|in:0,1',
 
             'is_antibiotic_resistance' =>       'nullable|integer|in:0,1',
@@ -334,7 +473,15 @@ class UpdateServiceRequest extends FormRequest
                                                     'prohibited_unless:service_type_id,'.$this->allow_send_pacs_check_id
                                                 ],
 
-            'other_pay_source_id' =>            'nullable|integer|exists:App\Models\HIS\OtherPaySource,id', 
+             'other_pay_source_id' =>           [
+                                                    'nullable',
+                                                    'integer',
+                                                    Rule::exists('App\Models\HIS\OtherPaySource', 'id')
+                                                    ->where(function ($query) {
+                                                        $query = $query
+                                                        ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                                                    }),
+                                                ],
             'attach_assign_print_type_code' =>  'nullable|string|max:100',
             'description' =>                    'nullable|string|max:2000',
             'notice' =>                         'nullable|string|max:4000',
@@ -384,7 +531,8 @@ class UpdateServiceRequest extends FormRequest
             'hein_order.max'         => config('keywords')['service']['hein_order'].config('keywords')['error']['string_max'],
 
             'parent_id.integer'       => config('keywords')['service']['parent_id'].config('keywords')['error']['integer'],
-            'parent_id.exists'        => config('keywords')['service']['parent_id'].config('keywords')['error']['exists'],
+            'parent_id.exists'        => config('keywords')['service']['parent_id'].config('keywords')['error']['exists'].config('keywords')['error']['not_in_service_id'],
+            'parent_id.not_in'        => config('keywords')['error']['parent_not_in_id'],
 
             'package_id.integer'       => config('keywords')['service']['package_id'].config('keywords')['error']['integer'],
             'package_id.exists'        => config('keywords')['service']['package_id'].config('keywords')['error']['exists'],
@@ -656,12 +804,12 @@ class UpdateServiceRequest extends FormRequest
         }
         if ($this->has('total_time_except_paty_ids')) {
             $this->merge([
-                'total_time_except_paty_ids_list' => explode(',', $this->total_time_except_paty_ids_ids),
+                'total_time_except_paty_ids_list' => explode(',', $this->total_time_except_paty_ids),
             ]);
         }
         if ($this->has('body_part_ids')) {
             $this->merge([
-                'body_part_ids_list' => explode(',', $this->body_part_ids_ids),
+                'body_part_ids_list' => explode(',', $this->body_part_ids),
             ]);
         }
 
@@ -672,43 +820,43 @@ class UpdateServiceRequest extends FormRequest
         $validator->after(function ($validator) {
             if ($this->has('applied_patient_classify_ids_list') && ($this->applied_patient_classify_ids_list[0] != null)) {
                 foreach ($this->applied_patient_classify_ids_list as $id) {
-                    if (!is_numeric($id) || !\App\Models\HIS\PatientClassify::find($id)) {
-                        $validator->errors()->add('applied_patient_classify_ids', 'Đối tượng chi tiết với id = ' . $id . ' trong danh sách đối tượng chi tiết không tồn tại!');
+                    if (!is_numeric($id) || !\App\Models\HIS\PatientClassify::where('id', $id)->where('is_active', 1)->first()) {
+                        $validator->errors()->add('applied_patient_classify_ids', 'Đối tượng chi tiết với id = ' . $id . config('keywords')['error']['not_find_or_not_active_in_list']);
                     }
                 }
             }
             if ($this->has('applied_patient_type_ids_list') && ($this->applied_patient_type_ids_list[0] != null)) {
                 foreach ($this->applied_patient_type_ids_list as $id) {
-                    if (!is_numeric($id) || !\App\Models\HIS\PatientType::find($id)) {
-                        $validator->errors()->add('applied_patient_type_ids', 'Đối tượng thanh toán với id = ' . $id . ' trong danh sách đối tượng thanh toán không tồn tại!');
+                    if (!is_numeric($id) || !\App\Models\HIS\PatientType::where('id', $id)->where('is_active', 1)->first()) {
+                        $validator->errors()->add('applied_patient_type_ids', 'Đối tượng thanh toán với id = ' . $id . config('keywords')['error']['not_find_or_not_active_in_list']);
                     }
                 }
             }
             if ($this->has('min_proc_time_except_paty_ids_list') && ($this->min_proc_time_except_paty_ids_list[0] != null)) {
                 foreach ($this->min_proc_time_except_paty_ids_list as $id) {
-                    if (!is_numeric($id) || !\App\Models\HIS\PatientType::find($id)) {
-                        $validator->errors()->add('min_proc_time_except_paty_ids', 'Đối tượng thanh toán với id = ' . $id . ' trong danh sách đối tượng thanh toán không tồn tại!');
+                    if (!is_numeric($id) || !\App\Models\HIS\PatientType::where('id', $id)->where('is_active', 1)->first()) {
+                        $validator->errors()->add('min_proc_time_except_paty_ids', 'Đối tượng thanh toán với id = ' . $id . config('keywords')['error']['not_find_or_not_active_in_list']);
                     }
                 }
             }
             if ($this->has('max_proc_time_except_paty_ids_list') && ($this->max_proc_time_except_paty_ids_list[0] != null)) {
                 foreach ($this->max_proc_time_except_paty_ids_list as $id) {
-                    if (!is_numeric($id) || !\App\Models\HIS\PatientType::find($id)) {
-                        $validator->errors()->add('max_proc_time_except_paty_ids', 'Đối tượng thanh toán với id = ' . $id . ' trong danh sách đối tượng thanh toán không tồn tại!');
+                    if (!is_numeric($id) || !\App\Models\HIS\PatientType::where('id', $id)->where('is_active', 1)->first()) {
+                        $validator->errors()->add('max_proc_time_except_paty_ids', 'Đối tượng thanh toán với id = ' . $id . config('keywords')['error']['not_find_or_not_active_in_list']);
                     }
                 }
             }
             if ($this->has('total_time_except_paty_ids_list') && ($this->total_time_except_paty_ids_list[0] != null)) {
                 foreach ($this->total_time_except_paty_ids_list as $id) {
-                    if (!is_numeric($id) || !\App\Models\HIS\PatientType::find($id)) {
-                        $validator->errors()->add('total_time_except_paty_ids', 'Đối tượng thanh toán với id = ' . $id . ' trong danh sách đối tượng thanh toán không tồn tại!');
+                    if (!is_numeric($id) || !\App\Models\HIS\PatientType::where('id', $id)->where('is_active', 1)->first()) {
+                        $validator->errors()->add('total_time_except_paty_ids', 'Đối tượng thanh toán với id = ' . $id . config('keywords')['error']['not_find_or_not_active_in_list']);
                     }
                 }
             }
             if ($this->has('body_part_ids_list') && ($this->body_part_ids_list[0] != null)) {
                 foreach ($this->body_part_ids_list as $id) {
-                    if (!is_numeric($id) || !\App\Models\HIS\BodyPart::find($id)) {
-                        $validator->errors()->add('body_part_ids', 'Bộ phận cơ thể với id = ' . $id . ' trong danh sách bộ phận cơ thể không tồn tại!');
+                    if (!is_numeric($id) || !\App\Models\HIS\BodyPart::where('id', $id)->where('is_active', 1)->first()) {
+                        $validator->errors()->add('body_part_ids', 'Bộ phận cơ thể với id = ' . $id . config('keywords')['error']['not_find_or_not_active_in_list']);
                     }
                 }
             }

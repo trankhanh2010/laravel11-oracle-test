@@ -29,6 +29,7 @@ return [
         'not_in_module_group_mhc' => ' Hoặc không phải là link màn hình chờ!',
         'not_active' => ' Hoặc bị tạm khóa!',
         'not_find_or_not_active_in_list' => ' trong danh sách không tồn tại hoặc đang bị tạm khóa!',
+        'parent_not_in_id' => 'Id cha không được trùng với Id hiện tại!',
 
     ],
     // Dùng chung

@@ -5,6 +5,8 @@ namespace App\Http\Requests\Province;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
 class CreateProvinceRequest extends FormRequest
 {
     /**
@@ -28,7 +30,15 @@ class CreateProvinceRequest extends FormRequest
             'province_code' =>                  'required|string|max:3|unique:App\Models\SDA\Province,province_code',
             'province_name' =>                  'required|string|max:100',
             'search_code' =>                    'nullable|string|max:10',
-            'national_id' =>                    'required|integer|exists:App\Models\SDA\National,id',
+            'national_id' =>                    [
+                                                    'required',
+                                                    'integer',
+                                                    Rule::exists('App\Models\SDA\National', 'id')
+                                                    ->where(function ($query) {
+                                                        $query = $query
+                                                        ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                                                    }),
+                                                ],
         ];
     }
     public function messages()

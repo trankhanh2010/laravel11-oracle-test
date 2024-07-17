@@ -5,6 +5,8 @@ namespace App\Http\Requests\Refectory;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
 class UpdateRefectoryRequest extends FormRequest
 {
     /**
@@ -25,9 +27,17 @@ class UpdateRefectoryRequest extends FormRequest
     public function rules()
     {
         return [
-            'refectory_name' =>              'required|string|max:100',
-            'room_type_id'  =>               'required|integer|exists:App\Models\HIS\RoomType,id',
-            'is_active' =>                  'required|integer|in:0,1'
+            'refectory_name' =>                 'required|string|max:100',
+                'room_type_id'  =>               [
+                                                    'required',
+                                                    'integer',
+                                                    Rule::exists('App\Models\HIS\RoomType', 'id')
+                                                    ->where(function ($query) {
+                                                        $query = $query
+                                                        ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                                                    }),
+                                                ],
+            'is_active' =>                      'required|integer|in:0,1'
 
         ];
     }

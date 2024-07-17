@@ -7,7 +7,7 @@ use Illuminate\Http\Exceptions\HttpResponseException;
 
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Validation\Rule;
-
+use Illuminate\Support\Facades\DB;
 class UpdateMediStockRequest extends FormRequest
 {
     /**
@@ -39,11 +39,35 @@ class UpdateMediStockRequest extends FormRequest
                                                     Rule::unique('App\Models\HIS\MediStock')->ignore($this->id),
                                                 ],
             'medi_stock_name' =>                'required|string|max:100',
-            'department_id' =>                  'required|integer|exists:App\Models\HIS\Department,id',
-            'room_type_id'  =>                  'required|integer|exists:App\Models\HIS\RoomType,id',
+            'department_id' =>                  [
+                                                    'required',
+                                                    'integer',
+                                                    Rule::exists('App\Models\HIS\Department', 'id')
+                                                    ->where(function ($query) {
+                                                        $query = $query
+                                                        ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                                                    }),
+                                                ],
+            'room_type_id'  =>                  [
+                                                    'required',
+                                                    'integer',
+                                                    Rule::exists('App\Models\HIS\RoomType', 'id')
+                                                    ->where(function ($query) {
+                                                        $query = $query
+                                                        ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                                                    }),
+                                                ],
             'bhyt_head_code' =>                 'nullable|string|max:200',
             'not_in_bhyt_head_code' =>          'nullable|string|max:200',
-            'parent_id' =>                      'nullable|integer|exists:App\Models\HIS\MediStock,id',
+            'parent_id' =>                      [
+                                                    'nullable',
+                                                    'integer',
+                                                    Rule::exists('App\Models\HIS\MediStock', 'id')
+                                                    ->where(function ($query) {
+                                                        $query = $query
+                                                        ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                                                    }),
+                                                ],
             'is_allow_imp_supplier' =>          'nullable|integer|in:0,1',
             'do_not_imp_medicine' =>            'nullable|integer|in:0,1',
             'do_not_imp_material' =>            'nullable|integer|in:0,1',
@@ -202,8 +226,8 @@ class UpdateMediStockRequest extends FormRequest
         $validator->after(function ($validator) {
             if ($this->has('patient_classify_ids_list') && ($this->patient_classify_ids_list[0] != null)) {
                 foreach ($this->patient_classify_ids_list as $id) {
-                    if (!is_numeric($id) || !\App\Models\HIS\PatientClassify::find($id)) {
-                        $validator->errors()->add('patient_classify_ids', 'Phân loại bệnh nhân với id = ' . $id . ' trong danh sách phân loại bệnh nhân không tồn tại!');
+                    if (!is_numeric($id) || !\App\Models\HIS\PatientClassify::where('id', $id)->where('is_active', 1)->first()) {
+                        $validator->errors()->add('patient_classify_ids', 'Phân loại bệnh nhân với id = ' . $id . config('keywords')['error']['not_find_or_not_active_in_list']);
                     }
                 }
             }
@@ -213,8 +237,8 @@ class UpdateMediStockRequest extends FormRequest
             }
             if ($this->has('medi_stock_exty') && ($this->medi_stock_exty[0] != null)) {
                 foreach ($this->medi_stock_exty as $item) {
-                    if (!is_numeric($item->id) || !\App\Models\HIS\ExpMestType::find($item->id)) {
-                        $validator->errors()->add('medi_stock_exty', 'Bản ghi với id = ' . $item->id . ' trong '.config('keywords')['medi_stock']['medi_stock_exty'].' không tồn tại!');
+                    if (!is_numeric($item->id) || !\App\Models\HIS\ExpMestType::where('id', $item->id)->where('is_active', 1)->first()) {
+                        $validator->errors()->add('medi_stock_exty', 'Bản ghi với id = ' . $item->id . ' trong '.config('keywords')['medi_stock']['medi_stock_exty'].' không tồn tại!'. config('keywords')['error']['not_active']);
                     }
                     if(!is_numeric($item->is_auto_approve) || (!in_array($item->is_auto_approve, [0, 1]))){
                         $validator->errors()->add('medi_stock_exty', config('keywords')['medi_stock']['is_auto_approve'].' trong '.config('keywords')['medi_stock']['medi_stock_exty'] .' phải là số nguyên và có giá trị 0 hoặc 1!');
@@ -230,8 +254,8 @@ class UpdateMediStockRequest extends FormRequest
             }
             if ($this->has('medi_stock_imty') && ($this->medi_stock_imty[0] != null)) {
                 foreach ($this->medi_stock_imty as $item) {
-                    if (!is_numeric($item->id) || !\App\Models\HIS\ImpMestType::find($item->id)) {
-                        $validator->errors()->add('medi_stock_imty', 'Bản ghi với id = ' . $item->id . ' trong '.config('keywords')['medi_stock']['medi_stock_imty'].' không tồn tại!');
+                    if (!is_numeric($item->id) || !\App\Models\HIS\ImpMestType::where('id', $item->id)->where('is_active', 1)->first()) {
+                        $validator->errors()->add('medi_stock_imty', 'Bản ghi với id = ' . $item->id . ' trong '.config('keywords')['medi_stock']['medi_stock_imty'].' không tồn tại!'. config('keywords')['error']['not_active']);
                     }
                     if(!is_numeric($item->is_auto_approve) || (!in_array($item->is_auto_approve, [0, 1]))){
                         $validator->errors()->add('medi_stock_imty', config('keywords')['medi_stock']['is_auto_approve'].' trong '.config('keywords')['medi_stock']['medi_stock_imty'] .'phải là số nguyên và có giá trị 0 hoặc 1!');

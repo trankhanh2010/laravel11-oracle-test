@@ -5,6 +5,8 @@ namespace App\Http\Requests\ReceptionRoom;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
 class CreateReceptionRoomRequest extends FormRequest
 {
     /**
@@ -27,13 +29,62 @@ class CreateReceptionRoomRequest extends FormRequest
         return [
             'reception_room_code' =>            'required|string|max:20|unique:App\Models\HIS\ReceptionRoom,reception_room_code',
             'reception_room_name' =>            'required|string|max:100',
-            'department_id' =>                  'required|integer|exists:App\Models\HIS\Department,id',
-            'area_id' =>                        'nullable|integer|exists:App\Models\HIS\Area,id',
-            'room_type_id'  =>                  'required|integer|exists:App\Models\HIS\RoomType,id',
+            'department_id' =>                  [
+                                                    'required',
+                                                    'integer',
+                                                    Rule::exists('App\Models\HIS\Department', 'id')
+                                                    ->where(function ($query) {
+                                                        $query = $query
+                                                        ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                                                    }),
+                                                ],
+            'area_id' =>                        [
+                                                    'nullable',
+                                                    'integer',
+                                                    Rule::exists('App\Models\HIS\Area', 'id')
+                                                    ->where(function ($query) {
+                                                        $query = $query
+                                                        ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                                                    }),
+                                                ],
+            'room_type_id'  =>                  [
+                                                    'required',
+                                                    'integer',
+                                                    Rule::exists('App\Models\HIS\RoomType', 'id')
+                                                    ->where(function ($query) {
+                                                        $query = $query
+                                                        ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                                                    }),
+                                                ],
             'patient_type_ids' =>               'nullable|string|max:50',
-            'default_cashier_room_id' =>        'nullable|integer|exists:App\Models\HIS\CashierRoom,id',
-            'deposit_account_book_id' =>        'nullable|integer|exists:App\Models\HIS\AccountBook,id',
-            'screen_saver_module_link' =>       'nullable|string|max:200|exists:App\Models\ACS\Module,module_link',
+            'default_cashier_room_id' =>        [
+                                                    'nullable',
+                                                    'integer',
+                                                    Rule::exists('App\Models\HIS\CashierRoom', 'id')
+                                                    ->where(function ($query) {
+                                                        $query = $query
+                                                        ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                                                    }),
+                                                ],
+            'deposit_account_book_id' =>        [
+                                                    'nullable',
+                                                    'integer',
+                                                    Rule::exists('App\Models\HIS\AccountBook', 'id')
+                                                    ->where(function ($query) {
+                                                        $query = $query
+                                                        ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                                                    }),
+                                                ],
+            'screen_saver_module_link' =>       [
+                                                    'nullable',
+                                                    'string',
+                                                    'max:200',
+                                                    Rule::exists('App\Models\ACS\Module', 'module_link')
+                                                    ->where(function ($query) {
+                                                        $query = $query
+                                                        ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                                                    }),
+                                                ],
             'is_pause' =>                       'nullable|integer|in:0,1',
             'is_allow_no_icd' =>                'nullable|integer|in:0,1',
             'is_restrict_execute_room' =>       'nullable|integer|in:0,1',
@@ -102,8 +153,8 @@ class CreateReceptionRoomRequest extends FormRequest
         $validator->after(function ($validator) {
             if ($this->has('patient_type_ids_list') && ($this->patient_type_ids_list[0] != null)) {
                 foreach ($this->patient_type_ids_list as $id) {
-                    if (!is_numeric($id) || !\App\Models\HIS\PatientType::find($id)) {
-                        $validator->errors()->add('patient_type_ids', 'Đối tượng thanh toán với id = ' . $id . ' trong danh sách đối tượng thanh toán không tồn tại!');
+                    if (!is_numeric($id) || !\App\Models\HIS\PatientType::where('id', $id)->where('is_active', 1)->first()) {
+                        $validator->errors()->add('patient_type_ids', 'Đối tượng thanh toán với id = ' . $id . config('keywords')['error']['not_find_or_not_active_in_list']);
                     }
                 }
             }
