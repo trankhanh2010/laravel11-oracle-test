@@ -47,6 +47,7 @@ class UpdateDataStoreRequest extends FormRequest
                                                     $query = $query
                                                     ->where(DB::connection('oracle_his')->raw("is_active"), 1);
                                                 }),
+                                                'not_in:'.$this->id,
                                             ],
             'stored_department_id' =>       [
                                                 'nullable',
@@ -86,6 +87,7 @@ class UpdateDataStoreRequest extends FormRequest
 
             'parent_id.integer'     => config('keywords')['data_store']['parent_id'].config('keywords')['error']['integer'],
             'parent_id.exists'      => config('keywords')['data_store']['parent_id'].config('keywords')['error']['exists'], 
+            'parent_id.not_in'      => config('keywords')['error']['parent_not_in_id'],
 
             'stored_department_id.integer'     => config('keywords')['data_store']['stored_department_id'].config('keywords')['error']['integer'],
             'stored_department_id.exists'      => config('keywords')['data_store']['stored_department_id'].config('keywords')['error']['exists'], 

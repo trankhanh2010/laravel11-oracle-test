@@ -67,6 +67,7 @@ class UpdateMediStockRequest extends FormRequest
                                                         $query = $query
                                                         ->where(DB::connection('oracle_his')->raw("is_active"), 1);
                                                     }),
+                                                    'not_in:'.$this->id,
                                                 ],
             'is_allow_imp_supplier' =>          'nullable|integer|in:0,1',
             'do_not_imp_medicine' =>            'nullable|integer|in:0,1',
@@ -124,7 +125,8 @@ class UpdateMediStockRequest extends FormRequest
             'not_in_bhyt_head_code.max'       => config('keywords')['medi_stock']['not_in_bhyt_head_code'].config('keywords')['error']['string_max'], 
 
             'parent_id.integer'    => config('keywords')['medi_stock']['parent_id'].config('keywords')['error']['integer'],
-            'parent_id.exists'     => config('keywords')['medi_stock']['parent_id'].config('keywords')['error']['exists'],    
+            'parent_id.exists'     => config('keywords')['medi_stock']['parent_id'].config('keywords')['error']['exists'],   
+            'parent_id.not_in'     => config('keywords')['error']['parent_not_in_id'], 
 
             'is_allow_imp_supplier.integer'   => config('keywords')['medi_stock']['is_allow_imp_supplier'].config('keywords')['error']['integer'],
             'is_allow_imp_supplier.in'        => config('keywords')['medi_stock']['is_allow_imp_supplier'].config('keywords')['error']['in'],  
