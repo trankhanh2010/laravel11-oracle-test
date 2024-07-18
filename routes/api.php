@@ -1053,6 +1053,8 @@ Route::group([
 
     // Service Req
     Route::get("v1/service-req/get-L-view", [ServiceReqController::class, "service_req_get_L_view"]);
+    Route::get("v2/service-req/get-L-view", [ServiceReqController::class, "service_req_get_L_view_v2"]);
+
 
     // Tracking
     Route::get("v1/tracking/get", [TrackingController::class, "tracking_get"]);
@@ -1073,6 +1075,8 @@ Route::group([
 
     // DHST
     Route::get("v1/dhst/get", [DhstController::class, "dhst_get"]);
+    Route::get("v2/dhst/get", [DhstController::class, "dhst_get_v2"]);
+
 
     // Sere Serv Ext
     Route::get("v1/sere-serv-ext/get", [SereServExtController::class, "sere_serv_ext"]);

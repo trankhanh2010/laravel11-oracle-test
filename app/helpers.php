@@ -472,12 +472,12 @@ if (!function_exists('view_service_req')) {
             return true;
         }
         $check = Cache::remember('loginname_check_execute_room_id_' . $execute_room_id, $time, function () use ($loginname, $execute_room_id, $time) {
-            $user_room = new UserRoom();
             return UserRoom::with('room.execute_room')
                 ->whereHas('room.execute_room', function ($query) use ($execute_room_id) {
                     $query->where('id', $execute_room_id);
                 })->exists();
         });
+        return $check;
     }
 }
 

@@ -107,6 +107,7 @@ class BaseApiDataController extends Controller
     protected $exp_mest_material;
     protected $treatment_bed_room;
     protected $bhyt_whiteList;
+    protected $antibiotic_request;
 
     public function __construct(Request $request)
     {
@@ -134,7 +135,7 @@ class BaseApiDataController extends Controller
                 $this->limit = 100;
             }
         }
-        $this->keyword = $this->param_request['ApiData']['KeyWord'] ?? $request->keyword;
+        $this->keyword = $this->param_request['ApiData']['KeyWord'] ?? $request->keyword ?? "";
 
         $this->order_by = $this->param_request['ApiData']['OrderBy'] ?? null;
         $this->order_by_request = $this->param_request['ApiData']['OrderBy'] ?? null;

@@ -367,7 +367,7 @@ class BaseApiCacheController extends Controller
                 $this->limit = 100;
             }
         }
-        $this->keyword = $this->param_request['ApiData']['KeyWord'] ?? $request->keyword;
+        $this->keyword = $this->param_request['ApiData']['KeyWord'] ?? $request->keyword ?? "";
         $this->order_by = $this->param_request['ApiData']['OrderBy'] ?? null;
         $this->order_by_request = $this->param_request['ApiData']['OrderBy'] ?? null;
         if ($this->order_by != null) {
