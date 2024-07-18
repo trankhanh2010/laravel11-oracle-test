@@ -118,7 +118,7 @@ use App\Http\Controllers\Api\ValidateControllers\CheckTreatmentTypeController;
 */
 
 Route::group([
-    "middleware" => ["check_module:api", "check_token:api"]
+    "middleware" => ["check_module:api"]
 ], function () {
 
     /// Khoa phòng
