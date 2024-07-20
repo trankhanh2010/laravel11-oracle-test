@@ -90,13 +90,13 @@ class ServiceReqController extends BaseApiDataController
             // 'order_time'
         ];
 
-        $keyword = mb_strtolower($this->keyword, 'UTF-8');
+        $keyword = create_slug(mb_strtolower($this->keyword, 'UTF-8'));
         $data = $this->service_req
         ->select($select);
         if ($keyword != null) {
             $data = $data->where(function ($query) use ($keyword) {
-                $query = $query->where(DB::connection('oracle_his')->raw('lower(his_service_req.service_req_code)'), 'like', '%' . $keyword . '%')
-                    ->orWhere(DB::connection('oracle_his')->raw('lower(his_service_req.tdl_patient_code)'), 'like', '%' . $keyword . '%');
+                $query = $query->where(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(his_service_req.service_req_code))'), 'like', '%' . $keyword . '%')
+                    ->orWhere(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(his_service_req.tdl_patient_code))'), 'like', '%' . $keyword . '%');
             });
         }
         if (!$this->is_include_deleted) {
@@ -252,13 +252,13 @@ class ServiceReqController extends BaseApiDataController
             // 'order_time'
         ];
 
-        $keyword = mb_strtolower($this->keyword, 'UTF-8');
+        $keyword = create_slug(mb_strtolower($this->keyword, 'UTF-8'));
         $data = $this->service_req
         ->select($select);
         if ($keyword != null) {
             $data = $data->where(function ($query) use ($keyword) {
-                $query = $query->where(DB::connection('oracle_his')->raw('lower(his_service_req.service_req_code)'), 'like', '%' . $keyword . '%')
-                    ->orWhere(DB::connection('oracle_his')->raw('lower(his_service_req.tdl_patient_code)'), 'like', '%' . $keyword . '%');
+                $query = $query->where(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(his_service_req.service_req_code))'), 'like', '%' . $keyword . '%')
+                    ->orWhere(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(his_service_req.tdl_patient_code))'), 'like', '%' . $keyword . '%');
             });
         }
         if (!$this->is_include_deleted) {

@@ -91,14 +91,14 @@ class DebateController extends BaseApiDataController
             'debate_users:id,debate_id,loginname,username,execute_role_id',
             'debate_users.execute_role:id,execute_role_name,execute_role_code'
         ];
-        $keyword = mb_strtolower($this->keyword, 'UTF-8');
+        $keyword = create_slug(mb_strtolower($this->keyword, 'UTF-8'));
         $data = $this->debate
             ->select($select);
         if ($keyword != null) {
             $data = $data->where(function ($query) use ($keyword) {
-                $query = $query->where(DB::connection('oracle_his')->raw('lower(his_debate.icd_code)'), 'like', '%' . $keyword . '%')
-                    ->orWhere(DB::connection('oracle_his')->raw('lower(his_debate.icd_name)'), 'like', '%' . $keyword . '%')
-                    ->orWhere(DB::connection('oracle_his')->raw('lower(his_debate.icd_sub_code)'), 'like', '%' . $keyword . '%');
+                $query = $query->where(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(his_debate.icd_code))'), 'like', '%' . $keyword . '%')
+                    ->orWhere(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(his_debate.icd_name))'), 'like', '%' . $keyword . '%')
+                    ->orWhere(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(his_debate.icd_sub_code))'), 'like', '%' . $keyword . '%');
             });
         }
         if (!$this->is_include_deleted) {
@@ -220,7 +220,7 @@ class DebateController extends BaseApiDataController
 
         ];
 
-        $keyword = mb_strtolower($this->keyword, 'UTF-8');
+        $keyword = create_slug(mb_strtolower($this->keyword, 'UTF-8'));
         $data = $this->debate
             ->leftJoin('his_treatment as treatment', 'treatment.id', '=', 'his_debate.treatment_id')
             ->leftJoin('his_department as department', 'department.id', '=', 'his_debate.department_id')
@@ -231,9 +231,9 @@ class DebateController extends BaseApiDataController
             ->select($select);
         if ($keyword != null) {
             $data = $data->where(function ($query) use ($keyword) {
-                $query = $query->where(DB::connection('oracle_his')->raw('lower(his_debate.icd_code)'), 'like', '%' . $keyword . '%')
-                    ->orWhere(DB::connection('oracle_his')->raw('lower(his_debate.icd_name)'), 'like', '%' . $keyword . '%')
-                    ->orWhere(DB::connection('oracle_his')->raw('lower(his_debate.icd_sub_code)'), 'like', '%' . $keyword . '%');
+                $query = $query->where(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(his_debate.icd_code))'), 'like', '%' . $keyword . '%')
+                    ->orWhere(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(his_debate.icd_name))'), 'like', '%' . $keyword . '%')
+                    ->orWhere(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(his_debate.icd_sub_code))'), 'like', '%' . $keyword . '%');
             });
         }
         if (!$this->is_include_deleted) {

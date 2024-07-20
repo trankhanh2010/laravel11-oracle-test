@@ -28,7 +28,7 @@ class ProvinceController extends BaseApiCacheController
     }
     public function province($id = null)
     {
-        $keyword = mb_strtolower($this->keyword, 'UTF-8');
+        $keyword = create_slug(mb_strtolower($this->keyword, 'UTF-8'));
         if ($keyword != null) {
             $param = [
                 'national:id,national_name,national_code'
@@ -36,8 +36,8 @@ class ProvinceController extends BaseApiCacheController
             $data = $this->province;
             $data = $data->where(function ($query) use ($keyword){
                 $query = $query
-                ->where(DB::connection('oracle_his')->raw('lower(province_code)'), 'like', '%' . $keyword . '%')
-                ->orWhere(DB::connection('oracle_his')->raw('lower(province_name)'), 'like', '%' . $keyword . '%');
+                ->where(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(province_code))'), 'like', '%' . $keyword . '%')
+                ->orWhere(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(province_name))'), 'like', '%' . $keyword . '%');
             });
         if ($this->is_active !== null) {
             $data = $data->where(function ($query) {

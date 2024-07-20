@@ -26,15 +26,15 @@ class HeinServiceTypeController extends BaseApiCacheController
     }
     public function hein_service_type($id = null)
     {
-        $keyword = mb_strtolower($this->keyword, 'UTF-8');
+        $keyword = create_slug(mb_strtolower($this->keyword, 'UTF-8'));
         if ($keyword != null) {
             $param = [
             ];
             $data = $this->hein_service_type;
             $data = $data->where(function ($query) use ($keyword){
                 $query = $query
-                ->where(DB::connection('oracle_his')->raw('lower(hein_service_type_code)'), 'like', '%' . $keyword . '%')
-                ->orWhere(DB::connection('oracle_his')->raw('lower(hein_service_type_name)'), 'like', '%' . $keyword . '%');
+                ->where(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(hein_service_type_code))'), 'like', '%' . $keyword . '%')
+                ->orWhere(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(hein_service_type_name))'), 'like', '%' . $keyword . '%');
             });
         if ($this->is_active !== null) {
             $data = $data->where(function ($query) {

@@ -37,7 +37,7 @@ class ServicePatyController extends BaseApiCacheController
     }
     public function service_paty($id = null)
     {
-        $keyword = mb_strtolower($this->keyword, 'UTF-8');
+        $keyword = create_slug(mb_strtolower($this->keyword, 'UTF-8'));
         if ($keyword != null) {
             $data = $this->service_paty
                 ->leftJoin('his_service as service', 'service.id', '=', 'his_service_paty.service_id')
@@ -61,13 +61,13 @@ class ServicePatyController extends BaseApiCacheController
                 );
             if ($keyword !== null) {
                 $data = $data->where(function ($query) use ($keyword) {
-                    $query->where(DB::connection('oracle_his')->raw('lower(service.service_name)'), 'like', '%' . $keyword . '%')
-                        ->orWhere(DB::connection('oracle_his')->raw('lower(service.service_code)'), 'like', '%' . $keyword . '%')
-                        ->orWhere(DB::connection('oracle_his')->raw('lower(patient_type.patient_type_name)'), 'like', '%' . $keyword . '%')
-                        ->orWhere(DB::connection('oracle_his')->raw('lower(patient_type.patient_type_code)'), 'like', '%' . $keyword . '%')
-                        ->orWhere(DB::connection('oracle_his')->raw('lower(package.package_name)'), 'like', '%' . $keyword . '%')
-                        ->orWhere(DB::connection('oracle_his')->raw('lower(package.package_code)'), 'like', '%' . $keyword . '%')
-                        ->orWhere(DB::connection('oracle_his')->raw('lower(service_type.service_type_name)'), 'like', '%' . $keyword . '%');
+                    $query->where(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(service.service_name))'), 'like', '%' . $keyword . '%')
+                        ->orWhere(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(service.service_code))'), 'like', '%' . $keyword . '%')
+                        ->orWhere(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(patient_type.patient_type_name))'), 'like', '%' . $keyword . '%')
+                        ->orWhere(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(patient_type.patient_type_code))'), 'like', '%' . $keyword . '%')
+                        ->orWhere(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(package.package_name))'), 'like', '%' . $keyword . '%')
+                        ->orWhere(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(package.package_code))'), 'like', '%' . $keyword . '%')
+                        ->orWhere(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(service_type.service_type_name))'), 'like', '%' . $keyword . '%');
                         
                 });
             }
@@ -211,9 +211,9 @@ class ServicePatyController extends BaseApiCacheController
                     if ($this->order_by != null) {
                         foreach ($this->order_by as $key => $item) {
                             if (!in_array($key, $this->order_by_join)) {
-                                $data->orderBy(DB::connection('oracle_his')->raw('lower(his_service_paty.' . $key . ')'), $item);
+                                $data->orderBy(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(his_service_paty.' . $key . ')'), $item);
                             } else {
-                                $data->orderBy(DB::connection('oracle_his')->raw('lower(' . $key . ')'), $item);
+                                $data->orderBy(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(' . $key . ')'), $item);
                             }
                         }
                     }

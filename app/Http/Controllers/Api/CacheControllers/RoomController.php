@@ -33,7 +33,7 @@ class RoomController extends BaseApiCacheController
     }
     public function room()
     {
-        $keyword = mb_strtolower($this->keyword, 'UTF-8');
+        $keyword = create_slug(mb_strtolower($this->keyword, 'UTF-8'));
         if(($keyword != null) || ($this->department_id != null)){
             $data = $this->room
                     ->leftJoin('his_bed_room as bed', 'his_room.id', '=', 'bed.room_id')
@@ -85,14 +85,14 @@ class RoomController extends BaseApiCacheController
                     }
                     if($keyword != null){
                         $data = $data->where(function ($query) use ($keyword) {
-                            $query->where(DB::connection('oracle_his')->raw('lower(bed.bed_room_name)'), 'like', '%' . $keyword . '%')
-                                  ->orWhere(DB::connection('oracle_his')->raw('lower(cashier.cashier_room_name)'), 'like', '%' . $keyword . '%')
-                                  ->orWhere(DB::connection('oracle_his')->raw('lower(execute.execute_room_name)'), 'like', '%' . $keyword . '%')
-                                  ->orWhere(DB::connection('oracle_his')->raw('lower(reception.reception_room_name)'), 'like', '%' . $keyword . '%')
-                                  ->orWhere(DB::connection('oracle_his')->raw('lower(bed.bed_room_code)'), 'like', '%' . $keyword . '%')
-                                  ->orWhere(DB::connection('oracle_his')->raw('lower(cashier.cashier_room_code)'), 'like', '%' . $keyword . '%')
-                                  ->orWhere(DB::connection('oracle_his')->raw('lower(execute.execute_room_code)'), 'like', '%' . $keyword . '%')
-                                  ->orWhere(DB::connection('oracle_his')->raw('lower(reception.reception_room_code)'), 'like', '%' . $keyword . '%');
+                            $query->where(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(bed.bed_room_name))'), 'like', '%' . $keyword . '%')
+                                  ->orWhere(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(cashier.cashier_room_name))'), 'like', '%' . $keyword . '%')
+                                  ->orWhere(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(execute.execute_room_name))'), 'like', '%' . $keyword . '%')
+                                  ->orWhere(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(reception.reception_room_name))'), 'like', '%' . $keyword . '%')
+                                  ->orWhere(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(bed.bed_room_code))'), 'like', '%' . $keyword . '%')
+                                  ->orWhere(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(cashier.cashier_room_code))'), 'like', '%' . $keyword . '%')
+                                  ->orWhere(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(execute.execute_room_code))'), 'like', '%' . $keyword . '%')
+                                  ->orWhere(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(reception.reception_room_code))'), 'like', '%' . $keyword . '%');
                         });
                     }
                 if ($this->is_active !== null) {

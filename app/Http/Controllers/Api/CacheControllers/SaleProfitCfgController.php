@@ -27,16 +27,16 @@ class SaleProfitCfgController extends BaseApiCacheController
     }
     public function sale_profit_cfg($id = null)
     {
-        $keyword = mb_strtolower($this->keyword, 'UTF-8');
+        $keyword = create_slug(mb_strtolower($this->keyword, 'UTF-8'));
         if ($keyword != null) {
             $param = [
             ];
             $data = $this->sale_profit_cfg;
             $data = $data->where(function ($query) use ($keyword){
                 $query = $query
-                ->where(DB::connection('oracle_his')->raw('lower(ratio)'), 'like', '%' . $keyword . '%')
-                ->orWhere(DB::connection('oracle_his')->raw('lower(imp_price_from)'), 'like', '%' . $keyword . '%')
-                ->orWhere(DB::connection('oracle_his')->raw('lower(imp_price_to)'), 'like', '%' . $keyword . '%');
+                ->where(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(ratio))'), 'like', '%' . $keyword . '%')
+                ->orWhere(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(imp_price_from))'), 'like', '%' . $keyword . '%')
+                ->orWhere(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(imp_price_to))'), 'like', '%' . $keyword . '%');
             });
         if ($this->is_active !== null) {
             $data = $data->where(function ($query) {

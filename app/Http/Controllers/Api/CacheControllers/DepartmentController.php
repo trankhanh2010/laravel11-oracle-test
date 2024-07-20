@@ -30,7 +30,7 @@ class DepartmentController extends BaseApiCacheController
     }
     public function department($id = null)
     {
-        $keyword = mb_strtolower($this->keyword, 'UTF-8');
+        $keyword = create_slug(mb_strtolower($this->keyword, 'UTF-8'));
         if ($keyword != null) {
             $param = [
                 'branch:id,branch_name,branch_code',
@@ -40,8 +40,8 @@ class DepartmentController extends BaseApiCacheController
             $data = $this->department;
             $data = $data->where(function ($query) use ($keyword){
                 $query = $query
-                ->where(DB::connection('oracle_his')->raw('lower(department_code)'), 'like', '%' . $keyword . '%')
-                ->orWhere(DB::connection('oracle_his')->raw('lower(department_name)'), 'like', '%' . $keyword . '%');
+                ->where(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(department_code))'), 'like', '%' . $keyword . '%')
+                ->orWhere(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(department_name))'), 'like', '%' . $keyword . '%');
             });
         if ($this->is_active !== null) {
             $data = $data->where(function ($query) {

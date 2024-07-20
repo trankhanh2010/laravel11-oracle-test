@@ -40,15 +40,15 @@ class DebateEkipUserController extends BaseApiDataController
             'execute_role:id,execute_role_name,execute_role_code',
             'department:id,department_name,department_code'
         ];
-        $keyword = mb_strtolower($this->keyword, 'UTF-8');
+        $keyword = create_slug(mb_strtolower($this->keyword, 'UTF-8'));
         $data = $this->debate_ekip_user
             ->leftJoin('his_execute_role as execute_role', 'execute_role.id', '=', 'his_debate_ekip_user.execute_role_id')
             ->leftJoin('his_department as department', 'department.id', '=', 'his_debate_ekip_user.department_id')
             ->select($select);
         if ($keyword != null) {
             $data = $data->where(function ($query) use ($keyword) {
-                $query = $query->where(DB::connection('oracle_his')->raw('lower(his_debate_ekip_user.loginname)'), 'like', '%' . $keyword . '%')
-                    ->orWhere(DB::connection('oracle_his')->raw('lower(his_debate_ekip_user.username)'), 'like', '%' . $keyword . '%');
+                $query = $query->where(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(his_debate_ekip_user.loginname))'), 'like', '%' . $keyword . '%')
+                    ->orWhere(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(his_debate_ekip_user.username))'), 'like', '%' . $keyword . '%');
             });
         }
         if (!$this->is_include_deleted) {

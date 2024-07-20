@@ -47,13 +47,13 @@ class SereServTeinController extends BaseApiDataController
             "TDL_SERVICE_REQ_ID",
             "RESULT_DESCRIPTION",
         ];
-        $keyword = mb_strtolower($this->keyword, 'UTF-8');
+        $keyword = create_slug(mb_strtolower($this->keyword, 'UTF-8'));
         $data = $this->sere_serv_tein
             ->select($select);
         if ($keyword != null) {
             $data = $data->where(function ($query) use ($keyword) {
-                $query = $query->where(DB::connection('oracle_his')->raw('lower(his_sere_serv_tein.value)'), 'like', '%' . $keyword . '%')
-                    ->orWhere(DB::connection('oracle_his')->raw('lower(his_sere_serv_tein.result_code)'), 'like', '%' . $keyword . '%');
+                $query = $query->where(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(his_sere_serv_tein.value))'), 'like', '%' . $keyword . '%')
+                    ->orWhere(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(his_sere_serv_tein.result_code))'), 'like', '%' . $keyword . '%');
             });
         }
         if (!$this->is_include_deleted) {
@@ -155,7 +155,7 @@ class SereServTeinController extends BaseApiDataController
             'test_index.test_index_unit:id,TEST_INDEX_UNIT_NAME,TEST_INDEX_UNIT_CODE',
         ];
 
-        $keyword = mb_strtolower($this->keyword, 'UTF-8');
+        $keyword = create_slug(mb_strtolower($this->keyword, 'UTF-8'));
         $data = $this->sere_serv_tein
             ->leftJoin('his_machine as machine', 'machine.id', '=', 'his_sere_serv_tein.machine_id')
             ->leftJoin('his_test_index as test_index', 'test_index.id', '=', 'his_sere_serv_tein.test_index_id')
@@ -163,8 +163,8 @@ class SereServTeinController extends BaseApiDataController
             ->select($select);
         if ($keyword != null) {
             $data = $data->where(function ($query) use ($keyword) {
-                $query = $query->where(DB::connection('oracle_his')->raw('lower(his_sere_serv_tein.value)'), 'like', '%' . $keyword . '%')
-                    ->orWhere(DB::connection('oracle_his')->raw('lower(his_sere_serv_tein.result_code)'), 'like', '%' . $keyword . '%');
+                $query = $query->where(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(his_sere_serv_tein.value))'), 'like', '%' . $keyword . '%')
+                    ->orWhere(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(his_sere_serv_tein.result_code))'), 'like', '%' . $keyword . '%');
             });
         }
         if (!$this->is_include_deleted) {

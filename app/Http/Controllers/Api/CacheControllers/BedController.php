@@ -27,7 +27,7 @@ class BedController extends BaseApiCacheController
     }
     public function bed($id = null)
     {
-        $keyword = mb_strtolower($this->keyword, 'UTF-8');
+        $keyword = create_slug(mb_strtolower($this->keyword, 'UTF-8'));
         if ($keyword != null) {
             $param = [
                 'bed_type:id,bed_type_name',
@@ -38,8 +38,8 @@ class BedController extends BaseApiCacheController
             $data = $this->bed;
             $data = $data->where(function ($query) use ($keyword){
                 $query = $query
-                ->where(DB::connection('oracle_his')->raw('lower(bed_code)'), 'like', '%' . $keyword . '%')
-                ->orWhere(DB::connection('oracle_his')->raw('lower(bed_name)'), 'like', '%' . $keyword . '%');
+                ->where(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(bed_code))'), 'like', '%' . $keyword . '%')
+                ->orWhere(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(bed_name))'), 'like', '%' . $keyword . '%');
             });
         if ($this->is_active !== null) {
             $data = $data->where(function ($query) {

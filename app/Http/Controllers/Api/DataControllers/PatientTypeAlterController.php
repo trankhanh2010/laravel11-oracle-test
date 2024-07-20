@@ -72,15 +72,15 @@ class PatientTypeAlterController extends BaseApiDataController
             'patient_type:id,patient_type_code,patient_type_name,IS_COPAYMENT',
             'treatment_type:id,treatment_type_code,treatment_type_name,HEIN_TREATMENT_TYPE_CODE'
         ];
-        $keyword = mb_strtolower($this->keyword, 'UTF-8');
+        $keyword = create_slug(mb_strtolower($this->keyword, 'UTF-8'));
         $data = $this->patient_type_alter
             ->leftJoin('his_patient_type as patient_type', 'patient_type.id', '=', 'his_patient_type_alter.patient_type_id')
             ->leftJoin('his_treatment_type as treatment_type', 'treatment_type.id', '=', 'his_patient_type_alter.treatment_type_id')
             ->select($select);
         if ($keyword != null) {
             $data = $data->where(function ($query) use ($keyword) {
-                $query = $query->where(DB::connection('oracle_his')->raw('lower(his_patient_type_alter.HAS_BIRTH_CERTIFICATE)'), 'like', '%' . $keyword . '%')
-                    ->orWhere(DB::connection('oracle_his')->raw('lower(his_patient_type_alter.HEIN_CARD_NUMBER)'), 'like', '%' . $keyword . '%');
+                $query = $query->where(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(his_patient_type_alter.HAS_BIRTH_CERTIFICATE))'), 'like', '%' . $keyword . '%')
+                    ->orWhere(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(his_patient_type_alter.HEIN_CARD_NUMBER))'), 'like', '%' . $keyword . '%');
             });
         }
         if (!$this->is_include_deleted) {

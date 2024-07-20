@@ -348,7 +348,6 @@ class BaseApiCacheController extends Controller
         $this->time = now()->addMinutes(10080);
         // Param json gửi từ client
         $this->param_request = json_decode(base64_decode($request->input('param')), true) ?? null;
-
         $this->per_page = $request->query('perPage', 10);
         $this->page = $request->query('page', 1);
         $this->start = $this->param_request['CommonParam']['Start'] ?? intval($request->start) ?? 0;

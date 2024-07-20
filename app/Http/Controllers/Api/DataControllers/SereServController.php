@@ -118,13 +118,13 @@ class SereServController extends BaseApiDataController
             'sese_trans_reqs'
         ];
 
-        $keyword = mb_strtolower($this->keyword, 'UTF-8');
+        $keyword = create_slug(mb_strtolower($this->keyword, 'UTF-8'));
         $data = $this->sere_serv
         ->select($select);
         if ($keyword != null) {
             $data = $data->where(function ($query) use ($keyword) {
-                $query = $query->where(DB::connection('oracle_his')->raw('lower(his_sere_serv.tdl_Service_Code)'), 'like', '%' . $keyword . '%')
-                    ->orWhere(DB::connection('oracle_his')->raw('lower(his_sere_serv.tdl_Service_name)'), 'like', '%' . $keyword . '%');
+                $query = $query->where(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(his_sere_serv.tdl_Service_Code))'), 'like', '%' . $keyword . '%')
+                    ->orWhere(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(his_sere_serv.tdl_Service_name))'), 'like', '%' . $keyword . '%');
             });
         }
         if (!$this->is_include_deleted) {
@@ -268,13 +268,13 @@ class SereServController extends BaseApiDataController
             'sese_trans_reqs'
         ];
 
-        $keyword = mb_strtolower($this->keyword, 'UTF-8');
+        $keyword = create_slug(mb_strtolower($this->keyword, 'UTF-8'));
         $data = $this->sere_serv
         ->select($select);
         if ($keyword != null) {
             $data = $data->where(function ($query) use ($keyword) {
-                $query = $query->where(DB::connection('oracle_his')->raw('lower(his_sere_serv.tdl_Service_Code)'), 'like', '%' . $keyword . '%')
-                    ->orWhere(DB::connection('oracle_his')->raw('lower(his_sere_serv.tdl_Service_name)'), 'like', '%' . $keyword . '%');
+                $query = $query->where(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(his_sere_serv.tdl_Service_Code))'), 'like', '%' . $keyword . '%')
+                    ->orWhere(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(his_sere_serv.tdl_Service_name))'), 'like', '%' . $keyword . '%');
             });
         }
         if (!$this->is_include_deleted) {
@@ -428,13 +428,13 @@ class SereServController extends BaseApiDataController
             'sese_trans_reqs'
         ];
 
-        $keyword = mb_strtolower($this->keyword, 'UTF-8');
+        $keyword = create_slug(mb_strtolower($this->keyword, 'UTF-8'));
         $data = $this->sere_serv
         ->select($select);
         if ($keyword != null) {
             $data = $data->where(function ($query) use ($keyword) {
-                $query = $query->where(DB::connection('oracle_his')->raw('lower(his_sere_serv.tdl_Service_Code)'), 'like', '%' . $keyword . '%')
-                    ->orWhere(DB::connection('oracle_his')->raw('lower(his_sere_serv.tdl_Service_name)'), 'like', '%' . $keyword . '%');
+                $query = $query->where(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(his_sere_serv.tdl_Service_Code))'), 'like', '%' . $keyword . '%')
+                    ->orWhere(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(his_sere_serv.tdl_Service_name))'), 'like', '%' . $keyword . '%');
             });
         }
         if (!$this->is_include_deleted) {
@@ -567,15 +567,16 @@ class SereServController extends BaseApiDataController
             'sese_trans_reqs'
         ];
 
-        $keyword = mb_strtolower($this->keyword, 'UTF-8');
+        $keyword = create_slug(mb_strtolower($this->keyword, 'UTF-8'));
         $data = $this->sere_serv
         ->select($select);
         if ($keyword != null) {
             $data = $data->where(function ($query) use ($keyword) {
-                $query = $query->where(DB::connection('oracle_his')->raw('lower(his_sere_serv.tdl_Service_Code)'), 'like', '%' . $keyword . '%')
-                ->orWhere(DB::connection('oracle_his')->raw('lower(his_sere_serv.TDL_SERVICE_REQ_CODE)'), 'like', '%' . $keyword . '%')
-                ->orWhere(DB::connection('oracle_his')->raw('lower(his_sere_serv.TDL_TREATMENT_CODE)'), 'like', '%' . $keyword . '%');
-                    // ->orWhere(DB::connection('oracle_his')->raw('lower(his_sere_serv.tdl_Service_name)'), 'like', '%' . $keyword . '%');
+                $query = $query->where(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(his_sere_serv.tdl_Service_Code))'), 'like', '%' . $keyword . '%')
+                    ->orWhere(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(his_sere_serv.TDL_SERVICE_REQ_CODE))'), 'like', '%' . $keyword . '%')
+                    ->orWhere(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(his_sere_serv.TDL_TREATMENT_CODE))'), 'like', '%' . $keyword . '%');
+                        // ->orWhere(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(his_sere_serv.tdl_Service_name))'), 'like', '%' . $keyword . '%');
+    
             });
         }
         if (!$this->is_include_deleted) {
@@ -613,18 +614,10 @@ class SereServController extends BaseApiDataController
             $data = $data->with($param);
             // Chuyển truy vấn sang chuỗi sql
             $sql = $data->toSql();
-            $bindings = $data->getBindings();
-
-            // Thêm dấu nháy đơn cho các giá trị chuỗi
-            foreach ($bindings as $key => $value) {
-                if (is_string($value)) {
-                    $bindings[$key] = "'" . $value . "'";
-                }
-            }
             // Truyền tham số qua binding tránh SQL Injection
             $bindings = $data->getBindings();
             $fullSql = 'SELECT * FROM (SELECT a.*, ROWNUM rnum FROM ('.$sql . ') a WHERE ROWNUM <= '.($this->limit+$this->start).' AND ID '.$this->equal.$this->sere_serv_last_id.') WHERE rnum > '.$this->start ;
-
+            // dump($fullSql, $bindings);
             $data = DB::connection('oracle_his')->select($fullSql, $bindings);
             $data = SereServResource::collection($data);
         }else{
@@ -731,13 +724,13 @@ class SereServController extends BaseApiDataController
             'sese_trans_reqs'
         ];
 
-        $keyword = mb_strtolower($this->keyword, 'UTF-8');
+        $keyword = create_slug(mb_strtolower($this->keyword, 'UTF-8'));
         $data = $this->sere_serv
         ->select($select);
         if ($keyword != null) {
             $data = $data->where(function ($query) use ($keyword) {
-                $query = $query->where(DB::connection('oracle_his')->raw('lower(his_sere_serv.tdl_Service_Code)'), 'like', '%' . $keyword . '%')
-                    ->orWhere(DB::connection('oracle_his')->raw('lower(his_sere_serv.tdl_Service_name)'), 'like', '%' . $keyword . '%');
+                $query = $query->where(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(his_sere_serv.tdl_Service_Code))'), 'like', '%' . $keyword . '%')
+                    ->orWhere(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(his_sere_serv.tdl_Service_name))'), 'like', '%' . $keyword . '%');
             });
         }
         if (!$this->is_include_deleted) {

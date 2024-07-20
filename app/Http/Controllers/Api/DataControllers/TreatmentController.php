@@ -54,8 +54,8 @@ class TreatmentController extends BaseApiDataController
            ->select($select);
        if ($keyword != null) {
            $data = $data->where(function ($query) use ($keyword) {
-               $query = $query->where(DB::connection('oracle_his')->raw('lower(his_treatment.tdl_patient_name)'), 'like', '%' . $keyword . '%')
-                   ->orWhere(DB::connection('oracle_his')->raw('lower(his_treatment.tdl_patient_code)'), 'like', '%' . $keyword . '%');
+               $query = $query->where(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(his_treatment.tdl_patient_name))'), 'like', '%' . $keyword . '%')
+                   ->orWhere(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(his_treatment.tdl_patient_code))'), 'like', '%' . $keyword . '%');
            });
        }
        if (!$this->is_include_deleted) {

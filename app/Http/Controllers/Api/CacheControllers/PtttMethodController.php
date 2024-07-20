@@ -26,7 +26,7 @@ class PtttMethodController extends BaseApiCacheController
     }
     public function pttt_method($id = null)
     {
-        $keyword = mb_strtolower($this->keyword, 'UTF-8');
+        $keyword = create_slug(mb_strtolower($this->keyword, 'UTF-8'));
         if($keyword != null){
             $data = $this->pttt_method
                     ->leftJoin('his_pttt_group as pttt_group', 'pttt_group.id', '=', 'his_pttt_method.pttt_group_id')
@@ -37,8 +37,8 @@ class PtttMethodController extends BaseApiCacheController
                     );
                     $data = $data->where(function ($query) use ($keyword){
                         $query = $query
-                    ->where(DB::connection('oracle_his')->raw('lower(his_pttt_method.pttt_method_code)'), 'like', '%' . $keyword . '%')
-                    ->orWhere(DB::connection('oracle_his')->raw('lower(his_pttt_method.pttt_method_name)'), 'like', '%' . $keyword . '%');
+                    ->where(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(his_pttt_method.pttt_method_code))'), 'like', '%' . $keyword . '%')
+                    ->orWhere(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(his_pttt_method.pttt_method_name))'), 'like', '%' . $keyword . '%');
                     });
         if ($this->is_active !== null) {
             $data = $data->where(function ($query) {
