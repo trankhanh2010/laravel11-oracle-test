@@ -1063,6 +1063,13 @@ Route::group([
     // Sere Serv
     Route::get("v1/sere-serv/get", [SereServController::class, "sere_serv_get"]);
 
+    Route::get("v2/sere-serv/get", [SereServController::class, "sere_serv_get_v2"]);
+    Route::get("v2/sere-serv/get-count", [SereServController::class, "sere_serv_get_count_v2"]);
+
+    Route::get("v3/sere-serv/get", [SereServController::class, "sere_serv_get_v3"]);
+    Route::get("v3/sere-serv/get-count", [SereServController::class, "sere_serv_get_count_v3"]);
+
+
     // Patient Type Alter
     Route::get("v1/patient-type-alter/get-view", [PatientTypeAlterController::class, "patient_type_alter_get_view"]);
 

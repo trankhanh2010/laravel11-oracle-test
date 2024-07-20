@@ -29,6 +29,7 @@ class BaseApiDataController extends Controller
 {
     protected $data = [];
     protected $time;
+    protected $time_id;
     protected $start;
     protected $limit;
     protected $order_by;
@@ -36,6 +37,9 @@ class BaseApiDataController extends Controller
     protected $order_by_request;
     protected $order_by_join;
     protected $only_active;
+    protected $equal;
+    protected $sere_serv_last_id = 0;
+    protected $sere_serv_first_id;
     protected $service_type_ids;
     protected $patient_type_ids;
     protected $service_id;
@@ -95,6 +99,7 @@ class BaseApiDataController extends Controller
     protected $dhst;
     protected $patient_type_alter;
     protected $sere_serv;
+    protected $sere_serv_name = 'sere_serv';
     protected $service_req;
     protected $sere_serv_ext;
     protected $sere_serv_tein;
@@ -114,6 +119,7 @@ class BaseApiDataController extends Controller
         // Khai báo các biến
         // Thời gian tồn tại của cache
         $this->time = now()->addMinutes(10080);
+        $this->time_id = now()->addMinutes(60);
         // Param json gửi từ client
         $this->param_request = json_decode(base64_decode($request->input('param')), true) ?? null;
 
@@ -546,6 +552,5 @@ class BaseApiDataController extends Controller
             }
         }
 
-        
     }
 }
