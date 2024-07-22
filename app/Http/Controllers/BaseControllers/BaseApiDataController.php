@@ -44,6 +44,8 @@ class BaseApiDataController extends Controller
     protected $sere_serv_last_id;
     protected $sere_serv_first_id = 0;
     protected $debate_last_id;
+    protected $debate_user_last_id;
+    protected $dhst_last_id;
     protected $service_type_ids;
     protected $patient_type_ids;
     protected $service_id;

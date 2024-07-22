@@ -1040,11 +1040,15 @@ Route::group([
     // Debate
     Route::get("v1/debate/get", [DebateController::class, "debate_get"]);
     Route::get("v1/debate/get-view", [DebateController::class, "debate_get_view"]);
+
     Route::get("v2/debate/get", [DebateController::class, "debate_get_v2"]);
     Route::get("v2/debate/get-view", [DebateController::class, "debate_get_view_v2"]);
+    
 
     // Debate User
     Route::get("v1/debate-user/get", [DebateUserController::class, "debate_user"]);
+    Route::get("v2/debate-user/get", [DebateUserController::class, "debate_user_v2"]);
+
 
     // Debate Ekip User
     Route::get("v1/debate-ekip-user/get", [DebateEkipUserController::class, "debate_ekip_user"]);
@@ -1085,6 +1089,7 @@ Route::group([
     // DHST
     Route::get("v1/dhst/get", [DhstController::class, "dhst_get"]);
     Route::get("v2/dhst/get", [DhstController::class, "dhst_get_v2"]);
+    Route::get("v3/dhst/get", [DhstController::class, "dhst_get_v3"]);
 
 
     // Sere Serv Ext

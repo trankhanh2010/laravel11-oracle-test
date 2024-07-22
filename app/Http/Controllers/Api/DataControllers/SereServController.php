@@ -19,14 +19,14 @@ class SereServController extends BaseApiDataController
         $this->order_by_join = [];
         // Kiểm tra tên trường trong bảng
         if ($this->order_by != null) {
-            // foreach ($this->order_by as $key => $item) {
-            //     if (!in_array($key, $this->order_by_join)) {
-            //         if ((!$this->sere_serv->getConnection()->getSchemaBuilder()->hasColumn($this->sere_serv->getTable(), $key))) {
-            //             unset($this->order_by_request[camelCaseFromUnderscore($key)]);
-            //             unset($this->order_by[$key]);
-            //         }
-            //     }
-            // }
+            foreach ($this->order_by as $key => $item) {
+                if (!in_array($key, $this->order_by_join)) {
+                    if ((!$this->sere_serv->getConnection()->getSchemaBuilder()->hasColumn($this->sere_serv->getTable(), $key))) {
+                        unset($this->order_by_request[camelCaseFromUnderscore($key)]);
+                        unset($this->order_by[$key]);
+                    }
+                }
+            }
             $this->order_by_tring = arrayToCustomString($this->order_by);
         }
         $this->equal = ">";
@@ -685,13 +685,14 @@ class SereServController extends BaseApiDataController
             });
         }
         if ($this->sere_serv_id == null) {
-            $count = $data->count();
-            if ($this->order_by != null) {
-                foreach ($this->order_by as $key => $item) {
-                    $data->orderBy('his_sere_serv.' . $key, $item);
-                }
-            }
+        } else {
+            $data = $data->where(function ($query) {
+                $query = $query->where(DB::connection('oracle_his')->raw('his_sere_serv.id'), $this->sere_serv_id);
+            });
+
         }
+        $count = $data->count();
+
         $param_return = [
             'start' => $this->start,
             'limit' => $this->limit,

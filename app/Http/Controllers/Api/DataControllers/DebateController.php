@@ -18,14 +18,14 @@ class DebateController extends BaseApiDataController
         $this->order_by_join = [];
         // Kiểm tra tên trường trong bảng
         if ($this->order_by != null) {
-            // foreach ($this->order_by as $key => $item) {
-            //     if (!in_array($key, $this->order_by_join)) {
-            //         if (!$this->debate->getConnection()->getSchemaBuilder()->hasColumn($this->debate->getTable(), $key)) {
-            //             unset($this->order_by_request[camelCaseFromUnderscore($key)]);
-            //             unset($this->order_by[$key]);
-            //         }
-            //     }
-            // }
+            foreach ($this->order_by as $key => $item) {
+                if (!in_array($key, $this->order_by_join)) {
+                    if (!$this->debate->getConnection()->getSchemaBuilder()->hasColumn($this->debate->getTable(), $key)) {
+                        unset($this->order_by_request[camelCaseFromUnderscore($key)]);
+                        unset($this->order_by[$key]);
+                    }
+                }
+            }
             $this->order_by_tring = arrayToCustomString($this->order_by);
         }
         $this->equal = ">";
