@@ -32,14 +32,18 @@ class BaseApiDataController extends Controller
     protected $time_id;
     protected $start;
     protected $limit;
+    protected $cursor;
+    protected $next_cursor;
     protected $order_by;
     protected $order_by_tring;
     protected $order_by_request;
     protected $order_by_join;
     protected $only_active;
     protected $equal;
-    protected $sere_serv_last_id = 0;
-    protected $sere_serv_first_id;
+    protected $sql_id;
+    protected $sere_serv_last_id;
+    protected $sere_serv_first_id = 0;
+    protected $debate_last_id;
     protected $service_type_ids;
     protected $patient_type_ids;
     protected $service_id;
@@ -122,12 +126,11 @@ class BaseApiDataController extends Controller
         $this->time_id = now()->addMinutes(60);
         // Param json gửi từ client
         $this->param_request = json_decode(base64_decode($request->input('param')), true) ?? null;
-
         $this->per_page = $request->query('perPage', 10);
         $this->page = $request->query('page', 1);
         $this->start = $this->param_request['CommonParam']['Start'] ?? intval($request->start) ?? 0;
         $this->limit = $this->param_request['CommonParam']['Limit'] ?? intval($request->limit) ?? 10;
-
+        $this->cursor = $this->param_request['CommonParam']['Cursor'] ?? intval($request->cursor) ?? 0;
         if (($this->limit <= 10) || (!in_array($this->limit, [10, 20, 50, 100, 500, 1000, 2000, 4000]))) {
             $this->limit = 10;
         }
@@ -186,7 +189,6 @@ class BaseApiDataController extends Controller
             $this->is_not_ksk_requried_aproval__or__is_ksk_approve = true;
         }
 
-
         $this->debate_id = $this->param_request['ApiData']['DebateId'] ?? null;
         if ($this->debate_id != null) {
             // Kiểm tra xem ID có tồn tại trong bảng  hay không
@@ -194,7 +196,7 @@ class BaseApiDataController extends Controller
                 $this->debate_id = null;
             } else {
                 if (!Debate::where('id', $this->debate_id)->exists()) {
-                    $this->debate_id = null;
+                    $this->debate_id = "err";
                 }
             }
         }

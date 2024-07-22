@@ -1040,6 +1040,8 @@ Route::group([
     // Debate
     Route::get("v1/debate/get", [DebateController::class, "debate_get"]);
     Route::get("v1/debate/get-view", [DebateController::class, "debate_get_view"]);
+    Route::get("v2/debate/get", [DebateController::class, "debate_get_v2"]);
+    Route::get("v2/debate/get-view", [DebateController::class, "debate_get_view_v2"]);
 
     // Debate User
     Route::get("v1/debate-user/get", [DebateUserController::class, "debate_user"]);

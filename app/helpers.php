@@ -632,3 +632,15 @@ if (!function_exists('return_check_data')) {
 
     }
 }
+
+if (!function_exists('return_param_error')) {
+    function return_param_error()
+    {
+        return response()->json([
+            'status'    => 422,
+            'success' => false,
+            'message' => 'param có dữ liệu không hợp lệ!'
+        ], 422);
+
+    }
+}
