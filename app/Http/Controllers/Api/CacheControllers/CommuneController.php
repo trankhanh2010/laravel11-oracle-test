@@ -29,7 +29,7 @@ class CommuneController extends BaseApiCacheController
     }
     public function commune($id = null)
     {
-        $keyword = create_slug(mb_strtolower($this->keyword, 'UTF-8'));
+        $keyword = $this->keyword;
         if($keyword != null){
             $data = $this->commune
             ->leftJoin('sda_district as district', 'district.id', '=', 'sda_commune.district_id')
@@ -40,9 +40,9 @@ class CommuneController extends BaseApiCacheController
             );
             $data = $data->where(function ($query) use ($keyword){
                 $query = $query
-                    ->where(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(sda_commune.commune_code))'), 'like', '%' . $keyword . '%')
-                    ->orWhere(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(sda_commune.commune_name))'), 'like', '%' . $keyword . '%')
-                    ->orWhere(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(sda_commune.search_code))'), 'like', '%' . $keyword . '%');
+                    ->where(DB::connection('oracle_his')->raw('sda_commune.commune_code'), 'like', $keyword . '%')
+                    ->orWhere(DB::connection('oracle_his')->raw('sda_commune.commune_name'), 'like', $keyword . '%')
+                    ->orWhere(DB::connection('oracle_his')->raw('sda_commune.search_code'), 'like', $keyword . '%');
             });
         if ($this->is_active !== null) {
             $data = $data->where(function ($query) {

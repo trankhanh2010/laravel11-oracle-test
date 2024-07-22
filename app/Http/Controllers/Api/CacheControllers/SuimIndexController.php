@@ -26,15 +26,15 @@ class SuimIndexController extends BaseApiCacheController
     }
     public function suim_index($id = null)
     {
-        $keyword = create_slug(mb_strtolower($this->keyword, 'UTF-8'));
+        $keyword = $this->keyword;
         if ($keyword != null) {
             $param = [
             ];
             $data = $this->suim_index;
             $data = $data->where(function ($query) use ($keyword){
                 $query = $query
-                ->where(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(suim_index_code))'), 'like', '%' . $keyword . '%')
-                ->orWhere(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(suim_index_name))'), 'like', '%' . $keyword . '%');
+                ->where(DB::connection('oracle_his')->raw('suim_index_code'), 'like', $keyword . '%')
+                ->orWhere(DB::connection('oracle_his')->raw('suim_index_name'), 'like', $keyword . '%');
             });
         if ($this->is_active !== null) {
             $data = $data->where(function ($query) {

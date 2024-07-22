@@ -32,7 +32,7 @@ class BedRoomController extends BaseApiCacheController
     }
     public function bed_room($id = null)
     {      
-        $keyword = create_slug(mb_strtolower($this->keyword, 'UTF-8'));
+        $keyword = $this->keyword;
         if ($keyword != null) {
             $param = [
                 'room:id,department_id,area_id,speciality_id,default_cashier_room_id,default_instr_patient_type_id,is_pause',
@@ -45,8 +45,8 @@ class BedRoomController extends BaseApiCacheController
             $data = $this->bed_room;
             $data = $data->where(function ($query) use ($keyword){
                 $query = $query
-                ->where(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(bed_room_code))'), 'like', '%' . $keyword . '%')
-                ->orWhere(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(bed_room_name))'), 'like', '%' . $keyword . '%');
+                ->where(DB::connection('oracle_his')->raw('bed_room_code'), 'like', $keyword . '%')
+                ->orWhere(DB::connection('oracle_his')->raw('bed_room_name'), 'like', $keyword . '%');
             });
         if ($this->is_active !== null) {
             $data = $data->where(function ($query) {

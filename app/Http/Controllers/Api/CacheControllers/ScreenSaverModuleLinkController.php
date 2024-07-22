@@ -28,15 +28,15 @@ class ScreenSaverModuleLinkController extends BaseApiCacheController
 
     public function screen_saver_module_link()
     {
-        $keyword = create_slug(mb_strtolower($this->keyword, 'UTF-8'));
+        $keyword = $this->keyword;
         if ($keyword != null) {
             $data = $this->module::select('acs_module.*')
                 ->join('ACS_MODULE_GROUP', 'ACS_MODULE.module_group_id', '=', 'ACS_MODULE_GROUP.id')
                 ->where('ACS_MODULE_GROUP.module_group_code', 'MHC');
                 $data = $data->where(function ($query) use ($keyword){
                     $query = $query
-                ->where(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(module_link))'), 'like', '%' . $keyword . '%')
-                ->orWhere(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(module_name))'), 'like', '%' . $keyword . '%');
+                ->where(DB::connection('oracle_his')->raw('module_link'), 'like', $keyword . '%')
+                ->orWhere(DB::connection('oracle_his')->raw('module_name'), 'like', $keyword . '%');
                 });
         if ($this->is_active !== null) {
             $data = $data->where(function ($query) {

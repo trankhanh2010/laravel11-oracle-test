@@ -33,7 +33,7 @@ class MediStockController extends BaseApiCacheController
     }
     public function medi_stock($id = null)
     {
-        $keyword = create_slug(mb_strtolower($this->keyword, 'UTF-8'));
+        $keyword = $this->keyword;
         if ($keyword != null) {
             $param = [
                 'room:id,department_id,room_type_id',
@@ -46,8 +46,8 @@ class MediStockController extends BaseApiCacheController
             $data = $this->medi_stock;
             $data = $data->where(function ($query) use ($keyword){
                 $query = $query
-                ->where(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(medi_stock_code))'), 'like', '%' . $keyword . '%')
-                ->orWhere(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(medi_stock_name))'), 'like', '%' . $keyword . '%');
+                ->where(DB::connection('oracle_his')->raw('medi_stock_code'), 'like', $keyword . '%')
+                ->orWhere(DB::connection('oracle_his')->raw('medi_stock_name'), 'like', $keyword . '%');
             });
         if ($this->is_active !== null) {
             $data = $data->where(function ($query) {

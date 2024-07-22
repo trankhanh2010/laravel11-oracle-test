@@ -31,15 +31,15 @@ class IcdCmController extends BaseApiCacheController
 
     public function icd_cm($id = null)
     {
-        $keyword = create_slug(mb_strtolower($this->keyword, 'UTF-8'));
+        $keyword = $this->keyword;
         if ($keyword != null) {
             $param = [
             ];
             $data = $this->icd_cm;
             $data = $data->where(function ($query) use ($keyword){
                 $query = $query
-                ->where(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(icd_cm_code))'), 'like', '%' . $keyword . '%')
-                ->orWhere(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(icd_cm_name))'), 'like', '%' . $keyword . '%');
+                ->where(DB::connection('oracle_his')->raw('icd_cm_code'), 'like', $keyword . '%')
+                ->orWhere(DB::connection('oracle_his')->raw('icd_cm_name'), 'like', $keyword . '%');
             });
         if ($this->is_active !== null) {
             $data = $data->where(function ($query) {

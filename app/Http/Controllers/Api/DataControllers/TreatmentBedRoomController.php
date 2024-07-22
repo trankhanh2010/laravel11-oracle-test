@@ -95,8 +95,8 @@ class TreatmentBedRoomController extends BaseApiDataController
         ->select($select);
       if ($keyword != null) {
           $data = $data->where(function ($query) use ($keyword) {
-              $query = $query->where(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(treatment.TDL_PATIENT_LAST_NAME))'), 'like', '%' . $keyword . '%')
-                  ->orWhere(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(treatment.TREATMENT_CODE))'), 'like', '%' . $keyword . '%');
+              $query = $query->where(DB::connection('oracle_his')->raw('treatment.TDL_PATIENT_LAST_NAME'), 'like', $keyword . '%')
+                  ->orWhere(DB::connection('oracle_his')->raw('treatment.TREATMENT_CODE'), 'like', $keyword . '%');
           });
       }
       if (!$this->is_include_deleted) {

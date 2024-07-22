@@ -57,13 +57,13 @@ class SereServExtController extends BaseApiDataController
             "SUBCLINICAL_PRES_ID",
             "DESCRIPTION",
         ];
-        $keyword = create_slug(mb_strtolower($this->keyword, 'UTF-8'));
+        $keyword = $this->keyword;
         $data = $this->sere_serv_ext
             ->select($select);
         if ($keyword != null) {
             $data = $data->where(function ($query) use ($keyword) {
-                $query = $query->where(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(his_sere_serv_ext.SUBCLINICAL_RESULT_USERNAME))'), 'like', '%' . $keyword . '%')
-                    ->orWhere(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(his_sere_serv_ext.SUBCLINICAL_RESULT_LOGINNAME))'), 'like', '%' . $keyword . '%');
+                $query = $query->where(DB::connection('oracle_his')->raw('his_sere_serv_ext.SUBCLINICAL_RESULT_USERNAME'), 'like', $keyword . '%')
+                    ->orWhere(DB::connection('oracle_his')->raw('his_sere_serv_ext.SUBCLINICAL_RESULT_LOGINNAME'), 'like', $keyword . '%');
             });
         }
         if (!$this->is_include_deleted) {

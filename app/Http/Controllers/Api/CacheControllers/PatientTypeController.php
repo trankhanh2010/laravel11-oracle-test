@@ -37,7 +37,7 @@ class PatientTypeController extends BaseApiCacheController
 
     public function patient_type($id = null)
     {
-        $keyword = create_slug(mb_strtolower($this->keyword, 'UTF-8'));
+        $keyword = $this->keyword;
         if (($keyword != null) || ($this->is_addition !== null)) {
             $param = [
                 'base_patient_type',
@@ -46,8 +46,8 @@ class PatientTypeController extends BaseApiCacheController
             $data = $this->patient_type;
             $data = $data->where(function ($query) use ($keyword){
                 $query = $query
-                ->where(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(patient_type_code))'), 'like', '%' . $keyword . '%')
-                ->orWhere(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(patient_type_name))'), 'like', '%' . $keyword . '%');
+                ->where(DB::connection('oracle_his')->raw('patient_type_code'), 'like', $keyword . '%')
+                ->orWhere(DB::connection('oracle_his')->raw('patient_type_name'), 'like', $keyword . '%');
             });
         if ($this->is_active !== null) {
             $data = $data->where(function ($query) {

@@ -29,13 +29,13 @@ class BranchController extends BaseApiCacheController
     }
     public function branch($id = null)
     {
-        $keyword = create_slug(mb_strtolower($this->keyword, 'UTF-8'));
+        $keyword = $this->keyword;
         if ($keyword != null) {
             $data = $this->branch;
             $data = $data->where(function ($query) use ($keyword){
                 $query = $query
-                ->where(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(branch_code))'), 'like', '%' . $keyword . '%')
-                ->orWhere(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(branch_name))'), 'like', '%' . $keyword . '%');
+                ->where(DB::connection('oracle_his')->raw('branch_code'), 'like', $keyword . '%')
+                ->orWhere(DB::connection('oracle_his')->raw('branch_name'), 'like', $keyword . '%');
             });
         if ($this->is_active !== null) {
             $data = $data->where(function ($query) {

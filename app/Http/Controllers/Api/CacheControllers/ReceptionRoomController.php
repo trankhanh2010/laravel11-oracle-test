@@ -30,7 +30,7 @@ class ReceptionRoomController extends BaseApiCacheController
     }
     public function reception_room($id = null)
     {
-        $keyword = create_slug(mb_strtolower($this->keyword, 'UTF-8'));
+        $keyword = $this->keyword;
         if ($keyword != null) {
             $param = [
                 'room.department',
@@ -40,8 +40,8 @@ class ReceptionRoomController extends BaseApiCacheController
             $data = $this->reception_room;
             $data = $data->where(function ($query) use ($keyword){
                 $query = $query
-                ->where(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(reception_room_code))'), 'like', '%' . $keyword . '%')
-                ->orWhere(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(reception_room_name))'), 'like', '%' . $keyword . '%');
+                ->where(DB::connection('oracle_his')->raw('reception_room_code'), 'like', $keyword . '%')
+                ->orWhere(DB::connection('oracle_his')->raw('reception_room_name'), 'like', $keyword . '%');
             });
         if ($this->is_active !== null) {
             $data = $data->where(function ($query) {

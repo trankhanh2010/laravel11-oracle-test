@@ -65,13 +65,13 @@ class DhstController extends BaseApiDataController
             'ksk_occupationals',
             'service_reqs',
         ];
-        $keyword = create_slug(mb_strtolower($this->keyword, 'UTF-8'));
+        $keyword = $this->keyword;
         $data = $this->dhst
         ->select($select);
         if ($keyword != null) {
             $data = $data->where(function ($query) use ($keyword) {
-                $query = $query->where(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(his_dhst.execute_loginname))'), 'like', '%' . $keyword . '%')
-                    ->orWhere(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(his_dhst.execute_username))'), 'like', '%' . $keyword . '%');
+                $query = $query->where(DB::connection('oracle_his')->raw('his_dhst.execute_loginname'), 'like', $keyword . '%')
+                    ->orWhere(DB::connection('oracle_his')->raw('his_dhst.execute_username'), 'like', $keyword . '%');
             });
         }
         if (!$this->is_include_deleted) {
@@ -153,14 +153,14 @@ class DhstController extends BaseApiDataController
             'ksk_occupationals',
             'service_reqs',
         ];
-        $keyword = create_slug(mb_strtolower($this->keyword, 'UTF-8'));
+        $keyword = $this->keyword;
         $data = $this->dhst
 
         ->select($select);
         if ($keyword != null) {
             $data = $data->where(function ($query) use ($keyword) {
-                $query = $query->where(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(his_dhst.execute_loginname))'), 'like', '%' . $keyword . '%')
-                    ->orWhere(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(his_dhst.execute_username))'), 'like', '%' . $keyword . '%');
+                $query = $query->where(DB::connection('oracle_his')->raw('his_dhst.execute_loginname'), 'like', $keyword . '%')
+                    ->orWhere(DB::connection('oracle_his')->raw('his_dhst.execute_username'), 'like', $keyword . '%');
             });
         }
         if (!$this->is_include_deleted) {

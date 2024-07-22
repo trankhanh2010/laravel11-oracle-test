@@ -30,12 +30,12 @@ class DebateUserController extends BaseApiDataController
     public function debate_user()
     {
         $param = [];
-        $keyword = create_slug(mb_strtolower($this->keyword, 'UTF-8'));
+        $keyword = $this->keyword;
         $data = $this->debate_user;
         if ($keyword != null) {
             $data = $data->where(function ($query) use ($keyword) {
-                $query = $query->where(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(his_debate_user.loginname))'), 'like', '%' . $keyword . '%')
-                    ->orWhere(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(his_debate_user.username))'), 'like', '%' . $keyword . '%');
+                $query = $query->where(DB::connection('oracle_his')->raw('his_debate_user.loginname'), 'like', $keyword . '%')
+                    ->orWhere(DB::connection('oracle_his')->raw('his_debate_user.username'), 'like', $keyword . '%');
             });
         }
         if (!$this->is_include_deleted) {

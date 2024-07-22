@@ -27,7 +27,7 @@ class RoleController extends BaseApiCacheController
     }
     public function role($id = null)
     {
-        $keyword = create_slug(mb_strtolower($this->keyword, 'UTF-8'));
+        $keyword = $this->keyword;
         if ($keyword != null) {
             $param = [
                 'modules:id,module_name'
@@ -35,8 +35,8 @@ class RoleController extends BaseApiCacheController
             $data = $this->role;
             $data = $data->where(function ($query) use ($keyword){
                 $query = $query
-                ->where(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(role_name))'), 'like', '%' . $keyword . '%')
-                ->orWhere(DB::connection('oracle_his')->raw('FUN_CONVERT_TO_UNSIGN(lower(role_code))'), 'like', '%' . $keyword . '%');
+                ->where(DB::connection('oracle_his')->raw('role_name'), 'like', $keyword . '%')
+                ->orWhere(DB::connection('oracle_his')->raw('role_code'), 'like', $keyword . '%');
             });
         if ($this->is_active !== null) {
             $data = $data->where(function ($query) {
