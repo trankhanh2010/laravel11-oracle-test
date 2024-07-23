@@ -656,3 +656,15 @@ if (!function_exists('return_500_error')) {
 
     }
 }
+
+if (!function_exists('return_404_error_page_not_found')) {
+    function return_404_error_page_not_found()
+    {
+        return response()->json([
+            'status'    => 404,
+            'success' => false,
+            'message' => 'Đường dẫn Api không hợp lệ!'
+        ], 500);
+
+    }
+}

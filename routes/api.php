@@ -116,7 +116,9 @@ use App\Http\Controllers\Api\ValidateControllers\CheckTreatmentTypeController;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-
+Route::fallback(function(){
+    return return_404_error_page_not_found();
+});
 Route::group([
     "middleware" => ["check_module:api"]
 ], function () {
