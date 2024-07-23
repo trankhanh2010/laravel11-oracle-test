@@ -18,14 +18,14 @@ class DebateController extends BaseApiDataController
         $this->order_by_join = [];
         // Kiểm tra tên trường trong bảng
         if ($this->order_by != null) {
-            foreach ($this->order_by as $key => $item) {
-                if (!in_array($key, $this->order_by_join)) {
-                    if (!$this->debate->getConnection()->getSchemaBuilder()->hasColumn($this->debate->getTable(), $key)) {
-                        unset($this->order_by_request[camelCaseFromUnderscore($key)]);
-                        unset($this->order_by[$key]);
-                    }
-                }
-            }
+            // foreach ($this->order_by as $key => $item) {
+            //     if (!in_array($key, $this->order_by_join)) {
+            //         if (!$this->debate->getConnection()->getSchemaBuilder()->hasColumn($this->debate->getTable(), $key)) {
+            //             unset($this->order_by_request[camelCaseFromUnderscore($key)]);
+            //             unset($this->order_by[$key]);
+            //         }
+            //     }
+            // }
             $this->order_by_tring = arrayToCustomString($this->order_by);
         }
         $this->equal = ">";
@@ -36,6 +36,13 @@ class DebateController extends BaseApiDataController
                 $this->cursor = $this->debate_last_id;
                 $this->equal = "<=";
             }
+        }
+        if($this->cursor < 0){
+            $this->sub_order_by = (strtolower($this->order_by["id"]) === 'asc') ? 'desc' : 'asc';
+            $this->equal = (strtolower($this->order_by["id"]) === 'desc') ? '>' : '<';
+
+            $this->sub_order_by_string = ' ORDER BY ID '.$this->order_by["id"];
+            $this->cursor = abs($this->cursor);
         }
     }
 
@@ -261,16 +268,23 @@ class DebateController extends BaseApiDataController
                 // $count = $data->count();
                 if ($this->order_by != null) {
                     foreach ($this->order_by as $key => $item) {
-                        $data->orderBy('his_debate.' . $key, $item);
+                        $data->orderBy('his_debate.' . $key, $this->sub_order_by ?? $item);
                     }
                 }
                 // Chuyển truy vấn sang chuỗi sql
                 $sql = $data->toSql();
                 // Truyền tham số qua binding tránh SQL Injection
                 $bindings = $data->getBindings();
-                $fullSql = 'SELECT * FROM (SELECT a.*, ROWNUM rnum FROM (' . $sql . ') a WHERE ROWNUM <= ' . ($this->limit + $this->start) . ' AND ID ' . $this->equal . $this->cursor . ') WHERE rnum > ' . $this->start;
+                $fullSql = 'SELECT * FROM (SELECT a.*, ROWNUM rnum FROM (' . $sql . ') a WHERE ROWNUM <= ' . ($this->limit + $this->start) . ' AND ID ' . $this->equal . $this->cursor . $this->sub_order_by_string. ') WHERE rnum > ' . $this->start;
                 $data = DB::connection('oracle_his')->select($fullSql, $bindings);
                 $data = DebateResource::collection($data);
+                if(isset($data[0])){
+                    if(($data[0]->id != $this->debate->max('id')) && ($data[0]->id != $this->debate->min('id'))){
+                        $this->prev_cursor = '-'.$data[0]->id;
+                    }else{
+                        $this->prev_cursor = null;
+                    }
+                }
             } else {
                 $data = $data->where(function ($query) {
                     $query = $query->where(DB::connection('oracle_his')->raw('his_debate.id'), $this->debate_id);
@@ -283,7 +297,7 @@ class DebateController extends BaseApiDataController
             }
 
             $param_return = [
-                'cursor' => $data[0]->id ?? null,
+                'prev_cursor' => $this->prev_cursor ?? null,
                 'limit' => $this->limit,
                 'next_cursor' => $data[($this->limit - 1)]->id ?? null,
                 'is_include_deleted' => $this->is_include_deleted ?? false,
@@ -296,7 +310,7 @@ class DebateController extends BaseApiDataController
             return return_data_success($param_return, $data);
         } catch (\Exception $e) {
             // Xử lý lỗi và trả về phản hồi lỗi
-            return return_param_error();
+            return return_500_error();
         }
     }
 
@@ -553,16 +567,21 @@ class DebateController extends BaseApiDataController
             if ($this->debate_id == null) {
                 if ($this->order_by != null) {
                     foreach ($this->order_by as $key => $item) {
-                        $data->orderBy('his_debate.' . $key, $item);
+                        $data->orderBy('his_debate.' . $key, $this->sub_order_by ?? $item);
                     }
                 }
                 // Chuyển truy vấn sang chuỗi sql
                 $sql = $data->toSql();
                 // Truyền tham số qua binding tránh SQL Injection
                 $bindings = $data->getBindings();
-                $fullSql = 'SELECT * FROM (SELECT a.*, ROWNUM rnum FROM (' . $sql . ') a WHERE ROWNUM <= ' . ($this->limit + $this->start) . ' AND ID ' . $this->equal . $this->cursor . ') WHERE rnum > ' . $this->start;
+                $fullSql = 'SELECT * FROM (SELECT a.*, ROWNUM rnum FROM (' . $sql . ') a WHERE ROWNUM <= ' . ($this->limit + $this->start) . ' AND ID ' . $this->equal . $this->cursor . $this->sub_order_by_string. ') WHERE rnum > ' . $this->start;
                 $data = DB::connection('oracle_his')->select($fullSql, $bindings);
                 $data = DebateGetViewResource::collection($data);
+                if(($data[0]->id != $this->debate->max('id')) && ($data[0]->id != $this->debate->min('id'))){
+                    $this->prev_cursor = '-'.$data[0]->id;
+                }else{
+                    $this->prev_cursor = null;
+                }
             } else {
                 $data = $data->where(function ($query) {
                     $query = $query->where(DB::connection('oracle_his')->raw('his_debate.id'), $this->debate_id);
@@ -571,7 +590,7 @@ class DebateController extends BaseApiDataController
             }
 
             $param_return = [
-                'cursor' => $data[0]->id ?? null,
+                'prev_cursor' => $this->prev_cursor ?? null,
                 'limit' => $this->limit,
                 'next_cursor' => $data[($this->limit - 1)]->id ?? null,
                 'is_include_deleted' => $this->is_include_deleted ?? false,
@@ -586,7 +605,7 @@ class DebateController extends BaseApiDataController
             return return_data_success($param_return, $data);
         } catch (\Exception $e) {
             // Xử lý lỗi và trả về phản hồi lỗi
-            return return_param_error();
+            return return_500_error();
         }
     }
 }

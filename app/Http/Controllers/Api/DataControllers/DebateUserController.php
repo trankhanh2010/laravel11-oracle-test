@@ -163,7 +163,7 @@ class DebateUserController extends BaseApiDataController
             return return_data_success($param_return, $data);
         } catch (\Exception $e) {
             // Xử lý lỗi và trả về phản hồi lỗi
-            return return_param_error();
+            return return_500_error();
         }
     }
 }

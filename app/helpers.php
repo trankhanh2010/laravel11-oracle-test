@@ -644,3 +644,15 @@ if (!function_exists('return_param_error')) {
 
     }
 }
+
+if (!function_exists('return_500_error')) {
+    function return_500_error()
+    {
+        return response()->json([
+            'status'    => 500,
+            'success' => false,
+            'message' => 'Có lỗi trong quá trình xử lý!'
+        ], 500);
+
+    }
+}

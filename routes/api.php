@@ -1052,6 +1052,8 @@ Route::group([
 
     // Debate Ekip User
     Route::get("v1/debate-ekip-user/get", [DebateEkipUserController::class, "debate_ekip_user"]);
+    Route::get("v2/debate-ekip-user/get", [DebateEkipUserController::class, "debate_ekip_user_v2"]);
+
 
     // Debate Type
     Route::get("v1/debate-type", [HISController::class, "debate_type"]);

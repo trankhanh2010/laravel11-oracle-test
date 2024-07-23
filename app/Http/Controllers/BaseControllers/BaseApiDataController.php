@@ -34,6 +34,9 @@ class BaseApiDataController extends Controller
     protected $limit;
     protected $cursor;
     protected $next_cursor;
+    protected $prev_cursor;
+    protected $sub_order_by = null;
+    protected $sub_order_by_string ='';
     protected $order_by;
     protected $order_by_tring;
     protected $order_by_request;
@@ -198,7 +201,7 @@ class BaseApiDataController extends Controller
                 $this->debate_id = null;
             } else {
                 if (!Debate::where('id', $this->debate_id)->exists()) {
-                    $this->debate_id = "err";
+                    $this->debate_id = null;
                 }
             }
         }
