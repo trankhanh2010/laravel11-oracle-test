@@ -18,15 +18,32 @@ class ServiceReqController extends BaseApiDataController
         $this->order_by_join = [];
         // Kiểm tra tên trường trong bảng
         if ($this->order_by != null) {
-            foreach ($this->order_by as $key => $item) {
-                if (!in_array($key, $this->order_by_join)) {
-                    if (!$this->service_req->getConnection()->getSchemaBuilder()->hasColumn($this->service_req->getTable(), $key)) {
-                        unset($this->order_by_request[camelCaseFromUnderscore($key)]);
-                        unset($this->order_by[$key]);
-                    }
-                }
-            }
+            // foreach ($this->order_by as $key => $item) {
+            //     if (!in_array($key, $this->order_by_join)) {
+            //         if (!$this->service_req->getConnection()->getSchemaBuilder()->hasColumn($this->service_req->getTable(), $key)) {
+            //             unset($this->order_by_request[camelCaseFromUnderscore($key)]);
+            //             unset($this->order_by[$key]);
+            //         }
+            //     }
+            // }
             $this->order_by_tring = arrayToCustomString($this->order_by);
+        }
+
+        $this->equal = ">";
+        if ((strtolower($this->order_by["id"] ?? null) == "desc")) {
+            $this->equal = "<";
+            if ($this->cursor === 0) {
+                $this->service_req_last_id = $this->service_req->max('id');
+                $this->cursor = $this->service_req_last_id;
+                $this->equal = "<=";
+            }
+        }
+        if ($this->cursor < 0) {
+            $this->sub_order_by = (strtolower($this->order_by["id"]) === 'asc') ? 'desc' : 'asc';
+            $this->equal = (strtolower($this->order_by["id"]) === 'desc') ? '>' : '<';
+
+            $this->sub_order_by_string = ' ORDER BY ID ' . $this->order_by["id"];
+            $this->cursor = abs($this->cursor);
         }
     }
     public function service_req_get_L_view(Request $request)
@@ -36,8 +53,8 @@ class ServiceReqController extends BaseApiDataController
             if (!view_service_req($this->execute_room_id, $request->bearerToken(), $this->time)) {
                 return return_403();
             }
-        }else{
-            if($this->service_req_id == null){
+        } else {
+            if ($this->service_req_id == null) {
                 return return_400('Thiếu execute_room_id!');
             }
         }
@@ -92,7 +109,7 @@ class ServiceReqController extends BaseApiDataController
 
         $keyword = $this->keyword;
         $data = $this->service_req
-        ->select($select);
+            ->select($select);
         if ($keyword != null) {
             $data = $data->where(function ($query) use ($keyword) {
                 $query = $query->where(DB::connection('oracle_his')->raw('his_service_req.service_req_code'), 'like', $keyword . '%')
@@ -162,12 +179,12 @@ class ServiceReqController extends BaseApiDataController
                 ->skip($this->start)
                 ->take($this->limit)
                 ->get();
-        }else{
+        } else {
             $data = $data->where(function ($query) {
                 $query = $query->where(DB::connection('oracle_his')->raw('his_service_req.id'), $this->service_req_id);
-                });
+            });
             $data = $data
-            ->first();
+                ->first();
         }
         $param_return = [
             'start' => $this->start,
@@ -187,8 +204,6 @@ class ServiceReqController extends BaseApiDataController
             'order_by' => $this->order_by_request
         ];
         return return_data_success($param_return, $data);
-
-       
     }
 
     public function service_req_get_L_view_v2(Request $request)
@@ -198,8 +213,8 @@ class ServiceReqController extends BaseApiDataController
             if (!view_service_req($this->execute_room_id, $request->bearerToken(), $this->time)) {
                 return return_403();
             }
-        }else{
-            if($this->service_req_id == null){
+        } else {
+            if ($this->service_req_id == null) {
                 return return_400('Thiếu execute_room_id!');
             }
         }
@@ -254,7 +269,7 @@ class ServiceReqController extends BaseApiDataController
 
         $keyword = $this->keyword;
         $data = $this->service_req
-        ->select($select);
+            ->select($select);
         if ($keyword != null) {
             $data = $data->where(function ($query) use ($keyword) {
                 $query = $query->where(DB::connection('oracle_his')->raw('his_service_req.service_req_code'), 'like', $keyword . '%')
@@ -331,15 +346,15 @@ class ServiceReqController extends BaseApiDataController
                 }
             }
             $fullSql = Str::replaceArray('?', $bindings, $sql);
-            $fullSql = $fullSql . ' OFFSET '.$this->start.' ROWS FETCH NEXT '.$this->limit.' ROWS ONLY';
+            $fullSql = $fullSql . ' OFFSET ' . $this->start . ' ROWS FETCH NEXT ' . $this->limit . ' ROWS ONLY';
             $data = DB::connection('oracle_his')->select($fullSql);
             $data = ServicereqResource::collection($data);
-        }else{
+        } else {
             $data = $data->where(function ($query) {
                 $query = $query->where(DB::connection('oracle_his')->raw('his_service_req.id'), $this->service_req_id);
-                });
+            });
             $data = $data
-            ->first();
+                ->first();
         }
         $param_return = [
             'start' => $this->start,
@@ -359,7 +374,234 @@ class ServiceReqController extends BaseApiDataController
             'order_by' => $this->order_by_request
         ];
         return return_data_success($param_return, $data);
+    }
 
-       
+    public function service_req_get_L_view_v3(Request $request)
+    {
+        //Kiểm tra xem User có quyền xem execute_room không
+        if ($this->execute_room_id != null) {
+            if (!view_service_req($this->execute_room_id, $request->bearerToken(), $this->time)) {
+                return return_403();
+            }
+        } else {
+            if ($this->service_req_id == null) {
+                return return_400('Thiếu execute_room_id!');
+            }
+        }
+
+        // Khai báo các trường cần select
+        $select = [
+            'his_service_req.id',
+            'his_service_req.service_req_code',
+            'his_service_req.tdl_patient_code',
+            'his_service_req.tdl_patient_name',
+            'his_service_req.tdl_patient_gender_name',
+            'his_service_req.tdl_patient_dob',
+            'his_service_req.tdl_patient_address',
+            'his_service_req.treatment_id',
+            'his_service_req.tdl_patient_avatar_url',
+            'his_service_req.service_req_stt_id',
+            'his_service_req.parent_id',
+            'his_service_req.execute_room_id',
+            'his_service_req.exe_service_module_id',
+            'his_service_req.request_department_id',
+            'his_service_req.tdl_treatment_code',
+            'his_service_req.dhst_id',
+            'his_service_req.priority',
+            'his_service_req.request_room_id',
+            'his_service_req.intruction_time',
+            'his_service_req.num_order',
+            'his_service_req.service_req_type_id',
+            'his_service_req.tdl_hein_card_number',
+            'his_service_req.tdl_treatment_type_id',
+            'his_service_req.intruction_date',
+            'his_service_req.execute_loginname',
+            'his_service_req.execute_username',
+            'his_service_req.tdl_patient_type_id',
+            'his_service_req.is_not_in_debt',
+            'his_service_req.is_no_execute',
+            'his_service_req.vir_intruction_month',
+            'his_service_req.has_child',
+            'his_service_req.tdl_patient_phone',
+            'his_service_req.resulting_time',
+            'his_service_req.tdl_service_ids',
+            'his_service_req.call_count',
+            'his_service_req.tdl_patient_unsigned_name',
+            'his_service_req.start_time',
+            'his_service_req.note',
+            'his_service_req.tdl_patient_id',
+            'his_service_req.icd_code',
+            'his_service_req.icd_name',
+            'his_service_req.icd_sub_code',
+            'his_service_req.icd_text',
+            // 'order_time'
+        ];
+
+        $keyword = $this->keyword;
+        try {
+            $data = $this->service_req
+                ->select($select);
+            $data_id = $this->service_req
+                ->select("HIS_SERVICE_REQ.ID");
+            if ($keyword != null) {
+                $data = $data->where(function ($query) use ($keyword) {
+                    $query = $query->where(DB::connection('oracle_his')->raw('his_service_req.TDL_TREATMENT_CODE'), 'like', $keyword . '%')
+                        ->orWhere(DB::connection('oracle_his')->raw('his_service_req.TDL_PATIENT_CODE'), 'like', $keyword . '%')
+                        ->orWhere(DB::connection('oracle_his')->raw('his_service_req.BARCODE'), 'like', $keyword . '%')
+                        ->orWhere(DB::connection('oracle_his')->raw('his_service_req.EXECUTE_LOGINNAME'), 'like', $keyword . '%')
+                        ->orWhere(DB::connection('oracle_his')->raw('his_service_req.SESSION_CODE'), 'like', $keyword . '%')
+                        ->orWhere(DB::connection('oracle_his')->raw('his_service_req.ASSIGN_TURN_CODE'), 'like', $keyword . '%')
+                        ->orWhere(DB::connection('oracle_his')->raw('his_service_req.SERVICE_REQ_CODE'), 'like', $keyword . '%');
+                });
+                $data_id = $data_id->where(function ($query) use ($keyword) {
+                    $query = $query->where(DB::connection('oracle_his')->raw('his_service_req.TDL_TREATMENT_CODE'), 'like', $keyword . '%')
+                        ->orWhere(DB::connection('oracle_his')->raw('his_service_req.TDL_PATIENT_CODE'), 'like', $keyword . '%')
+                        ->orWhere(DB::connection('oracle_his')->raw('his_service_req.BARCODE'), 'like', $keyword . '%')
+                        ->orWhere(DB::connection('oracle_his')->raw('his_service_req.EXECUTE_LOGINNAME'), 'like', $keyword . '%')
+                        ->orWhere(DB::connection('oracle_his')->raw('his_service_req.SESSION_CODE'), 'like', $keyword . '%')
+                        ->orWhere(DB::connection('oracle_his')->raw('his_service_req.ASSIGN_TURN_CODE'), 'like', $keyword . '%')
+                        ->orWhere(DB::connection('oracle_his')->raw('his_service_req.SERVICE_REQ_CODE'), 'like', $keyword . '%');
+                });
+            }
+            if (!$this->is_include_deleted) {
+                $data = $data->where(function ($query) {
+                    $query = $query->where(DB::connection('oracle_his')->raw('his_service_req.is_delete'), 0);
+                });
+                $data_id = $data_id->where(function ($query) {
+                    $query = $query->where(DB::connection('oracle_his')->raw('his_service_req.is_delete'), 0);
+                });
+            }
+            if ($this->is_active !== null) {
+                $data = $data->where(function ($query) {
+                    $query = $query->where(DB::connection('oracle_his')->raw('his_service_req.is_active'), $this->is_active);
+                });
+                $data_id = $data_id->where(function ($query) {
+                    $query = $query->where(DB::connection('oracle_his')->raw('his_service_req.is_active'), $this->is_active);
+                });
+            }
+            if ($this->service_req_stt_ids != null) {
+                $data = $data->where(function ($query) {
+                    $query = $query->whereIn(DB::connection('oracle_his')->raw('his_service_req.service_req_stt_id'), $this->service_req_stt_ids);
+                });
+                $data_id = $data_id->where(function ($query) {
+                    $query = $query->whereIn(DB::connection('oracle_his')->raw('his_service_req.service_req_stt_id'), $this->service_req_stt_ids);
+                });
+            }
+            if ($this->not_in_service_req_type_ids != null) {
+                $data = $data->where(function ($query) {
+                    $query = $query->whereNotIn(DB::connection('oracle_his')->raw('his_service_req.service_req_type_id'), $this->not_in_service_req_type_ids);
+                });
+                $data_id = $data_id->where(function ($query) {
+                    $query = $query->whereNotIn(DB::connection('oracle_his')->raw('his_service_req.service_req_type_id'), $this->not_in_service_req_type_ids);
+                });
+            }
+            if ($this->tdl_patient_type_ids != null) {
+                $data = $data->where(function ($query) {
+                    $query = $query->whereIn(DB::connection('oracle_his')->raw('his_service_req.tdl_patient_type_id'), $this->tdl_patient_type_ids);
+                });
+                $data_id = $data_id->where(function ($query) {
+                    $query = $query->whereIn(DB::connection('oracle_his')->raw('his_service_req.tdl_patient_type_id'), $this->tdl_patient_type_ids);
+                });
+            }
+            if ($this->execute_room_id != null) {
+                $data = $data->where(function ($query) {
+                    $query = $query->where(DB::connection('oracle_his')->raw('his_service_req.execute_room_id'), $this->execute_room_id);
+                });
+                $data_id = $data_id->where(function ($query) {
+                    $query = $query->where(DB::connection('oracle_his')->raw('his_service_req.execute_room_id'), $this->execute_room_id);
+                });
+            }
+            if ($this->intruction_time_from != null) {
+                $data = $data->where(function ($query) {
+                    $query = $query->where(DB::connection('oracle_his')->raw('his_service_req.intruction_time'), '>=', $this->intruction_time_from);
+                });
+                $data_id = $data_id->where(function ($query) {
+                    $query = $query->where(DB::connection('oracle_his')->raw('his_service_req.intruction_time'), '>=', $this->intruction_time_from);
+                });
+            }
+            if ($this->intruction_time_to != null) {
+                $data = $data->where(function ($query) {
+                    $query = $query->where(DB::connection('oracle_his')->raw('his_service_req.intruction_time'), '<=', $this->intruction_time_to);
+                });
+                $data_id = $data_id->where(function ($query) {
+                    $query = $query->where(DB::connection('oracle_his')->raw('his_service_req.intruction_time'), '<=', $this->intruction_time_to);
+                });
+            }
+            if (!$this->has_execute) {
+                $data = $data->where(function ($query) {
+                    $query = $query->where(DB::connection('oracle_his')->raw('his_service_req.is_no_execute'), 1);
+                });
+                $data_id = $data_id->where(function ($query) {
+                    $query = $query->where(DB::connection('oracle_his')->raw('his_service_req.is_no_execute'), 1);
+                });
+            }
+            if ($this->is_not_ksk_requried_aproval__or__is_ksk_approve) {
+                $data = $data->where(function ($query) {
+                    $query = $query->where(DB::connection('oracle_his')->raw('his_service_req.TDL_KSK_IS_REQUIRED_APPROVAL'), null);
+                    $query = $query->orWhere(DB::connection('oracle_his')->raw('his_service_req.TDL_IS_KSK_APPROVE'), 0);
+                    $query = $query->orwhere(DB::connection('oracle_his')->raw('his_service_req.TDL_IS_KSK_APPROVE'), 1);
+                });
+                $data_id = $data_id->where(function ($query) {
+                    $query = $query->where(DB::connection('oracle_his')->raw('his_service_req.TDL_KSK_IS_REQUIRED_APPROVAL'), null);
+                    $query = $query->orWhere(DB::connection('oracle_his')->raw('his_service_req.TDL_IS_KSK_APPROVE'), 0);
+                    $query = $query->orwhere(DB::connection('oracle_his')->raw('his_service_req.TDL_IS_KSK_APPROVE'), 1);
+                });
+            }
+            if ($this->service_req_id == null) {
+                if ($this->order_by != null) {
+                    foreach ($this->order_by as $key => $item) {
+                        $data->orderBy('his_service_req.' . $key, $this->sub_order_by ?? $item);
+                    }
+                }
+                // Chuyển truy vấn sang chuỗi sql
+                $sql = $data->toSql();
+                $sql_id = $data_id->toSql();
+                // Truyền tham số qua binding tránh SQL Injection
+                $bindings = $data->getBindings();
+                $bindings_id = $data_id->getBindings();
+                $id_max_sql = DB::connection('oracle_his')->select('SELECT a.ID, ROWNUM  FROM (' . $sql_id . ' order by ID desc) a  WHERE ROWNUM = 1 ', $bindings_id);
+                $id_min_sql = DB::connection('oracle_his')->select('SELECT a.ID, ROWNUM  FROM (' . $sql_id . ' order by ID asc) a  WHERE ROWNUM = 1 ', $bindings_id);
+                $id_max_sql = intval($id_max_sql[0]->id ?? null);
+                $id_min_sql = intval($id_min_sql[0]->id ?? null);
+
+                $fullSql = 'SELECT * FROM (SELECT a.*, ROWNUM rnum FROM (' . $sql . ') a WHERE ROWNUM <= ' . ($this->limit + $this->start) . ' AND ID ' . $this->equal . $this->cursor . $this->sub_order_by_string. ') WHERE rnum > ' . $this->start;
+                $data = DB::connection('oracle_his')->select($fullSql, $bindings);
+                $data = ServicereqResource::collection($data);
+                if(isset($data[0])){
+                    if(($data[0]->id != $this->service_req->max('id')) && ($data[0]->id != $this->service_req->min('id')) && ($data[0]->id != $id_max_sql) && ($data[0]->id != $id_min_sql)){
+                        $this->prev_cursor = '-'.$data[0]->id;
+                    }else{
+                        $this->prev_cursor = null;
+                    }
+                }
+            } else {
+                $data = $data->where(function ($query) {
+                    $query = $query->where(DB::connection('oracle_his')->raw('his_service_req.id'), $this->service_req_id);
+                });
+                $data = $data
+                    ->first();
+            }
+            $param_return = [
+                'prev_cursor' => $this->prev_cursor ?? null,
+                'limit' => $this->limit,
+                'next_cursor' => $data[($this->limit - 1)]->id ?? null,
+                'is_iclude_deleted' => $this->is_include_deleted ?? false,
+                'is_active' => $this->is_active,
+                'service_req_stt_ids' => $this->service_req_stt_ids,
+                'not_in_service_req_type_ids' => $this->not_in_service_req_type_ids,
+                'tdl_patient_type_ids' => $this->tdl_patient_type_ids,
+                'execute_room_id' => $this->execute_room_id,
+                'intruction_time_from' => $this->intruction_time_from,
+                'intruction_time_to' => $this->intruction_time_to,
+                'has_execute' => $this->has_execute,
+                'is_not_ksk_requried_aproval__or__is_ksk_approve' => $this->is_not_ksk_requried_aproval__or__is_ksk_approve,
+                'keyword' => $this->keyword,
+                'order_by' => $this->order_by_request
+            ];
+            return return_data_success($param_return, $data);
+        } catch (\Exception $e) {
+            // Xử lý lỗi và trả về phản hồi lỗi
+            return return_500_error();
+        }
     }
 }

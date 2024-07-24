@@ -1064,6 +1064,8 @@ Route::group([
     // Service Req
     Route::get("v1/service-req/get-L-view", [ServiceReqController::class, "service_req_get_L_view"]);
     Route::get("v2/service-req/get-L-view", [ServiceReqController::class, "service_req_get_L_view_v2"]);
+    Route::get("v3/service-req/get-L-view", [ServiceReqController::class, "service_req_get_L_view_v3"]);
+
 
 
     // Tracking
@@ -1082,6 +1084,8 @@ Route::group([
 
     // Patient Type Alter
     Route::get("v1/patient-type-alter/get-view", [PatientTypeAlterController::class, "patient_type_alter_get_view"]);
+    Route::get("v2/patient-type-alter/get-view", [PatientTypeAlterController::class, "patient_type_alter_get_view_v2"]);
+
 
     // Treatment
     Route::get("v1/treatment/get-L-view", [TreatmentController::class, "treatment_get_L_view"]);
@@ -1098,6 +1102,7 @@ Route::group([
 
     // Sere Serv Ext
     Route::get("v1/sere-serv-ext/get", [SereServExtController::class, "sere_serv_ext"]);
+    Route::get("v2/sere-serv-ext/get", [SereServExtController::class, "sere_serv_ext_v2"]);
 
     // Sere Serv Tein
     Route::get("v1/sere-serv-tein/get", [SereServTeinController::class, "sere_serv_tein_get"]);
