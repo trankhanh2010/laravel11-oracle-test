@@ -17,14 +17,14 @@ class DebateUserController extends BaseApiDataController
         $this->order_by_join = [];
         // Kiểm tra tên trường trong bảng
         if ($this->order_by != null) {
-            foreach ($this->order_by as $key => $item) {
-                if (!in_array($key, $this->order_by_join)) {
-                    if (!$this->debate_user->getConnection()->getSchemaBuilder()->hasColumn($this->debate_user->getTable(), $key)) {
-                        unset($this->order_by_request[camelCaseFromUnderscore($key)]);
-                        unset($this->order_by[$key]);
-                    }
-                }
-            }
+            // foreach ($this->order_by as $key => $item) {
+            //     if (!in_array($key, $this->order_by_join)) {
+            //         if (!$this->debate_user->getConnection()->getSchemaBuilder()->hasColumn($this->debate_user->getTable(), $key)) {
+            //             unset($this->order_by_request[camelCaseFromUnderscore($key)]);
+            //             unset($this->order_by[$key]);
+            //         }
+            //     }
+            // }
             $this->order_by_tring = arrayToCustomString($this->order_by);
         }
         $this->equal = ">";
@@ -35,6 +35,13 @@ class DebateUserController extends BaseApiDataController
                 $this->cursor = $this->debate_user_last_id;
                 $this->equal = "<=";
             }
+        }
+        if($this->cursor < 0){
+            $this->sub_order_by = (strtolower($this->order_by["id"]) === 'asc') ? 'desc' : 'asc';
+            $this->equal = (strtolower($this->order_by["id"]) === 'desc') ? '>' : '<';
+
+            $this->sub_order_by_string = ' ORDER BY ID '.$this->order_by["id"];
+            $this->cursor = abs($this->cursor);
         }
     }
     public function debate_user()
@@ -105,14 +112,24 @@ class DebateUserController extends BaseApiDataController
         $keyword = $this->keyword;
         try {
             $data = $this->debate_user;
+            $data_id = $this->debate_user
+            ->select("HIS_DEBATE_USER.ID");
+
             if ($keyword != null) {
                 $data = $data->where(function ($query) use ($keyword) {
-                    $query = $query->where(DB::connection('oracle_his')->raw('his_debate_user.loginname'), 'like', $keyword . '%')
-                        ->orWhere(DB::connection('oracle_his')->raw('his_debate_user.username'), 'like', $keyword . '%');
+                    $query = $query->where(DB::connection('oracle_his')->raw('his_debate_user.loginname'), 'like', $keyword . '%');
+                        // ->orWhere(DB::connection('oracle_his')->raw('his_debate_user.username'), 'like', $keyword . '%');
+                });
+                $data_id = $data_id->where(function ($query) use ($keyword) {
+                    $query = $query->where(DB::connection('oracle_his')->raw('his_debate_user.loginname'), 'like', $keyword . '%');
+                        // ->orWhere(DB::connection('oracle_his')->raw('his_debate_user.username'), 'like', $keyword . '%');
                 });
             }
             if (!$this->is_include_deleted) {
                 $data = $data->where(function ($query) {
+                    $query = $query->where(DB::connection('oracle_his')->raw('his_debate_user.is_delete'), 0);
+                });
+                $data_id = $data_id->where(function ($query) {
                     $query = $query->where(DB::connection('oracle_his')->raw('his_debate_user.is_delete'), 0);
                 });
             }
@@ -120,9 +137,15 @@ class DebateUserController extends BaseApiDataController
                 $data = $data->where(function ($query) {
                     $query = $query->where(DB::connection('oracle_his')->raw('his_debate_user.is_active'), $this->is_active);
                 });
+                $data_id = $data_id->where(function ($query) {
+                    $query = $query->where(DB::connection('oracle_his')->raw('his_debate_user.is_active'), $this->is_active);
+                });
             }
             if ($this->debate_id != null) {
                 $data = $data->where(function ($query) {
+                    $query = $query->where(DB::connection('oracle_his')->raw('his_debate_user.debate_id'), $this->debate_id);
+                });
+                $data_id = $data_id->where(function ($query) {
                     $query = $query->where(DB::connection('oracle_his')->raw('his_debate_user.debate_id'), $this->debate_id);
                 });
             }
@@ -134,11 +157,24 @@ class DebateUserController extends BaseApiDataController
                 }
                 // Chuyển truy vấn sang chuỗi sql
                 $sql = $data->toSql();
+                $sql_id = $data_id->toSql();
                 // Truyền tham số qua binding tránh SQL Injection
                 $bindings = $data->getBindings();
-                $fullSql = 'SELECT * FROM (SELECT a.*, ROWNUM rnum FROM (' . $sql . ') a WHERE ROWNUM <= ' . ($this->limit + $this->start) . ' AND ID ' . $this->equal . $this->cursor . ') WHERE rnum > ' . $this->start;
+                $bindings_id = $data_id->getBindings();
+                $id_max_sql = DB::connection('oracle_his')->select('SELECT a.ID, ROWNUM  FROM (' . $sql_id . ' order by ID desc) a  WHERE ROWNUM = 1 ', $bindings_id);
+                $id_min_sql = DB::connection('oracle_his')->select('SELECT a.ID, ROWNUM  FROM (' . $sql_id . ' order by ID asc) a  WHERE ROWNUM = 1 ', $bindings_id);
+                $id_max_sql = intval($id_max_sql[0]->id ?? null);
+                $id_min_sql = intval($id_min_sql[0]->id ?? null);
+                $fullSql = 'SELECT * FROM (SELECT a.*, ROWNUM rnum FROM (' . $sql . ') a WHERE ROWNUM <= ' . ($this->limit + $this->start) . ' AND ID ' . $this->equal . $this->cursor . $this->sub_order_by_string . ') WHERE rnum > ' . $this->start;
                 $data = DB::connection('oracle_his')->select($fullSql, $bindings);
                 $data = DebateUserResource::collection($data);
+                if(isset($data[0])){
+                    if(($data[0]->id != $this->debate_user->max('id')) && ($data[0]->id != $this->debate_user->min('id')) && ($data[0]->id != $id_max_sql) && ($data[0]->id != $id_min_sql)){
+                        $this->prev_cursor = '-'.$data[0]->id;
+                    }else{
+                        $this->prev_cursor = null;
+                    }
+                }
             } else {
                 $data = $data->where(function ($query) {
                     $query = $query->where(DB::connection('oracle_his')->raw('his_debate_user.id'), $this->debate_user_id);
@@ -150,7 +186,7 @@ class DebateUserController extends BaseApiDataController
                     ->first();
             }
             $param_return = [
-                'cursor' => $data[0]->id ?? null,
+                'prev_cursor' => $this->prev_cursor ?? null,
                 'limit' => $this->limit,
                 'next_cursor' => $data[($this->limit - 1)]->id ?? null,
                 'is_include_deleted' => $this->is_include_deleted ?? false,
