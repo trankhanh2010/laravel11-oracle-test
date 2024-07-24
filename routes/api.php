@@ -1108,4 +1108,7 @@ Route::group([
     Route::get("v1/sere-serv-tein/get", [SereServTeinController::class, "sere_serv_tein_get"]);
     Route::get("v1/sere-serv-tein/get-view", [SereServTeinController::class, "sere_serv_tein_get_view"]);
 
+    Route::get("v2/sere-serv-tein/get", [SereServTeinController::class, "sere_serv_tein_get_v2"]);
+    Route::get("v2/sere-serv-tein/get-view", [SereServTeinController::class, "sere_serv_tein_get_view_v2"]);
+
 });
