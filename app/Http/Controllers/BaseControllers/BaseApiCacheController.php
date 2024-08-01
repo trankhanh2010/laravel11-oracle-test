@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\BaseControllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\HIS\Bed;
 use App\Models\HIS\Department;
 use App\Models\HIS\Machine;
 use App\Models\HIS\Package;
@@ -29,6 +30,8 @@ class BaseApiCacheController extends Controller
     protected $service_ids;
     protected $machine_ids;
     protected $room_ids;
+    protected $service_follow_ids;
+    protected $bed_ids;
     protected $service_id;
     protected $package_id;
     protected $department_id;
@@ -516,6 +519,32 @@ class BaseApiCacheController extends Controller
                 } else {
                     if (!Room::where('id', $item)->exists()) {
                         unset($this->room_ids[$key]);
+                    }
+                }
+            }
+        }
+        $this->service_follow_ids = $this->param_request['ApiData']['ServiceFollowIds'] ?? null;
+        if ($this->service_follow_ids != null) {
+            foreach ($this->service_follow_ids as $key => $item) {
+                // Kiểm tra xem ID có tồn tại trong bảng  hay không
+                if (!is_numeric($item)) {
+                    unset($this->service_follow_ids[$key]);
+                } else {
+                    if (!Service::where('id', $item)->exists()) {
+                        unset($this->service_follow_ids[$key]);
+                    }
+                }
+            }
+        }
+        $this->bed_ids = $this->param_request['ApiData']['BedIds'] ?? null;
+        if ($this->bed_ids != null) {
+            foreach ($this->bed_ids as $key => $item) {
+                // Kiểm tra xem ID có tồn tại trong bảng  hay không
+                if (!is_numeric($item)) {
+                    unset($this->bed_ids[$key]);
+                } else {
+                    if (!Bed::where('id', $item)->exists()) {
+                        unset($this->bed_ids[$key]);
                     }
                 }
             }

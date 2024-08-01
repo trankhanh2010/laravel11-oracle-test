@@ -69,6 +69,8 @@ use App\Http\Controllers\Api\CacheControllers\SaleProfitCfgController;
 use App\Http\Controllers\Api\CacheControllers\ServiceConditionController;
 use App\Http\Controllers\Api\CacheControllers\ServiceMachineController;
 use App\Http\Controllers\Api\CacheControllers\ServiceRoomController;
+use App\Http\Controllers\Api\CacheControllers\ServiceFollowController;
+use App\Http\Controllers\Api\CacheControllers\BedBstyController;
 
 // Data Controllers
 use App\Http\Controllers\Api\DataControllers\DebateController;
@@ -110,6 +112,7 @@ use App\Http\Controllers\Api\ValidateControllers\CheckRefectoryController;
 use App\Http\Controllers\Api\ValidateControllers\CheckSpecialityController;
 use App\Http\Controllers\Api\ValidateControllers\CheckServiceController;
 use App\Http\Controllers\Api\ValidateControllers\CheckTreatmentTypeController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -472,14 +475,14 @@ Route::group([
     /// Dịch vụ đi kèm
     Route::group(['as' => 'HIS.Desktop.Plugins.HisServiceFollow'], function () {
         // Trả về tất cả mối quan hệ
-        Route::get("v1/service-follow", [HISController::class, "service_follow"]);
-        Route::get("v1/service-follow/{id}", [HISController::class, "service_follow_id"]);
-        // Trả về tất cả dịch vụ cùng dịch vụ đi kèm
-        Route::get("v1/service/all/follow", [HISController::class, "service_with_follow"]);
-        Route::get("v1/service/{id}/follow", [HISController::class, "service_with_follow"]);
-        // Trả về tất cả dịch vụ đi kèm cùng dịch vụ
-        Route::get("v1/follow/all/service", [HISController::class, "follow_with_service"]);
-        Route::get("v1/follow/{id}/service", [HISController::class, "follow_with_service"]);
+        Route::get("v1/service-follow", [ServiceFollowController::class, "service_follow"]);
+        Route::get("v1/service-follow/{id}", [ServiceFollowController::class, "service_follow"]);
+        // // Trả về tất cả dịch vụ cùng dịch vụ đi kèm
+        // Route::get("v1/service/all/follow", [HISController::class, "service_with_follow"]);
+        // Route::get("v1/service/{id}/follow", [HISController::class, "service_with_follow"]);
+        // // Trả về tất cả dịch vụ đi kèm cùng dịch vụ
+        // Route::get("v1/follow/all/service", [HISController::class, "follow_with_service"]);
+        // Route::get("v1/follow/{id}/service", [HISController::class, "follow_with_service"]);
     });
 
     /// Giường
@@ -491,14 +494,14 @@ Route::group([
     /// Giường - Dịch vụ giường
     Route::group(['as' => 'HIS.Desktop.Plugins.BedBsty'], function () {
         // Trả về tất cả mối quan hệ
-        Route::get("v1/bed-bsty", [HISController::class, "bed_bsty"]);
-        Route::get("v1/bed-bsty/{id}", [HISController::class, "bed_bsty_id"]);
-        // Trả về tất cả dịch vụ cùng giường
-        Route::get("v1/service/all/bed", [HISController::class, "service_with_bed"]);
-        Route::get("v1/service/{id}/bed", [HISController::class, "service_with_bed"]);
-        // Trả về tất cả giường cùng dịch vụ
-        Route::get("v1/bed/all/service", [HISController::class, "bed_with_service"]);
-        Route::get("v1/bed/{id}/service", [HISController::class, "bed_with_service"]);
+        Route::get("v1/bed-bsty", [BedBstyController::class, "bed_bsty"]);
+        Route::get("v1/bed-bsty/{id}", [BedBstyController::class, "bed_bsty"]);
+        // // Trả về tất cả dịch vụ cùng giường
+        // Route::get("v1/service/all/bed", [HISController::class, "service_with_bed"]);
+        // Route::get("v1/service/{id}/bed", [HISController::class, "service_with_bed"]);
+        // // Trả về tất cả giường cùng dịch vụ
+        // Route::get("v1/bed/all/service", [HISController::class, "bed_with_service"]);
+        // Route::get("v1/bed/{id}/service", [HISController::class, "bed_with_service"]);
     });
 
     /// Loại giường
