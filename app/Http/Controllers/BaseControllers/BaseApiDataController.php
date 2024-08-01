@@ -57,6 +57,7 @@ class BaseApiDataController extends Controller
     protected $tracking_last_id;
     protected $treatment_bed_room_last_id;
     protected $treatment_last_id;
+    protected $user_room_last_id;
     protected $service_type_ids;
     protected $patient_type_ids;
     protected $service_id;
@@ -130,6 +131,7 @@ class BaseApiDataController extends Controller
     protected $treatment_bed_room;
     protected $bhyt_whiteList;
     protected $antibiotic_request;
+    protected $user_room;
 
     public function __construct(Request $request)
     {

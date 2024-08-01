@@ -67,6 +67,9 @@ use App\Http\Controllers\Api\CacheControllers\ReligionController;
 use App\Http\Controllers\Api\CacheControllers\ServiceReqTypeController;
 use App\Http\Controllers\Api\CacheControllers\SaleProfitCfgController;
 use App\Http\Controllers\Api\CacheControllers\ServiceConditionController;
+use App\Http\Controllers\Api\CacheControllers\ServiceMachineController;
+use App\Http\Controllers\Api\CacheControllers\ServiceRoomController;
+
 // Data Controllers
 use App\Http\Controllers\Api\DataControllers\DebateController;
 use App\Http\Controllers\Api\DataControllers\DebateUserController;
@@ -80,6 +83,7 @@ use App\Http\Controllers\Api\DataControllers\SereServTeinController;
 use App\Http\Controllers\Api\DataControllers\TrackingController;
 use App\Http\Controllers\Api\DataControllers\TreatmentController;
 use App\Http\Controllers\Api\DataControllers\TreatmentBedRoomController;
+use App\Http\Controllers\Api\DataControllers\UserRoomController;
 
 // Validate Controllers
 use App\Http\Controllers\Api\ValidateControllers\CheckBedRoomController;
@@ -432,14 +436,14 @@ Route::group([
     /// Dịch vụ máy
     Route::group(['as' => 'HIS.Desktop.Plugins.ServiceMachine'], function () {
         // Trả về tất cả mối quan hệ
-        Route::get("v1/service-machine", [HISController::class, "service_machine"]);
-        Route::get("v1/service-machine/{id}", [HISController::class, "service_machine_id"]);
+        Route::get("v1/service-machine", [ServiceMachineController::class, "service_machine"]);
+        Route::get("v1/service-machine/{id}", [ServiceMachineController::class, "service_machine"]);
         // Trả về tất cả dịch vụ cùng máy
-        Route::get("v1/service/all/machine", [HISController::class, "service_with_machine"]);
-        Route::get("v1/service/{id}/machine", [HISController::class, "service_with_machine"]);
+        Route::get("v1/service/all/machine", [ServiceMachineController::class, "service_with_machine"]);
+        Route::get("v1/service/{id}/machine", [ServiceMachineController::class, "service_with_machine"]);
         // Trả về tất cả máy cùng dịch vụ
-        Route::get("v1/machine/all/service", [HISController::class, "machine_with_service"]);
-        Route::get("v1/machine/{id}/service", [HISController::class, "machine_with_service"]);
+        Route::get("v1/machine/all/service", [ServiceMachineController::class, "machine_with_service"]);
+        Route::get("v1/machine/{id}/service", [ServiceMachineController::class, "machine_with_service"]);
     });
 
     /// Máy / Máy cận lâm sàn
@@ -451,14 +455,14 @@ Route::group([
     /// Dịch vụ phòng
     Route::group(['as' => 'HIS.Desktop.Plugins.RoomService'], function () {
         // Trả về tất cả mối quan hệ
-        Route::get("v1/service-room", [HISController::class, "service_room"]);
-        Route::get("v1/service-room/{id}", [HISController::class, "service_room"]);
-        // Trả về tất cả dịch vụ cùng phòng
-        Route::get("v1/service/all/room", [HISController::class, "service_with_room"]);
-        Route::get("v1/service/{id}/room", [HISController::class, "service_with_room"]);
-        // Trả về tất cả phòng cùng dịch vụ
-        Route::get("v1/room/all/service", [HISController::class, "room_with_service"]);
-        Route::get("v1/room/{id}/service", [HISController::class, "room_with_service"]);
+        Route::get("v1/service-room", [ServiceRoomController::class, "service_room"]);
+        Route::get("v1/service-room/{id}", [ServiceRoomController::class, "service_room"]);
+        // // Trả về tất cả dịch vụ cùng phòng
+        // Route::get("v1/service/all/room", [HISController::class, "service_with_room"]);
+        // Route::get("v1/service/{id}/room", [HISController::class, "service_with_room"]);
+        // // Trả về tất cả phòng cùng dịch vụ
+        // Route::get("v1/room/all/service", [HISController::class, "room_with_service"]);
+        // Route::get("v1/room/{id}/service", [HISController::class, "room_with_service"]);
     });
 
     /// Phòng
@@ -1037,7 +1041,7 @@ Route::group([
 
     /// Nhân viên - Phòng
     // Trả về nhân viên cùng phòng
-    Route::get("v1/user-room/get-view", [HISController::class, "user_with_room"]);
+    Route::get("v1/user-room/get-view", [UserRoomController::class, "user_with_room"]);
 
     // Debate
     Route::get("v1/debate/get", [DebateController::class, "debate_get"]);

@@ -4,8 +4,10 @@ namespace App\Http\Controllers\BaseControllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\HIS\Department;
+use App\Models\HIS\Machine;
 use App\Models\HIS\Package;
 use App\Models\HIS\PatientType;
+use App\Models\HIS\Room;
 use App\Models\HIS\RoomType;
 use App\Models\HIS\Service;
 use Illuminate\Http\Request;
@@ -24,6 +26,9 @@ class BaseApiCacheController extends Controller
     protected $only_active;
     protected $service_type_ids;
     protected $patient_type_ids;
+    protected $service_ids;
+    protected $machine_ids;
+    protected $room_ids;
     protected $service_id;
     protected $package_id;
     protected $department_id;
@@ -473,6 +478,45 @@ class BaseApiCacheController extends Controller
             } else {
                 if (!ServiceType::where('id', $this->service_type_id)->exists()) {
                     $this->service_type_id = null;
+                }
+            }
+        }
+        $this->service_ids = $this->param_request['ApiData']['ServiceIds'] ?? null;
+        if ($this->service_ids != null) {
+            foreach ($this->service_ids as $key => $item) {
+                // Kiểm tra xem ID có tồn tại trong bảng  hay không
+                if (!is_numeric($item)) {
+                    unset($this->service_ids[$key]);
+                } else {
+                    if (!Service::where('id', $item)->exists()) {
+                        unset($this->service_ids[$key]);
+                    }
+                }
+            }
+        }
+        $this->machine_ids = $this->param_request['ApiData']['MachineIds'] ?? null;
+        if ($this->machine_ids != null) {
+            foreach ($this->machine_ids as $key => $item) {
+                // Kiểm tra xem ID có tồn tại trong bảng  hay không
+                if (!is_numeric($item)) {
+                    unset($this->machine_ids[$key]);
+                } else {
+                    if (!Machine::where('id', $item)->exists()) {
+                        unset($this->machine_ids[$key]);
+                    }
+                }
+            }
+        }
+        $this->room_ids = $this->param_request['ApiData']['RoomIds'] ?? null;
+        if ($this->room_ids != null) {
+            foreach ($this->room_ids as $key => $item) {
+                // Kiểm tra xem ID có tồn tại trong bảng  hay không
+                if (!is_numeric($item)) {
+                    unset($this->room_ids[$key]);
+                } else {
+                    if (!Room::where('id', $item)->exists()) {
+                        unset($this->room_ids[$key]);
+                    }
                 }
             }
         }
