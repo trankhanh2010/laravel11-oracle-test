@@ -660,6 +660,17 @@ class SereServController extends BaseApiDataController
                     }else{
                         $this->prev_cursor = null;
                     }
+                    if(((count($data) === 1) && ($this->order_by["id"] == 'desc') && ($data[0]->id == $id_min_sql)) 
+                    || ((count($data) === 1) && ($this->order_by["id"] == 'asc') && ($data[0]->id == $id_max_sql))){
+                        $this->prev_cursor = '-'.$data[0]->id;
+                    }
+                    if($this->raw_cursor == 0){
+                        $this->prev_cursor = null;
+                    }
+                    $this->next_cursor = $data[($this->limit - 1)]->id ?? null;
+                    if(($this->next_cursor == $id_max_sql && ($this->order_by["id"] == 'asc') ) || ($this->next_cursor == $id_min_sql && ($this->order_by["id"] == 'desc'))){
+                        $this->next_cursor = null;
+                    }
                 }
             } else {
                 $data = $data->where(function ($query) {
@@ -672,7 +683,7 @@ class SereServController extends BaseApiDataController
             $param_return = [
                 'prev_cursor' => $this->prev_cursor ?? null,
                 'limit' => $this->limit,
-                'next_cursor' => $data[($this->limit - 1)]->id ?? null,
+                'next_cursor' => $this->next_cursor ?? null,
                 'is_include_deleted' => $this->is_include_deleted ?? false,
                 'is_active' => $this->is_active,
                 'service_req_ids' => $this->service_req_ids,

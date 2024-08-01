@@ -1072,6 +1072,9 @@ Route::group([
     Route::get("v1/tracking/get", [TrackingController::class, "tracking_get"]);
     Route::get("v1/tracking/get-data", [TrackingController::class, "tracking_get_data"]);
 
+    Route::get("v2/tracking/get", [TrackingController::class, "tracking_get_v2"]);
+    Route::get("v2/tracking/get-data", [TrackingController::class, "tracking_get_data_v2"]);
+
     // Sere Serv
     Route::get("v1/sere-serv/get", [SereServController::class, "sere_serv_get"]);
 
@@ -1091,8 +1094,13 @@ Route::group([
     Route::get("v1/treatment/get-L-view", [TreatmentController::class, "treatment_get_L_view"]);
     Route::get("v1/treatment/get-treatment-with-patient-type-info-sdo", [TreatmentController::class, "treatment_get_treatment_with_patient_type_info_sdo"]);
 
+    Route::get("v2/treatment/get-L-view", [TreatmentController::class, "treatment_get_L_view_v2"]);
+    Route::get("v2/treatment/get-treatment-with-patient-type-info-sdo", [TreatmentController::class, "treatment_get_treatment_with_patient_type_info_sdo_v2"]);
+
     // Treatment Bed Room
     Route::get("v1/treatment-bed-room/get-L-view", [TreatmentBedRoomController::class, "treatment_bed_room_get_L_view"]);
+    Route::get("v2/treatment-bed-room/get-L-view", [TreatmentBedRoomController::class, "treatment_bed_room_get_L_view_v2"]);
+
 
     // DHST
     Route::get("v1/dhst/get", [DhstController::class, "dhst_get"]);

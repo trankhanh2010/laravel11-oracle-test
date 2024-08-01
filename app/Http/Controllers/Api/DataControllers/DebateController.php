@@ -305,6 +305,17 @@ class DebateController extends BaseApiDataController
                     }else{
                         $this->prev_cursor = null;
                     }
+                    if(((count($data) === 1) && ($this->order_by["id"] == 'desc') && ($data[0]->id == $id_min_sql)) 
+                    || ((count($data) === 1) && ($this->order_by["id"] == 'asc') && ($data[0]->id == $id_max_sql))){
+                        $this->prev_cursor = '-'.$data[0]->id;
+                    }
+                    if($this->raw_cursor == 0){
+                        $this->prev_cursor = null;
+                    }
+                    $this->next_cursor = $data[($this->limit - 1)]->id ?? null;
+                    if(($this->next_cursor == $id_max_sql && ($this->order_by["id"] == 'asc') ) || ($this->next_cursor == $id_min_sql && ($this->order_by["id"] == 'desc'))){
+                        $this->next_cursor = null;
+                    }
                 }
             } else {
                 $data = $data->where(function ($query) {
@@ -312,15 +323,13 @@ class DebateController extends BaseApiDataController
                 });
                 $data = $data->with($param);
                 $data = $data
-                    ->skip($this->start)
-                    ->take($this->limit)
                     ->first();
             }
 
             $param_return = [
                 'prev_cursor' => $this->prev_cursor ?? null,
                 'limit' => $this->limit,
-                'next_cursor' => $data[($this->limit - 1)]->id ?? null,
+                'next_cursor' => $this->next_cursor ?? null,
                 'is_include_deleted' => $this->is_include_deleted ?? false,
                 'is_active' => $this->is_active,
                 'debate_id' => $this->debate_id,
@@ -632,11 +641,24 @@ class DebateController extends BaseApiDataController
                 $fullSql = 'SELECT * FROM (SELECT a.*, ROWNUM rnum FROM (' . $sql . ') a WHERE ROWNUM <= ' . ($this->limit + $this->start) . ' AND ID ' . $this->equal . $this->cursor . $this->sub_order_by_string. ') WHERE rnum > ' . $this->start;
                 $data = DB::connection('oracle_his')->select($fullSql, $bindings);
                 $data = DebateGetViewResource::collection($data);
-                if(($data[0]->id != $this->debate->max('id')) && ($data[0]->id != $this->debate->min('id')) && ($data[0]->id != $id_max_sql) && ($data[0]->id != $id_min_sql)){
-                    $this->prev_cursor = '-'.$data[0]->id;
-                }else{
-                    $this->prev_cursor = null;
-                }
+                if(isset($data[0])){
+                    if(($data[0]->id != $this->debate->max('id')) && ($data[0]->id != $this->debate->min('id')) && ($data[0]->id != $id_max_sql) && ($data[0]->id != $id_min_sql)){
+                        $this->prev_cursor = '-'.$data[0]->id;
+                    }else{
+                        $this->prev_cursor = null;
+                    }
+                    if(((count($data) === 1) && ($this->order_by["id"] == 'desc') && ($data[0]->id == $id_min_sql)) 
+                    || ((count($data) === 1) && ($this->order_by["id"] == 'asc') && ($data[0]->id == $id_max_sql))){
+                        $this->prev_cursor = '-'.$data[0]->id;
+                    }
+                    if($this->raw_cursor == 0){
+                        $this->prev_cursor = null;
+                    }
+                    $this->next_cursor = $data[($this->limit - 1)]->id ?? null;
+                    if(($this->next_cursor == $id_max_sql && ($this->order_by["id"] == 'asc') ) || ($this->next_cursor == $id_min_sql && ($this->order_by["id"] == 'desc'))){
+                        $this->next_cursor = null;
+                    }
+                 }
             } else {
                 $data = $data->where(function ($query) {
                     $query = $query->where(DB::connection('oracle_his')->raw('his_debate.id'), $this->debate_id);
@@ -647,7 +669,7 @@ class DebateController extends BaseApiDataController
             $param_return = [
                 'prev_cursor' => $this->prev_cursor ?? null,
                 'limit' => $this->limit,
-                'next_cursor' => $data[($this->limit - 1)]->id ?? null,
+                'next_cursor' => $this->next_cursor ?? null,
                 'is_include_deleted' => $this->is_include_deleted ?? false,
                 'is_active' => $this->is_active ?? null,
                 'debate_id' => $this->debate_id,

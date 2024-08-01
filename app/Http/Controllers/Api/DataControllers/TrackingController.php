@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\DataControllers;
 
 use App\Http\Controllers\BaseControllers\BaseApiDataController;
+use App\Http\Resources\TrackingResource;
 use App\Models\HIS\Care;
 use App\Models\HIS\Dhst;
 use App\Models\HIS\ExpMest;
@@ -36,19 +37,36 @@ class TrackingController extends BaseApiDataController
         $this->order_by_join = [];
         // Kiểm tra tên trường trong bảng
         if ($this->order_by != null) {
-            foreach ($this->order_by as $key => $item) {
-                if (!in_array($key, $this->order_by_join)) {
-                    if (!$this->tracking->getConnection()->getSchemaBuilder()->hasColumn($this->tracking->getTable(), $key)) {
-                        unset($this->order_by_request[camelCaseFromUnderscore($key)]);
-                        unset($this->order_by[$key]);
-                    }
-                }
-            }
+            // foreach ($this->order_by as $key => $item) {
+            //     if (!in_array($key, $this->order_by_join)) {
+            //         if (!$this->tracking->getConnection()->getSchemaBuilder()->hasColumn($this->tracking->getTable(), $key)) {
+            //             unset($this->order_by_request[camelCaseFromUnderscore($key)]);
+            //             unset($this->order_by[$key]);
+            //         }
+            //     }
+            // }
             $this->order_by_tring = arrayToCustomString($this->order_by);
         }
         // Kiểm tra giá trị tối đa của limit
         if($this->limit > 500){
             $this->limit = 10;
+        }
+
+        $this->equal = ">";
+        if ((strtolower($this->order_by["id"] ?? null) == "desc")) {
+            $this->equal = "<";
+            if($this->cursor === 0){
+                $this->tracking_last_id = $this->tracking->max('id');
+                $this->cursor = $this->tracking_last_id;
+                $this->equal = "<=";
+            }
+        }
+        if($this->cursor < 0){
+            $this->sub_order_by = (strtolower($this->order_by["id"]) === 'asc') ? 'desc' : 'asc';
+            $this->equal = (strtolower($this->order_by["id"]) === 'desc') ? '>' : '<';
+
+            $this->sub_order_by_string = ' ORDER BY ID '.$this->order_by["id"];
+            $this->cursor = abs($this->cursor);
         }
     }
     public function tracking_get(Request $request)
@@ -147,6 +165,148 @@ class TrackingController extends BaseApiDataController
         return return_data_success($param_return, $data);
     }
 
+
+    public function tracking_get_v2(Request $request)
+    {
+        $select = [
+            'his_tracking.id',
+            'his_tracking.create_time',
+            'his_tracking.modify_time',
+            'his_tracking.creator',
+            'his_tracking.modifier',
+            'his_tracking.app_creator',
+            'his_tracking.app_modifier',
+            'his_tracking.is_active',
+            'his_tracking.is_delete',
+            'his_tracking.treatment_id',
+            'his_tracking.tracking_time',
+            'his_tracking.icd_code',
+            'his_tracking.icd_name',
+            'his_tracking.department_id',
+            'his_tracking.care_instruction',
+            'his_tracking.room_id',
+            'his_tracking.emr_document_stt_id',
+            'his_tracking.content',
+        ];
+        $param = [
+            'cares',
+            'debates',
+            'Dhsts',
+            'service_reqs'
+        ];
+
+        $keyword = $this->keyword;
+        try {
+        $data = $this->tracking
+            ->select($select);
+        $data_id = $this->tracking
+            ->select("HIS_TRACKING.ID");
+        if ($keyword != null) {
+            $data = $data->where(function ($query) use ($keyword) {
+                $query = $query->where(DB::connection('oracle_his')->raw('his_tracking.EMR_DOCUMENT_CODE'), 'like', $keyword . '%');
+            });
+            $data_id = $data_id->where(function ($query) use ($keyword) {
+                $query = $query->where(DB::connection('oracle_his')->raw('his_tracking.EMR_DOCUMENT_CODE'), 'like', $keyword . '%');
+            });
+        }
+        if (!$this->is_include_deleted) {
+            $data = $data->where(function ($query) {
+                $query = $query->where(DB::connection('oracle_his')->raw('his_tracking.is_delete'), 0);
+            });
+            $data_id = $data_id->where(function ($query) {
+                $query = $query->where(DB::connection('oracle_his')->raw('his_tracking.is_delete'), 0);
+            });
+        }
+        if ($this->is_active !== null) {
+            $data = $data->where(function ($query) {
+                $query = $query->where(DB::connection('oracle_his')->raw('his_tracking.is_active'), $this->is_active);
+            });
+            $data_id = $data_id->where(function ($query) {
+                $query = $query->where(DB::connection('oracle_his')->raw('his_tracking.is_active'), $this->is_active);
+            });
+        }
+        if ($this->treatment_ids != null) {
+            $data = $data->where(function ($query) {
+                $query = $query->whereIn(DB::connection('oracle_his')->raw('his_tracking.treatment_id'), $this->treatment_ids);
+            });
+            $data_id = $data_id->where(function ($query) {
+                $query = $query->whereIn(DB::connection('oracle_his')->raw('his_tracking.treatment_id'), $this->treatment_ids);
+            });
+        }
+        if ($this->create_time_to != null) {
+            $data = $data->where(function ($query) {
+                $query = $query->where(DB::connection('oracle_his')->raw('his_tracking.create_time'), '>=', $this->create_time_to);
+            });
+            $data_id = $data_id->where(function ($query) {
+                $query = $query->where(DB::connection('oracle_his')->raw('his_tracking.create_time'), '>=', $this->create_time_to);
+            });
+        }
+
+
+        if ($this->tracking_id == null) {
+            if ($this->order_by != null) {
+                foreach ($this->order_by as $key => $item) {
+                    $data->orderBy('his_tracking.' . $key, $this->sub_order_by ?? $item);
+                }
+            }
+           // Chuyển truy vấn sang chuỗi sql
+           $sql = $data->toSql();
+           $sql_id = $data_id->toSql();
+           // Truyền tham số qua binding tránh SQL Injection
+           $bindings = $data->getBindings();
+           $bindings_id = $data_id->getBindings();
+           $id_max_sql = DB::connection('oracle_his')->select('SELECT a.ID, ROWNUM  FROM (' . $sql_id . ' order by ID desc) a  WHERE ROWNUM = 1 ', $bindings_id);
+           $id_min_sql = DB::connection('oracle_his')->select('SELECT a.ID, ROWNUM  FROM (' . $sql_id . ' order by ID asc) a  WHERE ROWNUM = 1 ', $bindings_id);
+           $id_max_sql = intval($id_max_sql[0]->id ?? null);
+           $id_min_sql = intval($id_min_sql[0]->id ?? null);
+
+           $fullSql = 'SELECT * FROM (SELECT a.*, ROWNUM rnum FROM (' . $sql . ') a WHERE ROWNUM <= ' . ($this->limit + $this->start) . ' AND ID ' . $this->equal . $this->cursor . $this->sub_order_by_string. ') WHERE rnum > ' . $this->start;
+           $data = DB::connection('oracle_his')->select($fullSql, $bindings);
+           $data = TrackingResource::collection($data);
+           if(isset($data[0])){
+               if(($data[0]->id != $this->tracking->max('id')) && ($data[0]->id != $this->tracking->min('id')) && ($data[0]->id != $id_max_sql) && ($data[0]->id != $id_min_sql)){
+                   $this->prev_cursor = '-'.$data[0]->id;
+               }else{
+                   $this->prev_cursor = null;
+               }
+               if(((count($data) === 1) && ($this->order_by["id"] == 'desc') && ($data[0]->id == $id_min_sql)) 
+               || ((count($data) === 1) && ($this->order_by["id"] == 'asc') && ($data[0]->id == $id_max_sql))){
+                   $this->prev_cursor = '-'.$data[0]->id;
+               }
+               if($this->raw_cursor == 0){
+                   $this->prev_cursor = null;
+               }
+               $this->next_cursor = $data[($this->limit - 1)]->id ?? null;
+               if(($this->next_cursor == $id_max_sql && ($this->order_by["id"] == 'asc') ) || ($this->next_cursor == $id_min_sql && ($this->order_by["id"] == 'desc'))){
+                   $this->next_cursor = null;
+               }
+            }
+        } else {
+            $data = $data->where(function ($query) {
+                $query = $query->where(DB::connection('oracle_his')->raw('his_tracking.id'), $this->tracking_id);
+            });
+            $data = $data->with($param)
+                ->first();
+        }
+
+        $param_return = [
+            'prev_cursor' => $this->prev_cursor ?? null,
+            'limit' => $this->limit,
+            'next_cursor' => $this->next_cursor ?? null,
+            'is_include_deleted' => $this->is_include_deleted ?? false,
+            'is_active' => $this->is_active,
+            'tracking_id' => $this->tracking_id,
+            'treatment_ids' => $this->treatment_ids,
+            'create_time_to' => $this->create_time_to,
+            'keyword' => $this->keyword,
+            'order_by' => $this->order_by_request
+        ];
+        return return_data_success($param_return, $data);
+    } catch (\Exception $e) {
+        // Xử lý lỗi và trả về phản hồi lỗi
+        return return_500_error();
+    }
+    }
     public function tracking_get_data(Request $request)
     {
         // Khai báo các trường cần select

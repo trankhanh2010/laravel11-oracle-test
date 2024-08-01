@@ -33,6 +33,7 @@ class BaseApiDataController extends Controller
     protected $start;
     protected $limit;
     protected $cursor;
+    protected $raw_cursor;
     protected $next_cursor;
     protected $prev_cursor;
     protected $sub_order_by = null;
@@ -53,6 +54,9 @@ class BaseApiDataController extends Controller
     protected $service_req_last_id;
     protected $sere_serv_ext_last_id;
     protected $sere_serv_tein_last_id;
+    protected $tracking_last_id;
+    protected $treatment_bed_room_last_id;
+    protected $treatment_last_id;
     protected $service_type_ids;
     protected $patient_type_ids;
     protected $service_id;
@@ -140,6 +144,7 @@ class BaseApiDataController extends Controller
         $this->start = $this->param_request['CommonParam']['Start'] ?? intval($request->start) ?? 0;
         $this->limit = $this->param_request['CommonParam']['Limit'] ?? intval($request->limit) ?? 10;
         $this->cursor = $this->param_request['CommonParam']['Cursor'] ?? intval($request->cursor) ?? 0;
+        $this->raw_cursor = $this->param_request['CommonParam']['Cursor'] ?? intval($request->cursor) ?? 0;
         if (($this->limit <= 10) || (!in_array($this->limit, [10, 20, 50, 100, 500, 1000, 2000, 4000]))) {
             $this->limit = 10;
         }
