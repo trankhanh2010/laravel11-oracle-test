@@ -3,23 +3,23 @@
 namespace App\Http\Controllers\Api\DataControllers;
 
 use App\Http\Controllers\BaseControllers\BaseApiDataController;
-use App\Http\Resources\SereServDepositGetResource;
-use App\Models\HIS\SereServDeposit;
+use App\Http\Resources\SeseDepoRepayGetViewResource;
+use App\Models\HIS\SeseDepoRepay;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class SereServDepositController  extends BaseApiDataController
+class SeseDepoRepayController extends BaseApiDataController
 {
     public function __construct(Request $request)
     {
         parent::__construct($request); // Gọi constructor của BaseController
-        $this->sere_serv_deposit = new SereServDeposit();
+        $this->sese_depo_repay = new SeseDepoRepay();
         $this->order_by_join = [];
         // Kiểm tra tên trường trong bảng
         if ($this->order_by != null) {
             // foreach ($this->order_by as $key => $item) {
             //     if (!in_array($key, $this->order_by_join)) {
-            //         if ((!$this->sere_serv_deposit->getConnection()->getSchemaBuilder()->hasColumn($this->sere_serv_deposit->getTable(), $key))) {
+            //         if ((!$this->sese_depo_repay->getConnection()->getSchemaBuilder()->hasColumn($this->sese_depo_repay->getTable(), $key))) {
             //             unset($this->order_by_request[camelCaseFromUnderscore($key)]);
             //             unset($this->order_by[$key]);
             //         }
@@ -31,8 +31,8 @@ class SereServDepositController  extends BaseApiDataController
         if ((strtolower($this->order_by["id"] ?? null) == "desc")) {
             $this->equal = "<";
             if ($this->cursor === 0) {
-                $this->sere_serv_deposit_last_id = $this->sere_serv_deposit->max('id');
-                $this->cursor = $this->sere_serv_deposit_last_id;
+                $this->sese_depo_repay_last_id = $this->sese_depo_repay->max('id') ?? 0;
+                $this->cursor = $this->sese_depo_repay_last_id;
                 $this->equal = "<=";
             }
         }
@@ -45,94 +45,81 @@ class SereServDepositController  extends BaseApiDataController
         }
     }
 
-    public function sere_serv_deposit_get_view(Request $request)
+    public function sese_depo_repay_get_view(Request $request)
     {
         $select = [
-            "his_sere_serv_deposit.ID",
-            "his_sere_serv_deposit.CREATE_TIME",
-            "his_sere_serv_deposit.MODIFY_TIME",
-            "his_sere_serv_deposit.CREATOR",
-            "his_sere_serv_deposit.MODIFIER",
-            "his_sere_serv_deposit.APP_CREATOR",
-            "his_sere_serv_deposit.APP_MODIFIER",
-            "his_sere_serv_deposit.IS_ACTIVE",
-            "his_sere_serv_deposit.IS_DELETE",
-            "his_sere_serv_deposit.SERE_SERV_ID",
-            "his_sere_serv_deposit.DEPOSIT_ID",
-            "his_sere_serv_deposit.AMOUNT",
-            "his_sere_serv_deposit.TDL_TREATMENT_ID",
-            "his_sere_serv_deposit.TDL_SERVICE_REQ_ID",
-            "his_sere_serv_deposit.TDL_SERVICE_ID",
-            "his_sere_serv_deposit.TDL_SERVICE_CODE",
-            "his_sere_serv_deposit.TDL_SERVICE_NAME",
-            "his_sere_serv_deposit.TDL_SERVICE_TYPE_ID",
-            "his_sere_serv_deposit.TDL_SERVICE_UNIT_ID",
-            "his_sere_serv_deposit.TDL_PATIENT_TYPE_ID",
-            "his_sere_serv_deposit.TDL_HEIN_SERVICE_TYPE_ID",
-            "his_sere_serv_deposit.TDL_REQUEST_DEPARTMENT_ID",
-            "his_sere_serv_deposit.TDL_EXECUTE_DEPARTMENT_ID",
-            "his_sere_serv_deposit.TDL_AMOUNT",
-            "his_sere_serv_deposit.TDL_HEIN_LIMIT_PRICE",
-            "his_sere_serv_deposit.TDL_VIR_PRICE",
-            "his_sere_serv_deposit.TDL_VIR_PRICE_NO_ADD_PRICE",
-            "his_sere_serv_deposit.TDL_VIR_HEIN_PRICE",
-            "his_sere_serv_deposit.TDL_VIR_TOTAL_PRICE",
-            "his_sere_serv_deposit.TDL_VIR_TOTAL_HEIN_PRICE",
-            "his_sere_serv_deposit.TDL_VIR_TOTAL_PATIENT_PRICE",
-
-            "V_HIS_SERE_SERV_DEPOSIT.SERVICE_REQ_STT_ID",
-            "V_HIS_SERE_SERV_DEPOSIT.SERVICE_REQ_TYPE_ID",
-            "V_HIS_SERE_SERV_DEPOSIT.SERVICE_REQ_CODE",
-            "V_HIS_SERE_SERV_DEPOSIT.INTRUCTION_TIME",
-            "V_HIS_SERE_SERV_DEPOSIT.SERVICE_TYPE_CODE",
-            "V_HIS_SERE_SERV_DEPOSIT.SERVICE_TYPE_NAME",
-            "V_HIS_SERE_SERV_DEPOSIT.TRANSACTION_CODE",
-            "V_HIS_SERE_SERV_DEPOSIT.PAY_FORM_ID",
-            "V_HIS_SERE_SERV_DEPOSIT.PAY_FORM_CODE",
-            "V_HIS_SERE_SERV_DEPOSIT.PAY_FORM_NAME",
+            "his_sese_depo_repay.id",
+            "his_sese_depo_repay.create_time",
+            "his_sese_depo_repay.modify_time",
+            "his_sese_depo_repay.creator",
+            "his_sese_depo_repay.modifier",
+            "his_sese_depo_repay.app_creator",
+            "his_sese_depo_repay.app_modifier",
+            "his_sese_depo_repay.is_active",
+            "his_sese_depo_repay.is_delete",
+            "his_sese_depo_repay.sere_serv_deposit_id",
+            "his_sese_depo_repay.repay_id",
+            "his_sese_depo_repay.amount",
+            "his_sese_depo_repay.is_cancel",
+            "his_sese_depo_repay.tdl_treatment_id",
+            "his_sese_depo_repay.tdl_service_req_id",
+            "his_sese_depo_repay.tdl_service_id",
+            "his_sese_depo_repay.tdl_service_code",
+            "his_sese_depo_repay.tdl_service_name",
+            "his_sese_depo_repay.tdl_service_type_id",
+            "his_sese_depo_repay.tdl_service_unit_id",
+            "his_sese_depo_repay.tdl_patient_type_id",
+            "his_sese_depo_repay.tdl_hein_service_type_id",
+            "his_sese_depo_repay.tdl_request_department_id",
+            "his_sese_depo_repay.tdl_execute_department_id",
+            "his_sese_depo_repay.tdl_amount",
+            "his_sese_depo_repay.tdl_vir_price",
+            "his_sese_depo_repay.tdl_vir_price_no_add_price",
+            "his_sese_depo_repay.tdl_vir_hein_price",
+            "his_sese_depo_repay.tdl_vir_total_price",
+            "his_sese_depo_repay.tdl_vir_total_hein_price",
+            "his_sese_depo_repay.tdl_vir_total_patient_price",
+            // "his_sese_depo_repay.sere_serv_id",
 
         ];
         $param = [];
 
         $keyword = $this->keyword;
         try {
-            $data = $this->sere_serv_deposit
-            ->leftJoin('V_HIS_SERE_SERV_DEPOSIT ', 'his_sere_serv_deposit.id', '=', 'V_HIS_SERE_SERV_DEPOSIT.id')
+            $data = $this->sese_depo_repay
                 ->select($select);
-            $data_id = $this->sere_serv_deposit
-            ->leftJoin('V_HIS_SERE_SERV_DEPOSIT ', 'his_sere_serv_deposit.id', '=', 'V_HIS_SERE_SERV_DEPOSIT.id')
-                ->select("his_sere_serv_deposit.ID");
+            $data_id = $this->sese_depo_repay
+                ->select("his_sese_depo_repay.ID");
             if ($keyword != null) {
-
             }
             if (!$this->is_include_deleted) {
                 $data = $data->where(function ($query) {
-                    $query = $query->where(DB::connection('oracle_his')->raw('his_sere_serv_deposit.is_delete'), 0);
+                    $query = $query->where(DB::connection('oracle_his')->raw('his_sese_depo_repay.is_delete'), 0);
                 });
                 $data_id = $data_id->where(function ($query) {
-                    $query = $query->where(DB::connection('oracle_his')->raw('his_sere_serv_deposit.is_delete'), 0);
+                    $query = $query->where(DB::connection('oracle_his')->raw('his_sese_depo_repay.is_delete'), 0);
                 });
             }
             if ($this->is_active !== null) {
                 $data = $data->where(function ($query) {
-                    $query = $query->where(DB::connection('oracle_his')->raw('his_sere_serv_deposit.is_active'), $this->is_active);
+                    $query = $query->where(DB::connection('oracle_his')->raw('his_sese_depo_repay.is_active'), $this->is_active);
                 });
                 $data_id = $data_id->where(function ($query) {
-                    $query = $query->where(DB::connection('oracle_his')->raw('his_sere_serv_deposit.is_active'), $this->is_active);
+                    $query = $query->where(DB::connection('oracle_his')->raw('his_sese_depo_repay.is_active'), $this->is_active);
                 });
             }
             if ($this->tdl_treatment_id != null) {
                 $data = $data->where(function ($query) {
-                    $query = $query->where(DB::connection('oracle_his')->raw('his_sere_serv_deposit.tdl_treatment_id'), $this->tdl_treatment_id);
+                    $query = $query->where(DB::connection('oracle_his')->raw('his_sese_depo_repay.tdl_treatment_id'), $this->tdl_treatment_id);
                 });
                 $data_id = $data_id->where(function ($query) {
-                    $query = $query->where(DB::connection('oracle_his')->raw('his_sere_serv_deposit.tdl_treatment_id'), $this->tdl_treatment_id);
+                    $query = $query->where(DB::connection('oracle_his')->raw('his_sese_depo_repay.tdl_treatment_id'), $this->tdl_treatment_id);
                 });
             }
-            if ($this->sere_serv_deposit_id == null) {
+            if ($this->sese_depo_repay_id == null) {
                 if ($this->order_by != null) {
                     foreach ($this->order_by as $key => $item) {
-                        $data->orderBy('his_sere_serv_deposit.' . $key, $this->sub_order_by ?? $item);
+                        $data->orderBy('his_sese_depo_repay.' . $key, $this->sub_order_by ?? $item);
                     }
                 }
                 // Chuyển truy vấn sang chuỗi sql
@@ -148,9 +135,9 @@ class SereServDepositController  extends BaseApiDataController
 
                 $fullSql = 'SELECT * FROM (SELECT a.*, ROWNUM rnum FROM (' . $sql . ') a WHERE ROWNUM <= ' . ($this->limit + $this->start) . ' AND ID ' . $this->equal . $this->cursor . $this->sub_order_by_string . ') WHERE rnum > ' . $this->start;
                 $data = DB::connection('oracle_his')->select($fullSql, $bindings);
-                $data = SereServDepositGetResource::collection($data);
+                $data = SeseDepoRepayGetViewResource::collection($data);
                 if (isset($data[0])) {
-                    if (($data[0]->id != $this->sere_serv_deposit->max('id')) && ($data[0]->id != $this->sere_serv_deposit->min('id')) && ($data[0]->id != $id_max_sql) && ($data[0]->id != $id_min_sql)) {
+                    if (($data[0]->id != $this->sese_depo_repay->max('id')) && ($data[0]->id != $this->sese_depo_repay->min('id')) && ($data[0]->id != $id_max_sql) && ($data[0]->id != $id_min_sql)) {
                         $this->prev_cursor = '-' . $data[0]->id;
                     } else {
                         $this->prev_cursor = null;
@@ -170,7 +157,7 @@ class SereServDepositController  extends BaseApiDataController
                 }
             } else {
                 $data = $data->where(function ($query) {
-                    $query = $query->where(DB::connection('oracle_his')->raw('his_sere_serv_deposit.id'), $this->sere_serv_deposit_id);
+                    $query = $query->where(DB::connection('oracle_his')->raw('his_sese_depo_repay.id'), $this->sese_depo_repay_id);
                 });
                 $data = $data
                     ->first();
@@ -181,7 +168,7 @@ class SereServDepositController  extends BaseApiDataController
                 'next_cursor' => $this->next_cursor ?? null,
                 'is_include_deleted' => $this->is_include_deleted ?? false,
                 'is_active' => $this->is_active,
-                'sere_serv_deposit_id' => $this->sere_serv_deposit_id,
+                'sese_depo_repay_id' => $this->sese_depo_repay_id,
                 'tdl_treatment_id' => $this->tdl_treatment_id,
                 'keyword' => $this->keyword,
                 'order_by' => $this->order_by_request

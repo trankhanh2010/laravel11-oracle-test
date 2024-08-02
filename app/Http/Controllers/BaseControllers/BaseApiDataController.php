@@ -22,6 +22,7 @@ use App\Models\HIS\ServiceReq;
 use App\Models\HIS\ServiceReqStt;
 use App\Models\HIS\ServiceReqType;
 use App\Models\HIS\ServiceType;
+use App\Models\HIS\SeseDepoRepay;
 use App\Models\HIS\TestIndex;
 use App\Models\HIS\Tracking;
 use App\Models\HIS\Treatment;
@@ -64,6 +65,7 @@ class BaseApiDataController extends Controller
     protected $user_room_last_id;
     protected $sere_serv_bill_last_id;
     protected $sere_serv_deposit_last_id;
+    protected $sese_depo_repay_last_id;
     protected $service_type_ids;
     protected $patient_type_ids;
     protected $tdl_treatment_type_ids;
@@ -111,6 +113,7 @@ class BaseApiDataController extends Controller
     protected $tracking_id;
     protected $sere_serv_bill_id;
     protected $sere_serv_deposit_id;
+    protected $sese_depo_repay_id;
     protected $include_material;
     protected $include_blood_pres;
     protected $patient_code__exact;
@@ -147,6 +150,7 @@ class BaseApiDataController extends Controller
     protected $user_room;
     protected $sere_serv_bill;
     protected $sere_serv_deposit;
+    protected $sese_depo_repay;
     public function __construct(Request $request)
     {
         // Khai báo các biến
@@ -649,6 +653,18 @@ class BaseApiDataController extends Controller
             } else {
                 if (!SereServDeposit::where('id', $this->sere_serv_deposit_id)->exists()) {
                     $this->sere_serv_deposit_id = null;
+                }
+            }
+        }
+
+        $this->sese_depo_repay_id = $this->param_request['ApiData']['SeseDepoRepayId'] ?? null;
+        if ($this->sese_depo_repay_id != null) {
+            // Kiểm tra xem ID có tồn tại trong bảng  hay không
+            if (!is_numeric($this->sese_depo_repay_id)) {
+                $this->sese_depo_repay_id = null;
+            } else {
+                if (!SeseDepoRepay::where('id', $this->sese_depo_repay_id)->exists()) {
+                    $this->sese_depo_repay_id = null;
                 }
             }
         }

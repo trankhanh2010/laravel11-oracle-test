@@ -88,6 +88,7 @@ use App\Http\Controllers\Api\DataControllers\TreatmentBedRoomController;
 use App\Http\Controllers\Api\DataControllers\UserRoomController;
 use App\Http\Controllers\Api\DataControllers\SereServBillController;
 use App\Http\Controllers\Api\DataControllers\SereServDepositController;
+use App\Http\Controllers\Api\DataControllers\SeseDepoRepayController;
 
 // Validate Controllers
 use App\Http\Controllers\Api\ValidateControllers\CheckBedRoomController;
@@ -1136,5 +1137,8 @@ Route::group([
 
     // Sere Serv Deposit
     Route::get("v1/sere-serv-deposit/get-view", [SereServDepositController::class, "sere_serv_deposit_get_view"]);
+
+    // Sese Depo Repay
+    Route::get("v1/sese-depo-repay/get-view", [SeseDepoRepayController::class, "sese_depo_repay_get_view"]);
 
 });
