@@ -86,6 +86,7 @@ use App\Http\Controllers\Api\DataControllers\TrackingController;
 use App\Http\Controllers\Api\DataControllers\TreatmentController;
 use App\Http\Controllers\Api\DataControllers\TreatmentBedRoomController;
 use App\Http\Controllers\Api\DataControllers\UserRoomController;
+use App\Http\Controllers\Api\DataControllers\SereServBillController;
 
 // Validate Controllers
 use App\Http\Controllers\Api\ValidateControllers\CheckBedRoomController;
@@ -1091,6 +1092,8 @@ Route::group([
     Route::get("v3/sere-serv/get", [SereServController::class, "sere_serv_get_v3"]);
     Route::get("v3/sere-serv/get-count", [SereServController::class, "sere_serv_get_count_v3"]);
 
+    Route::get("v1/sere-serv/get-view-5", [SereServController::class, "sere_serv_get_view_5"]);
+
 
     // Patient Type Alter
     Route::get("v1/patient-type-alter/get-view", [PatientTypeAlterController::class, "patient_type_alter_get_view"]);
@@ -1126,5 +1129,9 @@ Route::group([
 
     Route::get("v2/sere-serv-tein/get", [SereServTeinController::class, "sere_serv_tein_get_v2"]);
     Route::get("v2/sere-serv-tein/get-view", [SereServTeinController::class, "sere_serv_tein_get_view_v2"]);
+
+    // Sere Serv Bill
+    Route::get("v1/sere-serv-bill/get", [SereServBillController::class, "sere_serv_bill_get"]);
+
 
 });
