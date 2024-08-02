@@ -4,6 +4,7 @@ namespace App\Http\Controllers\BaseControllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\HIS\BedRoom;
+use App\Models\HIS\Branch;
 use App\Models\HIS\Debate;
 use App\Models\HIS\DebateEkipUser;
 use App\Models\HIS\DebateUser;
@@ -23,6 +24,7 @@ use App\Models\HIS\TestIndex;
 use App\Models\HIS\Tracking;
 use App\Models\HIS\Treatment;
 use App\Models\HIS\TreatmentBedRoom;
+use App\Models\HIS\TreatmentType;
 use Illuminate\Http\Request;
 
 class BaseApiDataController extends Controller
@@ -60,6 +62,11 @@ class BaseApiDataController extends Controller
     protected $user_room_last_id;
     protected $service_type_ids;
     protected $patient_type_ids;
+    protected $tdl_treatment_type_ids;
+    protected $branch_id;
+    protected $in_date_from;
+    protected $in_date_to;
+    protected $is_approve_store;
     protected $service_id;
     protected $package_id;
     protected $department_id;
@@ -132,7 +139,7 @@ class BaseApiDataController extends Controller
     protected $bhyt_whiteList;
     protected $antibiotic_request;
     protected $user_room;
-
+    protected $sere_serv_bill;
     public function __construct(Request $request)
     {
         // Khai báo các biến
@@ -569,5 +576,51 @@ class BaseApiDataController extends Controller
                 }
             }
         }
+
+        $this->tdl_treatment_type_ids = $this->param_request['ApiData']['TdlTreatmentTypeIds'] ?? null;
+        if ($this->tdl_treatment_type_ids != null) {
+            foreach ($this->tdl_treatment_type_ids as $key => $item) {
+                // Kiểm tra xem ID có tồn tại trong bảng  hay không
+                if (!is_numeric($item)) {
+                    unset($this->tdl_treatment_type_ids[$key]);
+                } else {
+                    if (!TreatmentType::where('id', $item)->exists()) {
+                        unset($this->tdl_treatment_type_ids[$key]);
+                    }
+                }
+            }
+        }
+
+        $this->branch_id = $this->param_request['ApiData']['BranchId'] ?? null;
+        if ($this->branch_id != null) {
+            // Kiểm tra xem ID có tồn tại trong bảng  hay không
+            if (!is_numeric($this->branch_id)) {
+                $this->branch_id = null;
+            } else {
+                if (!Branch::where('id', $this->branch_id)->exists()) {
+                    $this->branch_id = null;
+                }
+            }
+        }
+
+        $this->in_date_from = $this->param_request['ApiData']['InDateFrom'] ?? null;
+        if($this->in_date_from != null){
+            if(!preg_match('/^\d{14}$/',  $this->in_date_from)){
+                $this->in_date_from = null;
+            }
+        }
+
+        $this->in_date_to = $this->param_request['ApiData']['InDateTo'] ?? null;
+        if($this->in_date_to != null){
+            if(!preg_match('/^\d{14}$/',  $this->in_date_to)){
+                $this->in_date_to = null;
+            }
+        }
+
+        $this->is_approve_store = $this->param_request['ApiData']['IsApproveStore'] ?? null;
+        if (!is_bool ($this->is_approve_store)) {
+            $this->is_approve_store = null;
+        }
+
     }
 }

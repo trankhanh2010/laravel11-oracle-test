@@ -514,9 +514,9 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisServSegr'], function () {
         Route::get("v1/serv-segr", [HISController::class, "serv_segr"]);
         Route::get("v1/serv-segr/{id}", [HISController::class, "serv_segr"]);
-        Route::get("v1/service-group", [HISController::class, "service_group"]);
-        Route::get("v1/service-group/{id}", [HISController::class, "service_group_id"]);
     });
+    Route::get("v1/service-group", [HISController::class, "service_group"]);
+    Route::get("v1/service-group/{id}", [HISController::class, "service_group_id"]);
 
     /// Tài khoản nhân viên
     Route::group(['as' => 'HIS.Desktop.Plugins.EmpUser'], function () {
@@ -1100,6 +1100,7 @@ Route::group([
     // Treatment
     Route::get("v1/treatment/get-L-view", [TreatmentController::class, "treatment_get_L_view"]);
     Route::get("v1/treatment/get-treatment-with-patient-type-info-sdo", [TreatmentController::class, "treatment_get_treatment_with_patient_type_info_sdo"]);
+    Route::get("v1/treatment/get-fee-view", [TreatmentController::class, "treatment_get_fee_view"]);
 
     Route::get("v2/treatment/get-L-view", [TreatmentController::class, "treatment_get_L_view_v2"]);
     Route::get("v2/treatment/get-treatment-with-patient-type-info-sdo", [TreatmentController::class, "treatment_get_treatment_with_patient_type_info_sdo_v2"]);
