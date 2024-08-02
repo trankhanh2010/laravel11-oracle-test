@@ -858,12 +858,13 @@ class SereServController extends BaseApiDataController
         ];
 
         $keyword = $this->keyword;
-        // try {
+        try {
             $data = $this->sere_serv
             ->leftJoin('V_HIS_SERE_SERV_5 ', 'his_sere_serv.id', '=', 'V_HIS_SERE_SERV_5.id')
 
                 ->select($select);
             $data_id = $this->sere_serv
+            ->leftJoin('V_HIS_SERE_SERV_5 ', 'his_sere_serv.id', '=', 'V_HIS_SERE_SERV_5.id')
                 ->select("his_sere_serv.ID");
             if ($keyword != null) {
                 $data = $data->where(function ($query) use ($keyword) {
@@ -959,9 +960,9 @@ class SereServController extends BaseApiDataController
                 'order_by' => $this->order_by_request
             ];
             return return_data_success($param_return, $data);
-        // } catch (\Exception $e) {
-        //     // Xử lý lỗi và trả về phản hồi lỗi
-        //     return return_500_error();
-        // }
+        } catch (\Exception $e) {
+            // Xử lý lỗi và trả về phản hồi lỗi
+            return return_500_error();
+        }
     }
 }

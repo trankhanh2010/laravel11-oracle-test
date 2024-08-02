@@ -15,6 +15,7 @@ use App\Models\HIS\PatientType;
 use App\Models\HIS\PatientTypeAlter;
 use App\Models\HIS\SereServ;
 use App\Models\HIS\SereServBill;
+use App\Models\HIS\SereServDeposit;
 use App\Models\HIS\SereServExt;
 use App\Models\HIS\SereServTein;
 use App\Models\HIS\ServiceReq;
@@ -62,6 +63,7 @@ class BaseApiDataController extends Controller
     protected $treatment_last_id;
     protected $user_room_last_id;
     protected $sere_serv_bill_last_id;
+    protected $sere_serv_deposit_last_id;
     protected $service_type_ids;
     protected $patient_type_ids;
     protected $tdl_treatment_type_ids;
@@ -108,6 +110,7 @@ class BaseApiDataController extends Controller
     protected $create_time_to;
     protected $tracking_id;
     protected $sere_serv_bill_id;
+    protected $sere_serv_deposit_id;
     protected $include_material;
     protected $include_blood_pres;
     protected $patient_code__exact;
@@ -143,6 +146,7 @@ class BaseApiDataController extends Controller
     protected $antibiotic_request;
     protected $user_room;
     protected $sere_serv_bill;
+    protected $sere_serv_deposit;
     public function __construct(Request $request)
     {
         // Khai báo các biến
@@ -633,6 +637,18 @@ class BaseApiDataController extends Controller
             } else {
                 if (!SereServBill::where('id', $this->sere_serv_bill_id)->exists()) {
                     $this->sere_serv_bill_id = null;
+                }
+            }
+        }
+
+        $this->sere_serv_deposit_id = $this->param_request['ApiData']['SereServDepositId'] ?? null;
+        if ($this->sere_serv_deposit_id != null) {
+            // Kiểm tra xem ID có tồn tại trong bảng  hay không
+            if (!is_numeric($this->sere_serv_deposit_id)) {
+                $this->sere_serv_deposit_id = null;
+            } else {
+                if (!SereServDeposit::where('id', $this->sere_serv_deposit_id)->exists()) {
+                    $this->sere_serv_deposit_id = null;
                 }
             }
         }
