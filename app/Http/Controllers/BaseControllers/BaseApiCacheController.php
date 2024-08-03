@@ -19,32 +19,53 @@ class BaseApiCacheController extends Controller
     protected $errors = [];
     protected $data = [];
     protected $time;
+    protected $arr_limit;
     protected $start;
+    protected $start_name = 'Start';
     protected $limit;
+    protected $limit_name = 'Limit';
     protected $order_by;
+    protected $order_by_name = 'OrderBy';
     protected $order_by_tring;
     protected $order_by_request;
     protected $order_by_join;
     protected $only_active;
+    protected $only_active_name = 'OnlyActive';
     protected $service_type_ids;
+    protected $service_type_ids_name = 'ServiceTypeIds';
     protected $patient_type_ids;
+    protected $patient_type_ids_name = 'PatientTypeIds';
     protected $service_ids;
+    protected $service_ids_name = 'ServiceIds';
     protected $machine_ids;
+    protected $machine_ids_name = 'MachineIds';
     protected $room_ids;
+    protected $room_ids_name = 'RoomIds';
     protected $service_follow_ids;
+    protected $service_follow_ids_name = 'ServiceFollowIds';
     protected $bed_ids;
+    protected $bed_ids_name = 'BedIds';
     protected $service_id;
+    protected $service_id_name = 'ServiceId';
     protected $package_id;
+    protected $package_id_name = 'PackageId';
     protected $department_id;
+    protected $department_id_name = 'DepartmentId';
     protected $keyword;
+    protected $keyword_name = 'Keyword';
     protected $per_page;
     protected $page;
     protected $param_request;
     protected $is_active;
+    protected $is_active_name = 'IsActive';
     protected $effective;
+    protected $effective_name = 'Effective';
     protected $room_type_id;
+    protected $room_type_id_name = 'RoomTypeId';
     protected $is_addition;
+    protected $is_addition_name = 'IsAddition';
     protected $service_type_id;
+    protected $service_type_id_name = 'ServiceTypeId';
     protected $patient_type_ids_string;
     protected $service_type_ids_string;
 
@@ -401,35 +422,69 @@ class BaseApiCacheController extends Controller
         $this->page = $request->query('page', 1);
         $this->start = $this->param_request['CommonParam']['Start'] ?? intval($request->start) ?? 0;
         $this->limit = $this->param_request['CommonParam']['Limit'] ?? intval($request->limit) ?? 10;
-
-        if (($this->limit <= 10) || (!in_array($this->limit, [10, 20, 50, 100, 500, 1000, 2000, 4000]))) {
+        if($this->limit <= 0){
+            $this->limit = 10;
+        }
+        $this->arr_limit = [10, 20, 50, 100, 200, 500, 1000, 2000, 4000];
+        if (($this->limit < 10) || (!in_array($this->limit, $this->arr_limit))) {
+            $this->errors[$this->limit_name] = $this->mess_format.' Chỉ nhận giá trị thuộc mảng sau '.implode(', ', $this->arr_limit) ;
             $this->limit = 10;
         }
         if ($this->start != null) {
             if ((!is_numeric($this->start)) || (!is_int($this->start)) || ($this->start < 0)) {
+                $this->errors[$this->start_name] = $this->mess_format;
                 $this->start = 0;
             }
         }
-        if (($this->limit != null) || ($this->start != null)) {
-            if ((!is_numeric($this->limit)) || (!is_int($this->limit)) || ($this->limit > 4000) || ($this->limit <= 0)) {
-                $this->limit = 100;
+        // if (($this->limit != null) || ($this->start != null)) {
+        //     if ((!is_numeric($this->limit)) || (!is_int($this->limit)) || ($this->limit > 4000) || ($this->limit <= 0)) {
+        //         $this->errors[$this->limit_name] = $this->mess_format;
+        //         $this->limit = 100;
+        //     }
+        // }
+        $this->keyword = $this->param_request['ApiData']['KeyWord'] ?? $request->keyword ?? "";
+        if($this->keyword !== null){
+            if (!is_string ($this->keyword)) {
+                $this->errors[$this->keyword_name] = $this->mess_format;
+                $this->keyword = null;
             }
         }
-        $this->keyword = $this->param_request['ApiData']['KeyWord'] ?? $request->keyword ?? "";
+
         $this->order_by = $this->param_request['ApiData']['OrderBy'] ?? null;
         $this->order_by_request = $this->param_request['ApiData']['OrderBy'] ?? null;
         if ($this->order_by != null) {
             $this->order_by = convertArrayKeysToSnakeCase($this->order_by);
+            foreach($this->order_by as $key => $item){
+                if(!in_array($item, ['asc', 'desc'])){
+                    $this->errors[$this->order_by_name] = $this->mess_format;
+                }
+            }
         }
-        $this->only_active = $this->param_request['ApiData']['OnlyActive'] ?? 0;
+
+        $this->is_active = $this->param_request['ApiData']['IsActive'] ?? null;
+        if($this->is_active !== null){
+            if (!in_array ($this->is_active, [0,1])) {
+                $this->errors[$this->is_active_name] = $this->mess_format;
+                $this->is_active = 1;
+            }
+        }
+
+        $this->only_active = $this->param_request['ApiData']['OnlyActive'] ?? false;
+        if (!is_bool ($this->only_active)) {
+            $this->errors[$this->only_active_name] = $this->mess_format;
+            $this->only_active = false;
+        }
+
         $this->service_type_ids = $this->param_request['ApiData']['ServiceTypeIds'] ?? null;
         if ($this->service_type_ids != null) {
             foreach ($this->service_type_ids as $key => $item) {
                 // Kiểm tra xem ID có tồn tại trong bảng  hay không
                 if (!is_numeric($item)) {
+                    $this->errors[$this->service_type_ids_name] = $this->mess_format;
                     unset($this->service_type_ids[$key]);
                 } else {
                     if (!ServiceType::where('id', $item)->exists()) {
+                        $this->errors[$this->service_type_ids_name] = $this->mess_record_id;
                         unset($this->service_type_ids[$key]);
                     }
                 }
@@ -443,9 +498,11 @@ class BaseApiCacheController extends Controller
             foreach ($this->patient_type_ids as $key => $item) {
                 // Kiểm tra xem ID có tồn tại trong bảng  hay không
                 if (!is_numeric($item)) {
+                    $this->errors[$this->patient_type_ids_name] = $this->mess_format;
                     unset($this->patient_type_ids[$key]);
                 } else {
                     if (!PatientType::where('id', $item)->exists()) {
+                        $this->errors[$this->patient_type_ids_name] = $this->mess_record_id;
                         unset($this->patient_type_ids[$key]);
                     }
                 }
@@ -458,9 +515,11 @@ class BaseApiCacheController extends Controller
         if ($this->service_id !== null) {
             // Kiểm tra xem ID có tồn tại trong bảng  hay không
             if (!is_numeric($this->service_id)) {
+                $this->errors[$this->service_id_name] = $this->mess_format;
                 $this->service_id = null;
             } else {
                 if (!Service::where('id', $this->service_id)->exists()) {
+                    $this->errors[$this->service_id_name] = $this->mess_record_id;
                     $this->service_id = null;
                 }
             }
@@ -469,9 +528,11 @@ class BaseApiCacheController extends Controller
         if ($this->package_id !== null) {
             // Kiểm tra xem ID có tồn tại trong bảng  hay không
             if (!is_numeric($this->package_id)) {
+                $this->errors[$this->package_id_name] = $this->mess_format;
                 $this->package_id = null;
             } else {
                 if (!Package::where('id', $this->package_id)->exists()) {
+                    $this->errors[$this->package_id_name] = $this->mess_record_id;
                     $this->package_id = null;
                 }
             }
@@ -480,9 +541,11 @@ class BaseApiCacheController extends Controller
         if ($this->department_id !== null) {
             // Kiểm tra xem ID có tồn tại trong bảng  hay không
             if (!is_numeric($this->department_id)) {
+                $this->errors[$this->department_id_name] = $this->mess_format;
                 $this->department_id = null;
             } else {
                 if (!Department::where('id', $this->department_id)->exists()) {
+                    $this->errors[$this->department_id_name] = $this->mess_record_id;
                     $this->department_id = null;
                 }
             }
@@ -490,20 +553,24 @@ class BaseApiCacheController extends Controller
         $this->is_active = $this->param_request['ApiData']['IsActive'] ?? null;
         if ($this->is_active !== null) {
             if (!in_array($this->is_active, [0, 1])) {
+                $this->errors[$this->is_active_name] = $this->mess_format;
                 $this->is_active = 1;
             }
         }
         $this->effective = $this->param_request['ApiData']['Effective'] ?? false;
         if (!is_bool($this->effective)) {
+            $this->errors[$this->effective_name] = $this->mess_format;
             $this->effective = false;
         }
         $this->room_type_id = $this->param_request['ApiData']['RoomTypeId'] ?? null;
         if ($this->room_type_id !== null) {
             // Kiểm tra xem ID có tồn tại trong bảng  hay không
             if (!is_numeric($this->room_type_id)) {
+                $this->errors[$this->room_type_id_name] = $this->mess_format;
                 $this->room_type_id = null;
             } else {
                 if (!RoomType::where('id', $this->room_type_id)->exists()) {
+                    $this->errors[$this->room_type_id_name] = $this->mess_record_id;
                     $this->room_type_id = null;
                 }
             }
@@ -511,6 +578,7 @@ class BaseApiCacheController extends Controller
         $this->is_addition = $this->param_request['ApiData']['IsAddition'] ?? null;
         if ($this->is_addition !== null) {
             if (!in_array($this->is_addition, [0, 1])) {
+                $this->errors[$this->is_addition_name] = $this->mess_format;
                 $this->is_addition = 1;
             }
         }
@@ -518,9 +586,11 @@ class BaseApiCacheController extends Controller
         if ($this->service_type_id !== null) {
             // Kiểm tra xem ID có tồn tại trong bảng  hay không
             if (!is_numeric($this->service_type_id)) {
+                $this->errors[$this->service_type_id_name] = $this->mess_format;
                 $this->service_type_id = null;
             } else {
                 if (!ServiceType::where('id', $this->service_type_id)->exists()) {
+                    $this->errors[$this->service_type_id_name] = $this->mess_record_id;
                     $this->service_type_id = null;
                 }
             }
@@ -530,9 +600,11 @@ class BaseApiCacheController extends Controller
             foreach ($this->service_ids as $key => $item) {
                 // Kiểm tra xem ID có tồn tại trong bảng  hay không
                 if (!is_numeric($item)) {
+                    $this->errors[$this->service_ids_name] = $this->mess_format;
                     unset($this->service_ids[$key]);
                 } else {
                     if (!Service::where('id', $item)->exists()) {
+                        $this->errors[$this->service_ids_name] = $this->mess_record_id;
                         unset($this->service_ids[$key]);
                     }
                 }
@@ -543,9 +615,11 @@ class BaseApiCacheController extends Controller
             foreach ($this->machine_ids as $key => $item) {
                 // Kiểm tra xem ID có tồn tại trong bảng  hay không
                 if (!is_numeric($item)) {
+                    $this->errors[$this->machine_ids_name] = $this->mess_format;
                     unset($this->machine_ids[$key]);
                 } else {
                     if (!Machine::where('id', $item)->exists()) {
+                        $this->errors[$this->machine_ids_name] = $this->mess_record_id;
                         unset($this->machine_ids[$key]);
                     }
                 }
@@ -556,9 +630,11 @@ class BaseApiCacheController extends Controller
             foreach ($this->room_ids as $key => $item) {
                 // Kiểm tra xem ID có tồn tại trong bảng  hay không
                 if (!is_numeric($item)) {
+                    $this->errors[$this->room_ids_name] = $this->mess_format;
                     unset($this->room_ids[$key]);
                 } else {
                     if (!Room::where('id', $item)->exists()) {
+                        $this->errors[$this->room_ids_name] = $this->mess_record_id;
                         unset($this->room_ids[$key]);
                     }
                 }
@@ -569,9 +645,11 @@ class BaseApiCacheController extends Controller
             foreach ($this->service_follow_ids as $key => $item) {
                 // Kiểm tra xem ID có tồn tại trong bảng  hay không
                 if (!is_numeric($item)) {
+                    $this->errors[$this->service_follow_ids_name] = $this->mess_format;
                     unset($this->service_follow_ids[$key]);
                 } else {
                     if (!Service::where('id', $item)->exists()) {
+                        $this->errors[$this->service_follow_ids_name] = $this->mess_record_id;
                         unset($this->service_follow_ids[$key]);
                     }
                 }
@@ -582,9 +660,11 @@ class BaseApiCacheController extends Controller
             foreach ($this->bed_ids as $key => $item) {
                 // Kiểm tra xem ID có tồn tại trong bảng  hay không
                 if (!is_numeric($item)) {
+                    $this->errors[$this->bed_ids_name] = $this->mess_format;
                     unset($this->bed_ids[$key]);
                 } else {
                     if (!Bed::where('id', $item)->exists()) {
+                        $this->errors[$this->bed_ids_name] = $this->mess_record_id;
                         unset($this->bed_ids[$key]);
                     }
                 }

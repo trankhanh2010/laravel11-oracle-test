@@ -38,6 +38,7 @@ class BaseApiDataController extends Controller
     protected $data = [];
     protected $time;
     protected $columns_time;
+    protected $arr_limit;
     protected $time_id;
     protected $start;
     protected $start_name = 'Start';
@@ -313,8 +314,9 @@ class BaseApiDataController extends Controller
         }
         $this->cursor = $this->param_request['CommonParam']['Cursor'] ?? intval($request->cursor) ?? 0;
         $this->raw_cursor = $this->param_request['CommonParam']['Cursor'] ?? intval($request->cursor) ?? 0;
-        if (($this->limit < 10) || (!in_array($this->limit, [10, 20, 50, 100, 500, 1000, 2000, 4000]))) {
-            $this->errors[$this->limit_name] = $this->mess_format;
+        $this->arr_limit = [10, 20, 50, 100, 200, 500, 1000, 2000, 4000];
+        if (($this->limit < 10) || (!in_array($this->limit, $this->arr_limit))) {
+            $this->errors[$this->limit_name] = $this->mess_format.' Chỉ nhận giá trị thuộc mảng sau '.implode(', ', $this->arr_limit) ;
             $this->limit = 10;
         }
         if ($this->start != null) {
