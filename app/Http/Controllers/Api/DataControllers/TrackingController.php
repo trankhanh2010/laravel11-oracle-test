@@ -16,7 +16,9 @@ use App\Models\HIS\ServiceReq;
 use App\Models\HIS\Tracking;
 use App\Models\HIS\Treatment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class TrackingController extends BaseApiDataController
 {
@@ -45,6 +47,19 @@ class TrackingController extends BaseApiDataController
             //         }
             //     }
             // }
+            $columns = Cache::remember('columns_' . $this->tracking_name, $this->columns_time, function () {
+                return  Schema::connection('oracle_his')->getColumnListing($this->tracking->getTable()) ?? [];
+
+            });
+            foreach ($this->order_by as $key => $item) {
+                if (!in_array($key, $this->order_by_join)) {
+                    if ((!in_array($key, $columns))) {
+                        $this->errors[$key] = $this->mess_order_by_name;
+                        unset($this->order_by_request[camelCaseFromUnderscore($key)]);
+                        unset($this->order_by[$key]);
+                    }
+                }
+            }
             $this->order_by_tring = arrayToCustomString($this->order_by);
         }
         // Kiểm tra giá trị tối đa của limit
@@ -71,6 +86,11 @@ class TrackingController extends BaseApiDataController
     }
     public function tracking_get(Request $request)
     {
+        // Kiểm tra param và trả về lỗi nếu nó không hợp lệ
+        if($this->check_param()){
+            return $this->check_param();
+        }
+
         $select = [
             'his_tracking.id',
             'his_tracking.create_time',
@@ -168,6 +188,11 @@ class TrackingController extends BaseApiDataController
 
     public function tracking_get_v2(Request $request)
     {
+        // Kiểm tra param và trả về lỗi nếu nó không hợp lệ
+        if($this->check_param()){
+            return $this->check_param();
+        }
+
         $select = [
             'his_tracking.id',
             'his_tracking.create_time',
@@ -309,6 +334,11 @@ class TrackingController extends BaseApiDataController
     }
     public function tracking_get_data(Request $request)
     {
+        // Kiểm tra param và trả về lỗi nếu nó không hợp lệ
+        if($this->check_param()){
+            return $this->check_param();
+        }
+        
         // Khai báo các trường cần select
         $select_treatment = [
             'id',

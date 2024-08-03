@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Api\DataControllers;
 use App\Http\Controllers\BaseControllers\BaseApiDataController;
 use Illuminate\Http\Request;
 use App\Models\HIS\UserRoom;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Schema;
+
 class UserRoomController extends BaseApiDataController
 {
 
@@ -24,6 +27,19 @@ class UserRoomController extends BaseApiDataController
             //         }
             //     }
             // }
+            $columns = Cache::remember('columns_' . $this->user_room_name, $this->columns_time, function () {
+                return  Schema::connection('oracle_his')->getColumnListing($this->user_room->getTable()) ?? [];
+
+            });
+            foreach ($this->order_by as $key => $item) {
+                if (!in_array($key, $this->order_by_join)) {
+                    if ((!in_array($key, $columns))) {
+                        $this->errors[$key] = $this->mess_order_by_name;
+                        unset($this->order_by_request[camelCaseFromUnderscore($key)]);
+                        unset($this->order_by[$key]);
+                    }
+                }
+            }
             $this->order_by_tring = arrayToCustomString($this->order_by);
         }
         // Kiểm tra giá trị tối đa của limit
@@ -51,6 +67,11 @@ class UserRoomController extends BaseApiDataController
 
     public function user_with_room()
     {
+        // Kiểm tra param và trả về lỗi nếu nó không hợp lệ
+        if($this->check_param()){
+            return $this->check_param();
+        }
+
         // Khai báo các biến lấy từ json param
         $request_loginname = $this->param_request['ApiData']['LOGINNAME'] ?? null;
 

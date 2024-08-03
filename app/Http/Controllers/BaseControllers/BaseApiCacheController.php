@@ -16,6 +16,7 @@ use App\Models\HIS\ServiceType;
 
 class BaseApiCacheController extends Controller
 {
+    protected $errors = [];
     protected $data = [];
     protected $time;
     protected $start;
@@ -349,13 +350,53 @@ class BaseApiCacheController extends Controller
     protected $package_name = 'package';
     protected $service_condition;
     protected $service_condition_name = 'service_condition';
+
+    // Thông báo lỗi
+    protected $mess_format;
+    protected $mess_order_by_name;
+    protected $mess_record_id;
+    protected $mess_decode_param;
+
+    // Function kiểm tra lỗi và lấy thông báo lỗi
+    protected function has_errors()
+    {
+        return !empty($this->errors);
+    }
+
+    protected function get_errors()
+    {
+        return $this->errors;
+    }
+
+    protected function check_param()
+    {
+        if ($this->has_errors()) {
+            return return_400($this->get_errors());
+        }
+        return null;
+    }
     public function __construct(Request $request)
     {
         // Khai báo các biến
         // Thời gian tồn tại của cache
         $this->time = now()->addMinutes(10080);
+
+        // Thông báo lỗi 
+        $this->mess_format = config('keywords')['error']['format'];
+        $this->mess_order_by_name = config('keywords')['error']['order_by_name'];
+        $this->mess_record_id = config('keywords')['error']['record_id'];
+        $this->mess_decode_param = config('keywords')['error']['decode_param'];
+
+
         // Param json gửi từ client
-        $this->param_request = json_decode(base64_decode($request->input('param')), true) ?? null;
+        if ($request->input('param') !== null) {
+            $this->param_request = json_decode(base64_decode($request->input('param')), true) ?? null;
+            if ($this->param_request === null) {
+                $this->errors['param'] = $this->mess_decode_param;
+            }
+        }
+
+        // Gán và kiểm tra các tham số được gửi lên
         $this->per_page = $request->query('perPage', 10);
         $this->page = $request->query('page', 1);
         $this->start = $this->param_request['CommonParam']['Start'] ?? intval($request->start) ?? 0;
@@ -394,7 +435,7 @@ class BaseApiCacheController extends Controller
                 }
             }
         }
-        if($this->service_type_ids != null){
+        if ($this->service_type_ids != null) {
             $this->service_type_ids_string = arrayToCustomStringNotKey($this->service_type_ids);
         }
         $this->patient_type_ids = $this->param_request['ApiData']['PatientTypeIds'] ?? null;
@@ -410,8 +451,8 @@ class BaseApiCacheController extends Controller
                 }
             }
         }
-        if($this->patient_type_ids !=  null){
-            $this->patient_type_ids_string = arrayToCustomStringNotKey($this->patient_type_ids); 
+        if ($this->patient_type_ids !=  null) {
+            $this->patient_type_ids_string = arrayToCustomStringNotKey($this->patient_type_ids);
         }
         $this->service_id = $this->param_request['ApiData']['ServiceId'] ?? null;
         if ($this->service_id !== null) {
@@ -447,13 +488,13 @@ class BaseApiCacheController extends Controller
             }
         }
         $this->is_active = $this->param_request['ApiData']['IsActive'] ?? null;
-        if($this->is_active !== null){
-            if (!in_array ($this->is_active, [0,1])) {
+        if ($this->is_active !== null) {
+            if (!in_array($this->is_active, [0, 1])) {
                 $this->is_active = 1;
             }
         }
         $this->effective = $this->param_request['ApiData']['Effective'] ?? false;
-        if (!is_bool ($this->effective)) {
+        if (!is_bool($this->effective)) {
             $this->effective = false;
         }
         $this->room_type_id = $this->param_request['ApiData']['RoomTypeId'] ?? null;
@@ -468,8 +509,8 @@ class BaseApiCacheController extends Controller
             }
         }
         $this->is_addition = $this->param_request['ApiData']['IsAddition'] ?? null;
-        if($this->is_addition !== null){
-            if (!in_array ($this->is_addition, [0,1])) {
+        if ($this->is_addition !== null) {
+            if (!in_array($this->is_addition, [0, 1])) {
                 $this->is_addition = 1;
             }
         }

@@ -7,7 +7,9 @@ use App\Http\Resources\TreatmentGetFeeViewResource;
 use App\Http\Resources\TreatmentResource;
 use App\Models\HIS\Treatment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class TreatmentController extends BaseApiDataController
 {
@@ -26,6 +28,19 @@ class TreatmentController extends BaseApiDataController
             //         }
             //     }
             // }
+            $columns = Cache::remember('columns_' . $this->treatment_name, $this->columns_time, function () {
+                return  Schema::connection('oracle_his')->getColumnListing($this->treatment->getTable()) ?? [];
+
+            });
+            foreach ($this->order_by as $key => $item) {
+                if (!in_array($key, $this->order_by_join)) {
+                    if ((!in_array($key, $columns))) {
+                        $this->errors[$key] = $this->mess_order_by_name;
+                        unset($this->order_by_request[camelCaseFromUnderscore($key)]);
+                        unset($this->order_by[$key]);
+                    }
+                }
+            }
             $this->order_by_tring = arrayToCustomString($this->order_by);
         }
 
@@ -48,6 +63,11 @@ class TreatmentController extends BaseApiDataController
     }
     public function treatment_get_L_view(Request $request)
     {
+        // Kiểm tra param và trả về lỗi nếu nó không hợp lệ
+        if($this->check_param()){
+            return $this->check_param();
+        }
+
         $select = [
             "ID",
             "CREATE_TIME",
@@ -127,6 +147,11 @@ class TreatmentController extends BaseApiDataController
 
     public function treatment_get_L_view_v2(Request $request)
     {
+        // Kiểm tra param và trả về lỗi nếu nó không hợp lệ
+        if($this->check_param()){
+            return $this->check_param();
+        }
+
         $select = [
             "ID",
             "CREATE_TIME",
@@ -254,6 +279,11 @@ class TreatmentController extends BaseApiDataController
 
     public function treatment_get_treatment_with_patient_type_info_sdo(Request $request)
     {
+        // Kiểm tra param và trả về lỗi nếu nó không hợp lệ
+        if($this->check_param()){
+            return $this->check_param();
+        }
+    
         $select = [
             "his_treatment.ID",
             "his_treatment.CREATE_TIME",
@@ -419,6 +449,11 @@ class TreatmentController extends BaseApiDataController
 
     public function treatment_get_treatment_with_patient_type_info_sdo_v2(Request $request)
     {
+        // Kiểm tra param và trả về lỗi nếu nó không hợp lệ
+        if($this->check_param()){
+            return $this->check_param();
+        }
+
         $select = [
             "his_treatment.ID",
             "his_treatment.CREATE_TIME",
@@ -584,6 +619,11 @@ class TreatmentController extends BaseApiDataController
 
     public function treatment_get_fee_view(Request $request)
     {
+        // Kiểm tra param và trả về lỗi nếu nó không hợp lệ
+        if($this->check_param()){
+            return $this->check_param();
+        }
+
         $select = [
             "his_treatment.ID",
             "his_treatment.CREATE_TIME",

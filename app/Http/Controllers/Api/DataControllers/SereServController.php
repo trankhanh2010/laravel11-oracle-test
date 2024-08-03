@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Schema;
 
 class SereServController extends BaseApiDataController
 {
@@ -28,6 +29,19 @@ class SereServController extends BaseApiDataController
             //         }
             //     }
             // }
+            $columns = Cache::remember('columns_' . $this->sere_serv_name, $this->columns_time, function () {
+                return  Schema::connection('oracle_his')->getColumnListing($this->sere_serv->getTable()) ?? [];
+
+            });
+            foreach ($this->order_by as $key => $item) {
+                if (!in_array($key, $this->order_by_join)) {
+                    if ((!in_array($key, $columns))) {
+                        $this->errors[$key] = $this->mess_order_by_name;
+                        unset($this->order_by_request[camelCaseFromUnderscore($key)]);
+                        unset($this->order_by[$key]);
+                    }
+                }
+            }
             $this->order_by_tring = arrayToCustomString($this->order_by);
         }
         $this->equal = ">";
@@ -49,6 +63,11 @@ class SereServController extends BaseApiDataController
     }
     public function sere_serv_get(Request $request)
     {
+        // Kiểm tra param và trả về lỗi nếu nó không hợp lệ
+        if($this->check_param()){
+            return $this->check_param();
+        }
+
         $select = [
             "his_sere_serv.ID",
             "his_sere_serv.CREATE_TIME",
@@ -199,6 +218,11 @@ class SereServController extends BaseApiDataController
 
     public function sere_serv_get_v2(Request $request)
     {
+        // Kiểm tra param và trả về lỗi nếu nó không hợp lệ
+        if($this->check_param()){
+            return $this->check_param();
+        }
+
         $select = [
             "his_sere_serv.ID",
             "his_sere_serv.CREATE_TIME",
@@ -359,6 +383,11 @@ class SereServController extends BaseApiDataController
 
     public function sere_serv_get_count_v2(Request $request)
     {
+        // Kiểm tra param và trả về lỗi nếu nó không hợp lệ
+        if($this->check_param()){
+            return $this->check_param();
+        }
+
         $select = [
             "his_sere_serv.ID",
             "his_sere_serv.CREATE_TIME",
@@ -497,6 +526,10 @@ class SereServController extends BaseApiDataController
 
     public function sere_serv_get_v3(Request $request)
     {
+        // Kiểm tra param và trả về lỗi nếu nó không hợp lệ
+        if($this->check_param()){
+            return $this->check_param();
+        }
         $select = [
             "his_sere_serv.ID",
             "his_sere_serv.CREATE_TIME",
@@ -703,6 +736,11 @@ class SereServController extends BaseApiDataController
 
     public function sere_serv_get_count_v3(Request $request)
     {
+        // Kiểm tra param và trả về lỗi nếu nó không hợp lệ
+        if($this->check_param()){
+            return $this->check_param();
+        }
+
         $keyword = $this->keyword;
         $data = $this->sere_serv;
         if ($keyword != null) {
@@ -763,6 +801,11 @@ class SereServController extends BaseApiDataController
 
     public function sere_serv_get_view_5(Request $request)
     {
+        // Kiểm tra param và trả về lỗi nếu nó không hợp lệ
+        if($this->check_param()){
+            return $this->check_param();
+        }
+        
         $select = [
             "his_sere_serv.ID",
             "his_sere_serv.CREATE_TIME",

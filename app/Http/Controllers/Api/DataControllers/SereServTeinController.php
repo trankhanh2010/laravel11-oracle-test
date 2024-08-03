@@ -7,7 +7,9 @@ use App\Http\Resources\SereServTeinGetViewResource;
 use App\Http\Resources\SereServTeinResource;
 use App\Models\HIS\SereServTein;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class SereServTeinController extends BaseApiDataController
 {
@@ -26,6 +28,19 @@ class SereServTeinController extends BaseApiDataController
             //         }
             //     }
             // }
+            $columns = Cache::remember('columns_' . $this->sere_serv_tein_name, $this->columns_time, function () {
+                return  Schema::connection('oracle_his')->getColumnListing($this->sere_serv_tein->getTable()) ?? [];
+
+            });
+            foreach ($this->order_by as $key => $item) {
+                if (!in_array($key, $this->order_by_join)) {
+                    if ((!in_array($key, $columns))) {
+                        $this->errors[$key] = $this->mess_order_by_name;
+                        unset($this->order_by_request[camelCaseFromUnderscore($key)]);
+                        unset($this->order_by[$key]);
+                    }
+                }
+            }
             $this->order_by_tring = arrayToCustomString($this->order_by);
         }
 
@@ -48,6 +63,11 @@ class SereServTeinController extends BaseApiDataController
     }
     public function sere_serv_tein_get(Request $request)
     {
+        // Kiểm tra param và trả về lỗi nếu nó không hợp lệ
+        if($this->check_param()){
+            return $this->check_param();
+        }
+
         $select = [
             "ID",
             "CREATE_TIME",
@@ -135,6 +155,11 @@ class SereServTeinController extends BaseApiDataController
 
     public function sere_serv_tein_get_v2(Request $request)
     {
+        // Kiểm tra param và trả về lỗi nếu nó không hợp lệ
+        if($this->check_param()){
+            return $this->check_param();
+        }
+
         $select = [
             "ID",
             "CREATE_TIME",
@@ -270,6 +295,11 @@ class SereServTeinController extends BaseApiDataController
     }
     public function sere_serv_tein_get_view(Request $request)
     {
+        // Kiểm tra param và trả về lỗi nếu nó không hợp lệ
+        if($this->check_param()){
+            return $this->check_param();
+        }
+
         $select = [
             "his_sere_serv_tein.ID",
             "his_sere_serv_tein.CREATE_TIME",
@@ -375,6 +405,11 @@ class SereServTeinController extends BaseApiDataController
 
     public function sere_serv_tein_get_view_v2(Request $request)
     {
+        // Kiểm tra param và trả về lỗi nếu nó không hợp lệ
+        if($this->check_param()){
+            return $this->check_param();
+        }
+
         $select = [
             "his_sere_serv_tein.ID",
             "his_sere_serv_tein.CREATE_TIME",

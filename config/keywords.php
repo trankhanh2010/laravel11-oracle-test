@@ -22,7 +22,7 @@ return [
         'lte' => ' phải bé hơn hoặc bằng :value!',
         'gte' => ' phải lớn hơn hoặc bằng :value!',
 
-        /// Err logic db
+        /// Error logic db
         'not_in_service_type_id' => ' Hoặc không thuộc nhóm dịch vụ đã chọn!',
         'not_in_service_id' => ' Hoặc không thuộc dịch vụ đã chọn!',
         'not_in_loginname' => ' Hoặc không khớp với loginname',
@@ -31,6 +31,11 @@ return [
         'not_find_or_not_active_in_list' => ' trong danh sách không tồn tại hoặc đang bị tạm khóa!',
         'parent_not_in_id' => 'Id cha không được trùng với Id hiện tại!',
 
+        /// Error validate param
+        'format' => 'Kiểu dữ liệu không hợp lệ!',
+        'order_by_name' => 'Tên trường cần sắp xếp không hợp lệ!',
+        'record_id' => 'Id không hợp lệ!',
+        'decode_param' => 'Tham số param không hợp lệ!'
     ],
     // Dùng chung
     'all' => [

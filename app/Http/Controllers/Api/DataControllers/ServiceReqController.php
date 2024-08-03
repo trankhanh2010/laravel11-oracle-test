@@ -6,7 +6,9 @@ use App\Http\Controllers\BaseControllers\BaseApiDataController;
 use App\Http\Resources\ServicereqResource;
 use App\Models\HIS\ServiceReq;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
 class ServiceReqController extends BaseApiDataController
@@ -26,6 +28,19 @@ class ServiceReqController extends BaseApiDataController
             //         }
             //     }
             // }
+            $columns = Cache::remember('columns_' . $this->service_req_name, $this->columns_time, function () {
+                return  Schema::connection('oracle_his')->getColumnListing($this->service_req->getTable()) ?? [];
+
+            });
+            foreach ($this->order_by as $key => $item) {
+                if (!in_array($key, $this->order_by_join)) {
+                    if ((!in_array($key, $columns))) {
+                        $this->errors[$key] = $this->mess_order_by_name;
+                        unset($this->order_by_request[camelCaseFromUnderscore($key)]);
+                        unset($this->order_by[$key]);
+                    }
+                }
+            }
             $this->order_by_tring = arrayToCustomString($this->order_by);
         }
 
@@ -48,6 +63,11 @@ class ServiceReqController extends BaseApiDataController
     }
     public function service_req_get_L_view(Request $request)
     {
+        // Kiểm tra param và trả về lỗi nếu nó không hợp lệ
+        if($this->check_param()){
+            return $this->check_param();
+        }
+
         // Kiểm tra xem User có quyền xem execute_room không
         if ($this->execute_room_id != null) {
             if (!view_service_req($this->execute_room_id, $request->bearerToken(), $this->time)) {
@@ -208,6 +228,11 @@ class ServiceReqController extends BaseApiDataController
 
     public function service_req_get_L_view_v2(Request $request)
     {
+        // Kiểm tra param và trả về lỗi nếu nó không hợp lệ
+        if($this->check_param()){
+            return $this->check_param();
+        }
+
         //Kiểm tra xem User có quyền xem execute_room không
         if ($this->execute_room_id != null) {
             if (!view_service_req($this->execute_room_id, $request->bearerToken(), $this->time)) {
@@ -378,6 +403,11 @@ class ServiceReqController extends BaseApiDataController
 
     public function service_req_get_L_view_v3(Request $request)
     {
+        // Kiểm tra param và trả về lỗi nếu nó không hợp lệ
+        if($this->check_param()){
+            return $this->check_param();
+        }
+        
         //Kiểm tra xem User có quyền xem execute_room không
         if ($this->execute_room_id != null) {
             if (!view_service_req($this->execute_room_id, $request->bearerToken(), $this->time)) {

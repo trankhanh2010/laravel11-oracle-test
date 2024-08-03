@@ -7,7 +7,9 @@ use App\Http\Resources\DhstResource;
 use App\Models\HIS\AntibioticRequest;
 use App\Models\HIS\Dhst;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
 class DhstController extends BaseApiDataController
@@ -28,6 +30,19 @@ class DhstController extends BaseApiDataController
             //         }
             //     }
             // }
+            $columns = Cache::remember('columns_' . $this->dhst_name, $this->columns_time, function () {
+                return  Schema::connection('oracle_his')->getColumnListing($this->dhst->getTable()) ?? [];
+
+            });
+            foreach ($this->order_by as $key => $item) {
+                if (!in_array($key, $this->order_by_join)) {
+                    if ((!in_array($key, $columns))) {
+                        $this->errors[$key] = $this->mess_order_by_name;
+                        unset($this->order_by_request[camelCaseFromUnderscore($key)]);
+                        unset($this->order_by[$key]);
+                    }
+                }
+            }
             $this->order_by_tring = arrayToCustomString($this->order_by);
         }
         $this->equal = ">";
@@ -50,6 +65,11 @@ class DhstController extends BaseApiDataController
     }
     public function dhst_get(Request $request)
     {
+        // Kiểm tra param và trả về lỗi nếu nó không hợp lệ
+        if($this->check_param()){
+            return $this->check_param();
+        }
+
         $select = [
             "ID",
             "CREATE_TIME",
@@ -136,6 +156,11 @@ class DhstController extends BaseApiDataController
 
     public function dhst_get_v2(Request $request)
     {
+        // Kiểm tra param và trả về lỗi nếu nó không hợp lệ
+        if($this->check_param()){
+            return $this->check_param();
+        }
+
         $select = [
             "his_dhst.ID",
             "his_dhst.CREATE_TIME",
@@ -234,6 +259,11 @@ class DhstController extends BaseApiDataController
 
     public function dhst_get_v3(Request $request)
     {
+        // Kiểm tra param và trả về lỗi nếu nó không hợp lệ
+        if($this->check_param()){
+            return $this->check_param();
+        }
+
         $select = [
             "ID",
             "CREATE_TIME",

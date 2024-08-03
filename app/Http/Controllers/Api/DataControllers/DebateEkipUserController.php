@@ -6,7 +6,9 @@ use App\Http\Controllers\BaseControllers\BaseApiDataController;
 use App\Http\Resources\DebateEkipUserResource;
 use App\Models\HIS\DebateEkipUser;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class DebateEkipUserController extends BaseApiDataController
 {
@@ -25,6 +27,19 @@ class DebateEkipUserController extends BaseApiDataController
             //         }
             //     }
             // }
+            $columns = Cache::remember('columns_' . $this->debate_ekip_user_name, $this->columns_time, function () {
+                return  Schema::connection('oracle_his')->getColumnListing($this->debate_ekip_user->getTable()) ?? [];
+
+            });
+            foreach ($this->order_by as $key => $item) {
+                if (!in_array($key, $this->order_by_join)) {
+                    if ((!in_array($key, $columns))) {
+                        $this->errors[$key] = $this->mess_order_by_name;
+                        unset($this->order_by_request[camelCaseFromUnderscore($key)]);
+                        unset($this->order_by[$key]);
+                    }
+                }
+            }
             $this->order_by_tring = arrayToCustomString($this->order_by);
         }
         $this->equal = ">";
@@ -46,6 +61,11 @@ class DebateEkipUserController extends BaseApiDataController
     }
     public function debate_ekip_user($id = null)
     {
+        // Kiểm tra param và trả về lỗi nếu nó không hợp lệ
+        if($this->check_param()){
+            return $this->check_param();
+        }
+    
         $select = [
             'his_debate_ekip_user.*',
             'execute_role.execute_role_code',
@@ -117,6 +137,11 @@ class DebateEkipUserController extends BaseApiDataController
 
     public function debate_ekip_user_v2($id = null)
     {
+        // Kiểm tra param và trả về lỗi nếu nó không hợp lệ
+        if($this->check_param()){
+            return $this->check_param();
+        }
+
         $select = [
             'his_debate_ekip_user.*',
             'execute_role.execute_role_code',

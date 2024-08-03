@@ -65,7 +65,7 @@ function create_slug($string)
         $result = [];
         foreach ($array as $key => $value) {
             $newKey = camelToSnake($key);
-            $result[$newKey] = $value;
+            $result[$newKey] = camelToSnake($value);
         }
         return $result;
     }

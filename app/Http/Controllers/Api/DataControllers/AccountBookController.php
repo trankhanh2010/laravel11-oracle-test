@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Api\DataControllers;
 use App\Http\Controllers\BaseControllers\BaseApiDataController;
 use App\Models\HIS\AccountBook;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class AccountBookController extends BaseApiDataController
 {
@@ -24,12 +26,30 @@ class AccountBookController extends BaseApiDataController
             //         }
             //     }
             // }
+            $columns = Cache::remember('columns_' . $this->account_book_name, $this->columns_time, function () {
+                return  Schema::connection('oracle_his')->getColumnListing($this->account_book->getTable()) ?? [];
+
+            });
+            foreach ($this->order_by as $key => $item) {
+                if (!in_array($key, $this->order_by_join)) {
+                    if ((!in_array($key, $columns))) {
+                        $this->errors[$key] = $this->mess_order_by_name;
+                        unset($this->order_by_request[camelCaseFromUnderscore($key)]);
+                        unset($this->order_by[$key]);
+                    }
+                }
+            }
             $this->order_by_tring = arrayToCustomString($this->order_by);
         }
     }
 
     public function account_book_get_view(Request $request)
     {
+        // Kiểm tra param và trả về lỗi nếu nó không hợp lệ
+        if($this->check_param()){
+            return $this->check_param();
+        }
+
         $select = [
             "his_account_book.ID",
             "his_account_book.CREATE_TIME",
