@@ -79,7 +79,7 @@ class SeseDepoRepayController extends BaseApiDataController
             "his_sese_depo_repay.tdl_vir_total_price",
             "his_sese_depo_repay.tdl_vir_total_hein_price",
             "his_sese_depo_repay.tdl_vir_total_patient_price",
-            // "his_sese_depo_repay.sere_serv_id",
+            "V_HIS_SESE_DEPO_REPAY.sere_serv_id",
 
         ];
         $param = [];
@@ -87,6 +87,7 @@ class SeseDepoRepayController extends BaseApiDataController
         $keyword = $this->keyword;
         try {
             $data = $this->sese_depo_repay
+            ->leftJoin('V_HIS_SESE_DEPO_REPAY ', 'his_sese_depo_repay.id', '=', 'V_HIS_SESE_DEPO_REPAY.id')
                 ->select($select);
             $data_id = $this->sese_depo_repay
                 ->select("his_sese_depo_repay.ID");

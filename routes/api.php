@@ -89,6 +89,7 @@ use App\Http\Controllers\Api\DataControllers\UserRoomController;
 use App\Http\Controllers\Api\DataControllers\SereServBillController;
 use App\Http\Controllers\Api\DataControllers\SereServDepositController;
 use App\Http\Controllers\Api\DataControllers\SeseDepoRepayController;
+use App\Http\Controllers\Api\DataControllers\AccountBookController;
 
 // Validate Controllers
 use App\Http\Controllers\Api\ValidateControllers\CheckBedRoomController;
@@ -1140,5 +1141,9 @@ Route::group([
 
     // Sese Depo Repay
     Route::get("v1/sese-depo-repay/get-view", [SeseDepoRepayController::class, "sese_depo_repay_get_view"]);
+
+    // Account Book
+    Route::get("v1/account-book/get-view", [AccountBookController::class, "account_book_get_view"]);
+
 
 });

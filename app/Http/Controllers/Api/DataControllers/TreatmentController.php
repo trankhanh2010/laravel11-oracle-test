@@ -760,7 +760,7 @@ class TreatmentController extends BaseApiDataController
         ];
         try {
             $data = $this->treatment
-            ->leftJoin('V_HIS_TREATMENT_FEE ', 'his_treatment.treatment_code', '=', 'V_HIS_TREATMENT_FEE.treatment_code')
+            ->leftJoin('V_HIS_TREATMENT_FEE ', 'his_treatment.id', '=', 'V_HIS_TREATMENT_FEE.id')
 
             ->select($select);
             $data_id = $this->treatment

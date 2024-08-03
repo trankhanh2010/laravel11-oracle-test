@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\BaseControllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\HIS\AccountBook;
 use App\Models\HIS\BedRoom;
 use App\Models\HIS\Branch;
+use App\Models\HIS\CashierRoom;
 use App\Models\HIS\Debate;
 use App\Models\HIS\DebateEkipUser;
 use App\Models\HIS\DebateUser;
@@ -73,6 +75,8 @@ class BaseApiDataController extends Controller
     protected $in_date_from;
     protected $in_date_to;
     protected $is_approve_store;
+    protected $for_deposit;
+    protected $loginname;
     protected $service_id;
     protected $package_id;
     protected $department_id;
@@ -114,6 +118,8 @@ class BaseApiDataController extends Controller
     protected $sere_serv_bill_id;
     protected $sere_serv_deposit_id;
     protected $sese_depo_repay_id;
+    protected $cashier_room_id;
+    protected $account_book_id;
     protected $include_material;
     protected $include_blood_pres;
     protected $patient_code__exact;
@@ -122,6 +128,7 @@ class BaseApiDataController extends Controller
     protected $add_time_from;
     protected $bed_room_ids;
     protected $treatment_bed_room_id;
+    protected $is_out_of_bill;
 
     // Khai báo các biến mặc định model
     protected $app_creator = "MOS_v2";
@@ -151,6 +158,7 @@ class BaseApiDataController extends Controller
     protected $sere_serv_bill;
     protected $sere_serv_deposit;
     protected $sese_depo_repay;
+    protected $account_book;
     public function __construct(Request $request)
     {
         // Khai báo các biến
@@ -669,5 +677,43 @@ class BaseApiDataController extends Controller
             }
         }
 
+        $this->is_out_of_bill = $this->param_request['ApiData']['IsOutOfBill'] ?? null;
+        if (!is_bool ($this->is_out_of_bill)) {
+            $this->is_out_of_bill = null;
+        }
+
+        $this->for_deposit = $this->param_request['ApiData']['ForDeposit'] ?? null;
+        if (!is_bool ($this->for_deposit)) {
+            $this->for_deposit = null;
+        }
+
+        $this->loginname = $this->param_request['ApiData']['Loginname'] ?? null;
+        if (!is_string ($this->loginname)) {
+            $this->loginname = null;
+        }
+
+        $this->cashier_room_id = $this->param_request['ApiData']['CashierRoomId'] ?? null;
+        if ($this->cashier_room_id != null) {
+            // Kiểm tra xem ID có tồn tại trong bảng  hay không
+            if (!is_numeric($this->cashier_room_id)) {
+                $this->cashier_room_id = null;
+            } else {
+                if (!CashierRoom::where('id', $this->cashier_room_id)->exists()) {
+                    $this->cashier_room_id = null;
+                }
+            }
+        }
+
+        $this->account_book_id = $this->param_request['ApiData']['AccountBookId'] ?? null;
+        if ($this->account_book_id != null) {
+            // Kiểm tra xem ID có tồn tại trong bảng  hay không
+            if (!is_numeric($this->account_book_id)) {
+                $this->account_book_id = null;
+            } else {
+                if (!AccountBook::where('id', $this->account_book_id)->exists()) {
+                    $this->account_book_id = null;
+                }
+            }
+        }
     }
 }

@@ -46,7 +46,7 @@ class SeseDepoRepayGetViewResource extends JsonResource
             'tdlVirTotalPrice' => $this->tdl_vir_total_price,
             'tdlVirTotalHeinPrice' => $this->tdl_vir_total_hein_price,
             'tdlVirTotalPatientPrice' => $this->tdl_vir_total_patient_price,
-            // 'sereServId' => $this->sere_serv_id,
+            'sereServId' => $this->sere_serv_id,
 
         ];
     }
