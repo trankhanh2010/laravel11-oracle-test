@@ -8,7 +8,9 @@ use App\Http\Requests\BodyPart\UpdateBodyPartRequest;
 use App\Models\HIS\BodyPart;
 use Illuminate\Http\Request;
 use App\Events\Cache\DeleteCache;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class BodyPartController extends BaseApiCacheController
 {
@@ -18,10 +20,24 @@ class BodyPartController extends BaseApiCacheController
 
         // Kiểm tra tên trường trong bảng
         if ($this->order_by != null) {
+            // foreach ($this->order_by as $key => $item) {
+            //     if (!$this->body_part->getConnection()->getSchemaBuilder()->hasColumn($this->body_part->getTable(), $key)) {
+            //         unset($this->order_by_request[camelCaseFromUnderscore($key)]);       
+            //         unset($this->order_by[$key]);               
+            //     }
+            // }
+            $this->order_by_join = [];
+            $columns = Cache::remember('columns_' . $this->body_part_name, $this->columns_time, function () {
+                return  Schema::connection('oracle_his')->getColumnListing($this->body_part->getTable()) ?? [];
+
+            });
             foreach ($this->order_by as $key => $item) {
-                if (!$this->body_part->getConnection()->getSchemaBuilder()->hasColumn($this->body_part->getTable(), $key)) {
-                    unset($this->order_by_request[camelCaseFromUnderscore($key)]);       
-                    unset($this->order_by[$key]);               
+                if (!in_array($key, $this->order_by_join)) {
+                    if ((!in_array($key, $columns))) {
+                        $this->errors[snakeToCamel($key)] = $this->mess_order_by_name;
+                        unset($this->order_by_request[camelCaseFromUnderscore($key)]);
+                        unset($this->order_by[$key]);
+                    }
                 }
             }
             $this->order_by_tring = arrayToCustomString($this->order_by);
@@ -29,6 +45,11 @@ class BodyPartController extends BaseApiCacheController
     }
     public function body_part($id = null)
     {
+        // Kiểm tra param và trả về lỗi nếu nó không hợp lệ
+        if($this->check_param()){
+            return $this->check_param();
+        }
+        try {
         $keyword = $this->keyword;
         if ($keyword != null) {
             $data = $this->body_part;
@@ -80,6 +101,10 @@ class BodyPartController extends BaseApiCacheController
             'order_by' => $this->order_by_request
         ];
         return return_data_success($param_return, $data ?? $data['data']);
+    } catch (\Exception $e) {
+        // Xử lý lỗi và trả về phản hồi lỗi
+        return return_500_error();
+    }
     }
 
     public function body_part_create(CreateBodyPartRequest $request)

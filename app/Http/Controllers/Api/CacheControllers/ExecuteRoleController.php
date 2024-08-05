@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\DB;
 use App\Events\Cache\DeleteCache;
 use App\Http\Requests\ExecuteRole\CreateExecuteRoleRequest;
 use App\Http\Requests\ExecuteRole\UpdateExecuteRoleRequest;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Schema;
 
 class ExecuteRoleController extends BaseApiCacheController
 {
@@ -19,10 +21,24 @@ class ExecuteRoleController extends BaseApiCacheController
 
         // Kiểm tra tên trường trong bảng
         if ($this->order_by != null) {
+            // foreach ($this->order_by as $key => $item) {
+            //     if (!$this->execute_role->getConnection()->getSchemaBuilder()->hasColumn($this->execute_role->getTable(), $key)) {
+            //         unset($this->order_by_request[camelCaseFromUnderscore($key)]);       
+            //         unset($this->order_by[$key]);               
+            //     }
+            // }
+            $this->order_by_join = [];
+            $columns = Cache::remember('columns_' . $this->execute_role_name, $this->columns_time, function () {
+                return  Schema::connection('oracle_his')->getColumnListing($this->execute_role->getTable()) ?? [];
+
+            });
             foreach ($this->order_by as $key => $item) {
-                if (!$this->execute_role->getConnection()->getSchemaBuilder()->hasColumn($this->execute_role->getTable(), $key)) {
-                    unset($this->order_by_request[camelCaseFromUnderscore($key)]);       
-                    unset($this->order_by[$key]);               
+                if (!in_array($key, $this->order_by_join)) {
+                    if ((!in_array($key, $columns))) {
+                        $this->errors[snakeToCamel($key)] = $this->mess_order_by_name;
+                        unset($this->order_by_request[camelCaseFromUnderscore($key)]);
+                        unset($this->order_by[$key]);
+                    }
                 }
             }
             $this->order_by_tring = arrayToCustomString($this->order_by);
@@ -30,6 +46,11 @@ class ExecuteRoleController extends BaseApiCacheController
     }
     public function execute_role($id = null)
     {
+        // Kiểm tra param và trả về lỗi nếu nó không hợp lệ
+        if($this->check_param()){
+            return $this->check_param();
+        }
+        try {
         $keyword = $this->keyword;
         if ($keyword != null) {
             $param = [
@@ -134,6 +155,10 @@ class ExecuteRoleController extends BaseApiCacheController
             'order_by' => $this->order_by_request
         ];
         return return_data_success($param_return, $data ?? $data['data']);
+    } catch (\Exception $e) {
+        // Xử lý lỗi và trả về phản hồi lỗi
+        return return_500_error();
+    }
     }
 
     public function execute_role_create(CreateExecuteRoleRequest $request)

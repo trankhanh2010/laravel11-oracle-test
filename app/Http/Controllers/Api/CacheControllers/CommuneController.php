@@ -10,6 +10,8 @@ use App\Http\Requests\Commune\CreateCommuneRequest;
 use App\Http\Requests\Commune\UpdateCommuneRequest;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Schema;
+
 class CommuneController extends BaseApiCacheController
 {
     public function __construct(Request $request){
@@ -18,10 +20,24 @@ class CommuneController extends BaseApiCacheController
 
         // Kiểm tra tên trường trong bảng
         if ($this->order_by != null) {
+            // foreach ($this->order_by as $key => $item) {
+            //     if (!$this->commune->getConnection()->getSchemaBuilder()->hasColumn($this->commune->getTable(), $key)) {
+            //         unset($this->order_by_request[camelCaseFromUnderscore($key)]);       
+            //         unset($this->order_by[$key]);               
+            //     }
+            // }
+            $this->order_by_join = [];
+            $columns = Cache::remember('columns_' . $this->commune_name, $this->columns_time, function () {
+                return  Schema::connection('oracle_sda')->getColumnListing($this->commune->getTable()) ?? [];
+
+            });
             foreach ($this->order_by as $key => $item) {
-                if (!$this->commune->getConnection()->getSchemaBuilder()->hasColumn($this->commune->getTable(), $key)) {
-                    unset($this->order_by_request[camelCaseFromUnderscore($key)]);       
-                    unset($this->order_by[$key]);               
+                if (!in_array($key, $this->order_by_join)) {
+                    if ((!in_array($key, $columns))) {
+                        $this->errors[snakeToCamel($key)] = $this->mess_order_by_name;
+                        unset($this->order_by_request[camelCaseFromUnderscore($key)]);
+                        unset($this->order_by[$key]);
+                    }
                 }
             }
             $this->order_by_tring = arrayToCustomString($this->order_by);
@@ -29,6 +45,11 @@ class CommuneController extends BaseApiCacheController
     }
     public function commune($id = null)
     {
+        // Kiểm tra param và trả về lỗi nếu nó không hợp lệ
+        if($this->check_param()){
+            return $this->check_param();
+        }
+        try {
         $keyword = $this->keyword;
         if($keyword != null){
             $data = $this->commune
@@ -122,6 +143,10 @@ class CommuneController extends BaseApiCacheController
             'order_by' => $this->order_by_request
         ];
         return return_data_success($param_return, $data ?? $data['data']);
+    } catch (\Exception $e) {
+        // Xử lý lỗi và trả về phản hồi lỗi
+        return return_500_error();
+    }
     }
     public function commune_create(CreateCommuneRequest $request)
     {

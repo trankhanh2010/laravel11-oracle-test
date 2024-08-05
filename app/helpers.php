@@ -54,6 +54,18 @@ function create_slug($string)
         return $snake;
     }
 
+    function snakeToCamel($string) {
+        // Chuyển chuỗi về dạng mảng với dấu gạch dưới làm phân tách
+        $words = explode('_', $string);
+        
+        // Chuyển từ thứ hai trở đi thành chữ hoa đầu
+        $words = array_map(function($word, $index) {
+            return $index == 0 ? $word : ucfirst($word);
+        }, $words, array_keys($words));
+        
+        // Gộp mảng thành chuỗi
+        return implode('', $words);
+    }
     function camelCaseFromUnderscore($string)
     {
         return lcfirst(preg_replace_callback('/(?:^|_)([a-z])/', function($matches) {

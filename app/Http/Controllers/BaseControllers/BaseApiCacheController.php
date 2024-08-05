@@ -19,6 +19,7 @@ class BaseApiCacheController extends Controller
     protected $errors = [];
     protected $data = [];
     protected $time;
+    protected $columns_time;
     protected $arr_limit;
     protected $start;
     protected $start_name = 'Start';
@@ -401,6 +402,7 @@ class BaseApiCacheController extends Controller
         // Khai báo các biến
         // Thời gian tồn tại của cache
         $this->time = now()->addMinutes(10080);
+        $this->columns_time = now()->addMinutes(20000);
 
         // Thông báo lỗi 
         $this->mess_format = config('keywords')['error']['format'];

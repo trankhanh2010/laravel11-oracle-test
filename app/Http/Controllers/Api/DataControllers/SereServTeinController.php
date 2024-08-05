@@ -35,7 +35,7 @@ class SereServTeinController extends BaseApiDataController
             foreach ($this->order_by as $key => $item) {
                 if (!in_array($key, $this->order_by_join)) {
                     if ((!in_array($key, $columns))) {
-                        $this->errors[$key] = $this->mess_order_by_name;
+                        $this->errors[snakeToCamel($key)] = $this->mess_order_by_name;
                         unset($this->order_by_request[camelCaseFromUnderscore($key)]);
                         unset($this->order_by[$key]);
                     }
