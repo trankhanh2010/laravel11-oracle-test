@@ -22,27 +22,8 @@ class TreatmentBedRoomController extends BaseApiDataController
         $this->order_by_join = [];
         // Kiểm tra tên trường trong bảng
         if ($this->order_by != null) {
-            // foreach ($this->order_by as $key => $item) {
-            //     if (!in_array($key, $this->order_by_join)) {
-            //         if (!$this->treatment->getConnection()->getSchemaBuilder()->hasColumn($this->treatment->getTable(), $key)) {
-            //             unset($this->order_by_request[camelCaseFromUnderscore($key)]);
-            //             unset($this->order_by[$key]);
-            //         }
-            //     }
-            // }
-            $columns = Cache::remember('columns_' . $this->treatment_bed_room_name, $this->columns_time, function () {
-                return  Schema::connection('oracle_his')->getColumnListing($this->treatment_bed_room->getTable()) ?? [];
-
-            });
-            foreach ($this->order_by as $key => $item) {
-                if (!in_array($key, $this->order_by_join)) {
-                    if ((!in_array($key, $columns))) {
-                        $this->errors[snakeToCamel($key)] = $this->mess_order_by_name;
-                        unset($this->order_by_request[camelCaseFromUnderscore($key)]);
-                        unset($this->order_by[$key]);
-                    }
-                }
-            }
+            $columns = $this->get_columns_table($this->treatment_bed_room);
+            $this->order_by = $this->check_order_by($this->order_by, $columns, $this->order_by_join ?? []);
             $this->order_by_tring = arrayToCustomString($this->order_by);
         }
 

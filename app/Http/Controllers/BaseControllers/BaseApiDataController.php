@@ -31,6 +31,8 @@ use App\Models\HIS\Treatment;
 use App\Models\HIS\TreatmentBedRoom;
 use App\Models\HIS\TreatmentType;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Schema;
 
 class BaseApiDataController extends Controller
 {
@@ -273,12 +275,34 @@ class BaseApiDataController extends Controller
         return $this->errors;
     }
 
-    protected function check_param(){
+    protected function check_param()
+    {
         if ($this->has_errors()) {
             return return_400($this->get_errors());
         }
         return null;
-
+    }
+    protected function get_columns_table($table)
+    {
+        $parts = explode('_', $table->getTable());
+        $conn = strtolower($parts[0]);
+        $columns_table = Cache::remember('columns_' . $table->getTable(), $this->columns_time, function () use ($table, $conn) {
+            return  Schema::connection('oracle_'.$conn)->getColumnListing($table->getTable()) ?? [];
+        });
+        return $columns_table;
+    }
+    protected function check_order_by($order_by, $columns, $order_by_join)
+    {
+        foreach ($order_by as $key => $item) {
+            if (!in_array($key, $order_by_join)) {
+                if ((!in_array($key, $columns))) {
+                    $this->errors[snakeToCamel($key)] = $this->mess_order_by_name;
+                    unset($this->order_by_request[camelCaseFromUnderscore($key)]);
+                    unset($this->order_by[$key]);
+                }
+            }
+        }
+        return $order_by;
     }
     public function __construct(Request $request)
     {

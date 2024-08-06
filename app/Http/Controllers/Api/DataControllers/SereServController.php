@@ -21,27 +21,8 @@ class SereServController extends BaseApiDataController
         $this->order_by_join = [];
         // Kiểm tra tên trường trong bảng
         if ($this->order_by != null) {
-            // foreach ($this->order_by as $key => $item) {
-            //     if (!in_array($key, $this->order_by_join)) {
-            //         if ((!$this->sere_serv->getConnection()->getSchemaBuilder()->hasColumn($this->sere_serv->getTable(), $key))) {
-            //             unset($this->order_by_request[camelCaseFromUnderscore($key)]);
-            //             unset($this->order_by[$key]);
-            //         }
-            //     }
-            // }
-            $columns = Cache::remember('columns_' . $this->sere_serv_name, $this->columns_time, function () {
-                return  Schema::connection('oracle_his')->getColumnListing($this->sere_serv->getTable()) ?? [];
-
-            });
-            foreach ($this->order_by as $key => $item) {
-                if (!in_array($key, $this->order_by_join)) {
-                    if ((!in_array($key, $columns))) {
-                        $this->errors[snakeToCamel($key)] = $this->mess_order_by_name;
-                        unset($this->order_by_request[camelCaseFromUnderscore($key)]);
-                        unset($this->order_by[$key]);
-                    }
-                }
-            }
+            $columns = $this->get_columns_table($this->sere_serv);
+            $this->order_by = $this->check_order_by($this->order_by, $columns, $this->order_by_join ?? []);
             $this->order_by_tring = arrayToCustomString($this->order_by);
         }
         $this->equal = ">";
