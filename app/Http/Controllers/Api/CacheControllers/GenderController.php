@@ -15,12 +15,8 @@ class GenderController extends BaseApiCacheController
 
         // Kiểm tra tên trường trong bảng
         if ($this->order_by != null) {
-            foreach ($this->order_by as $key => $item) {
-                if (!$this->gender->getConnection()->getSchemaBuilder()->hasColumn($this->gender->getTable(), $key)) {
-                    unset($this->order_by_request[camelCaseFromUnderscore($key)]);       
-                    unset($this->order_by[$key]);               
-                }
-            }
+            $columns = $this->get_columns_table($this->gender);
+            $this->order_by = $this->check_order_by($this->order_by, $columns, $this->order_by_join ?? []);
             $this->order_by_tring = arrayToCustomString($this->order_by);
         }
     }
@@ -74,11 +70,11 @@ class GenderController extends BaseApiCacheController
         $param_return = [
             'start' => $this->start,
             'limit' => $this->limit,
-            'count' => $count ?? $data['count'],
+            'count' => $count ?? null,
             'is_active' => $this->is_active,
             'keyword' => $this->keyword,
             'order_by' => $this->order_by_request
         ];
-        return return_data_success($param_return, $data ?? $data['data']);
+        return return_data_success($param_return, $data ?? $data['data'] ?? null);
     }
 }

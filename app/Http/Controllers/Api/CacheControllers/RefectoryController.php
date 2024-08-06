@@ -17,14 +17,11 @@ class RefectoryController extends BaseApiCacheController
         parent::__construct($request); // Gọi constructor của BaseController
         $this->refectory = new Refectory();
         $this->room = new Room();
+
         // Kiểm tra tên trường trong bảng
         if ($this->order_by != null) {
-            foreach ($this->order_by as $key => $item) {
-                if (!$this->refectory->getConnection()->getSchemaBuilder()->hasColumn($this->refectory->getTable(), $key)) {
-                    unset($this->order_by_request[camelCaseFromUnderscore($key)]);       
-                    unset($this->order_by[$key]);               
-                }
-            }
+            $columns = $this->get_columns_table($this->refectory);
+            $this->order_by = $this->check_order_by($this->order_by, $columns, $this->order_by_join ?? []);
             $this->order_by_tring = arrayToCustomString($this->order_by);
         }
     }

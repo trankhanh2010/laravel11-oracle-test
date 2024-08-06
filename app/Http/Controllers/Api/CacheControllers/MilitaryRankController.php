@@ -15,12 +15,8 @@ class MilitaryRankController extends BaseApiCacheController
 
         // Kiểm tra tên trường trong bảng
         if ($this->order_by != null) {
-            foreach ($this->order_by as $key => $item) {
-                if (!$this->military_rank->getConnection()->getSchemaBuilder()->hasColumn($this->military_rank->getTable(), $key)) {
-                    unset($this->order_by_request[camelCaseFromUnderscore($key)]);       
-                    unset($this->order_by[$key]);               
-                }
-            }
+            $columns = $this->get_columns_table($this->military_rank);
+            $this->order_by = $this->check_order_by($this->order_by, $columns, $this->order_by_join ?? []);
             $this->order_by_tring = arrayToCustomString($this->order_by);
         }
     }

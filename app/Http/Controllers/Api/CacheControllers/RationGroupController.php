@@ -15,12 +15,8 @@ class RationGroupController extends BaseApiCacheController
 
         // Kiểm tra tên trường trong bảng
         if ($this->order_by != null) {
-            foreach ($this->order_by as $key => $item) {
-                if (!$this->ration_group->getConnection()->getSchemaBuilder()->hasColumn($this->ration_group->getTable(), $key)) {
-                    unset($this->order_by_request[camelCaseFromUnderscore($key)]);       
-                    unset($this->order_by[$key]);               
-                }
-            }
+            $columns = $this->get_columns_table($this->ration_group);
+            $this->order_by = $this->check_order_by($this->order_by, $columns, $this->order_by_join ?? []);
             $this->order_by_tring = arrayToCustomString($this->order_by);
         }
     }

@@ -13,6 +13,8 @@ use App\Models\HIS\RoomType;
 use App\Models\HIS\Service;
 use Illuminate\Http\Request;
 use App\Models\HIS\ServiceType;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Schema;
 
 class BaseApiCacheController extends Controller
 {
@@ -397,6 +399,28 @@ class BaseApiCacheController extends Controller
         }
         return null;
     }
+    protected function get_columns_table($table)
+    {
+        $parts = explode('_', $table->getTable());
+        $conn = strtolower($parts[0]);
+        $columns_table = Cache::remember('columns_' . $table->getTable(), $this->columns_time, function () use ($table, $conn) {
+            return  Schema::connection('oracle_'.$conn)->getColumnListing($table->getTable()) ?? [];
+        });
+        return $columns_table;
+    }
+    protected function check_order_by($order_by, $columns, $order_by_join)
+    {
+        foreach ($order_by as $key => $item) {
+            if (!in_array($key, $order_by_join)) {
+                if ((!in_array($key, $columns))) {
+                    $this->errors[snakeToCamel($key)] = $this->mess_order_by_name;
+                    unset($this->order_by_request[camelCaseFromUnderscore($key)]);
+                    unset($this->order_by[$key]);
+                }
+            }
+        }
+        return $order_by;
+    }
     public function __construct(Request $request)
     {
         // Khai báo các biến
@@ -424,12 +448,12 @@ class BaseApiCacheController extends Controller
         $this->page = $request->query('page', 1);
         $this->start = $this->param_request['CommonParam']['Start'] ?? intval($request->start) ?? 0;
         $this->limit = $this->param_request['CommonParam']['Limit'] ?? intval($request->limit) ?? 10;
-        if($this->limit <= 0){
+        if ($this->limit <= 0) {
             $this->limit = 10;
         }
         $this->arr_limit = [10, 20, 50, 100, 200, 500, 1000, 2000, 4000];
         if (($this->limit < 10) || (!in_array($this->limit, $this->arr_limit))) {
-            $this->errors[$this->limit_name] = $this->mess_format.' Chỉ nhận giá trị thuộc mảng sau '.implode(', ', $this->arr_limit) ;
+            $this->errors[$this->limit_name] = $this->mess_format . ' Chỉ nhận giá trị thuộc mảng sau ' . implode(', ', $this->arr_limit);
             $this->limit = 10;
         }
         if ($this->start != null) {
@@ -445,8 +469,8 @@ class BaseApiCacheController extends Controller
         //     }
         // }
         $this->keyword = $this->param_request['ApiData']['KeyWord'] ?? $request->keyword ?? "";
-        if($this->keyword !== null){
-            if (!is_string ($this->keyword)) {
+        if ($this->keyword !== null) {
+            if (!is_string($this->keyword)) {
                 $this->errors[$this->keyword_name] = $this->mess_format;
                 $this->keyword = null;
             }
@@ -456,23 +480,23 @@ class BaseApiCacheController extends Controller
         $this->order_by_request = $this->param_request['ApiData']['OrderBy'] ?? null;
         if ($this->order_by != null) {
             $this->order_by = convertArrayKeysToSnakeCase($this->order_by);
-            foreach($this->order_by as $key => $item){
-                if(!in_array($item, ['asc', 'desc'])){
+            foreach ($this->order_by as $key => $item) {
+                if (!in_array($item, ['asc', 'desc'])) {
                     $this->errors[$this->order_by_name] = $this->mess_format;
                 }
             }
         }
 
         $this->is_active = $this->param_request['ApiData']['IsActive'] ?? null;
-        if($this->is_active !== null){
-            if (!in_array ($this->is_active, [0,1])) {
+        if ($this->is_active !== null) {
+            if (!in_array($this->is_active, [0, 1])) {
                 $this->errors[$this->is_active_name] = $this->mess_format;
                 $this->is_active = 1;
             }
         }
 
         $this->only_active = $this->param_request['ApiData']['OnlyActive'] ?? false;
-        if (!is_bool ($this->only_active)) {
+        if (!is_bool($this->only_active)) {
             $this->errors[$this->only_active_name] = $this->mess_format;
             $this->only_active = false;
         }

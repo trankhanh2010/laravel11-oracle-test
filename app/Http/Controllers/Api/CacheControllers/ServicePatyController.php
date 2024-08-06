@@ -24,14 +24,8 @@ class ServicePatyController extends BaseApiCacheController
         $this->order_by_join = ['service_name', 'service_code', 'patient_type_name', 'patient_type_code', 'branch_name', 'branch_code', 'package_name', 'package_code'];
         // Kiểm tra tên trường trong bảng
         if ($this->order_by != null) {
-            foreach ($this->order_by as $key => $item) {
-                if (!in_array($key, $this->order_by_join)) {
-                    if (!$this->service_paty->getConnection()->getSchemaBuilder()->hasColumn($this->service_paty->getTable(), $key)) {
-                        unset($this->order_by_request[camelCaseFromUnderscore($key)]);
-                        unset($this->order_by[$key]);
-                    }
-                }
-            }
+            $columns = $this->get_columns_table($this->service_paty);
+            $this->order_by = $this->check_order_by($this->order_by, $columns, $this->order_by_join ?? []);
             $this->order_by_tring = arrayToCustomString($this->order_by);
         }
     }
@@ -211,9 +205,9 @@ class ServicePatyController extends BaseApiCacheController
                     if ($this->order_by != null) {
                         foreach ($this->order_by as $key => $item) {
                             if (!in_array($key, $this->order_by_join)) {
-                                $data->orderBy(DB::connection('oracle_his')->raw('his_service_paty.' . $key . ')'), $item);
+                                $data->orderBy(DB::connection('oracle_his')->raw('his_service_paty.' . $key . ''), $item);
                             } else {
-                                $data->orderBy(DB::connection('oracle_his')->raw('' . $key . ')'), $item);
+                                $data->orderBy(DB::connection('oracle_his')->raw('' . $key . ''), $item);
                             }
                         }
                     }

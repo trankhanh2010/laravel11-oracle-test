@@ -20,26 +20,8 @@ class BodyPartController extends BaseApiCacheController
 
         // Kiểm tra tên trường trong bảng
         if ($this->order_by != null) {
-            // foreach ($this->order_by as $key => $item) {
-            //     if (!$this->body_part->getConnection()->getSchemaBuilder()->hasColumn($this->body_part->getTable(), $key)) {
-            //         unset($this->order_by_request[camelCaseFromUnderscore($key)]);       
-            //         unset($this->order_by[$key]);               
-            //     }
-            // }
-            $this->order_by_join = [];
-            $columns = Cache::remember('columns_' . $this->body_part_name, $this->columns_time, function () {
-                return  Schema::connection('oracle_his')->getColumnListing($this->body_part->getTable()) ?? [];
-
-            });
-            foreach ($this->order_by as $key => $item) {
-                if (!in_array($key, $this->order_by_join)) {
-                    if ((!in_array($key, $columns))) {
-                        $this->errors[snakeToCamel($key)] = $this->mess_order_by_name;
-                        unset($this->order_by_request[camelCaseFromUnderscore($key)]);
-                        unset($this->order_by[$key]);
-                    }
-                }
-            }
+            $columns = $this->get_columns_table($this->body_part);
+            $this->order_by = $this->check_order_by($this->order_by, $columns, $this->order_by_join ?? []);
             $this->order_by_tring = arrayToCustomString($this->order_by);
         }
     }
@@ -95,12 +77,12 @@ class BodyPartController extends BaseApiCacheController
         $param_return = [
             'start' => $this->start,
             'limit' => $this->limit,
-            'count' => $count ?? $data['count'],
+            'count' => $count ?? null,
             'is_active' => $this->is_active,
             'keyword' => $this->keyword,
             'order_by' => $this->order_by_request
         ];
-        return return_data_success($param_return, $data ?? $data['data']);
+        return return_data_success($param_return, $data ?? $data['data'] ?? null);
     } catch (\Exception $e) {
         // Xử lý lỗi và trả về phản hồi lỗi
         return return_500_error();

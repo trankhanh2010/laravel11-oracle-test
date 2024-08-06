@@ -16,12 +16,8 @@ class SaleProfitCfgController extends BaseApiCacheController
 
         // Kiểm tra tên trường trong bảng
         if ($this->order_by != null) {
-            foreach ($this->order_by as $key => $item) {
-                if (!$this->sale_profit_cfg->getConnection()->getSchemaBuilder()->hasColumn($this->sale_profit_cfg->getTable(), $key)) {
-                    unset($this->order_by_request[camelCaseFromUnderscore($key)]);       
-                    unset($this->order_by[$key]);               
-                }
-            }
+            $columns = $this->get_columns_table($this->sale_profit_cfg);
+            $this->order_by = $this->check_order_by($this->order_by, $columns, $this->order_by_join ?? []);
             $this->order_by_tring = arrayToCustomString($this->order_by);
         }
     }
