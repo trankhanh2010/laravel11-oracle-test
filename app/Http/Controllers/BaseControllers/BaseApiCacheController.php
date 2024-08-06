@@ -3,9 +3,15 @@
 namespace App\Http\Controllers\BaseControllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\ACS\Module;
+use App\Models\ACS\Role;
 use App\Models\HIS\Bed;
 use App\Models\HIS\Department;
+use App\Models\HIS\Employee;
+use App\Models\HIS\ExecuteRole;
 use App\Models\HIS\Machine;
+use App\Models\HIS\MedicineType;
+use App\Models\HIS\MediStock;
 use App\Models\HIS\Package;
 use App\Models\HIS\PatientType;
 use App\Models\HIS\Room;
@@ -69,6 +75,20 @@ class BaseApiCacheController extends Controller
     protected $is_addition_name = 'IsAddition';
     protected $service_type_id;
     protected $service_type_id_name = 'ServiceTypeId';
+    protected $loginname;
+    protected $loginname_name = 'Loginname';
+    protected $execute_role_id;
+    protected $execute_role_id_name = 'ExecuteRoleId';
+    protected $module_id;
+    protected $module_id_name = 'ModuleId';
+    protected $role_id;
+    protected $role_id_name = 'RoleId';
+    protected $medi_stock_id;
+    protected $medi_stock_id_name = 'MediStockId';
+    protected $patient_type_id;
+    protected $patient_type_id_name = 'PatientTypeId';
+    protected $medicine_type_id;
+    protected $medicine_type_id_name = 'medicine_type_id';
     protected $patient_type_ids_string;
     protected $service_type_ids_string;
 
@@ -374,6 +394,12 @@ class BaseApiCacheController extends Controller
     protected $package_name = 'package';
     protected $service_condition;
     protected $service_condition_name = 'service_condition';
+    protected $employee;
+    protected $employee_name = 'employee';
+    protected $token ;
+    protected $token_name = 'token';
+    protected $medi_stock_mety;
+    protected $medi_stock_mety_name = 'medi_stock_mety';
 
     // Thông báo lỗi
     protected $mess_format;
@@ -693,6 +719,97 @@ class BaseApiCacheController extends Controller
                         $this->errors[$this->bed_ids_name] = $this->mess_record_id;
                         unset($this->bed_ids[$key]);
                     }
+                }
+            }
+        }
+        $this->loginname = $this->param_request['ApiData']['Loginname'] ?? null;
+        if ($this->loginname !== null) {
+            // Kiểm tra xem ID có tồn tại trong bảng  hay không
+            if (!is_string($this->loginname)) {
+                $this->errors[$this->loginname_name] = $this->mess_format;
+                $this->loginname = null;
+            } else {
+                if (!Employee::where('loginname', $this->loginname)->exists()) {
+                    $this->errors[$this->loginname_name] = $this->mess_record_id;
+                    $this->loginname = null;
+                }
+            }
+        }
+        $this->execute_role_id = $this->param_request['ApiData']['ExecuteRoleId'] ?? null;
+        if ($this->execute_role_id !== null) {
+            // Kiểm tra xem ID có tồn tại trong bảng  hay không
+            if (!is_numeric($this->execute_role_id)) {
+                $this->errors[$this->execute_role_id_name] = $this->mess_format;
+                $this->execute_role_id = null;
+            } else {
+                if (!ExecuteRole::where('id', $this->execute_role_id)->exists()) {
+                    $this->errors[$this->execute_role_id_name] = $this->mess_record_id;
+                    $this->execute_role_id = null;
+                }
+            }
+        }
+        $this->module_id = $this->param_request['ApiData']['ModuleId'] ?? null;
+        if ($this->module_id !== null) {
+            // Kiểm tra xem ID có tồn tại trong bảng  hay không
+            if (!is_numeric($this->module_id)) {
+                $this->errors[$this->module_id_name] = $this->mess_format;
+                $this->module_id = null;
+            } else {
+                if (!Module::where('id', $this->module_id)->exists()) {
+                    $this->errors[$this->module_id_name] = $this->mess_record_id;
+                    $this->module_id = null;
+                }
+            }
+        }
+        $this->role_id = $this->param_request['ApiData']['RoleId'] ?? null;
+        if ($this->role_id !== null) {
+            // Kiểm tra xem ID có tồn tại trong bảng  hay không
+            if (!is_numeric($this->role_id)) {
+                $this->errors[$this->role_id_name] = $this->mess_format;
+                $this->role_id = null;
+            } else {
+                if (!Role::where('id', $this->role_id)->exists()) {
+                    $this->errors[$this->role_id_name] = $this->mess_record_id;
+                    $this->role_id = null;
+                }
+            }
+        }
+        $this->medi_stock_id = $this->param_request['ApiData']['MediStockId'] ?? null;
+        if ($this->medi_stock_id !== null) {
+            // Kiểm tra xem ID có tồn tại trong bảng  hay không
+            if (!is_numeric($this->medi_stock_id)) {
+                $this->errors[$this->medi_stock_id_name] = $this->mess_format;
+                $this->medi_stock_id = null;
+            } else {
+                if (!MediStock::where('id', $this->medi_stock_id)->exists()) {
+                    $this->errors[$this->medi_stock_id_name] = $this->mess_record_id;
+                    $this->medi_stock_id = null;
+                }
+            }
+        }
+        $this->patient_type_id = $this->param_request['ApiData']['PatientTypeId'] ?? null;
+        if ($this->patient_type_id !== null) {
+            // Kiểm tra xem ID có tồn tại trong bảng  hay không
+            if (!is_numeric($this->patient_type_id)) {
+                $this->errors[$this->patient_type_id_name] = $this->mess_format;
+                $this->patient_type_id = null;
+            } else {
+                if (!PatientType::where('id', $this->patient_type_id)->exists()) {
+                    $this->errors[$this->patient_type_id_name] = $this->mess_record_id;
+                    $this->patient_type_id = null;
+                }
+            }
+        }
+        $this->medicine_type_id = $this->param_request['ApiData']['MedicineTypeId'] ?? null;
+        if ($this->medicine_type_id !== null) {
+            // Kiểm tra xem ID có tồn tại trong bảng  hay không
+            if (!is_numeric($this->medicine_type_id)) {
+                $this->errors[$this->medicine_type_id_name] = $this->mess_format;
+                $this->medicine_type_id = null;
+            } else {
+                if (!MedicineType::where('id', $this->medicine_type_id)->exists()) {
+                    $this->errors[$this->medicine_type_id_name] = $this->mess_record_id;
+                    $this->medicine_type_id = null;
                 }
             }
         }

@@ -71,6 +71,13 @@ use App\Http\Controllers\Api\CacheControllers\ServiceMachineController;
 use App\Http\Controllers\Api\CacheControllers\ServiceRoomController;
 use App\Http\Controllers\Api\CacheControllers\ServiceFollowController;
 use App\Http\Controllers\Api\CacheControllers\BedBstyController;
+use App\Http\Controllers\Api\CacheControllers\ServSegrController;
+use App\Http\Controllers\Api\CacheControllers\ServiceGroupController;
+use App\Http\Controllers\Api\CacheControllers\InfoUserController;
+use App\Http\Controllers\Api\CacheControllers\ExecuteRoleUserController;
+use App\Http\Controllers\Api\CacheControllers\ModuleRoleController;
+use App\Http\Controllers\Api\CacheControllers\MestPatientTypeController;
+use App\Http\Controllers\Api\CacheControllers\MediStockMetyController;
 
 // Data Controllers
 use App\Http\Controllers\Api\DataControllers\DebateController;
@@ -516,11 +523,11 @@ Route::group([
 
     /// Nhóm dịch vụ
     Route::group(['as' => 'HIS.Desktop.Plugins.HisServSegr'], function () {
-        Route::get("v1/serv-segr", [HISController::class, "serv_segr"]);
-        Route::get("v1/serv-segr/{id}", [HISController::class, "serv_segr"]);
+        Route::get("v1/serv-segr", [ServSegrController::class, "serv_segr"]);
+        Route::get("v1/serv-segr/{id}", [ServSegrController::class, "serv_segr"]);
     });
-    Route::get("v1/service-group", [HISController::class, "service_group"]);
-    Route::get("v1/service-group/{id}", [HISController::class, "service_group_id"]);
+    Route::get("v1/service-group", [ServiceGroupController::class, "service_group"]);
+    Route::get("v1/service-group/{id}", [ServiceGroupController::class, "service_group"]);
 
     /// Tài khoản nhân viên
     Route::group(['as' => 'HIS.Desktop.Plugins.EmpUser'], function () {
@@ -530,20 +537,20 @@ Route::group([
 
     /// Thông tin tài khoản
     Route::group(['as' => 'HIS.Desktop.Plugins.InfoUser'], function () {
-        Route::get("v1/info-user/{id}", [HISController::class, "info_user_id"]);
+        Route::get("v1/info-user", [InfoUserController::class, "info_user"]);
     });
 
     /// Tài khoản - Vai trò thực hiện
     Route::group(['as' => 'HIS.Desktop.Plugins.ExecuteRoleUser'], function () {
         // Trả về tất cả mối quan hệ
-        Route::get("v1/execute-role-user", [HISController::class, "execute_role_user"]);
-        Route::get("v1/execute-role-user/{id}", [HISController::class, "execute_role_user"]);
-        // Trả về tất cả tài khoản cùng vai trò thực hiện
-        Route::get("v1/user/all/execute-role", [HISController::class, "user_with_execute_role"]);
-        Route::get("v1/user/{id}/execute-role", [HISController::class, "user_with_execute_role"]);
-        // Trả về tất cả vai trò thực hiện cùng tài khoản
-        Route::get("v1/execute-role/all/user", [HISController::class, "execute_role_with_user"]);
-        Route::get("v1/execute-role/{id}/user", [HISController::class, "execute_role_with_user"]);
+        Route::get("v1/execute-role-user", [ExecuteRoleUserController::class, "execute_role_user"]);
+        Route::get("v1/execute-role-user/{id}", [ExecuteRoleUserController::class, "execute_role_user"]);
+        // // Trả về tất cả tài khoản cùng vai trò thực hiện
+        // Route::get("v1/user/all/execute-role", [HISController::class, "user_with_execute_role"]);
+        // Route::get("v1/user/{id}/execute-role", [HISController::class, "user_with_execute_role"]);
+        // // Trả về tất cả vai trò thực hiện cùng tài khoản
+        // Route::get("v1/execute-role/all/user", [HISController::class, "execute_role_with_user"]);
+        // Route::get("v1/execute-role/{id}/user", [HISController::class, "execute_role_with_user"]);
     });
 
     /// Vai trò
@@ -554,8 +561,8 @@ Route::group([
 
     /// Vai trò - Chức năng 
     Route::group(['as' => 'ACS.Desktop.Plugins.AcsModuleRole'], function () {
-        Route::get("v1/module-role", [HISController::class, "module_role"]);
-        Route::get("v1/module-role/{id}", [HISController::class, "module_role"]);
+        Route::get("v1/module-role", [ModuleRoleController::class, "module_role"]);
+        Route::get("v1/module-role/{id}", [ModuleRoleController::class, "module_role"]);
     });
 
     /// Dân tộc
@@ -638,27 +645,27 @@ Route::group([
     /// Kho - Đối tượng
     Route::group(['as' => 'HIS.Desktop.Plugins.MestPatientType'], function () {
         // Trả về tất cả mối quan hệ
-        Route::get("v1/mest-patient-type", [HISController::class, "mest_patient_type"]);
-        Route::get("v1/mest-patient-type/{id}", [HISController::class, "mest_patient_type"]);
-        // Trả về tất cả kho cùng đối tượng
-        Route::get("v1/medi-stock/all/patient-type", [HISController::class, "medi_stock_with_patient_type"]);
-        Route::get("v1/medi-stock/{id}/patient-type", [HISController::class, "medi_stock_with_patient_type"]);
-        // Trả về tất cả đối tượng cùng kho
-        Route::get("v1/patient-type/all/medi-stock", [HISController::class, "patient_type_with_medi_stock"]);
-        Route::get("v1/patient-type/{id}/medi-stock", [HISController::class, "patient_type_with_medi_stock"]);
+        Route::get("v1/mest-patient-type", [MestPatientTypeController::class, "mest_patient_type"]);
+        Route::get("v1/mest-patient-type/{id}", [MestPatientTypeController::class, "mest_patient_type"]);
+        // // Trả về tất cả kho cùng đối tượng
+        // Route::get("v1/medi-stock/all/patient-type", [HISController::class, "medi_stock_with_patient_type"]);
+        // Route::get("v1/medi-stock/{id}/patient-type", [HISController::class, "medi_stock_with_patient_type"]);
+        // // Trả về tất cả đối tượng cùng kho
+        // Route::get("v1/patient-type/all/medi-stock", [HISController::class, "patient_type_with_medi_stock"]);
+        // Route::get("v1/patient-type/{id}/medi-stock", [HISController::class, "patient_type_with_medi_stock"]);
     });
 
     /// Kho - Loại thuốc
     Route::group(['as' => 'HIS.Desktop.Plugins.MediStockMetyList'], function () {
         // Trả về tất cả mối quan hệ
-        Route::get("v1/medi-stock-mety-list", [HISController::class, "medi_stock_mety_list"]);
-        Route::get("v1/medi-stock-mety-list/{id}", [HISController::class, "medi_stock_mety_list"]);
-        // Trả về tất cả kho cùng loại thuốc 
-        Route::get("v1/medi-stock/all/medicine-type", [HISController::class, "medi_stock_with_medicine_type"]);
-        Route::get("v1/medi-stock/{id}/medicine-type", [HISController::class, "medi_stock_with_medicine_type"]);
-        // Trả về tất cả loại thuốc cùng kho
-        Route::get("v1/medicine-type/all/medi-stock", [HISController::class, "medicine_type_with_medi_stock"]);
-        Route::get("v1/medicine-type/{id}/medi-stock", [HISController::class, "medicine_type_with_medi_stock"]);
+        Route::get("v1/medi-stock-mety-list", [MediStockMetyController::class, "medi_stock_mety_list"]);
+        Route::get("v1/medi-stock-mety-list/{id}", [MediStockMetyController::class, "medi_stock_mety_list"]);
+        // // Trả về tất cả kho cùng loại thuốc 
+        // Route::get("v1/medi-stock/all/medicine-type", [HISController::class, "medi_stock_with_medicine_type"]);
+        // Route::get("v1/medi-stock/{id}/medicine-type", [HISController::class, "medi_stock_with_medicine_type"]);
+        // // Trả về tất cả loại thuốc cùng kho
+        // Route::get("v1/medicine-type/all/medi-stock", [HISController::class, "medicine_type_with_medi_stock"]);
+        // Route::get("v1/medicine-type/{id}/medi-stock", [HISController::class, "medicine_type_with_medi_stock"]);
     });
 
     /// Kho - Loại vật tư
