@@ -45,7 +45,7 @@ class TreatmentController extends BaseApiDataController
     public function treatment_get_L_view(Request $request)
     {
         // Kiểm tra param và trả về lỗi nếu nó không hợp lệ
-        if($this->check_param()){
+        if ($this->check_param()) {
             return $this->check_param();
         }
 
@@ -129,7 +129,7 @@ class TreatmentController extends BaseApiDataController
     public function treatment_get_L_view_v2(Request $request)
     {
         // Kiểm tra param và trả về lỗi nếu nó không hợp lệ
-        if($this->check_param()){
+        if ($this->check_param()) {
             return $this->check_param();
         }
 
@@ -261,10 +261,10 @@ class TreatmentController extends BaseApiDataController
     public function treatment_get_treatment_with_patient_type_info_sdo(Request $request)
     {
         // Kiểm tra param và trả về lỗi nếu nó không hợp lệ
-        if($this->check_param()){
+        if ($this->check_param()) {
             return $this->check_param();
         }
-    
+
         $select = [
             "his_treatment.ID",
             "his_treatment.CREATE_TIME",
@@ -431,7 +431,7 @@ class TreatmentController extends BaseApiDataController
     public function treatment_get_treatment_with_patient_type_info_sdo_v2(Request $request)
     {
         // Kiểm tra param và trả về lỗi nếu nó không hợp lệ
-        if($this->check_param()){
+        if ($this->check_param()) {
             return $this->check_param();
         }
 
@@ -601,7 +601,7 @@ class TreatmentController extends BaseApiDataController
     public function treatment_get_fee_view(Request $request)
     {
         // Kiểm tra param và trả về lỗi nếu nó không hợp lệ
-        if($this->check_param()){
+        if ($this->check_param()) {
             return $this->check_param();
         }
 
@@ -707,7 +707,8 @@ class TreatmentController extends BaseApiDataController
             "his_treatment.HOSPITAL_DIRECTOR_LOGINNAME",
             "his_treatment.HOSPITAL_DIRECTOR_USERNAME",
             "his_treatment.HAS_CARD",
-
+        ];
+        $select_join_v = [
             "V_HIS_TREATMENT_FEE.TOTAL_BILL_AMOUNT",
             "V_HIS_TREATMENT_FEE.TOTAL_BILL_OTHER_AMOUNT",
             "V_HIS_TREATMENT_FEE.TOTAL_BILL_TRANSFER_AMOUNT",
@@ -731,8 +732,10 @@ class TreatmentController extends BaseApiDataController
             "V_HIS_TREATMENT_FEE.TDL_TREATMENT_TYPE_NAME",
             "V_HIS_TREATMENT_FEE.HEIN_TREATMENT_TYPE_CODE",
             "V_HIS_TREATMENT_FEE.LOCKING_AMOUNT",
-
         ];
+        if ($this->treatment_id != null) {
+            $select = array_merge($select, $select_join_v);
+        }
         $param = [
             'patient_type:id,patient_type_code,patient_type_name,IS_COPAYMENT',
             'treatment_type:id,treatment_type_code,treatment_type_name,HEIN_TREATMENT_TYPE_CODE',
@@ -780,13 +783,14 @@ class TreatmentController extends BaseApiDataController
             'tuberculosis_treats'
         ];
         try {
-            $data = $this->treatment
-            ->leftJoin('V_HIS_TREATMENT_FEE ', 'his_treatment.id', '=', 'V_HIS_TREATMENT_FEE.id')
-
-            ->select($select);
-            $data_id = $this->treatment
-            
-            ->select("His_treatment.ID");
+            $data = $this->treatment;
+            $data_id = $this->treatment;
+            if ($this->treatment_id != null) {
+                $data = $data->leftJoin('V_HIS_TREATMENT_FEE ', 'his_treatment.id', '=', 'V_HIS_TREATMENT_FEE.id');
+                $data_id = $data_id->leftJoin('V_HIS_TREATMENT_FEE ', 'his_treatment.id', '=', 'V_HIS_TREATMENT_FEE.id');
+            }
+            $data = $data->select($select);
+            $data_id = $data_id->select("His_treatment.ID");
             if (!$this->is_include_deleted) {
                 $data = $data->where(function ($query) {
                     $query = $query->where(DB::connection('oracle_his')->raw('his_treatment.is_delete'), 0);
@@ -843,23 +847,23 @@ class TreatmentController extends BaseApiDataController
                     $query = $query->where(DB::connection('oracle_his')->raw('his_treatment.in_date'), '<=', $this->in_date_to);
                 });
             }
-           if($this->is_approve_store != null){
-            if ($this->is_approve_store) {
-                $data = $data->where(function ($query) {
-                    $query = $query->whereNotNull(DB::connection('oracle_his')->raw('his_treatment.approval_store_stt_id'));
-                });
-                $data_id = $data_id->where(function ($query) {
-                    $query = $query->whereNotNull(DB::connection('oracle_his')->raw('his_treatment.approval_store_stt_id'));
-                });
-            }else{
-                $data = $data->where(function ($query) {
-                    $query = $query->whereNull(DB::connection('oracle_his')->raw('his_treatment.approval_store_stt_id'));
-                });
-                $data_id = $data_id->where(function ($query) {
-                    $query = $query->whereNull(DB::connection('oracle_his')->raw('his_treatment.approval_store_stt_id'));
-                });
+            if ($this->is_approve_store != null) {
+                if ($this->is_approve_store) {
+                    $data = $data->where(function ($query) {
+                        $query = $query->whereNotNull(DB::connection('oracle_his')->raw('his_treatment.approval_store_stt_id'));
+                    });
+                    $data_id = $data_id->where(function ($query) {
+                        $query = $query->whereNotNull(DB::connection('oracle_his')->raw('his_treatment.approval_store_stt_id'));
+                    });
+                } else {
+                    $data = $data->where(function ($query) {
+                        $query = $query->whereNull(DB::connection('oracle_his')->raw('his_treatment.approval_store_stt_id'));
+                    });
+                    $data_id = $data_id->where(function ($query) {
+                        $query = $query->whereNull(DB::connection('oracle_his')->raw('his_treatment.approval_store_stt_id'));
+                    });
+                }
             }
-           }
 
             if ($this->treatment_id == null) {
                 if ($this->order_by != null) {
@@ -878,7 +882,20 @@ class TreatmentController extends BaseApiDataController
                 $id_max_sql = intval($id_max_sql[0]->id ?? null);
                 $id_min_sql = intval($id_min_sql[0]->id ?? null);
 
-                $fullSql = 'SELECT * FROM (SELECT a.*, ROWNUM rnum FROM (' . $sql . ') a WHERE ROWNUM <= ' . ($this->limit + $this->start) . ' AND ID ' . $this->equal . $this->cursor . $this->sub_order_by_string . ') WHERE rnum > ' . $this->start;
+                $bindings = array_merge($bindings, [
+                    intval($this->limit + $this->start),
+                    intval($this->cursor),
+                    intval($this->start),
+                ]);
+                $fullSql = 'SELECT /*+ 
+                    INDEX(t HIS_TREATMENT_PK) 
+                    NO_MERGE(t)
+                    FULL(t) 
+                    */ 
+                * FROM (SELECT /*+ 
+                    FIRST_ROWS('.$this->limit.') 
+                    */
+                a.*, ROWNUM rnum FROM (' . $sql . ') a WHERE ROWNUM <= ? AND ID ' . $this->equal . ' ? ' . $this->sub_order_by_string . ') WHERE rnum > ?';
                 $data = DB::connection('oracle_his')->select($fullSql, $bindings);
                 $data = TreatmentGetFeeViewResource::collection($data);
                 if (isset($data[0])) {
