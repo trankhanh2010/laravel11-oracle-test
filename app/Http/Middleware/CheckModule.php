@@ -28,20 +28,26 @@ class CheckModule
         $token = get_token_header($request, $token_header);
         $user = get_user_with_loginname($token->login_name);
         // Nếu module vô danh thì đi tiếp
-        $is_anonymous =  Cache::remember('is_anonymous_'.$currentRouteName, $time , function () use ($currentRouteName) {
-            return Module::select('is_anonymous')->where('module_link',$currentRouteName)->value('is_anonymous');
+        $list_is_anonymous =  Cache::remember('list_is_anonymous', now()->addMinutes(1440) , function ()  {
+            return Module::where('is_anonymous', 1)->pluck('module_link')->toArray();
         });
-        if($is_anonymous){
+        if(in_array($currentRouteName, $list_is_anonymous)){
             return $next($request);
         }
         // Nếu có full quyền thì đi tiếp
-        if($user->checkSuperAdmin()){
+        $check_super_admin =  Cache::remember('check_super_admin_'.$user->loginname, now()->addMinutes(1440) , function () use ($user) {
+            return $user->checkSuperAdmin();
+        });
+        if($check_super_admin){
             return $next($request);
         }
         // Kiểm tra quyền module
-        if ($user->hasModule($currentRouteName)) {
+        $has_module =  Cache::remember('has_module_'.$currentRouteName.'_'.$user->loginname, now()->addMinutes(1440) , function () use ($user, $currentRouteName) {
+            return $user->hasModule($currentRouteName);
+        });
+        if ($has_module) {
             return $next($request);
         }
-        return response()->json(['mess' => '403'], 403);
+        return return_403();
     }
 }

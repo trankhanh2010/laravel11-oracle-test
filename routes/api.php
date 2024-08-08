@@ -85,6 +85,11 @@ use App\Http\Controllers\Api\CacheControllers\PatientTypeRoomController;
 use App\Http\Controllers\Api\CacheControllers\PatientTypeAllowController;
 use App\Http\Controllers\Api\CacheControllers\PositionController;
 use App\Http\Controllers\Api\CacheControllers\WorkPlaceController;
+use App\Http\Controllers\Api\CacheControllers\BornPositionController;
+use App\Http\Controllers\Api\CacheControllers\PatientCaseController;
+use App\Http\Controllers\Api\CacheControllers\BhytParamController;
+use App\Http\Controllers\Api\CacheControllers\BhytBlacklistController;
+use App\Http\Controllers\Api\CacheControllers\MedicinePatyController;
 
 // Data Controllers
 use App\Http\Controllers\Api\DataControllers\DebateController;
@@ -753,14 +758,14 @@ Route::group([
 
     /// Ngôi thai
     Route::group(['as' => 'HIS.Desktop.Plugins.HisBornPosition'], function () {
-        Route::get("v1/born-position", [HISController::class, "born_position"]);
-        Route::get("v1/born-position/{id}", [HISController::class, "born_position"]);
+        Route::get("v1/born-position", [BornPositionController::class, "born_position"]);
+        Route::get("v1/born-position/{id}", [BornPositionController::class, "born_position"]);
     });
 
     /// Trường hợp bệnh
     Route::group(['as' => 'HIS.Desktop.Plugins.HisPatientCase'], function () {
-        Route::get("v1/patient-case", [HISController::class, "patient_case"]);
-        Route::get("v1/patient-case/{id}", [HISController::class, "patient_case"]);
+        Route::get("v1/patient-case", [PatientCaseController::class, "patient_case"]);
+        Route::get("v1/patient-case/{id}", [PatientCaseController::class, "patient_case"]);
     });
 
     /// Đầu mã thẻ BHYT
@@ -777,20 +782,20 @@ Route::group([
 
     /// Tham số BHYT
     Route::group(['as' => 'HIS.Desktop.Plugins.HisBHYTParam'], function () {
-        Route::get("v1/bhyt-param", [HISController::class, "bhyt_param"]);
-        Route::get("v1/bhyt-param/{id}", [HISController::class, "bhyt_param"]);
+        Route::get("v1/bhyt-param", [BhytParamController::class, "bhyt_param"]);
+        Route::get("v1/bhyt-param/{id}", [BhytParamController::class, "bhyt_param"]);
     });
 
     /// Thẻ BHYT không hợp lệ
     Route::group(['as' => 'HIS.Desktop.Plugins.HisBhytBlacklist'], function () {
-        Route::get("v1/bhyt-blacklist", [HISController::class, "bhyt_blacklist"]);
-        Route::get("v1/bhyt-blacklist/{id}", [HISController::class, "bhyt_blacklist"]);
+        Route::get("v1/bhyt-blacklist", [BhytBlacklistController::class, "bhyt_blacklist"]);
+        Route::get("v1/bhyt-blacklist/{id}", [BhytBlacklistController::class, "bhyt_blacklist"]);
     });
 
     /// Chính sách giá thuốc
     Route::group(['as' => 'HIS.Desktop.Plugins.HisMedicinePaty'], function () {
-        Route::get("v1/medicine-paty", [HISController::class, "medicine_paty"]);
-        Route::get("v1/medicine-paty/{id}", [HISController::class, "medicine_paty"]);
+        Route::get("v1/medicine-paty", [MedicinePatyController::class, "medicine_paty"]);
+        Route::get("v1/medicine-paty/{id}", [MedicinePatyController::class, "medicine_paty"]);
     });
 
     /// Bộ phận thương tích

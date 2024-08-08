@@ -559,87 +559,16 @@ class HISController extends Controller
 
 
 
-    // /// Born Position
-    // public function born_position($id = null)
-    // {
-    //     if ($id == null) {
-    //         $name = $this->born_position_name;
-    //         $param = [];
-    //     } else {
-    //         $name = $this->born_position_name . '_' . $id;
-    //         $param = [];
-    //     }
-    //     $data = get_cache_full($this->born_position, $param, $name, $id, $this->time);
-    //     return response()->json(['data' => $data], 200);
-    // }
-
-    // /// Born Position
-    // public function patient_case($id = null)
-    // {
-    //     if ($id == null) {
-    //         $name = $this->patient_case_name;
-    //         $param = [];
-    //     } else {
-    //         $name = $this->patient_case_name . '_' . $id;
-    //         $param = [];
-    //     }
-    //     $data = get_cache_full($this->patient_case, $param, $name, $id, $this->time);
-    //     return response()->json(['data' => $data], 200);
-    // }
 
 
-    // /// BHYT Whitelist
 
 
-    // /// BHYT Param
-    // public function bhyt_param($id = null)
-    // {
-    //     if ($id == null) {
-    //         $name = $this->bhyt_param_name;
-    //         $param = [];
-    //     } else {
-    //         $name = $this->bhyt_param_name . '_' . $id;
-    //         $param = [];
-    //     }
-    //     $data = get_cache_full($this->bhyt_param, $param, $name, $id, $this->time);
-    //     return response()->json(['data' => $data], 200);
-    // }
 
-    // /// BHYT Blacklist
-    // public function bhyt_blacklist($id = null)
-    // {
-    //     if ($id == null) {
-    //         $name = $this->bhyt_blacklist_name;
-    //         $param = [];
-    //     } else {
-    //         $name = $this->bhyt_blacklist_name . '_' . $id;
-    //         $param = [];
-    //     }
-    //     $data = get_cache_full($this->bhyt_blacklist, $param, $name, $id, $this->time);
-    //     return response()->json(['data' => $data], 200);
-    // }
 
-    // /// Medicine Paty
-    // public function medicine_paty($id = null)
-    // {
-    //     if ($id == null) {
-    //         $name = $this->medicine_paty_name;
-    //         $param = [
-    //             'medicine',
-    //             'medicine.medicine_type:id,medicine_type_name,medicine_type_code',
-    //             'patient_type'
-    //         ];
-    //     } else {
-    //         $name = $this->medicine_paty_name . '_' . $id;
-    //         $param = [
-    //             'medicine',
-    //             'medicine.medicine_type',
-    //             'patient_type'
-    //         ];
-    //     }
-    //     $data = get_cache_full($this->medicine_paty, $param, $name, $id, $this->time);
-    //     return response()->json(['data' => $data], 200);
-    // }
+
+
+
+
 
     // /// Accident Body Part
     // public function accident_body_part($id = null)
