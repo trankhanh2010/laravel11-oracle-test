@@ -90,6 +90,22 @@ use App\Http\Controllers\Api\CacheControllers\PatientCaseController;
 use App\Http\Controllers\Api\CacheControllers\BhytParamController;
 use App\Http\Controllers\Api\CacheControllers\BhytBlacklistController;
 use App\Http\Controllers\Api\CacheControllers\MedicinePatyController;
+use App\Http\Controllers\Api\CacheControllers\AccidentBodyPartController;
+use App\Http\Controllers\Api\CacheControllers\PreparationsBloodController;
+use App\Http\Controllers\Api\CacheControllers\ContraindicationController;
+use App\Http\Controllers\Api\CacheControllers\DosageFormController;
+use App\Http\Controllers\Api\CacheControllers\AccidentLocationController;
+use App\Http\Controllers\Api\CacheControllers\LicenseClassController;
+use App\Http\Controllers\Api\CacheControllers\ManufacturerController;
+use App\Http\Controllers\Api\CacheControllers\IcdController;
+use App\Http\Controllers\Api\CacheControllers\MediRecordTypeController;
+use App\Http\Controllers\Api\CacheControllers\FileTypeController;
+use App\Http\Controllers\Api\CacheControllers\TreatmentEndTypeController;
+use App\Http\Controllers\Api\CacheControllers\TranPatiTechController;
+use App\Http\Controllers\Api\CacheControllers\DebateReasonController;
+use App\Http\Controllers\Api\CacheControllers\CancelReasonController;
+use App\Http\Controllers\Api\CacheControllers\InteractionReasonController;
+use App\Http\Controllers\Api\CacheControllers\UnlimitReasonController;
 
 // Data Controllers
 use App\Http\Controllers\Api\DataControllers\DebateController;
@@ -156,7 +172,7 @@ Route::group([
     /// Khoa phòng
     Route::group(['as' => 'HIS.Desktop.Plugins.HisDepartment'], function () {
         Route::get("v1/department", [DepartmentController::class, "department"]);
-        Route::get("v1/department/{id}", [DepartmentController::class, "department"])->name('.api.department.index_with_id');
+        Route::get("v1/department/{id}", [DepartmentController::class, "department"]);
         Route::get("v1/department-check", [CheckDepartmentController::class, "check_code"]);
         // Route::get("v1/department/deleted", [DepartmentController::class, "department"]);
         // Route::get("v1/department/{id}/restore", [DepartmentController::class, "department_restore"]);
@@ -800,98 +816,98 @@ Route::group([
 
     /// Bộ phận thương tích
     Route::group(['as' => 'HIS.Desktop.Plugins.HisAccidentBodyPart'], function () {
-        Route::get("v1/accident-body-part", [HISController::class, "accident_body_part"]);
-        Route::get("v1/accident-body-part/{id}", [HISController::class, "accident_body_part"]);
+        Route::get("v1/accident-body-part", [AccidentBodyPartController::class, "accident_body_part"]);
+        Route::get("v1/accident-body-part/{id}", [AccidentBodyPartController::class, "accident_body_part"]);
     });
 
     /// Chế phẩm máu
     Route::group(['as' => 'HIS.Desktop.Plugins.HisPreparationsBlood'], function () {
-        Route::get("v1/preparations-blood", [HISController::class, "preparations_blood"]);
-        Route::get("v1/preparations-blood/{id}", [HISController::class, "preparations_blood"]);
+        Route::get("v1/preparations-blood", [PreparationsBloodController::class, "preparations_blood"]);
+        Route::get("v1/preparations-blood/{id}", [PreparationsBloodController::class, "preparations_blood"]);
     });
 
     /// Chống chỉ định
     Route::group(['as' => 'HIS.Desktop.Plugins.HisContraindication'], function () {
-        Route::get("v1/contraindication", [HISController::class, "contraindication"]);
-        Route::get("v1/contraindication/{id}", [HISController::class, "contraindication"]);
+        Route::get("v1/contraindication", [ContraindicationController::class, "contraindication"]);
+        Route::get("v1/contraindication/{id}", [ContraindicationController::class, "contraindication"]);
     });
 
     /// Dạng bào chế
     Route::group(['as' => 'HIS.Desktop.Plugins.HisDosageForm'], function () {
-        Route::get("v1/dosage-form", [HISController::class, "dosage_form"]);
-        Route::get("v1/dosage-form/{id}", [HISController::class, "dosage_form"]);
+        Route::get("v1/dosage-form", [DosageFormController::class, "dosage_form"]);
+        Route::get("v1/dosage-form/{id}", [DosageFormController::class, "dosage_form"]);
     });
 
     /// Địa điểm tai nạn
     Route::group(['as' => 'HIS.Desktop.Plugins.HisAccidentLocation'], function () {
-        Route::get("v1/accident-location", [HISController::class, "accident_location"]);
-        Route::get("v1/accident-location/{id}", [HISController::class, "accident_location"]);
+        Route::get("v1/accident-location", [AccidentLocationController::class, "accident_location"]);
+        Route::get("v1/accident-location/{id}", [AccidentLocationController::class, "accident_location"]);
     });
 
     /// Hạng lái xe
     Route::group(['as' => 'HIS.Desktop.Plugins.LicenseClass'], function () {
-        Route::get("v1/license-class", [HISController::class, "license_class"]);
-        Route::get("v1/license-class/{id}", [HISController::class, "license_class"]);
+        Route::get("v1/license-class", [LicenseClassController::class, "license_class"]);
+        Route::get("v1/license-class/{id}", [LicenseClassController::class, "license_class"]);
     });
 
     /// Hãng sản xuất
     Route::group(['as' => 'HIS.Desktop.Plugins.HisManufacturer'], function () {
-        Route::get("v1/manufacturer", [HISController::class, "manufacturer"]);
-        Route::get("v1/manufacturer/{id}", [HISController::class, "manufacturer"]);
+        Route::get("v1/manufacturer", [ManufacturerController::class, "manufacturer"]);
+        Route::get("v1/manufacturer/{id}", [ManufacturerController::class, "manufacturer"]);
     });
 
     /// ICD - Accepted Icd - Chẩn đoán
     Route::group(['as' => 'HIS.Desktop.Plugins.HisIcd'], function () {
-        Route::get("v1/icd", [HISController::class, "icd"]);
-        Route::get("v1/icd/{id}", [HISController::class, "icd"]);
+        Route::get("v1/icd", [IcdController::class, "icd"]);
+        Route::get("v1/icd/{id}", [IcdController::class, "icd"]);
     });
 
     /// Loại bệnh án
     Route::group(['as' => 'HIS.Desktop.Plugins.HisMediRecordType'], function () {
-        Route::get("v1/medi-record-type", [HISController::class, "medi_record_type"]);
-        Route::get("v1/medi-record-type/{id}", [HISController::class, "medi_record_type"]);
+        Route::get("v1/medi-record-type", [MediRecordTypeController::class, "medi_record_type"]);
+        Route::get("v1/medi-record-type/{id}", [MediRecordTypeController::class, "medi_record_type"]);
     });
 
     /// Loại giấy tờ
     Route::group(['as' => 'HIS.Desktop.Plugins.HisFileType'], function () {
-        Route::get("v1/file-type", [HISController::class, "file_type"]);
-        Route::get("v1/file-type/{id}", [HISController::class, "file_type"]);
+        Route::get("v1/file-type", [FileTypeController::class, "file_type"]);
+        Route::get("v1/file-type/{id}", [FileTypeController::class, "file_type"]);
     });
 
     /// Loại ra viện
     Route::group(['as' => 'HIS.Desktop.Plugins.HisTreatmentEndType'], function () {
-        Route::get("v1/treatment-end-type", [HISController::class, "treatment_end_type"]);
-        Route::get("v1/treatment-end-type/{id}", [HISController::class, "treatment_end_type"]);
+        Route::get("v1/treatment-end-type", [TreatmentEndTypeController::class, "treatment_end_type"]);
+        Route::get("v1/treatment-end-type/{id}", [TreatmentEndTypeController::class, "treatment_end_type"]);
     });
 
     /// Lý do chuyển tuyến chuyên môn
     Route::group(['as' => 'HIS.Desktop.Plugins.TranPatiTech'], function () {
-        Route::get("v1/tran-pati-tech", [HISController::class, "tran_pati_tech"]);
-        Route::get("v1/tran-pati-tech/{id}", [HISController::class, "tran_pati_tech"]);
+        Route::get("v1/tran-pati-tech", [TranPatiTechController::class, "tran_pati_tech"]);
+        Route::get("v1/tran-pati-tech/{id}", [TranPatiTechController::class, "tran_pati_tech"]);
     });
 
     /// Lý do hội chẩn
     Route::group(['as' => 'HIS.Desktop.Plugins.HisDebateReason'], function () {
-        Route::get("v1/debate-reason", [HISController::class, "debate_reason"]);
-        Route::get("v1/debate-reason/{id}", [HISController::class, "debate_reason"]);
+        Route::get("v1/debate-reason", [DebateReasonController::class, "debate_reason"]);
+        Route::get("v1/debate-reason/{id}", [DebateReasonController::class, "debate_reason"]);
     });
 
     /// Lý do hủy giao dịch
     Route::group(['as' => 'HIS.Desktop.Plugins.HisCancelReason'], function () {
-        Route::get("v1/cancel-reason", [HISController::class, "cancel_reason"]);
-        Route::get("v1/cancel-reason/{id}", [HISController::class, "cancel_reason"]);
+        Route::get("v1/cancel-reason", [CancelReasonController::class, "cancel_reason"]);
+        Route::get("v1/cancel-reason/{id}", [CancelReasonController::class, "cancel_reason"]);
     });
 
     /// Lý do kê đơn tương tác
     Route::group(['as' => 'HIS.Desktop.Plugins.InteractionReason'], function () {
-        Route::get("v1/interaction-reason", [HISController::class, "interaction_reason"]);
-        Route::get("v1/interaction-reason/{id}", [HISController::class, "interaction_reason"]);
+        Route::get("v1/interaction-reason", [InteractionReasonController::class, "interaction_reason"]);
+        Route::get("v1/interaction-reason/{id}", [InteractionReasonController::class, "interaction_reason"]);
     });
 
     /// Lý do mở trần
     Route::group(['as' => 'HIS.Desktop.Plugins.HisUnlimitReason'], function () {
-        Route::get("v1/unlimit-reason", [HISController::class, "unlimit_reason"]);
-        Route::get("v1/unlimit-reason/{id}", [HISController::class, "unlimit_reason"]);
+        Route::get("v1/unlimit-reason", [UnlimitReasonController::class, "unlimit_reason"]);
+        Route::get("v1/unlimit-reason/{id}", [UnlimitReasonController::class, "unlimit_reason"]);
     });
 
     /// Lý do nhập viện
