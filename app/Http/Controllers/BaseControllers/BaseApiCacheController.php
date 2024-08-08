@@ -9,7 +9,9 @@ use App\Models\HIS\Bed;
 use App\Models\HIS\Department;
 use App\Models\HIS\Employee;
 use App\Models\HIS\ExecuteRole;
+use App\Models\HIS\ExecuteRoom;
 use App\Models\HIS\Machine;
+use App\Models\HIS\MaterialType;
 use App\Models\HIS\MedicineType;
 use App\Models\HIS\MediStock;
 use App\Models\HIS\Package;
@@ -88,7 +90,15 @@ class BaseApiCacheController extends Controller
     protected $patient_type_id;
     protected $patient_type_id_name = 'PatientTypeId';
     protected $medicine_type_id;
-    protected $medicine_type_id_name = 'medicine_type_id';
+    protected $medicine_type_id_name = 'MedicineTypeId';
+    protected $material_type_id;
+    protected $material_type_id_name = 'MaterialTypeId';
+    protected $room_id;
+    protected $room_id_name = 'RoomId';
+    protected $execute_room_id;
+    protected $execute_room_id_name = 'ExecuteRoomId';
+    protected $patient_type_allow_id;
+    protected $patient_type_allow_id_name = 'PatientTypeAllowId';
     protected $patient_type_ids_string;
     protected $service_type_ids_string;
 
@@ -400,6 +410,10 @@ class BaseApiCacheController extends Controller
     protected $token_name = 'token';
     protected $medi_stock_mety;
     protected $medi_stock_mety_name = 'medi_stock_mety';
+    protected $medi_stock_maty;
+    protected $medi_stock_maty_name = 'medi_stock_maty';
+    protected $mest_room;
+    protected $mest_room_name = 'mest_room';
 
     // Thông báo lỗi
     protected $mess_format;
@@ -810,6 +824,58 @@ class BaseApiCacheController extends Controller
                 if (!MedicineType::where('id', $this->medicine_type_id)->exists()) {
                     $this->errors[$this->medicine_type_id_name] = $this->mess_record_id;
                     $this->medicine_type_id = null;
+                }
+            }
+        }
+        $this->material_type_id = $this->param_request['ApiData']['MaterialTypeId'] ?? null;
+        if ($this->material_type_id !== null) {
+            // Kiểm tra xem ID có tồn tại trong bảng  hay không
+            if (!is_numeric($this->material_type_id)) {
+                $this->errors[$this->material_type_id_name] = $this->mess_format;
+                $this->material_type_id = null;
+            } else {
+                if (!MaterialType::where('id', $this->material_type_id)->exists()) {
+                    $this->errors[$this->material_type_id_name] = $this->mess_record_id;
+                    $this->material_type_id = null;
+                }
+            }
+        }
+        $this->room_id = $this->param_request['ApiData']['RoomId'] ?? null;
+        if ($this->room_id !== null) {
+            // Kiểm tra xem ID có tồn tại trong bảng  hay không
+            if (!is_numeric($this->room_id)) {
+                $this->errors[$this->room_id_name] = $this->mess_format;
+                $this->room_id = null;
+            } else {
+                if (!Room::where('id', $this->room_id)->exists()) {
+                    $this->errors[$this->room_id_name] = $this->mess_record_id;
+                    $this->room_id = null;
+                }
+            }
+        }
+        $this->execute_room_id = $this->param_request['ApiData']['ExecuteRoomId'] ?? null;
+        if ($this->execute_room_id !== null) {
+            // Kiểm tra xem ID có tồn tại trong bảng  hay không
+            if (!is_numeric($this->execute_room_id)) {
+                $this->errors[$this->execute_room_id_name] = $this->mess_format;
+                $this->execute_room_id = null;
+            } else {
+                if (!ExecuteRoom::where('id', $this->execute_room_id)->exists()) {
+                    $this->errors[$this->execute_room_id_name] = $this->mess_record_id;
+                    $this->execute_room_id = null;
+                }
+            }
+        }
+        $this->patient_type_allow_id = $this->param_request['ApiData']['PatientTypeAllowId'] ?? null;
+        if ($this->patient_type_allow_id !== null) {
+            // Kiểm tra xem ID có tồn tại trong bảng  hay không
+            if (!is_numeric($this->patient_type_allow_id)) {
+                $this->errors[$this->patient_type_allow_id_name] = $this->mess_format;
+                $this->patient_type_allow_id = null;
+            } else {
+                if (!PatientType::where('id', $this->patient_type_allow_id)->exists()) {
+                    $this->errors[$this->patient_type_allow_id_name] = $this->mess_record_id;
+                    $this->patient_type_allow_id = null;
                 }
             }
         }

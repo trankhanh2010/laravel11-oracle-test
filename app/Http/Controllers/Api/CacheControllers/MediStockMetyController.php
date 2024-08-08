@@ -35,20 +35,28 @@ class MediStockMetyController extends BaseApiCacheController
                 ->leftJoin('his_medi_stock as medi_stock', 'medi_stock.id', '=', 'his_medi_stock_mety.medi_stock_id')
                 ->leftJoin('his_medicine_type as medicine_type', 'medicine_type.id', '=', 'his_medi_stock_mety.medicine_type_id')
                 ->leftJoin('his_service_unit as service_unit', 'service_unit.id', '=', 'medicine_type.tdl_service_unit_id')
+                ->leftJoin('his_medi_stock as exp_medi_stock', 'exp_medi_stock.id', '=', 'his_medi_stock_mety.exp_medi_stock_id')
 
                     ->select(
                         'his_medi_stock_mety.*',
-                        'medi_stock.medi_stock_code',
+                        'medi_stock.medi_stock_code as medi_stock_code',
                         'medi_stock.medi_stock_name',
                         'service_unit.service_unit_code',
                         'service_unit.service_unit_name',
                         'medicine_type.medicine_type_code',
                         'medicine_type.medicine_type_name',
+                        'medicine_type.CONCENTRA',
+                        'medicine_type.REGISTER_NUMBER',
+                        'medicine_type.ACTIVE_INGR_BHYT_CODE',
+                        'medicine_type.ACTIVE_INGR_BHYT_NAME',
+                        'medicine_type.DISTRIBUTED_AMOUNT',
+                        'exp_medi_stock.medi_stock_code as exp_medi_stock_code',
+                        'exp_medi_stock.medi_stock_name as exp_medi_stock_name',
                     );
                 $data = $data->where(function ($query) use ($keyword) {
                     $query = $query
                         ->where(DB::connection('oracle_his')->raw('medicine_type.medicine_type_code'), 'like', $keyword . '%')
-                        ->orWhere(DB::connection('oracle_his')->raw('his_medi_stock_mety.medi_stock_code'), 'like', $keyword . '%');
+                        ->orWhere(DB::connection('oracle_his')->raw('medi_stock.medi_stock_code'), 'like', $keyword . '%');
                 });
                 if ($this->is_active !== null) {
                     $data = $data->where(function ($query) {
@@ -82,7 +90,8 @@ class MediStockMetyController extends BaseApiCacheController
                         ->leftJoin('his_medi_stock as medi_stock', 'medi_stock.id', '=', 'his_medi_stock_mety.medi_stock_id')
                         ->leftJoin('his_medicine_type as medicine_type', 'medicine_type.id', '=', 'his_medi_stock_mety.medicine_type_id')
                         ->leftJoin('his_service_unit as service_unit', 'service_unit.id', '=', 'medicine_type.tdl_service_unit_id')
-        
+                        ->leftJoin('his_medi_stock as exp_medi_stock', 'exp_medi_stock.id', '=', 'his_medi_stock_mety.exp_medi_stock_id')
+
                             ->select(
                                 'his_medi_stock_mety.*',
                                 'medi_stock.medi_stock_code',
@@ -91,6 +100,13 @@ class MediStockMetyController extends BaseApiCacheController
                                 'service_unit.service_unit_name',
                                 'medicine_type.medicine_type_code',
                                 'medicine_type.medicine_type_name',
+                                'medicine_type.CONCENTRA',
+                                'medicine_type.REGISTER_NUMBER',
+                                'medicine_type.ACTIVE_INGR_BHYT_CODE',
+                                'medicine_type.ACTIVE_INGR_BHYT_NAME',
+                                'medicine_type.DISTRIBUTED_AMOUNT',
+                                'exp_medi_stock.medi_stock_code as exp_medi_stock_code',
+                                'exp_medi_stock.medi_stock_name as exp_medi_stock_name',
                             );
                         if ($this->is_active !== null) {
                             $data = $data->where(function ($query) {
@@ -132,7 +148,8 @@ class MediStockMetyController extends BaseApiCacheController
                         ->leftJoin('his_medi_stock as medi_stock', 'medi_stock.id', '=', 'his_medi_stock_mety.medi_stock_id')
                         ->leftJoin('his_medicine_type as medicine_type', 'medicine_type.id', '=', 'his_medi_stock_mety.medicine_type_id')
                         ->leftJoin('his_service_unit as service_unit', 'service_unit.id', '=', 'medicine_type.tdl_service_unit_id')
-        
+                        ->leftJoin('his_medi_stock as exp_medi_stock', 'exp_medi_stock.id', '=', 'his_medi_stock_mety.exp_medi_stock_id')
+
                             ->select(
                                 'his_medi_stock_mety.*',
                                 'medi_stock.medi_stock_code',
@@ -141,6 +158,13 @@ class MediStockMetyController extends BaseApiCacheController
                                 'service_unit.service_unit_name',
                                 'medicine_type.medicine_type_code',
                                 'medicine_type.medicine_type_name',
+                                'medicine_type.CONCENTRA',
+                                'medicine_type.REGISTER_NUMBER',
+                                'medicine_type.ACTIVE_INGR_BHYT_CODE',
+                                'medicine_type.ACTIVE_INGR_BHYT_NAME',
+                                'medicine_type.DISTRIBUTED_AMOUNT',
+                                'exp_medi_stock.medi_stock_code as exp_medi_stock_code',
+                                'exp_medi_stock.medi_stock_name as exp_medi_stock_name',
                             )
                             ->where('his_medi_stock_mety.id', $id);
                         if ($this->is_active !== null) {

@@ -78,6 +78,13 @@ use App\Http\Controllers\Api\CacheControllers\ExecuteRoleUserController;
 use App\Http\Controllers\Api\CacheControllers\ModuleRoleController;
 use App\Http\Controllers\Api\CacheControllers\MestPatientTypeController;
 use App\Http\Controllers\Api\CacheControllers\MediStockMetyController;
+use App\Http\Controllers\Api\CacheControllers\MediStockMatyController;
+use App\Http\Controllers\Api\CacheControllers\MestRoomController;
+use App\Http\Controllers\Api\CacheControllers\ExroRoomController;
+use App\Http\Controllers\Api\CacheControllers\PatientTypeRoomController;
+use App\Http\Controllers\Api\CacheControllers\PatientTypeAllowController;
+use App\Http\Controllers\Api\CacheControllers\PositionController;
+use App\Http\Controllers\Api\CacheControllers\WorkPlaceController;
 
 // Data Controllers
 use App\Http\Controllers\Api\DataControllers\DebateController;
@@ -671,53 +678,53 @@ Route::group([
     /// Kho - Loại vật tư
     Route::group(['as' => 'HIS.Desktop.Plugins.MediStockMatyList'], function () {
         // Trả về tất cả mối quan hệ
-        Route::get("v1/medi-stock-maty-list", [HISController::class, "medi_stock_maty_list"]);
-        Route::get("v1/medi-stock-maty-list/{id}", [HISController::class, "medi_stock_maty_list"]);
-        // Trả về tất cả kho cùng loại vật tư 
-        Route::get("v1/medi-stock/all/material-type", [HISController::class, "medi_stock_with_material_type"]);
-        Route::get("v1/medi-stock/{id}/material-type", [HISController::class, "medi_stock_with_material_type"]);
-        // Trả về tất cả loại vật tư cùng kho
-        Route::get("v1/material-type/all/medi-stock", [HISController::class, "material_type_with_medi_stock"]);
-        Route::get("v1/material-type/{id}/medi-stock", [HISController::class, "material_type_with_medi_stock"]);
+        Route::get("v1/medi-stock-maty-list", [MediStockMatyController::class, "medi_stock_maty_list"]);
+        Route::get("v1/medi-stock-maty-list/{id}", [MediStockMatyController::class, "medi_stock_maty_list"]);
+        // // Trả về tất cả kho cùng loại vật tư 
+        // Route::get("v1/medi-stock/all/material-type", [HISController::class, "medi_stock_with_material_type"]);
+        // Route::get("v1/medi-stock/{id}/material-type", [HISController::class, "medi_stock_with_material_type"]);
+        // // Trả về tất cả loại vật tư cùng kho
+        // Route::get("v1/material-type/all/medi-stock", [HISController::class, "material_type_with_medi_stock"]);
+        // Route::get("v1/material-type/{id}/medi-stock", [HISController::class, "material_type_with_medi_stock"]);
     });
 
     /// Kho - Phòng
     Route::group(['as' => 'HIS.Desktop.Plugins.MestExportRoom'], function () {
         // Trả về tất cả mối quan hệ
-        Route::get("v1/mest-export-room", [HISController::class, "mest_export_room"]);
-        Route::get("v1/mest-export-room/{id}", [HISController::class, "mest_export_room"]);
-        // Trả về tất cả kho cùng phòng
-        Route::get("v1/medi-stock/all/room", [HISController::class, "medi_stock_with_room"]);
-        Route::get("v1/medi-stock/{id}/room", [HISController::class, "medi_stock_with_room"]);
-        // Trả về tất cả phòng cùng kho
-        Route::get("v1/room/all/medi-stock", [HISController::class, "room_with_medi_stock"]);
-        Route::get("v1/room/{id}/medi-stock", [HISController::class, "room_with_medi_stock"]);
+        Route::get("v1/mest-export-room", [MestRoomController::class, "mest_export_room"]);
+        Route::get("v1/mest-export-room/{id}", [MestRoomController::class, "mest_export_room"]);
+        // // Trả về tất cả kho cùng phòng
+        // Route::get("v1/medi-stock/all/room", [HISController::class, "medi_stock_with_room"]);
+        // Route::get("v1/medi-stock/{id}/room", [HISController::class, "medi_stock_with_room"]);
+        // // Trả về tất cả phòng cùng kho
+        // Route::get("v1/room/all/medi-stock", [HISController::class, "room_with_medi_stock"]);
+        // Route::get("v1/room/{id}/medi-stock", [HISController::class, "room_with_medi_stock"]);
     });
 
     /// Phòng chỉ định - Phòng thực hiện 
     Route::group(['as' => 'HIS.Desktop.Plugins.ExroRoom'], function () {
         // Trả về tất cả mối quan hệ
-        Route::get("v1/exro-room", [HISController::class, "exro_room"]);
-        Route::get("v1/exro-room/{id}", [HISController::class, "exro_room"]);
-        // Trả về tất cả phòng thực hiện cùng phòng chỉ định
-        Route::get("v1/execute-room/all/room", [HISController::class, "execute_room_with_room"]);
-        Route::get("v1/execute-room/{id}/room", [HISController::class, "execute_room_with_room"]);
-        // Trả về tất cả phòng chỉ định cùng phòng thực hiện
-        Route::get("v1/room/all/execute-room", [HISController::class, "room_with_execute_room"]);
-        Route::get("v1/room/{id}/execute-room", [HISController::class, "room_with_execute_room"]);
+        Route::get("v1/exro-room", [ExroRoomController::class, "exro_room"]);
+        Route::get("v1/exro-room/{id}", [ExroRoomController::class, "exro_room"]);
+        // // Trả về tất cả phòng thực hiện cùng phòng chỉ định
+        // Route::get("v1/execute-room/all/room", [HISController::class, "execute_room_with_room"]);
+        // Route::get("v1/execute-room/{id}/room", [HISController::class, "execute_room_with_room"]);
+        // // Trả về tất cả phòng chỉ định cùng phòng thực hiện
+        // Route::get("v1/room/all/execute-room", [HISController::class, "room_with_execute_room"]);
+        // Route::get("v1/room/{id}/execute-room", [HISController::class, "room_with_execute_room"]);
     });
 
     /// Phòng thực hiện - Đối tượng bệnh nhân
     Route::group(['as' => 'HIS.Desktop.Plugins.PatientTypeRoom'], function () {
         // Trả về tất cả mối quan hệ
-        Route::get("v1/patient-type-room", [HISController::class, "patient_type_room"]);
-        Route::get("v1/patient-type-room/{id}", [HISController::class, "patient_type_room"]);
-        // Trả về tất cả phòng thực hiện cùng đối tượng bệnh nhân
-        Route::get("v1/room/all/patient-type", [HISController::class, "room_with_patient_type"]);
-        Route::get("v1/room/{id}/patient-type", [HISController::class, "room_with_patient_type"]);
-        // Trả về tất cả đối tượng bệnh nhân cùng phòng thực hiện
-        Route::get("v1/patient-type/all/room", [HISController::class, "patient_type_with_room"]);
-        Route::get("v1/patient-type/{id}/room", [HISController::class, "patient_type_with_room"]);
+        Route::get("v1/patient-type-room", [PatientTypeRoomController::class, "patient_type_room"]);
+        Route::get("v1/patient-type-room/{id}", [PatientTypeRoomController::class, "patient_type_room"]);
+        // // Trả về tất cả phòng thực hiện cùng đối tượng bệnh nhân
+        // Route::get("v1/room/all/patient-type", [HISController::class, "room_with_patient_type"]);
+        // Route::get("v1/room/{id}/patient-type", [HISController::class, "room_with_patient_type"]);
+        // // Trả về tất cả đối tượng bệnh nhân cùng phòng thực hiện
+        // Route::get("v1/patient-type/all/room", [HISController::class, "patient_type_with_room"]);
+        // Route::get("v1/patient-type/{id}/room", [HISController::class, "patient_type_with_room"]);
     });
 
     /// Thiết lập lợi nhuận xuất bán
@@ -728,20 +735,20 @@ Route::group([
 
     /// Chuyển đổi đối tượng
     Route::group(['as' => 'HIS.Desktop.Plugins.PatientTypeAllow'], function () {
-        Route::get("v1/patient-type-allow", [HISController::class, "patient_type_allow"]);
-        Route::get("v1/patient-type-allow/{id}", [HISController::class, "patient_type_allow"]);
+        Route::get("v1/patient-type-allow", [PatientTypeAllowController::class, "patient_type_allow"]);
+        Route::get("v1/patient-type-allow/{id}", [PatientTypeAllowController::class, "patient_type_allow"]);
     });
 
     /// Chức vụ
     Route::group(['as' => 'HIS.Desktop.Plugins.HisPosition'], function () {
-        Route::get("v1/position", [HISController::class, "position"]);
-        Route::get("v1/position/{id}", [HISController::class, "position"]);
+        Route::get("v1/position", [PositionController::class, "position"]);
+        Route::get("v1/position/{id}", [PositionController::class, "position"]);
     });
 
     /// Nơi làm việc
     Route::group(['as' => 'HIS.Desktop.Plugins.HisWorkPlace'], function () {
-        Route::get("v1/work-place", [HISController::class, "work_place"]);
-        Route::get("v1/work-place/{id}", [HISController::class, "work_place"]);
+        Route::get("v1/work-place", [WorkPlaceController::class, "work_place"]);
+        Route::get("v1/work-place/{id}", [WorkPlaceController::class, "work_place"]);
     });
 
     /// Ngôi thai
