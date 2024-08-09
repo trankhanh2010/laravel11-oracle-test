@@ -5,6 +5,7 @@ namespace App\Http\Controllers\BaseControllers;
 use App\Http\Controllers\Controller;
 use App\Models\ACS\Module;
 use App\Models\ACS\Role;
+use App\Models\HIS\ActiveIngredient;
 use App\Models\HIS\Bed;
 use App\Models\HIS\Department;
 use App\Models\HIS\Employee;
@@ -99,6 +100,10 @@ class BaseApiCacheController extends Controller
     protected $execute_room_id_name = 'ExecuteRoomId';
     protected $patient_type_allow_id;
     protected $patient_type_allow_id_name = 'PatientTypeAllowId';
+    protected $active_ingredient_id;
+    protected $active_ingredient_id_name = 'ActiveIngredientId';
+    protected $test_service_type_id;
+    protected $test_service_type_id_name = 'TestServiceTypeId';
     protected $patient_type_ids_string;
     protected $service_type_ids_string;
 
@@ -876,6 +881,35 @@ class BaseApiCacheController extends Controller
                 if (!PatientType::where('id', $this->patient_type_allow_id)->exists()) {
                     $this->errors[$this->patient_type_allow_id_name] = $this->mess_record_id;
                     $this->patient_type_allow_id = null;
+                }
+            }
+        }
+        $this->active_ingredient_id = $this->param_request['ApiData']['ActiveIngredientId'] ?? null;
+        if ($this->active_ingredient_id !== null) {
+            // Kiểm tra xem ID có tồn tại trong bảng  hay không
+            if (!is_numeric($this->active_ingredient_id)) {
+                $this->errors[$this->active_ingredient_id_name] = $this->mess_format;
+                $this->active_ingredient_id = null;
+            } else {
+                if (!ActiveIngredient::where('id', $this->active_ingredient_id)->exists()) {
+                    $this->errors[$this->active_ingredient_id_name] = $this->mess_record_id;
+                    $this->active_ingredient_id = null;
+                }
+            }
+        }
+        $this->test_service_type_id = $this->param_request['ApiData']['TestServiceTypeId'] ?? null;
+        if ($this->test_service_type_id !== null) {
+            // Kiểm tra xem ID có tồn tại trong bảng  hay không
+            if (!is_numeric($this->test_service_type_id)) {
+                $this->errors[$this->test_service_type_id_name] = $this->mess_format;
+                $this->test_service_type_id = null;
+            } else {
+                if (!Service::
+                        leftJoin('his_service_type as service_type', 'service_type.id', '=', 'his_service.service_type_id')
+                        ->where('his_service.id', $this->test_service_type_id)
+                        ->where('service_type.service_type_code', 'XN')->exists()) {
+                    $this->errors[$this->test_service_type_id_name] = $this->mess_record_id;
+                    $this->test_service_type_id = null;
                 }
             }
         }

@@ -117,6 +117,19 @@ use App\Http\Controllers\Api\CacheControllers\AccidentCareController;
 use App\Http\Controllers\Api\CacheControllers\PtttTableController;
 use App\Http\Controllers\Api\CacheControllers\EmotionlessMethodController;
 use App\Http\Controllers\Api\CacheControllers\PtttCatastropheController;
+use App\Http\Controllers\Api\CacheControllers\PtttConditionController;
+use App\Http\Controllers\Api\CacheControllers\AwarenessController;
+use App\Http\Controllers\Api\CacheControllers\MedicineLineController;
+use App\Http\Controllers\Api\CacheControllers\BloodVolumeController;
+use App\Http\Controllers\Api\CacheControllers\MedicineUseFormController;
+use App\Http\Controllers\Api\CacheControllers\BidTypeController;
+use App\Http\Controllers\Api\CacheControllers\MedicineTypeAcinController;
+use App\Http\Controllers\Api\CacheControllers\AtcGroupController;
+use App\Http\Controllers\Api\CacheControllers\BloodGroupController;
+use App\Http\Controllers\Api\CacheControllers\MedicineGroupController;
+use App\Http\Controllers\Api\CacheControllers\TestIndexController;
+use App\Http\Controllers\Api\CacheControllers\TestIndexUnitController;
+use App\Http\Controllers\Api\CacheControllers\DebateTypeController;
 
 // Data Controllers
 use App\Http\Controllers\Api\DataControllers\DebateController;
@@ -1009,81 +1022,81 @@ Route::group([
 
     /// Tình trạng PTTT
     Route::group(['as' => 'HIS.Desktop.Plugins.HisPtttCondition'], function () {
-        Route::get("v1/pttt-condition", [HISController::class, "pttt_condition"]);
-        Route::get("v1/pttt-condition/{id}", [HISController::class, "pttt_condition"]);
+        Route::get("v1/pttt-condition", [PtttConditionController::class, "pttt_condition"]);
+        Route::get("v1/pttt-condition/{id}", [PtttConditionController::class, "pttt_condition"]);
     });
 
     /// Ý thức
     Route::group(['as' => 'HIS.Desktop.Plugins.HisAwareness'], function () {
-        Route::get("v1/awareness", [HISController::class, "awareness"]);
-        Route::get("v1/awareness/{id}", [HISController::class, "awareness"]);
+        Route::get("v1/awareness", [AwarenessController::class, "awareness"]);
+        Route::get("v1/awareness/{id}", [AwarenessController::class, "awareness"]);
     });
 
     /// Dòng thuốc
     Route::group(['as' => 'HIS.Desktop.Plugins.HisMedicineLine'], function () {
-        Route::get("v1/medicine-line", [HISController::class, "medicine_line"]);
-        Route::get("v1/medicine-line/{id}", [HISController::class, "medicine_line"]);
+        Route::get("v1/medicine-line", [MedicineLineController::class, "medicine_line"]);
+        Route::get("v1/medicine-line/{id}", [MedicineLineController::class, "medicine_line"]);
     });
 
     /// Dung tích túi máu
     Route::group(['as' => 'HIS.Desktop.Plugins.HisBloodVolume'], function () {
-        Route::get("v1/blood-volume", [HISController::class, "blood_volume"]);
-        Route::get("v1/blood-volume/{id}", [HISController::class, "blood_volume"]);
+        Route::get("v1/blood-volume", [BloodVolumeController::class, "blood_volume"]);
+        Route::get("v1/blood-volume/{id}", [BloodVolumeController::class, "blood_volume"]);
     });
 
     /// Đường dùng thuốc
     Route::group(['as' => 'HIS.Desktop.Plugins.HisMedicineUseForm'], function () {
-        Route::get("v1/medicine-use-form", [HISController::class, "medicine_use_form"]);
-        Route::get("v1/medicine-use-form/{id}", [HISController::class, "medicine_use_form"]);
+        Route::get("v1/medicine-use-form", [MedicineUseFormController::class, "medicine_use_form"]);
+        Route::get("v1/medicine-use-form/{id}", [MedicineUseFormController::class, "medicine_use_form"]);
     });
 
     /// Loại thầu
     Route::group(['as' => 'HIS.Desktop.Plugins.HisBidType'], function () {
-        Route::get("v1/bid-type", [HISController::class, "bid_type"]);
-        Route::get("v1/bid-type/{id}", [HISController::class, "bid_type"]);
+        Route::get("v1/bid-type", [BidTypeController::class, "bid_type"]);
+        Route::get("v1/bid-type/{id}", [BidTypeController::class, "bid_type"]);
     });
 
     /// Loại thuốc - Hoạt chất
     Route::group(['as' => 'HIS.Desktop.Plugins.MedicineTypeActiveIngredient'], function () {
         // Trả về tất cả mối quan hệ
-        Route::get("v1/medicine-type-acin", [HISController::class, "medicine_type_acin"]);
-        Route::get("v1/medicine-type-acin/{id}", [HISController::class, "medicine_type_acin"]);
-        // Trả về tất cả loại thuốc cùng hoạt chất
-        Route::get("v1/medicine-type/all/active-ingredient", [HISController::class, "medicine_type_with_active_ingredient"]);
-        Route::get("v1/medicine-type/{id}/active-ingredient", [HISController::class, "medicine_type_with_active_ingredient"]);
-        // Trả về tất cả hoạt chất cùng loại thuốc
-        Route::get("v1/active-ingredient/all/medicine-type", [HISController::class, "active_ingredient_with_medicine_type"]);
-        Route::get("v1/active-ingredient/{id}/medicine-type", [HISController::class, "active_ingredient_with_medicine_type"]);
+        Route::get("v1/medicine-type-acin", [MedicineTypeAcinController::class, "medicine_type_acin"]);
+        Route::get("v1/medicine-type-acin/{id}", [MedicineTypeAcinController::class, "medicine_type_acin"]);
+        // // Trả về tất cả loại thuốc cùng hoạt chất
+        // Route::get("v1/medicine-type/all/active-ingredient", [HISController::class, "medicine_type_with_active_ingredient"]);
+        // Route::get("v1/medicine-type/{id}/active-ingredient", [HISController::class, "medicine_type_with_active_ingredient"]);
+        // // Trả về tất cả hoạt chất cùng loại thuốc
+        // Route::get("v1/active-ingredient/all/medicine-type", [HISController::class, "active_ingredient_with_medicine_type"]);
+        // Route::get("v1/active-ingredient/{id}/medicine-type", [HISController::class, "active_ingredient_with_medicine_type"]);
     });
 
     /// Nhóm ATC
     Route::group(['as' => 'HIS.Desktop.Plugins.HisAtcGroup'], function () {
-        Route::get("v1/atc-group", [HISController::class, "atc_group"]);
-        Route::get("v1/atc-group/{id}", [HISController::class, "atc_group"]);
+        Route::get("v1/atc-group", [AtcGroupController::class, "atc_group"]);
+        Route::get("v1/atc-group/{id}", [AtcGroupController::class, "atc_group"]);
     });
 
     /// Nhóm máu
     Route::group(['as' => 'HIS.Desktop.Plugins.HisBloodGroup'], function () {
-        Route::get("v1/blood-group", [HISController::class, "blood_group"]);
-        Route::get("v1/blood-group/{id}", [HISController::class, "blood_group"]);
+        Route::get("v1/blood-group", [BloodGroupController::class, "blood_group"]);
+        Route::get("v1/blood-group/{id}", [BloodGroupController::class, "blood_group"]);
     });
 
     /// Nhóm thuốc
     Route::group(['as' => 'HIS.Desktop.Plugins.HisMedicineGroup'], function () {
-        Route::get("v1/medicine-group", [HISController::class, "medicine_group"]);
-        Route::get("v1/medicine-group/{id}", [HISController::class, "medicine_group"]);
+        Route::get("v1/medicine-group", [MedicineGroupController::class, "medicine_group"]);
+        Route::get("v1/medicine-group/{id}", [MedicineGroupController::class, "medicine_group"]);
     });
 
     /// Chỉ số xét nghiệm
     Route::group(['as' => 'HIS.Desktop.Plugins.HisTestIndex'], function () {
-        Route::get("v1/test-index", [HISController::class, "test_index"]);
-        Route::get("v1/test-index/{id}", [HISController::class, "test_index"]);
+        Route::get("v1/test-index", [TestIndexController::class, "test_index"]);
+        Route::get("v1/test-index/{id}", [TestIndexController::class, "test_index"]);
     });
 
     /// Đơn vị tính chỉ số xét nghiệm
     Route::group(['as' => 'HIS.Desktop.Plugins.HisTestIndexUnit'], function () {
-        Route::get("v1/test-index-unit", [HISController::class, "test_index_unit"]);
-        Route::get("v1/test-index-unit/{id}", [HISController::class, "test_index_unit"]);
+        Route::get("v1/test-index-unit", [TestIndexUnitController::class, "test_index_unit"]);
+        Route::get("v1/test-index-unit/{id}", [TestIndexUnitController::class, "test_index_unit"]);
     });
 
     /// Loại mẫu bệnh phẩm
@@ -1115,8 +1128,8 @@ Route::group([
 
 
     // Debate Type
-    Route::get("v1/debate-type", [HISController::class, "debate_type"]);
-    Route::get("v1/debate-type/{id}", [HISController::class, "debate_type"]);
+    Route::get("v1/debate-type", [DebateTypeController::class, "debate_type"]);
+    Route::get("v1/debate-type/{id}", [DebateTypeController::class, "debate_type"]);
 
     // Service Req
     Route::get("v1/service-req/get-L-view", [ServiceReqController::class, "service_req_get_L_view"]);
