@@ -106,6 +106,17 @@ use App\Http\Controllers\Api\CacheControllers\DebateReasonController;
 use App\Http\Controllers\Api\CacheControllers\CancelReasonController;
 use App\Http\Controllers\Api\CacheControllers\InteractionReasonController;
 use App\Http\Controllers\Api\CacheControllers\UnlimitReasonController;
+use App\Http\Controllers\Api\CacheControllers\HospitalizeReasonController;
+use App\Http\Controllers\Api\CacheControllers\ExpMestReasonController;
+use App\Http\Controllers\Api\CacheControllers\CareerTitleController;
+use App\Http\Controllers\Api\CacheControllers\AccidentHurtTypeController;
+use App\Http\Controllers\Api\CacheControllers\SupplierController;
+use App\Http\Controllers\Api\CacheControllers\DeathWithinController;
+use App\Http\Controllers\Api\CacheControllers\LocationStoreController;
+use App\Http\Controllers\Api\CacheControllers\AccidentCareController;
+use App\Http\Controllers\Api\CacheControllers\PtttTableController;
+use App\Http\Controllers\Api\CacheControllers\EmotionlessMethodController;
+use App\Http\Controllers\Api\CacheControllers\PtttCatastropheController;
 
 // Data Controllers
 use App\Http\Controllers\Api\DataControllers\DebateController;
@@ -151,7 +162,7 @@ use App\Http\Controllers\Api\ValidateControllers\CheckRefectoryController;
 use App\Http\Controllers\Api\ValidateControllers\CheckSpecialityController;
 use App\Http\Controllers\Api\ValidateControllers\CheckServiceController;
 use App\Http\Controllers\Api\ValidateControllers\CheckTreatmentTypeController;
-
+use App\Http\Controllers\Api\CacheControllers\ProcessingMethodController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -912,62 +923,62 @@ Route::group([
 
     /// Lý do nhập viện
     Route::group(['as' => 'HIS.Desktop.Plugins.HospitalizeReason'], function () {
-        Route::get("v1/hospitalize-reason", [HISController::class, "hospitalize_reason"]);
-        Route::get("v1/hospitalize-reason/{id}", [HISController::class, "hospitalize_reason"]);
+        Route::get("v1/hospitalize-reason", [HospitalizeReasonController::class, "hospitalize_reason"]);
+        Route::get("v1/hospitalize-reason/{id}", [HospitalizeReasonController::class, "hospitalize_reason"]);
     });
 
     /// Lý do xuất
     Route::group(['as' => 'HIS.Desktop.Plugins.HisExpMestReason'], function () {
-        Route::get("v1/exp-mest-reason", [HISController::class, "exp_mest_reason"]);
-        Route::get("v1/exp-mest-reason/{id}", [HISController::class, "exp_mest_reason"]);
+        Route::get("v1/exp-mest-reason", [ExpMestReasonController::class, "exp_mest_reason"]);
+        Route::get("v1/exp-mest-reason/{id}", [ExpMestReasonController::class, "exp_mest_reason"]);
     });
 
     /// Nghề nghiệp nhân viên
     Route::group(['as' => 'HIS.Desktop.Plugins.CareerTitle'], function () {
-        Route::get("v1/career-title", [HISController::class, "career_title"]);
-        Route::get("v1/career-title/{id}", [HISController::class, "career_title"]);
+        Route::get("v1/career-title", [CareerTitleController::class, "career_title"]);
+        Route::get("v1/career-title/{id}", [CareerTitleController::class, "career_title"]);
     });
 
     /// Nguyên nhân tai nạn 
     Route::group(['as' => 'HIS.Desktop.Plugins.HisAccidentHurtType'], function () {
-        Route::get("v1/accident-hurt-type", [HISController::class, "accident_hurt_type"]);
-        Route::get("v1/accident-hurt-type/{id}", [HISController::class, "accident_hurt_type"]);
+        Route::get("v1/accident-hurt-type", [AccidentHurtTypeController::class, "accident_hurt_type"]);
+        Route::get("v1/accident-hurt-type/{id}", [AccidentHurtTypeController::class, "accident_hurt_type"]);
     });
 
     /// Nhà cung cấp
     Route::group(['as' => 'HIS.Desktop.Plugins.HisSupplier'], function () {
-        Route::get("v1/supplier", [HISController::class, "supplier"]);
-        Route::get("v1/supplier/{id}", [HISController::class, "supplier"]);
+        Route::get("v1/supplier", [SupplierController::class, "supplier"]);
+        Route::get("v1/supplier/{id}", [SupplierController::class, "supplier"]);
     });
 
     /// Phương pháp ché biến
     Route::group(['as' => 'HIS.Desktop.Plugins.HisProcessing'], function () {
-        Route::get("v1/processing-method", [HISController::class, "processing_method"]);
-        Route::get("v1/processing-method/{id}", [HISController::class, "processing_method"]);
+        Route::get("v1/processing-method", [ProcessingMethodController::class, "processing_method"]);
+        Route::get("v1/processing-method/{id}", [ProcessingMethodController::class, "processing_method"]);
     });
 
     /// Thời gian tử vong
     Route::group(['as' => 'HIS.Desktop.Plugins.HisDeathWithin'], function () {
-        Route::get("v1/death-within", [HISController::class, "death_within"]);
-        Route::get("v1/death-within/{id}", [HISController::class, "death_within"]);
+        Route::get("v1/death-within", [DeathWithinController::class, "death_within"]);
+        Route::get("v1/death-within/{id}", [DeathWithinController::class, "death_within"]);
     });
 
     /// Vị trí hồ sơ bệnh án
     Route::group(['as' => 'HIS.Desktop.Plugins.LocationTreatment'], function () {
-        Route::get("v1/location-treatment", [HISController::class, "location_treatment"]);
-        Route::get("v1/location-treatment/{id}", [HISController::class, "location_treatment"]);
+        Route::get("v1/location-treatment", [LocationStoreController::class, "location_treatment"]);
+        Route::get("v1/location-treatment/{id}", [LocationStoreController::class, "location_treatment"]);
     });
 
     /// Xử lý sau tai nạn
     Route::group(['as' => 'HIS.Desktop.Plugins.HisAccidentCare'], function () {
-        Route::get("v1/accident-care", [HISController::class, "accident_care"]);
-        Route::get("v1/accident-care/{id}", [HISController::class, "accident_care"]);
+        Route::get("v1/accident-care", [AccidentCareController::class, "accident_care"]);
+        Route::get("v1/accident-care/{id}", [AccidentCareController::class, "accident_care"]);
     });
 
     /// Bàn mổ
     Route::group(['as' => 'HIS.Desktop.Plugins.HisPtttTable'], function () {
-        Route::get("v1/pttt-table", [HISController::class, "pttt_table"]);
-        Route::get("v1/pttt-table/{id}", [HISController::class, "pttt_table"]);
+        Route::get("v1/pttt-table", [PtttTableController::class, "pttt_table"]);
+        Route::get("v1/pttt-table/{id}", [PtttTableController::class, "pttt_table"]);
     });
 
     /// Nhóm PTTT
@@ -986,14 +997,14 @@ Route::group([
 
     /// Phương pháp vô cảm
     Route::group(['as' => 'HIS.Desktop.Plugins.HisEmotionlessMethod'], function () {
-        Route::get("v1/emotionless-method", [HISController::class, "emotionless_method"]);
-        Route::get("v1/emotionless-method/{id}", [HISController::class, "emotionless_method"]);
+        Route::get("v1/emotionless-method", [EmotionlessMethodController::class, "emotionless_method"]);
+        Route::get("v1/emotionless-method/{id}", [EmotionlessMethodController::class, "emotionless_method"]);
     });
 
     /// Tai biến PTTT
     Route::group(['as' => 'HIS.Desktop.Plugins.HisPtttCatastrophe'], function () {
-        Route::get("v1/pttt-catastrophe", [HISController::class, "pttt_catastrophe"]);
-        Route::get("v1/pttt-catastrophe/{id}", [HISController::class, "pttt_catastrophe"]);
+        Route::get("v1/pttt-catastrophe", [PtttCatastropheController::class, "pttt_catastrophe"]);
+        Route::get("v1/pttt-catastrophe/{id}", [PtttCatastropheController::class, "pttt_catastrophe"]);
     });
 
     /// Tình trạng PTTT
