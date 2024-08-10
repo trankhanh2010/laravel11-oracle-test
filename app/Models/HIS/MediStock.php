@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use App\Scopes\IsDeleteScope;
+use Illuminate\Support\Facades\Cache;
+
 class MediStock extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
@@ -32,8 +34,14 @@ class MediStock extends Model
     // }
     public function getPatientClassifysAttribute()
     {
-        $data = PatientClassify::whereIn('id', explode(',', $this->patient_classify_ids))->get();
-        return $data;
+        if($this->patient_classify_ids != null){
+            return Cache::remember('patient_classify_ids_' . $this->patient_classify_ids, $this->time, function ()  {
+                $data = PatientClassify::whereIn('id', explode(',', $this->patient_classify_ids))->get();
+                return $data;
+        });
+        }
+        return null;
+
     }
     public function room()
     {

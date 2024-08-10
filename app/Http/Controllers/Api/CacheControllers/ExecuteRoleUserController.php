@@ -74,13 +74,18 @@ class ExecuteRoleUserController extends BaseApiCacheController
                         $data->orderBy('his_execute_role_user.' . $key, $item);
                     }
                 }
-                $data = $data
+                if($this->get_all){
+                    $data = $data
+                    ->get();
+                }else{
+                    $data = $data
                     ->skip($this->start)
                     ->take($this->limit)
                     ->get();
+                }
             } else {
                 if ($id == null) {
-                    $data = Cache::remember($this->execute_role_user_name .'_loginname_'.$this->loginname. '_execute_role_id_'.$this->execute_role_id. '_start_' . $this->start . '_limit_' . $this->limit . $this->order_by_tring . '_is_active_' . $this->is_active, $this->time, function () {
+                    $data = Cache::remember($this->execute_role_user_name .'_loginname_'.$this->loginname. '_execute_role_id_'.$this->execute_role_id. '_start_' . $this->start . '_limit_' . $this->limit . $this->order_by_tring . '_is_active_' . $this->is_active. '_get_all_' . $this->get_all, $this->time, function () {
                         $data = $this->execute_role_user
                         ->leftJoin('his_employee as employee', 'employee.loginname', '=', 'his_execute_role_user.loginname')
                         ->leftJoin('his_department as department', 'department.id', '=', 'employee.department_id')
@@ -118,10 +123,15 @@ class ExecuteRoleUserController extends BaseApiCacheController
                                 $data->orderBy('his_execute_role_user.' . $key, $item);
                             }
                         }
-                        $data = $data
+                        if($this->get_all){
+                            $data = $data
+                            ->get();
+                        }else{
+                            $data = $data
                             ->skip($this->start)
                             ->take($this->limit)
                             ->get();
+                        }
                         return ['data' => $data, 'count' => $count];
                     });
                 } else {
@@ -161,14 +171,15 @@ class ExecuteRoleUserController extends BaseApiCacheController
                 }
             }
             $param_return = [
-                'start' => $this->start,
-                'limit' => $this->limit,
-                'count' => $count ?? ($data['count'] ?? null),
-                'is_active' => $this->is_active,
-                'loginname' => $this->loginname,
-                'execute_role_id' => $this->execute_role_id,
-                'keyword' => $this->keyword,
-                'order_by' => $this->order_by_request
+                $this->get_all_name => $this->get_all,
+                $this->start_name => ($this->get_all || !is_null($id)) ? null : $this->start,
+                $this->limit_name => ($this->get_all || !is_null($id)) ? null : $this->limit,
+                $this->count_name => $count ?? ($data['count'] ?? null),
+                $this->is_active_name => $this->is_active,
+                $this->loginname_name => $this->loginname,
+                $this->execute_role_id_name => $this->execute_role_id,
+                $this->keyword_name => $this->keyword,
+                $this->order_by_name => $this->order_by_request
             ];
             return return_data_success($param_return, $data?? ($data['data'] ?? null));
         } catch (\Exception $e) {

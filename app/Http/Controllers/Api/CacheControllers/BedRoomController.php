@@ -62,14 +62,21 @@ class BedRoomController extends BaseApiCacheController
                     $data->orderBy($key, $item);
                 }
             }
-            $data = $data
+            if($this->get_all){
+                $data = $data
+                ->with($param)
+                ->get();
+            }else{
+                $data = $data
                 ->skip($this->start)
                 ->take($this->limit)
                 ->with($param)
                 ->get();
+            }
+
         } else {
             if ($id == null) {
-                $name = $this->bed_room_name  . '_start_' . $this->start . '_limit_' . $this->limit . $this->order_by_tring. '_is_active_' . $this->is_active;
+                $name = $this->bed_room_name  . '_start_' . $this->start . '_limit_' . $this->limit . $this->order_by_tring. '_is_active_' . $this->is_active . '_get_all_' . $this->get_all;
                 $param = [
                     'room:id,department_id,area_id,speciality_id,default_cashier_room_id,default_instr_patient_type_id,is_pause',
                     'room.department:id,department_name,department_code',
@@ -97,15 +104,16 @@ class BedRoomController extends BaseApiCacheController
                 ];
             }
             $model = $this->bed_room;
-            $data = get_cache_full($model, $param, $name, $id, $this->time, $this->start, $this->limit, $this->order_by, $this->is_active);
+            $data = get_cache_full($model, $param, $name, $id, $this->time, $this->start, $this->limit, $this->order_by, $this->is_active, $this->get_all);
         }
         $param_return = [
-            'start' => $this->start,
-            'limit' => $this->limit,
-            'count' => $count ?? ($data['count'] ?? null),
-            'is_active' => $this->is_active,
-            'keyword' => $this->keyword,
-            'order_by' => $this->order_by_request
+            $this->get_all_name => $this->get_all,
+            $this->start_name => ($this->get_all || !is_null($id)) ? null : $this->start,
+            $this->limit_name => ($this->get_all || !is_null($id)) ? null : $this->limit,
+            $this->count_name => $count ?? ($data['count'] ?? null),
+            $this->is_active_name => $this->is_active,
+            $this->keyword_name => $this->keyword,
+            $this->order_by_name => $this->order_by_request
         ];
         return return_data_success($param_return, $data?? ($data['data'] ?? null));
     } catch (\Exception $e) {

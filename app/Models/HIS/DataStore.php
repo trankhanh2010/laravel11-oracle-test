@@ -24,15 +24,26 @@ class DataStore extends Model
     public function getTreatmentTypesAttribute()
     {
         $treatment_type_ids = $this->treatment_type_ids;
-        return Cache::remember('treatment_type_ids_' . $treatment_type_ids, $this->time, function () use ( $treatment_type_ids) {
-            return TreatmentType::select('id', 'treatment_type_code', 'treatment_type_name')->whereIn('id', explode(',', $treatment_type_ids))->get();
-        });
+        if($treatment_type_ids != null){
+            return Cache::remember('treatment_type_ids_' . $treatment_type_ids, $this->time, function () use ( $treatment_type_ids) {
+                return TreatmentType::select('id', 'treatment_type_code', 'treatment_type_name')->whereIn('id', explode(',', $treatment_type_ids))->get();
+            });
+        }
+        return null;
+       
     }
 
     public function getTreatmentEndTypesAttribute()
     {
-        $data = TreatmentEndType::select('id', 'treatment_end_type_code', 'treatment_end_type_name')->whereIn('id', explode(',', $this->treatment_end_type_ids))->get();
-        return $data;
+        if($this->treatment_end_type_ids != null){
+            return Cache::remember('treatment_end_type_ids_' . $this->treatment_end_type_ids, $this->time, function ()  {
+            $data = TreatmentEndType::select('id', 'treatment_end_type_code', 'treatment_end_type_name')->whereIn('id', explode(',', $this->treatment_end_type_ids))->get();
+            return $data;
+        });
+
+        }
+        return null;
+
     }
     public function room()
     {

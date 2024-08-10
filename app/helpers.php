@@ -193,10 +193,10 @@ if (!function_exists('get_cache_full')) {
     //         return $data;
     //     }
     // }
-    function get_cache_full($model, $relation_ship, $name, $id = null, $time, $start, $limit, $order_by, $is_active)
+    function get_cache_full($model, $relation_ship, $name, $id = null, $time, $start, $limit, $order_by, $is_active, $get_all)
 {
     if (!$id) {
-        $data = Cache::remember($name, $time, function () use ($model, $relation_ship, $start, $limit, $order_by, $is_active) {
+        $data = Cache::remember($name, $time, function () use ($model, $relation_ship, $start, $limit, $order_by, $is_active, $get_all) {
             $data = $model::with($relation_ship);
             if($is_active !== null){
                 $data = $data->where('is_active', $is_active);
@@ -207,11 +207,16 @@ if (!function_exists('get_cache_full')) {
                     $data->orderBy($key, $item);
                 }
             }
-            $data = $data    
+            if($get_all){
+                $data = $data    
+                ->get();
+            }else{
+                $data = $data    
                 ->skip($start)
                 ->take($limit)
                 ->get();
-        return ['data' => $data, 'count' => $count];
+            }
+            return ['data' => $data, 'count' => $count];
         });
         return $data;
     } else {
@@ -251,10 +256,10 @@ if (!function_exists('get_cache_full_select')) {
     //         return $data;
     //     }
     // }
-    function get_cache_full_select($model, $relation_ship, $select, $name, $id = null, $time, $start, $limit, $order_by, $is_active)
+    function get_cache_full_select($model, $relation_ship, $select, $name, $id = null, $time, $start, $limit, $order_by, $is_active, $get_all)
     {
         if (!$id) {
-            $data = Cache::remember($name, $time, function () use ($model, $relation_ship, $select, $start, $limit, $order_by, $is_active) {
+            $data = Cache::remember($name, $time, function () use ($model, $relation_ship, $select, $start, $limit, $order_by, $is_active, $get_all) {
                 $data=  $model::select($select)->with($relation_ship);
                 if($is_active !== null){
                     $data = $data->where('is_active', $is_active);
@@ -265,10 +270,15 @@ if (!function_exists('get_cache_full_select')) {
                         $data->orderBy($key, $item);
                     }
                 }
-                $data = $data    
+                if($get_all){
+                    $data = $data
+                    ->get();
+                }else{
+                    $data = $data
                     ->skip($start)
                     ->take($limit)
                     ->get();
+                }
             return ['data' => $data, 'count' => $count];
             });
         } else {

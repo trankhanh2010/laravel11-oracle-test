@@ -65,6 +65,9 @@ class BaseApiCacheController extends Controller
     protected $department_id_name = 'DepartmentId';
     protected $keyword;
     protected $keyword_name = 'Keyword';
+    protected $get_all;
+    protected $get_all_name = 'GetAll';
+    protected $count_name = 'Count';
     protected $per_page;
     protected $page;
     protected $param_request;
@@ -538,6 +541,11 @@ class BaseApiCacheController extends Controller
             }
         }
 
+        $this->get_all = $this->param_request['CommonParam']['GetAll'] ?? false;
+        if (!is_bool($this->get_all)) {
+            $this->errors[$this->get_all_name] = $this->mess_format;
+            $this->get_all = false;
+        }
         $this->order_by = $this->param_request['ApiData']['OrderBy'] ?? null;
         $this->order_by_request = $this->param_request['ApiData']['OrderBy'] ?? null;
         if ($this->order_by != null) {

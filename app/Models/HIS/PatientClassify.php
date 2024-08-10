@@ -5,6 +5,7 @@ namespace App\Models\HIS;
 use App\Traits\dinh_dang_ten_truong;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
 
 class PatientClassify extends Model
 {
@@ -21,13 +22,21 @@ class PatientClassify extends Model
     ];
     public function getBHYTWhitelistsAttribute()
     {
-        $data = BHYTWhitelist::whereIn('id', explode(',', $this->bhyt_whitelist_ids))->get();
-        return $data;
+        if($this->bhyt_whitelist_ids != ""){
+            return Cache::remember('bhyt_whitelist_ids_' . $this->bhyt_whitelist_ids, $this->time, function () {
+                return BHYTWhitelist::whereIn('id', explode(',', $this->bhyt_whitelist_ids))->get();
+            });
+        }
+        return null;
     }
     public function getMilitarryRanksAttribute()
     {
-        $data = MilitaryRank::whereIn('id', explode(',', $this->military_rank_ids))->get();
-        return $data;
+        if($this->military_rank_ids != ""){
+            return Cache::remember('military_rank_ids_' . $this->military_rank_ids, $this->time, function () {
+                return MilitaryRank::whereIn('id', explode(',', $this->military_rank_ids))->get();
+            });
+        }
+        return null;
     }
 
     public function patient_type()
