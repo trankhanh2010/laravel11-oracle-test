@@ -57,9 +57,9 @@ class GenderController extends BaseApiCacheController
                 if (!is_numeric($id)) {
                     return return_id_error($id);
                 }
-                $data = $this->gender->find($id);
-                if ($data == null) {
-                    return return_not_record($id);
+                $check_id = $this->check_id($id, $this->gender, $this->gender_name);
+                if($check_id){
+                    return $check_id; 
                 }
                 $name = $this->gender_name . '_' . $id. '_is_active_' . $this->is_active;
                 $param = [
@@ -75,6 +75,6 @@ class GenderController extends BaseApiCacheController
             'keyword' => $this->keyword,
             'order_by' => $this->order_by_request
         ];
-        return return_data_success($param_return, $data ?? $data['data'] ?? null);
+        return return_data_success($param_return, $data ?? ($data['data'] ?? null) ?? null);
     }
 }

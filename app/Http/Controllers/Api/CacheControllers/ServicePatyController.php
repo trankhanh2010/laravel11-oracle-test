@@ -221,9 +221,9 @@ class ServicePatyController extends BaseApiCacheController
                 if (!is_numeric($id)) {
                     return return_id_error($id);
                 }
-                $data = $this->service_paty->find($id);
-                if ($data == null) {
-                    return return_not_record($id);
+                $check_id = $this->check_id($id, $this->service_paty, $this->service_paty_name);
+                if($check_id){
+                    return $check_id; 
                 }
                 $data = get_cache_full($this->service_paty, [], $this->service_paty_name.'_id_'. $id. '_is_active_'. $this->is_active, $id, $this->time, $this->start, $this->limit, $this->order_by, $this->is_active);
                 if($data != null){
@@ -366,7 +366,7 @@ class ServicePatyController extends BaseApiCacheController
         $param_return = [
             'start' => $this->start,
             'limit' => $this->limit,
-            'count' => $count ?? $data['count'],
+            'count' => $count ?? ($data['count'] ?? null),
             'keyword' => $this->keyword,
             'order_by' => $this->order_by_request,
             'service_type_ids' => $this->service_type_ids ?? null,
@@ -374,7 +374,7 @@ class ServicePatyController extends BaseApiCacheController
             'service_id' => $this->service_id ?? null,
             'package_id' => $this->package_id ?? null
         ];
-        return return_data_success($param_return, $data_param ?? $data ?? $data['data']);
+        return return_data_success($param_return, $data_param ?? $data?? ($data['data'] ?? null));
     }
 
     public function service_paty_create(CreateServicePatyRequest $request)

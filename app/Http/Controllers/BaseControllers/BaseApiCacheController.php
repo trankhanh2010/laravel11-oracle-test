@@ -444,6 +444,23 @@ class BaseApiCacheController extends Controller
         }
         return null;
     }
+    protected function check_id($id, $model, $name)
+    {
+        if($this->is_active !== null){
+            $data = Cache::remember($name . '_check_id_' . $id . '_is_active_' . $this->is_active, $this->time, function () use ($id, $model) {
+                return $model->where('id', $id)->where('is_active', $this->is_active)->exists();
+            });
+        }else{
+            $data = Cache::remember($name . '_check_id_' . $id , $this->time, function () use ($id, $model) {
+                return $model->where('id', $id)->exists();
+            });
+        }
+
+        if (!$data) {
+            return return_not_record($id);
+        }
+        return null;
+    }
     protected function get_columns_table($table)
     {
         $parts = explode('_', $table->getTable());

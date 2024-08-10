@@ -194,14 +194,14 @@ class RoomController extends BaseApiCacheController
         $param_return = [
             'start' => $this->start,
             'limit' => $this->limit,
-            'count' => $count ?? $data['count'],
+            'count' => $count ?? ($data['count'] ?? null),
             'is_active' => $this->is_active,
             'keyword' => $this->keyword,
             'order_by' => $this->order_by_request,
             'department_id' => $this->department_id ?? null,
             'room_type_id' => $this->room_type_id ?? null,
         ];
-        return return_data_success($param_return, $data ?? $data['data']);
+        return return_data_success($param_return, $data?? ($data['data'] ?? null));
     }
     // public function room_with_department($id)
     // {

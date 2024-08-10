@@ -114,9 +114,9 @@ class ServiceFollowController extends BaseApiCacheController
                 if (!is_numeric($id)) {
                     return return_id_error($id);
                 }
-                $data = $this->service_follow->find($id);
-                if ($data == null) {
-                    return return_not_record($id);
+                $check_id = $this->check_id($id, $this->service_follow, $this->service_follow_name);
+                if($check_id){
+                    return $check_id; 
                 }
                 $data = Cache::remember($this->service_follow_name . '_' . $id . '_is_active_' . $this->is_active, $this->time, function () use ($id) {
                     $data = $this->service_follow
@@ -150,7 +150,7 @@ class ServiceFollowController extends BaseApiCacheController
         $param_return = [
             'start' => $this->start,
             'limit' => $this->limit,
-            'count' => $count ?? (is_array($data) ? $data['count'] : null),
+            'count' => $count ?? ($data['count'] ?? null),
             'service_ids' => $this->service_ids ?? null,
             'service_follow_ids' => $this->service_follow_ids ?? null,
             'is_active' => $this->is_active,

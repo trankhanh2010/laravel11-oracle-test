@@ -76,11 +76,11 @@ class ScreenSaverModuleLinkController extends BaseApiCacheController
         $param_return = [
             'start' => $this->start,
             'limit' => $this->limit,
-            'count' => $count ?? $data['count'],
+            'count' => $count ?? ($data['count'] ?? null),
             'is_active' => $this->is_active,
             'keyword' => $this->keyword,
             'order_by' => $this->order_by_request
         ];
-        return return_data_success($param_return, $data ?? $data['data']);
+        return return_data_success($param_return, $data?? ($data['data'] ?? null));
     }
 }

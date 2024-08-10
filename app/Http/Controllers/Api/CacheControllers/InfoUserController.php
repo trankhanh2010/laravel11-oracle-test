@@ -37,9 +37,9 @@ class InfoUserController extends BaseApiCacheController
             if (!is_numeric($id)) {
                 return return_id_error($id);
             }
-            $data = $this->employee->find($id);
-            if ($data == null) {
-                return return_not_record($id);
+            $check_id = $this->check_id($id, $this->employee, $this->employee_name);
+            if($check_id){
+                return $check_id; 
             }
             $data = Cache::remember($this->employee_name . '_' . $id . '_is_active_' . $this->is_active, $this->time, function () use ($id) {
                 $data = $this->employee
@@ -76,7 +76,7 @@ class InfoUserController extends BaseApiCacheController
                 'keyword' => $this->keyword,
                 'order_by' => $this->order_by_request
             ];
-            return return_data_success($param_return, $data ?? $data['data']);
+            return return_data_success($param_return, $data?? ($data['data'] ?? null));
         } catch (\Exception $e) {
             // Xử lý lỗi và trả về phản hồi lỗi
             return return_500_error();

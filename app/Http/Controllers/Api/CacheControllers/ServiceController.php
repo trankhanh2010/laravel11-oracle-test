@@ -89,9 +89,9 @@ class ServiceController extends BaseApiCacheController
                 if (!is_numeric($id)) {
                     return return_id_error($id);
                 }
-                $data = $this->service->find($id);
-                if ($data == null) {
-                    return return_not_record($id);
+                $check_id = $this->check_id($id, $this->service, $this->service_name);
+                if($check_id){
+                    return $check_id; 
                 }
                 $data = get_cache_full($this->service, [], $this->service_name.'_id_'.$id. '_start_' . $this->start . '_limit_' . $this->limit . $this->order_by_tring. '_is_active_' . $this->is_active, $id, $this->time,$this->start, $this->limit, $this->order_by, $this->is_active);
                 if($data != null){
@@ -164,13 +164,13 @@ class ServiceController extends BaseApiCacheController
         $param_return = [
             'start' => $this->start,
             'limit' => $this->limit,
-            'count' => $count ?? $data['count'],
+            'count' => $count ?? ($data['count'] ?? null),
             'is_active' => $this->is_active,
             'service_type_id' => $this->service_type_id,
             'keyword' => $this->keyword,
             'order_by' => $this->order_by_request
         ];
-        return return_data_success($param_return, $data ?? $data['data']);
+        return return_data_success($param_return, $data?? ($data['data'] ?? null));
     } 
     // public function service($id)
     // {
@@ -298,11 +298,11 @@ class ServiceController extends BaseApiCacheController
     //     $param_return = [
     //         'start' => $this->start,
     //         'limit' => $this->limit,
-    //         'count' => $count ?? $data['count'] ?? null,
+    //         'count' => $count ?? ($data['count'] ?? null) ?? null,
     //         'keyword' => $this->keyword,
     //         'order_by' => $this->order_by_request
     //     ];
-    //     return return_data_success($param_return, $data ?? $data['data']);
+    //     return return_data_success($param_return, $data?? ($data['data'] ?? null));
     // }
     
 

@@ -70,9 +70,9 @@ class DistrictController extends BaseApiCacheController
                 if (!is_numeric($id)) {
                     return return_id_error($id);
                 }
-                $data = $this->district->find($id);
-                if ($data == null) {
-                    return return_not_record($id);
+                $check_id = $this->check_id($id, $this->district, $this->district_name);
+                if($check_id){
+                    return $check_id; 
                 }
                 $name = $this->district_name . '_' . $id. '_is_active_' . $this->is_active;
                 $param = [
@@ -85,12 +85,12 @@ class DistrictController extends BaseApiCacheController
         $param_return = [
             'start' => $this->start,
             'limit' => $this->limit,
-            'count' => $count ?? $data['count'],
+            'count' => $count ?? ($data['count'] ?? null),
             'is_active' => $this->is_active,
             'keyword' => $this->keyword,
             'order_by' => $this->order_by_request
         ];
-        return return_data_success($param_return, $data ?? $data['data']);
+        return return_data_success($param_return, $data?? ($data['data'] ?? null));
     } catch (\Exception $e) {
         // Xử lý lỗi và trả về phản hồi lỗi
         return return_500_error();

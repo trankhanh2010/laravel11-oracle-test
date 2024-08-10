@@ -183,9 +183,9 @@ class ServiceRoomController extends BaseApiCacheController
                 if (!is_numeric($id)) {
                     return return_id_error($id);
                 }
-                $data = $this->service_room->find($id);
-                if ($data == null) {
-                    return return_not_record($id);
+                $check_id = $this->check_id($id, $this->service_room, $this->service_room_name);
+                if($check_id){
+                    return $check_id; 
                 }
                 $data = Cache::remember($this->service_room_name . '_' . $id . '_is_active_' . $this->is_active, $this->time, function () use ($id) {
                     $data = $this->service_room
@@ -249,7 +249,7 @@ class ServiceRoomController extends BaseApiCacheController
         $param_return = [
             'start' => $this->start,
             'limit' => $this->limit,
-            'count' => $count ?? (is_array($data) ? $data['count'] : null),
+            'count' => $count ?? ($data['count'] ?? null),
             'service_ids' => $this->service_ids ?? null,
             'room_ids' => $this->room_ids ?? null,
             'is_active' => $this->is_active,

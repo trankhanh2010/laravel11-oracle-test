@@ -94,6 +94,6 @@ class UserRoomController extends BaseApiDataController
             'limit' => $this->limit,
             'order_by' => $this->order_by_request
         ];
-        return return_data_success($param_return, $data ?? $data['data']);
+        return return_data_success($param_return, $data?? ($data['data'] ?? null));
     }
 }

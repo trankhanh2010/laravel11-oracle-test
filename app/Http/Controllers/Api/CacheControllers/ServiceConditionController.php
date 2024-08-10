@@ -85,9 +85,9 @@ class ServiceConditionController extends BaseApiCacheController
                 if (!is_numeric($id)) {
                     return return_id_error($id);
                 }
-                $data = $this->service_condition->find($id);
-                if ($data == null) {
-                    return return_not_record($id);
+                $check_id = $this->check_id($id, $this->service_condition, $this->service_condition_name);
+                if($check_id){
+                    return $check_id; 
                 }
                 $data = Cache::remember($this->service_condition_name.'_'.$id. '_is_active_' . $this->is_active, $this->time, function () use ($id){
                     $data = DB::connection('oracle_his')->table('his_service_condition as service_condition')
@@ -112,6 +112,6 @@ class ServiceConditionController extends BaseApiCacheController
             'keyword' => $this->keyword,
             'order_by' => $this->order_by_request
         ];
-        return return_data_success($param_return, $data ?? $data['data']);
+        return return_data_success($param_return, $data?? ($data['data'] ?? null));
     }
 }
