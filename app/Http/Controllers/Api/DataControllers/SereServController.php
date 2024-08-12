@@ -183,16 +183,16 @@ class SereServController extends BaseApiDataController
                 ->first();
         }
         $param_return = [
-            'start' => $this->start,
-            'limit' => $this->limit,
-            'count' => $count ?? null,
-            'is_include_deleted' => $this->is_include_deleted ?? false,
-            'is_active' => $this->is_active,
-            'service_req_ids' => $this->service_req_ids,
-            'service_type_id' => $this->service_type_id,
-            'treatment_id' => $this->treatment_id,
-            'keyword' => $this->keyword,
-            'order_by' => $this->order_by_request
+            $this->start_name => $this->start,
+            $this->limit_name => $this->limit,
+            $this->count_name => $count ?? null,
+            $this->is_include_deleted_name => $this->is_include_deleted ?? false,
+            $this->is_active_name => $this->is_active,
+            $this->service_req_ids_name => $this->service_req_ids,
+            $this->service_type_id_name => $this->service_type_id,
+            $this->treatment_id_name => $this->treatment_id,
+            $this->keyword_name => $this->keyword,
+            $this->order_by_name => $this->order_by_request
         ];
         return return_data_success($param_return, $data);
     }
@@ -348,16 +348,16 @@ class SereServController extends BaseApiDataController
                 ->first();
         }
         $param_return = [
-            'start' => $this->start,
-            'limit' => $this->limit,
-            // 'count' => $count ?? null,
-            'is_include_deleted' => $this->is_include_deleted ?? false,
-            'is_active' => $this->is_active,
-            'service_req_ids' => $this->service_req_ids,
-            'service_type_id' => $this->service_type_id,
-            'treatment_id' => $this->treatment_id,
-            'keyword' => $this->keyword,
-            'order_by' => $this->order_by_request
+            $this->start_name => $this->start,
+            $this->limit_name => $this->limit,
+            // $this->count_name => $count ?? null,
+            $this->is_include_deleted_name => $this->is_include_deleted ?? false,
+            $this->is_active_name => $this->is_active,
+            $this->service_req_ids_name => $this->service_req_ids,
+            $this->service_type_id_name => $this->service_type_id,
+            $this->treatment_id_name => $this->treatment_id,
+            $this->keyword_name => $this->keyword,
+            $this->order_by_name => $this->order_by_request
         ];
         return return_data_success($param_return, $data);
     }
@@ -491,16 +491,16 @@ class SereServController extends BaseApiDataController
             }
         }
         $param_return = [
-            'start' => $this->start,
-            'limit' => $this->limit,
-            'count' => $count ?? null,
-            'is_include_deleted' => $this->is_include_deleted ?? false,
-            'is_active' => $this->is_active,
-            'service_req_ids' => $this->service_req_ids,
-            'service_type_id' => $this->service_type_id,
-            'treatment_id' => $this->treatment_id,
-            'keyword' => $this->keyword,
-            'order_by' => $this->order_by_request
+            $this->start_name => $this->start,
+            $this->limit_name => $this->limit,
+            $this->count_name => $count ?? null,
+            $this->is_include_deleted_name => $this->is_include_deleted ?? false,
+            $this->is_active_name => $this->is_active,
+            $this->service_req_ids_name => $this->service_req_ids,
+            $this->service_type_id_name => $this->service_type_id,
+            $this->treatment_id_name => $this->treatment_id,
+            $this->keyword_name => $this->keyword,
+            $this->order_by_name => $this->order_by_request
         ];
         return return_data_success($param_return, $data);
     }
@@ -697,16 +697,16 @@ class SereServController extends BaseApiDataController
                     ->first();
             }
             $param_return = [
-                'prev_cursor' => $this->prev_cursor ?? null,
-                'limit' => $this->limit,
-                'next_cursor' => $this->next_cursor ?? null,
-                'is_include_deleted' => $this->is_include_deleted ?? false,
-                'is_active' => $this->is_active,
-                'service_req_ids' => $this->service_req_ids,
-                'service_type_id' => $this->service_type_id,
-                'treatment_id' => $this->treatment_id,
-                'keyword' => $this->keyword,
-                'order_by' => $this->order_by_request
+                $this->prev_cursor_name => $this->prev_cursor ?? null,
+                $this->limit_name => $this->limit,
+                $this->next_cursor_name => $this->next_cursor ?? null,
+                $this->is_include_deleted_name => $this->is_include_deleted ?? false,
+                $this->is_active_name => $this->is_active,
+                $this->service_req_ids_name => $this->service_req_ids,
+                $this->service_type_id_name => $this->service_type_id,
+                $this->treatment_id_name => $this->treatment_id,
+                $this->keyword_name => $this->keyword,
+                $this->order_by_name => $this->order_by_request
             ];
             return return_data_success($param_return, $data);
         } catch (\Exception $e) {
@@ -766,16 +766,16 @@ class SereServController extends BaseApiDataController
         $count = $data->count();
 
         $param_return = [
-            'start' => $this->start,
-            'limit' => $this->limit,
-            'count' => $count ?? null,
-            'is_include_deleted' => $this->is_include_deleted ?? false,
-            'is_active' => $this->is_active,
-            'service_req_ids' => $this->service_req_ids,
-            'service_type_id' => $this->service_type_id,
-            'treatment_id' => $this->treatment_id,
-            'keyword' => $this->keyword,
-            'order_by' => $this->order_by_request
+            $this->start_name => $this->start,
+            $this->limit_name => $this->limit,
+            $this->count_name => $count ?? null,
+            $this->is_include_deleted_name => $this->is_include_deleted ?? false,
+            $this->is_active_name => $this->is_active,
+            $this->service_req_ids_name => $this->service_req_ids,
+            $this->service_type_id_name => $this->service_type_id,
+            $this->treatment_id_name => $this->treatment_id,
+            $this->keyword_name => $this->keyword,
+            $this->order_by_name => $this->order_by_request
         ];
         return return_data_success($param_return, $data);
     }
@@ -973,15 +973,15 @@ class SereServController extends BaseApiDataController
                     ->first();
             }
             $param_return = [
-                'prev_cursor' => $this->prev_cursor ?? null,
-                'limit' => $this->limit,
-                'next_cursor' => $this->next_cursor ?? null,
-                'is_include_deleted' => $this->is_include_deleted ?? false,
-                'is_active' => $this->is_active,
-                'sere_serv_id' => $this->sere_serv_id,
-                'tdl_treatment_id' => $this->tdl_treatment_id,
-                'keyword' => $this->keyword,
-                'order_by' => $this->order_by_request
+                $this->prev_cursor_name => $this->prev_cursor ?? null,
+                $this->limit_name => $this->limit,
+                $this->next_cursor_name => $this->next_cursor ?? null,
+                $this->is_include_deleted_name => $this->is_include_deleted ?? false,
+                $this->is_active_name => $this->is_active,
+                $this->sere_serv_id_name => $this->sere_serv_id,
+                $this->tdl_treatment_id_name => $this->tdl_treatment_id,
+                $this->keyword_name => $this->keyword,
+                $this->order_by_name => $this->order_by_request
             ];
             return return_data_success($param_return, $data);
         } catch (\Exception $e) {

@@ -46,10 +46,13 @@ class BaseApiDataController extends Controller
     protected $start_name = 'Start';
     protected $limit;
     protected $limit_name = 'Limit';
+    protected $count_name = 'Count';
     protected $cursor;
     protected $raw_cursor;
     protected $next_cursor;
+    protected $next_cursor_name = 'NextCursor';
     protected $prev_cursor;
+    protected $prev_cursor_name = 'PrevCursor';
     protected $sub_order_by = null;
     protected $sub_order_by_string ='';
     protected $order_by;

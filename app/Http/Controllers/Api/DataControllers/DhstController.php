@@ -123,14 +123,14 @@ class DhstController extends BaseApiDataController
                 ->first();
         }
         $param_return = [
-            'start' => $this->start,
-            'limit' => $this->limit,
-            'count' => $count ?? null,
-            'is_include_deleted' => $this->is_include_deleted ?? false,
-            'is_active' => $this->is_active,
-            'dhst_id' => $this->dhst_id,
-            'keyword' => $this->keyword,
-            'order_by' => $this->order_by_request
+            $this->start_name => $this->start,
+            $this->limit_name => $this->limit,
+            $this->count_name => $count ?? null,
+            $this->is_include_deleted_name => $this->is_include_deleted ?? false,
+            $this->is_active_name => $this->is_active,
+            $this->dhst_id_name => $this->dhst_id,
+            $this->keyword_name => $this->keyword,
+            $this->order_by_name => $this->order_by_request
         ];
         return return_data_success($param_return, $data);
     }
@@ -226,14 +226,14 @@ class DhstController extends BaseApiDataController
                 ->first();
         }
         $param_return = [
-            'start' => $this->start,
-            'limit' => $this->limit,
-            'count' => $count ?? null,
-            'is_include_deleted' => $this->is_include_deleted ?? false,
-            'is_active' => $this->is_active,
-            'dhst_id' => $this->dhst_id,
-            'keyword' => $this->keyword,
-            'order_by' => $this->order_by_request
+            $this->start_name => $this->start,
+            $this->limit_name => $this->limit,
+            $this->count_name => $count ?? null,
+            $this->is_include_deleted_name => $this->is_include_deleted ?? false,
+            $this->is_active_name => $this->is_active,
+            $this->dhst_id_name => $this->dhst_id,
+            $this->keyword_name => $this->keyword,
+            $this->order_by_name => $this->order_by_request
         ];
         return return_data_success($param_return, $data);
     }
@@ -358,14 +358,14 @@ class DhstController extends BaseApiDataController
                     ->first();
             }
             $param_return = [
-                'prev_cursor' => $this->prev_cursor ?? null,
-                'limit' => $this->limit,
-                'next_cursor' => $this->next_cursor ?? null,
-                'is_include_deleted' => $this->is_include_deleted ?? false,
-                'is_active' => $this->is_active,
-                'dhst_id' => $this->dhst_id,
-                'keyword' => $this->keyword,
-                'order_by' => $this->order_by_request
+                $this->prev_cursor_name => $this->prev_cursor ?? null,
+                $this->limit_name => $this->limit,
+                $this->next_cursor_name => $this->next_cursor ?? null,
+                $this->is_include_deleted_name => $this->is_include_deleted ?? false,
+                $this->is_active_name => $this->is_active,
+                $this->dhst_id_name => $this->dhst_id,
+                $this->keyword_name => $this->keyword,
+                $this->order_by_name => $this->order_by_request
             ];
             return return_data_success($param_return, $data);
         } catch (\Exception $e) {

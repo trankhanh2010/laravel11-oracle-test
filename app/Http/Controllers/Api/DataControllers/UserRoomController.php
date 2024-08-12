@@ -90,9 +90,9 @@ class UserRoomController extends BaseApiDataController
         $data = $model->skip($this->start)->take($this->limit)->with($param)->get();
         // Trả về dữ liệu
         $param_return = [
-            'start' => $this->start,
-            'limit' => $this->limit,
-            'order_by' => $this->order_by_request
+            $this->start_name => $this->start,
+            $this->limit_name => $this->limit,
+            $this->order_by_name => $this->order_by_request
         ];
         return return_data_success($param_return, $data?? ($data['data'] ?? null));
     }

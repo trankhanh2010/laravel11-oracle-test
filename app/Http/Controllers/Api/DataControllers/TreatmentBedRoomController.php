@@ -166,18 +166,18 @@ class TreatmentBedRoomController extends BaseApiDataController
         }
 
         $param_return = [
-            'start' => $this->start,
-            'limit' => $this->limit,
-            'count' => $count ?? null,
-            'is_include_deleted' => $this->is_include_deleted ?? false,
-            'is_active' => $this->is_active,
-            'treatment_bed_room_id' => $this->treatment_bed_room_id,
-            'is_in_room' => $this->is_in_room,
-            'add_time_to' => $this->add_time_to,
-            'add_time_from' => $this->add_time_from,
-            'bed_room_ids' => $this->bed_room_ids,
-            'keyword' => $this->keyword,
-            'order_by' => $this->order_by_request
+            $this->start_name => $this->start,
+            $this->limit_name => $this->limit,
+            $this->count_name => $count ?? null,
+            $this->is_include_deleted_name => $this->is_include_deleted ?? false,
+            $this->is_active_name => $this->is_active,
+            $this->treatment_bed_room_id_name => $this->treatment_bed_room_id,
+            $this->is_in_room_name => $this->is_in_room,
+            $this->add_time_to_name => $this->add_time_to,
+            $this->add_time_from_name => $this->add_time_from,
+            $this->bed_room_ids_name => $this->bed_room_ids,
+            $this->keyword_name => $this->keyword,
+            $this->order_by_name => $this->order_by_request
         ];
         return return_data_success($param_return, $data);
     }
@@ -359,18 +359,18 @@ class TreatmentBedRoomController extends BaseApiDataController
             }
 
             $param_return = [
-                'prev_cursor' => $this->prev_cursor ?? null,
-                'limit' => $this->limit,
-                'next_cursor' => $this->next_cursor ?? null,
-                'is_include_deleted' => $this->is_include_deleted ?? false,
-                'is_active' => $this->is_active,
-                'treatment_bed_room_id' => $this->treatment_bed_room_id,
-                'is_in_room' => $this->is_in_room,
-                'add_time_to' => $this->add_time_to,
-                'add_time_from' => $this->add_time_from,
-                'bed_room_ids' => $this->bed_room_ids,
-                'keyword' => $this->keyword,
-                'order_by' => $this->order_by_request
+                $this->prev_cursor_name => $this->prev_cursor ?? null,
+                $this->limit_name => $this->limit,
+                $this->next_cursor_name => $this->next_cursor ?? null,
+                $this->is_include_deleted_name => $this->is_include_deleted ?? false,
+                $this->is_active_name => $this->is_active,
+                $this->treatment_bed_room_id_name => $this->treatment_bed_room_id,
+                $this->is_in_room_name => $this->is_in_room,
+                $this->add_time_to_name => $this->add_time_to,
+                $this->add_time_from_name => $this->add_time_from,
+                $this->bed_room_ids_name => $this->bed_room_ids,
+                $this->keyword_name => $this->keyword,
+                $this->order_by_name => $this->order_by_request
             ];
             return return_data_success($param_return, $data);
         } catch (\Exception $e) {

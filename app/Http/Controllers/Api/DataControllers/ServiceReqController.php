@@ -188,21 +188,21 @@ class ServiceReqController extends BaseApiDataController
                 ->first();
         }
         $param_return = [
-            'start' => $this->start,
-            'limit' => $this->limit,
-            'count' => $count ?? null,
-            'is_iclude_deleted' => $this->is_include_deleted ?? false,
-            'is_active' => $this->is_active,
-            'service_req_stt_ids' => $this->service_req_stt_ids,
-            'not_in_service_req_type_ids' => $this->not_in_service_req_type_ids,
-            'tdl_patient_type_ids' => $this->tdl_patient_type_ids,
-            'execute_room_id' => $this->execute_room_id,
-            'intruction_time_from' => $this->intruction_time_from,
-            'intruction_time_to' => $this->intruction_time_to,
-            'has_execute' => $this->has_execute,
-            'is_not_ksk_requried_aproval__or__is_ksk_approve' => $this->is_not_ksk_requried_aproval__or__is_ksk_approve,
-            'keyword' => $this->keyword,
-            'order_by' => $this->order_by_request
+            $this->start_name => $this->start,
+            $this->limit_name => $this->limit,
+            $this->count_name => $count ?? null,
+            $this->is_include_deleted_name => $this->is_include_deleted ?? false,
+            $this->is_active_name => $this->is_active,
+            $this->service_req_stt_ids_name => $this->service_req_stt_ids,
+            $this->not_in_service_req_type_ids_name => $this->not_in_service_req_type_ids,
+            $this->tdl_patient_type_ids_name => $this->tdl_patient_type_ids,
+            $this->execute_room_id_name => $this->execute_room_id,
+            $this->intruction_time_from_name => $this->intruction_time_from,
+            $this->intruction_time_to_name => $this->intruction_time_to,
+            $this->has_execute_name => $this->has_execute,
+            $this->is_not_ksk_requried_aproval__or__is_ksk_approve_name => $this->is_not_ksk_requried_aproval__or__is_ksk_approve,
+            $this->keyword_name => $this->keyword,
+            $this->order_by_name => $this->order_by_request
         ];
         return return_data_success($param_return, $data);
     }
@@ -363,21 +363,21 @@ class ServiceReqController extends BaseApiDataController
                 ->first();
         }
         $param_return = [
-            'start' => $this->start,
-            'limit' => $this->limit,
-            'count' => $count ?? null,
-            'is_iclude_deleted' => $this->is_include_deleted ?? false,
-            'is_active' => $this->is_active,
-            'service_req_stt_ids' => $this->service_req_stt_ids,
-            'not_in_service_req_type_ids' => $this->not_in_service_req_type_ids,
-            'tdl_patient_type_ids' => $this->tdl_patient_type_ids,
-            'execute_room_id' => $this->execute_room_id,
-            'intruction_time_from' => $this->intruction_time_from,
-            'intruction_time_to' => $this->intruction_time_to,
-            'has_execute' => $this->has_execute,
-            'is_not_ksk_requried_aproval__or__is_ksk_approve' => $this->is_not_ksk_requried_aproval__or__is_ksk_approve,
-            'keyword' => $this->keyword,
-            'order_by' => $this->order_by_request
+            $this->start_name => $this->start,
+            $this->limit_name => $this->limit,
+            $this->count_name => $count ?? null,
+            $this->is_include_deleted_name => $this->is_include_deleted ?? false,
+            $this->is_active_name => $this->is_active,
+            $this->service_req_stt_ids_name => $this->service_req_stt_ids,
+            $this->not_in_service_req_type_ids_name => $this->not_in_service_req_type_ids,
+            $this->tdl_patient_type_ids_name => $this->tdl_patient_type_ids,
+            $this->execute_room_id_name => $this->execute_room_id,
+            $this->intruction_time_from_name => $this->intruction_time_from,
+            $this->intruction_time_to_name => $this->intruction_time_to,
+            $this->has_execute_name => $this->has_execute,
+            $this->is_not_ksk_requried_aproval__or__is_ksk_approve_name => $this->is_not_ksk_requried_aproval__or__is_ksk_approve,
+            $this->keyword_name => $this->keyword,
+            $this->order_by_name => $this->order_by_request
         ];
         return return_data_success($param_return, $data);
     }
@@ -604,21 +604,21 @@ class ServiceReqController extends BaseApiDataController
                     ->first();
             }
             $param_return = [
-                'prev_cursor' => $this->prev_cursor ?? null,
-                'limit' => $this->limit,
-                'next_cursor' => $this->next_cursor ?? null,
-                'is_iclude_deleted' => $this->is_include_deleted ?? false,
-                'is_active' => $this->is_active,
-                'service_req_stt_ids' => $this->service_req_stt_ids,
-                'not_in_service_req_type_ids' => $this->not_in_service_req_type_ids,
-                'tdl_patient_type_ids' => $this->tdl_patient_type_ids,
-                'execute_room_id' => $this->execute_room_id,
-                'intruction_time_from' => $this->intruction_time_from,
-                'intruction_time_to' => $this->intruction_time_to,
-                'has_execute' => $this->has_execute,
-                'is_not_ksk_requried_aproval__or__is_ksk_approve' => $this->is_not_ksk_requried_aproval__or__is_ksk_approve,
-                'keyword' => $this->keyword,
-                'order_by' => $this->order_by_request
+                $this->prev_cursor_name => $this->prev_cursor ?? null,
+                $this->limit_name => $this->limit,
+                $this->next_cursor_name => $this->next_cursor ?? null,
+                $this->is_include_deleted_name => $this->is_include_deleted ?? false,
+                $this->is_active_name => $this->is_active,
+                $this->service_req_stt_ids_name => $this->service_req_stt_ids,
+                $this->not_in_service_req_type_ids_name => $this->not_in_service_req_type_ids,
+                $this->tdl_patient_type_ids_name => $this->tdl_patient_type_ids,
+                $this->execute_room_id_name => $this->execute_room_id,
+                $this->intruction_time_from_name => $this->intruction_time_from,
+                $this->intruction_time_to_name => $this->intruction_time_to,
+                $this->has_execute_name => $this->has_execute,
+                $this->is_not_ksk_requried_aproval__or__is_ksk_approve_name => $this->is_not_ksk_requried_aproval__or__is_ksk_approve,
+                $this->keyword_name => $this->keyword,
+                $this->order_by_name => $this->order_by_request
             ];
             return return_data_success($param_return, $data);
         } catch (\Exception $e) {

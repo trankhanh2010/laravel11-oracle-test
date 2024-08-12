@@ -123,15 +123,15 @@ class SereServExtController extends BaseApiDataController
         }
 
         $param_return = [
-            'start' => $this->start,
-            'limit' => $this->limit,
-            'count' => $count ?? null,
-            'is_include_deleted' => $this->is_include_deleted ?? false,
-            'is_active' => $this->is_active,
-            'sere_serv_ext_id' => $this->sere_serv_ext_id,
-            'sere_serv_ids' => $this->sere_serv_ids,
-            'keyword' => $this->keyword,
-            'order_by' => $this->order_by_request
+            $this->start_name => $this->start,
+            $this->limit_name => $this->limit,
+            $this->count_name => $count ?? null,
+            $this->is_include_deleted_name => $this->is_include_deleted ?? false,
+            $this->is_active_name => $this->is_active,
+            $this->sere_serv_ext_id_name => $this->sere_serv_ext_id,
+            $this->sere_serv_ids_name => $this->sere_serv_ids,
+            $this->keyword_name => $this->keyword,
+            $this->order_by_name => $this->order_by_request
         ];
         return return_data_success($param_return, $data);
     }
@@ -263,15 +263,15 @@ class SereServExtController extends BaseApiDataController
             }
 
             $param_return = [
-                'prev_cursor' => $this->prev_cursor ?? null,
-                'limit' => $this->limit,
-                'next_cursor' => $this->next_cursor ?? null,
-                'is_include_deleted' => $this->is_include_deleted ?? false,
-                'is_active' => $this->is_active,
-                'sere_serv_ext_id' => $this->sere_serv_ext_id,
-                'sere_serv_ids' => $this->sere_serv_ids,
-                'keyword' => $this->keyword,
-                'order_by' => $this->order_by_request
+                $this->prev_cursor_name => $this->prev_cursor ?? null,
+                $this->limit_name => $this->limit,
+                $this->next_cursor_name => $this->next_cursor ?? null,
+                $this->is_include_deleted_name => $this->is_include_deleted ?? false,
+                $this->is_active_name => $this->is_active,
+                $this->sere_serv_ext_id_name => $this->sere_serv_ext_id,
+                $this->sere_serv_ids_name => $this->sere_serv_ids,
+                $this->keyword_name => $this->keyword,
+                $this->order_by_name => $this->order_by_request
             ];
             return return_data_success($param_return, $data);
         } catch (\Exception $e) {

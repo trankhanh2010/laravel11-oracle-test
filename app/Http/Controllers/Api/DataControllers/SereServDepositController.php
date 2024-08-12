@@ -177,15 +177,15 @@ class SereServDepositController  extends BaseApiDataController
                     ->first();
             }
             $param_return = [
-                'prev_cursor' => $this->prev_cursor ?? null,
-                'limit' => $this->limit,
-                'next_cursor' => $this->next_cursor ?? null,
-                'is_include_deleted' => $this->is_include_deleted ?? false,
-                'is_active' => $this->is_active,
-                'sere_serv_deposit_id' => $this->sere_serv_deposit_id,
-                'tdl_treatment_id' => $this->tdl_treatment_id,
-                'keyword' => $this->keyword,
-                'order_by' => $this->order_by_request
+                $this->prev_cursor_name => $this->prev_cursor ?? null,
+                $this->limit_name => $this->limit,
+                $this->next_cursor_name => $this->next_cursor ?? null,
+                $this->is_include_deleted_name => $this->is_include_deleted ?? false,
+                $this->is_active_name => $this->is_active,
+                $this->sere_serv_deposit_id_name => $this->sere_serv_deposit_id,
+                $this->tdl_treatment_id_name => $this->tdl_treatment_id,
+                $this->keyword_name => $this->keyword,
+                $this->order_by_name => $this->order_by_request
             ];
             return return_data_success($param_return, $data);
         } catch (\Exception $e) {
