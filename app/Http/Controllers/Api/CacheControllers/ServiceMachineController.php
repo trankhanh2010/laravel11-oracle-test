@@ -30,7 +30,7 @@ class ServiceMachineController extends BaseApiCacheController
     public function service_machine($id = null)
     {
         $keyword = $this->keyword;
-        if (($keyword != null) || ($this->service_ids != null) || ($this->machine_ids != null)) {
+        if (($keyword != null)) {
             $data = $this->service_machine
                 ->leftJoin('his_service as service', 'service.id', '=', 'his_service_machine.service_id')
                 ->leftJoin('his_service_type as service_type', 'service_type.id', '=', 'service.service_type_id')
@@ -72,13 +72,18 @@ class ServiceMachineController extends BaseApiCacheController
                     $data->orderBy('his_service_machine.' . $key, $item);
                 }
             }
-            $data = $data
+            if($this->get_all){
+                $data = $data
+                ->get();
+            }else{
+                $data = $data
                 ->skip($this->start)
                 ->take($this->limit)
                 ->get();
+            }
         } else {
             if ($id == null) {
-                $data = Cache::remember($this->service_machine_name . '_start_' . $this->start . '_limit_' . $this->limit . $this->order_by_tring . '_is_active_' . $this->is_active, $this->time, function () {
+                $data = Cache::remember($this->service_machine_name . '_start_' . $this->start . '_machine_ids_'.$this->machine_ids_string . '_service_ids_'. $this->service_ids_string. '_limit_' . $this->limit . $this->order_by_tring . '_is_active_' . $this->is_active. '_get_all_' . $this->get_all, $this->time, function () {
                     $data = $this->service_machine
                     ->leftJoin('his_service as service', 'service.id', '=', 'his_service_machine.service_id')
                     ->leftJoin('his_service_type as service_type', 'service_type.id', '=', 'service.service_type_id')
@@ -99,16 +104,31 @@ class ServiceMachineController extends BaseApiCacheController
                         $query = $query->where(DB::connection('oracle_his')->raw('his_service_machine.is_active'), $this->is_active);
                     });
                 }
+                if ($this->service_ids != null) {
+                    $data = $data->where(function ($query) {
+                        $query = $query->whereIn(DB::connection('oracle_his')->raw('his_service_machine.service_id'), $this->service_ids);
+                    });
+                }
+                if ($this->machine_ids != null) {
+                    $data = $data->where(function ($query) {
+                        $query = $query->whereIn(DB::connection('oracle_his')->raw('his_service_machine.machine_id'), $this->machine_ids);
+                    });
+                }
                 $count = $data->count();
                 if ($this->order_by != null) {
                     foreach ($this->order_by as $key => $item) {
                         $data->orderBy('his_service_machine.' . $key, $item);
                     }
                 }
-                $data = $data
+                if($this->get_all){
+                    $data = $data
+                    ->get();
+                }else{
+                    $data = $data
                     ->skip($this->start)
                     ->take($this->limit)
                     ->get();
+                }
                     return ['data' => $data, 'count' => $count];
                 });
             } else {
@@ -147,14 +167,15 @@ class ServiceMachineController extends BaseApiCacheController
             }
         }
         $param_return = [
-            'start' => $this->start,
-            'limit' => $this->limit,
-            'count' => $count ?? ($data['count'] ?? null),
-            'service_ids' => $this->service_ids ?? null,
-            'machine_ids' => $this->machine_ids ?? null,
-            'is_active' => $this->is_active,
-            'keyword' => $this->keyword,
-            'order_by' => $this->order_by_request
+            $this->get_all_name => $this->get_all,
+            $this->start_name => ($this->get_all || !is_null($id)) ? null : $this->start,
+            $this->limit_name => ($this->get_all || !is_null($id)) ? null : $this->limit,
+            $this->count_name => $count ?? ($data['count'] ?? null),
+            $this->service_ids_name => $this->service_ids ?? null,
+            $this->machine_ids_name => $this->machine_ids ?? null,
+            $this->is_active_name => $this->is_active,
+            $this->keyword_name => $this->keyword,
+            $this->order_by_name => $this->order_by_request
         ];
         return return_data_success($param_return, $data['data'] ?? $data);
     }

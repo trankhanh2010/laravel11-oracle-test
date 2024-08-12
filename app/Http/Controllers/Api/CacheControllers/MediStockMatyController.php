@@ -74,13 +74,18 @@ class MediStockMatyController extends BaseApiCacheController
                         $data->orderBy('his_medi_stock_maty.' . $key, $item);
                     }
                 }
-                $data = $data
+                if($this->get_all){
+                    $data = $data
+                    ->get();
+                }else{
+                    $data = $data
                     ->skip($this->start)
                     ->take($this->limit)
                     ->get();
+                }
             } else {
                 if ($id == null) {
-                    $data = Cache::remember($this->medi_stock_maty_name .'_medi_stock_id_'.$this->medi_stock_id. '_material_type_id_'.$this->material_type_id. '_start_' . $this->start . '_limit_' . $this->limit . $this->order_by_tring . '_is_active_' . $this->is_active, $this->time, function () {
+                    $data = Cache::remember($this->medi_stock_maty_name .'_medi_stock_id_'.$this->medi_stock_id. '_material_type_id_'.$this->material_type_id. '_start_' . $this->start . '_limit_' . $this->limit . $this->order_by_tring . '_is_active_' . $this->is_active. '_get_all_' . $this->get_all, $this->time, function () {
                         $data = $this->medi_stock_maty
                         ->leftJoin('his_medi_stock as medi_stock', 'medi_stock.id', '=', 'his_medi_stock_maty.medi_stock_id')
                         ->leftJoin('his_material_type as material_type', 'material_type.id', '=', 'his_medi_stock_maty.material_type_id')
@@ -119,10 +124,15 @@ class MediStockMatyController extends BaseApiCacheController
                                 $data->orderBy('his_medi_stock_maty.' . $key, $item);
                             }
                         }
-                        $data = $data
+                        if($this->get_all){
+                            $data = $data
+                            ->get();
+                        }else{
+                            $data = $data
                             ->skip($this->start)
                             ->take($this->limit)
                             ->get();
+                        }
                         return ['data' => $data, 'count' => $count];
                     });
                 } else {
@@ -163,14 +173,15 @@ class MediStockMatyController extends BaseApiCacheController
                 }
             }
             $param_return = [
-                'start' => $this->start,
-                'limit' => $this->limit,
-                'count' => $count ?? ($data['count'] ?? null),
-                'is_active' => $this->is_active,
-                'medi_stock_id' => $this->medi_stock_id,
-                'material_type_id' => $this->material_type_id,
-                'keyword' => $this->keyword,
-                'order_by' => $this->order_by_request
+                $this->get_all_name => $this->get_all,
+                $this->start_name => ($this->get_all || !is_null($id)) ? null : $this->start,
+                $this->limit_name => ($this->get_all || !is_null($id)) ? null : $this->limit,
+                $this->count_name => $count ?? ($data['count'] ?? null),
+                $this->is_active_name => $this->is_active,
+                $this->medi_stock_id_name => $this->medi_stock_id,
+                $this->material_type_id_name => $this->material_type_id,
+                $this->keyword_name => $this->keyword,
+                $this->order_by_name => $this->order_by_request
             ];
             return return_data_success($param_return, $data ?? ($data['data'] ?? null) ?? null);
         } catch (\Exception $e) {

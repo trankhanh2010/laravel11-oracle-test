@@ -49,8 +49,10 @@ class BaseApiCacheController extends Controller
     protected $patient_type_ids_name = 'PatientTypeIds';
     protected $service_ids;
     protected $service_ids_name = 'ServiceIds';
+    protected $service_ids_string;
     protected $machine_ids;
     protected $machine_ids_name = 'MachineIds';
+    protected $machine_ids_string;
     protected $room_ids;
     protected $room_ids_name = 'RoomIds';
     protected $service_follow_ids;
@@ -706,6 +708,9 @@ class BaseApiCacheController extends Controller
                 }
             }
         }
+        if($this->service_ids != null){
+            $this->service_ids_string = arrayToCustomStringNotKey($this->service_ids);
+        }
         $this->machine_ids = $this->param_request['ApiData']['MachineIds'] ?? null;
         if ($this->machine_ids != null) {
             foreach ($this->machine_ids as $key => $item) {
@@ -720,6 +725,9 @@ class BaseApiCacheController extends Controller
                     }
                 }
             }
+        }
+        if($this->machine_ids != null){
+            $this->machine_ids_string = arrayToCustomStringNotKey($this->machine_ids);
         }
         $this->room_ids = $this->param_request['ApiData']['RoomIds'] ?? null;
         if ($this->room_ids != null) {

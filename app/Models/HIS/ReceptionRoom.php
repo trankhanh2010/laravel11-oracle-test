@@ -5,6 +5,7 @@ namespace App\Models\HIS;
 use App\Traits\dinh_dang_ten_truong;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 class ReceptionRoom extends Model
 {
@@ -21,8 +22,14 @@ class ReceptionRoom extends Model
     ];
     public function getPatientTypesAttribute()
     {
-        $data = PatientType::whereIn('id', explode(',', $this->patient_type_ids))->get();
-        return $data;
+        $patient_type_ids = $this->patient_type_ids;
+        if( $patient_type_ids != ""){
+            return Cache::remember('patient_type_ids_' . $patient_type_ids, $this->time, function () use ( $patient_type_ids) {
+                $data = PatientType::whereIn('id', explode(',', $this->patient_type_ids))->get();
+                return $data;
+                        });
+        }
+        return null;
     }
 
     public function room()

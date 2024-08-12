@@ -125,13 +125,18 @@ class ServicePatyController extends BaseApiCacheController
                     }
                 }
             }
-            $data = $data
+            if($this->get_all){
+                $data = $data
+                ->get();
+            }else{
+                $data = $data
                 ->skip($this->start)
                 ->take($this->limit)
                 ->get();
+            }
         } else {
             if ($id == null) {
-                $data = Cache::remember('service_paty' .'_effective_'.$this->effective.'_package_id_'.$this->package_id.'_service_id_'.$this->service_id.'_patient_type_ids_'.$this->patient_type_ids_string.'_service_type_ids_'.$this->service_type_ids_string. '_start_' . $this->start . '_limit_' . $this->limit . $this->order_by_tring. '_is_active_' . $this->is_active, $this->time, function () {
+                $data = Cache::remember('service_paty' .'_effective_'.$this->effective.'_package_id_'.$this->package_id.'_service_id_'.$this->service_id.'_patient_type_ids_'.$this->patient_type_ids_string.'_service_type_ids_'.$this->service_type_ids_string. '_start_' . $this->start . '_limit_' . $this->limit . $this->order_by_tring. '_is_active_' . $this->is_active. '_get_all_' . $this->get_all, $this->time, function () {
                     $data = $this->service_paty
                         ->leftJoin('his_service as service', 'service.id', '=', 'his_service_paty.service_id')
                         ->leftJoin('his_patient_type as patient_type', 'patient_type.id', '=', 'his_service_paty.patient_type_id')
@@ -211,10 +216,15 @@ class ServicePatyController extends BaseApiCacheController
                             }
                         }
                     }
-                    $data = $data
+                    if($this->get_all){
+                        $data = $data
+                        ->get();
+                    }else{
+                        $data = $data
                         ->skip($this->start)
                         ->take($this->limit)
                         ->get();
+                    }
                     return ['data' => $data, 'count' => $count];
                 });
             } else {
@@ -225,7 +235,7 @@ class ServicePatyController extends BaseApiCacheController
                 if($check_id){
                     return $check_id; 
                 }
-                $data = get_cache_full($this->service_paty, [], $this->service_paty_name.'_id_'. $id. '_is_active_'. $this->is_active, $id, $this->time, $this->start, $this->limit, $this->order_by, $this->is_active);
+                $data = get_cache_full($this->service_paty, [], $this->service_paty_name.'_id_'. $id. '_is_active_'. $this->is_active, $id, $this->time, $this->start, $this->limit, $this->order_by, $this->is_active, $this->get_all);
                 if($data != null){
                     $data_a = $data;
                     $data1 = get_cache_1_1($this->service_paty, "service", $this->service_paty_name, $id, $this->time);
@@ -364,15 +374,16 @@ class ServicePatyController extends BaseApiCacheController
             }
         }
         $param_return = [
-            'start' => $this->start,
-            'limit' => $this->limit,
-            'count' => $count ?? ($data['count'] ?? null),
-            'keyword' => $this->keyword,
-            'order_by' => $this->order_by_request,
-            'service_type_ids' => $this->service_type_ids ?? null,
-            'patient_type_ids' => $this->patient_type_ids ?? null,
-            'service_id' => $this->service_id ?? null,
-            'package_id' => $this->package_id ?? null
+            $this->get_all_name => $this->get_all,
+            $this->start_name => ($this->get_all || !is_null($id)) ? null : $this->start,
+            $this->limit_name => ($this->get_all || !is_null($id)) ? null : $this->limit,
+            $this->count_name => $count ?? ($data['count'] ?? null),
+            $this->keyword_name => $this->keyword,
+            $this->order_by_name => $this->order_by_request,
+            $this->service_type_ids_name => $this->service_type_ids ?? null,
+            $this->patient_type_ids_name => $this->patient_type_ids ?? null,
+            $this->service_id_name => $this->service_id ?? null,
+            $this->package_id_name => $this->package_id ?? null
         ];
         return return_data_success($param_return, $data_param ?? $data?? ($data['data'] ?? null));
     }

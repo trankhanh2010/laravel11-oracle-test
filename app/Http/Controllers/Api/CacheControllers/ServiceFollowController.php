@@ -69,13 +69,18 @@ class ServiceFollowController extends BaseApiCacheController
                     $data->orderBy('his_service_follow.' . $key, $item);
                 }
             }
-            $data = $data
+            if($this->get_all){
+                $data = $data
+                ->get();
+            }else{
+                $data = $data
                 ->skip($this->start)
                 ->take($this->limit)
                 ->get();
+            }
         } else {
             if ($id == null) {
-                $data = Cache::remember($this->service_follow_name . '_start_' . $this->start . '_limit_' . $this->limit . $this->order_by_tring . '_is_active_' . $this->is_active, $this->time, function () {
+                $data = Cache::remember($this->service_follow_name . '_start_' . $this->start . '_limit_' . $this->limit . $this->order_by_tring . '_is_active_' . $this->is_active. '_get_all_' . $this->get_all, $this->time, function () {
                     $data = $this->service_follow
                         ->leftJoin('his_service as service', 'service.id', '=', 'his_service_follow.service_id')
                         ->leftJoin('his_service_type as service_type', 'service_type.id', '=', 'service.service_type_id')
@@ -104,10 +109,15 @@ class ServiceFollowController extends BaseApiCacheController
                             $data->orderBy('his_service_follow.' . $key, $item);
                         }
                     }
-                    $data = $data
+                    if($this->get_all){
+                        $data = $data
+                        ->get();
+                    }else{
+                        $data = $data
                         ->skip($this->start)
                         ->take($this->limit)
                         ->get();
+                    }
                     return ['data' => $data, 'count' => $count];
                 });
             } else {
@@ -148,14 +158,15 @@ class ServiceFollowController extends BaseApiCacheController
             }
         }
         $param_return = [
-            'start' => $this->start,
-            'limit' => $this->limit,
-            'count' => $count ?? ($data['count'] ?? null),
-            'service_ids' => $this->service_ids ?? null,
-            'service_follow_ids' => $this->service_follow_ids ?? null,
-            'is_active' => $this->is_active,
-            'keyword' => $this->keyword,
-            'order_by' => $this->order_by_request
+            $this->get_all_name => $this->get_all,
+            $this->start_name => ($this->get_all || !is_null($id)) ? null : $this->start,
+            $this->limit_name => ($this->get_all || !is_null($id)) ? null : $this->limit,
+            $this->count_name => $count ?? ($data['count'] ?? null),
+            $this->service_ids_name => $this->service_ids ?? null,
+            $this->service_follow_ids_name => $this->service_follow_ids ?? null,
+            $this->is_active_name => $this->is_active,
+            $this->keyword_name => $this->keyword,
+            $this->order_by_name => $this->order_by_request
         ];
         return return_data_success($param_return, $data['data'] ?? $data);
     }

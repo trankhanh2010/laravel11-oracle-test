@@ -26,7 +26,7 @@ class RoomController extends BaseApiCacheController
             $this->order_by_tring = arrayToCustomString($this->order_by);
         }
     }
-    public function room()
+    public function room($id = null)
     {
         $keyword = $this->keyword;
         if (($keyword != null) || ($this->department_id != null)) {
@@ -120,12 +120,17 @@ class RoomController extends BaseApiCacheController
                     }
                 }
             }
-            $data = $data
+            if($this->get_all){
+                $data = $data
+                ->get();
+            }else{
+                $data = $data
                 ->skip($this->start)
                 ->take($this->limit)
                 ->get();
+            }
         } else {
-            $data = Cache::remember('room_name_code_with_bed_room_bed_room_execute_room_reception_room' . '_start_' . $this->start . '_limit_' . $this->limit . $this->order_by_tring . '_is_active_' . $this->is_active, $this->time, function () {
+            $data = Cache::remember('room_name_code_with_bed_room_bed_room_execute_room_reception_room' . '_start_' . $this->start . '_limit_' . $this->limit . $this->order_by_tring . '_is_active_' . $this->is_active. '_get_all_' . $this->get_all, $this->time, function () {
                 $data = $this->room
                     ->leftJoin('his_bed_room as bed', 'his_room.id', '=', 'bed.room_id')
                     ->leftJoin('his_cashier_room as cashier', 'his_room.id', '=', 'cashier.room_id')
@@ -184,22 +189,28 @@ class RoomController extends BaseApiCacheController
                         }
                     }
                 }
-                $data = $data
+                if($this->get_all){
+                    $data = $data
+                    ->get();
+                }else{
+                    $data = $data
                     ->skip($this->start)
                     ->take($this->limit)
                     ->get();
+                }
                 return ['data' => $data, 'count' => $count];
             });
         }
         $param_return = [
-            'start' => $this->start,
-            'limit' => $this->limit,
-            'count' => $count ?? ($data['count'] ?? null),
-            'is_active' => $this->is_active,
-            'keyword' => $this->keyword,
-            'order_by' => $this->order_by_request,
-            'department_id' => $this->department_id ?? null,
-            'room_type_id' => $this->room_type_id ?? null,
+            $this->get_all_name => $this->get_all,
+            $this->start_name => ($this->get_all || !is_null($id)) ? null : $this->start,
+            $this->limit_name => ($this->get_all || !is_null($id)) ? null : $this->limit,
+            $this->count_name => $count ?? ($data['count'] ?? null),
+            $this->is_active_name => $this->is_active,
+            $this->keyword_name => $this->keyword,
+            $this->order_by_name => $this->order_by_request,
+            $this->department_id_name => $this->department_id ?? null,
+            $this->room_type_id_name => $this->room_type_id ?? null,
         ];
         return return_data_success($param_return, $data?? ($data['data'] ?? null));
     }
