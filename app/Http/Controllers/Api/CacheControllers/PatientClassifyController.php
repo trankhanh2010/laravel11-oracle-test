@@ -95,6 +95,7 @@ class PatientClassifyController extends BaseApiCacheController
     }
     public function patient_classify_create(CreatePatientClassifyRequest $request)
     {
+        try {
         $data = $this->patient_classify::create([
             'create_time' => now()->format('Ymdhis'),
             'modify_time' => now()->format('Ymdhis'),
@@ -117,6 +118,9 @@ class PatientClassifyController extends BaseApiCacheController
         // Gọi event để xóa cache
         event(new DeleteCache($this->patient_classify_name));
         return return_data_create_success($data);
+    } catch (\Exception $e) {
+        return return_500_error();
+    }
     }
 
     public function patient_classify_update(UpdatePatientClassifyRequest $request, $id)
@@ -128,6 +132,7 @@ class PatientClassifyController extends BaseApiCacheController
         if ($data == null) {
             return return_not_record($id);
         }
+        try {
         $data_update = [
             'modify_time' => now()->format('Ymdhis'),
             'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
@@ -148,6 +153,9 @@ class PatientClassifyController extends BaseApiCacheController
         // Gọi event để xóa cache
         event(new DeleteCache($this->patient_classify_name));
         return return_data_update_success($data);
+    } catch (\Exception $e) {
+        return return_500_error();
+    }
     }
 
     public function patient_classify_delete(Request $request, $id)

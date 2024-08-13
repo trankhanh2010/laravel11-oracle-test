@@ -95,6 +95,7 @@ class BranchController extends BaseApiCacheController
 
     public function branch_create(CreateBranchRequest $request)
     {
+        try {
         $data = $this->branch::create([
             'create_time' => now()->format('Ymdhis'),
             'modify_time' => now()->format('Ymdhis'),
@@ -142,6 +143,9 @@ class BranchController extends BaseApiCacheController
         // Gọi event để xóa cache
         event(new DeleteCache($this->branch_name));
         return return_data_create_success($data);
+    } catch (\Exception $e) {
+        return return_500_error();
+    }
     }
 
     public function branch_update(UpdateBranchRequest $request, $id)
@@ -153,6 +157,7 @@ class BranchController extends BaseApiCacheController
         if ($data == null) {
             return return_not_record($id);
         }
+        try {
         $data_update = [
             'modify_time' => now()->format('Ymdhis'),
             'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
@@ -200,6 +205,9 @@ class BranchController extends BaseApiCacheController
         // Gọi event để xóa cache
         event(new DeleteCache($this->branch_name));
         return return_data_update_success($data);
+    } catch (\Exception $e) {
+        return return_500_error();
+    }
     }
 
     public function branch_delete(Request $request, $id)

@@ -12,7 +12,8 @@ class AccidentCare extends Model
     protected $connection = 'oracle_his';
     protected $table = 'HIS_Accident_Care';
 
-    protected $fillable = [
-       
+    public $timestamps = false;
+    protected $guarded = [
+        'id',
     ];
 }

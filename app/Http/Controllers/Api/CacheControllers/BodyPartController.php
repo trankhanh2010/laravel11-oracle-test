@@ -97,6 +97,7 @@ class BodyPartController extends BaseApiCacheController
 
     public function body_part_create(CreateBodyPartRequest $request)
     {
+        try {
         $data = $this->body_part::create([
             'create_time' => now()->format('Ymdhis'),
             'modify_time' => now()->format('Ymdhis'),
@@ -110,6 +111,9 @@ class BodyPartController extends BaseApiCacheController
         // Gọi event để xóa cache
         event(new DeleteCache($this->body_part_name));
         return return_data_create_success($data);
+    } catch (\Exception $e) {
+        return return_500_error();
+    }
     }
 
     public function body_part_update(UpdateBodyPartRequest $request, $id)
@@ -121,6 +125,7 @@ class BodyPartController extends BaseApiCacheController
         if ($data == null) {
             return return_not_record($id);
         }
+        try {
         $data_update = [
             'modify_time' => now()->format('Ymdhis'),
             'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
@@ -135,6 +140,9 @@ class BodyPartController extends BaseApiCacheController
         // Gọi event để xóa cache
         event(new DeleteCache($this->body_part_name));
         return return_data_update_success($data);
+    } catch (\Exception $e) {
+        return return_500_error();
+    }
     }
 
     public function body_part_delete(Request $request, $id)

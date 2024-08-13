@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers\Api\CacheControllers;
 
+use App\Events\Cache\DeleteCache;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
+use App\Http\Requests\AccidentHurtType\CreateAccidentHurtTypeRequest;
+use App\Http\Requests\AccidentHurtType\UpdateAccidentHurtTypeRequest;
 use App\Models\HIS\AccidentHurtType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -128,17 +131,71 @@ class AccidentHurtTypeController extends BaseApiCacheController
             return return_500_error();
         }
     }
-    // /// Accident Hurt Type
-    // public function accident_hurt_type($id = null)
-    // {
-    //     if ($id == null) {
-    //         $name = $this->accident_hurt_type_name;
-    //         $param = [];
-    //     } else {
-    //         $name = $this->accident_hurt_type_name . '_' . $id;
-    //         $param = [];
-    //     }
-    //     $data = get_cache_full($this->accident_hurt_type, $param, $name, $id, $this->time);
-    //     return response()->json(['data' => $data], 200);
-    // }
+    public function accident_hurt_type_create(CreateAccidentHurtTypeRequest $request)
+    {
+        try {
+        $data = $this->accident_hurt_type::create([
+            'create_time' => now()->format('Ymdhis'),
+            'modify_time' => now()->format('Ymdhis'),
+            'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
+            'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+            'app_creator' => $this->app_creator,
+            'app_modifier' => $this->app_modifier,
+            'is_active' => 1,
+            'is_delete' => 0,
+            'accident_hurt_type_code' => $request->accident_hurt_type_code,
+            'accident_hurt_type_name' => $request->accident_hurt_type_name,
+        ]);
+        // Gọi event để xóa cache
+        event(new DeleteCache($this->accident_hurt_type_name));
+        return return_data_create_success($data);
+    } catch (\Exception $e) {
+        return return_500_error();
+    }
+    }
+
+    public function accident_hurt_type_update(UpdateAccidentHurtTypeRequest $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->accident_hurt_type->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        try {
+        $data->update([
+            'modify_time' => now()->format('Ymdhis'),
+            'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+            'app_modifier' => $this->app_modifier,
+            'accident_hurt_type_code' => $request->accident_hurt_type_code,
+            'accident_hurt_type_name' => $request->accident_hurt_type_name,
+            'is_active' => $request->is_active
+        ]);
+        // Gọi event để xóa cache
+        event(new DeleteCache($this->accident_hurt_type_name));
+        return return_data_update_success($data);
+    } catch (\Exception $e) {
+        return return_500_error();
+    }
+    }
+
+    public function accident_hurt_type_delete(Request $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->accident_hurt_type->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        try {
+            $data->delete();
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->accident_hurt_type_name));
+            return return_data_delete_success();
+        } catch (\Exception $e) {
+            return return_data_delete_fail();
+        }
+    }
 }

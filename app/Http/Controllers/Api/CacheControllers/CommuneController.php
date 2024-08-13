@@ -143,6 +143,7 @@ class CommuneController extends BaseApiCacheController
     }
     public function commune_create(CreateCommuneRequest $request)
     {
+        try {
         $data = $this->commune::create([
             'create_time' => now()->format('Ymdhis'),
             'modify_time' => now()->format('Ymdhis'),
@@ -159,6 +160,9 @@ class CommuneController extends BaseApiCacheController
         // Gọi event để xóa cache
         event(new DeleteCache($this->commune_name));
         return return_data_create_success($data);
+    } catch (\Exception $e) {
+        return return_500_error();
+    }
     }
 
     public function commune_update(UpdateCommuneRequest $request, $id)
@@ -170,6 +174,7 @@ class CommuneController extends BaseApiCacheController
         if ($data == null) {
             return return_not_record($id);
         }
+        try {
         $data_update = [
             'modify_time' => now()->format('Ymdhis'),
             'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
@@ -187,6 +192,9 @@ class CommuneController extends BaseApiCacheController
         // Gọi event để xóa cache
         event(new DeleteCache($this->commune_name));
         return return_data_update_success($data);
+    } catch (\Exception $e) {
+        return return_500_error();
+    }
     }
 
     public function commune_delete(Request $request, $id)

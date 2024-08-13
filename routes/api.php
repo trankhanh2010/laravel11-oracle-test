@@ -565,6 +565,9 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisBed'], function () {
         Route::get("v1/bed", [BedController::class, "bed"])->name('.get');
         Route::get("v1/bed/{id}", [BedController::class, "bed"])->name('.get_id');
+        Route::post("v1/bed", [BedController::class, "bed_create"])->name('.create');
+        Route::put("v1/bed/{id}", [BedController::class, "bed_update"])->name('.update');
+        Route::delete("v1/bed/{id}", [BedController::class, "bed_delete"])->name('.delete');
     });
 
     /// Giường - Dịch vụ giường
@@ -855,6 +858,9 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisAccidentBodyPart'], function () {
         Route::get("v1/accident-body-part", [AccidentBodyPartController::class, "accident_body_part"])->name('.get');
         Route::get("v1/accident-body-part/{id}", [AccidentBodyPartController::class, "accident_body_part"])->name('.get_id');
+        Route::post("v1/accident-body-part", [AccidentBodyPartController::class, "accident_body_part_create"])->name('.create');
+        Route::put("v1/accident-body-part/{id}", [AccidentBodyPartController::class, "accident_body_part_update"])->name('.update');
+        Route::delete("v1/accident-body-part/{id}", [AccidentBodyPartController::class, "accident_body_part_delete"])->name('.delete');
     });
 
     /// Chế phẩm máu
@@ -879,6 +885,9 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisAccidentLocation'], function () {
         Route::get("v1/accident-location", [AccidentLocationController::class, "accident_location"])->name('.get');
         Route::get("v1/accident-location/{id}", [AccidentLocationController::class, "accident_location"])->name('.get_id');
+        Route::post("v1/accident-location", [AccidentLocationController::class, "accident_location_create"])->name('.create');
+        Route::put("v1/accident-location/{id}", [AccidentLocationController::class, "accident_location_update"])->name('.update');
+        Route::delete("v1/accident-location/{id}", [AccidentLocationController::class, "accident_location_delete"])->name('.delete');
     });
 
     /// Hạng lái xe
@@ -969,6 +978,9 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisAccidentHurtType'], function () {
         Route::get("v1/accident-hurt-type", [AccidentHurtTypeController::class, "accident_hurt_type"])->name('.get');
         Route::get("v1/accident-hurt-type/{id}", [AccidentHurtTypeController::class, "accident_hurt_type"])->name('.get_id');
+        Route::post("v1/accident-hurt-type", [AccidentHurtTypeController::class, "accident_hurt_type_create"])->name('.create');
+        Route::put("v1/accident-hurt-type/{id}", [AccidentHurtTypeController::class, "accident_hurt_type_update"])->name('.update');
+        Route::delete("v1/accident-hurt-type/{id}", [AccidentHurtTypeController::class, "accident_hurt_type_delete"])->name('.delete');
     });
 
     /// Nhà cung cấp
@@ -999,6 +1011,9 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisAccidentCare'], function () {
         Route::get("v1/accident-care", [AccidentCareController::class, "accident_care"])->name('.get');
         Route::get("v1/accident-care/{id}", [AccidentCareController::class, "accident_care"])->name('.get_id');
+        Route::post("v1/accident-care", [AccidentCareController::class, "accident_care_create"])->name('.create');
+        Route::put("v1/accident-care/{id}", [AccidentCareController::class, "accident_care_update"])->name('.update');
+        Route::delete("v1/accident-care/{id}", [AccidentCareController::class, "accident_care_delete"])->name('.delete');
     });
 
     /// Bàn mổ
@@ -1043,6 +1058,9 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisAwareness'], function () {
         Route::get("v1/awareness", [AwarenessController::class, "awareness"])->name('.get');
         Route::get("v1/awareness/{id}", [AwarenessController::class, "awareness"])->name('.get_id');
+        Route::post("v1/awareness", [AwarenessController::class, "awareness_create"])->name('.create');
+        Route::put("v1/awareness/{id}", [AwarenessController::class, "awareness_update"])->name('.update');
+        Route::delete("v1/awareness/{id}", [AwarenessController::class, "awareness_delete"])->name('.delete');
     });
 
     /// Dòng thuốc
@@ -1086,6 +1104,9 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisAtcGroup'], function () {
         Route::get("v1/atc-group", [AtcGroupController::class, "atc_group"])->name('.get');
         Route::get("v1/atc-group/{id}", [AtcGroupController::class, "atc_group"])->name('.get_id');
+        Route::post("v1/atc-group", [AtcGroupController::class, "atc_group_create"])->name('.create');
+        Route::put("v1/atc-group/{id}", [AtcGroupController::class, "atc_group_update"])->name('.update');
+        Route::delete("v1/atc-group/{id}", [AtcGroupController::class, "atc_group_delete"])->name('.delete');
     });
 
     /// Nhóm máu

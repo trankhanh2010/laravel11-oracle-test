@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers\Api\CacheControllers;
 
+use App\Events\Cache\DeleteCache;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
+use App\Http\Requests\AccidentCare\CreateAccidentCareRequest;
+use App\Http\Requests\AccidentCare\UpdateAccidentCareRequest;
 use App\Models\HIS\AccidentCare;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -128,17 +131,71 @@ class AccidentCareController extends BaseApiCacheController
             return return_500_error();
         }
     }
-    // /// Accident Care
-    // public function accident_care($id = null)
-    // {
-    //     if ($id == null) {
-    //         $name = $this->accident_care_name;
-    //         $param = [];
-    //     } else {
-    //         $name = $this->accident_care_name . '_' . $id;
-    //         $param = [];
-    //     }
-    //     $data = get_cache_full($this->accident_care, $param, $name, $id, $this->time);
-    //     return response()->json(['data' => $data], 200);
-    // }
+    public function accident_care_create(CreateAccidentCareRequest $request)
+    {
+        try {
+        $data = $this->accident_care::create([
+            'create_time' => now()->format('Ymdhis'),
+            'modify_time' => now()->format('Ymdhis'),
+            'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
+            'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+            'app_creator' => $this->app_creator,
+            'app_modifier' => $this->app_modifier,
+            'is_active' => 1,
+            'is_delete' => 0,
+            'accident_care_code' => $request->accident_care_code,
+            'accident_care_name' => $request->accident_care_name,
+        ]);
+        // Gọi event để xóa cache
+        event(new DeleteCache($this->accident_care_name));
+        return return_data_create_success($data);
+    } catch (\Exception $e) {
+        return return_500_error();
+    }
+    }
+
+    public function accident_care_update(UpdateAccidentCareRequest $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->accident_care->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        try {
+        $data->update([
+            'modify_time' => now()->format('Ymdhis'),
+            'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+            'app_modifier' => $this->app_modifier,
+            'accident_care_code' => $request->accident_care_code,
+            'accident_care_name' => $request->accident_care_name,
+            'is_active' => $request->is_active
+        ]);
+        // Gọi event để xóa cache
+        event(new DeleteCache($this->accident_care_name));
+        return return_data_update_success($data);
+    } catch (\Exception $e) {
+        return return_500_error();
+    }
+    }
+
+    public function accident_care_delete(Request $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->accident_care->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        try {
+            $data->delete();
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->accident_care_name));
+            return return_data_delete_success();
+        } catch (\Exception $e) {
+            return return_data_delete_fail();
+        }
+    }
 }

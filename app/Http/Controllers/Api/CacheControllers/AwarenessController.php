@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers\Api\CacheControllers;
 
+use App\Events\Cache\DeleteCache;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
+use App\Http\Requests\Awareness\CreateAwarenessRequest;
+use App\Http\Requests\Awareness\UpdateAwarenessRequest;
 use App\Models\HIS\Awareness;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -128,18 +131,72 @@ class AwarenessController extends BaseApiCacheController
             return return_500_error();
         }
     }
-    // /// Awareness
-    // public function awareness($id = null)
-    // {
-    //     if ($id == null) {
-    //         $name = $this->awareness_name;
-    //         $param = [];
-    //     } else {
-    //         $name = $this->awareness_name . '_' . $id;
-    //         $param = [];
-    //     }
-    //     $data = get_cache_full($this->awareness, $param, $name, $id, $this->time);
-    //     return response()->json(['data' => $data], 200);
-    // }
+    public function awareness_create(CreateAwarenessRequest $request)
+    {
+        try {
+        $data = $this->awareness::create([
+            'create_time' => now()->format('Ymdhis'),
+            'modify_time' => now()->format('Ymdhis'),
+            'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
+            'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+            'app_creator' => $this->app_creator,
+            'app_modifier' => $this->app_modifier,
+            'is_active' => 1,
+            'is_delete' => 0,
+            'awareness_code' => $request->awareness_code,
+            'awareness_name' => $request->awareness_name,
+        ]);
+        // Gọi event để xóa cache
+        event(new DeleteCache($this->awareness_name));
+        return return_data_create_success($data);
+    } catch (\Exception $e) {
+        return return_500_error();
+    }
+    }
+
+    public function awareness_update(UpdateAwarenessRequest $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->awareness->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        try {
+        $data->update([
+            'modify_time' => now()->format('Ymdhis'),
+            'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+            'app_modifier' => $this->app_modifier,
+            'awareness_code' => $request->awareness_code,
+            'awareness_name' => $request->awareness_name,
+            'is_active' => $request->is_active
+        ]);
+        // Gọi event để xóa cache
+        event(new DeleteCache($this->awareness_name));
+        return return_data_update_success($data);
+    } catch (\Exception $e) {
+        return return_500_error();
+    }
+    }
+
+    public function awareness_delete(Request $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->awareness->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        try {
+            $data->delete();
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->awareness_name));
+            return return_data_delete_success();
+        } catch (\Exception $e) {
+            return return_data_delete_fail();
+        }
+    }
 
 }

@@ -12,7 +12,8 @@ class Awareness extends Model
     
     protected $connection = 'oracle_his';
     protected $table = 'HIS_Awareness';
-    protected $fillable = [
-
+    public $timestamps = false;
+    protected $guarded = [
+        'id',
     ];
 }

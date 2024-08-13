@@ -90,6 +90,7 @@ class RoomGroupController extends BaseApiCacheController
 
     public function room_group_create(CreateRoomGroupRequest $request)
     {
+        try {
         $data = $this->room_group::create([
             'create_time' => now()->format('Ymdhis'),
             'modify_time' => now()->format('Ymdhis'),
@@ -104,5 +105,8 @@ class RoomGroupController extends BaseApiCacheController
         // Gọi event để xóa cache
         event(new DeleteCache($this->room_group_name));
         return return_data_create_success($data);
+    } catch (\Exception $e) {
+        return return_500_error();
+    }
     }
 }

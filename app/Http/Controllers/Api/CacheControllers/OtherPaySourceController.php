@@ -88,6 +88,7 @@ class OtherPaySourceController extends BaseApiCacheController
 
     public function other_pay_source_create(CreateOtherPaySourceRequest $request)
     {
+        try {
         $data = $this->other_pay_source::create([
             'create_time' => now()->format('Ymdhis'),
             'modify_time' => now()->format('Ymdhis'),
@@ -105,10 +106,14 @@ class OtherPaySourceController extends BaseApiCacheController
         // Gọi event để xóa cache
         event(new DeleteCache($this->other_pay_source_name));
         return return_data_create_success($data);
+    } catch (\Exception $e) {
+        return return_500_error();
+    }
     }
 
     public function other_pay_source_update(UpdateOtherPaySourceRequest $request, $id)
     {
+        try {
         if (!is_numeric($id)) {
             return return_id_error($id);
         }
@@ -134,6 +139,9 @@ class OtherPaySourceController extends BaseApiCacheController
         // Gọi event để xóa cache
         event(new DeleteCache($this->other_pay_source_name));
         return return_data_update_success($data);
+    } catch (\Exception $e) {
+        return return_500_error();
+    }
     }
 
     public function other_pay_source_delete(Request $request, $id)

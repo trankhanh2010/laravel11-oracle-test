@@ -88,6 +88,7 @@ class MediOrgController extends BaseApiCacheController
 
     public function medi_org_create(CreateMediOrgRequest $request)
     {
+        try {
         $data = $this->medi_org::create([
             'create_time' => now()->format('Ymdhis'),
             'modify_time' => now()->format('Ymdhis'),
@@ -110,6 +111,9 @@ class MediOrgController extends BaseApiCacheController
         // Gọi event để xóa cache
         event(new DeleteCache($this->medi_org_name));
         return return_data_create_success($data);
+    } catch (\Exception $e) {
+        return return_500_error();
+    }
     }
 
     public function medi_org_update(UpdateMediOrgRequest $request, $id)
@@ -121,6 +125,7 @@ class MediOrgController extends BaseApiCacheController
         if ($data == null) {
             return return_not_record($id);
         }
+        try {
         $data_update = [
             'modify_time' => now()->format('Ymdhis'),
             'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
@@ -144,6 +149,9 @@ class MediOrgController extends BaseApiCacheController
         // Gọi event để xóa cache
         event(new DeleteCache($this->medi_org_name));
         return return_data_update_success($data);
+    } catch (\Exception $e) {
+        return return_500_error();
+    }
     }
 
     public function medi_org_delete(Request $request, $id)

@@ -11,6 +11,8 @@ class AccidentHurtType extends Model
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
     protected $table = 'HIS_Accident_Hurt_Type';
-    protected $fillable = [
+    public $timestamps = false;
+    protected $guarded = [
+        'id',
     ];
 }

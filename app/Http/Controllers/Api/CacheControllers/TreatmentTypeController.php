@@ -93,6 +93,7 @@ class TreatmentTypeController extends BaseApiCacheController
 
     public function treatment_type_create(CreateTreatmentTypeRequest $request)
     {
+        try {
         $data = $this->treatment_type::create([
             'create_time' => now()->format('Ymdhis'),
             'modify_time' => now()->format('Ymdhis'),
@@ -120,6 +121,9 @@ class TreatmentTypeController extends BaseApiCacheController
         // Gọi event để xóa cache
         event(new DeleteCache($this->treatment_type_name));
         return return_data_create_success($data);
+    } catch (\Exception $e) {
+        return return_500_error();
+    }
     }
 
     public function treatment_type_update(UpdateTreatmentTypeRequest $request, $id)
@@ -131,6 +135,7 @@ class TreatmentTypeController extends BaseApiCacheController
         if ($data == null) {
             return return_not_record($id);
         }
+        try {
         $data_update = [
             'modify_time' => now()->format('Ymdhis'),
             'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
@@ -157,6 +162,9 @@ class TreatmentTypeController extends BaseApiCacheController
         // Gọi event để xóa cache
         event(new DeleteCache($this->treatment_type_name));
         return return_data_update_success($data);
+    } catch (\Exception $e) {
+        return return_500_error();
+    }
     }
 
     public function treatment_type_delete(Request $request, $id)

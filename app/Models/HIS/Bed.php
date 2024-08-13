@@ -11,10 +11,9 @@ class Bed extends Model
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
     protected $table = 'HIS_Bed';
-    protected $fillable = [
-        'bed_room_id',
-        'bed_type_id',
-        'treatment_room_id',
+    public $timestamps = false;
+    protected $guarded = [
+        'id',
     ];
 
     public function bed_room()

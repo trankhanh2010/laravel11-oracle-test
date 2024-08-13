@@ -91,6 +91,7 @@ class IcdCmController extends BaseApiCacheController
     }
     public function icd_cm_create(CreateIcdCmRequest $request)
     {
+        try {
         $data = $this->icd_cm::create([
             'create_time' => now()->format('Ymdhis'),
             'modify_time' => now()->format('Ymdhis'),
@@ -110,6 +111,9 @@ class IcdCmController extends BaseApiCacheController
         // Gọi event để xóa cache
         event(new DeleteCache($this->icd_cm_name));
         return return_data_create_success($data);
+    } catch (\Exception $e) {
+        return return_500_error();
+    }
     }
 
     public function icd_cm_update(UpdateIcdCmRequest $request, $id)
@@ -121,6 +125,7 @@ class IcdCmController extends BaseApiCacheController
         if ($data == null) {
             return return_not_record($id);
         }
+        try {
         $data_update = [
             'modify_time' => now()->format('Ymdhis'),
             'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
@@ -141,6 +146,9 @@ class IcdCmController extends BaseApiCacheController
         // Gọi event để xóa cache
         event(new DeleteCache($this->icd_cm_name));
         return return_data_update_success($data);
+    } catch (\Exception $e) {
+        return return_500_error();
+    }
     }
 
     public function icd_cm_delete(Request $request, $id)

@@ -93,6 +93,7 @@ class AreaController extends BaseApiCacheController
 
     public function area_create(CreateAreaRequest $request)
     {
+        try {
         $data = $this->area::create([
             'create_time' => now()->format('Ymdhis'),
             'modify_time' => now()->format('Ymdhis'),
@@ -109,6 +110,9 @@ class AreaController extends BaseApiCacheController
         // Gọi event để xóa cache
         event(new DeleteCache($this->area_name));
         return return_data_create_success($data);
+    } catch (\Exception $e) {
+        return return_500_error();
+    }
     }
 
     public function area_update(UpdateAreaRequest $request, $id)
@@ -120,6 +124,7 @@ class AreaController extends BaseApiCacheController
         if ($data == null) {
             return return_not_record($id);
         }
+        try {
         $data->update([
             'modify_time' => now()->format('Ymdhis'),
             'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
@@ -132,6 +137,9 @@ class AreaController extends BaseApiCacheController
         // Gọi event để xóa cache
         event(new DeleteCache($this->area_name));
         return return_data_update_success($data);
+    } catch (\Exception $e) {
+        return return_500_error();
+    }
     }
 
     public function area_delete(Request $request, $id)

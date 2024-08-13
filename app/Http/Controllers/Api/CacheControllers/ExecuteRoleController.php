@@ -152,6 +152,7 @@ class ExecuteRoleController extends BaseApiCacheController
 
     public function execute_role_create(CreateExecuteRoleRequest $request)
     {
+        try {
         $data = $this->execute_role::create([
             'create_time' => now()->format('Ymdhis'),
             'modify_time' => now()->format('Ymdhis'),
@@ -177,6 +178,9 @@ class ExecuteRoleController extends BaseApiCacheController
         // Gọi event để xóa cache
         event(new DeleteCache($this->execute_role_name));
         return return_data_create_success($data);
+    } catch (\Exception $e) {
+        return return_500_error();
+    }
     }
 
     public function execute_role_update(UpdateExecuteRoleRequest $request, $id)
@@ -188,6 +192,7 @@ class ExecuteRoleController extends BaseApiCacheController
         if ($data == null) {
             return return_not_record($id);
         }
+        try {
         $data->update([
             'modify_time' => now()->format('Ymdhis'),
             'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
@@ -209,6 +214,9 @@ class ExecuteRoleController extends BaseApiCacheController
         // Gọi event để xóa cache
         event(new DeleteCache($this->execute_role_name));
         return return_data_update_success($data);
+    } catch (\Exception $e) {
+        return return_500_error();
+    }
     }
 
     public function execute_role_delete(Request $request, $id)

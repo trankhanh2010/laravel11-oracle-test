@@ -505,6 +505,44 @@ return [
         'execute_room_ids' => 'Danh sách id phòng thực hiện',
         'request_deparment_ids' => 'Danh sách id khoa yêu cầu',
         'request_room_ids' => 'Danh sách id phòng yêu cầu',
-
     ],
+    // Bộ phận thương tích
+    'accident_body_part' => [
+        'accident_body_part_code' => 'Mã bộ phận thương tích',
+        'accident_body_part_name' => 'Tên bộ phận thương tích',
+    ],
+    // Xử lý sau tai nạn
+    'accident_care' => [
+        'accident_care_code' => 'Mã xử lý sau tai nạn',
+        'accident_care_name' => 'Tên xử lý sau tai nạn',
+    ],
+    // Nguyên nhân tai nạn
+    'accident_hurt_type' => [
+        'accident_hurt_type_code' => 'Mã nguyên nhân tai nạn',
+        'accident_hurt_type_name' => 'Tên nguyên nhân tai nạn',
+    ],
+    // Địa điểm tai nạn
+    'accident_location' => [
+        'accident_location_code' => 'Mã địa điểm tai nạn',
+        'accident_location_name' => 'Tên địa điểm tai nạn',
+    ],
+    // Nhóm ATC
+    'atc_group' => [
+        'atc_group_code' => 'Mã nhóm ATC',
+        'atc_group_name' => 'Tên nhóm ATC',
+    ],
+    // Ý thức
+    'awareness' => [
+        'awareness_code' => 'Mã ý thức',
+        'awareness_name' => 'Tên ý thức',
+    ],
+    // Giường
+    'bed' => [
+        'bed_code' => 'Mã giường',
+        'bed_name' => 'Tên giường',
+        'bed_type_id' => 'Id loại giường',
+        'bed_room_id' => 'Id buồng bệnh',
+        'max_capacity' => 'Sức chứa tối đa',
+        'is_bed_stretcher' => 'Trường là giường cáng',
+    ]
 ];

@@ -322,6 +322,7 @@ class ServiceController extends BaseApiCacheController
 
     public function service_create(CreateServiceRequest $request)
     {
+        try {
         $data = $this->service::create([
             'create_time' => now()->format('Ymdhis'),
             'modify_time' => now()->format('Ymdhis'),
@@ -425,6 +426,9 @@ class ServiceController extends BaseApiCacheController
         // Gọi event để xóa cache
         event(new DeleteCache($this->service_name));
         return return_data_create_success($data);
+    } catch (\Exception $e) {
+        return return_500_error();
+    }
     }
 
     public function service_update(UpdateServiceRequest $request, $id)
@@ -436,6 +440,7 @@ class ServiceController extends BaseApiCacheController
         if ($data == null) {
             return return_not_record($id);
         }
+        try {
         $data_update = [
             'modify_time' => now()->format('Ymdhis'),
             'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
@@ -539,6 +544,9 @@ class ServiceController extends BaseApiCacheController
         // Gọi event để xóa cache
         event(new DeleteCache($this->service_name));
         return return_data_update_success($data);
+    } catch (\Exception $e) {
+        return return_500_error();
+    }
     }
 
     public function service_delete(Request $request, $id)

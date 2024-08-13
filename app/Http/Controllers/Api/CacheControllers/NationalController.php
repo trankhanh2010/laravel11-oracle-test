@@ -87,6 +87,7 @@ class NationalController extends BaseApiCacheController
     }
     public function national_create(CreateNationalRequest $request)
     {
+        try {
         $data = $this->national::create([
             'create_time' => now()->format('Ymdhis'),
             'modify_time' => now()->format('Ymdhis'),
@@ -101,6 +102,9 @@ class NationalController extends BaseApiCacheController
         // Gọi event để xóa cache
         event(new DeleteCache($this->national_name));
         return return_data_create_success($data);
+    } catch (\Exception $e) {
+        return return_500_error();
+    }
     }
 
     public function national_update(UpdateNationalRequest $request, $id)
@@ -112,6 +116,7 @@ class NationalController extends BaseApiCacheController
         if ($data == null) {
             return return_not_record($id);
         }
+        try {
         $data_update = [
             'modify_time' => now()->format('Ymdhis'),
             'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
@@ -127,6 +132,9 @@ class NationalController extends BaseApiCacheController
         // Gọi event để xóa cache
         event(new DeleteCache($this->national_name));
         return return_data_update_success($data);
+    } catch (\Exception $e) {
+        return return_500_error();
+    }
     }
 
     public function national_delete(Request $request, $id)

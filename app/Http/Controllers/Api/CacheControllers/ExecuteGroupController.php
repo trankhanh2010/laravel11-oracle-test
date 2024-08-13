@@ -101,6 +101,7 @@ class ExecuteGroupController extends BaseApiCacheController
     }
     public function execute_group_create(CreateExecuteGroupRequest $request)
     {
+        try {
         $data = $this->execute_group::create([
             'create_time' => now()->format('Ymdhis'),
             'modify_time' => now()->format('Ymdhis'),
@@ -114,6 +115,9 @@ class ExecuteGroupController extends BaseApiCacheController
         // Gọi event để xóa cache
         event(new DeleteCache($this->execute_group_name));
         return return_data_create_success($data);
+    } catch (\Exception $e) {
+        return return_500_error();
+    }
     }
 
     public function execute_group_update(UpdateExecuteGroupRequest $request, $id)
@@ -125,6 +129,7 @@ class ExecuteGroupController extends BaseApiCacheController
         if ($data == null) {
             return return_not_record($id);
         }
+        try {
         $data_update = [
             'modify_time' => now()->format('Ymdhis'),
             'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
@@ -139,6 +144,9 @@ class ExecuteGroupController extends BaseApiCacheController
         // Gọi event để xóa cache
         event(new DeleteCache($this->execute_group_name));
         return return_data_update_success($data);
+    } catch (\Exception $e) {
+        return return_500_error();
+    }
     }
 
     public function execute_group_delete(Request $request, $id)

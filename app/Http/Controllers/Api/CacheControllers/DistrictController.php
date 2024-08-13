@@ -106,6 +106,7 @@ class DistrictController extends BaseApiCacheController
 
     public function district_create(CreateDistrictRequest $request)
     {
+        try {
         $data = $this->district::create([
             'create_time' => now()->format('Ymdhis'),
             'modify_time' => now()->format('Ymdhis'),
@@ -122,6 +123,9 @@ class DistrictController extends BaseApiCacheController
         // Gọi event để xóa cache
         event(new DeleteCache($this->district_name));
         return return_data_create_success($data);
+    } catch (\Exception $e) {
+        return return_500_error();
+    }
     }
 
     public function district_update(UpdateDistrictRequest $request, $id)
@@ -133,6 +137,7 @@ class DistrictController extends BaseApiCacheController
         if ($data == null) {
             return return_not_record($id);
         }
+        try {
         $data_update = [
             'modify_time' => now()->format('Ymdhis'),
             'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
@@ -150,6 +155,9 @@ class DistrictController extends BaseApiCacheController
         // Gọi event để xóa cache
         event(new DeleteCache($this->district_name));
         return return_data_update_success($data);
+    } catch (\Exception $e) {
+        return return_500_error();
+    }
     }
 
     public function district_delete(Request $request, $id)
