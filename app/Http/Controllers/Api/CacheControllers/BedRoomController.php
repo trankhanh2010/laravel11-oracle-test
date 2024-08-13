@@ -45,46 +45,112 @@ class BedRoomController extends BaseApiCacheController
                 'room.default_cashier_room:id,cashier_room_name',
                 'room.default_instr_patient_type:id,patient_type_name',
             ];
-            $data = $this->bed_room;
+            $data = $this->bed_room
+                ->leftJoin('his_room as room', 'room.id', '=', 'his_bed_room.room_id')
+                ->leftJoin('his_department as department', 'department.id', '=', 'room.department_id')
+                ->leftJoin('his_area as area', 'area.id', '=', 'room.area_id')
+                ->leftJoin('his_speciality as speciality', 'speciality.id', '=', 'room.speciality_id')
+                ->leftJoin('his_cashier_room as default_cashier_room', 'default_cashier_room.id', '=', 'room.default_cashier_room_id')
+                ->leftJoin('his_patient_type as default_instr_patient_type', 'default_instr_patient_type.id', '=', 'room.default_instr_patient_type_id')
+
+                ->select(
+                    'his_bed_room.*',
+                    'room.is_pause',
+                    'department.id as department_id',
+                    'department.department_name',
+                    'department.department_code',
+                    'area.area_name',
+                    'area.area_code',
+                    'speciality.speciality_name',
+                    'speciality.speciality_code',
+                    'default_cashier_room.cashier_room_name',
+                    'default_cashier_room.cashier_room_code',
+                    'default_instr_patient_type.patient_type_name',
+                    'default_instr_patient_type.patient_type_code',
+                );
             $data = $data->where(function ($query) use ($keyword){
                 $query = $query
-                ->where(DB::connection('oracle_his')->raw('bed_room_code'), 'like', $keyword . '%')
-                ->orWhere(DB::connection('oracle_his')->raw('bed_room_name'), 'like', $keyword . '%');
+                ->where(DB::connection('oracle_his')->raw('his_bed_room.bed_room_code'), 'like', $keyword . '%')
+                ->orWhere(DB::connection('oracle_his')->raw('his_bed_room.bed_room_name'), 'like', $keyword . '%');
             });
         if ($this->is_active !== null) {
             $data = $data->where(function ($query) {
                 $query = $query->where(DB::connection('oracle_his')->raw('his_bed_room.is_active'), $this->is_active);
             });
+        }
+        if ($this->department_id !== null) {
+            $data = $data->where(function ($query) {
+                $query = $query->where(DB::connection('oracle_his')->raw('room.department_id'), $this->department_id);
+            });
         } 
             $count = $data->count();
             if ($this->order_by != null) {
                 foreach ($this->order_by as $key => $item) {
-                    $data->orderBy($key, $item);
+                    $data->orderBy('his_bed_room.'.$key, $item);
                 }
             }
             if($this->get_all){
                 $data = $data
-                ->with($param)
                 ->get();
             }else{
                 $data = $data
                 ->skip($this->start)
                 ->take($this->limit)
-                ->with($param)
                 ->get();
             }
 
         } else {
             if ($id == null) {
-                $name = $this->bed_room_name  . '_start_' . $this->start . '_limit_' . $this->limit . $this->order_by_tring. '_is_active_' . $this->is_active . '_get_all_' . $this->get_all;
-                $param = [
-                    'room:id,department_id,area_id,speciality_id,default_cashier_room_id,default_instr_patient_type_id,is_pause',
-                    'room.department:id,department_name,department_code',
-                    'room.area:id,area_name',
-                    'room.speciality:id,speciality_name,speciality_code',
-                    'room.default_cashier_room:id,cashier_room_name',
-                    'room.default_instr_patient_type:id,patient_type_name',
-                ];
+                $data = Cache::remember($this->bed_room_name. '_department_id_'.$this->department_id. '_start_' . $this->start . '_limit_' . $this->limit. $this->order_by_tring. '_is_active_' . $this->is_active. '_get_all_' . $this->get_all, $this->time, function (){
+                    $data = $this->bed_room
+                    ->leftJoin('his_room as room', 'room.id', '=', 'his_bed_room.room_id')
+                    ->leftJoin('his_department as department', 'department.id', '=', 'room.department_id')
+                    ->leftJoin('his_area as area', 'area.id', '=', 'room.area_id')
+                    ->leftJoin('his_speciality as speciality', 'speciality.id', '=', 'room.speciality_id')
+                    ->leftJoin('his_cashier_room as default_cashier_room', 'default_cashier_room.id', '=', 'room.default_cashier_room_id')
+                    ->leftJoin('his_patient_type as default_instr_patient_type', 'default_instr_patient_type.id', '=', 'room.default_instr_patient_type_id')
+                    ->select(
+                        'his_bed_room.*',
+                        'room.is_pause',
+                        'department.id as department_id',
+                        'department.department_name',
+                        'department.department_code',
+                        'area.area_name',
+                        'area.area_code',
+                        'speciality.speciality_name',
+                        'speciality.speciality_code',
+                        'default_cashier_room.cashier_room_name',
+                        'default_cashier_room.cashier_room_code',
+                        'default_instr_patient_type.patient_type_name',
+                        'default_instr_patient_type.patient_type_code',
+                    );
+                    if ($this->is_active !== null) {
+                        $data = $data->where(function ($query) {
+                            $query = $query->where(DB::connection('oracle_his')->raw('his_bed_room.is_active'), $this->is_active);
+                        });
+                    }
+                    if ($this->department_id !== null) {
+                        $data = $data->where(function ($query) {
+                            $query = $query->where(DB::connection('oracle_his')->raw('room.department_id'), $this->department_id);
+                        });
+                    } 
+                        $count = $data->count();
+                        if ($this->order_by != null) {
+                            foreach ($this->order_by as $key => $item) {
+                                $data->orderBy('his_bed_room.'.$key, $item);
+                            }
+                        }
+                        if($this->get_all){
+                            $data = $data
+                            ->get();
+                        }else{
+                            $data = $data
+                            ->skip($this->start)
+                            ->take($this->limit)
+                            ->get();
+                        }
+                    return ['data' => $data, 'count' => $count];
+                });
             } else {
                 if (!is_numeric($id)) {
                     return return_id_error($id);
@@ -102,9 +168,10 @@ class BedRoomController extends BaseApiCacheController
                     'room.default_cashier_room',
                     'room.default_instr_patient_type',
                 ];
+                $model = $this->bed_room;
+                $data = get_cache_full($model, $param, $name, $id, $this->time, $this->start, $this->limit, $this->order_by, $this->is_active, $this->get_all);
             }
-            $model = $this->bed_room;
-            $data = get_cache_full($model, $param, $name, $id, $this->time, $this->start, $this->limit, $this->order_by, $this->is_active, $this->get_all);
+
         }
         $param_return = [
             $this->get_all_name => $this->get_all,
