@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers\Api\CacheControllers;
 
+use App\Events\Cache\DeleteCache;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
+use App\Http\Requests\EmotionlessMethod\CreateEmotionlessMethodRequest;
+use App\Http\Requests\EmotionlessMethod\UpdateEmotionlessMethodRequest;
 use App\Models\HIS\EmotionlessMethod;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -128,17 +131,95 @@ class EmotionlessMethodController extends BaseApiCacheController
             return return_500_error();
         }
     }
-    // /// Emotionless Method
-    // public function emotionless_method($id = null)
-    // {
-    //     if ($id == null) {
-    //         $name = $this->emotionless_method_name;
-    //         $param = [];
-    //     } else {
-    //         $name = $this->emotionless_method_name . '_' . $id;
-    //         $param = [];
-    //     }
-    //     $data = get_cache_full($this->emotionless_method, $param, $name, $id, $this->time);
-    //     return response()->json(['data' => $data], 200);
-    // }
+    public function emotionless_method_create(CreateEmotionlessMethodRequest $request)
+    {
+        try {
+            // Nếu chọn cả 2 phương pháp thì để trống cả 2
+            $is_first = $request->is_first;
+            $is_second = $request->is_second;
+            if(($request->is_first == 1) && ($request->is_second == 1)){
+                $is_first = null;
+                $is_second = null;
+            }
+
+            $data = $this->emotionless_method::create([
+                'create_time' => now()->format('Ymdhis'),
+                'modify_time' => now()->format('Ymdhis'),
+                'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_creator' => $this->app_creator,
+                'app_modifier' => $this->app_modifier,
+                'is_active' => 1,
+                'is_delete' => 0,
+                'emotionless_method_code' => $request->emotionless_method_code,
+                'emotionless_method_name' => $request->emotionless_method_name,
+                'is_first' => $is_first,
+                'is_second' => $is_second,
+                'is_anaesthesia' => $request->is_anaesthesia,
+                'hein_code' => $request->hein_code,
+
+            ]);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->emotionless_method_name));
+            return return_data_create_success($data);
+        } catch (\Exception $e) {
+            return return_500_error();
+        }
+    }
+       
+    public function emotionless_method_update(UpdateEmotionlessMethodRequest $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->emotionless_method->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        try {
+            // Nếu chọn cả 2 phương pháp thì để trống cả 2
+            $is_first = $request->is_first;
+            $is_second = $request->is_second;
+            if(($request->is_first == 1) && ($request->is_second == 1)){
+                $is_first = null;
+                $is_second = null;
+            }
+            $data->update([
+                'modify_time' => now()->format('Ymdhis'),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_modifier' => $this->app_modifier,
+                'emotionless_method_code' => $request->emotionless_method_code,
+                'emotionless_method_name' => $request->emotionless_method_name,
+                'is_first' => $is_first,
+                'is_second' => $is_second,
+                'is_anaesthesia' => $request->is_anaesthesia,
+                'hein_code' => $request->hein_code,
+                'is_active' => $request->is_active
+            ]);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->emotionless_method_name));
+            return return_data_update_success($data);
+        } catch (\Exception $e) {
+            return return_500_error();
+        }
+    }
+
+    public function emotionless_method_delete(Request $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->emotionless_method->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        try {
+            $data->delete();
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->emotionless_method_name));
+            return return_data_delete_success();
+        } catch (\Exception $e) {
+            return return_data_delete_fail();
+        }
+    }
 }

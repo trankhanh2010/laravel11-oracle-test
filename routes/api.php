@@ -601,6 +601,9 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.EmpUser'], function () {
         Route::get("v1/emp-user", [EmpUserController::class, "emp_user"])->name('.get');
         Route::get("v1/emp-user/{id}", [EmpUserController::class, "emp_user"])->name('.get_id');
+        Route::post("v1/emp-user", [EmpUserController::class, "emp_user_create"])->name('.create');
+        Route::put("v1/emp-user/{id}", [EmpUserController::class, "emp_user_update"])->name('.update');
+        Route::delete("v1/emp-user/{id}", [EmpUserController::class, "emp_user_delete"])->name('.delete');
     });
 
     /// Thông tin tài khoản
@@ -637,6 +640,9 @@ Route::group([
     Route::group(['as' => 'SDA.Desktop.Plugins.SdaEthnic'], function () {
         Route::get("v1/ethnic", [EthnicController::class, "ethnic"])->name('.get');
         Route::get("v1/ethnic/{id}", [EthnicController::class, "ethnic"])->name('.get_id');
+        Route::post("v1/ethnic", [EthnicController::class, "ethnic_create"])->name('.create');
+        Route::put("v1/ethnic/{id}", [EthnicController::class, "ethnic_update"])->name('.update');
+        Route::delete("v1/ethnic/{id}", [EthnicController::class, "ethnic_delete"])->name('.delete');
     });
 
     /// Đối tượng bệnh nhân
@@ -897,6 +903,9 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisDosageForm'], function () {
         Route::get("v1/dosage-form", [DosageFormController::class, "dosage_form"])->name('.get');
         Route::get("v1/dosage-form/{id}", [DosageFormController::class, "dosage_form"])->name('.get_id');
+        Route::post("v1/dosage-form", [DosageFormController::class, "dosage_form_create"])->name('.create');
+        Route::put("v1/dosage-form/{id}", [DosageFormController::class, "dosage_form_update"])->name('.update');
+        Route::delete("v1/dosage-form/{id}", [DosageFormController::class, "dosage_form_delete"])->name('.delete');
     });
 
     /// Địa điểm tai nạn
@@ -936,6 +945,9 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisFileType'], function () {
         Route::get("v1/file-type", [FileTypeController::class, "file_type"])->name('.get');
         Route::get("v1/file-type/{id}", [FileTypeController::class, "file_type"])->name('.get_id');
+        Route::post("v1/file-type", [FileTypeController::class, "file_type_create"])->name('.create');
+        Route::put("v1/file-type/{id}", [FileTypeController::class, "file_type_update"])->name('.update');
+        Route::delete("v1/file-type/{id}", [FileTypeController::class, "file_type_delete"])->name('.delete');
     });
 
     /// Loại ra viện
@@ -954,6 +966,9 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisDebateReason'], function () {
         Route::get("v1/debate-reason", [DebateReasonController::class, "debate_reason"])->name('.get');
         Route::get("v1/debate-reason/{id}", [DebateReasonController::class, "debate_reason"])->name('.get_id');
+        Route::post("v1/debate-reason", [DebateReasonController::class, "debate_reason_create"])->name('.create');
+        Route::put("v1/debate-reason/{id}", [DebateReasonController::class, "debate_reason_update"])->name('.update');
+        Route::delete("v1/debate-reason/{id}", [DebateReasonController::class, "debate_reason_delete"])->name('.delete');
     });
 
     /// Lý do hủy giao dịch
@@ -1067,6 +1082,9 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisEmotionlessMethod'], function () {
         Route::get("v1/emotionless-method", [EmotionlessMethodController::class, "emotionless_method"])->name('.get');
         Route::get("v1/emotionless-method/{id}", [EmotionlessMethodController::class, "emotionless_method"])->name('.get_id');
+        Route::post("v1/emotionless-method", [EmotionlessMethodController::class, "emotionless_method_create"])->name('.create');
+        Route::put("v1/emotionless-method/{id}", [EmotionlessMethodController::class, "emotionless_method_update"])->name('.update');
+        Route::delete("v1/emotionless-method/{id}", [EmotionlessMethodController::class, "emotionless_method_delete"])->name('.delete');
     });
 
     /// Tai biến PTTT

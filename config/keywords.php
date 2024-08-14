@@ -12,9 +12,11 @@ return [
         'integer_min' => ' phải lớn hơn hoặc bằng :min!',
         'integer_max' => ' phải bé hơn hoặc bằng :max!',
         'in' => ' chỉ chấp nhận các giá trị :values',
+        'email' => ' không đúng định dạng email!',
         'regex_19_4' => ' chỉ chấp nhận số có tối đa 19 chữ số trong đó có tối đa 4 chữ số thập phân!',
         'regex_19_2' => ' chỉ chấp nhận số có tối đa 19 chữ số trong đó có tối đa 2 chữ số thập phân!',
-        'regex_ymdhis' => ' phải được định dạng ymdhis và chuyển sang số nguyên có 14 chữ số!',
+        'regex_phone' => ' không đúng định dạng!',
+        'regex_ymdhis' => ' phải được định dạng yyyymmddhhiiss và chuyển sang số nguyên có 14 chữ số!',
         'regex_hhmm' => ' phải được định dạng hhmm trong đó hh có giá trị từ 01 đến 23, mm có giá trị 00, 15 ,30 hoặc 45!',
         'numeric' => ' phải là số!',
         'prohibited_unless_service_type' => ' chỉ được nhập khi mã loại dịch vụ thuộc ',
@@ -611,5 +613,79 @@ return [
     'death_within' => [
         'death_within_code' => 'Mã thời gian tử vong',
         'death_within_name' => 'Tên thời gian tử vong',
+    ],
+    // Lý do hội chẩn
+    'debate_reason' => [
+        'debate_reason_code' => 'Mã lý do hội chẩn',
+        'debate_reason_name' => 'Tên lý do hội chẩn',
+    ],
+    // Dạng bào chế
+    'dosage_form' => [
+        'dosage_form_code' => 'Mã dạng bào chế',
+        'dosage_form_name' => 'Tên dạng bào chế',
+    ],
+    // Phương pháp vô cảm
+    'emotionless_method' => [
+        'emotionless_method_code' => 'Mã phương pháp vô cảm',
+        'emotionless_method_name' => 'Tên phương pháp vô cảm',
+        'is_first' => 'Trường phương pháp 1',
+        'is_second' => 'Trường phương pháp 2',
+        'is_anaesthesia' => 'Trường gây tê',
+        'hein_code' => 'Mã BHYT',
+    ],
+    // Tài khoản nhân viên
+    'emp_user' => [
+        'loginname' => 'Tên đăng nhập',
+        'tdl_username' => 'Họ tên',
+        'dob' => 'Ngày sinh',
+        'gender_id' => 'Id giới tính',
+        'ethnic_code' => 'Mã dân tộc',
+
+        'tdl_email' => 'Email',
+        'tdl_mobile' => 'Số điện thoại',
+        'diploma' => 'Chứng chỉ',
+        'diploma_date' => 'Ngày cấp chứng chỉ hành nghề',
+        'diploma_place' => 'Nơi cấp chứng chỉ hành nghề',
+        'title' => 'Chức danh',
+
+        'medicine_type_rank' => 'Hạng thuốc kê đơn',
+        'max_bhyt_service_req_per_day' => 'Số lượt BHYT xử lý tối đa / ngày',
+        'max_service_req_per_day' => 'Số lượt bệnh nhân tối đa / ngày',
+        'is_service_req_exam' => 'Trường chỉ tính công khám',
+        'account_number' => 'Số tài khoản',
+        'bank' => 'Tên ngân hàng',
+
+        'department_id' => 'Id khoa',
+        'default_medi_stock_ids' => 'Danh sách Id kho mặc định',
+        'erx_loginname' => 'Tên đăng nhập ERX',
+        'erx_password' => 'Mật khẩu ERX',
+        'identification_number' => 'Số CMT/CCCD/HC',
+        'social_insurance_number' => 'Sổ bảo hiểm xã hội',
+        'career_title_id' => 'Id nghề nghiệp',
+
+        'position' => 'Vị trí',
+        'speciality_codes' => 'Danh sách mã phạm vi chuyên môn',
+        'type_of_time' => 'Thời gian đăng ký',
+        'branch_id' => 'Id cơ sở khám chữa bệnh',
+        'medi_org_codes' => 'Danh sách mã cơ sở khám chữa bệnh khác',
+        'is_doctor' => 'Trường là bác sĩ',
+
+        'is_nurse' => 'Trường là y tá',
+        'is_admin' => 'Trường là quản trị hệ thống',
+        'allow_update_other_sclinical' => 'Trường sửa KQ CLS',
+        'do_not_allow_simultaneity' => 'Trường chặn thực hiện CLS cùng lúc',
+        'is_limit_schedule' => 'Trường giới hạn thời gian làm việc',
+        'is_need_sign_instead' => 'Trường cần ký thay',
+    ],
+    // Dân tộc
+    'ethnic' => [
+        'ethnic_code' => 'Mã dân tộc',
+        'ethnic_name' => 'Tên dân tộc',
+        'other_name' => 'Tên gọi khác',
+    ],
+    // Loại giấy tờ
+    'file_type' => [
+        'file_type_code' => 'Mã loại giấy tờ',
+        'file_type_name' => 'Tên loại giấy tờ',
     ],
 ];

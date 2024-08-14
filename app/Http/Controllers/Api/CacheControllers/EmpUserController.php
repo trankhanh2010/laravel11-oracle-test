@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers\Api\CacheControllers;
 
+use App\Events\Cache\DeleteCache;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
+use App\Http\Requests\Employee\CreateEmployeeRequest;
+use App\Http\Requests\Employee\UpdateEmployeeRequest;
 use App\Models\HIS\Employee;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -102,5 +105,154 @@ class EmpUserController extends BaseApiCacheController
         // Xử lý lỗi và trả về phản hồi lỗi
         return return_500_error();
     }
+    }
+
+    public function emp_user_create(CreateEmployeeRequest $request)
+    {
+        try {
+            $data = $this->emp_user::create([
+                'create_time' => now()->format('Ymdhis'),
+                'modify_time' => now()->format('Ymdhis'),
+                'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_creator' => $this->app_creator,
+                'app_modifier' => $this->app_modifier,
+                'is_active' => 1,
+                'is_delete' => 0,
+
+                'loginname' => $request->loginname,
+                'tdl_username' => $request->tdl_username,
+                'dob' => $request->dob,
+                'gender_id' => $request->gender_id,
+                'ethnic_code' => $request->ethnic_code,
+
+                'tdl_email' => $request->tdl_email,
+                'tdl_mobile' => $request->tdl_mobile,
+                'diploma' => $request->diploma,
+                'diploma_date' => $request->diploma_date,
+                'diploma_place' => $request->diploma_place,
+                'title' => $request->title,
+
+                'medicine_type_rank' => $request->medicine_type_rank,
+                'max_bhyt_service_req_per_day' => $request->max_bhyt_service_req_per_day,
+                'max_service_req_per_day' => $request->max_service_req_per_day,
+                'is_service_req_exam' => $request->is_service_req_exam,
+                'account_number' => $request->account_number,
+                'bank' => $request->bank,
+
+                'department_id' => $request->department_id,
+                'default_medi_stock_ids' => $request->default_medi_stock_ids,
+                'erx_loginname' => $request->erx_loginname,
+                'erx_password' => $request->erx_password,
+                'identification_number' => $request->identification_number,
+                'social_insurance_number' => $request->social_insurance_number,
+
+                'career_title_id' => $request->career_title_id,
+                'position' => $request->position,
+                'speciality_codes' => $request->speciality_codes,
+                'type_of_time' => $request->type_of_time,
+                'branch_id' => $request->branch_id,
+                'medi_org_codes' => $request->medi_org_codes,
+
+                'is_doctor' => $request->is_doctor,
+                'is_nurse' => $request->is_nurse,
+                'is_admin' => $request->is_admin,
+                'allow_update_other_sclinical' => $request->allow_update_other_sclinical,
+                'do_not_allow_simultaneity' => $request->do_not_allow_simultaneity,
+                'is_limit_schedule' => $request->is_limit_schedule,
+
+                'is_need_sign_instead' => $request->is_need_sign_instead,
+            ]);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->emp_user_name));
+            return return_data_create_success($data);
+        } catch (\Exception $e) {
+            return return_500_error();
+        }
+    }
+                            
+    public function emp_user_update(UpdateEmployeeRequest $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->emp_user->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        try {
+            $data->update([
+                'modify_time' => now()->format('Ymdhis'),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_modifier' => $this->app_modifier,
+
+                'tdl_username' => $request->tdl_username,
+                'dob' => $request->dob,
+                'gender_id' => $request->gender_id,
+                'ethnic_code' => $request->ethnic_code,
+
+                'tdl_email' => $request->tdl_email,
+                'tdl_mobile' => $request->tdl_mobile,
+                'diploma' => $request->diploma,
+                'diploma_date' => $request->diploma_date,
+                'diploma_place' => $request->diploma_place,
+                'title' => $request->title,
+
+                'medicine_type_rank' => $request->medicine_type_rank,
+                'max_bhyt_service_req_per_day' => $request->max_bhyt_service_req_per_day,
+                'max_service_req_per_day' => $request->max_service_req_per_day,
+                'is_service_req_exam' => $request->is_service_req_exam,
+                'account_number' => $request->account_number,
+                'bank' => $request->bank,
+
+                'department_id' => $request->department_id,
+                'default_medi_stock_ids' => $request->default_medi_stock_ids,
+                'erx_loginname' => $request->erx_loginname,
+                'erx_password' => $request->erx_password,
+                'identification_number' => $request->identification_number,
+                'social_insurance_number' => $request->social_insurance_number,
+
+                'career_title_id' => $request->career_title_id,
+                'position' => $request->position,
+                'speciality_codes' => $request->speciality_codes,
+                'type_of_time' => $request->type_of_time,
+                'branch_id' => $request->branch_id,
+                'medi_org_codes' => $request->medi_org_codes,
+
+                'is_doctor' => $request->is_doctor,
+                'is_nurse' => $request->is_nurse,
+                'is_admin' => $request->is_admin,
+                'allow_update_other_sclinical' => $request->allow_update_other_sclinical,
+                'do_not_allow_simultaneity' => $request->do_not_allow_simultaneity,
+                'is_limit_schedule' => $request->is_limit_schedule,
+
+                'is_need_sign_instead' => $request->is_need_sign_instead,
+                'is_active' => $request->is_active
+            ]);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->emp_user_name));
+            return return_data_update_success($data);
+        } catch (\Exception $e) {
+            return return_500_error();
+        }
+    }
+
+    public function emp_user_delete(Request $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->emp_user->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        try {
+            $data->delete();
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->emp_user_name));
+            return return_data_delete_success();
+        } catch (\Exception $e) {
+            return return_data_delete_fail();
+        }
     }
 }

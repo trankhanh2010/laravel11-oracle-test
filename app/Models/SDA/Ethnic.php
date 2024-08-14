@@ -11,7 +11,8 @@ class Ethnic extends Model
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_sda';
     protected $table = 'SDA_Ethnic';
-    protected $fillable = [
-        
+    public $timestamps = false;
+    protected $guarded = [
+        'id',
     ];
 }

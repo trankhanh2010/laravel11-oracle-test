@@ -11,21 +11,17 @@ class Employee extends Model
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his';
     protected $table = 'HIS_Employee';
-    protected $fillable = [
-        'erx_assword',
-        'department_id',
-        'default_medi_stock_ids',
-        'gender_id',
-        'branch_id',
-        'career_title_id',
+    public $timestamps = false;
+    protected $guarded = [
+        'id',
     ];
-    // protected $attributes = [
-    //     'erx_assword' => '*******'
+    // protected $hidden = [
+    //     'erx_password'
     // ];
-    protected $hidden = [
-        'erx_password'
-    ];
-
+    public function getErxPasswordAttribute($value)
+    {
+        return '******';
+    }
     public function department()
     {
         return $this->belongsTo(Department::class,'department_id');

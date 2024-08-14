@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers\Api\CacheControllers;
 
+use App\Events\Cache\DeleteCache;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
+use App\Http\Requests\Ethnic\CreateEthnicRequest;
+use App\Http\Requests\Ethnic\UpdateEthnicRequest;
 use App\Models\SDA\Ethnic;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -96,5 +99,75 @@ class EthnicController extends BaseApiCacheController
         // Xử lý lỗi và trả về phản hồi lỗi
         return return_500_error();
     }
+    }
+
+    public function ethnic_create(CreateEthnicRequest $request)
+    {
+        try {
+            $data = $this->ethnic::create([
+                'create_time' => now()->format('Ymdhis'),
+                'modify_time' => now()->format('Ymdhis'),
+                'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_creator' => $this->app_creator,
+                'app_modifier' => $this->app_modifier,
+                'is_active' => 1,
+                'is_delete' => 0,
+                'ethnic_code' => $request->ethnic_code,
+                'ethnic_name' => $request->ethnic_name,
+                'other_name' => $request->other_name,  
+            ]);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->ethnic_name));
+            return return_data_create_success($data);
+        } catch (\Exception $e) {
+            return return_500_error();
+        }
+    }
+     
+    public function ethnic_update(UpdateEthnicRequest $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->ethnic->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        try {
+            $data->update([
+                'modify_time' => now()->format('Ymdhis'),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_modifier' => $this->app_modifier,
+                'ethnic_code' => $request->ethnic_code,
+                'ethnic_name' => $request->ethnic_name,
+                'other_name' => $request->other_name, 
+                'is_active' => $request->is_active
+            ]);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->ethnic_name));
+            return return_data_update_success($data);
+        } catch (\Exception $e) {
+            return return_500_error();
+        }
+    }
+
+    public function ethnic_delete(Request $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->ethnic->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        try {
+            $data->delete();
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->ethnic_name));
+            return return_data_delete_success();
+        } catch (\Exception $e) {
+            return return_data_delete_fail();
+        }
     }
 }

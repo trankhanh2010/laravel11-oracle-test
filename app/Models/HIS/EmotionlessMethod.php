@@ -12,7 +12,8 @@ class EmotionlessMethod extends Model
     
     protected $connection = 'oracle_his';
     protected $table = 'HIS_emotionless_method';
-    protected $fillable = [
-
+    public $timestamps = false;
+    protected $guarded = [
+        'id',
     ];
 }

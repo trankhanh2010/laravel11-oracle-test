@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers\Api\CacheControllers;
 
+use App\Events\Cache\DeleteCache;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
+use App\Http\Requests\DebateReason\CreateDebateReasonRequest;
+use App\Http\Requests\DebateReason\UpdateDebateReasonRequest;
 use App\Models\HIS\DebateReason;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -128,21 +131,71 @@ class DebateReasonController extends BaseApiCacheController
             return return_500_error();
         }
     }
-    // /// Debate Reason
-    // public function debate_reason($id = null)
-    // {
-    //     if ($id == null) {
-    //         $name = $this->debate_reason_name;
-    //         $param = [
-    //             'debates:id,debate_reason_id,icd_name,icd_code,icd_sub_code'
-    //         ];
-    //     } else {
-    //         $name = $this->debate_reason_name . '_' . $id;
-    //         $param = [
-    //             'debates'
-    //         ];
-    //     }
-    //     $data = get_cache_full($this->debate_reason, $param, $name, $id, $this->time);
-    //     return response()->json(['data' => $data], 200);
-    // }
+    public function debate_reason_create(CreateDebateReasonRequest $request)
+    {
+        try {
+            $data = $this->debate_reason::create([
+                'create_time' => now()->format('Ymdhis'),
+                'modify_time' => now()->format('Ymdhis'),
+                'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_creator' => $this->app_creator,
+                'app_modifier' => $this->app_modifier,
+                'is_active' => 1,
+                'is_delete' => 0,
+                'debate_reason_code' => $request->debate_reason_code,
+                'debate_reason_name' => $request->debate_reason_name,
+            ]);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->debate_reason_name));
+            return return_data_create_success($data);
+        } catch (\Exception $e) {
+            return return_500_error();
+        }
+    }
+     
+    public function debate_reason_update(UpdateDebateReasonRequest $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->debate_reason->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        try {
+            $data->update([
+                'modify_time' => now()->format('Ymdhis'),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_modifier' => $this->app_modifier,
+                'debate_reason_code' => $request->debate_reason_code,
+                'debate_reason_name' => $request->debate_reason_name,
+                'is_active' => $request->is_active
+            ]);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->debate_reason_name));
+            return return_data_update_success($data);
+        } catch (\Exception $e) {
+            return return_500_error();
+        }
+    }
+
+    public function debate_reason_delete(Request $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->debate_reason->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        try {
+            $data->delete();
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->debate_reason_name));
+            return return_data_delete_success();
+        } catch (\Exception $e) {
+            return return_data_delete_fail();
+        }
+    }
 }

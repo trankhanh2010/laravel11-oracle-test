@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers\Api\CacheControllers;
 
+use App\Events\Cache\DeleteCache;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
+use App\Http\Requests\DosageForm\CreateDosageFormRequest;
+use App\Http\Requests\DosageForm\UpdateDosageFormRequest;
 use App\Models\HIS\DosageForm;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -128,17 +131,70 @@ class DosageFormController extends BaseApiCacheController
             return return_500_error();
         }
     }
-    // /// Dosage Form
-    // public function dosage_form($id = null)
-    // {
-    //     if ($id == null) {
-    //         $name = $this->dosage_form_name;
-    //         $param = [];
-    //     } else {
-    //         $name = $this->dosage_form_name . '_' . $id;
-    //         $param = [];
-    //     }
-    //     $data = get_cache_full($this->dosage_form, $param, $name, $id, $this->time);
-    //     return response()->json(['data' => $data], 200);
-    // }
+    public function dosage_form_create(CreateDosageFormRequest $request)
+    {
+        try {
+            $data = $this->dosage_form::create([
+                'create_time' => now()->format('Ymdhis'),
+                'modify_time' => now()->format('Ymdhis'),
+                'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_creator' => $this->app_creator,
+                'app_modifier' => $this->app_modifier,
+                'is_active' => 1,
+                'is_delete' => 0,
+                'dosage_form_code' => $request->dosage_form_code,
+                'dosage_form_name' => $request->dosage_form_name,
+            ]);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->dosage_form_name));
+            return return_data_create_success($data);
+        } catch (\Exception $e) {
+            return return_500_error();
+        }
+    }
+      
+    public function dosage_form_update(UpdateDosageFormRequest $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->dosage_form->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        try {
+            $data->update([
+                'modify_time' => now()->format('Ymdhis'),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_modifier' => $this->app_modifier,
+                'dosage_form_name' => $request->dosage_form_name,
+                'is_active' => $request->is_active
+            ]);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->dosage_form_name));
+            return return_data_update_success($data);
+        } catch (\Exception $e) {
+            return return_500_error();
+        }
+    }
+
+    public function dosage_form_delete(Request $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->dosage_form->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        try {
+            $data->delete();
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->dosage_form_name));
+            return return_data_delete_success();
+        } catch (\Exception $e) {
+            return return_data_delete_fail();
+        }
+    }
 }
