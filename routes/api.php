@@ -828,6 +828,9 @@ Route::group([
     Route::group(['as' => 'BHYT HIS.Desktop.Plugins.HisBhytWhitelist'], function () {
         Route::get("v1/bhyt-whitelist", [BhytWhitelistController::class, "bhyt_whitelist"])->name('.get');
         Route::get("v1/bhyt-whitelist/{id}", [BhytWhitelistController::class, "bhyt_whitelist"])->name('.get_id');
+        Route::post("v1/bhyt-whitelist", [BhytWhitelistController::class, "bhyt_whitelist_create"])->name('.create');
+        Route::put("v1/bhyt-whitelist/{id}", [BhytWhitelistController::class, "bhyt_whitelist_update"])->name('.update');
+        Route::delete("v1/bhyt-whitelist/{id}", [BhytWhitelistController::class, "bhyt_whitelist_delete"])->name('.delete');
     });
 
     /// Nhóm dịch vụ BHYT
@@ -840,12 +843,18 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisBHYTParam'], function () {
         Route::get("v1/bhyt-param", [BhytParamController::class, "bhyt_param"])->name('.get');
         Route::get("v1/bhyt-param/{id}", [BhytParamController::class, "bhyt_param"])->name('.get_id');
+        Route::post("v1/bhyt-param", [BhytParamController::class, "bhyt_param_create"])->name('.create');
+        Route::put("v1/bhyt-param/{id}", [BhytParamController::class, "bhyt_param_update"])->name('.update');
+        Route::delete("v1/bhyt-param/{id}", [BhytParamController::class, "bhyt_param_delete"])->name('.delete');
     });
 
     /// Thẻ BHYT không hợp lệ
     Route::group(['as' => 'HIS.Desktop.Plugins.HisBhytBlacklist'], function () {
         Route::get("v1/bhyt-blacklist", [BhytBlacklistController::class, "bhyt_blacklist"])->name('.get');
         Route::get("v1/bhyt-blacklist/{id}", [BhytBlacklistController::class, "bhyt_blacklist"])->name('.get_id');
+        Route::post("v1/bhyt-blacklist", [BhytBlacklistController::class, "bhyt_blacklist_create"])->name('.create');
+        Route::put("v1/bhyt-blacklist/{id}", [BhytBlacklistController::class, "bhyt_blacklist_update"])->name('.update');
+        Route::delete("v1/bhyt-blacklist/{id}", [BhytBlacklistController::class, "bhyt_blacklist_delete"])->name('.delete');
     });
 
     /// Chính sách giá thuốc
@@ -1073,6 +1082,9 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisBloodVolume'], function () {
         Route::get("v1/blood-volume", [BloodVolumeController::class, "blood_volume"])->name('.get');
         Route::get("v1/blood-volume/{id}", [BloodVolumeController::class, "blood_volume"])->name('.get_id');
+        Route::post("v1/blood-volume", [BloodVolumeController::class, "blood_volume_create"])->name('.create');
+        Route::put("v1/blood-volume/{id}", [BloodVolumeController::class, "blood_volume_update"])->name('.update');
+        Route::delete("v1/blood-volume/{id}", [BloodVolumeController::class, "blood_volume_delete"])->name('.delete');
     });
 
     /// Đường dùng thuốc
@@ -1085,6 +1097,9 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisBidType'], function () {
         Route::get("v1/bid-type", [BidTypeController::class, "bid_type"])->name('.get');
         Route::get("v1/bid-type/{id}", [BidTypeController::class, "bid_type"])->name('.get_id');
+        Route::post("v1/bid-type", [BidTypeController::class, "bid_type_create"])->name('.create');
+        Route::put("v1/bid-type/{id}", [BidTypeController::class, "bid_type_update"])->name('.update');
+        Route::delete("v1/bid-type/{id}", [BidTypeController::class, "bid_type_delete"])->name('.delete');
     });
 
     /// Loại thuốc - Hoạt chất
@@ -1113,6 +1128,9 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisBloodGroup'], function () {
         Route::get("v1/blood-group", [BloodGroupController::class, "blood_group"])->name('.get');
         Route::get("v1/blood-group/{id}", [BloodGroupController::class, "blood_group"])->name('.get_id');
+        Route::post("v1/blood-group", [BloodGroupController::class, "blood_group_create"])->name('.create');
+        Route::put("v1/blood-group/{id}", [BloodGroupController::class, "blood_group_update"])->name('.update');
+        Route::delete("v1/blood-group/{id}", [BloodGroupController::class, "blood_group_delete"])->name('.delete');
     });
 
     /// Nhóm thuốc

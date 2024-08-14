@@ -10,8 +10,9 @@ class BloodGroup extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his';
-    protected $table = 'HIS_Blood_Group';
-    protected $fillable = [
-
+    protected $table = 'HIS_Blood_Group';    
+    public $timestamps = false;
+    protected $guarded = [
+        'id',
     ];
 }

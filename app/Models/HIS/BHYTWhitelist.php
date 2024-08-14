@@ -11,8 +11,9 @@ class BHYTWhitelist extends Model
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
     protected $table = 'HIS_BHYT_Whitelist';
-    protected $fillable = [
-
+    public $timestamps = false;
+    protected $guarded = [
+        'id',
     ];
 
     public function career()

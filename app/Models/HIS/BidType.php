@@ -12,7 +12,8 @@ class BidType extends Model
     
     protected $connection = 'oracle_his';
     protected $table = 'HIS_Bid_Type';
-    protected $fillable = [
-
+    public $timestamps = false;
+    protected $guarded = [
+        'id',
     ];
 }

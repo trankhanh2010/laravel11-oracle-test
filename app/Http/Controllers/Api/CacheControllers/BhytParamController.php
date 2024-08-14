@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers\Api\CacheControllers;
 
+use App\Events\Cache\DeleteCache;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
+use App\Http\Requests\BhytParam\CreateBhytParamRequest;
+use App\Http\Requests\BhytParam\UpdateBhytParamRequest;
 use App\Models\HIS\BHYTParam;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -128,17 +131,82 @@ class BhytParamController extends BaseApiCacheController
             return return_500_error();
         }
     }
-    // /// BHYT Param
-    // public function bhyt_param($id = null)
-    // {
-    //     if ($id == null) {
-    //         $name = $this->bhyt_param_name;
-    //         $param = [];
-    //     } else {
-    //         $name = $this->bhyt_param_name . '_' . $id;
-    //         $param = [];
-    //     }
-    //     $data = get_cache_full($this->bhyt_param, $param, $name, $id, $this->time);
-    //     return response()->json(['data' => $data], 200);
-    // }
+    public function bhyt_param_create(CreateBhytParamRequest $request)
+    {
+        try {
+            $data = $this->bhyt_param::create([
+                'create_time' => now()->format('Ymdhis'),
+                'modify_time' => now()->format('Ymdhis'),
+                'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_creator' => $this->app_creator,
+                'app_modifier' => $this->app_modifier,
+                'is_active' => 1,
+                'is_delete' => 0,
+                'base_salary' => $request->base_salary,
+                'min_total_by_salary' => $request->min_total_by_salary,
+                'max_total_package_by_salary' => $request->max_total_package_by_salary,
+                'second_stent_paid_ratio' => $request->second_stent_paid_ratio,
+                'priority' => $request->priority,
+                'from_time' => $request->from_time,
+                'to_time' => $request->to_time,
+
+            ]);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->bhyt_param_name));
+            return return_data_create_success($data);
+        } catch (\Exception $e) {
+            return return_500_error();
+        }
+    }
+
+    public function bhyt_param_update(UpdateBhytParamRequest $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->bhyt_param->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        try {
+            $data->update([
+                'modify_time' => now()->format('Ymdhis'),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_modifier' => $this->app_modifier,
+                'base_salary' => $request->base_salary,
+                'min_total_by_salary' => $request->min_total_by_salary,
+                'max_total_package_by_salary' => $request->max_total_package_by_salary,
+                'second_stent_paid_ratio' => $request->second_stent_paid_ratio,
+                'priority' => $request->priority,
+                'from_time' => $request->from_time,
+                'to_time' => $request->to_time,
+                'is_active' => $request->is_active
+            ]);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->bhyt_param_name));
+            return return_data_update_success($data);
+        } catch (\Exception $e) {
+            return return_500_error();
+        }
+    }
+         
+    public function bhyt_param_delete(Request $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->bhyt_param->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        try {
+            $data->delete();
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->bhyt_param_name));
+            return return_data_delete_success();
+        } catch (\Exception $e) {
+            return return_data_delete_fail();
+        }
+    }
 }

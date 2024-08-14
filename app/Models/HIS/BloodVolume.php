@@ -12,7 +12,8 @@ class BloodVolume extends Model
     
     protected $connection = 'oracle_his';
     protected $table = 'HIS_Blood_Volume';
-    protected $fillable = [
-
+    public $timestamps = false;
+    protected $guarded = [
+        'id',
     ];
 }

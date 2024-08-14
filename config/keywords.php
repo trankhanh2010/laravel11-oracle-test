@@ -544,5 +544,42 @@ return [
         'bed_room_id' => 'Id buồng bệnh',
         'max_capacity' => 'Sức chứa tối đa',
         'is_bed_stretcher' => 'Trường là giường cáng',
-    ]
+    ],
+    // Thẻ BHYT không hợp lệ
+    'bhyt_blacklist' => [
+        'hein_card_number' => 'Số thẻ',
+    ],
+    // Tham số BHYT
+    'bhyt_param' => [
+        'base_salary' => 'Lương cơ bản',
+        'min_total_by_salary' => 'Tổng tiền tối thiểu',
+        'max_total_package_by_salary' => 'Trần gói VTYT',
+        'second_stent_paid_ratio' => 'Tỉ lệ thanh toán của stent thứ 2',
+        'priority' => 'Sự ưu tiên',
+        'from_time' => 'Hiệu lực từ',
+        'to_time' => 'Hiệu lực đến',
+    ],
+    // Đầu thẻ BHYT
+    'bhyt_whitelist' => [
+        'bhyt_whitelist_code' => 'Đầu thẻ',
+        'career_id' => 'Id nghề nghiệp',
+        'is_not_check_bhyt' => 'Trường không kiểm tra trên cổng',
+    ],
+    // Loại thầu
+    'bid_type' => [
+        'bid_type_code' => 'Mã loại thầu',
+        'bid_type_name' => 'Tên loại thầu',
+    ],
+    // Nhóm máu
+    'blood_group' => [
+        'blood_group_code' => 'Mã nhóm máu',
+        'blood_group_name' => 'Tên nhóm máu',
+        'blood_erythrocyte' => 'Trường là khối hồng cầu',
+        'blood_plasma' => 'Trường là khối huyết tương, tiểu cầu',
+    ],
+    // Dung tích máu
+    'blood_volume' => [
+        'volume' => 'Dung tích',
+        'is_donation' => 'Trường là hiến máu',
+    ],
 ];

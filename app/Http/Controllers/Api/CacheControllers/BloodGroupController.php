@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers\Api\CacheControllers;
 
+use App\Events\Cache\DeleteCache;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
+use App\Http\Requests\BloodGroup\CreateBloodGroupRequest;
+use App\Http\Requests\BloodGroup\UpdateBloodGroupRequest;
 use App\Models\HIS\BloodGroup;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -128,17 +131,76 @@ class BloodGroupController extends BaseApiCacheController
             return return_500_error();
         }
     }
-    // /// Blood Group
-    // public function blood_group($id = null)
-    // {
-    //     if ($id == null) {
-    //         $name = $this->blood_group_name;
-    //         $param = [];
-    //     } else {
-    //         $name = $this->blood_group_name . '_' . $id;
-    //         $param = [];
-    //     }
-    //     $data = get_cache_full($this->blood_group, $param, $name, $id, $this->time);
-    //     return response()->json(['data' => $data], 200);
-    // }
+    public function blood_group_create(CreateBloodGroupRequest $request)
+    {
+        try {
+            $data = $this->blood_group::create([
+                'create_time' => now()->format('Ymdhis'),
+                'modify_time' => now()->format('Ymdhis'),
+                'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_creator' => $this->app_creator,
+                'app_modifier' => $this->app_modifier,
+                'is_active' => 1,
+                'is_delete' => 0,
+                'blood_group_code' => $request->blood_group_code,
+                'blood_group_name' => $request->blood_group_name,
+                'blood_erythrocyte' => $request->blood_erythrocyte,
+                'blood_plasma' => $request->blood_plasma,
+
+            ]);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->blood_group_name));
+            return return_data_create_success($data);
+        } catch (\Exception $e) {
+            return return_500_error();
+        }
+    }
+        
+    public function blood_group_update(UpdateBloodGroupRequest $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->blood_group->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        try {
+            $data->update([
+                'modify_time' => now()->format('Ymdhis'),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_modifier' => $this->app_modifier,
+                'blood_group_code' => $request->blood_group_code,
+                'blood_group_name' => $request->blood_group_name,
+                'blood_erythrocyte' => $request->blood_erythrocyte,
+                'blood_plasma' => $request->blood_plasma,
+                'is_active' => $request->is_active
+            ]);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->blood_group_name));
+            return return_data_update_success($data);
+        } catch (\Exception $e) {
+            return return_500_error();
+        }
+    }
+
+    public function blood_group_delete(Request $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->blood_group->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        try {
+            $data->delete();
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->blood_group_name));
+            return return_data_delete_success();
+        } catch (\Exception $e) {
+            return return_data_delete_fail();
+        }
+    }
 }

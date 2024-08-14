@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers\Api\CacheControllers;
 
+use App\Events\Cache\DeleteCache;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
+use App\Http\Requests\BhytBlacklist\CreateBhytBlacklistRequest;
+use App\Http\Requests\BhytBlacklist\UpdateBhytBlacklistRequest;
 use App\Models\HIS\BHYTBlacklist;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -50,22 +53,22 @@ class BhytBlacklistController extends BaseApiCacheController
                         $data->orderBy('his_bhyt_blacklist.' . $key, $item);
                     }
                 }
-                if($this->get_all){
+                if ($this->get_all) {
                     $data = $data
-                    ->get();
-                }else{
+                        ->get();
+                } else {
                     $data = $data
-                    ->skip($this->start)
-                    ->take($this->limit)
-                    ->get();
+                        ->skip($this->start)
+                        ->take($this->limit)
+                        ->get();
                 }
             } else {
                 if ($id == null) {
-                    $data = Cache::remember($this->bhyt_blacklist_name . '_start_' . $this->start . '_limit_' . $this->limit . $this->order_by_tring . '_is_active_' . $this->is_active. '_get_all_' . $this->get_all, $this->time, function () {
+                    $data = Cache::remember($this->bhyt_blacklist_name . '_start_' . $this->start . '_limit_' . $this->limit . $this->order_by_tring . '_is_active_' . $this->is_active . '_get_all_' . $this->get_all, $this->time, function () {
                         $data = $this->bhyt_blacklist
-                        ->select(
-                            'his_bhyt_blacklist.*',
-                        );
+                            ->select(
+                                'his_bhyt_blacklist.*',
+                            );
                         if ($this->is_active !== null) {
                             $data = $data->where(function ($query) {
                                 $query = $query->where(DB::connection('oracle_his')->raw('his_bhyt_blacklist.is_active'), $this->is_active);
@@ -78,14 +81,14 @@ class BhytBlacklistController extends BaseApiCacheController
                                 $data->orderBy('his_bhyt_blacklist.' . $key, $item);
                             }
                         }
-                        if($this->get_all){
+                        if ($this->get_all) {
                             $data = $data
-                            ->get();
-                        }else{
+                                ->get();
+                        } else {
                             $data = $data
-                            ->skip($this->start)
-                            ->take($this->limit)
-                            ->get();
+                                ->skip($this->start)
+                                ->take($this->limit)
+                                ->get();
                         }
                         return ['data' => $data, 'count' => $count];
                     });
@@ -94,14 +97,14 @@ class BhytBlacklistController extends BaseApiCacheController
                         return return_id_error($id);
                     }
                     $check_id = $this->check_id($id, $this->bhyt_blacklist, $this->bhyt_blacklist_name);
-                    if($check_id){
-                        return $check_id; 
+                    if ($check_id) {
+                        return $check_id;
                     }
                     $data = Cache::remember($this->bhyt_blacklist_name . '_' . $id . '_is_active_' . $this->is_active, $this->time, function () use ($id) {
                         $data = $this->bhyt_blacklist
-                        ->select(
-                            'his_bhyt_blacklist.*',
-                        )
+                            ->select(
+                                'his_bhyt_blacklist.*',
+                            )
                             ->where('his_bhyt_blacklist.id', $id);
                         if ($this->is_active !== null) {
                             $data = $data->where(function ($query) {
@@ -128,17 +131,69 @@ class BhytBlacklistController extends BaseApiCacheController
             return return_500_error();
         }
     }
-    // /// BHYT Blacklist
-    // public function bhyt_blacklist($id = null)
-    // {
-    //     if ($id == null) {
-    //         $name = $this->bhyt_blacklist_name;
-    //         $param = [];
-    //     } else {
-    //         $name = $this->bhyt_blacklist_name . '_' . $id;
-    //         $param = [];
-    //     }
-    //     $data = get_cache_full($this->bhyt_blacklist, $param, $name, $id, $this->time);
-    //     return response()->json(['data' => $data], 200);
-    // }
+    public function bhyt_blacklist_create(CreateBhytBlacklistRequest $request)
+    {
+        try {
+            $data = $this->bhyt_blacklist::create([
+                'create_time' => now()->format('Ymdhis'),
+                'modify_time' => now()->format('Ymdhis'),
+                'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_creator' => $this->app_creator,
+                'app_modifier' => $this->app_modifier,
+                'is_active' => 1,
+                'is_delete' => 0,
+                'hein_card_number' => $request->hein_card_number,
+            ]);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->bhyt_blacklist_name));
+            return return_data_create_success($data);
+        } catch (\Exception $e) {
+            return return_500_error();
+        }
+    }
+
+    public function bhyt_blacklist_update(UpdateBhytBlacklistRequest $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->bhyt_blacklist->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        try {
+            $data->update([
+                'modify_time' => now()->format('Ymdhis'),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_modifier' => $this->app_modifier,
+                'hein_card_number' => $request->hein_card_number,
+                'is_active' => $request->is_active
+            ]);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->bhyt_blacklist_name));
+            return return_data_update_success($data);
+        } catch (\Exception $e) {
+            return return_500_error();
+        }
+    }
+
+    public function bhyt_blacklist_delete(Request $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->bhyt_blacklist->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        try {
+            $data->delete();
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->bhyt_blacklist_name));
+            return return_data_delete_success();
+        } catch (\Exception $e) {
+            return return_data_delete_fail();
+        }
+    }
 }
