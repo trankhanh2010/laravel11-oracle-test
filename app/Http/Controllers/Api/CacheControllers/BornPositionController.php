@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers\Api\CacheControllers;
 
+use App\Events\Cache\DeleteCache;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
+use App\Http\Requests\BornPosition\CreateBornPositionRequest;
+use App\Http\Requests\BornPosition\UpdateBornPositionRequest;
 use App\Models\HIS\BornPosition;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -128,17 +131,71 @@ class BornPositionController extends BaseApiCacheController
             return return_500_error();
         }
     }
-    // /// Born born_position
-    // public function born_born_position($id = null)
-    // {
-    //     if ($id == null) {
-    //         $name = $this->born_born_position_name;
-    //         $param = [];
-    //     } else {
-    //         $name = $this->born_born_position_name . '_' . $id;
-    //         $param = [];
-    //     }
-    //     $data = get_cache_full($this->born_born_position, $param, $name, $id, $this->time);
-    //     return response()->json(['data' => $data], 200);
-    // }
+    public function born_position_create(CreateBornPositionRequest $request)
+    {
+        try {
+            $data = $this->born_position::create([
+                'create_time' => now()->format('Ymdhis'),
+                'modify_time' => now()->format('Ymdhis'),
+                'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_creator' => $this->app_creator,
+                'app_modifier' => $this->app_modifier,
+                'is_active' => 1,
+                'is_delete' => 0,
+                'born_position_code' => $request->born_position_code,
+                'born_position_name' => $request->born_position_name,
+            ]);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->born_position_name));
+            return return_data_create_success($data);
+        } catch (\Exception $e) {
+            return return_500_error();
+        }
+    }
+     
+    public function born_position_update(UpdateBornPositionRequest $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->born_position->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        try {
+            $data->update([
+                'modify_time' => now()->format('Ymdhis'),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_modifier' => $this->app_modifier,
+                'born_position_code' => $request->born_position_code,
+                'born_position_name' => $request->born_position_name,
+                'is_active' => $request->is_active
+            ]);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->born_position_name));
+            return return_data_update_success($data);
+        } catch (\Exception $e) {
+            return return_500_error();
+        }
+    }
+
+    public function born_position_delete(Request $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->born_position->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        try {
+            $data->delete();
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->born_position_name));
+            return return_data_delete_success();
+        } catch (\Exception $e) {
+            return return_data_delete_fail();
+        }
+    }
 }

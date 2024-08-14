@@ -582,4 +582,34 @@ return [
         'volume' => 'Dung tích',
         'is_donation' => 'Trường là hiến máu',
     ],
+    // Ngôi thai
+    'born_position' => [
+        'born_position_code' => 'Mã ngôi thai',
+        'born_position_name' => 'Tên ngôi thai',
+    ],
+    // Lý do hủy giao dịch
+    'cancel_reason' => [
+        'cancel_reason_code' => 'Mã lý do hủy giao dịch',
+        'cancel_reason_name' => 'Tên lý do hủy giao dịch',
+    ],
+    // Nghề nghiệp
+    'career' => [
+        'career_code' => 'Mã nghề nghiệp',
+        'career_name' => 'Tên nghề nghiệp',
+    ],
+    // Nghề nghiệp nhân viên
+    'career_title' => [
+        'career_title_code' => 'Mã nghề nghiệp nhân viên',
+        'career_title_name' => 'Tên nghề nghiệp nhân viên',
+    ],
+    // Chống chỉ định
+    'contraindication' => [
+        'contraindication_code' => 'Mã chống chỉ định',
+        'contraindication_name' => 'Tên chống chỉ định',
+    ],
+    // Thời gian tử vong
+    'death_within' => [
+        'death_within_code' => 'Mã thời gian tử vong',
+        'death_within_name' => 'Tên thời gian tử vong',
+    ],
 ];

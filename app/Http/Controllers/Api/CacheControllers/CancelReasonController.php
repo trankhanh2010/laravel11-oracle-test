@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers\Api\CacheControllers;
 
+use App\Events\Cache\DeleteCache;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
+use App\Http\Requests\CancelReason\CreateCancelReasonRequest;
+use App\Http\Requests\CancelReason\UpdateCancelReasonRequest;
 use App\Models\HIS\CancelReason;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -128,17 +131,71 @@ class CancelReasonController extends BaseApiCacheController
             return return_500_error();
         }
     }
-    // /// Cancel Reason
-    // public function cancel_reason($id = null)
-    // {
-    //     if ($id == null) {
-    //         $name = $this->cancel_reason_name;
-    //         $param = [];
-    //     } else {
-    //         $name = $this->cancel_reason_name . '_' . $id;
-    //         $param = [];
-    //     }
-    //     $data = get_cache_full($this->cancel_reason, $param, $name, $id, $this->time);
-    //     return response()->json(['data' => $data], 200);
-    // }
+    public function cancel_reason_create(CreateCancelReasonRequest $request)
+    {
+        try {
+            $data = $this->cancel_reason::create([
+                'create_time' => now()->format('Ymdhis'),
+                'modify_time' => now()->format('Ymdhis'),
+                'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_creator' => $this->app_creator,
+                'app_modifier' => $this->app_modifier,
+                'is_active' => 1,
+                'is_delete' => 0,
+                'cancel_reason_code' => $request->cancel_reason_code,
+                'cancel_reason_name' => $request->cancel_reason_name,
+            ]);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->cancel_reason_name));
+            return return_data_create_success($data);
+        } catch (\Exception $e) {
+            return return_500_error();
+        }
+    }
+     
+    public function cancel_reason_update(UpdateCancelReasonRequest $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->cancel_reason->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        try {
+            $data->update([
+                'modify_time' => now()->format('Ymdhis'),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_modifier' => $this->app_modifier,
+                'cancel_reason_code' => $request->cancel_reason_code,
+                'cancel_reason_name' => $request->cancel_reason_name,
+                'is_active' => $request->is_active
+            ]);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->cancel_reason_name));
+            return return_data_update_success($data);
+        } catch (\Exception $e) {
+            return return_500_error();
+        }
+    }
+
+    public function cancel_reason_delete(Request $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->cancel_reason->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        try {
+            $data->delete();
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->cancel_reason_name));
+            return return_data_delete_success();
+        } catch (\Exception $e) {
+            return return_data_delete_fail();
+        }
+    }
 }

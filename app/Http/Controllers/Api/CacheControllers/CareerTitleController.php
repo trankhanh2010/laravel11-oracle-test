@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers\Api\CacheControllers;
 
+use App\Events\Cache\DeleteCache;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
+use App\Http\Requests\CareerTitle\CreateCareerTitleRequest;
+use App\Http\Requests\CareerTitle\UpdateCareerTitleRequest;
 use App\Models\HIS\CareerTitle;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -128,17 +131,71 @@ class CareerTitleController extends BaseApiCacheController
             return return_500_error();
         }
     }
-    // /// Career Title
-    // public function career_title($id = null)
-    // {
-    //     if ($id == null) {
-    //         $name = $this->career_title_name;
-    //         $param = [];
-    //     } else {
-    //         $name = $this->career_title_name . '_' . $id;
-    //         $param = [];
-    //     }
-    //     $data = get_cache_full($this->career_title, $param, $name, $id, $this->time);
-    //     return response()->json(['data' => $data], 200);
-    // }
+    public function career_title_create(CreateCareerTitleRequest $request)
+    {
+        try {
+            $data = $this->career_title::create([
+                'create_time' => now()->format('Ymdhis'),
+                'modify_time' => now()->format('Ymdhis'),
+                'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_creator' => $this->app_creator,
+                'app_modifier' => $this->app_modifier,
+                'is_active' => 1,
+                'is_delete' => 0,
+                'career_title_code' => $request->career_title_code,
+                'career_title_name' => $request->career_title_name,
+            ]);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->career_title_name));
+            return return_data_create_success($data);
+        } catch (\Exception $e) {
+            return return_500_error();
+        }
+    }
+      
+    public function career_title_update(UpdateCareerTitleRequest $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->career_title->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        try {
+            $data->update([
+                'modify_time' => now()->format('Ymdhis'),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_modifier' => $this->app_modifier,
+                'career_title_code' => $request->career_title_code,
+                'career_title_name' => $request->career_title_name,
+                'is_active' => $request->is_active
+            ]);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->career_title_name));
+            return return_data_update_success($data);
+        } catch (\Exception $e) {
+            return return_500_error();
+        }
+    }
+
+    public function career_title_delete(Request $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->career_title->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        try {
+            $data->delete();
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->career_title_name));
+            return return_data_delete_success();
+        } catch (\Exception $e) {
+            return return_data_delete_fail();
+        }
+    }
 }

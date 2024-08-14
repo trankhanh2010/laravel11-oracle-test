@@ -12,6 +12,8 @@ class CancelReason extends Model
     
     protected $connection = 'oracle_his'; 
     protected $table = 'HIS_Cancel_Reason';
-    protected $fillable = [
+    public $timestamps = false;
+    protected $guarded = [
+        'id',
     ];
 }

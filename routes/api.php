@@ -662,6 +662,9 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisCareer'], function () {
         Route::get("v1/career", [CareerController::class, "career"])->name('.get');
         Route::get("v1/career/{id}", [CareerController::class, "career"])->name('.get_id');
+        Route::post("v1/career", [CareerController::class, "career_create"])->name('.create');
+        Route::put("v1/career/{id}", [CareerController::class, "career_update"])->name('.update');
+        Route::delete("v1/career/{id}", [CareerController::class, "career_delete"])->name('.delete');
     });
 
     /// Phân loại bệnh nhân
@@ -816,6 +819,9 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisBornPosition'], function () {
         Route::get("v1/born-position", [BornPositionController::class, "born_position"])->name('.get');
         Route::get("v1/born-position/{id}", [BornPositionController::class, "born_position"])->name('.get_id');
+        Route::post("v1/born-position", [BornPositionController::class, "born_position_create"])->name('.create');
+        Route::put("v1/born-position/{id}", [BornPositionController::class, "born_position_update"])->name('.update');
+        Route::delete("v1/born-position/{id}", [BornPositionController::class, "born_position_delete"])->name('.delete');
     });
 
     /// Trường hợp bệnh
@@ -882,6 +888,9 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisContraindication'], function () {
         Route::get("v1/contraindication", [ContraindicationController::class, "contraindication"])->name('.get');
         Route::get("v1/contraindication/{id}", [ContraindicationController::class, "contraindication"])->name('.get_id');
+        Route::post("v1/contraindication", [ContraindicationController::class, "contraindication_create"])->name('.create');
+        Route::put("v1/contraindication/{id}", [ContraindicationController::class, "contraindication_update"])->name('.update');
+        Route::delete("v1/contraindication/{id}", [ContraindicationController::class, "contraindication_delete"])->name('.delete');
     });
 
     /// Dạng bào chế
@@ -951,6 +960,9 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisCancelReason'], function () {
         Route::get("v1/cancel-reason", [CancelReasonController::class, "cancel_reason"])->name('.get');
         Route::get("v1/cancel-reason/{id}", [CancelReasonController::class, "cancel_reason"])->name('.get_id');
+        Route::post("v1/cancel-reason", [CancelReasonController::class, "cancel_reason_create"])->name('.create');
+        Route::put("v1/cancel-reason/{id}", [CancelReasonController::class, "cancel_reason_update"])->name('.update');
+        Route::delete("v1/cancel-reason/{id}", [CancelReasonController::class, "cancel_reason_delete"])->name('.delete');
     });
 
     /// Lý do kê đơn tương tác
@@ -981,6 +993,9 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.CareerTitle'], function () {
         Route::get("v1/career-title", [CareerTitleController::class, "career_title"])->name('.get');
         Route::get("v1/career-title/{id}", [CareerTitleController::class, "career_title"])->name('.get_id');
+        Route::post("v1/career-title", [CareerTitleController::class, "career_title_create"])->name('.create');
+        Route::put("v1/career-title/{id}", [CareerTitleController::class, "career_title_update"])->name('.update');
+        Route::delete("v1/career-title/{id}", [CareerTitleController::class, "career_title_delete"])->name('.delete');
     });
 
     /// Nguyên nhân tai nạn 
@@ -1008,6 +1023,9 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisDeathWithin'], function () {
         Route::get("v1/death-within", [DeathWithinController::class, "death_within"])->name('.get');
         Route::get("v1/death-within/{id}", [DeathWithinController::class, "death_within"])->name('.get_id');
+        Route::post("v1/death-within", [DeathWithinController::class, "death_within_create"])->name('.create');
+        Route::put("v1/death-within/{id}", [DeathWithinController::class, "death_within_update"])->name('.update');
+        Route::delete("v1/death-within/{id}", [DeathWithinController::class, "death_within_delete"])->name('.delete');
     });
 
     /// Vị trí hồ sơ bệnh án
