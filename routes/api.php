@@ -132,6 +132,7 @@ use App\Http\Controllers\Api\CacheControllers\TestIndexUnitController;
 use App\Http\Controllers\Api\CacheControllers\DebateTypeController;
 use App\Http\Controllers\Api\CacheControllers\IcdGroupController;
 use App\Http\Controllers\Api\CacheControllers\AgeTypeController;
+use App\Http\Controllers\Api\CacheControllers\MedicineController;
 
 // Data Controllers
 use App\Http\Controllers\Api\DataControllers\DebateController;
@@ -214,9 +215,9 @@ Route::group([
 
     /// Loại phòng
     Route::group(['as' => 'HIS.Desktop.Plugins.RoomTypeModule'], function () {
-    Route::get("v1/room-type", [RoomTypeController::class, "room_type"])->name('.get');
-    Route::get("v1/room-type/{id}", [RoomTypeController::class, "room_type"])->name('.get_id');
-});
+        Route::get("v1/room-type", [RoomTypeController::class, "room_type"])->name('.get');
+        Route::get("v1/room-type/{id}", [RoomTypeController::class, "room_type"])->name('.get_id');
+    });
 
     /// Nhóm phòng
     Route::get("v1/room-group", [RoomGroupController::class, "room_group"])->name('.get_room_group');
@@ -225,8 +226,8 @@ Route::group([
 
     /// Link màn hình chờ
     Route::group(['as' => 'ACS.Desktop.Plugins.AcsModule'], function () {
-    Route::get("v1/screen-saver-module-link", [ScreenSaverModuleLinkController::class, "screen_saver_module_link"])->name('.get');
-});
+        Route::get("v1/screen-saver-module-link", [ScreenSaverModuleLinkController::class, "screen_saver_module_link"])->name('.get');
+    });
 
     /// Buồng bệnh
     Route::group(['as' => 'HIS.Desktop.Plugins.HisBedRoomList'], function () {
@@ -455,9 +456,9 @@ Route::group([
 
     /// Cỡ phim
     Route::group(['as' => 'HIS.Desktop.Plugins.HisFilmSize'], function () {
-    Route::get("v1/film-size", [FilmSizeController::class, "film_size"])->name('.get');
-    Route::get("v1/film-size/{id}", [FilmSizeController::class, "film_size"])->name('.get_id');
-});
+        Route::get("v1/film-size", [FilmSizeController::class, "film_size"])->name('.get');
+        Route::get("v1/film-size/{id}", [FilmSizeController::class, "film_size"])->name('.get_id');
+    });
 
     /// Giới tính
     Route::get("v1/gender", [GenderController::class, "gender"])->name('.get_gender');
@@ -473,15 +474,15 @@ Route::group([
 
     /// Module xử lý dịch vụ
     Route::group(['as' => 'HIS.Desktop.Plugins.HisExeServiceModule'], function () {
-    Route::get("v1/exe-service-module", [ExeServiceModuleController::class, "exe_service_module"])->name('.get');
-    Route::get("v1/exe-service-module/{id}", [ExeServiceModuleController::class, "exe_service_module"])->name('.get_id');
-});
+        Route::get("v1/exe-service-module", [ExeServiceModuleController::class, "exe_service_module"])->name('.get');
+        Route::get("v1/exe-service-module/{id}", [ExeServiceModuleController::class, "exe_service_module"])->name('.get_id');
+    });
 
     /// Chỉ số
     Route::group(['as' => 'HIS.Desktop.Plugins.HisSuimIndex'], function () {
-    Route::get("v1/suim-index", [SuimIndexController::class, "suim_index"])->name('.get');
-    Route::get("v1/suim-index/{id}", [SuimIndexController::class, "suim_index"])->name('.get_id');
-});
+        Route::get("v1/suim-index", [SuimIndexController::class, "suim_index"])->name('.get');
+        Route::get("v1/suim-index/{id}", [SuimIndexController::class, "suim_index"])->name('.get_id');
+    });
 
     /// Gói
     Route::get("v1/package", [PackageController::class, "package"])->name('.get_v');
@@ -518,9 +519,9 @@ Route::group([
 
     /// Điều kiện dịch vụ
     Route::group(['as' => 'HIS.Desktop.Plugins.HisServiceCondition'], function () {
-    Route::get("v1/service-condition", [ServiceConditionController::class, "service_condition"])->name('.get');
-    Route::get("v1/service-condition/{id}", [ServiceConditionController::class, "service_condition"])->name('.get_id');
-});
+        Route::get("v1/service-condition", [ServiceConditionController::class, "service_condition"])->name('.get');
+        Route::get("v1/service-condition/{id}", [ServiceConditionController::class, "service_condition"])->name('.get_id');
+    });
 
     /// Dịch vụ máy
     Route::group(['as' => 'HIS.Desktop.Plugins.ServiceMachine'], function () {
@@ -887,7 +888,14 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisMedicinePaty'], function () {
         Route::get("v1/medicine-paty", [MedicinePatyController::class, "medicine_paty"])->name('.get');
         Route::get("v1/medicine-paty/{id}", [MedicinePatyController::class, "medicine_paty"])->name('.get_id');
+        Route::post("v1/medicine-paty", [MedicinePatyController::class, "medicine_paty_create"])->name('.create');
+        Route::put("v1/medicine-paty/{id}", [MedicinePatyController::class, "medicine_paty_update"])->name('.update');
+        Route::delete("v1/medicine-paty/{id}", [MedicinePatyController::class, "medicine_paty_delete"])->name('.delete');
     });
+
+    /// Thuốc
+    Route::get("v1/medicine", [MedicineController::class, "medicine"])->name('.get_medicine');
+    Route::get("v1/medicine/{id}", [MedicineController::class, "medicine"])->name('.get_medicine_id');
 
     /// Bộ phận thương tích
     Route::group(['as' => 'HIS.Desktop.Plugins.HisAccidentBodyPart'], function () {
@@ -944,6 +952,9 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisManufacturer'], function () {
         Route::get("v1/manufacturer", [ManufacturerController::class, "manufacturer"])->name('.get');
         Route::get("v1/manufacturer/{id}", [ManufacturerController::class, "manufacturer"])->name('.get_id');
+        Route::post("v1/manufacturer", [ManufacturerController::class, "manufacturer_create"])->name('.create');
+        Route::put("v1/manufacturer/{id}", [ManufacturerController::class, "manufacturer_update"])->name('.update');
+        Route::delete("v1/manufacturer/{id}", [ManufacturerController::class, "manufacturer_delete"])->name('.delete');
     });
 
     /// ICD - Accepted Icd - Chẩn đoán
@@ -1156,6 +1167,9 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisMedicineUseForm'], function () {
         Route::get("v1/medicine-use-form", [MedicineUseFormController::class, "medicine_use_form"])->name('.get');
         Route::get("v1/medicine-use-form/{id}", [MedicineUseFormController::class, "medicine_use_form"])->name('.get_id');
+        Route::post("v1/medicine-use-form", [MedicineUseFormController::class, "medicine_use_form_create"])->name('.create');
+        Route::put("v1/medicine-use-form/{id}", [MedicineUseFormController::class, "medicine_use_form_update"])->name('.update');
+        Route::delete("v1/medicine-use-form/{id}", [MedicineUseFormController::class, "medicine_use_form_delete"])->name('.delete');
     });
 
     /// Loại thầu

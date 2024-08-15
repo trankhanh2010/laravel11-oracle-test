@@ -428,6 +428,8 @@ class BaseApiCacheController extends Controller
     protected $icd_group_name = 'icd_group';
     protected $age_type;
     protected $age_type_name = 'age_type';
+    protected $medicine;
+    protected $medicine_name = 'medicine';
 
     // Thông báo lỗi
     protected $mess_format;

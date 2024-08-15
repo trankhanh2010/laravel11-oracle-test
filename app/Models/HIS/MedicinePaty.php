@@ -11,7 +11,9 @@ class MedicinePaty extends Model
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
     protected $table = 'HIS_Medicine_Paty';
-    protected $fillable = [
+    public $timestamps = false;
+    protected $guarded = [
+        'id',
     ];
 
     public function medicine()

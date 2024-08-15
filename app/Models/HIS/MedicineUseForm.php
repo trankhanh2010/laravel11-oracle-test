@@ -12,7 +12,8 @@ class MedicineUseForm extends Model
     
     protected $connection = 'oracle_his';
     protected $table = 'HIS_Medicine_Use_Form';
-    protected $fillable = [
-
+    public $timestamps = false;
+    protected $guarded = [
+        'id',
     ];
 }

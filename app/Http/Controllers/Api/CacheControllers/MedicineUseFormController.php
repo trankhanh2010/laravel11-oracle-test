@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers\Api\CacheControllers;
 
+use App\Events\Cache\DeleteCache;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
+use App\Http\Requests\MedicineUseForm\CreateMedicineUseFormRequest;
+use App\Http\Requests\MedicineUseForm\UpdateMedicineUseFormRequest;
 use App\Models\HIS\MedicineUseForm;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -128,17 +131,77 @@ class MedicineUseFormController extends BaseApiCacheController
             return return_500_error();
         }
     }
-    // /// Medicine Use Form
-    // public function medicine_use_form($id = null)
-    // {
-    //     if ($id == null) {
-    //         $name = $this->medicine_use_form_name;
-    //         $param = [];
-    //     } else {
-    //         $name = $this->medicine_use_form_name . '_' . $id;
-    //         $param = [];
-    //     }
-    //     $data = get_cache_full($this->medicine_use_form, $param, $name, $id, $this->time);
-    //     return response()->json(['data' => $data], 200);
-    // }
+    public function medicine_use_form_create(CreateMedicineUseFormRequest $request)
+    {
+        try {
+            $data = $this->medicine_use_form::create([
+                'create_time' => now()->format('Ymdhis'),
+                'modify_time' => now()->format('Ymdhis'),
+                'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_creator' => $this->app_creator,
+                'app_modifier' => $this->app_modifier,
+                'is_active' => 1,
+                'is_delete' => 0,
+
+                'medicine_use_form_code' => $request->medicine_use_form_code,
+                'medicine_use_form_name' => $request->medicine_use_form_name,
+                'num_order' => $request->num_order,
+
+            ]);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->medicine_use_form_name));
+            return return_data_create_success($data);
+        } catch (\Exception $e) {
+            return return_500_error();
+        }
+    }
+       
+    public function medicine_use_form_update(UpdateMedicineUseFormRequest $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->medicine_use_form->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        try {
+            $data->update([
+                'modify_time' => now()->format('Ymdhis'),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_modifier' => $this->app_modifier,
+
+                'medicine_use_form_code' => $request->medicine_use_form_code,
+                'medicine_use_form_name' => $request->medicine_use_form_name,
+                'num_order' => $request->num_order,
+
+                'is_active' => $request->is_active
+            ]);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->medicine_use_form_name));
+            return return_data_update_success($data);
+        } catch (\Exception $e) {
+            return return_500_error();
+        }
+    }
+
+    public function medicine_use_form_delete(Request $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->medicine_use_form->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        try {
+            $data->delete();
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->medicine_use_form_name));
+            return return_data_delete_success();
+        } catch (\Exception $e) {
+            return return_data_delete_fail();
+        }
+    }
 }

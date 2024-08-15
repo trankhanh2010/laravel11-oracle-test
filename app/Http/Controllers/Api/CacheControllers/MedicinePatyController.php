@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers\Api\CacheControllers;
 
+use App\Events\Cache\DeleteCache;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
+use App\Http\Requests\MedicinePaty\CreateMedicinePatyRequest;
+use App\Http\Requests\MedicinePaty\UpdateMedicinePatyRequest;
 use App\Models\HIS\MedicinePaty;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -212,4 +215,79 @@ class MedicinePatyController extends BaseApiCacheController
     //     $data = get_cache_full($this->medicine_paty, $param, $name, $id, $this->time);
     //     return response()->json(['data' => $data], 200);
     // }
+    public function medicine_paty_create(CreateMedicinePatyRequest $request)
+    {
+        try {
+            $data = $this->medicine_paty::create([
+                'create_time' => now()->format('Ymdhis'),
+                'modify_time' => now()->format('Ymdhis'),
+                'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_creator' => $this->app_creator,
+                'app_modifier' => $this->app_modifier,
+                'is_active' => 1,
+                'is_delete' => 0,
+
+                'medicine_id' => $request->medicine_id,
+                'patient_type_id' => $request->patient_type_id,
+                'exp_price' => $request->exp_price,
+                'exp_vat_ratio' => $request->exp_vat_ratio,
+
+            ]);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->medicine_paty_name));
+            return return_data_create_success($data);
+        } catch (\Exception $e) {
+            return return_500_error();
+        }
+    }
+        
+    public function medicine_paty_update(UpdateMedicinePatyRequest $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->medicine_paty->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        try {
+            $data->update([
+                'modify_time' => now()->format('Ymdhis'),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_modifier' => $this->app_modifier,
+
+                'medicine_id' => $request->medicine_id,
+                'patient_type_id' => $request->patient_type_id,
+                'exp_price' => $request->exp_price,
+                'exp_vat_ratio' => $request->exp_vat_ratio,
+
+                'is_active' => $request->is_active
+            ]);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->medicine_paty_name));
+            return return_data_update_success($data);
+        } catch (\Exception $e) {
+            return return_500_error();
+        }
+    }
+
+    public function medicine_paty_delete(Request $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->medicine_paty->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        try {
+            $data->delete();
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->medicine_paty_name));
+            return return_data_delete_success();
+        } catch (\Exception $e) {
+            return return_data_delete_fail();
+        }
+    }
 }

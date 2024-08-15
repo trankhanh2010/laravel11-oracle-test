@@ -762,4 +762,26 @@ return [
         'room_id' => 'Id phòng',
         'is_kidney' => 'Trường chạy thận',
     ],
+    // Hãng sản xuất
+    'manufacturer' => [
+        'manufacturer_code' => 'Mã hãng sản xuất',
+        'manufacturer_name' => 'Tên hãng sản xuất',
+        'manufacturer_short_name' => ' Tên viết tắt',
+        'email' => 'Email',
+        'phone' => 'Số điện thoại',
+        'address' => 'Địa chỉ',
+    ],
+    // Chính sách giá thuốc
+    'medicine_paty' => [
+        'medicine_id' => 'Id thuốc',
+        'patient_type_id' => 'Id đối tượng thanh toán',
+        'exp_price' => 'Giá',
+        'exp_vat_ratio' => 'VAT (%)',
+    ],
+    // Đường dùng thuốc
+    'medicine_use_form' => [
+        'medicine_use_form_code' => 'Mã đường dùng thuốc',
+        'medicine_use_form_name' => 'Tên đường dùng thuốc',
+        'num_order' => 'Số thứ tự',
+    ],
 ];
