@@ -12,6 +12,8 @@ class HospitalizeReason extends Model
     
     protected $connection = 'oracle_his'; 
     protected $table = 'HIS_Hospitalize_Reason';
-    protected $fillable = [
+    public $timestamps = false;
+    protected $guarded = [
+        'id',
     ];
 }

@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Api\CacheControllers;
 
+use App\Events\Cache\DeleteCache;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\InfoUser\UpdateInfoUserRequest;
 use App\Models\ACS\Token;
 use App\Models\ACS\User;
 use App\Models\HIS\Employee;
@@ -83,24 +85,46 @@ class InfoUserController extends BaseApiCacheController
             return return_500_error();
         }
     }
-    // /// Info User
-    // public function info_user_id($id)
-    // {
-    //     $data = get_cache($this->emp_user, $this->emp_user_name, $id, $this->time);
-    //     $data1 = get_cache_1_1($this->emp_user, "department", $this->emp_user_name, $id, $this->time);
-    //     $data2 = get_cache_1_1($this->emp_user, "gender", $this->emp_user_name, $id, $this->time);
-    //     $data3 = get_cache_1_1($this->emp_user, "branch", $this->emp_user_name, $id, $this->time);
-    //     $data4 = get_cache_1_1($this->emp_user, "career_title", $this->emp_user_name, $id, $this->time);
-    //     $data5 = get_cache_1_n_with_ids($this->emp_user, "default_medi_stock", $this->emp_user_name, $id, $this->time);
+    public function info_user_update(UpdateInfoUserRequest $request)
+    {
+        $login_name = $this->token->where('token_code', $request->bearerToken())->first()->login_name;
+        $id = $this->employee->where('loginname', $login_name)->first()->id;
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->employee->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        try {
+            $data->update([
+                'modify_time' => now()->format('Ymdhis'),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_modifier' => $this->app_modifier,
 
-    //     return response()->json(['data' => [
-    //         'info_user' => $data,
-    //         'department' => $data1,
-    //         'genderr' => $data2,
-    //         'branch' => $data3,
-    //         'career_title' => $data4,
-    //         'default_medi_stock' => $data5,
+                'tdl_username' => $request->tdl_username,
+                'dob' => $request->dob,
+                'tdl_email' => $request->tdl_email,
+                'tdl_mobile' => $request->tdl_mobile,
+                'diploma' => $request->diploma,
+                'title' => $request->title,
 
-    //     ]], 200);
-    // }
+                'account_number' => $request->account_number,
+                'bank' => $request->bank,
+                'department_id' => $request->department_id,
+                'default_medi_stock_ids' => $request->default_medi_stock_ids,
+                'social_insurance_number' => $request->social_insurance_number,
+                'erx_loginname' => $request->erx_loginname,
+                'erx_password' => $request->erx_password,
+
+                'is_active' => $request->is_active,
+            ]);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->employee_name));
+            return return_data_update_success($data);
+        } catch (\Exception $e) {
+            return return_500_error();
+        }
+    }
+                 
 }

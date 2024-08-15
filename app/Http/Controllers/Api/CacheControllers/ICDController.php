@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers\Api\CacheControllers;
 
+use App\Events\Cache\DeleteCache;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
+use App\Http\Requests\Icd\CreateIcdRequest;
+use App\Http\Requests\Icd\UpdateIcdRequest;
 use App\Models\HIS\Icd;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -128,27 +131,117 @@ class ICDController extends BaseApiCacheController
             return return_500_error();
         }
     }
-    // /// ICD
-    // public function icd($id = null)
-    // {
-    //     if ($id == null) {
-    //         $name = $this->icd_name;
-    //         $param = [
-    //             'icd_group',
-    //             'icd_chapter',
-    //             'gender',
-    //             'age_type'
-    //         ];
-    //     } else {
-    //         $name = $this->icd_name . '_' . $id;
-    //         $param = [
-    //             'icd_group',
-    //             'icd_chapter',
-    //             'gender',
-    //             'age_type'
-    //         ];
-    //     }
-    //     $data = get_cache_full($this->icd, $param, $name, $id, $this->time);
-    //     return response()->json(['data' => $data], 200);
-    // }
+
+    public function icd_create(CreateIcdRequest $request)
+    {
+        try {
+            $data = $this->icd::create([
+                'create_time' => now()->format('Ymdhis'),
+                'modify_time' => now()->format('Ymdhis'),
+                'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_creator' => $this->app_creator,
+                'app_modifier' => $this->app_modifier,
+                'is_active' => 1,
+                'is_delete' => 0,
+
+                'icd_code' => $request->icd_code,
+                'icd_name' => $request->icd_name,
+                'icd_name_en' => $request->icd_name_en,
+                'icd_name_common' => $request->icd_name_common,
+                'icd_group_id' => $request->icd_group_id,
+                'attach_icd_codes' => $request->attach_icd_codes,
+
+                'age_from' => $request->age_from,
+                'age_to' => $request->age_to,
+                'age_type_id' => $request->age_type_id,
+                'gender_id' => $request->gender_id,
+                'is_sword' => $request->is_sword,
+                'is_subcode' => $request->is_subcode,
+
+                'is_latent_tuberculosis' => $request->is_latent_tuberculosis,
+                'is_cause' => $request->is_cause,
+                'is_hein_nds' => $request->is_hein_nds,
+                'is_require_cause' => $request->is_require_cause,
+                'is_traditional' => $request->is_traditional,
+                'unable_for_treatment' => $request->unable_for_treatment,
+
+                'do_not_use_hein' => $request->do_not_use_hein,
+                'is_covid' => $request->is_covid,
+
+            ]);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->icd_name));
+            return return_data_create_success($data);
+        } catch (\Exception $e) {
+            return return_500_error();
+        }
+    }
+     
+    public function icd_update(UpdateIcdRequest $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->icd->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        try {
+            $data->update([
+                'modify_time' => now()->format('Ymdhis'),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_modifier' => $this->app_modifier,
+
+                'icd_code' => $request->icd_code,
+                'icd_name' => $request->icd_name,
+                'icd_name_en' => $request->icd_name_en,
+                'icd_name_common' => $request->icd_name_common,
+                'icd_group_id' => $request->icd_group_id,
+                'attach_icd_codes' => $request->attach_icd_codes,
+
+                'age_from' => $request->age_from,
+                'age_to' => $request->age_to,
+                'age_type_id' => $request->age_type_id,
+                'gender_id' => $request->gender_id,
+                'is_sword' => $request->is_sword,
+                'is_subcode' => $request->is_subcode,
+
+                'is_latent_tuberculosis' => $request->is_latent_tuberculosis,
+                'is_cause' => $request->is_cause,
+                'is_hein_nds' => $request->is_hein_nds,
+                'is_require_cause' => $request->is_require_cause,
+                'is_traditional' => $request->is_traditional,
+                'unable_for_treatment' => $request->unable_for_treatment,
+
+                'do_not_use_hein' => $request->do_not_use_hein,
+                'is_covid' => $request->is_covid,
+                'is_active' => $request->is_active
+            ]);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->icd_name));
+            return return_data_update_success($data);
+        } catch (\Exception $e) {
+            return return_500_error();
+        }
+    }
+
+    public function icd_delete(Request $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->icd->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        try {
+            $data->delete();
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->icd_name));
+            return return_data_delete_success();
+        } catch (\Exception $e) {
+            return return_data_delete_fail();
+        }
+    }
 }

@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers\Api\CacheControllers;
 
+use App\Events\Cache\DeleteCache;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
+use App\Http\Requests\HospitalizeReason\CreateHospitalizeReasonRequest;
+use App\Http\Requests\HospitalizeReason\UpdateHospitalizeReasonRequest;
 use App\Models\HIS\HospitalizeReason;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -128,17 +131,70 @@ class HospitalizeReasonController extends BaseApiCacheController
             return return_500_error();
         }
     }
-    // /// Hospitalize Reason
-    // public function hospitalize_reason($id = null)
-    // {
-    //     if ($id == null) {
-    //         $name = $this->hospitalize_reason_name;
-    //         $param = [];
-    //     } else {
-    //         $name = $this->hospitalize_reason_name . '_' . $id;
-    //         $param = [];
-    //     }
-    //     $data = get_cache_full($this->hospitalize_reason, $param, $name, $id, $this->time);
-    //     return response()->json(['data' => $data], 200);
-    // }
+    public function hospitalize_reason_create(CreateHospitalizeReasonRequest $request)
+    {
+        try {
+            $data = $this->hospitalize_reason::create([
+                'create_time' => now()->format('Ymdhis'),
+                'modify_time' => now()->format('Ymdhis'),
+                'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_creator' => $this->app_creator,
+                'app_modifier' => $this->app_modifier,
+                'is_active' => 1,
+                'is_delete' => 0,
+                'hospitalize_reason_code' => $request->hospitalize_reason_code,
+                'hospitalize_reason_name' => $request->hospitalize_reason_name,
+            ]);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->hospitalize_reason_name));
+            return return_data_create_success($data);
+        } catch (\Exception $e) {
+            return return_500_error();
+        }
+    }
+      
+    public function hospitalize_reason_update(UpdateHospitalizeReasonRequest $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->hospitalize_reason->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        try {
+            $data->update([
+                'modify_time' => now()->format('Ymdhis'),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_modifier' => $this->app_modifier,
+                'hospitalize_reason_name' => $request->hospitalize_reason_name,
+                'is_active' => $request->is_active
+            ]);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->hospitalize_reason_name));
+            return return_data_update_success($data);
+        } catch (\Exception $e) {
+            return return_500_error();
+        }
+    }
+
+    public function hospitalize_reason_delete(Request $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->hospitalize_reason->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        try {
+            $data->delete();
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->hospitalize_reason_name));
+            return return_data_delete_success();
+        } catch (\Exception $e) {
+            return return_data_delete_fail();
+        }
+    }
 }

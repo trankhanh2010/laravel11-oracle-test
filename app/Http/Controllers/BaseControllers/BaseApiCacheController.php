@@ -424,6 +424,10 @@ class BaseApiCacheController extends Controller
     protected $medi_stock_maty_name = 'medi_stock_maty';
     protected $mest_room;
     protected $mest_room_name = 'mest_room';
+    protected $icd_group;
+    protected $icd_group_name = 'icd_group';
+    protected $age_type;
+    protected $age_type_name = 'age_type';
 
     // Thông báo lỗi
     protected $mess_format;

@@ -12,6 +12,7 @@ return [
         'integer_min' => ' phải lớn hơn hoặc bằng :min!',
         'integer_max' => ' phải bé hơn hoặc bằng :max!',
         'in' => ' chỉ chấp nhận các giá trị :values',
+        'not_in' => ' không thể nhận giá trị :values',
         'email' => ' không đúng định dạng email!',
         'regex_19_4' => ' chỉ chấp nhận số có tối đa 19 chữ số trong đó có tối đa 4 chữ số thập phân!',
         'regex_19_2' => ' chỉ chấp nhận số có tối đa 19 chữ số trong đó có tối đa 2 chữ số thập phân!',
@@ -23,6 +24,8 @@ return [
         'declined_if'=> ' chỉ được nhập khi ',
         'lte' => ' phải bé hơn hoặc bằng :value!',
         'gte' => ' phải lớn hơn hoặc bằng :value!',
+        'lt' => ' phải bé hơn :value!',
+        'gt' => ' phải lớn hơn :value!',
 
         /// Error logic db
         'not_in_service_type_id' => ' Hoặc không thuộc nhóm dịch vụ đã chọn!',
@@ -687,5 +690,36 @@ return [
     'file_type' => [
         'file_type_code' => 'Mã loại giấy tờ',
         'file_type_name' => 'Tên loại giấy tờ',
+    ],
+    // Lý do nhập viện
+    'hospitalize_reason' => [
+        'hospitalize_reason_code' => 'Mã lý do nhập viện',
+        'hospitalize_reason_name' => 'Tên lý do nhập viện',
+    ],
+    // Icd
+    'icd' => [
+        'icd_code' => 'Mã ICD',
+        'icd_name' => 'Tên ICD',
+        'icd_name_en' => 'Tên tiếng Anh',
+        'icd_name_common' => 'Tên thường gọi',
+        'icd_group_id' => 'Id nhóm ICD',
+        'attach_icd_codes' => 'Danh sách mã ICD đi kèm',
+
+        'age_from' => 'Tuổi từ',
+        'age_to' => 'Tuổi đến',
+        'age_type_id' => 'Id loại tuổi',
+        'gender_id' => 'Id giới tính',
+        'is_sword' => 'Trường là mã kiếm',
+        'is_subcode' => 'Trường là bệnh phụ',
+
+        'is_latent_tuberculosis' => 'Trường là bệnh lao tiềm ẩn',
+        'is_cause' => 'Trường là nguyên nhân gây bệnh',
+        'is_hein_nds' => 'Trường ngoài định suất',
+        'is_require_cause' => 'Trường bắt buộc nhập nguyên nhân ngoài',
+        'is_traditional' => 'Trường là ICD y học cổ truyền',
+        'unable_for_treatment' => 'Trường chặn điều trị',
+
+        'do_not_use_hein' => 'Trường không sử dụng cho đối tượng BHYT',
+        'is_covid' => 'Trường là bệnh Covid',
     ],
 ];

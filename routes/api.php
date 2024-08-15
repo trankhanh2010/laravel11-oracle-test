@@ -130,6 +130,8 @@ use App\Http\Controllers\Api\CacheControllers\MedicineGroupController;
 use App\Http\Controllers\Api\CacheControllers\TestIndexController;
 use App\Http\Controllers\Api\CacheControllers\TestIndexUnitController;
 use App\Http\Controllers\Api\CacheControllers\DebateTypeController;
+use App\Http\Controllers\Api\CacheControllers\IcdGroupController;
+use App\Http\Controllers\Api\CacheControllers\AgeTypeController;
 
 // Data Controllers
 use App\Http\Controllers\Api\DataControllers\DebateController;
@@ -435,6 +437,14 @@ Route::group([
         Route::delete("v1/icd-cm/{id}", [IcdCmController::class, "icd_cm_delete"])->name('.delete');
     });
 
+    /// Nhóm ICD
+    Route::get("v1/icd-group", [IcdGroupController::class, "icd_group"])->name('.get_icd_group');
+    Route::get("v1/icd-group/{id}", [IcdGroupController::class, "icd_group"])->name('.get_icd_group_id');
+
+    /// Loại tuổi
+    Route::get("v1/age-type", [AgeTypeController::class, "age_type"])->name('.get_age_type');
+    Route::get("v1/age-type/{id}", [AgeTypeController::class, "age_type"])->name('.get_age_type_id');
+
     /// Loại chẩn đoán hình ảnh
     Route::get("v1/diim-type", [DiimTypeController::class, "diim_type"])->name('.get_diim_type');
     Route::get("v1/diim-type/{id}", [DiimTypeController::class, "diim_type"])->name('.get_diim_type_id');
@@ -609,6 +619,7 @@ Route::group([
     /// Thông tin tài khoản
     Route::group(['as' => 'HIS.Desktop.Plugins.InfoUser'], function () {
         Route::get("v1/info-user", [InfoUserController::class, "info_user"])->name('.get');
+        Route::put("v1/info-user", [InfoUserController::class, "info_user_update"])->name('.update');
     });
 
     /// Tài khoản - Vai trò thực hiện
@@ -933,6 +944,9 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisIcd'], function () {
         Route::get("v1/icd", [IcdController::class, "icd"])->name('.get');
         Route::get("v1/icd/{id}", [IcdController::class, "icd"])->name('.get_id');
+        Route::post("v1/icd", [IcdController::class, "icd_create"])->name('.create');
+        Route::put("v1/icd/{id}", [IcdController::class, "icd_update"])->name('.update');
+        Route::delete("v1/icd/{id}", [IcdController::class, "icd_delete"])->name('.delete');
     });
 
     /// Loại bệnh án
@@ -996,6 +1010,9 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HospitalizeReason'], function () {
         Route::get("v1/hospitalize-reason", [HospitalizeReasonController::class, "hospitalize_reason"])->name('.get');
         Route::get("v1/hospitalize-reason/{id}", [HospitalizeReasonController::class, "hospitalize_reason"])->name('.get_id');
+        Route::post("v1/hospitalize-reason", [HospitalizeReasonController::class, "hospitalize_reason_create"])->name('.create');
+        Route::put("v1/hospitalize-reason/{id}", [HospitalizeReasonController::class, "hospitalize_reason_update"])->name('.update');
+        Route::delete("v1/hospitalize-reason/{id}", [HospitalizeReasonController::class, "hospitalize_reason_delete"])->name('.delete');
     });
 
     /// Lý do xuất
