@@ -29,7 +29,7 @@ class RoomController extends BaseApiCacheController
     public function room($id = null)
     {
         $keyword = $this->keyword;
-        if (($keyword != null) || ($this->department_id != null)) {
+        if (($keyword != null)) {
             $data = $this->room
                 ->leftJoin('his_bed_room as bed', 'his_room.id', '=', 'bed.room_id')
                 ->leftJoin('his_cashier_room as cashier', 'his_room.id', '=', 'cashier.room_id')
@@ -130,7 +130,7 @@ class RoomController extends BaseApiCacheController
                 ->get();
             }
         } else {
-            $data = Cache::remember('room_name_code_with_bed_room_bed_room_execute_room_reception_room' . '_start_' . $this->start . '_limit_' . $this->limit . $this->order_by_tring . '_is_active_' . $this->is_active. '_get_all_' . $this->get_all, $this->time, function () {
+            $data = Cache::remember($this->room_name . '_start_' . $this->start . '_limit_' . $this->limit . $this->order_by_tring . '_is_active_' . $this->is_active.'_department_id_'.$this->department_id.'_room_type_id_'.$this->room_type_id. '_get_all_' . $this->get_all, $this->time, function () {
                 $data = $this->room
                     ->leftJoin('his_bed_room as bed', 'his_room.id', '=', 'bed.room_id')
                     ->leftJoin('his_cashier_room as cashier', 'his_room.id', '=', 'cashier.room_id')
@@ -177,6 +177,16 @@ class RoomController extends BaseApiCacheController
                 if ($this->is_active !== null) {
                     $data = $data->where(function ($query) {
                         $query = $query->where(DB::connection('oracle_his')->raw("his_room.is_active"), $this->is_active);
+                    });
+                }
+                if ($this->department_id !== null) {
+                    $data = $data->where(function ($query) {
+                        $query = $query->where(DB::connection('oracle_his')->raw('his_room.department_id'), $this->department_id);
+                    });
+                }
+                if ($this->room_type_id !== null) {
+                    $data = $data->where(function ($query) {
+                        $query = $query->where(DB::connection('oracle_his')->raw('his_room.room_type_id'), $this->room_type_id);
                     });
                 }
                 $count = $data->count();

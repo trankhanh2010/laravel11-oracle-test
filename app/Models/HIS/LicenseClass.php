@@ -11,6 +11,8 @@ class LicenseClass extends Model
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
     protected $table = 'HIS_License_Class';
-    protected $fillable = [
+    public $timestamps = false;
+    protected $guarded = [
+        'id',
     ];
 }

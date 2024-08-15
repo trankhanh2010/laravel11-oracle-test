@@ -539,6 +539,9 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisMachine'], function () {
         Route::get("v1/machine", [MachineController::class, "machine"])->name('.get');
         Route::get("v1/machine/{id}", [MachineController::class, "machine"])->name('.get_id');
+        Route::post("v1/machine", [MachineController::class, "machine_create"])->name('.create');
+        Route::put("v1/machine/{id}", [MachineController::class, "machine_update"])->name('.update');
+        Route::delete("v1/machine/{id}", [MachineController::class, "machine_delete"])->name('.delete');
     });
 
     /// Dịch vụ phòng
@@ -932,6 +935,9 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.LicenseClass'], function () {
         Route::get("v1/license-class", [LicenseClassController::class, "license_class"])->name('.get');
         Route::get("v1/license-class/{id}", [LicenseClassController::class, "license_class"])->name('.get_id');
+        Route::post("v1/license-class", [LicenseClassController::class, "license_class_create"])->name('.create');
+        Route::put("v1/license-class/{id}", [LicenseClassController::class, "license_class_update"])->name('.update');
+        Route::delete("v1/license-class/{id}", [LicenseClassController::class, "license_class_delete"])->name('.delete');
     });
 
     /// Hãng sản xuất
@@ -998,6 +1004,9 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.InteractionReason'], function () {
         Route::get("v1/interaction-reason", [InteractionReasonController::class, "interaction_reason"])->name('.get');
         Route::get("v1/interaction-reason/{id}", [InteractionReasonController::class, "interaction_reason"])->name('.get_id');
+        Route::post("v1/interaction-reason", [InteractionReasonController::class, "interaction_reason_create"])->name('.create');
+        Route::put("v1/interaction-reason/{id}", [InteractionReasonController::class, "interaction_reason_update"])->name('.update');
+        Route::delete("v1/interaction-reason/{id}", [InteractionReasonController::class, "interaction_reason_delete"])->name('.delete');
     });
 
     /// Lý do mở trần
@@ -1064,6 +1073,9 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.LocationTreatment'], function () {
         Route::get("v1/location-treatment", [LocationStoreController::class, "location_treatment"])->name('.get');
         Route::get("v1/location-treatment/{id}", [LocationStoreController::class, "location_treatment"])->name('.get_id');
+        Route::post("v1/location-treatment", [LocationStoreController::class, "location_treatment_create"])->name('.create');
+        Route::put("v1/location-treatment/{id}", [LocationStoreController::class, "location_treatment_update"])->name('.update');
+        Route::delete("v1/location-treatment/{id}", [LocationStoreController::class, "location_treatment_delete"])->name('.delete');
     });
 
     /// Xử lý sau tai nạn

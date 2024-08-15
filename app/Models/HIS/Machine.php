@@ -12,10 +12,9 @@ class Machine extends Model
     protected $connection = 'oracle_his';
     protected $table = 'HIS_Machine';
 
-    protected $fillable = [
-        'room_id',
-        'room_ids',
-        'department_id',
+    public $timestamps = false;
+    protected $guarded = [
+        'id',
     ];
 
     public function services()

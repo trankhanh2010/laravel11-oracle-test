@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers\Api\CacheControllers;
 
+use App\Events\Cache\DeleteCache;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
+use App\Http\Requests\LicenseClass\CreateLicenseClassRequest;
+use App\Http\Requests\LicenseClass\UpdateLicenseClassRequest;
 use App\Models\HIS\LicenseClass;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -128,17 +131,71 @@ class LicenseClassController extends BaseApiCacheController
             return return_500_error();
         }
     }
-    // /// License Class
-    // public function license_class($id = null)
-    // {
-    //     if ($id == null) {
-    //         $name = $this->license_class_name;
-    //         $param = [];
-    //     } else {
-    //         $name = $this->license_class_name . '_' . $id;
-    //         $param = [];
-    //     }
-    //     $data = get_cache_full($this->license_class, $param, $name, $id, $this->time);
-    //     return response()->json(['data' => $data], 200);
-    // }
+    public function license_class_create(CreateLicenseClassRequest $request)
+    {
+        try {
+            $data = $this->license_class::create([
+                'create_time' => now()->format('Ymdhis'),
+                'modify_time' => now()->format('Ymdhis'),
+                'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_creator' => $this->app_creator,
+                'app_modifier' => $this->app_modifier,
+                'is_active' => 1,
+                'is_delete' => 0,
+                'license_class_code' => $request->license_class_code,
+                'license_class_name' => $request->license_class_name,
+            ]);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->license_class_name));
+            return return_data_create_success($data);
+        } catch (\Exception $e) {
+            return return_500_error();
+        }
+    }
+      
+    public function license_class_update(UpdateLicenseClassRequest $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->license_class->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        try {
+            $data->update([
+                'modify_time' => now()->format('Ymdhis'),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_modifier' => $this->app_modifier,
+                'license_class_code' => $request->license_class_code,
+                'license_class_name' => $request->license_class_name,
+                'is_active' => $request->is_active
+            ]);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->license_class_name));
+            return return_data_update_success($data);
+        } catch (\Exception $e) {
+            return return_500_error();
+        }
+    }
+
+    public function license_class_delete(Request $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->license_class->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        try {
+            $data->delete();
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->license_class_name));
+            return return_data_delete_success();
+        } catch (\Exception $e) {
+            return return_data_delete_fail();
+        }
+    }
 }

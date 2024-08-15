@@ -12,6 +12,8 @@ class InteractionReason extends Model
     
     protected $connection = 'oracle_his'; 
     protected $table = 'HIS_Interaction_Reason';
-    protected $fillable = [
+    public $timestamps = false;
+    protected $guarded = [
+        'id',
     ];
 }

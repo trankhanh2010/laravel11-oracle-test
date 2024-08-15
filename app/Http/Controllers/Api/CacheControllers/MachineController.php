@@ -6,6 +6,8 @@ use App\Http\Controllers\BaseControllers\BaseApiCacheController;
 use App\Models\HIS\Machine;
 use Illuminate\Http\Request;
 use App\Events\Cache\DeleteCache;
+use App\Http\Requests\Machine\CreateMachineRequest;
+use App\Http\Requests\Machine\UpdateMachineRequest;
 use Illuminate\Support\Facades\DB;
 class MachineController extends BaseApiCacheController
 {
@@ -78,5 +80,107 @@ class MachineController extends BaseApiCacheController
             $this->order_by_name => $this->order_by_request
         ];
         return return_data_success($param_return, $data?? ($data['data'] ?? null));
+    }
+    public function machine_create(CreateMachineRequest $request)
+    {
+        try {
+            $data = $this->machine::create([
+                'create_time' => now()->format('Ymdhis'),
+                'modify_time' => now()->format('Ymdhis'),
+                'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_creator' => $this->app_creator,
+                'app_modifier' => $this->app_modifier,
+                'is_active' => 1,
+                'is_delete' => 0,
+
+                'machine_code' => $request->machine_code,
+                'machine_name' => $request->machine_name,
+                'serial_number' => $request->serial_number,
+                'source_code' => $request->source_code,
+                'machine_group_code' => $request->machine_group_code,
+                'symbol' => $request->symbol,
+
+                'manufacturer_name' => $request->manufacturer_name,
+                'national_name' => $request->national_name,
+                'manufactured_year' => $request->manufactured_year,
+                'used_year' => $request->used_year,
+                'circulation_number' => $request->circulation_number,
+                'integrate_address' => $request->integrate_address,
+
+                'max_service_per_day' => $request->max_service_per_day,
+                'department_id' => $request->department_id,
+                'room_ids' => $request->room_ids,
+                'is_kidney' => $request->is_kidney,
+            ]);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->machine_name));
+            return return_data_create_success($data);
+        } catch (\Exception $e) {
+            return return_500_error();
+        }
+    }
+                    
+    public function machine_update(UpdateMachineRequest $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->machine->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        try {
+            $data->update([
+                'modify_time' => now()->format('Ymdhis'),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_modifier' => $this->app_modifier,
+
+                'machine_code' => $request->machine_code,
+                'machine_name' => $request->machine_name,
+                'serial_number' => $request->serial_number,
+                'source_code' => $request->source_code,
+                'machine_group_code' => $request->machine_group_code,
+                'symbol' => $request->symbol,
+
+                'manufacturer_name' => $request->manufacturer_name,
+                'national_name' => $request->national_name,
+                'manufactured_year' => $request->manufactured_year,
+                'used_year' => $request->used_year,
+                'circulation_number' => $request->circulation_number,
+                'integrate_address' => $request->integrate_address,
+
+                'max_service_per_day' => $request->max_service_per_day,
+                'department_id' => $request->department_id,
+                'room_ids' => $request->room_ids,
+                'is_kidney' => $request->is_kidney,
+
+                'is_active' => $request->is_active
+            ]);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->machine_name));
+            return return_data_update_success($data);
+        } catch (\Exception $e) {
+            return return_500_error();
+        }
+    }
+
+    public function machine_delete(Request $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->machine->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        try {
+            $data->delete();
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->machine_name));
+            return return_data_delete_success();
+        } catch (\Exception $e) {
+            return return_data_delete_fail();
+        }
     }
 }

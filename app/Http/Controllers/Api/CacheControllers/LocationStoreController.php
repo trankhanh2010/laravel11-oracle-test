@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers\Api\CacheControllers;
 
+use App\Events\Cache\DeleteCache;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
+use App\Http\Requests\LocationTreatment\CreateLocationTreatmentRequest;
+use App\Http\Requests\LocationTreatment\UpdateLocationTreatmentRequest;
 use App\Models\HIS\LocationStore;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -137,17 +140,72 @@ class LocationStoreController extends BaseApiCacheController
             return return_500_error();
         }
     }
-    // /// Location Treatment
-    // public function location_treatment($id = null)
-    // {
-    //     if ($id == null) {
-    //         $name = $this->location_store_name;
-    //         $param = [];
-    //     } else {
-    //         $name = $this->location_store_name . '_' . $id;
-    //         $param = [];
-    //     }
-    //     $data = get_cache_full($this->location_store, $param, $name, $id, $this->time);
-    //     return response()->json(['data' => $data], 200);
-    // }
+    public function location_treatment_create(CreateLocationTreatmentRequest $request)
+    {
+        try {
+            $data = $this->location_store::create([
+                'create_time' => now()->format('Ymdhis'),
+                'modify_time' => now()->format('Ymdhis'),
+                'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_creator' => $this->app_creator,
+                'app_modifier' => $this->app_modifier,
+                'is_active' => 1,
+                'is_delete' => 0,
+                'location_store_code' => $request->location_store_code,
+                'location_store_name' => $request->location_store_name,
+                'data_store_id' => $request->data_store_id,
+            ]);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->location_store_name));
+            return return_data_create_success($data);
+        } catch (\Exception $e) {
+            return return_500_error();
+        }
+    }
+      
+    public function location_treatment_update(UpdateLocationTreatmentRequest $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->location_store->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        try {
+            $data->update([
+                'modify_time' => now()->format('Ymdhis'),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_modifier' => $this->app_modifier,
+                'location_store_name' => $request->location_store_name,
+                'data_store_id' => $request->data_store_id,
+                'is_active' => $request->is_active
+            ]);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->location_store_name));
+            return return_data_update_success($data);
+        } catch (\Exception $e) {
+            return return_500_error();
+        }
+    }
+
+    public function location_treatment_delete(Request $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->location_store->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        try {
+            $data->delete();
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->location_store_name));
+            return return_data_delete_success();
+        } catch (\Exception $e) {
+            return return_data_delete_fail();
+        }
+    }
 }

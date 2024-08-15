@@ -19,6 +19,7 @@ return [
         'regex_phone' => ' không đúng định dạng!',
         'regex_ymdhis' => ' phải được định dạng yyyymmddhhiiss và chuyển sang số nguyên có 14 chữ số!',
         'regex_hhmm' => ' phải được định dạng hhmm trong đó hh có giá trị từ 01 đến 23, mm có giá trị 00, 15 ,30 hoặc 45!',
+        'regex_year' => ' phải có đủ 4 chữ số!',
         'numeric' => ' phải là số!',
         'prohibited_unless_service_type' => ' chỉ được nhập khi mã loại dịch vụ thuộc ',
         'declined_if'=> ' chỉ được nhập khi ',
@@ -35,7 +36,8 @@ return [
         'not_active' => ' Hoặc bị tạm khóa!',
         'not_find_or_not_active_in_list' => ' trong danh sách không tồn tại hoặc đang bị tạm khóa!',
         'parent_not_in_id' => 'Id cha không được trùng với Id hiện tại!',
-
+        'not_in_department_id' => ' không thuộc khoa đã chọn!',
+        'not_in_room_type_XL' => ' không thuộc kiểu phòng khám/cls/pttt!',
         /// Error validate param
         'format' => 'Kiểu dữ liệu không hợp lệ!',
         'order_by_name' => 'Tên trường cần sắp xếp không hợp lệ!',
@@ -721,5 +723,43 @@ return [
 
         'do_not_use_hein' => 'Trường không sử dụng cho đối tượng BHYT',
         'is_covid' => 'Trường là bệnh Covid',
+    ],
+    // Lý do kê đơn tương tác
+    'interaction_reason' => [
+        'interaction_reason_code' => 'Mã lý do kê đơn tương tác',
+        'interaction_reason_name' => 'Tên lý do kê đơn tương tác',
+    ],
+    // Hạng lái xe
+    'license_class' => [
+        'license_class_code' => 'Mã hạng lái xe',
+        'license_class_name' => 'Tên hạng lái xe',
+    ],
+    // Vị trí hồ sơ bệnh án
+    'location_store' => [
+        'location_store_code' => 'Mã vị trí hồ sơ bệnh án',
+        'location_store_name' => 'Tên vị trí hồ sơ bệnh án',
+        'data_store_id' => 'Id tủ bệnh án',
+    ],
+    // Máy cận lâm sàng
+    'machine' => [
+        'machine_code' => 'Mã máy',
+        'machine_name' => 'Tên máy',
+        'serial_number' => 'Số Seri',
+        'source_code' => 'Nguồn kinh phí',
+        'machine_group_code' => 'Mã nhóm máy',
+        'symbol' => 'Ký hiệu',
+
+        'manufacturer_name' => 'Công ty sản xuất',
+        'national_name' => 'Nước sản xuất',
+        'manufactured_year' => 'Năm sản xuất',
+        'used_year' => 'Năm sử dụng',
+        'circulation_number' => 'Số lưu hành',
+        'integrate_address' => 'Địa chỉ tích hợp',
+
+        'max_service_per_day' => 'Số lượng dịch vụ / ngày',
+        'department_id' => 'Id khoa',
+        'room_ids' => 'Danh sách Id phòng',
+        'room_id' => 'Id phòng',
+        'is_kidney' => 'Trường chạy thận',
     ],
 ];

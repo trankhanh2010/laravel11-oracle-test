@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers\Api\CacheControllers;
 
+use App\Events\Cache\DeleteCache;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\InteractionReason\CreateInteractionReasonRequest;
+use App\Http\Requests\InteractionReason\UpdateInteractionReasonRequest;
 use App\Models\HIS\InteractionReason;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -129,17 +132,71 @@ class InteractionReasonController extends BaseApiCacheController
             return return_500_error();
         }
     }
-    // /// Interaction Reason
-    // public function interaction_reason($id = null)
-    // {
-    //     if ($id == null) {
-    //         $name = $this->interaction_reason_name;
-    //         $param = [];
-    //     } else {
-    //         $name = $this->interaction_reason_name . '_' . $id;
-    //         $param = [];
-    //     }
-    //     $data = get_cache_full($this->interaction_reason, $param, $name, $id, $this->time);
-    //     return response()->json(['data' => $data], 200);
-    // }
+    public function interaction_reason_create(CreateInteractionReasonRequest $request)
+    {
+        try {
+            $data = $this->interaction_reason::create([
+                'create_time' => now()->format('Ymdhis'),
+                'modify_time' => now()->format('Ymdhis'),
+                'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_creator' => $this->app_creator,
+                'app_modifier' => $this->app_modifier,
+                'is_active' => 1,
+                'is_delete' => 0,
+                'interaction_reason_code' => $request->interaction_reason_code,
+                'interaction_reason_name' => $request->interaction_reason_name,
+            ]);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->interaction_reason_name));
+            return return_data_create_success($data);
+        } catch (\Exception $e) {
+            return return_500_error();
+        }
+    }
+      
+    public function interaction_reason_update(UpdateInteractionReasonRequest $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->interaction_reason->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        try {
+            $data->update([
+                'modify_time' => now()->format('Ymdhis'),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_modifier' => $this->app_modifier,
+                'interaction_reason_code' => $request->interaction_reason_code,
+                'interaction_reason_name' => $request->interaction_reason_name,
+                'is_active' => $request->is_active
+            ]);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->interaction_reason_name));
+            return return_data_update_success($data);
+        } catch (\Exception $e) {
+            return return_500_error();
+        }
+    }
+
+    public function interaction_reason_delete(Request $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->interaction_reason->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        try {
+            $data->delete();
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->interaction_reason_name));
+            return return_data_delete_success();
+        } catch (\Exception $e) {
+            return return_data_delete_fail();
+        }
+    }
 }
