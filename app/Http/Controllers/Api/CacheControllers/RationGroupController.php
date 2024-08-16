@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers\Api\CacheControllers;
 
+use App\Events\Cache\DeleteCache;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
+use App\Http\Requests\RationGroup\CreateRationGroupRequest;
+use App\Http\Requests\RationGroup\UpdateRationGroupRequest;
 use App\Models\HIS\RationGroup;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -84,5 +87,71 @@ class RationGroupController extends BaseApiCacheController
         ];
         return return_data_success($param_return, $data?? ($data['data'] ?? null));
     }
+    public function ration_group_create(CreateRationGroupRequest $request)
+    {
+        try {
+            $data = $this->ration_group::create([
+                'create_time' => now()->format('Ymdhis'),
+                'modify_time' => now()->format('Ymdhis'),
+                'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_creator' => $this->app_creator,
+                'app_modifier' => $this->app_modifier,
+                'is_active' => 1,
+                'is_delete' => 0,
+                'ration_group_code' => $request->ration_group_code,
+                'ration_group_name' => $request->ration_group_name,
+            ]);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->ration_group_name));
+            return return_data_create_success($data);
+        } catch (\Exception $e) {
+            return return_500_error();
+        }
+    }
+     
+    public function ration_group_update(UpdateRationGroupRequest $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->ration_group->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        try {
+            $data->update([
+                'modify_time' => now()->format('Ymdhis'),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_modifier' => $this->app_modifier,
+                'ration_group_code' => $request->ration_group_code,
+                'ration_group_name' => $request->ration_group_name,
+                'is_active' => $request->is_active
+            ]);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->ration_group_name));
+            return return_data_update_success($data);
+        } catch (\Exception $e) {
+            return return_500_error();
+        }
+    }
 
+    public function ration_group_delete(Request $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->ration_group->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        try {
+            $data->delete();
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->ration_group_name));
+            return return_data_delete_success();
+        } catch (\Exception $e) {
+            return return_data_delete_fail();
+        }
+    }
 }

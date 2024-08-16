@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers\Api\CacheControllers;
 
+use App\Events\Cache\DeleteCache;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
+use App\Http\Requests\PtttTable\CreatePtttTableRequest;
+use App\Http\Requests\PtttTable\UpdatePtttTableRequest;
 use App\Models\HIS\PtttTable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -161,22 +164,75 @@ class PtttTableController extends BaseApiCacheController
             return return_500_error();
         }
     }
-    // /// Pttt Table
-    // public function pttt_table($id = null)
-    // {
-    //     if ($id == null) {
-    //         $name = $this->pttt_table_name;
-    //         $param = [
-    //             'execute_room:id,execute_room_name,execute_room_code'
-    //         ];
-    //     } else {
-    //         $name = $this->pttt_table_name . '_' . $id;
-    //         $param = [
-    //             'execute_room'
-    //         ];
-    //     }
-    //     $data = get_cache_full($this->pttt_table, $param, $name, $id, $this->time);
-    //     return response()->json(['data' => $data], 200);
-    // }
+    public function pttt_table_create(CreatePtttTableRequest $request)
+    {
+        try {
+            $data = $this->pttt_table::create([
+                'create_time' => now()->format('Ymdhis'),
+                'modify_time' => now()->format('Ymdhis'),
+                'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_creator' => $this->app_creator,
+                'app_modifier' => $this->app_modifier,
+                'is_active' => 1,
+                'is_delete' => 0,
+                'pttt_table_code' => $request->pttt_table_code,
+                'pttt_table_name' => $request->pttt_table_name,
+                'execute_room_id' => $request->execute_room_id,
+            ]);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->pttt_table_name));
+            return return_data_create_success($data);
+        } catch (\Exception $e) {
+            return return_500_error();
+        }
+    }
+       
+    public function pttt_table_update(UpdatePtttTableRequest $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->pttt_table->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        try {
+            $data->update([
+                'modify_time' => now()->format('Ymdhis'),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_modifier' => $this->app_modifier,
+
+                'pttt_table_name' => $request->pttt_table_name,
+                'execute_room_id' => $request->execute_room_id,
+
+                'is_active' => $request->is_active
+            ]);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->pttt_table_name));
+            return return_data_update_success($data);
+        } catch (\Exception $e) {
+            return return_500_error();
+        }
+    }
+
+    public function pttt_table_delete(Request $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->pttt_table->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        try {
+            $data->delete();
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->pttt_table_name));
+            return return_data_delete_success();
+        } catch (\Exception $e) {
+            return return_data_delete_fail();
+        }
+    }
     
 }

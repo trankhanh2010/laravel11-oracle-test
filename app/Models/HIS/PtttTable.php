@@ -11,8 +11,9 @@ class PtttTable extends Model
     use HasFactory,  dinh_dang_ten_truong;
     protected $connection = 'oracle_his';
     protected $table = 'HIS_Pttt_Table';
-    protected $fillable = [
-
+    public $timestamps = false;
+    protected $guarded = [
+        'id',
     ];
 
     public function execute_room()

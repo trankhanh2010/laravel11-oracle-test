@@ -41,22 +41,22 @@ class CreateBhytParamRequest extends FormRequest
             'base_salary.required'    => config('keywords')['bhyt_param']['base_salary'].config('keywords')['error']['required'],
             'base_salary.numeric'     => config('keywords')['bhyt_param']['base_salary'].config('keywords')['error']['numeric'],
             'base_salary.regex'       => config('keywords')['bhyt_param']['base_salary'].config('keywords')['error']['regex_19_4'],
-            'base_salary.max'         => config('keywords')['bhyt_param']['base_salary'].config('keywords')['error']['integer_max'],
+            'base_salary.min'         => config('keywords')['bhyt_param']['base_salary'].config('keywords')['error']['integer_min'],
 
             'min_total_by_salary.required'    => config('keywords')['bhyt_param']['min_total_by_salary'].config('keywords')['error']['required'],
             'min_total_by_salary.numeric'     => config('keywords')['bhyt_param']['min_total_by_salary'].config('keywords')['error']['numeric'],
             'min_total_by_salary.regex'       => config('keywords')['bhyt_param']['min_total_by_salary'].config('keywords')['error']['regex_19_4'],
-            'min_total_by_salary.max'         => config('keywords')['bhyt_param']['min_total_by_salary'].config('keywords')['error']['integer_max'],
+            'min_total_by_salary.min'         => config('keywords')['bhyt_param']['min_total_by_salary'].config('keywords')['error']['integer_min'],
 
             'max_total_package_by_salary.required'    => config('keywords')['bhyt_param']['max_total_package_by_salary'].config('keywords')['error']['required'],
             'max_total_package_by_salary.numeric'     => config('keywords')['bhyt_param']['max_total_package_by_salary'].config('keywords')['error']['numeric'],
             'max_total_package_by_salary.regex'       => config('keywords')['bhyt_param']['max_total_package_by_salary'].config('keywords')['error']['regex_19_4'],
-            'max_total_package_by_salary.max'         => config('keywords')['bhyt_param']['max_total_package_by_salary'].config('keywords')['error']['integer_max'],
+            'max_total_package_by_salary.min'         => config('keywords')['bhyt_param']['max_total_package_by_salary'].config('keywords')['error']['integer_min'],
 
             'second_stent_paid_ratio.required'    => config('keywords')['bhyt_param']['second_stent_paid_ratio'].config('keywords')['error']['required'],
             'second_stent_paid_ratio.numeric'     => config('keywords')['bhyt_param']['second_stent_paid_ratio'].config('keywords')['error']['numeric'],
             'second_stent_paid_ratio.regex'       => config('keywords')['bhyt_param']['second_stent_paid_ratio'].config('keywords')['error']['regex_19_4'],
-            'second_stent_paid_ratio.max'         => config('keywords')['bhyt_param']['second_stent_paid_ratio'].config('keywords')['error']['integer_max'],
+            'second_stent_paid_ratio.min'         => config('keywords')['bhyt_param']['second_stent_paid_ratio'].config('keywords')['error']['integer_min'],
 
             'priority.integer'     => config('keywords')['bhyt_param']['priority'].config('keywords')['error']['integer'],
 

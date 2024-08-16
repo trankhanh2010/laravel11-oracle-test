@@ -723,6 +723,9 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisRationGroup'], function () {
         Route::get("v1/ration-group", [RationGroupController::class, "ration_group"])->name('.get');
         Route::get("v1/ration-group/{id}", [RationGroupController::class, "ration_group"])->name('.get_id');
+        Route::post("v1/ration-group", [RationGroupController::class, "ration_group_create"])->name('.create');
+        Route::put("v1/ration-group/{id}", [RationGroupController::class, "ration_group_update"])->name('.update');
+        Route::delete("v1/ration-group/{id}", [RationGroupController::class, "ration_group_delete"])->name('.delete');
     });
 
     /// Loại y lệnh 
@@ -1114,6 +1117,9 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisPtttTable'], function () {
         Route::get("v1/pttt-table", [PtttTableController::class, "pttt_table"])->name('.get');
         Route::get("v1/pttt-table/{id}", [PtttTableController::class, "pttt_table"])->name('.get_id');
+        Route::post("v1/pttt-table", [PtttTableController::class, "pttt_table_create"])->name('.create');
+        Route::put("v1/pttt-table/{id}", [PtttTableController::class, "pttt_table_update"])->name('.update');
+        Route::delete("v1/pttt-table/{id}", [PtttTableController::class, "pttt_table_delete"])->name('.delete');
     });
 
     /// Nhóm PTTT
@@ -1121,6 +1127,9 @@ Route::group([
         //Trả về tất cả nhóm pttt cùng nhóm dịch vụ 
         Route::get("v1/pttt-group", [PtttGroupController::class, "pttt_group"])->name('.get');
         Route::get("v1/pttt-group/{id}", [PtttGroupController::class, "pttt_group"])->name('.get_id');
+        Route::post("v1/pttt-group", [PtttGroupController::class, "pttt_group_create"])->name('.create');
+        Route::put("v1/pttt-group/{id}", [PtttGroupController::class, "pttt_group_update"])->name('.update');
+        Route::delete("v1/pttt-group/{id}", [PtttGroupController::class, "pttt_group_delete"])->name('.delete');
     });
 
     /// Phương pháp PTTT
@@ -1128,6 +1137,9 @@ Route::group([
         //Trả về tất cả nhóm pttt cùng nhóm dịch vụ 
         Route::get("v1/pttt-method", [PtttMethodController::class, "pttt_method"])->name('.get');
         Route::get("v1/pttt-method/{id}", [PtttMethodController::class, "pttt_method"])->name('.get_id');
+        Route::post("v1/pttt-method", [PtttMethodController::class, "pttt_method_create"])->name('.create');
+        Route::put("v1/pttt-method/{id}", [PtttMethodController::class, "pttt_method_update"])->name('.update');
+        Route::delete("v1/pttt-method/{id}", [PtttMethodController::class, "pttt_method_delete"])->name('.delete');
     });
 
     /// Phương pháp vô cảm
@@ -1152,6 +1164,9 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisPtttCondition'], function () {
         Route::get("v1/pttt-condition", [PtttConditionController::class, "pttt_condition"])->name('.get');
         Route::get("v1/pttt-condition/{id}", [PtttConditionController::class, "pttt_condition"])->name('.get_id');
+        Route::post("v1/pttt-condition", [PtttConditionController::class, "pttt_condition_create"])->name('.create');
+        Route::put("v1/pttt-condition/{id}", [PtttConditionController::class, "pttt_condition_update"])->name('.update');
+        Route::delete("v1/pttt-condition/{id}", [PtttConditionController::class, "pttt_condition_delete"])->name('.delete');
     });
 
     /// Ý thức

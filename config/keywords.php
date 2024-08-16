@@ -38,6 +38,8 @@ return [
         'parent_not_in_id' => 'Id cha không được trùng với Id hiện tại!',
         'not_in_department_id' => ' không thuộc khoa đã chọn!',
         'not_in_room_type_XL' => ' không thuộc kiểu phòng khám/cls/pttt!',
+        'not_in_service_type_GI' => ' không thuộc loại dịch vụ giường!',
+
         /// Error validate param
         'format' => 'Kiểu dữ liệu không hợp lệ!',
         'order_by_name' => 'Tên trường cần sắp xếp không hợp lệ!',
@@ -814,5 +816,35 @@ return [
     'pttt_catastrophe' => [
         'pttt_catastrophe_code' => 'Mã tai biến PTTT',
         'pttt_catastrophe_name' => 'Tên tai biến PTTT',
+    ],
+    // Tình trạng PTTT
+    'pttt_condition' => [
+        'pttt_condition_code' => 'Mã tình trạng PTTT',
+        'pttt_condition_name' => 'Tên tình trạng PTTT',
+    ],
+    // Nhóm PTTT
+    'pttt_group' => [
+        'pttt_group_code' => 'Mã nhóm',
+        'pttt_group_name' => 'Tên nhóm',
+        'num_order' => 'Số thứ tự',
+        'remuneration' => 'Thù lao người thực hiện',
+        'bed_service_type_ids' => 'Danh sách Id dịch vụ giường',
+    ],
+    // Phương pháp PTTT
+    'pttt_method' => [
+        'pttt_method_code' => 'Mã phương pháp PTTT',
+        'pttt_method_name' => 'Tên phương pháp PTTT',
+        'pttt_group_id' => 'Id nhóm PTTT',
+    ],
+    // Bàn mổ
+    'pttt_table' => [
+        'pttt_table_code' => 'Mã bàn mổ',
+        'pttt_table_name' => 'Tên bàn mổ',
+        'execute_room_id' => 'Id phòng khám',
+    ],
+    // Nhóm suất ăn
+    'ration_group' => [
+        'ration_group_code' => 'Mã nhóm suất ăn',
+        'ration_group_name' => 'Tên nhóm suất ăn',
     ],
 ];
