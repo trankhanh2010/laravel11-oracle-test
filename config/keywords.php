@@ -847,4 +847,36 @@ return [
         'ration_group_code' => 'Mã nhóm suất ăn',
         'ration_group_name' => 'Tên nhóm suất ăn',
     ],
+    // Bữa ăn
+    'ration_time' => [
+        'ration_time_code' => 'Mã bữa ăn',
+        'ration_time_name' => 'Tên bữa ăn',
+    ],
+    // Mối quan hệ
+    'relation_list' => [
+        'relation_code' => 'Mã mối quan hệ',
+        'relation_name' => 'Tên mối quan hệ',
+    ],
+    // Tôn giáo
+    'religion' => [
+        'religion_code' => 'Mã tôn giáo',
+        'religion_name' => 'Tên tôn giáo',
+    ],
+    // Vai trò
+    'role' => [
+        'role_code' => 'Mã vai trò',
+        'role_name' => 'Tên vai trò',
+        'is_full' => 'Trường toàn quyền',
+    ],
+    // Thiết lập lợi nhuận xuất bán
+    'sale_profit_cfg' => [
+        'ratio' => 'Tỉ lệ thiết lập',
+        'imp_price_from' => 'Giá nhập từ',
+        'imp_price_to' => 'Giá nhập đến',
+        'is_medicine' => 'Trường là thuốc',
+        'is_material' => 'Trường là vật tư',
+        'is_common_medicine' => 'Trường là thuốc thường',
+        'is_functional_food' => 'Trường là thực phẩm chức năng',
+        'is_drug_store' => 'Trường là thuốc thuộc quầy thuốc',
+    ],
 ];

@@ -11,7 +11,8 @@ class Religion extends Model
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_sda';
     protected $table = 'SDA_Religion';
-    protected $fillable = [
-
+    protected $guarded = [
+        'id',
     ];
+    public $timestamps = false;
 }

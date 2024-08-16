@@ -11,5 +11,8 @@ class RationTime extends Model
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his';
     protected $table = 'HIS_Ration_Time';
- 
+    public $timestamps = false;
+    protected $guarded = [
+        'id',
+    ];
 }

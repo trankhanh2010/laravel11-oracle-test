@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers\Api\CacheControllers;
 
+use App\Events\Cache\DeleteCache;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
+use App\Http\Requests\SaleProfitCfg\CreateSaleProfitCfgRequest;
+use App\Http\Requests\SaleProfitCfg\UpdateSaleProfitCfgRequest;
 use App\Models\HIS\SaleProfitCFG;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -86,5 +89,86 @@ class SaleProfitCfgController extends BaseApiCacheController
             $this->order_by_name => $this->order_by_request
         ];
         return return_data_success($param_return, $data?? ($data['data'] ?? null));
+    }
+    public function sale_profit_cfg_create(CreateSaleProfitCfgRequest $request)
+    {
+        try {
+            $data = $this->sale_profit_cfg::create([
+                'create_time' => now()->format('Ymdhis'),
+                'modify_time' => now()->format('Ymdhis'),
+                'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_creator' => $this->app_creator,
+                'app_modifier' => $this->app_modifier,
+                'is_active' => 1,
+                'is_delete' => 0,
+
+                'ratio' => $request->ratio,
+                'imp_price_from' => $request->imp_price_from,
+                'imp_price_to' => $request->imp_price_to,
+                'is_medicine' => $request->is_medicine,
+                'is_material' => $request->is_material,
+                'is_common_medicine' => $request->is_common_medicine,
+                'is_functional_food' => $request->is_functional_food,
+                'is_drug_store' => $request->is_drug_store,
+
+            ]);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->sale_profit_cfg_name));
+            return return_data_create_success($data);
+        } catch (\Exception $e) {
+            return return_500_error();
+        }
+    }
+            
+    public function sale_profit_cfg_update(UpdateSaleProfitCfgRequest $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->sale_profit_cfg->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        try {
+            $data->update([
+                'modify_time' => now()->format('Ymdhis'),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_modifier' => $this->app_modifier,
+                'ratio' => $request->ratio,
+                'imp_price_from' => $request->imp_price_from,
+                'imp_price_to' => $request->imp_price_to,
+                'is_medicine' => $request->is_medicine,
+                'is_material' => $request->is_material,
+                'is_common_medicine' => $request->is_common_medicine,
+                'is_functional_food' => $request->is_functional_food,
+                'is_drug_store' => $request->is_drug_store,
+                'is_active' => $request->is_active
+            ]);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->sale_profit_cfg_name));
+            return return_data_update_success($data);
+        } catch (\Exception $e) {
+            return return_500_error();
+        }
+    }
+
+    public function sale_profit_cfg_delete(Request $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->sale_profit_cfg->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        try {
+            $data->delete();
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->sale_profit_cfg_name));
+            return return_data_delete_success();
+        } catch (\Exception $e) {
+            return return_data_delete_fail();
+        }
     }
 }

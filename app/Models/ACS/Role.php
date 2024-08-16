@@ -11,7 +11,10 @@ class Role extends Model
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_acs'; 
     protected $table = 'ACS_ROLE';
-
+    public $timestamps = false;
+    protected $guarded = [
+        'id',
+    ];
     public function users()
     {
         return $this->belongsToMany(User::class, 'acs_role_user', 'role_id', 'user_id');

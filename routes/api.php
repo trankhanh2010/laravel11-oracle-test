@@ -643,6 +643,9 @@ Route::group([
     Route::group(['as' => 'ACS.Desktop.Plugins.AcsRole'], function () {
         Route::get("v1/role", [RoleController::class, "role"])->name('.get');
         Route::get("v1/role/{id}", [RoleController::class, "role"])->name('.get_id');
+        Route::post("v1/role", [RoleController::class, "role_create"])->name('.create');
+        Route::put("v1/role/{id}", [RoleController::class, "role_update"])->name('.update');
+        Route::delete("v1/role/{id}", [RoleController::class, "role_delete"])->name('.delete');
     });
 
     /// Vai trò - Chức năng 
@@ -680,6 +683,9 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.EmrRelationList'], function () {
         Route::get("v1/relation-list", [RelationController::class, "relation_list"])->name('.get');
         Route::get("v1/relation-list/{id}", [RelationController::class, "relation_list"])->name('.get_id');
+        Route::post("v1/relation-list", [RelationController::class, "relation_list_create"])->name('.create');
+        Route::put("v1/relation-list/{id}", [RelationController::class, "relation_list_update"])->name('.update');
+        Route::delete("v1/relation-list/{id}", [RelationController::class, "relation_list_delete"])->name('.delete');
     });
 
     /// Nghề nghiệp
@@ -705,6 +711,9 @@ Route::group([
     Route::group(['as' => 'SDA.Desktop.Plugins.SdaReligion'], function () {
         Route::get("v1/religion", [ReligionController::class, "religion"])->name('.get');
         Route::get("v1/religion/{id}", [ReligionController::class, "religion"])->name('.get_id');
+        Route::post("v1/religion", [ReligionController::class, "religion_create"])->name('.create');
+        Route::put("v1/religion/{id}", [ReligionController::class, "religion_update"])->name('.update');
+        Route::delete("v1/religion/{id}", [ReligionController::class, "religion_delete"])->name('.delete');
     });
 
     /// Đơn vị tính
@@ -738,6 +747,9 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisRationTime'], function () {
         Route::get("v1/ration-time", [RationTimeController::class, "ration_time"])->name('.get');
         Route::get("v1/ration-time/{id}", [RationTimeController::class, "ration_time"])->name('.get_id');
+        Route::post("v1/ration-time", [RationTimeController::class, "ration_time_create"])->name('.create');
+        Route::put("v1/ration-time/{id}", [RationTimeController::class, "ration_time_update"])->name('.update');
+        Route::delete("v1/ration-time/{id}", [RationTimeController::class, "ration_time_delete"])->name('.delete');
     });
 
     /// Kho - Đối tượng
@@ -822,6 +834,9 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.EstablishSaleProfitCFG'], function () {
         Route::get("v1/sale-profit-cfg", [SaleProfitCfgController::class, "sale_profit_cfg"])->name('.get');
         Route::get("v1/sale-profit-cfg/{id}", [SaleProfitCfgController::class, "sale_profit_cfg"])->name('.get_id');
+        Route::post("v1/sale-profit-cfg", [SaleProfitCfgController::class, "sale_profit_cfg_create"])->name('.create');
+        Route::put("v1/sale-profit-cfg/{id}", [SaleProfitCfgController::class, "sale_profit_cfg_update"])->name('.update');
+        Route::delete("v1/sale-profit-cfg/{id}", [SaleProfitCfgController::class, "sale_profit_cfg_delete"])->name('.delete');
     });
 
     /// Chuyển đổi đối tượng
