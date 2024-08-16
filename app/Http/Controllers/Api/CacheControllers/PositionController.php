@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers\Api\CacheControllers;
 
+use App\Events\Cache\DeleteCache;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
+use App\Http\Requests\Position\CreatePositionRequest;
+use App\Http\Requests\Position\UpdatePositionRequest;
 use App\Models\HIS\Position;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -128,17 +131,76 @@ class PositionController extends BaseApiCacheController
             return return_500_error();
         }
     }
-    // /// Position
-    // public function position($id = null)
-    // {
-    //     if ($id == null) {
-    //         $name = $this->position_name;
-    //         $param = [];
-    //     } else {
-    //         $name = $this->position_name . '_' . $id;
-    //         $param = [];
-    //     }
-    //     $data = get_cache_full($this->position, $param, $name, $id, $this->time);
-    //     return response()->json(['data' => $data], 200);
-    // }
+    public function position_create(CreatePositionRequest $request)
+    {
+        try {
+            $data = $this->position::create([
+                'create_time' => now()->format('Ymdhis'),
+                'modify_time' => now()->format('Ymdhis'),
+                'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_creator' => $this->app_creator,
+                'app_modifier' => $this->app_modifier,
+                'is_active' => 1,
+                'is_delete' => 0,
+                'position_code' => $request->position_code,
+                'position_name' => $request->position_name,
+                'description' => $request->description,
+
+            ]);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->position_name));
+            return return_data_create_success($data);
+        } catch (\Exception $e) {
+            return return_500_error();
+        }
+    }
+       
+    public function position_update(UpdatePositionRequest $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->position->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        try {
+            $data->update([
+                'modify_time' => now()->format('Ymdhis'),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_modifier' => $this->app_modifier,
+
+                'position_code' => $request->position_code,
+                'position_name' => $request->position_name,
+                'description' => $request->description,
+
+                'is_active' => $request->is_active
+            ]);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->position_name));
+            return return_data_update_success($data);
+        } catch (\Exception $e) {
+            return return_500_error();
+        }
+    }
+
+    public function position_delete(Request $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->position->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        try {
+            $data->delete();
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->position_name));
+            return return_data_delete_success();
+        } catch (\Exception $e) {
+            return return_data_delete_fail();
+        }
+    }
 }

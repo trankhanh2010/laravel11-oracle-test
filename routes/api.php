@@ -671,6 +671,9 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisPriorityType'], function () {
         Route::get("v1/priority-type", [PriorityTypeController::class, "priority_type"])->name('.get');
         Route::get("v1/priority-type/{id}", [PriorityTypeController::class, "priority_type"])->name('.get_id');
+        Route::post("v1/priority-type", [PriorityTypeController::class, "priority_type_create"])->name('.create');
+        Route::put("v1/priority-type/{id}", [PriorityTypeController::class, "priority_type_update"])->name('.update');
+        Route::delete("v1/priority-type/{id}", [PriorityTypeController::class, "priority_type_delete"])->name('.delete');
     });
 
     /// Mối quan hệ
@@ -828,6 +831,9 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisPosition'], function () {
         Route::get("v1/position", [PositionController::class, "position"])->name('.get');
         Route::get("v1/position/{id}", [PositionController::class, "position"])->name('.get_id');
+        Route::post("v1/position", [PositionController::class, "position_create"])->name('.create');
+        Route::put("v1/position/{id}", [PositionController::class, "position_update"])->name('.update');
+        Route::delete("v1/position/{id}", [PositionController::class, "position_delete"])->name('.delete');
     });
 
     /// Nơi làm việc
@@ -910,6 +916,9 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisPreparationsBlood'], function () {
         Route::get("v1/preparations-blood", [PreparationsBloodController::class, "preparations_blood"])->name('.get');
         Route::get("v1/preparations-blood/{id}", [PreparationsBloodController::class, "preparations_blood"])->name('.get_id');
+        Route::post("v1/preparations-blood", [PreparationsBloodController::class, "preparations_blood_create"])->name('.create');
+        Route::put("v1/preparations-blood/{id}", [PreparationsBloodController::class, "preparations_blood_update"])->name('.update');
+        Route::delete("v1/preparations-blood/{id}", [PreparationsBloodController::class, "preparations_blood_delete"])->name('.delete');
     });
 
     /// Chống chỉ định
@@ -970,6 +979,9 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisMediRecordType'], function () {
         Route::get("v1/medi-record-type", [MediRecordTypeController::class, "medi_record_type"])->name('.get');
         Route::get("v1/medi-record-type/{id}", [MediRecordTypeController::class, "medi_record_type"])->name('.get_id');
+        Route::post("v1/medi-record-type", [MediRecordTypeController::class, "medi_record_type_create"])->name('.create');
+        Route::put("v1/medi-record-type/{id}", [MediRecordTypeController::class, "medi_record_type_update"])->name('.update');
+        Route::delete("v1/medi-record-type/{id}", [MediRecordTypeController::class, "medi_record_type_delete"])->name('.delete');
     });
 
     /// Loại giấy tờ
@@ -1065,7 +1077,7 @@ Route::group([
         Route::get("v1/supplier/{id}", [SupplierController::class, "supplier"])->name('.get_id');
     });
 
-    /// Phương pháp ché biến
+    /// Phương pháp chế biến
     Route::group(['as' => 'HIS.Desktop.Plugins.HisProcessing'], function () {
         Route::get("v1/processing-method", [ProcessingMethodController::class, "processing_method"])->name('.get');
         Route::get("v1/processing-method/{id}", [ProcessingMethodController::class, "processing_method"])->name('.get_id');
@@ -1131,6 +1143,9 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisPtttCatastrophe'], function () {
         Route::get("v1/pttt-catastrophe", [PtttCatastropheController::class, "pttt_catastrophe"])->name('.get');
         Route::get("v1/pttt-catastrophe/{id}", [PtttCatastropheController::class, "pttt_catastrophe"])->name('.get_id');
+        Route::post("v1/pttt-catastrophe", [PtttCatastropheController::class, "pttt_catastrophe_create"])->name('.create');
+        Route::put("v1/pttt-catastrophe/{id}", [PtttCatastropheController::class, "pttt_catastrophe_update"])->name('.update');
+        Route::delete("v1/pttt-catastrophe/{id}", [PtttCatastropheController::class, "pttt_catastrophe_delete"])->name('.delete');
     });
 
     /// Tình trạng PTTT

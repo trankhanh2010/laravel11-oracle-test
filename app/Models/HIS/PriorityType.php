@@ -11,5 +11,8 @@ class PriorityType extends Model
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
     protected $table = 'HIS_PRIORITY_TYPE';
-
+    public $timestamps = false;
+    protected $guarded = [
+        'id',
+    ];
 }

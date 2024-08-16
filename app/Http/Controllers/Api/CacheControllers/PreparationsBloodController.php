@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers\Api\CacheControllers;
 
+use App\Events\Cache\DeleteCache;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
+use App\Http\Requests\PreparationsBlood\CreatePreparationsBloodRequest;
+use App\Http\Requests\PreparationsBlood\UpdatePreparationsBloodRequest;
 use App\Models\HIS\PreparationsBlood;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -128,17 +131,70 @@ class PreparationsBloodController extends BaseApiCacheController
             return return_500_error();
         }
     }
-    // /// Preparations Blood
-    // public function preparations_blood($id = null)
-    // {
-    //     if ($id == null) {
-    //         $name = $this->preparations_blood_name;
-    //         $param = [];
-    //     } else {
-    //         $name = $this->preparations_blood_name . '_' . $id;
-    //         $param = [];
-    //     }
-    //     $data = get_cache_full($this->preparations_blood, $param, $name, $id, $this->time);
-    //     return response()->json(['data' => $data], 200);
-    // }
+    public function preparations_blood_create(CreatePreparationsBloodRequest $request)
+    {
+        try {
+            $data = $this->preparations_blood::create([
+                'create_time' => now()->format('Ymdhis'),
+                'modify_time' => now()->format('Ymdhis'),
+                'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_creator' => $this->app_creator,
+                'app_modifier' => $this->app_modifier,
+                'is_active' => 1,
+                'is_delete' => 0,
+                'preparations_blood_code' => $request->preparations_blood_code,
+                'preparations_blood_name' => $request->preparations_blood_name,
+            ]);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->preparations_blood_name));
+            return return_data_create_success($data);
+        } catch (\Exception $e) {
+            return return_500_error();
+        }
+    }
+      
+    public function preparations_blood_update(UpdatePreparationsBloodRequest $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->preparations_blood->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        try {
+            $data->update([
+                'modify_time' => now()->format('Ymdhis'),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_modifier' => $this->app_modifier,
+                'preparations_blood_name' => $request->preparations_blood_name,
+                'is_active' => $request->is_active
+            ]);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->preparations_blood_name));
+            return return_data_update_success($data);
+        } catch (\Exception $e) {
+            return return_500_error();
+        }
+    }
+
+    public function preparations_blood_delete(Request $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->preparations_blood->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        try {
+            $data->delete();
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->preparations_blood_name));
+            return return_data_delete_success();
+        } catch (\Exception $e) {
+            return return_data_delete_fail();
+        }
+    }
 }

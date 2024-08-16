@@ -12,7 +12,8 @@ class PtttCatastrophe extends Model
     
     protected $connection = 'oracle_his';
     protected $table = 'HIS_Pttt_Catastrophe';
-    protected $fillable = [
-
+    public $timestamps = false;
+    protected $guarded = [
+        'id',
     ];
 }

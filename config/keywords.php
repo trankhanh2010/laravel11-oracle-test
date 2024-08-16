@@ -784,4 +784,35 @@ return [
         'medicine_use_form_name' => 'Tên đường dùng thuốc',
         'num_order' => 'Số thứ tự',
     ],
+    // Loại bệnh án
+    'medi_record_type' => [
+        'medi_record_type_code' => 'Mã loại bệnh án',
+        'medi_record_type_name' => 'Tên loại bệnh án',
+    ],
+    // Vị trí
+    'position' => [
+        'position_code' => 'Mã vị trí',
+        'position_name' => 'Tên vị trí',
+        'description' => 'Ghi chú',
+    ],
+    // Chế phẩm máu
+    'preparations_blood' => [
+        'preparations_blood_code' => 'Mã chế phẩm máu',
+        'preparations_blood_name' => 'Tên chế phẩm máu',
+    ],
+    // Đối tượng ưu tiên
+    'priority_type' => [
+        'priority_type_code' => 'Mã loại đối tượng ưu tiên',
+        'priority_type_name' => 'Tên loại đối tượng ưu tiên',
+        'age_from' => 'Tuối từ',
+        'age_to' => 'Tuổi đến',
+        'bhyt_prefixs' => 'Đầu thẻ BHYT',
+        'is_for_exam_subclinical' => 'Trường ưu tiên khám và cận lâm sàng',
+        'is_for_prescription' => 'Trường ưu tiên phát thuốc',
+    ],
+    // Tai biến PTTT
+    'pttt_catastrophe' => [
+        'pttt_catastrophe_code' => 'Mã tai biến PTTT',
+        'pttt_catastrophe_name' => 'Tên tai biến PTTT',
+    ],
 ];
