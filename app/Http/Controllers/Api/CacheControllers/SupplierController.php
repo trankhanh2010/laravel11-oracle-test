@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers\Api\CacheControllers;
 
+use App\Events\Cache\DeleteCache;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
+use App\Http\Requests\Supplier\CreateSupplierRequest;
+use App\Http\Requests\Supplier\UpdateSupplierRequest;
 use App\Models\HIS\Supplier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -141,4 +144,107 @@ class SupplierController extends BaseApiCacheController
     //     $data = get_cache_full($this->supplier, $param, $name, $id, $this->time);
     //     return response()->json(['data' => $data], 200);
     // }
+    public function supplier_create(CreateSupplierRequest $request)
+    {
+        try {
+            $data = $this->supplier::create([
+                'create_time' => now()->format('Ymdhis'),
+                'modify_time' => now()->format('Ymdhis'),
+                'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_creator' => $this->app_creator,
+                'app_modifier' => $this->app_modifier,
+                'is_active' => 1,
+                'is_delete' => 0,
+
+                'supplier_code' => $request->supplier_code,
+                'supplier_name' => $request->supplier_name,
+                'supplier_short_name' => $request->supplier_short_name,
+                'email' => $request->email,
+                'phone' => $request->phone,
+                'tax_code' => $request->tax_code,
+
+                'representative' => $request->representative,
+                'position' => $request->position,
+                'auth_letter_num' => $request->auth_letter_num,
+                'auth_letter_issue_date' => $request->auth_letter_issue_date,
+                'contract_num' => $request->contract_num,
+                'contract_date' => $request->contract_date,
+
+                'bank_account' => $request->bank_account,
+                'fax' => $request->fax,
+                'bank_info' => $request->bank_info,
+                'address' => $request->address,
+
+            ]);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->supplier_name));
+            return return_data_create_success($data);
+        } catch (\Exception $e) {
+            return return_500_error();
+        }
+    }
+                 
+    public function supplier_update(UpdateSupplierRequest $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->supplier->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        try {
+            $data->update([
+                'modify_time' => now()->format('Ymdhis'),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_modifier' => $this->app_modifier,
+
+                'supplier_code' => $request->supplier_code,
+                'supplier_name' => $request->supplier_name,
+                'supplier_short_name' => $request->supplier_short_name,
+                'email' => $request->email,
+                'phone' => $request->phone,
+                'tax_code' => $request->tax_code,
+
+                'representative' => $request->representative,
+                'position' => $request->position,
+                'auth_letter_num' => $request->auth_letter_num,
+                'auth_letter_issue_date' => $request->auth_letter_issue_date,
+                'contract_num' => $request->contract_num,
+                'contract_date' => $request->contract_date,
+
+                'bank_account' => $request->bank_account,
+                'fax' => $request->fax,
+                'bank_info' => $request->bank_info,
+                'address' => $request->address,
+
+                'is_active' => $request->is_active
+            ]);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->supplier_name));
+            return return_data_update_success($data);
+        } catch (\Exception $e) {
+            return return_500_error();
+        }
+    }
+
+    public function supplier_delete(Request $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->supplier->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        try {
+            $data->delete();
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->supplier_name));
+            return return_data_delete_success();
+        } catch (\Exception $e) {
+            return return_data_delete_fail();
+        }
+    }
 }

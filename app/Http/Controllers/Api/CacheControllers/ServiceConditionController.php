@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers\Api\CacheControllers;
 
+use App\Events\Cache\DeleteCache;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
+use App\Http\Requests\ServiceCondition\CreateServiceConditionRequest;
+use App\Http\Requests\ServiceCondition\UpdateServiceConditionRequest;
 use App\Models\HIS\ServiceCondition;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -125,5 +128,82 @@ class ServiceConditionController extends BaseApiCacheController
             $this->order_by_name => $this->order_by_request
         ];
         return return_data_success($param_return, $data?? ($data['data'] ?? null));
+    }
+
+    public function service_condition_create(CreateServiceConditionRequest $request)
+    {
+        try {
+            $data = $this->service_condition::create([
+                'create_time' => now()->format('Ymdhis'),
+                'modify_time' => now()->format('Ymdhis'),
+                'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_creator' => $this->app_creator,
+                'app_modifier' => $this->app_modifier,
+                'is_active' => 1,
+                'is_delete' => 0,
+
+                'service_condition_code' => $request->service_condition_code,
+                'service_condition_name' => $request->service_condition_name,
+                'hein_ratio' => $request->hein_ratio,
+                'hein_price' => $request->hein_price,
+                'service_id' => $request->service_id,
+
+            ]);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->service_condition_name));
+            return return_data_create_success($data);
+        } catch (\Exception $e) {
+            return return_500_error();
+        }
+    }
+        
+    public function service_condition_update(UpdateServiceConditionRequest $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->service_condition->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        try {
+            $data->update([
+                'modify_time' => now()->format('Ymdhis'),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_modifier' => $this->app_modifier,
+
+                'service_condition_code' => $request->service_condition_code,
+                'service_condition_name' => $request->service_condition_name,
+                'hein_ratio' => $request->hein_ratio,
+                'hein_price' => $request->hein_price,
+                'service_id' => $request->service_id,
+                'is_active' => $request->is_active
+            ]);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->service_condition_name));
+            return return_data_update_success($data);
+        } catch (\Exception $e) {
+            return return_500_error();
+        }
+    }
+     
+    public function service_condition_delete(Request $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->service_condition->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        try {
+            $data->delete();
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->service_condition_name));
+            return return_data_delete_success();
+        } catch (\Exception $e) {
+            return return_data_delete_fail();
+        }
     }
 }

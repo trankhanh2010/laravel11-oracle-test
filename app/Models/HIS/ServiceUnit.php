@@ -11,8 +11,9 @@ class ServiceUnit extends Model
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his';
     protected $table = 'HIS_Service_Unit';
-    protected $fillable = [
-        'convert_id',
+    public $timestamps = false;
+    protected $guarded = [
+        'id',
     ];
 
     public function convert()

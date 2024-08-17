@@ -521,6 +521,9 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisServiceCondition'], function () {
         Route::get("v1/service-condition", [ServiceConditionController::class, "service_condition"])->name('.get');
         Route::get("v1/service-condition/{id}", [ServiceConditionController::class, "service_condition"])->name('.get_id');
+        Route::post("v1/service-condition", [ServiceConditionController::class, "service_condition_create"])->name('.create');
+        Route::put("v1/service-condition/{id}", [ServiceConditionController::class, "service_condition_update"])->name('.update');
+        Route::delete("v1/service-condition/{id}", [ServiceConditionController::class, "service_condition_delete"])->name('.delete');
     });
 
     /// Dịch vụ máy
@@ -720,6 +723,9 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisServiceUnitEdit'], function () {
         Route::get("v1/service-unit", [ServiceUnitController::class, "service_unit"])->name('.get');
         Route::get("v1/service-unit/{id}", [ServiceUnitController::class, "service_unit"])->name('.get_id');
+        Route::post("v1/service-unit", [ServiceUnitController::class, "service_unit_create"])->name('.create');
+        Route::put("v1/service-unit/{id}", [ServiceUnitController::class, "service_unit_update"])->name('.update');
+        Route::delete("v1/service-unit/{id}", [ServiceUnitController::class, "service_unit_delete"])->name('.delete');
     });
 
     /// Loại dịch vụ
@@ -1015,12 +1021,18 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisTreatmentEndType'], function () {
         Route::get("v1/treatment-end-type", [TreatmentEndTypeController::class, "treatment_end_type"])->name('.get');
         Route::get("v1/treatment-end-type/{id}", [TreatmentEndTypeController::class, "treatment_end_type"])->name('.get_id');
+        Route::post("v1/treatment-end-type", [TreatmentEndTypeController::class, "treatment_end_type_create"])->name('.create');
+        Route::put("v1/treatment-end-type/{id}", [TreatmentEndTypeController::class, "treatment_end_type_update"])->name('.update');
+        Route::delete("v1/treatment-end-type/{id}", [TreatmentEndTypeController::class, "treatment_end_type_delete"])->name('.delete');
     });
 
     /// Lý do chuyển tuyến chuyên môn
     Route::group(['as' => 'HIS.Desktop.Plugins.TranPatiTech'], function () {
         Route::get("v1/tran-pati-tech", [TranPatiTechController::class, "tran_pati_tech"])->name('.get');
         Route::get("v1/tran-pati-tech/{id}", [TranPatiTechController::class, "tran_pati_tech"])->name('.get_id');
+        Route::post("v1/tran-pati-tech", [TranPatiTechController::class, "tran_pati_tech_create"])->name('.create');
+        Route::put("v1/tran-pati-tech/{id}", [TranPatiTechController::class, "tran_pati_tech_update"])->name('.update');
+        Route::delete("v1/tran-pati-tech/{id}", [TranPatiTechController::class, "tran_pati_tech_delete"])->name('.delete');
     });
 
     /// Lý do hội chẩn
@@ -1093,6 +1105,9 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisSupplier'], function () {
         Route::get("v1/supplier", [SupplierController::class, "supplier"])->name('.get');
         Route::get("v1/supplier/{id}", [SupplierController::class, "supplier"])->name('.get_id');
+        Route::post("v1/supplier", [SupplierController::class, "supplier_create"])->name('.create');
+        Route::put("v1/supplier/{id}", [SupplierController::class, "supplier_update"])->name('.update');
+        Route::delete("v1/supplier/{id}", [SupplierController::class, "supplier_delete"])->name('.delete');
     });
 
     /// Phương pháp chế biến

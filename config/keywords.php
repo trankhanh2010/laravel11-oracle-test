@@ -879,4 +879,57 @@ return [
         'is_functional_food' => 'Trường là thực phẩm chức năng',
         'is_drug_store' => 'Trường là thuốc thuộc quầy thuốc',
     ],
+    // Điều kiện dịch vụ
+    'service_condition' => [
+        'service_condition_code' => 'Mã điều kiện dịch vụ',
+        'service_condition_name' => 'Tên điều kiện dịch vụ',
+        'hein_ratio' => 'Tỉ lệ BH thanh toán',
+        'hein_price' => 'Giá trần BHYT',
+        'service_id' => 'Id dịch vụ',
+    ],
+    // Đơn vị tính
+    'service_unit' => [
+        'service_unit_code' => 'Mã đơn vị tính',
+        'service_unit_name' => 'Tên đơn vị tính',
+        'service_unit_symbol' => 'Kí hiệu',
+        'medicine_num_order' => 'Số thứ tự sắp xếp thuốc',
+        'material_num_order' => 'Số thứ tự sắp xếp vật tư',
+        'convert_id' => 'Id đơn vị chuyển đổi',
+        'convert_ratio' => 'Tỉ lệ chuyển đổi',
+        'is_primary' => 'Trường là đơn vị nhỏ nhất',
+    ],
+    // Nhà cung cấp
+    'supplier' => [
+        'supplier_code' => 'Mã nhà cung cấp',
+        'supplier_name' => 'Tên nhà cung cấp',
+        'supplier_short_name' => 'Tên viết tắt',
+        'email' => 'Email',
+        'phone' => 'Số điện thoại',
+        'tax_code' => 'Mã số thuế',
+
+        'representative' => 'Người đại diện',
+        'position' => 'Chức vụ',
+        'auth_letter_num' => 'Số giấy ủy quyền',
+        'auth_letter_issue_date' => 'Ngày cấp giấy ủy quyền',
+        'contract_num' => 'Số hợp đồng',
+        'contract_date' => 'Ngày hợp đồng',
+
+        'bank_account' => 'Số tài khoản ngân hàng',
+        'fax' => 'FAX',
+        'bank_info' => 'Thông tin tài khoản ngân hàng',
+        'address' => 'Địa chỉ',
+    ],
+    // Lý do chuyển tuyến chuyên môn
+    'tran_pati_tech' => [
+        'tran_pati_tech_code' => 'Mã lý do chuyển tuyến chuyên môn',
+        'tran_pati_tech_name' => 'Tên lý do chuyển tuyến chuyên môn',
+    ],
+    // Loại ra viện
+    'treatment_end_type' => [
+        'treatment_end_type_code' => 'Mã loại ra viện',
+        'treatment_end_type_name' => 'Tên loại ra viện',
+        'end_code_prefix' => 'Tiền tố sinh sổ ra viện',
+        'is_for_out_patient' => 'Trường là bệnh nhân khám',
+        'is_for_in_patient' => 'Trường là bệnh nhân nhập viện',
+    ],
 ];

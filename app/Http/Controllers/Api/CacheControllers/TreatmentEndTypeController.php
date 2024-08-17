@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers\Api\CacheControllers;
 
+use App\Events\Cache\DeleteCache;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
+use App\Http\Requests\TreatmentEndType\CreateTreatmentEndTypeRequest;
+use App\Http\Requests\TreatmentEndType\UpdateTreatmentEndTypeRequest;
+use App\Http\Requests\TreatmentType\UpdateTreatmentTypeRequest;
 use App\Models\HIS\TreatmentEndType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -141,4 +145,93 @@ class TreatmentEndTypeController extends BaseApiCacheController
     //     $data = get_cache_full($this->treatment_end_type, $param, $name, $id, $this->time);
     //     return response()->json(['data' => $data], 200);
     // }
+    public function treatment_end_type_create(CreateTreatmentEndTypeRequest $request)
+    {
+        try {
+            $data = $this->treatment_end_type::create([
+                'create_time' => now()->format('Ymdhis'),
+                'modify_time' => now()->format('Ymdhis'),
+                'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_creator' => $this->app_creator,
+                'app_modifier' => $this->app_modifier,
+                'is_active' => 1,
+                'is_delete' => 0,
+
+                'treatment_end_type_code' => $request->treatment_end_type_code,
+                'treatment_end_type_name' => $request->treatment_end_type_name,
+                'end_code_prefix' => $request->end_code_prefix,
+                'is_for_out_patient' => $request->is_for_out_patient,
+                'is_for_in_patient' => $request->is_for_in_patient,
+
+            ]);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->treatment_end_type_name));
+            return return_data_create_success($data);
+        } catch (\Exception $e) {
+            return return_500_error();
+        }
+    }
+          
+    public function treatment_end_type_update(UpdateTreatmentEndTypeRequest $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->treatment_end_type->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        try {
+            if($data->is_active == 0){
+                $data->update([
+                    'modify_time' => now()->format('Ymdhis'),
+                    'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                    'app_modifier' => $this->app_modifier,
+    
+                    'treatment_end_type_code' => $request->treatment_end_type_code,
+                    'treatment_end_type_name' => $request->treatment_end_type_name,
+                    'end_code_prefix' => $request->end_code_prefix,
+                    'is_for_out_patient' => $request->is_for_out_patient,
+                    'is_for_in_patient' => $request->is_for_in_patient,
+                    'is_active' => $request->is_active
+                ]);
+            }else{
+                $data->update([
+                    'modify_time' => now()->format('Ymdhis'),
+                    'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                    'app_modifier' => $this->app_modifier,
+    
+                    'end_code_prefix' => $request->end_code_prefix,
+                    'is_for_out_patient' => $request->is_for_out_patient,
+                    'is_for_in_patient' => $request->is_for_in_patient,
+                    'is_active' => $request->is_active
+                ]);
+            }
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->treatment_end_type_name));
+            return return_data_update_success($data);
+        } catch (\Exception $e) {
+            return return_500_error();
+        }
+    }
+
+    public function treatment_end_type_delete(Request $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->treatment_end_type->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        try {
+            $data->delete();
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->treatment_end_type_name));
+            return return_data_delete_success();
+        } catch (\Exception $e) {
+            return return_data_delete_fail();
+        }
+    }
 }

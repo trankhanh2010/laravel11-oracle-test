@@ -39,7 +39,7 @@ class UpdateManufacturerRequest extends FormRequest
             'manufacturer_name' =>      'required|string|max:1000',
             'manufacturer_short_name' =>    'nullable|string|max:50',
             'email' =>          'nullable|string|max:100|email',                       
-            'phone' =>          'nullable|string|max:20|regex:/^[0-9]+$/', 
+            'phone' =>          'nullable|string|max:20', 
             'address' =>        'nullable|string|max:2000',
             'is_active' =>               'required|integer|in:0,1'
 
@@ -66,7 +66,7 @@ class UpdateManufacturerRequest extends FormRequest
 
             'phone.string'      => config('keywords')['manufacturer']['phone'].config('keywords')['error']['string'],
             'phone.max'         => config('keywords')['manufacturer']['phone'].config('keywords')['error']['string_max'],
-            'phone.regex'         => config('keywords')['manufacturer']['phone'].config('keywords')['error']['regex_phone'],
+            // 'phone.regex'         => config('keywords')['manufacturer']['phone'].config('keywords')['error']['regex_phone'],
 
             'address.string'      => config('keywords')['manufacturer']['address'].config('keywords')['error']['string'],
             'address.max'         => config('keywords')['manufacturer']['address'].config('keywords')['error']['string_max'],

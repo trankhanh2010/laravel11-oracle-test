@@ -11,5 +11,8 @@ class ServiceCondition extends Model
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his';
     protected $table = 'HIS_Service_Condition';
- 
+    public $timestamps = false;
+    protected $guarded = [
+        'id',
+    ];
 }
