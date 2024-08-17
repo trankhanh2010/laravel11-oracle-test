@@ -11,10 +11,9 @@ class MediStockMety extends Model
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his';
     protected $table = 'HIS_Medi_Stock_Mety';
-    protected $fillable = [
-        'medi_stock_id',
-        'medicine_type_id',
-        'exp_medi_stock_id'
+    public $timestamps = false;
+    protected $guarded = [
+        'id',
     ];
 
     public function medi_stock()

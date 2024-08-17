@@ -133,6 +133,7 @@ use App\Http\Controllers\Api\CacheControllers\DebateTypeController;
 use App\Http\Controllers\Api\CacheControllers\IcdGroupController;
 use App\Http\Controllers\Api\CacheControllers\AgeTypeController;
 use App\Http\Controllers\Api\CacheControllers\MedicineController;
+use App\Http\Controllers\Api\CacheControllers\MedicineTypeController;
 
 // Data Controllers
 use App\Http\Controllers\Api\DataControllers\DebateController;
@@ -763,6 +764,7 @@ Route::group([
         // Trả về tất cả mối quan hệ
         Route::get("v1/mest-patient-type", [MestPatientTypeController::class, "mest_patient_type"])->name('.get');
         Route::get("v1/mest-patient-type/{id}", [MestPatientTypeController::class, "mest_patient_type"])->name('.get_id');
+        Route::post("v1/mest-patient-type", [MestPatientTypeController::class, "mest_patient_type_create"])->name('.create');
         // // Trả về tất cả kho cùng đối tượng
         // Route::get("v1/medi-stock/all/patient-type", [HISController::class, "medi_stock_with_patient_type"]);
         // Route::get("v1/medi-stock/{id}/patient-type", [HISController::class, "medi_stock_with_patient_type"]);
@@ -776,6 +778,7 @@ Route::group([
         // Trả về tất cả mối quan hệ
         Route::get("v1/medi-stock-mety-list", [MediStockMetyController::class, "medi_stock_mety_list"])->name('.get');
         Route::get("v1/medi-stock-mety-list/{id}", [MediStockMetyController::class, "medi_stock_mety_list"])->name('.get_id');
+        Route::post("v1/medi-stock-mety-list", [MediStockMetyController::class, "medi_stock_mety_list_create"])->name('.create');
         // // Trả về tất cả kho cùng loại thuốc 
         // Route::get("v1/medi-stock/all/medicine-type", [HISController::class, "medi_stock_with_medicine_type"]);
         // Route::get("v1/medi-stock/{id}/medicine-type", [HISController::class, "medi_stock_with_medicine_type"]);
@@ -864,6 +867,9 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisWorkPlace'], function () {
         Route::get("v1/work-place", [WorkPlaceController::class, "work_place"])->name('.get');
         Route::get("v1/work-place/{id}", [WorkPlaceController::class, "work_place"])->name('.get_id');
+        Route::post("v1/work-place", [WorkPlaceController::class, "work_place_create"])->name('.create');
+        Route::put("v1/work-place/{id}", [WorkPlaceController::class, "work_place_update"])->name('.update');
+        Route::delete("v1/work-place/{id}", [WorkPlaceController::class, "work_place_delete"])->name('.delete');
     });
 
     /// Ngôi thai
@@ -926,6 +932,10 @@ Route::group([
     /// Thuốc
     Route::get("v1/medicine", [MedicineController::class, "medicine"])->name('.get_medicine');
     Route::get("v1/medicine/{id}", [MedicineController::class, "medicine"])->name('.get_medicine_id');
+
+    /// Loại thuốc
+    Route::get("v1/medicine-type", [MedicineTypeController::class, "medicine_type"])->name('.get_medicine_type');
+    Route::get("v1/medicine-type/{id}", [MedicineTypeController::class, "medicine_type"])->name('.get_medicine_type_id');
 
     /// Bộ phận thương tích
     Route::group(['as' => 'HIS.Desktop.Plugins.HisAccidentBodyPart'], function () {
@@ -1066,6 +1076,9 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisUnlimitReason'], function () {
         Route::get("v1/unlimit-reason", [UnlimitReasonController::class, "unlimit_reason"])->name('.get');
         Route::get("v1/unlimit-reason/{id}", [UnlimitReasonController::class, "unlimit_reason"])->name('.get_id');
+        Route::post("v1/unlimit-reason", [UnlimitReasonController::class, "unlimit_reason_create"])->name('.create');
+        Route::put("v1/unlimit-reason/{id}", [UnlimitReasonController::class, "unlimit_reason_update"])->name('.update');
+        Route::delete("v1/unlimit-reason/{id}", [UnlimitReasonController::class, "unlimit_reason_delete"])->name('.delete');
     });
 
     /// Lý do nhập viện

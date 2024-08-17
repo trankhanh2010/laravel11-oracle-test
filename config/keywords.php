@@ -932,4 +932,36 @@ return [
         'is_for_out_patient' => 'Trường là bệnh nhân khám',
         'is_for_in_patient' => 'Trường là bệnh nhân nhập viện',
     ],
+    // Lý do mở trần
+    'unlimit_reason' => [
+        'unlimit_reason' => 'Lý do mở trần',
+    ],
+    // Nơi làm việc
+    'work_place' => [
+        'work_place_code' => 'Mã nơi làm việc',
+        'work_place_name' => 'Tên nơi làm việc',
+        'address' => 'Địa chỉ',
+        'director_name' => 'Tên giám đốc',
+        'tax_code' => 'Mã số thuế',
+        'phone' => 'Số điện thoại',
+        'contact_name' => 'Tên người liên hệ',
+        'contact_mobile' => 'Điện thoại người liên hệ',
+    ],
+    // Kho - Đối tượng
+    'mest_patient_type' => [
+        'medi_stock_id' => 'Id kho',
+        'patient_type_ids' => 'Danh sách Id đối tượng',
+        'patient_type_id' => 'Id đối tượng',
+        'medi_stock_ids' => 'Danh sách Id kho',
+    ],
+    // Kho - Loại thuốc
+    'medi_stock_mety' => [
+        'medi_stock_id' => 'Id kho',
+        'medicine_type_ids' => 'Danh sách Id loại thuốc',
+        'medicine_type_id' => 'Id loại thuốc',
+        'medi_stock_ids' => 'Danh sách Id kho',
+        'is_prevent_max' => 'Trường chặn nhập quá trần',
+        'is_prevent_exp' => 'Trường không cho xuất',
+        'is_goods_restrict' => 'Trường là thuốc giới hạn',  
+    ],
 ];

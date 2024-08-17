@@ -12,7 +12,8 @@ class WorkPlace extends Model
     
     protected $connection = 'oracle_his'; 
     protected $table = 'HIS_Work_Place';
-    protected $fillable = [
-
+    public $timestamps = false;
+    protected $guarded = [
+        'id',
     ];
 }

@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers\Api\CacheControllers;
 
+use App\Events\Cache\DeleteCache;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
+use App\Http\Requests\MediStockMety\CreateMediStockMetyRequest;
+use App\Models\HIS\MedicineType;
+use App\Models\HIS\MediStock;
 use App\Models\HIS\MediStockMety;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -14,7 +18,8 @@ class MediStockMetyController extends BaseApiCacheController
     {
         parent::__construct($request); // Gọi constructor của BaseController
         $this->medi_stock_mety = new MediStockMety();
-
+        $this->medi_stock = new MediStock();
+        $this->medicine_type = new MedicineType();
         // Kiểm tra tên trường trong bảng
         if ($this->order_by != null) {
             $columns = $this->get_columns_table($this->medi_stock_mety);
@@ -265,4 +270,92 @@ class MediStockMetyController extends BaseApiCacheController
     //     $data = get_cache_full($this->medicine_type, $param, $name, $id, $this->time);
     //     return response()->json(['data' => $data], 200);
     // }
+    public function medi_stock_mety_list_create(CreateMediStockMetyRequest $request)
+    {
+        if($request->medi_stock_id != null){
+            $id = $request->medi_stock_id;
+            if (!is_numeric($id)) {
+                return return_id_error($id);
+            }
+            $data = $this->medi_stock->find($id);
+            if ($data == null) {
+                return return_not_record($id);
+            }   
+            // Start transaction
+            DB::connection('oracle_his')->beginTransaction();
+            try {
+                if($request->medicine_type_ids !== null){
+                    $medicine_type_ids_arr = explode(',', $request->medicine_type_ids);
+                    foreach($medicine_type_ids_arr as $key => $item){
+                        $medicine_type_ids_arr_data[$item] =  [
+                            'create_time' => now()->format('Ymdhis'),
+                            'modify_time' => now()->format('Ymdhis'),
+                            'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
+                            'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                            'app_creator' => $this->app_creator,
+                            'app_modifier' => $this->app_modifier,
+                            'is_prevent_max' => $request->is_prevent_max,
+                            'is_prevent_exp' => $request->is_prevent_exp,
+                            'is_goods_restrict' => $request->is_goods_restrict,
+                        ];
+                    }
+                    foreach($medicine_type_ids_arr as $key => $item){
+                        $data->medicine_types()->sync($medicine_type_ids_arr_data);
+                    }
+                }else{
+                    MediStockMety::where('medi_stock_id', $data->id)->delete();
+                }
+                DB::connection('oracle_his')->commit();
+                // Gọi event để xóa cache
+                event(new DeleteCache($this->medi_stock_mety_name));
+                return return_data_create_success([$data]);
+            } catch (\Exception $e) {
+                // Rollback transaction nếu có lỗi
+                DB::connection('oracle_his')->rollBack();
+                return return_data_fail_transaction();
+            }
+        }else{
+            $id = $request->medicine_type_id;
+            if (!is_numeric($id)) {
+                return return_id_error($id);
+            }
+            $data = $this->medicine_type->find($id);
+            if ($data == null) {
+                return return_not_record($id);
+            }
+            // Start transaction
+            DB::connection('oracle_his')->beginTransaction();
+            try {
+                if($request->medi_stock_ids !== null){
+                    $medi_stock_ids_arr = explode(',', $request->medi_stock_ids);
+                    foreach($medi_stock_ids_arr as $key => $item){
+                        $medi_stock_ids_arr_data[$item] =  [
+                            'create_time' => now()->format('Ymdhis'),
+                            'modify_time' => now()->format('Ymdhis'),
+                            'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
+                            'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                            'app_creator' => $this->app_creator,
+                            'app_modifier' => $this->app_modifier,
+                            'is_prevent_max' => $request->is_prevent_max,
+                            'is_prevent_exp' => $request->is_prevent_exp,
+                            'is_goods_restrict' => $request->is_goods_restrict,
+                        ];
+                    }
+                    foreach($medi_stock_ids_arr as $key => $item){
+                        $data->medi_stocks()->sync($medi_stock_ids_arr_data);
+                    }
+                }else{
+                    MediStockMety::where('medicine_type_id', $data->id)->delete();
+                }
+                DB::connection('oracle_his')->commit();
+                // Gọi event để xóa cache
+                event(new DeleteCache($this->medi_stock_mety_name));
+                return return_data_create_success([$data]);
+            } catch (\Exception $e) {
+                // Rollback transaction nếu có lỗi
+                DB::connection('oracle_his')->rollBack();
+                return return_data_fail_transaction();
+            }
+        }
+    }
 }

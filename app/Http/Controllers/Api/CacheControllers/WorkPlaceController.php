@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers\Api\CacheControllers;
 
+use App\Events\Cache\DeleteCache;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
+use App\Http\Requests\WorkPlace\CreateWorkPlaceRequest;
+use App\Http\Requests\WorkPlace\UpdateWorkPlaceRequest;
 use App\Models\HIS\WorkPlace;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -128,17 +131,89 @@ class WorkPlaceController extends BaseApiCacheController
             return return_500_error();
         }
     }
-    // /// Work Place
-    // public function work_place($id = null)
-    // {
-    //     if ($id == null) {
-    //         $name = $this->work_place_name;
-    //         $param = [];
-    //     } else {
-    //         $name = $this->work_place_name . '_' . $id;
-    //         $param = [];
-    //     }
-    //     $data = get_cache_full($this->work_place, $param, $name, $id, $this->time);
-    //     return response()->json(['data' => $data], 200);
-    // }
+    public function work_place_create(CreateWorkPlaceRequest $request)
+    {
+        try {
+            $data = $this->work_place::create([
+                'create_time' => now()->format('Ymdhis'),
+                'modify_time' => now()->format('Ymdhis'),
+                'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_creator' => $this->app_creator,
+                'app_modifier' => $this->app_modifier,
+                'is_active' => 1,
+                'is_delete' => 0,
+
+                'work_place_code' => $request->work_place_code,
+                'work_place_name' => $request->work_place_name,
+                'address' => $request->address,
+                'director_name' => $request->director_name,
+                'tax_code' => $request->tax_code,
+                'phone' => $request->phone,
+
+                'contact_name' => $request->contact_name,
+                'contact_mobile' => $request->contact_mobile,
+
+            ]);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->work_place_name));
+            return return_data_create_success($data);
+        } catch (\Exception $e) {
+            return return_500_error();
+        }
+    }
+            
+    public function work_place_update(UpdateWorkPlaceRequest $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->work_place->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        try {
+            $data->update([
+                'modify_time' => now()->format('Ymdhis'),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_modifier' => $this->app_modifier,
+
+                'work_place_code' => $request->work_place_code,
+                'work_place_name' => $request->work_place_name,
+                'address' => $request->address,
+                'director_name' => $request->director_name,
+                'tax_code' => $request->tax_code,
+                'phone' => $request->phone,
+
+                'contact_name' => $request->contact_name,
+                'contact_mobile' => $request->contact_mobile,
+
+                'is_active' => $request->is_active
+            ]);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->work_place_name));
+            return return_data_update_success($data);
+        } catch (\Exception $e) {
+            return return_500_error();
+        }
+    }
+
+    public function work_place_delete(Request $request, $id)
+    {
+        if (!is_numeric($id)) {
+            return return_id_error($id);
+        }
+        $data = $this->work_place->find($id);
+        if ($data == null) {
+            return return_not_record($id);
+        }
+        try {
+            $data->delete();
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->work_place_name));
+            return return_data_delete_success();
+        } catch (\Exception $e) {
+            return return_data_delete_fail();
+        }
+    }
 }
