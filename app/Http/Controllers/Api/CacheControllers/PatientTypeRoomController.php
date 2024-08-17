@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers\Api\CacheControllers;
 
+use App\Events\Cache\DeleteCache;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
+use App\Http\Requests\PatientTypeRoom\CreatePatientTypeRoomRequest;
+use App\Models\HIS\PatientType;
 use App\Models\HIS\PatientTypeRoom;
+use App\Models\HIS\Room;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -14,7 +18,8 @@ class PatientTypeRoomController extends BaseApiCacheController
     {
         parent::__construct($request); // Gọi constructor của BaseController
         $this->patient_type_room = new PatientTypeRoom();
-
+        $this->patient_type = new PatientType();
+        $this->room = new Room();
         // Kiểm tra tên trường trong bảng
         if ($this->order_by != null) {
             $columns = $this->get_columns_table($this->patient_type_room);
@@ -353,4 +358,88 @@ class PatientTypeRoomController extends BaseApiCacheController
     //     $data = get_cache_full($this->room, $param, $name, $id, $this->time);
     //     return response()->json(['data' => $data], 200);
     // }
+    public function patient_type_room_create(CreatePatientTypeRoomRequest $request)
+    {   
+        if($request->patient_type_id != null){
+            $id = $request->patient_type_id;
+            if (!is_numeric($id)) {
+                return return_id_error($id);
+            } 
+            $data = $this->patient_type->find($id);
+            if ($data == null) {
+                return return_not_record($id);
+            }   
+            // Start transaction
+            DB::connection('oracle_his')->beginTransaction();
+            try {
+                if($request->room_ids !== null){
+                    $room_ids_arr = explode(',', $request->room_ids);
+                    foreach($room_ids_arr as $key => $item){
+                        $room_ids_arr_data[$item] =  [
+                            'create_time' => now()->format('Ymdhis'),
+                            'modify_time' => now()->format('Ymdhis'),
+                            'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
+                            'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                            'app_creator' => $this->app_creator,
+                            'app_modifier' => $this->app_modifier,
+
+                        ];
+                    }
+                    foreach($room_ids_arr as $key => $item){
+                        $data->rooms()->sync($room_ids_arr_data);
+                    }
+                }else{
+                    PatientTypeRoom::where('patient_type_id', $data->id)->delete();
+                }
+                DB::connection('oracle_his')->commit();
+                // Gọi event để xóa cache
+                event(new DeleteCache($this->patient_type_room_name));
+                return return_data_create_success([$data]);
+            } catch (\Exception $e) {
+                // Rollback transaction nếu có lỗi
+                DB::connection('oracle_his')->rollBack();
+                return return_data_fail_transaction();
+            }  
+        }else{
+            $id = $request->room_id;
+            if (!is_numeric($id)) {
+                return return_id_error($id);
+            }
+            $data = $this->room->find($id);
+            if ($data == null) {
+                return return_not_record($id);
+            }
+            // Start transaction
+            DB::connection('oracle_his')->beginTransaction();
+            try {
+                if($request->patient_type_ids !== null){
+                    $patient_type_ids_arr = explode(',', $request->patient_type_ids);
+                    foreach($patient_type_ids_arr as $key => $item){
+                        $patient_type_ids_arr_data[$item] =  [
+                            'create_time' => now()->format('Ymdhis'),
+                            'modify_time' => now()->format('Ymdhis'),
+                            'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
+                            'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                            'app_creator' => $this->app_creator,
+                            'app_modifier' => $this->app_modifier,
+
+                        ];
+                    }
+                    foreach($patient_type_ids_arr as $key => $item){
+                        $data->patient_types()->sync($patient_type_ids_arr_data);
+                    }
+                }else{
+                    PatientTypeRoom::where('room_id', $data->id)->delete();
+                }
+                DB::connection('oracle_his')->commit();
+                // Gọi event để xóa cache
+                event(new DeleteCache($this->patient_type_room_name));
+                return return_data_create_success([$data]);
+            } catch (\Exception $e) {
+                // Rollback transaction nếu có lỗi
+                DB::connection('oracle_his')->rollBack();
+                return return_data_fail_transaction();
+            }
+        }
+    }
 }

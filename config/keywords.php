@@ -964,4 +964,37 @@ return [
         'is_prevent_exp' => 'Trường không cho xuất',
         'is_goods_restrict' => 'Trường là thuốc giới hạn',  
     ],
+    // Kho - Loại vật tư
+    'medi_stock_maty' => [
+        'medi_stock_id' => 'Id kho',
+        'material_type_ids' => 'Danh sách Id loại vật tư',
+        'material_type_id' => 'Id loại vật tư',
+        'medi_stock_ids' => 'Danh sách Id kho',
+        'is_prevent_max' => 'Trường chặn nhập quá trần',
+        'is_goods_restrict' => 'Trường là vật tư giới hạn',  
+    ],
+    // Kho - Phòng
+    'mest_room' => [
+        'medi_stock_id' => 'Id kho',
+        'room_ids' => 'Danh sách Id phòng',
+        'room_id' => 'Id phòng',
+        'medi_stock_ids' => 'Danh sách Id kho',
+    ],
+    // Phòng chỉ định - Phòng thực hiện
+    'exro_room' => [
+        'room_id' => 'Id phòng chỉ định',
+        'execute_room_ids' => 'Danh sách Id phòng thực hiện',
+        'execute_room_id' => 'Id phòng thực hiện',
+        'room_ids' => 'Danh sách Id phòng chỉ định',
+        'is_hold_order' => 'Trường được lấy STT ưu tiên',
+        'is_allow_request' => 'Trường được quyền chỉ định dịch vụ',
+        'is_priority_require' => 'Trường ưu tiên chỉ định đến phòng xl'
+    ],
+    // Phòng thực hiện - Đối tượng bệnh nhân
+    'patient_type_room' => [
+        'room_id' => 'Id phòng thực hiện',
+        'patient_type_ids' => 'Danh sách id đối tượng',
+        'patient_type_id' => 'Id đối tượng',
+        'room_ids' => 'Danh sách id phòng',
+    ],
 ];

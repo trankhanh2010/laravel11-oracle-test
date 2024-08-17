@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers\Api\CacheControllers;
 
+use App\Events\Cache\DeleteCache;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
+use App\Http\Requests\ExroRoom\CreateExroRoomRequest;
+use App\Models\HIS\ExecuteRoom;
 use App\Models\HIS\ExroRoom;
+use App\Models\HIS\Room;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -14,7 +18,8 @@ class ExroRoomController extends BaseApiCacheController
     {
         parent::__construct($request); // Gọi constructor của BaseController
         $this->exro_room = new ExroRoom();
-
+        $this->room = new Room();
+        $this->execute_room = new ExecuteRoom();
         // Kiểm tra tên trường trong bảng
         if ($this->order_by != null) {
             $columns = $this->get_columns_table($this->exro_room);
@@ -375,4 +380,92 @@ class ExroRoomController extends BaseApiCacheController
     //     $data = get_cache_full($this->room, $param, $name, $id, $this->time);
     //     return response()->json(['data' => $data], 200);
     // }
+    public function exro_room_create(CreateExroRoomRequest $request)
+    {   
+        if($request->execute_room_id != null){
+            $id = $request->execute_room_id;
+            if (!is_numeric($id)) {
+                return return_id_error($id);
+            } 
+            $data = $this->execute_room->find($id);
+            if ($data == null) {
+                return return_not_record($id);
+            }   
+            // Start transaction
+            DB::connection('oracle_his')->beginTransaction();
+            try {
+                if($request->room_ids !== null){
+                    $room_ids_arr = explode(',', $request->room_ids);
+                    foreach($room_ids_arr as $key => $item){
+                        $room_ids_arr_data[$item] =  [
+                            'create_time' => now()->format('Ymdhis'),
+                            'modify_time' => now()->format('Ymdhis'),
+                            'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
+                            'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                            'app_creator' => $this->app_creator,
+                            'app_modifier' => $this->app_modifier,
+                            'is_hold_order' => $request->is_hold_order,
+                            'is_allow_request' => $request->is_allow_request,
+                            'is_priority_require' => $request->is_priority_require,
+                        ];
+                    }
+                    foreach($room_ids_arr as $key => $item){
+                        $data->rooms()->sync($room_ids_arr_data);
+                    }
+                }else{
+                    ExroRoom::where('execute_room_id', $data->id)->delete();
+                }
+                DB::connection('oracle_his')->commit();
+                // Gọi event để xóa cache
+                event(new DeleteCache($this->exro_room_name));
+                return return_data_create_success([$data]);
+            } catch (\Exception $e) {
+                // Rollback transaction nếu có lỗi
+                DB::connection('oracle_his')->rollBack();
+                return return_data_fail_transaction();
+            }  
+        }else{
+            $id = $request->room_id;
+            if (!is_numeric($id)) {
+                return return_id_error($id);
+            }
+            $data = $this->room->find($id);
+            if ($data == null) {
+                return return_not_record($id);
+            }
+            // Start transaction
+            DB::connection('oracle_his')->beginTransaction();
+            try {
+                if($request->execute_room_ids !== null){
+                    $execute_room_ids_arr = explode(',', $request->execute_room_ids);
+                    foreach($execute_room_ids_arr as $key => $item){
+                        $execute_room_ids_arr_data[$item] =  [
+                            'create_time' => now()->format('Ymdhis'),
+                            'modify_time' => now()->format('Ymdhis'),
+                            'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
+                            'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                            'app_creator' => $this->app_creator,
+                            'app_modifier' => $this->app_modifier,
+                            'is_hold_order' => $request->is_hold_order,
+                            'is_allow_request' => $request->is_allow_request,
+                            'is_priority_require' => $request->is_priority_require,
+                        ];
+                    }
+                    foreach($execute_room_ids_arr as $key => $item){
+                        $data->execute_rooms()->sync($execute_room_ids_arr_data);
+                    }
+                }else{
+                    ExroRoom::where('room_id', $data->id)->delete();
+                }
+                DB::connection('oracle_his')->commit();
+                // Gọi event để xóa cache
+                event(new DeleteCache($this->exro_room_name));
+                return return_data_create_success([$data]);
+            } catch (\Exception $e) {
+                // Rollback transaction nếu có lỗi
+                DB::connection('oracle_his')->rollBack();
+                return return_data_fail_transaction();
+            }
+        }
+    }
 }

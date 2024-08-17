@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers\Api\CacheControllers;
 
+use App\Events\Cache\DeleteCache;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
+use App\Http\Requests\MestRoom\CreateMestRoomRequest;
+use App\Models\HIS\MediStock;
 use App\Models\HIS\MestRoom;
+use App\Models\HIS\Room;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -14,7 +18,8 @@ class MestRoomController extends BaseApiCacheController
     {
         parent::__construct($request); // Gọi constructor của BaseController
         $this->mest_room = new MestRoom();
-
+        $this->medi_stock = new MediStock();
+        $this->room = new Room();
         // Kiểm tra tên trường trong bảng
         if ($this->order_by != null) {
             $columns = $this->get_columns_table($this->mest_room);
@@ -349,4 +354,88 @@ class MestRoomController extends BaseApiCacheController
     //     $data = get_cache_full($this->room, $param, $name, $id, $this->time);
     //     return response()->json(['data' => $data], 200);
     // }
+    public function mest_export_room_create(CreateMestRoomRequest $request)
+    {
+        if($request->medi_stock_id != null){
+            $id = $request->medi_stock_id;
+            if (!is_numeric($id)) {
+                return return_id_error($id);
+            } 
+            $data = $this->medi_stock->find($id);
+            if ($data == null) {
+                return return_not_record($id);
+            }   
+            // Start transaction
+            DB::connection('oracle_his')->beginTransaction();
+            try {
+                if($request->room_ids !== null){
+                    $room_ids_arr = explode(',', $request->room_ids);
+                    foreach($room_ids_arr as $key => $item){
+                        $room_ids_arr_data[$item] =  [
+                            'create_time' => now()->format('Ymdhis'),
+                            'modify_time' => now()->format('Ymdhis'),
+                            'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
+                            'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                            'app_creator' => $this->app_creator,
+                            'app_modifier' => $this->app_modifier,
+
+                        ];
+                    }
+                    foreach($room_ids_arr as $key => $item){
+                        $data->rooms()->sync($room_ids_arr_data);
+                    }
+                }else{
+                    MestRoom::where('medi_stock_id', $data->id)->delete();
+                }
+                DB::connection('oracle_his')->commit();
+                // Gọi event để xóa cache
+                event(new DeleteCache($this->mest_room_name));
+                return return_data_create_success([$data]);
+            } catch (\Exception $e) {
+                // Rollback transaction nếu có lỗi
+                DB::connection('oracle_his')->rollBack();
+                return return_data_fail_transaction();
+            }  
+        }else{
+            $id = $request->room_id;
+            if (!is_numeric($id)) {
+                return return_id_error($id);
+            }
+            $data = $this->room->find($id);
+            if ($data == null) {
+                return return_not_record($id);
+            }
+            // Start transaction
+            DB::connection('oracle_his')->beginTransaction();
+            try {
+                if($request->medi_stock_ids !== null){
+                    $medi_stock_ids_arr = explode(',', $request->medi_stock_ids);
+                    foreach($medi_stock_ids_arr as $key => $item){
+                        $medi_stock_ids_arr_data[$item] =  [
+                            'create_time' => now()->format('Ymdhis'),
+                            'modify_time' => now()->format('Ymdhis'),
+                            'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
+                            'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                            'app_creator' => $this->app_creator,
+                            'app_modifier' => $this->app_modifier,
+
+                        ];
+                    }
+                    foreach($medi_stock_ids_arr as $key => $item){
+                        $data->medi_stocks()->sync($medi_stock_ids_arr_data);
+                    }
+                }else{
+                    MestRoom::where('room_id', $data->id)->delete();
+                }
+                DB::connection('oracle_his')->commit();
+                // Gọi event để xóa cache
+                event(new DeleteCache($this->mest_room_name));
+                return return_data_create_success([$data]);
+            } catch (\Exception $e) {
+                // Rollback transaction nếu có lỗi
+                DB::connection('oracle_his')->rollBack();
+                return return_data_fail_transaction();
+            }
+        }
+    }
 }

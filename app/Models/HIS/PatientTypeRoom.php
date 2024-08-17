@@ -12,8 +12,9 @@ class PatientTypeRoom extends Model
     
     protected $connection = 'oracle_his'; // Kết nối CSDL mặc định
     protected $table = 'HIS_Patient_Type_Room';
-    protected $fillable = [
-
+    public $timestamps = false;
+    protected $guarded = [
+        'id',
     ];
     public function room()
     {

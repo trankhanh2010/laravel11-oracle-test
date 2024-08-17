@@ -134,6 +134,7 @@ use App\Http\Controllers\Api\CacheControllers\IcdGroupController;
 use App\Http\Controllers\Api\CacheControllers\AgeTypeController;
 use App\Http\Controllers\Api\CacheControllers\MedicineController;
 use App\Http\Controllers\Api\CacheControllers\MedicineTypeController;
+use App\Http\Controllers\Api\CacheControllers\MaterialTypeController;
 
 // Data Controllers
 use App\Http\Controllers\Api\DataControllers\DebateController;
@@ -792,6 +793,7 @@ Route::group([
         // Trả về tất cả mối quan hệ
         Route::get("v1/medi-stock-maty-list", [MediStockMatyController::class, "medi_stock_maty_list"])->name('.get');
         Route::get("v1/medi-stock-maty-list/{id}", [MediStockMatyController::class, "medi_stock_maty_list"])->name('.get_id');
+        Route::post("v1/medi-stock-maty-list", [MediStockMatyController::class, "medi_stock_maty_list_create"])->name('.create');
         // // Trả về tất cả kho cùng loại vật tư 
         // Route::get("v1/medi-stock/all/material-type", [HISController::class, "medi_stock_with_material_type"]);
         // Route::get("v1/medi-stock/{id}/material-type", [HISController::class, "medi_stock_with_material_type"]);
@@ -805,6 +807,7 @@ Route::group([
         // Trả về tất cả mối quan hệ
         Route::get("v1/mest-export-room", [MestRoomController::class, "mest_export_room"])->name('.get');
         Route::get("v1/mest-export-room/{id}", [MestRoomController::class, "mest_export_room"])->name('.get_id');
+        Route::post("v1/mest-export-room", [MestRoomController::class, "mest_export_room_create"])->name('.create');
         // // Trả về tất cả kho cùng phòng
         // Route::get("v1/medi-stock/all/room", [HISController::class, "medi_stock_with_room"]);
         // Route::get("v1/medi-stock/{id}/room", [HISController::class, "medi_stock_with_room"]);
@@ -818,6 +821,7 @@ Route::group([
         // Trả về tất cả mối quan hệ
         Route::get("v1/exro-room", [ExroRoomController::class, "exro_room"])->name('.get');
         Route::get("v1/exro-room/{id}", [ExroRoomController::class, "exro_room"])->name('.get_id');
+        Route::post("v1/exro-room", [ExroRoomController::class, "exro_room_create"])->name('.create');
         // // Trả về tất cả phòng thực hiện cùng phòng chỉ định
         // Route::get("v1/execute-room/all/room", [HISController::class, "execute_room_with_room"]);
         // Route::get("v1/execute-room/{id}/room", [HISController::class, "execute_room_with_room"]);
@@ -831,6 +835,8 @@ Route::group([
         // Trả về tất cả mối quan hệ
         Route::get("v1/patient-type-room", [PatientTypeRoomController::class, "patient_type_room"])->name('.get');
         Route::get("v1/patient-type-room/{id}", [PatientTypeRoomController::class, "patient_type_room"])->name('.get_id');
+        Route::post("v1/patient-type-room", [PatientTypeRoomController::class, "patient_type_room_create"])->name('.create');
+
         // // Trả về tất cả phòng thực hiện cùng đối tượng bệnh nhân
         // Route::get("v1/room/all/patient-type", [HISController::class, "room_with_patient_type"]);
         // Route::get("v1/room/{id}/patient-type", [HISController::class, "room_with_patient_type"]);
@@ -936,6 +942,10 @@ Route::group([
     /// Loại thuốc
     Route::get("v1/medicine-type", [MedicineTypeController::class, "medicine_type"])->name('.get_medicine_type');
     Route::get("v1/medicine-type/{id}", [MedicineTypeController::class, "medicine_type"])->name('.get_medicine_type_id');
+
+    /// Loại vật tư
+    Route::get("v1/material-type", [MaterialTypeController::class, "material_type"])->name('.get_material_type');
+    Route::get("v1/material-type/{id}", [MaterialTypeController::class, "material_type"])->name('.get_material_type_id');
 
     /// Bộ phận thương tích
     Route::group(['as' => 'HIS.Desktop.Plugins.HisAccidentBodyPart'], function () {
