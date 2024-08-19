@@ -176,22 +176,9 @@ class IndexRecordsToElasticsearch extends Command
                 // lấy ra tiền tố his, acs, ....
                 $first_table = strtolower(explode('_', $item)[0]);
                 $name_table = strtolower(substr($item, strlen($first_table . '_')));
-                $results = DB::connection('oracle_' . $first_table)->table($item)->get();
-                // lặp qua từng bản ghi
-                foreach ($results as $result) {
-                    $data = [];
-                    foreach ($result as $key => $value) {
-                        $data[$key] = $value;
-                    }
-                    $params = [
-                        'index' => $name_table,
-                        'id'    => $result->id,
-                        'body'  => $data
-                    ];
+                dispatch(new \App\Jobs\IndexTableToElasticsearch($item, $first_table, $name_table));
 
-                    $client->index($params);
-                }
-                $this->info('Import bang ' . $item . '.');
+                $this->info('Đã dispatch job cho bảng ' . $item . '.');
             }
         }
     }
