@@ -19,6 +19,7 @@ class BedController extends BaseApiCacheController
     {
         parent::__construct($request); // Gọi constructor của BaseController
         $this->bed = new Bed();
+        $this->client = app('Elasticsearch');
 
         // Kiểm tra tên trường trong bảng
         if ($this->order_by != null) {
@@ -35,40 +36,58 @@ class BedController extends BaseApiCacheController
         }
         try {
             $keyword = $this->keyword;
-            if ($keyword != null) {
-                $param = [
-                    'bed_type:id,bed_type_name',
-                    'bed_room:id,bed_room_name,room_id',
-                    'bed_room.room:id,department_id',
-                    'bed_room.room.department:id,department_name'
-                ];
-                $data = $this->bed;
-                $data = $data->where(function ($query) use ($keyword) {
-                    $query = $query
-                        ->where(DB::connection('oracle_his')->raw('bed_code'), 'like', $keyword . '%')
-                        ->orWhere(DB::connection('oracle_his')->raw('bed_name'), 'like', $keyword . '%');
-                });
-                if ($this->is_active !== null) {
-                    $data = $data->where(function ($query) {
-                        $query = $query->where(DB::connection('oracle_his')->raw('his_bed.is_active'), $this->is_active);
-                    });
-                }
-                $count = $data->count();
-                if ($this->order_by != null) {
-                    foreach ($this->order_by as $key => $item) {
-                        $data->orderBy($key, $item);
-                    }
-                }
-                if ($this->get_all) {
-                    $data = $data
-                        ->with($param)
-                        ->get();
+            if ($keyword != null || $this->elastic_search_type != null) {
+                if ($this->elastic_search_type != null) {
+                    $query = $this->buildSearchQuery($this->elastic_search_type, $this->elastic_field, $this->keyword);
+                    $highlight = $this->buildHighlight($this->elastic_search_type);
+                    $data = $this->client->search([
+                        'index' => $this->bed_name,
+                        'body' => [
+                            'query' => $query,
+                            'highlight' => $highlight,
+                            'size' => $this->limit,   
+                            'from' => $this->start,    
+                        ]
+                    ]);
+
+
+                    $count = $data['hits']['total']['value'];
+                    $data = $data['hits']['hits'];
                 } else {
-                    $data = $data
-                        ->skip($this->start)
-                        ->take($this->limit)
-                        ->with($param)
-                        ->get();
+                    $param = [
+                        'bed_type:id,bed_type_name',
+                        'bed_room:id,bed_room_name,room_id',
+                        'bed_room.room:id,department_id',
+                        'bed_room.room.department:id,department_name'
+                    ];
+                    $data = $this->bed;
+                    $data = $data->where(function ($query) use ($keyword) {
+                        $query = $query
+                            ->where(DB::connection('oracle_his')->raw('bed_code'), 'like', $keyword . '%')
+                            ->orWhere(DB::connection('oracle_his')->raw('bed_name'), 'like', $keyword . '%');
+                    });
+                    if ($this->is_active !== null) {
+                        $data = $data->where(function ($query) {
+                            $query = $query->where(DB::connection('oracle_his')->raw('his_bed.is_active'), $this->is_active);
+                        });
+                    }
+                    $count = $data->count();
+                    if ($this->order_by != null) {
+                        foreach ($this->order_by as $key => $item) {
+                            $data->orderBy($key, $item);
+                        }
+                    }
+                    if ($this->get_all) {
+                        $data = $data
+                            ->with($param)
+                            ->get();
+                    } else {
+                        $data = $data
+                            ->skip($this->start)
+                            ->take($this->limit)
+                            ->with($param)
+                            ->get();
+                    }
                 }
             } else {
                 if ($id == null) {
@@ -116,30 +135,30 @@ class BedController extends BaseApiCacheController
     public function bed_create(CreateBedRequest $request)
     {
         try {
-        $data = $this->bed::create([
-            'create_time' => now()->format('Ymdhis'),
-            'modify_time' => now()->format('Ymdhis'),
-            'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
-            'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
-            'app_creator' => $this->app_creator,
-            'app_modifier' => $this->app_modifier,
-            'is_active' => 1,
-            'is_delete' => 0,
-            'bed_code' => $request->bed_code,
-            'bed_name' => $request->bed_name,
-            'bed_type_id' => $request->bed_type_id,
-            'bed_room_id' => $request->bed_room_id,
-            'max_capacity' => $request->max_capacity,
-            'is_bed_stretcher' => $request->is_bed_stretcher,
-        ]);
-        // Gọi event để xóa cache
-        event(new DeleteCache($this->bed_name));
-        return return_data_create_success($data);
-    } catch (\Exception $e) {
-        return return_500_error();
+            $data = $this->bed::create([
+                'create_time' => now()->format('Ymdhis'),
+                'modify_time' => now()->format('Ymdhis'),
+                'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_creator' => $this->app_creator,
+                'app_modifier' => $this->app_modifier,
+                'is_active' => 1,
+                'is_delete' => 0,
+                'bed_code' => $request->bed_code,
+                'bed_name' => $request->bed_name,
+                'bed_type_id' => $request->bed_type_id,
+                'bed_room_id' => $request->bed_room_id,
+                'max_capacity' => $request->max_capacity,
+                'is_bed_stretcher' => $request->is_bed_stretcher,
+            ]);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->bed_name));
+            return return_data_create_success($data);
+        } catch (\Exception $e) {
+            return return_500_error();
+        }
     }
-    }
-      
+
     public function bed_update(UpdateBedRequest $request, $id)
     {
         if (!is_numeric($id)) {
@@ -150,20 +169,20 @@ class BedController extends BaseApiCacheController
             return return_not_record($id);
         }
         try {
-        $data->update([
-            'modify_time' => now()->format('Ymdhis'),
-            'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
-            'app_modifier' => $this->app_modifier,
-            'bed_code' => $request->bed_code,
-            'bed_name' => $request->bed_name,
-            'is_active' => $request->is_active
-        ]);
-        // Gọi event để xóa cache
-        event(new DeleteCache($this->bed_name));
-        return return_data_update_success($data);
-    } catch (\Exception $e) {
-        return return_500_error();
-    }
+            $data->update([
+                'modify_time' => now()->format('Ymdhis'),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
+                'app_modifier' => $this->app_modifier,
+                'bed_code' => $request->bed_code,
+                'bed_name' => $request->bed_name,
+                'is_active' => $request->is_active
+            ]);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->bed_name));
+            return return_data_update_success($data);
+        } catch (\Exception $e) {
+            return return_500_error();
+        }
     }
 
     public function bed_delete(Request $request, $id)

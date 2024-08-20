@@ -24,6 +24,7 @@ use Illuminate\Http\Request;
 use App\Models\HIS\ServiceType;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 
 class BaseApiCacheController extends Controller
 {
@@ -416,7 +417,7 @@ class BaseApiCacheController extends Controller
     protected $service_condition_name = 'service_condition';
     protected $employee;
     protected $employee_name = 'employee';
-    protected $token ;
+    protected $token;
     protected $token_name = 'token';
     protected $medi_stock_mety;
     protected $medi_stock_mety_name = 'medi_stock_mety';
@@ -431,6 +432,28 @@ class BaseApiCacheController extends Controller
     protected $medicine;
     protected $medicine_name = 'medicine';
 
+    // Khai báo các biến cho Elastic
+    protected $client;
+    protected $elastic_search_type_arr = ['match', 'term', 'wildcard', 'multi_match', 'bool',];
+    protected $elastic_search_type;
+    protected $elastic_search_type_name = 'ElasticSearchType';
+    protected $elastic_field;
+    protected $elastic_field_name = 'ElasticField';
+    protected $elastic_fields;
+    protected $elastic_fields_name = 'ElasticFields';
+    protected $elastic_field_request;
+    protected $elastic_fields_request;
+    protected $elastic_operator_arr = ['AND', 'OR'];
+    protected $elastic_operator;
+    protected $elastic_operator_name = 'ElasticOperator';
+    protected $elastic_should;
+    protected $elastic_should_name = 'ElasticShould';
+    protected $elastic_must;
+    protected $elastic_must_name = 'ElasticMust';
+    protected $elastic_must_not;
+    protected $elastic_must_not_name = 'ElasticMustNot';
+    protected $elastic_filter;
+    protected $elastic_filter_name = 'ElasticFilter';
     // Thông báo lỗi
     protected $mess_format;
     protected $mess_order_by_name;
@@ -457,12 +480,12 @@ class BaseApiCacheController extends Controller
     }
     protected function check_id($id, $model, $name)
     {
-        if($this->is_active !== null){
+        if ($this->is_active !== null) {
             $data = Cache::remember($name . '_check_id_' . $id . '_is_active_' . $this->is_active, $this->time, function () use ($id, $model) {
                 return $model->where('id', $id)->where('is_active', $this->is_active)->exists();
             });
-        }else{
-            $data = Cache::remember($name . '_check_id_' . $id , $this->time, function () use ($id, $model) {
+        } else {
+            $data = Cache::remember($name . '_check_id_' . $id, $this->time, function () use ($id, $model) {
                 return $model->where('id', $id)->exists();
             });
         }
@@ -477,7 +500,7 @@ class BaseApiCacheController extends Controller
         $parts = explode('_', $table->getTable());
         $conn = strtolower($parts[0]);
         $columns_table = Cache::remember('columns_' . $table->getTable(), $this->columns_time, function () use ($table, $conn) {
-            return  Schema::connection('oracle_'.$conn)->getColumnListing($table->getTable()) ?? [];
+            return  Schema::connection('oracle_' . $conn)->getColumnListing($table->getTable()) ?? [];
         });
         return $columns_table;
     }
@@ -494,6 +517,147 @@ class BaseApiCacheController extends Controller
         }
         return $order_by;
     }
+
+    // Function Elastic
+    function buildSearchQuery($searchType, $field, $value)
+    {
+        $query = [];
+
+        switch ($searchType) {
+            case 'match':
+                $matchQuery = [
+                    'query' => $value,
+                ];
+                // Thêm 'operator' vào truy vấn chỉ khi nó có giá trị
+                if ($this->elastic_operator !== null) {
+                    $matchQuery['operator'] = $this->elastic_operator;
+                }
+                $query =  [
+                    'match' => [
+                        $field => $matchQuery
+                    ]
+                ];
+                break;
+            case 'term':
+                $query =  [
+                    'term' => [
+                        $field . '.keyword' => $value
+                    ]
+                ];
+                break;
+            case 'wildcard':
+                $query =  [
+                    'wildcard' => [
+                        $field . '.keyword' => '*' . $value . '*',
+                    ]
+                ];
+                break;
+            case 'multi_match':
+                $query = [
+                    'multi_match' =>  [
+                        'query' => $value,
+                        'fields' => $this->elastic_fields
+                    ]
+                ];
+                break;
+            case 'bool':
+                $matchQuery = [];
+                if ($this->elastic_must !== null) {
+                    $matchQuery['must'] = $this->elastic_must;
+                }
+                if ($this->elastic_should !== null) {
+                    $matchQuery['should'] = $this->elastic_should;
+                }
+                if ($this->elastic_must_not !== null) {
+                    $matchQuery['must_not'] = $this->elastic_must_not;
+                }
+                if ($this->elastic_filter !== null) {
+                    $matchQuery['filter'] = $this->elastic_filter;
+                }
+                $query =  [
+                    'bool' =>
+                    $matchQuery
+
+                ];
+                break;
+        }
+
+        return $query;
+    }
+    function buildHighlight($searchType)
+    {
+        $highlight = [];
+
+        switch ($searchType) {
+            case 'match':
+                $highlight  = [
+                    'fields' => [
+                        $this->elastic_field => [
+                            'pre_tags' => ['<em>'],  // Tag mở đầu cho highlight
+                            'post_tags' => ['</em>'], // Tag kết thúc cho highlight
+                            'number_of_fragments' => 0, // Hiển thị toàn bộ văn bản
+                            'fragment_size' => 150  // Kích thước của mỗi đoạn highlight
+                        ]
+                    ]
+                ];
+                break;
+            case 'term':
+                $highlight  = [
+                    'fields' => [
+                        $this->elastic_field.'.keyword' => [
+                            'pre_tags' => ['<em>'],  // Tag mở đầu cho highlight
+                            'post_tags' => ['</em>'], // Tag kết thúc cho highlight
+                            'number_of_fragments' => 0, // Hiển thị toàn bộ văn bản
+                            'fragment_size' => 150  // Kích thước của mỗi đoạn highlight
+                        ]
+                    ]
+                ];
+                break;
+            case 'wildcard':
+                $highlight  = [
+                    'fields' => [
+                        $this->elastic_field.'.keyword' => [
+                            'pre_tags' => ['<em>'],  // Tag mở đầu cho highlight
+                            'post_tags' => ['</em>'], // Tag kết thúc cho highlight
+                            'number_of_fragments' => 0, // Hiển thị toàn bộ văn bản
+                            'fragment_size' => 150  // Kích thước của mỗi đoạn highlight
+                        ]
+                    ]
+                ];
+                break;
+            case 'multi_match':
+                $fields = [];
+                foreach($this->elastic_fields as $key => $item){
+                    $fields[$item] = [
+                        'pre_tags' => ['<em>'],  // Tag mở đầu cho highlight
+                        'post_tags' => ['</em>'], // Tag kết thúc cho highlight
+                        'number_of_fragments' => 0, // Hiển thị toàn bộ văn bản
+                        'fragment_size' => 150  // Kích thước của mỗi đoạn highlight
+                    ];
+                }
+                $highlight  = [
+                    'fields' => $fields
+                ];
+                break;
+            case 'bool':
+                $fields = [];
+                foreach($this->elastic_fields as $key => $item){
+                    $fields[$item] = [
+                        'pre_tags' => ['<em>'],  // Tag mở đầu cho highlight
+                        'post_tags' => ['</em>'], // Tag kết thúc cho highlight
+                        'number_of_fragments' => 0, // Hiển thị toàn bộ văn bản
+                        'fragment_size' => 150  // Kích thước của mỗi đoạn highlight
+                    ];
+                }
+                $highlight  = [
+                    'fields' => $fields
+                ];
+                break;
+        }
+
+        return $highlight;
+    }
+
     public function __construct(Request $request)
     {
         // Khai báo các biến
@@ -577,6 +741,69 @@ class BaseApiCacheController extends Controller
         if (!is_bool($this->only_active)) {
             $this->errors[$this->only_active_name] = $this->mess_format;
             $this->only_active = false;
+        }
+
+        // Elastic Search
+        $this->elastic_search_type = strtolower($this->param_request['ApiData']['ElasticSearchType'] ?? null);
+        if ($this->elastic_search_type != null) {
+            if (!in_array($this->elastic_search_type, $this->elastic_search_type_arr)) {
+                $this->errors[$this->elastic_search_type_name] = $this->mess_format . ' Chỉ nhận giá trị thuộc mảng sau ' . implode(', ', $this->elastic_search_type_arr);
+            }
+        }
+
+        $this->elastic_operator = strtoupper($this->param_request['ApiData']['ElasticOperator'] ?? null);
+        if ($this->elastic_operator != null) {
+            if (!in_array($this->elastic_operator, $this->elastic_operator_arr)) {
+                $this->errors[$this->elastic_operator_name] = $this->mess_format . ' Chỉ nhận giá trị thuộc mảng sau ' . implode(', ', $this->elastic_operator_arr);
+            }
+        }
+
+        $this->elastic_field = $this->param_request['ApiData']['ElasticField'] ?? null;
+        $this->elastic_field_request = $this->param_request['ApiData']['ElasticField'] ?? null;
+        if ($this->elastic_field != null) {
+            $this->elastic_field = Str::snake($this->elastic_field);
+        }
+
+        $this->elastic_fields = $this->param_request['ApiData']['ElasticFields'] ?? null;
+        $this->elastic_fields_request = $this->param_request['ApiData']['ElasticFields'] ?? null;
+        if ($this->elastic_fields != null) {
+            $this->elastic_fields = convertArrayKeysToSnakeCase($this->elastic_fields);
+        }
+
+        $this->elastic_must = $this->param_request['ApiData']['ElasticMust'] ?? null;
+        if ($this->elastic_must != null) {
+            foreach ($this->elastic_must as $key => $item) {
+                foreach ($this->elastic_must[$key] as $key1 => $item) {
+                    if (!in_array($key1, ['match', 'term', 'wildcard', 'filter'])) {
+                        $this->errors[$this->elastic_must_name] = $this->mess_format . ' Chỉ nhận giá trị thuộc mảng sau ' . implode(', ', ['match', 'term', 'wildcard']);
+                    }
+                    $this->elastic_must[$key][$key1] = convertArrayKeysToSnakeCase($this->elastic_must[$key][$key1]);
+                }
+            }
+        }
+
+        $this->elastic_should = $this->param_request['ApiData']['ElasticShould'] ?? null;
+        if ($this->elastic_should != null) {
+            foreach ($this->elastic_should as $key => $item) {
+                foreach ($this->elastic_should[$key] as $key1 => $item) {
+                    if (!in_array($key1, ['match', 'term', 'wildcard', 'filter'])) {
+                        $this->errors[$this->elastic_should_name] = $this->mess_format . ' Chỉ nhận giá trị thuộc mảng sau ' . implode(', ', ['match', 'term', 'wildcard']);
+                    }
+                    $this->elastic_should[$key][$key1] = convertArrayKeysToSnakeCase($this->elastic_should[$key][$key1]);
+                }
+            }
+        }
+
+        $this->elastic_must_not = $this->param_request['ApiData']['ElasticMustNot'] ?? null;
+        if ($this->elastic_must_not != null) {
+            foreach ($this->elastic_must_not as $key => $item) {
+                foreach ($this->elastic_must_not[$key] as $key1 => $item) {
+                    if (!in_array($key1, ['match', 'term', 'wildcard', 'filter'])) {
+                        $this->errors[$this->elastic_must_not_name] = $this->mess_format . ' Chỉ nhận giá trị thuộc mảng sau ' . implode(', ', ['match', 'term', 'wildcard']);
+                    }
+                    $this->elastic_must_not[$key][$key1] = convertArrayKeysToSnakeCase($this->elastic_must_not[$key][$key1]);
+                }
+            }
         }
 
         $this->service_type_ids = $this->param_request['ApiData']['ServiceTypeIds'] ?? null;
@@ -714,7 +941,7 @@ class BaseApiCacheController extends Controller
                 }
             }
         }
-        if($this->service_ids != null){
+        if ($this->service_ids != null) {
             $this->service_ids_string = arrayToCustomStringNotKey($this->service_ids);
         }
         $this->machine_ids = $this->param_request['ApiData']['MachineIds'] ?? null;
@@ -732,7 +959,7 @@ class BaseApiCacheController extends Controller
                 }
             }
         }
-        if($this->machine_ids != null){
+        if ($this->machine_ids != null) {
             $this->machine_ids_string = arrayToCustomStringNotKey($this->machine_ids);
         }
         $this->room_ids = $this->param_request['ApiData']['RoomIds'] ?? null;
@@ -943,10 +1170,9 @@ class BaseApiCacheController extends Controller
                 $this->errors[$this->test_service_type_id_name] = $this->mess_format;
                 $this->test_service_type_id = null;
             } else {
-                if (!Service::
-                        leftJoin('his_service_type as service_type', 'service_type.id', '=', 'his_service.service_type_id')
-                        ->where('his_service.id', $this->test_service_type_id)
-                        ->where('service_type.service_type_code', 'XN')->exists()) {
+                if (!Service::leftJoin('his_service_type as service_type', 'service_type.id', '=', 'his_service.service_type_id')
+                    ->where('his_service.id', $this->test_service_type_id)
+                    ->where('service_type.service_type_code', 'XN')->exists()) {
                     $this->errors[$this->test_service_type_id_name] = $this->mess_record_id;
                     $this->test_service_type_id = null;
                 }

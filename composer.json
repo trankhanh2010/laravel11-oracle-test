@@ -15,6 +15,7 @@
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.0",
         "predis/predis": "^2.2",
+        "symfony/psr-http-message-bridge": "^7.1",
         "yajra/laravel-oci8": "^11.0"
     },
     "require-dev": {
