@@ -37,6 +37,66 @@ class BedController extends BaseApiCacheController
             $this->order_by_tring = arrayToCustomString($this->order_by);
         }
     }
+    protected function applyJoins()
+    {
+        return $this->bed
+            ->leftJoin('his_bed_type', 'his_bed.bed_type_id', '=', 'his_bed_type.id')
+            ->leftJoin('his_bed_room', 'his_bed.bed_room_id', '=', 'his_bed_room.id')
+            ->leftJoin('his_room', 'his_bed_room.room_id', '=', 'his_room.id')
+            ->leftJoin('his_department', 'his_room.department_id', '=', 'his_department.id')
+            ->select(
+                'his_bed.*',
+                'his_bed_type.bed_type_name',
+                'his_bed_type.bed_type_code',
+                'his_bed_room.bed_room_name',
+                'his_bed_room.bed_room_code',
+                'his_department.department_name',
+                'his_department.department_code'
+            );
+    }
+    protected function applyIsActiveFilter($query)
+    {
+        if ($this->is_active !== null) {
+            $query->where(DB::connection('oracle_his')->raw('his_bed.is_active'), $this->is_active);
+        }
+
+        return $query;
+    }
+    protected function applyOrdering($query)
+    {
+        if ($this->order_by != null) {
+            foreach ($this->order_by as $key => $item) {
+                if (in_array($key, $this->order_by_join)) {
+                    if (in_array($key, ['bed_type_name', 'bed_type_code'])) {
+                        $query->orderBy('his_bed_type.' . $key, $item);
+                    }
+                    if (in_array($key, ['bed_room_name', 'bed_room_code'])) {
+                        $query->orderBy('his_bed_room.' . $key, $item);
+                    }
+                    if (in_array($key, ['department_name', 'department_code'])) {
+                        $query->orderBy('his_department.' . $key, $item);
+                    }
+                } else {
+                    $query->orderBy('his_bed.' . $key, $item);
+                }
+            }
+        }
+
+        return $query;
+    }
+    protected function fetchData($query)
+    {
+        if ($this->get_all) {
+            // Lấy tất cả dữ liệu
+            return $query->get();
+        } else {
+            // Lấy dữ liệu phân trang
+            return $query
+                ->skip($this->start)
+                ->take($this->limit)
+                ->get();
+        }
+    }
     public function bed($id = null)
     {
         // Kiểm tra param và trả về lỗi nếu nó không hợp lệ
@@ -55,97 +115,36 @@ class BedController extends BaseApiCacheController
                         'size' => $this->limit,
                         'from' => $this->start,
                     ];
-                    if($this->order_by_elastic != null){
+                    if ($this->order_by_elastic != null) {
                         $body['sort'] = $this->buildSort($this->bed_name);
                     }
                     $data = $this->client->search([
                         'index' => $this->bed_name,
                         'body' => $body,
                     ]);
-                    
+
                     $count = $data['hits']['total']['value'];
                     $data = ElasticResource::collection($data['hits']['hits']);
                 } else {
-                    $data = $this->bed
-                        ->leftJoin('his_bed_type', 'his_bed.bed_type_id', '=', 'his_bed_type.id')
-                        ->leftJoin('his_bed_room', 'his_bed.bed_room_id', '=', 'his_bed_room.id')
-                        ->leftJoin('his_room', 'his_bed_room.room_id', '=', 'his_room.id')
-                        ->leftJoin('his_department', 'his_room.department_id', '=', 'his_department.id')
-
-                        ->select(
-                            'his_bed.*',
-                            'his_bed_type.bed_type_name',
-                            'his_bed_type.bed_type_code',
-                            'his_bed_room.bed_room_name',
-                            'his_bed_room.bed_room_code',
-                            'his_department.department_name',
-                            'his_department.department_code',
-                        );
+                    $data = $this->applyJoins();
                     $data = $data->where(function ($query) use ($keyword) {
                         $query = $query
                             ->where(DB::connection('oracle_his')->raw('his_bed.bed_code'), 'like', $keyword . '%')
                             ->orWhere(DB::connection('oracle_his')->raw('his_bed.bed_name'), 'like', $keyword . '%');
                     });
-                    if ($this->is_active !== null) {
-                        $data = $data->where(function ($query) {
-                            $query = $query->where(DB::connection('oracle_his')->raw('his_bed.is_active'), $this->is_active);
-                        });
-                    }
+                    $data = $this->applyIsActiveFilter($data);
                     $count = $data->count();
-                    if ($this->order_by != null) {
-                        foreach ($this->order_by as $key => $item) {
-                            $data->orderBy('his_bed.' . $key, $item);
-                        }
-                    }
-                    if ($this->get_all) {
-                        $data = $data
-                            ->get();
-                    } else {
-                        $data = $data
-                            ->skip($this->start)
-                            ->take($this->limit)
-                            ->get();
-                    }
+                    $data = $this->applyOrdering($data);
+                    $data = $this->fetchData($data);
                 }
             } else {
                 if ($id == null) {
                     $data = Cache::remember($this->bed_name . '_start_' . $this->start . '_limit_' . $this->limit . $this->order_by_tring . '_is_active_' . $this->is_active . '_get_all_' . $this->get_all, $this->time, function () {
-                        $data = $this->bed
-                            ->leftJoin('his_bed_type', 'his_bed.bed_type_id', '=', 'his_bed_type.id')
-                            ->leftJoin('his_bed_room', 'his_bed.bed_room_id', '=', 'his_bed_room.id')
-                            ->leftJoin('his_room', 'his_bed_room.room_id', '=', 'his_room.id')
-                            ->leftJoin('his_department', 'his_room.department_id', '=', 'his_department.id')
-
-                            ->select(
-                                'his_bed.*',
-                                'his_bed_type.bed_type_name',
-                                'his_bed_type.bed_type_code',
-                                'his_bed_room.bed_room_name',
-                                'his_bed_room.bed_room_code',
-                                'his_department.department_name',
-                                'his_department.department_code',
-                            );
-                        if ($this->is_active !== null) {
-                            $data = $data->where(function ($query) {
-                                $query = $query->where(DB::connection('oracle_his')->raw('his_bed.is_active'), $this->is_active);
-                            });
-                        }
-
+                        $data = $this->applyJoins();
+                        $data = $this->applyIsActiveFilter($data);
                         $count = $data->count();
-                        if ($this->order_by != null) {
-                            foreach ($this->order_by as $key => $item) {
-                                $data->orderBy('his_bed.' . $key, $item);
-                            }
-                        }
-                        if ($this->get_all) {
-                            $data = $data
-                                ->get();
-                        } else {
-                            $data = $data
-                                ->skip($this->start)
-                                ->take($this->limit)
-                                ->get();
-                        }
+                        $data = $this->applyOrdering($data);
+                        $data = $this->fetchData($data);
                         return ['data' => $data, 'count' => $count];
                     });
                 } else {
@@ -157,27 +156,9 @@ class BedController extends BaseApiCacheController
                         return $check_id;
                     }
                     $data = Cache::remember($this->bed_name . '_' . $id . '_is_active_' . $this->is_active, $this->time, function () use ($id) {
-                        $data = $this->bed
-                            ->leftJoin('his_bed_type', 'his_bed.bed_type_id', '=', 'his_bed_type.id')
-                            ->leftJoin('his_bed_room', 'his_bed.bed_room_id', '=', 'his_bed_room.id')
-                            ->leftJoin('his_room', 'his_bed_room.room_id', '=', 'his_room.id')
-                            ->leftJoin('his_department', 'his_room.department_id', '=', 'his_department.id')
-
-                            ->select(
-                                'his_bed.*',
-                                'his_bed_type.bed_type_name',
-                                'his_bed_type.bed_type_code',
-                                'his_bed_room.bed_room_name',
-                                'his_bed_room.bed_room_code',
-                                'his_department.department_name',
-                                'his_department.department_code',
-                            )
+                        $data = $this->applyJoins()
                             ->where('his_bed.id', $id);
-                        if ($this->is_active !== null) {
-                            $data = $data->where(function ($query) {
-                                $query = $query->where(DB::connection('oracle_his')->raw('his_bed.is_active'), $this->is_active);
-                            });
-                        }
+                        $data = $this->applyIsActiveFilter($data);
                         $data = $data->first();
                         return $data;
                     });
