@@ -596,6 +596,18 @@ if (!function_exists('return_data_delete_success')) {
     }
 }
 
+if (!function_exists('return_clear_cache')) {
+    function return_clear_cache()
+    {
+        return response()->json([
+            'status'    => 200,
+            'success' => true,
+            'message' => 'Thành công!'
+        ], 200);
+
+    }
+}
+
 if (!function_exists('return_data_delete_fail')) {
     function return_data_delete_fail()
     {
@@ -668,12 +680,13 @@ if (!function_exists('return_param_error')) {
 }
 
 if (!function_exists('return_500_error')) {
-    function return_500_error()
+    function return_500_error($mess = null)
     {
         return response()->json([
             'status'    => 500,
             'success' => false,
-            'message' => 'Có lỗi trong quá trình xử lý!'
+            'message' => 'Có lỗi trong quá trình xử lý!',
+            'detail' => $mess
         ], 500);
 
     }

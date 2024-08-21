@@ -136,6 +136,10 @@ use App\Http\Controllers\Api\CacheControllers\MedicineController;
 use App\Http\Controllers\Api\CacheControllers\MedicineTypeController;
 use App\Http\Controllers\Api\CacheControllers\MaterialTypeController;
 
+// Base Api
+use App\Http\Controllers\BaseControllers\CacheController;
+use App\Http\Controllers\BaseControllers\ElasticSearchController;
+
 // Data Controllers
 use App\Http\Controllers\Api\DataControllers\DebateController;
 use App\Http\Controllers\Api\DataControllers\DebateUserController;
@@ -198,6 +202,12 @@ Route::fallback(function () {
 Route::group([
     "middleware" => ["check_module:api"]
 ], function () {
+    /// Cache
+    Route::get("v1/clear-cache", [CacheController::class, "clear_cache"])->name('.clear_cache');
+
+    /// Elastic Search
+    Route::get("v1/index-records-to-elasticsearch", [ElasticSearchController::class, "index_records_to_elasticsearch"])->name('.index_records_to_elasticsearch');
+    Route::delete("v1/delete-index", [ElasticSearchController::class, "delete_index"])->name('.delete_index');
 
     /// Khoa phòng
     Route::group(['as' => 'HIS.Desktop.Plugins.HisDepartment'], function () {

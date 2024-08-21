@@ -41,6 +41,7 @@ class BaseApiCacheController extends Controller
     protected $order_by_name = 'OrderBy';
     protected $order_by_tring;
     protected $order_by_request;
+    protected $order_by_elastic;
     protected $order_by_join;
     protected $only_active;
     protected $only_active_name = 'OnlyActive';
@@ -658,6 +659,30 @@ class BaseApiCacheController extends Controller
         return $highlight;
     }
 
+    function buildSort($name)
+    {
+        $sort = [];
+        // Mảng kết quả sau khi đổi key
+        $updatedSortArray = [];
+        // Lặp qua từng phần tử trong mảng ban đầu
+        foreach ($this->order_by_elastic as $key => $order) {
+            // Tạo key mới bằng cách thêm '.keyword'
+            if(in_array($key, config('params')['elastic']['keyword'][$name])){
+                $newKey = $key . '.keyword';
+            }else{
+                $newKey = $key;
+            }
+            
+            // Thêm phần tử vào mảng kết quả với key mới
+            $updatedSortArray[] = [
+                $newKey => [
+                    'order' => $order
+                ]
+            ];
+        }
+        $sort = $updatedSortArray;
+        return $sort;
+    }
     public function __construct(Request $request)
     {
         // Khai báo các biến
@@ -728,6 +753,7 @@ class BaseApiCacheController extends Controller
                 }
             }
         }
+        $this->order_by_elastic = $this->order_by;
 
         $this->is_active = $this->param_request['ApiData']['IsActive'] ?? null;
         if ($this->is_active !== null) {
@@ -757,7 +783,6 @@ class BaseApiCacheController extends Controller
                 $this->errors[$this->elastic_operator_name] = $this->mess_format . ' Chỉ nhận giá trị thuộc mảng sau ' . implode(', ', $this->elastic_operator_arr);
             }
         }
-
         $this->elastic_field = $this->param_request['ApiData']['ElasticField'] ?? null;
         $this->elastic_field_request = $this->param_request['ApiData']['ElasticField'] ?? null;
         if ($this->elastic_field != null) {

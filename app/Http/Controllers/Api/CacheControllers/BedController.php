@@ -7,6 +7,7 @@ use App\Http\Controllers\BaseControllers\BaseApiCacheController;
 use App\Http\Requests\Bed\CreateBedRequest;
 use App\Http\Requests\Bed\UpdateBedRequest;
 use App\Http\Requests\BedRoom\UpdateBedRoomRequest;
+use App\Http\Resources\Elastic\ElasticResource;
 use App\Models\HIS\Bed;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -23,6 +24,14 @@ class BedController extends BaseApiCacheController
 
         // Kiểm tra tên trường trong bảng
         if ($this->order_by != null) {
+            $this->order_by_join = [
+                'bed_type_name',
+                'bed_type_code',
+                'bed_room_name',
+                'bed_room_code',
+                'department_name',
+                'department_code',
+            ];
             $columns = $this->get_columns_table($this->bed);
             $this->order_by = $this->check_order_by($this->order_by, $columns, $this->order_by_join ?? []);
             $this->order_by_tring = arrayToCustomString($this->order_by);
@@ -40,31 +49,42 @@ class BedController extends BaseApiCacheController
                 if ($this->elastic_search_type != null) {
                     $query = $this->buildSearchQuery($this->elastic_search_type, $this->elastic_field, $this->keyword);
                     $highlight = $this->buildHighlight($this->elastic_search_type);
+                    $body = [
+                        'query' => $query,
+                        'highlight' => $highlight,
+                        'size' => $this->limit,
+                        'from' => $this->start,
+                    ];
+                    if($this->order_by_elastic != null){
+                        $body['sort'] = $this->buildSort($this->bed_name);
+                    }
                     $data = $this->client->search([
                         'index' => $this->bed_name,
-                        'body' => [
-                            'query' => $query,
-                            'highlight' => $highlight,
-                            'size' => $this->limit,   
-                            'from' => $this->start,    
-                        ]
+                        'body' => $body,
                     ]);
-
-
+                    
                     $count = $data['hits']['total']['value'];
-                    $data = $data['hits']['hits'];
+                    $data = ElasticResource::collection($data['hits']['hits']);
                 } else {
-                    $param = [
-                        'bed_type:id,bed_type_name',
-                        'bed_room:id,bed_room_name,room_id',
-                        'bed_room.room:id,department_id',
-                        'bed_room.room.department:id,department_name'
-                    ];
-                    $data = $this->bed;
+                    $data = $this->bed
+                        ->leftJoin('his_bed_type', 'his_bed.bed_type_id', '=', 'his_bed_type.id')
+                        ->leftJoin('his_bed_room', 'his_bed.bed_room_id', '=', 'his_bed_room.id')
+                        ->leftJoin('his_room', 'his_bed_room.room_id', '=', 'his_room.id')
+                        ->leftJoin('his_department', 'his_room.department_id', '=', 'his_department.id')
+
+                        ->select(
+                            'his_bed.*',
+                            'his_bed_type.bed_type_name',
+                            'his_bed_type.bed_type_code',
+                            'his_bed_room.bed_room_name',
+                            'his_bed_room.bed_room_code',
+                            'his_department.department_name',
+                            'his_department.department_code',
+                        );
                     $data = $data->where(function ($query) use ($keyword) {
                         $query = $query
-                            ->where(DB::connection('oracle_his')->raw('bed_code'), 'like', $keyword . '%')
-                            ->orWhere(DB::connection('oracle_his')->raw('bed_name'), 'like', $keyword . '%');
+                            ->where(DB::connection('oracle_his')->raw('his_bed.bed_code'), 'like', $keyword . '%')
+                            ->orWhere(DB::connection('oracle_his')->raw('his_bed.bed_name'), 'like', $keyword . '%');
                     });
                     if ($this->is_active !== null) {
                         $data = $data->where(function ($query) {
@@ -74,30 +94,60 @@ class BedController extends BaseApiCacheController
                     $count = $data->count();
                     if ($this->order_by != null) {
                         foreach ($this->order_by as $key => $item) {
-                            $data->orderBy($key, $item);
+                            $data->orderBy('his_bed.' . $key, $item);
                         }
                     }
                     if ($this->get_all) {
                         $data = $data
-                            ->with($param)
                             ->get();
                     } else {
                         $data = $data
                             ->skip($this->start)
                             ->take($this->limit)
-                            ->with($param)
                             ->get();
                     }
                 }
             } else {
                 if ($id == null) {
-                    $name = $this->bed_name . '_start_' . $this->start . '_limit_' . $this->limit . $this->order_by_tring . '_is_active_' . $this->is_active . '_get_all_' . $this->get_all;
-                    $param = [
-                        'bed_type:id,bed_type_name',
-                        'bed_room:id,bed_room_name,room_id',
-                        'bed_room.room:id,department_id',
-                        'bed_room.room.department:id,department_name'
-                    ];
+                    $data = Cache::remember($this->bed_name . '_start_' . $this->start . '_limit_' . $this->limit . $this->order_by_tring . '_is_active_' . $this->is_active . '_get_all_' . $this->get_all, $this->time, function () {
+                        $data = $this->bed
+                            ->leftJoin('his_bed_type', 'his_bed.bed_type_id', '=', 'his_bed_type.id')
+                            ->leftJoin('his_bed_room', 'his_bed.bed_room_id', '=', 'his_bed_room.id')
+                            ->leftJoin('his_room', 'his_bed_room.room_id', '=', 'his_room.id')
+                            ->leftJoin('his_department', 'his_room.department_id', '=', 'his_department.id')
+
+                            ->select(
+                                'his_bed.*',
+                                'his_bed_type.bed_type_name',
+                                'his_bed_type.bed_type_code',
+                                'his_bed_room.bed_room_name',
+                                'his_bed_room.bed_room_code',
+                                'his_department.department_name',
+                                'his_department.department_code',
+                            );
+                        if ($this->is_active !== null) {
+                            $data = $data->where(function ($query) {
+                                $query = $query->where(DB::connection('oracle_his')->raw('his_bed.is_active'), $this->is_active);
+                            });
+                        }
+
+                        $count = $data->count();
+                        if ($this->order_by != null) {
+                            foreach ($this->order_by as $key => $item) {
+                                $data->orderBy('his_bed.' . $key, $item);
+                            }
+                        }
+                        if ($this->get_all) {
+                            $data = $data
+                                ->get();
+                        } else {
+                            $data = $data
+                                ->skip($this->start)
+                                ->take($this->limit)
+                                ->get();
+                        }
+                        return ['data' => $data, 'count' => $count];
+                    });
                 } else {
                     if (!is_numeric($id)) {
                         return return_id_error($id);
@@ -106,16 +156,32 @@ class BedController extends BaseApiCacheController
                     if ($check_id) {
                         return $check_id;
                     }
-                    $name =  $this->bed_name . '_' . $id . '_is_active_' . $this->is_active;
-                    $param = [
-                        'bed_type',
-                        'bed_room',
-                        'bed_room.room',
-                        'bed_room.room.department'
-                    ];
+                    $data = Cache::remember($this->bed_name . '_' . $id . '_is_active_' . $this->is_active, $this->time, function () use ($id) {
+                        $data = $this->bed
+                            ->leftJoin('his_bed_type', 'his_bed.bed_type_id', '=', 'his_bed_type.id')
+                            ->leftJoin('his_bed_room', 'his_bed.bed_room_id', '=', 'his_bed_room.id')
+                            ->leftJoin('his_room', 'his_bed_room.room_id', '=', 'his_room.id')
+                            ->leftJoin('his_department', 'his_room.department_id', '=', 'his_department.id')
+
+                            ->select(
+                                'his_bed.*',
+                                'his_bed_type.bed_type_name',
+                                'his_bed_type.bed_type_code',
+                                'his_bed_room.bed_room_name',
+                                'his_bed_room.bed_room_code',
+                                'his_department.department_name',
+                                'his_department.department_code',
+                            )
+                            ->where('his_bed.id', $id);
+                        if ($this->is_active !== null) {
+                            $data = $data->where(function ($query) {
+                                $query = $query->where(DB::connection('oracle_his')->raw('his_bed.is_active'), $this->is_active);
+                            });
+                        }
+                        $data = $data->first();
+                        return $data;
+                    });
                 }
-                $model = $this->bed;
-                $data = get_cache_full($model, $param, $name, $id, $this->time, $this->start, $this->limit, $this->order_by, $this->is_active, $this->get_all);
             }
             $param_return = [
                 $this->get_all_name => $this->get_all,
