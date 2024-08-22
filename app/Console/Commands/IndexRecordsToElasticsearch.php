@@ -6,6 +6,8 @@ use App\Providers\ElasticsearchServiceProvider;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use App\Events\Elastic\Bed\CreateBedIndex;
+use App\Models\HIS\Bed;
+
 class IndexRecordsToElasticsearch extends Command
 {
     /**
@@ -35,19 +37,19 @@ class IndexRecordsToElasticsearch extends Command
         if ($param != 'all' && $param != null) {
             $table = explode(',', $param);
         } else {
-           $table = $table_arr;
+            $table = $table_arr;
         }
 
         if ($table !== null) {
             foreach ($table as $key => $item) {
-                if(in_array($item, $table_arr)){
-                        // lấy ra tiền tố his, acs, ....
+                if (in_array($item, $table_arr)) {
+                    // lấy ra tiền tố his, acs, ....
                     $first_table = strtolower(explode('_', $item)[0]);
                     $name_table = strtolower(substr($item, strlen($first_table . '_')));
                     $this->processAndIndexData($item, $first_table, $name_table);
-                    
+
                     $this->info('Đã tạo Index cho bảng ' . $item . '.');
-                }else{
+                } else {
                     $this->error('Không tồn tại bảng ' . $item . '.');
                 }
             }
@@ -56,47 +58,31 @@ class IndexRecordsToElasticsearch extends Command
 
     protected function processAndIndexData($table, $first_table, $name_table)
     {
-       // Khởi tạo kết nối đến Elastic
-       $client = app('Elasticsearch');
-       switch ($table) {
-           case 'his_bed':
-               $results = DB::connection('oracle_' . $first_table)
-                   ->table($table)
-                   ->leftJoin('his_bed_type', 'his_bed.bed_type_id', '=', 'his_bed_type.id')
-                   ->leftJoin('his_bed_room', 'his_bed.bed_room_id', '=', 'his_bed_room.id')
-                   ->leftJoin('his_room', 'his_bed_room.room_id', '=', 'his_room.id')
-                   ->leftJoin('his_department', 'his_room.department_id', '=', 'his_department.id')
+        // Khởi tạo kết nối đến Elastic
+        $client = app('Elasticsearch');
+        switch ($table) {
+            case 'his_bed':
+                $results = Bed::get_data_from_db_to_elastic(null);
+                event(new CreateBedIndex($name_table));
+                break;
 
-                   ->select(
-                       'his_bed.*',
-                       'his_bed_type.bed_type_name',
-                       'his_bed_type.bed_type_code',
-                       'his_bed_room.bed_room_name',
-                       'his_bed_room.bed_room_code',
-                       'his_department.department_name',
-                       'his_department.department_code',
-                   )
-                   ->get();
-               event(new CreateBedIndex($name_table));
-               break;
+            default:
+                // Xử lý mặc định hoặc xử lý khi không có bảng khớp
+                $results = DB::connection('oracle_' . $first_table)->table($table)->get();
+                break;
+        }
+        foreach ($results as $result) {
+            $data = [];
+            foreach ($result as $key => $value) {
+                $data[$key] = $value;
+            }
+            $params = [
+                'index' => $name_table,
+                'id'    => $result->id,
+                'body'  => $data
+            ];
 
-           default:
-               // Xử lý mặc định hoặc xử lý khi không có bảng khớp
-               $results = DB::connection('oracle_' . $first_table)->table($table)->get();
-               break;
-       }
-       foreach ($results as $result) {
-           $data = [];
-           foreach ($result as $key => $value) {
-               $data[$key] = $value;
-           }
-           $params = [
-               'index' => $name_table,
-               'id'    => $result->id,
-               'body'  => $data
-           ];
-
-           $client->index($params);
-       }
+            $client->index($params);
+        }
     }
 }
