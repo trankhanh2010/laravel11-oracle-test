@@ -67,7 +67,7 @@ class UpdateBedRequest extends FormRequest
                                         },
                                     ],
             'is_bed_stretcher' =>   'nullable|integer|in:0,1',
-
+            'is_active' =>                      'required|integer|in:0,1'
         ];
     }
     public function messages()
@@ -96,6 +96,10 @@ class UpdateBedRequest extends FormRequest
 
             'is_bed_stretcher.integer'    => config('keywords')['bed']['is_bed_stretcher'].config('keywords')['error']['integer'],
             'is_bed_stretcher.in'         => config('keywords')['bed']['is_bed_stretcher'].config('keywords')['error']['in'], 
+
+            'is_active.required'    => config('keywords')['all']['is_active'].config('keywords')['error']['required'],            
+            'is_active.integer'     => config('keywords')['all']['is_active'].config('keywords')['error']['integer'], 
+            'is_active.in'          => config('keywords')['all']['is_active'].config('keywords')['error']['in'], 
         ];
     }
 

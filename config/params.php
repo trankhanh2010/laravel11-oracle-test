@@ -138,7 +138,6 @@ return [
             'bed' => [
                 'bed_name',
                 'bed_room_name',
-                
             ]
         ],
     ]

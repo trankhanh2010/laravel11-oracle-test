@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Bed;
 
+use App\Models\HIS\Bed;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Contracts\Validation\Validator;
@@ -45,6 +46,17 @@ class CreateBedRequest extends FormRequest
                                         $query = $query
                                         ->where(DB::connection('oracle_his')->raw("is_active"), 1);
                                     }),
+                                    function ($attribute, $value, $fail) {
+                                        if (($this->bed_name !== null) && ($value !== null)) {
+                                            $exists = Bed::where('bed_name', $this->bed_name)
+                                                ->where('bed_room_id', $value)
+                                                ->exists();
+
+                                            if ($exists) {
+                                                $fail('Cặp '. config('keywords')['bed']['bed_name']. ' và '.config('keywords')['bed']['bed_room_id']. ' đã tồn tại!');
+                                            }
+                                        }
+                                    },
                                 ], 
             'max_capacity' =>       [
                                         'nullable',

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api\CacheControllers;
 
 use App\Events\Cache\DeleteCache;
+use App\Events\Elastic\Bed\InsertBedIndex;
+use App\Events\Elastic\DeleteIndex;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
 use App\Http\Requests\Bed\CreateBedRequest;
 use App\Http\Requests\Bed\UpdateBedRequest;
@@ -107,7 +109,7 @@ class BedController extends BaseApiCacheController
             $keyword = $this->keyword;
             if ($keyword != null || $this->elastic_search_type != null) {
                 if ($this->elastic_search_type != null) {
-                    $query = $this->buildSearchQuery($this->elastic_search_type, $this->elastic_field, $this->keyword);
+                    $query = $this->buildSearchQuery($this->elastic_search_type, $this->elastic_field, $this->keyword, $this->bed_name);
                     $highlight = $this->buildHighlight($this->elastic_search_type);
                     $body = [
                         'query' => $query,
@@ -122,7 +124,6 @@ class BedController extends BaseApiCacheController
                         'index' => $this->bed_name,
                         'body' => $body,
                     ]);
-
                     $count = $data['hits']['total']['value'];
                     $data = ElasticResource::collection($data['hits']['hits']);
                 } else {
@@ -200,6 +201,8 @@ class BedController extends BaseApiCacheController
             ]);
             // Gọi event để xóa cache
             event(new DeleteCache($this->bed_name));
+            // Gọi event để thêm index vào elastic
+            event(new InsertBedIndex($data, $this->bed_name));
             return return_data_create_success($data);
         } catch (\Exception $e) {
             return return_500_error();
@@ -226,6 +229,8 @@ class BedController extends BaseApiCacheController
             ]);
             // Gọi event để xóa cache
             event(new DeleteCache($this->bed_name));
+            // Gọi event để thêm index vào elastic
+            event(new InsertBedIndex($data, $this->bed_name));
             return return_data_update_success($data);
         } catch (\Exception $e) {
             return return_500_error();
@@ -245,6 +250,8 @@ class BedController extends BaseApiCacheController
             $data->delete();
             // Gọi event để xóa cache
             event(new DeleteCache($this->bed_name));
+            // Gọi event để xóa index trong elastic
+            event(new DeleteIndex($data, $this->bed_name));
             return return_data_delete_success();
         } catch (\Exception $e) {
             return return_data_delete_fail();

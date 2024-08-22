@@ -435,7 +435,8 @@ class BaseApiCacheController extends Controller
 
     // Khai báo các biến cho Elastic
     protected $client;
-    protected $elastic_search_type_arr = ['match', 'term', 'wildcard', 'multi_match', 'bool',];
+    protected $elastic_search_type_arr = ['match', 'term', 'wildcard', 'query_string', 'multi_match', 'match_phrase', 'prefix', 'bool',];
+    protected $elastic_search_type_must_should_must_not = ['match', 'term', 'wildcard', 'match_phrase', 'prefix'];
     protected $elastic_search_type;
     protected $elastic_search_type_name = 'ElasticSearchType';
     protected $elastic_field;
@@ -520,7 +521,7 @@ class BaseApiCacheController extends Controller
     }
 
     // Function Elastic
-    function buildSearchQuery($searchType, $field, $value)
+    function buildSearchQuery($searchType, $field, $value, $name_table)
     {
         $query = [];
 
@@ -553,6 +554,35 @@ class BaseApiCacheController extends Controller
                     ]
                 ];
                 break;
+            case 'query_string':
+                $query =  [
+                    'query_string' => [
+                        'query' =>  $value,
+                    ]
+                ];
+                break;
+            case 'match_phrase':
+                $query =  [
+                    'match_phrase' => [
+                        $field => $value
+                    ]
+                ];
+                break;
+            case 'prefix':
+                if(in_array($field, config('params')['elastic']['keyword'][$name_table])){
+                    $query =  [
+                        'prefix' => [
+                            $field . '.keyword' => $value
+                        ]
+                    ];
+                }else{
+                    $query =  [
+                        'prefix' => [
+                            $field => $value
+                        ]
+                    ];
+                }
+                break;
             case 'multi_match':
                 $query = [
                     'multi_match' =>  [
@@ -562,15 +592,90 @@ class BaseApiCacheController extends Controller
                 ];
                 break;
             case 'bool':
+                // Mảng kết quả sau khi đổi key
+                $updated_elastic_must = [];
+                $updated_elastic_should = [];
+                $updated_elastic_must_not = [];
+
+                // Lặp qua từng phần tử trong mảng ban đầu
+                if ($this->elastic_must != null) {
+                    foreach ($this->elastic_must as $key => $item) {
+                        // Tạo key mới bằng cách thêm '.keyword'
+                        foreach ($item as $key_item => $item2) {
+                            foreach ($item2 as $key_item2 => $item3) {
+                                if (in_array($key_item2, config('params')['elastic']['keyword'][$name_table]) && in_array($key_item, ['term', 'wildcard', 'prefix'])) {
+                                    $newKey = $key_item2 . '.keyword';
+                                } else {
+                                    $newKey = $key_item2;
+                                }
+                                if(in_array($key_item, ['wildcard'])){
+                                    $item3 = '*'.$item3.'*';
+                                }
+                                // Thêm phần tử vào mảng kết quả với key mới
+                                $updated_elastic_must[$key][$key_item] = [
+                                    $newKey => $item3
+                                ];
+                            }
+                        }
+                    }
+                }
+
+                // Lặp qua từng phần tử trong mảng ban đầu
+                if ($this->elastic_should != null) {
+                    foreach ($this->elastic_should as $key => $item) {
+                        // Tạo key mới bằng cách thêm '.keyword'
+                        foreach ($item as $key_item => $item2) {
+                            foreach ($item2 as $key_item2 => $item3) {
+                                if (in_array($key_item2, config('params')['elastic']['keyword'][$name_table]) && in_array($key_item, ['term', 'wildcard', 'prefix'])) {
+                                    $newKey = $key_item2 . '.keyword';
+                                } else {
+                                    $newKey = $key_item2;
+                                }
+                                if(in_array($key_item, ['wildcard'])){
+                                    $item3 = '*'.$item3.'*';
+                                }
+                                // Thêm phần tử vào mảng kết quả với key mới
+                                $updated_elastic_should[$key][$key_item] = [
+                                    $newKey => $item3
+                                ];
+                            }
+                        }
+                    }
+                }
+
+
+                // Lặp qua từng phần tử trong mảng ban đầu
+                if ($this->elastic_must_not != null) {
+                    foreach ($this->elastic_must_not as $key => $item) {
+                        // Tạo key mới bằng cách thêm '.keyword'
+                        foreach ($item as $key_item => $item2) {
+                            foreach ($item2 as $key_item2 => $item3) {
+                                if (in_array($key_item2, config('params')['elastic']['keyword'][$name_table]) && in_array($key_item, ['term', 'wildcard', 'prefix'])) {
+                                    $newKey = $key_item2 . '.keyword';
+                                } else {
+                                    $newKey = $key_item2;
+                                }
+                                if(in_array($key_item, ['wildcard'])){
+                                    $item3 = '*'.$item3.'*';
+                                }
+                                // Thêm phần tử vào mảng kết quả với key mới
+                                $updated_elastic_must_not[$key][$key_item] = [
+                                    $newKey => $item3
+                                ];
+                            }
+                        }
+                    }
+                }
+
                 $matchQuery = [];
                 if ($this->elastic_must !== null) {
-                    $matchQuery['must'] = $this->elastic_must;
+                    $matchQuery['must'] = $updated_elastic_must;
                 }
                 if ($this->elastic_should !== null) {
-                    $matchQuery['should'] = $this->elastic_should;
+                    $matchQuery['should'] = $updated_elastic_should;
                 }
                 if ($this->elastic_must_not !== null) {
-                    $matchQuery['must_not'] = $this->elastic_must_not;
+                    $matchQuery['must_not'] = $updated_elastic_must_not;
                 }
                 if ($this->elastic_filter !== null) {
                     $matchQuery['filter'] = $this->elastic_filter;
@@ -605,7 +710,7 @@ class BaseApiCacheController extends Controller
             case 'term':
                 $highlight  = [
                     'fields' => [
-                        $this->elastic_field.'.keyword' => [
+                        $this->elastic_field . '.keyword' => [
                             'pre_tags' => ['<em>'],  // Tag mở đầu cho highlight
                             'post_tags' => ['</em>'], // Tag kết thúc cho highlight
                             'number_of_fragments' => 0, // Hiển thị toàn bộ văn bản
@@ -617,7 +722,43 @@ class BaseApiCacheController extends Controller
             case 'wildcard':
                 $highlight  = [
                     'fields' => [
-                        $this->elastic_field.'.keyword' => [
+                        $this->elastic_field . '.keyword' => [
+                            'pre_tags' => ['<em>'],  // Tag mở đầu cho highlight
+                            'post_tags' => ['</em>'], // Tag kết thúc cho highlight
+                            'number_of_fragments' => 0, // Hiển thị toàn bộ văn bản
+                            'fragment_size' => 150  // Kích thước của mỗi đoạn highlight
+                        ]
+                    ]
+                ];
+                break;
+            case 'query_string':
+                $highlight  = [
+                    'fields' => [
+                        $this->elastic_field => [
+                            'pre_tags' => ['<em>'],  // Tag mở đầu cho highlight
+                            'post_tags' => ['</em>'], // Tag kết thúc cho highlight
+                            'number_of_fragments' => 0, // Hiển thị toàn bộ văn bản
+                            'fragment_size' => 150  // Kích thước của mỗi đoạn highlight
+                        ]
+                    ]
+                ];
+                break;
+            case 'match_phrase':
+                $highlight  = [
+                    'fields' => [
+                        $this->elastic_field => [
+                            'pre_tags' => ['<em>'],  // Tag mở đầu cho highlight
+                            'post_tags' => ['</em>'], // Tag kết thúc cho highlight
+                            'number_of_fragments' => 0, // Hiển thị toàn bộ văn bản
+                            'fragment_size' => 150  // Kích thước của mỗi đoạn highlight
+                        ]
+                    ]
+                ];
+                break;
+            case 'prefix':
+                $highlight  = [
+                    'fields' => [
+                        $this->elastic_field => [
                             'pre_tags' => ['<em>'],  // Tag mở đầu cho highlight
                             'post_tags' => ['</em>'], // Tag kết thúc cho highlight
                             'number_of_fragments' => 0, // Hiển thị toàn bộ văn bản
@@ -628,7 +769,7 @@ class BaseApiCacheController extends Controller
                 break;
             case 'multi_match':
                 $fields = [];
-                foreach($this->elastic_fields as $key => $item){
+                foreach ($this->elastic_fields as $key => $item) {
                     $fields[$item] = [
                         'pre_tags' => ['<em>'],  // Tag mở đầu cho highlight
                         'post_tags' => ['</em>'], // Tag kết thúc cho highlight
@@ -642,7 +783,7 @@ class BaseApiCacheController extends Controller
                 break;
             case 'bool':
                 $fields = [];
-                foreach($this->elastic_fields as $key => $item){
+                foreach ($this->elastic_fields as $key => $item) {
                     $fields[$item] = [
                         'pre_tags' => ['<em>'],  // Tag mở đầu cho highlight
                         'post_tags' => ['</em>'], // Tag kết thúc cho highlight
@@ -667,12 +808,12 @@ class BaseApiCacheController extends Controller
         // Lặp qua từng phần tử trong mảng ban đầu
         foreach ($this->order_by_elastic as $key => $order) {
             // Tạo key mới bằng cách thêm '.keyword'
-            if(in_array($key, config('params')['elastic']['keyword'][$name])){
+            if (in_array($key, config('params')['elastic']['keyword'][$name])) {
                 $newKey = $key . '.keyword';
-            }else{
+            } else {
                 $newKey = $key;
             }
-            
+
             // Thêm phần tử vào mảng kết quả với key mới
             $updatedSortArray[] = [
                 $newKey => [
@@ -799,10 +940,13 @@ class BaseApiCacheController extends Controller
         if ($this->elastic_must != null) {
             foreach ($this->elastic_must as $key => $item) {
                 foreach ($this->elastic_must[$key] as $key1 => $item) {
-                    if (!in_array($key1, ['match', 'term', 'wildcard', 'filter'])) {
-                        $this->errors[$this->elastic_must_name] = $this->mess_format . ' Chỉ nhận giá trị thuộc mảng sau ' . implode(', ', ['match', 'term', 'wildcard']);
+                    if (!in_array($key1, $this->elastic_search_type_must_should_must_not)) {
+                        $this->errors[$this->elastic_must_name] = $this->mess_format . ' Chỉ nhận giá trị thuộc mảng sau ' . implode(', ', $this->elastic_search_type_must_should_must_not);
                     }
-                    $this->elastic_must[$key][$key1] = convertArrayKeysToSnakeCase($this->elastic_must[$key][$key1]);
+                    foreach($this->elastic_must[$key][$key1] as $old_key => $old_value){
+                        $this->elastic_must[$key][$key1][camelToSnake($old_key)] = $old_value;
+                        unset( $this->elastic_must[$key][$key1][$old_key]);
+                    }
                 }
             }
         }
@@ -811,10 +955,13 @@ class BaseApiCacheController extends Controller
         if ($this->elastic_should != null) {
             foreach ($this->elastic_should as $key => $item) {
                 foreach ($this->elastic_should[$key] as $key1 => $item) {
-                    if (!in_array($key1, ['match', 'term', 'wildcard', 'filter'])) {
-                        $this->errors[$this->elastic_should_name] = $this->mess_format . ' Chỉ nhận giá trị thuộc mảng sau ' . implode(', ', ['match', 'term', 'wildcard']);
+                    if (!in_array($key1, $this->elastic_search_type_must_should_must_not)) {
+                        $this->errors[$this->elastic_should_name] = $this->mess_format . ' Chỉ nhận giá trị thuộc mảng sau ' . implode(', ', $this->elastic_search_type_must_should_must_not);
                     }
-                    $this->elastic_should[$key][$key1] = convertArrayKeysToSnakeCase($this->elastic_should[$key][$key1]);
+                    foreach($this->elastic_should[$key][$key1] as $old_key => $old_value){
+                        $this->elastic_should[$key][$key1][camelToSnake($old_key)] = $old_value;
+                        unset( $this->elastic_should[$key][$key1][$old_key]);
+                    }
                 }
             }
         }
@@ -823,10 +970,13 @@ class BaseApiCacheController extends Controller
         if ($this->elastic_must_not != null) {
             foreach ($this->elastic_must_not as $key => $item) {
                 foreach ($this->elastic_must_not[$key] as $key1 => $item) {
-                    if (!in_array($key1, ['match', 'term', 'wildcard', 'filter'])) {
-                        $this->errors[$this->elastic_must_not_name] = $this->mess_format . ' Chỉ nhận giá trị thuộc mảng sau ' . implode(', ', ['match', 'term', 'wildcard']);
+                    if (!in_array($key1, $this->elastic_search_type_must_should_must_not)) {
+                        $this->errors[$this->elastic_must_not_name] = $this->mess_format . ' Chỉ nhận giá trị thuộc mảng sau ' . implode(', ', $this->elastic_search_type_must_should_must_not);
                     }
-                    $this->elastic_must_not[$key][$key1] = convertArrayKeysToSnakeCase($this->elastic_must_not[$key][$key1]);
+                    foreach($this->elastic_must_not[$key][$key1] as $old_key => $old_value){
+                        $this->elastic_must_not[$key][$key1][camelToSnake($old_key)] = $old_value;
+                        unset( $this->elastic_must_not[$key][$key1][$old_key]);
+                    }
                 }
             }
         }
