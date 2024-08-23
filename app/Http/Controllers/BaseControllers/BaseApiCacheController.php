@@ -569,7 +569,7 @@ class BaseApiCacheController extends Controller
                 ];
                 break;
             case 'prefix':
-                if(in_array($field, config('params')['elastic']['keyword'][$name_table])){
+                if(in_array($field, get_arr_elastic_index_keyword($name_table))){
                     $query =  [
                         'prefix' => [
                             $field . '.keyword' => $value
@@ -603,7 +603,7 @@ class BaseApiCacheController extends Controller
                         // Tạo key mới bằng cách thêm '.keyword'
                         foreach ($item as $key_item => $item2) {
                             foreach ($item2 as $key_item2 => $item3) {
-                                if (in_array($key_item2, config('params')['elastic']['keyword'][$name_table]) && in_array($key_item, ['term', 'wildcard', 'prefix'])) {
+                                if (in_array($key_item2, get_arr_elastic_index_keyword($name_table)) && in_array($key_item, ['term', 'wildcard', 'prefix'])) {
                                     $newKey = $key_item2 . '.keyword';
                                 } else {
                                     $newKey = $key_item2;
@@ -626,7 +626,7 @@ class BaseApiCacheController extends Controller
                         // Tạo key mới bằng cách thêm '.keyword'
                         foreach ($item as $key_item => $item2) {
                             foreach ($item2 as $key_item2 => $item3) {
-                                if (in_array($key_item2, config('params')['elastic']['keyword'][$name_table]) && in_array($key_item, ['term', 'wildcard', 'prefix'])) {
+                                if (in_array($key_item2, get_arr_elastic_index_keyword($name_table)) && in_array($key_item, ['term', 'wildcard', 'prefix'])) {
                                     $newKey = $key_item2 . '.keyword';
                                 } else {
                                     $newKey = $key_item2;
@@ -650,7 +650,7 @@ class BaseApiCacheController extends Controller
                         // Tạo key mới bằng cách thêm '.keyword'
                         foreach ($item as $key_item => $item2) {
                             foreach ($item2 as $key_item2 => $item3) {
-                                if (in_array($key_item2, config('params')['elastic']['keyword'][$name_table]) && in_array($key_item, ['term', 'wildcard', 'prefix'])) {
+                                if (in_array($key_item2, get_arr_elastic_index_keyword($name_table)) && in_array($key_item, ['term', 'wildcard', 'prefix'])) {
                                     $newKey = $key_item2 . '.keyword';
                                 } else {
                                     $newKey = $key_item2;
@@ -808,7 +808,7 @@ class BaseApiCacheController extends Controller
         // Lặp qua từng phần tử trong mảng ban đầu
         foreach ($this->order_by_elastic as $key => $order) {
             // Tạo key mới bằng cách thêm '.keyword'
-            if (in_array($key, config('params')['elastic']['keyword'][$name])) {
+            if (in_array($key, get_arr_elastic_index_keyword($name))) {
                 $newKey = $key . '.keyword';
             } else {
                 $newKey = $key;

@@ -133,12 +133,6 @@ return [
             'his_treatment_type',
             'his_unlimit_reason',
             'his_work_place',
-        ],
-        'keyword' => [
-            'bed' => [
-                'bed_name',
-                'bed_room_name',
-            ]
-        ],
+        ]
     ]
 ];

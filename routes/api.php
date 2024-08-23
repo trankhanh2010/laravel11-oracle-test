@@ -204,9 +204,12 @@ Route::group([
 ], function () {
     /// Cache
     Route::get("v1/clear-cache", [CacheController::class, "clear_cache"])->name('.clear_cache');
+    Route::get("v1/clear-cache-elastic-index-keyword", [CacheController::class, "clear_cache_elatic_index_keyword"])->name('.clear_cache_elatic_index_keyword');
 
     /// Elastic Search
     Route::get("v1/index-records-to-elasticsearch", [ElasticSearchController::class, "index_records_to_elasticsearch"])->name('.index_records_to_elasticsearch');
+    Route::get("v1/get-mapping", [ElasticSearchController::class, "get_mapping"])->name('.get_mapping');
+    Route::get("v1/get-setting", [ElasticSearchController::class, "get_index_settings"])->name('.get_index_settings');
     Route::delete("v1/delete-index", [ElasticSearchController::class, "delete_index"])->name('.delete_index');
 
     /// Khoa phòng

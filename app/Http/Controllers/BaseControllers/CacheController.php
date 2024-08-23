@@ -25,4 +25,12 @@ class CacheController extends BaseApiCacheController
             return return_500_error();
         }
     }
+    public function clear_cache_elatic_index_keyword(Request $request){
+        try{
+            event(new DeleteCache('elastic_index_keyword_'.$request->index));
+            return return_clear_cache();
+        } catch (\Exception $e) {
+            return return_500_error();
+        }
+    }
 }

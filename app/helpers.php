@@ -703,3 +703,26 @@ if (!function_exists('return_404_error_page_not_found')) {
 
     }
 }
+
+// Elastic Search
+
+if (!function_exists('get_arr_elastic_index_keyword')) {
+    function get_arr_elastic_index_keyword($name)
+    {
+        $time = 144000;
+        $data = Cache::remember('elastic_index_keyword_'.$name, $time, function () use ($name) {
+            $client = app('Elasticsearch');
+            $params = [
+                'index' => $name,
+            ];
+            $data = $client->indices()->getMapping($params)[$name];
+            foreach ($data['mappings']['properties'] as $field => $properties) {
+                if (isset($properties['fields']) && isset($properties['fields']['keyword'])) {
+                    $keywordFields[] = $field;
+                }
+            }
+            return $keywordFields;
+        });
+        return $data;
+    }
+}

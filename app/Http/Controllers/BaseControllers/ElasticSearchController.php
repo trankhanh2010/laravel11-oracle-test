@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\BaseControllers;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Elastic\ElasticMappingResource;
+use App\Http\Resources\Elastic\ElasticResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 
@@ -30,6 +32,7 @@ class ElasticSearchController extends Controller
         $output = Artisan::output();
 
         return response()->json([
+            'status'    => 200,
             'message' => 'Xong!',
             'output' => $output,
         ], 200);
@@ -71,6 +74,43 @@ class ElasticSearchController extends Controller
             }
         } catch (\Exception $e) {
             return return_500_error();
+        }
+    }
+    public function get_mapping(Request $request){
+        try {
+            $params = [
+                'index' => $request->index,
+            ];
+            $response = new ElasticMappingResource($this->client->indices()->getMapping($params)[$request->index]);
+        
+            return return_data_success([], $response);
+        } catch (\Exception $e) {
+            return return_500_error();
+        }
+    }
+    public function get_index_settings(Request $request)
+    {
+        $index = $request->index;
+        $detail = $request->detail;
+        try {
+            $params = [
+                'index' => $index
+            ];
+
+            $response = $this->client->indices()->get($params);
+            switch ($detail) {
+                case 'stop_filter':
+                    $response = $response[$index]['settings']['index']['analysis']['filter']['my_stop_filter'];
+                    break;
+    
+                default:
+                    // Xử lý mặc định hoặc xử lý khi không có bảng khớp
+                    $response = [];
+                    break;
+            }
+            return return_data_success([], $response);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 }

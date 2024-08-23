@@ -25,6 +25,26 @@ class CreateBedIndex
         $this->params =  [
             'index' => $this->model_name,
             'body' => [
+                'settings' => [
+                    'analysis' => [
+                        'analyzer' => [
+                            'my_custom_analyzer' => [
+                                'type' => 'custom',
+                                'tokenizer' => 'standard',
+                                'filter' => [
+                                    'lowercase',
+                                    'my_stop_filter'
+                                ]
+                            ]
+                        ],
+                        'filter' => [
+                            'my_stop_filter' => [
+                                'type' => 'stop',
+                                'stopwords' => ['giường', 'khoa', 'phòng', 'khoa_phòng'] // Danh sách từ dừng tùy chỉnh
+                            ]
+                        ]
+                    ]
+                ],
                 'mappings' => [
                     'properties' => [
                         'id' => [
@@ -51,10 +71,10 @@ class CreateBedIndex
                             'type' => 'keyword'  // Chuỗi không phân tích, lưu trữ giá trị chính xác
                         ],
                         'is_active' => [
-                            'type' => 'byte'  
+                            'type' => 'byte'
                         ],
                         'is_delete' => [
-                            'type' => 'byte'  
+                            'type' => 'byte'
                         ],
                         'group_code' => [
                             'type' => 'keyword'  // Chuỗi không phân tích, lưu trữ giá trị chính xác, có thể là null
@@ -64,6 +84,7 @@ class CreateBedIndex
                         ],
                         'bed_name' => [
                             'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
+                            'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
                             'fields' => [
                                 'keyword' => [  // Phân tích không để sắp xếp và tìm kiếm chính xác
                                     'type' => 'keyword'
@@ -89,7 +110,7 @@ class CreateBedIndex
                             'type' => 'long'  // Số nguyên 64-bit
                         ],
                         'is_bed_stretcher' => [
-                            'type' => 'byte'  
+                            'type' => 'byte'
                         ],
                         'bed_type_name' => [
                             'type' => 'keyword'  // Chuỗi không phân tích, lưu trữ giá trị chính xác
@@ -99,6 +120,7 @@ class CreateBedIndex
                         ],
                         'bed_room_name' => [
                             'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
+                            'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
                             'fields' => [
                                 'keyword' => [  // Phân tích không để sắp xếp và tìm kiếm chính xác
                                     'type' => 'keyword'
