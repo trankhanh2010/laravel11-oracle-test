@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\Api\CacheControllers;
 
 use App\Events\Cache\DeleteCache;
+use App\Events\Elastic\AtcGroup\InsertAtcGroupIndex;
+use App\Events\Elastic\DeleteIndex;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
 use App\Http\Requests\AtcGroup\CreateAtcGroupRequest;
 use App\Http\Requests\AtcGroup\UpdateAtcGroupRequest;
+use App\Http\Resources\Elastic\ElasticResource;
 use App\Models\HIS\AtcGroup;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -20,10 +23,85 @@ class AtcGroupController extends BaseApiCacheController
 
         // Kiểm tra tên trường trong bảng
         if ($this->order_by != null) {
+            $this->order_by_join = [];
             $columns = $this->get_columns_table($this->atc_group);
             $this->order_by = $this->check_order_by($this->order_by, $columns, $this->order_by_join ?? []);
             $this->order_by_tring = arrayToCustomString($this->order_by);
         }
+    }
+    protected function applyJoins()
+    {
+        return $this->atc_group
+            ->select(
+                'his_atc_group.*',
+            );
+    }
+    public function applyKeywordFilter($query, $keyword)
+    {
+        return $query->where(function ($query) use ($keyword) {
+            $query->where(DB::connection('oracle_his')->raw('his_atc_group.atc_group_code'), 'like', $keyword . '%')
+                ->orWhere(DB::connection('oracle_his')->raw('his_atc_group.atc_group_name'), 'like', $keyword . '%');
+        });
+    }
+    protected function applyIsActiveFilter($query)
+    {
+        if ($this->is_active !== null) {
+            $query->where(DB::connection('oracle_his')->raw('his_atc_group.is_active'), $this->is_active);
+        }
+
+        return $query;
+    }
+    protected function applyOrdering($query)
+    {
+        if ($this->order_by != null) {
+            foreach ($this->order_by as $key => $item) {
+                if (in_array($key, $this->order_by_join)) {
+
+                } else {
+                    $query->orderBy('his_atc_group.' . $key, $item);
+                }
+            }
+        }
+
+        return $query;
+    }
+    protected function fetchData($query)
+    {
+        if ($this->get_all) {
+            // Lấy tất cả dữ liệu
+            return $query->get();
+        } else {
+            // Lấy dữ liệu phân trang
+            return $query
+                ->skip($this->start)
+                ->take($this->limit)
+                ->get();
+        }
+    }
+    protected function buildSearchBody()
+    {
+        $query = $this->buildSearchQuery($this->elastic_search_type, $this->elastic_field, $this->keyword, $this->atc_group_name);
+        $highlight = $this->buildHighlight($this->elastic_search_type);
+        $paginate = $this->buildPaginateElastic();
+
+        $body = [
+            'query' => $query,
+            'highlight' => $highlight,
+        ];
+        $body = array_merge($body, $paginate);
+
+        if ($this->order_by_elastic !== null) {
+            $body['sort'] = $this->buildSort($this->atc_group_name);
+        }
+
+        return $body;
+    }
+    protected function executeSearch($index, $body)
+    {
+        return $this->client->search([
+            'index' => $index,
+            'body' => $body,
+        ]);
     }
     public function atc_group($id = null)
     {
@@ -33,63 +111,28 @@ class AtcGroupController extends BaseApiCacheController
         }
         try {
             $keyword = $this->keyword;
-            if ($keyword != null) {
-                $data = $this->atc_group
-                    ->select(
-                        'his_atc_group.*',
-                    );
-                $data = $data->where(function ($query) use ($keyword) {
-                    $query = $query
-                        ->where(DB::connection('oracle_his')->raw('his_atc_group.atc_group_code'), 'like', $keyword . '%');
-                });
-                if ($this->is_active !== null) {
-                    $data = $data->where(function ($query) {
-                        $query = $query->where(DB::connection('oracle_his')->raw('his_atc_group.is_active'), $this->is_active);
-                    });
-                }
-                $count = $data->count();
-                if ($this->order_by != null) {
-                    foreach ($this->order_by as $key => $item) {
-                        $data->orderBy('his_atc_group.' . $key, $item);
-                    }
-                }
-                if($this->get_all){
-                    $data = $data
-                    ->get();
-                }else{
-                    $data = $data
-                    ->skip($this->start)
-                    ->take($this->limit)
-                    ->get();
+            if ($keyword != null || $this->elastic_search_type != null) {
+                if ($this->elastic_search_type != null) {
+                    $body = $this->buildSearchBody();
+                    $data = $this->executeSearch($this->atc_group_name, $body);
+                    $count = $data['hits']['total']['value'];
+                    $data = ElasticResource::collection($data['hits']['hits']);
+                } else {
+                    $data = $this->applyJoins();
+                    $data = $this->applyKeywordFilter($data, $keyword);
+                    $data = $this->applyIsActiveFilter($data);
+                    $count = $data->count();
+                    $data = $this->applyOrdering($data);
+                    $data = $this->fetchData($data);
                 }
             } else {
                 if ($id == null) {
                     $data = Cache::remember($this->atc_group_name . '_start_' . $this->start . '_limit_' . $this->limit . $this->order_by_tring . '_is_active_' . $this->is_active. '_get_all_' . $this->get_all, $this->time, function () {
-                        $data = $this->atc_group
-                        ->select(
-                            'his_atc_group.*',
-                        );
-                        if ($this->is_active !== null) {
-                            $data = $data->where(function ($query) {
-                                $query = $query->where(DB::connection('oracle_his')->raw('his_atc_group.is_active'), $this->is_active);
-                            });
-                        }
-
+                        $data = $this->applyJoins();
+                        $data = $this->applyIsActiveFilter($data);
                         $count = $data->count();
-                        if ($this->order_by != null) {
-                            foreach ($this->order_by as $key => $item) {
-                                $data->orderBy('his_atc_group.' . $key, $item);
-                            }
-                        }
-                        if($this->get_all){
-                            $data = $data
-                            ->get();
-                        }else{
-                            $data = $data
-                            ->skip($this->start)
-                            ->take($this->limit)
-                            ->get();
-                        }
+                        $data = $this->applyOrdering($data);
+                        $data = $this->fetchData($data);
                         return ['data' => $data, 'count' => $count];
                     });
                 } else {
@@ -101,16 +144,9 @@ class AtcGroupController extends BaseApiCacheController
                         return $check_id; 
                     }
                     $data = Cache::remember($this->atc_group_name . '_' . $id . '_is_active_' . $this->is_active, $this->time, function () use ($id) {
-                        $data = $this->atc_group
-                        ->select(
-                            'his_atc_group.*',
-                        )
-                            ->where('his_atc_group.id', $id);
-                        if ($this->is_active !== null) {
-                            $data = $data->where(function ($query) {
-                                $query = $query->where(DB::connection('oracle_his')->raw('his_atc_group.is_active'), $this->is_active);
-                            });
-                        }
+                        $data = $this->applyJoins()
+                        ->where('his_atc_group.id', $id);
+                        $data = $this->applyIsActiveFilter($data);
                         $data = $data->first();
                         return $data;
                     });
@@ -148,6 +184,8 @@ class AtcGroupController extends BaseApiCacheController
         ]);
         // Gọi event để xóa cache
         event(new DeleteCache($this->atc_group_name));
+        // Gọi event để thêm index vào elastic
+        event(new InsertAtcGroupIndex($data, $this->atc_group_name));
         return return_data_create_success($data);
     } catch (\Exception $e) {
         return return_500_error();
@@ -174,6 +212,8 @@ class AtcGroupController extends BaseApiCacheController
         ]);
         // Gọi event để xóa cache
         event(new DeleteCache($this->atc_group_name));
+        // Gọi event để thêm index vào elastic
+        event(new InsertAtcGroupIndex($data, $this->atc_group_name));
         return return_data_update_success($data);
     } catch (\Exception $e) {
         return return_500_error();
@@ -193,6 +233,8 @@ class AtcGroupController extends BaseApiCacheController
             $data->delete();
             // Gọi event để xóa cache
             event(new DeleteCache($this->atc_group_name));
+            // Gọi event để xóa index trong elastic
+            event(new DeleteIndex($data, $this->atc_group_name));
             return return_data_delete_success();
         } catch (\Exception $e) {
             return return_data_delete_fail();

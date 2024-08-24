@@ -5,6 +5,7 @@ namespace App\Models\HIS;
 use App\Traits\dinh_dang_ten_truong;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class Area extends Model
 {
@@ -31,5 +32,17 @@ class Area extends Model
     public function department()
     {
         return $this->hasOne(Department::class);
+    }
+    public static function get_data_from_db_to_elastic($id = null){
+        $data = DB::connection('oracle_his')->table('his_area')
+        ->select(
+            'his_area.*'
+        );
+        if($id != null){
+            $data = $data->where('his_area.id','=', $id)->first();
+        }else{
+            $data = $data->get();
+        }
+        return $data;
     }
 }

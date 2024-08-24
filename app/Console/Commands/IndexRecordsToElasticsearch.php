@@ -6,6 +6,9 @@ use App\Events\Elastic\AccidentBodyPart\CreateAccidentBodyPartIndex;
 use App\Events\Elastic\AccidentCare\CreateAccidentCareIndex;
 use App\Events\Elastic\AccidentHurtType\CreateAccidentHurtTypeIndex;
 use App\Events\Elastic\AccidentLocation\CreateAccidentLocationIndex;
+use App\Events\Elastic\AgeType\CreateAgeTypeIndex;
+use App\Events\Elastic\Area\CreateAreaIndex;
+use App\Events\Elastic\AtcGroup\CreateAtcGroupIndex;
 use App\Providers\ElasticsearchServiceProvider;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
@@ -14,6 +17,9 @@ use App\Models\HIS\AccidentBodyPart;
 use App\Models\HIS\AccidentCare;
 use App\Models\HIS\AccidentHurtType;
 use App\Models\HIS\AccidentLocation;
+use App\Models\HIS\AgeType;
+use App\Models\HIS\Area;
+use App\Models\HIS\AtcGroup;
 use App\Models\HIS\Bed;
 
 class IndexRecordsToElasticsearch extends Command
@@ -84,7 +90,19 @@ class IndexRecordsToElasticsearch extends Command
             case 'his_accident_location':
                 $results = AccidentLocation::get_data_from_db_to_elastic(null);
                 event(new CreateAccidentLocationIndex($name_table));
-                break;              
+                break;     
+            case 'his_age_type':
+                $results = AgeType::get_data_from_db_to_elastic(null);
+                event(new CreateAgeTypeIndex($name_table));
+                break;     
+            case 'his_area':
+                $results = Area::get_data_from_db_to_elastic(null);
+                event(new CreateAreaIndex($name_table));
+                break;        
+            case 'his_atc_group':
+                $results = AtcGroup::get_data_from_db_to_elastic(null);
+                event(new CreateAtcGroupIndex($name_table));
+                break;  
             case 'his_bed':
                 $results = Bed::get_data_from_db_to_elastic(null);
                 event(new CreateBedIndex($name_table));

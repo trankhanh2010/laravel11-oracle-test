@@ -11,6 +11,11 @@ use App\Events\Elastic\AccidentHurtType\CreateAccidentHurtTypeIndex;
 use App\Events\Elastic\AccidentHurtType\InsertAccidentHurtTypeIndex;
 use App\Events\Elastic\AccidentLocation\CreateAccidentLocationIndex;
 use App\Events\Elastic\AccidentLocation\InsertAccidentLocationIndex;
+use App\Events\Elastic\AgeType\CreateAgeTypeIndex;
+use App\Events\Elastic\Area\CreateAreaIndex;
+use App\Events\Elastic\Area\InsertAreaIndex;
+use App\Events\Elastic\AtcGroup\CreateAtcGroupIndex;
+use App\Events\Elastic\AtcGroup\InsertAtcGroupIndex;
 use App\Events\Elastic\Bed\CreateBedIndex;
 use App\Events\Elastic\Bed\InsertBedIndex;
 use App\Events\Elastic\DeleteIndex;
@@ -23,6 +28,11 @@ use App\Listeners\Elastic\AccidentHurtType\ElasticCreateAccidentHurtTypeIndex;
 use App\Listeners\Elastic\AccidentHurtType\ElasticInsertAccidentHurtTypeIndex;
 use App\Listeners\Elastic\AccidentLocation\ElasticCreateAccidentLocationIndex;
 use App\Listeners\Elastic\AccidentLocation\ElasticInsertAccidentLocationIndex;
+use App\Listeners\Elastic\AgeType\ElasticCreateAgeTypeIndex;
+use App\Listeners\Elastic\Area\ElasticCreateAreaIndex;
+use App\Listeners\Elastic\Area\ElasticInsertAreaIndex;
+use App\Listeners\Elastic\AtcGroup\ElasticCreateAtcGroupIndex;
+use App\Listeners\Elastic\AtcGroup\ElasticInsertAtcGroupIndex;
 use App\Listeners\Elastic\Bed\ElasticCreateBedIndex;
 use App\Listeners\Elastic\Bed\ElasticInsertBedIndex;
 use App\Listeners\Elastic\ElasticDeleteIndex;
@@ -59,24 +69,46 @@ class EventServiceProvider extends ServiceProvider
         InsertAccidentBodyPartIndex::class => [
             ElasticInsertAccidentBodyPartIndex::class,
         ],
+
         CreateAccidentCareIndex::class => [
             ElasticCreateAccidentCareIndex::class,
         ],
         InsertAccidentCareIndex::class => [
             ElasticInsertAccidentCareIndex::class,
         ],
+
         CreateAccidentHurtTypeIndex::class => [
             ElasticCreateAccidentHurtTypeIndex::class,
         ],
         InsertAccidentHurtTypeIndex::class => [
             ElasticInsertAccidentHurtTypeIndex::class,
         ],
+
         CreateAccidentLocationIndex::class => [
             ElasticCreateAccidentLocationIndex::class,
         ],
         InsertAccidentLocationIndex::class => [
             ElasticInsertAccidentLocationIndex::class,
         ],
+
+        CreateAgeTypeIndex::class => [
+            ElasticCreateAgeTypeIndex::class,
+        ],
+        
+        CreateAreaIndex::class => [
+            ElasticCreateAreaIndex::class,
+        ],
+        InsertAreaIndex::class => [
+            ElasticInsertAreaIndex::class,
+        ],
+
+        CreateAtcGroupIndex::class => [
+            ElasticCreateAtcGroupIndex::class,
+        ],
+        InsertAtcGroupIndex::class => [
+            ElasticInsertAtcGroupIndex::class,
+        ],
+
         CreateBedIndex::class => [
             ElasticCreateBedIndex::class,
         ],
