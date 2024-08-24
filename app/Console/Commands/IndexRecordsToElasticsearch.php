@@ -2,10 +2,18 @@
 
 namespace App\Console\Commands;
 
+use App\Events\Elastic\AccidentBodyPart\CreateAccidentBodyPartIndex;
+use App\Events\Elastic\AccidentCare\CreateAccidentCareIndex;
+use App\Events\Elastic\AccidentHurtType\CreateAccidentHurtTypeIndex;
+use App\Events\Elastic\AccidentLocation\CreateAccidentLocationIndex;
 use App\Providers\ElasticsearchServiceProvider;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use App\Events\Elastic\Bed\CreateBedIndex;
+use App\Models\HIS\AccidentBodyPart;
+use App\Models\HIS\AccidentCare;
+use App\Models\HIS\AccidentHurtType;
+use App\Models\HIS\AccidentLocation;
 use App\Models\HIS\Bed;
 
 class IndexRecordsToElasticsearch extends Command
@@ -61,6 +69,22 @@ class IndexRecordsToElasticsearch extends Command
         // Khởi tạo kết nối đến Elastic
         $client = app('Elasticsearch');
         switch ($table) {
+            case 'his_accident_body_part':
+                $results = AccidentBodyPart::get_data_from_db_to_elastic(null);
+                event(new CreateAccidentBodyPartIndex($name_table));
+                break;
+            case 'his_accident_care':
+                $results = AccidentCare::get_data_from_db_to_elastic(null);
+                event(new CreateAccidentCareIndex($name_table));
+                break;    
+            case 'his_accident_hurt_type':
+                $results = AccidentHurtType::get_data_from_db_to_elastic(null);
+                event(new CreateAccidentHurtTypeIndex($name_table));
+                break;    
+            case 'his_accident_location':
+                $results = AccidentLocation::get_data_from_db_to_elastic(null);
+                event(new CreateAccidentLocationIndex($name_table));
+                break;              
             case 'his_bed':
                 $results = Bed::get_data_from_db_to_elastic(null);
                 event(new CreateBedIndex($name_table));

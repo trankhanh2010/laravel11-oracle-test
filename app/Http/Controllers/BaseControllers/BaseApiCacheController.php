@@ -891,6 +891,7 @@ class BaseApiCacheController extends Controller
     public function __construct(Request $request)
     {
         // Khai báo các biến
+        $this->client = app('Elasticsearch');
         // Thời gian tồn tại của cache
         $this->time = now()->addMinutes(10080);
         $this->columns_time = now()->addMinutes(20000);

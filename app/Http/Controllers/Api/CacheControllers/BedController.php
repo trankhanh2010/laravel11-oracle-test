@@ -22,7 +22,6 @@ class BedController extends BaseApiCacheController
     {
         parent::__construct($request); // Gọi constructor của BaseController
         $this->bed = new Bed();
-        $this->client = app('Elasticsearch');
 
         // Kiểm tra tên trường trong bảng
         if ($this->order_by != null) {
@@ -55,6 +54,13 @@ class BedController extends BaseApiCacheController
                 'his_department.department_name',
                 'his_department.department_code'
             );
+    }
+    public function applyKeywordFilter($query, $keyword)
+    {
+        return $query->where(function ($query) use ($keyword) {
+            $query->where(DB::connection('oracle_his')->raw('his_bed.bed_code'), 'like', $keyword . '%')
+                ->orWhere(DB::connection('oracle_his')->raw('his_bed.bed_name'), 'like', $keyword . '%');
+        });
     }
     protected function applyIsActiveFilter($query)
     {
@@ -99,6 +105,31 @@ class BedController extends BaseApiCacheController
                 ->get();
         }
     }
+    protected function buildSearchBody()
+    {
+        $query = $this->buildSearchQuery($this->elastic_search_type, $this->elastic_field, $this->keyword, $this->bed_name);
+        $highlight = $this->buildHighlight($this->elastic_search_type);
+        $paginate = $this->buildPaginateElastic();
+
+        $body = [
+            'query' => $query,
+            'highlight' => $highlight,
+        ];
+        $body = array_merge($body, $paginate);
+
+        if ($this->order_by_elastic !== null) {
+            $body['sort'] = $this->buildSort($this->bed_name);
+        }
+
+        return $body;
+    }
+    protected function executeSearch($index, $body)
+    {
+        return $this->client->search([
+            'index' => $index,
+            'body' => $body,
+        ]);
+    }
     public function bed($id = null)
     {
         // Kiểm tra param và trả về lỗi nếu nó không hợp lệ
@@ -109,30 +140,13 @@ class BedController extends BaseApiCacheController
             $keyword = $this->keyword;
             if ($keyword != null || $this->elastic_search_type != null) {
                 if ($this->elastic_search_type != null) {
-                    $query = $this->buildSearchQuery($this->elastic_search_type, $this->elastic_field, $this->keyword, $this->bed_name);
-                    $highlight = $this->buildHighlight($this->elastic_search_type);
-                    $paginate = $this->buildPaginateElastic();
-                    $body = [
-                        'query' => $query,
-                        'highlight' => $highlight,
-                    ];
-                    $body = $body + $paginate;
-                    if ($this->order_by_elastic != null) {
-                        $body['sort'] = $this->buildSort($this->bed_name);
-                    }
-                    $data = $this->client->search([
-                        'index' => $this->bed_name,
-                        'body' => $body,
-                    ]);
+                    $body = $this->buildSearchBody();
+                    $data = $this->executeSearch($this->bed_name, $body);
                     $count = $data['hits']['total']['value'];
                     $data = ElasticResource::collection($data['hits']['hits']);
                 } else {
                     $data = $this->applyJoins();
-                    $data = $data->where(function ($query) use ($keyword) {
-                        $query = $query
-                            ->where(DB::connection('oracle_his')->raw('his_bed.bed_code'), 'like', $keyword . '%')
-                            ->orWhere(DB::connection('oracle_his')->raw('his_bed.bed_name'), 'like', $keyword . '%');
-                    });
+                    $data = $this->applyKeywordFilter($data, $keyword);
                     $data = $this->applyIsActiveFilter($data);
                     $count = $data->count();
                     $data = $this->applyOrdering($data);
