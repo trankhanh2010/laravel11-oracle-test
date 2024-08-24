@@ -32,7 +32,8 @@ class CreateBedIndex
                                 'type' => 'custom',
                                 'tokenizer' => 'standard',
                                 'filter' => [
-                                    'lowercase',
+                                    'lowercase',       // Chuyển chữ hoa thành chữ thường
+                                    'asciifolding',    // Loại bỏ dấu
                                     'my_stop_filter'
                                 ]
                             ]
@@ -40,7 +41,7 @@ class CreateBedIndex
                         'filter' => [
                             'my_stop_filter' => [
                                 'type' => 'stop',
-                                'stopwords' => ['giường', 'khoa', 'phòng', 'khoa_phòng'] // Danh sách từ dừng tùy chỉnh
+                                'stopwords' => ['giuong', 'khoa', 'phong', 'khoa_phong'] // Danh sách từ dừng tùy chỉnh
                             ]
                         ]
                     ]
@@ -80,7 +81,13 @@ class CreateBedIndex
                             'type' => 'keyword'  // Chuỗi không phân tích, lưu trữ giá trị chính xác, có thể là null
                         ],
                         'bed_code' => [
-                            'type' => 'keyword'  // Chuỗi không phân tích, lưu trữ giá trị chính xác
+                            'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
+                            'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
+                            'fields' => [
+                                'keyword' => [  // Phân tích không để sắp xếp và tìm kiếm chính xác
+                                    'type' => 'keyword'
+                                ]
+                            ]
                         ],
                         'bed_name' => [
                             'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
@@ -128,7 +135,13 @@ class CreateBedIndex
                             ]
                         ],
                         'bed_room_code' => [
-                            'type' => 'keyword'  // Chuỗi không phân tích, lưu trữ giá trị chính xác
+                            'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
+                            'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
+                            'fields' => [
+                                'keyword' => [  // Phân tích không để sắp xếp và tìm kiếm chính xác
+                                    'type' => 'keyword'
+                                ]
+                            ]
                         ],
                         'department_name' => [
                             'type' => 'keyword'  // Chuỗi không phân tích, lưu trữ giá trị chính xác

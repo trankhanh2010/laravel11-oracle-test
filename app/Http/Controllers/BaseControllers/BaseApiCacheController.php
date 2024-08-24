@@ -436,7 +436,8 @@ class BaseApiCacheController extends Controller
     // Khai báo các biến cho Elastic
     protected $client;
     protected $elastic_search_type_arr = ['match', 'term', 'wildcard', 'query_string', 'multi_match', 'match_phrase', 'prefix', 'bool',];
-    protected $elastic_search_type_must_should_must_not = ['match', 'term', 'wildcard', 'match_phrase', 'prefix'];
+    protected $elastic_search_type_must_should_must_not = ['match', 'term', 'wildcard', 'match_phrase', 'prefix', 'query_string', 'range'];
+    protected $elastic_range_arr = ['gt', 'gte', 'lt', 'lte'];
     protected $elastic_search_type;
     protected $elastic_search_type_name = 'ElasticSearchType';
     protected $elastic_field;
@@ -611,10 +612,27 @@ class BaseApiCacheController extends Controller
                                 if(in_array($key_item, ['wildcard'])){
                                     $item3 = '*'.$item3.'*';
                                 }
+                                if(in_array($key_item, ['query_string'])){
+                                    // Tách chuỗi thành các từ bằng khoảng trắng
+                                    $item3 = explode(' ', $item3);
+                                    // Biến từng từ thành dạng wildcard
+                                    $wildcards = array_map(function($word) {
+                                        return '*' . $word . '*';
+                                    }, $item3);
+                                    // Kết hợp các từ với toán tử OR (||)
+                                    $item3 = implode(' || ', $wildcards);
+                                }
                                 // Thêm phần tử vào mảng kết quả với key mới
-                                $updated_elastic_must[$key][$key_item] = [
-                                    $newKey => $item3
-                                ];
+                                if(in_array($key_item, ['query_string'])){
+                                    $updated_elastic_must[$key][$key_item] = [
+                                        'query' => $item3,
+                                        'fields' => [$key_item2],
+                                    ];
+                                }else{
+                                    $updated_elastic_must[$key][$key_item] = [
+                                        $newKey => $item3,
+                                    ];
+                                }
                             }
                         }
                     }
@@ -634,10 +652,27 @@ class BaseApiCacheController extends Controller
                                 if(in_array($key_item, ['wildcard'])){
                                     $item3 = '*'.$item3.'*';
                                 }
+                                if(in_array($key_item, ['query_string'])){
+                                    // Tách chuỗi thành các từ bằng khoảng trắng
+                                    $item3 = explode(' ', $item3);
+                                    // Biến từng từ thành dạng wildcard
+                                    $wildcards = array_map(function($word) {
+                                        return '*' . $word . '*';
+                                    }, $item3);
+                                    // Kết hợp các từ với toán tử OR (||)
+                                    $item3 = implode(' || ', $wildcards);
+                                }
                                 // Thêm phần tử vào mảng kết quả với key mới
-                                $updated_elastic_should[$key][$key_item] = [
-                                    $newKey => $item3
-                                ];
+                                if(in_array($key_item, ['query_string'])){
+                                    $updated_elastic_should[$key][$key_item] = [
+                                        'query' => $item3,
+                                        'fields' => [$key_item2],
+                                    ];
+                                }else{
+                                    $updated_elastic_should[$key][$key_item] = [
+                                        $newKey => $item3,
+                                    ];
+                                }
                             }
                         }
                     }
@@ -658,10 +693,27 @@ class BaseApiCacheController extends Controller
                                 if(in_array($key_item, ['wildcard'])){
                                     $item3 = '*'.$item3.'*';
                                 }
+                                if(in_array($key_item, ['query_string'])){
+                                    // Tách chuỗi thành các từ bằng khoảng trắng
+                                    $item3 = explode(' ', $item3);
+                                    // Biến từng từ thành dạng wildcard
+                                    $wildcards = array_map(function($word) {
+                                        return '*' . $word . '*';
+                                    }, $item3);
+                                    // Kết hợp các từ với toán tử OR (||)
+                                    $item3 = implode(' || ', $wildcards);
+                                }
                                 // Thêm phần tử vào mảng kết quả với key mới
-                                $updated_elastic_must_not[$key][$key_item] = [
-                                    $newKey => $item3
-                                ];
+                                if(in_array($key_item, ['query_string'])){
+                                    $updated_elastic_must_not[$key][$key_item] = [
+                                        'query' => $item3,
+                                        'fields' => [$key_item2],
+                                    ];
+                                }else{
+                                    $updated_elastic_must_not[$key][$key_item] = [
+                                        $newKey => $item3,
+                                    ];
+                                }
                             }
                         }
                     }
@@ -799,7 +851,19 @@ class BaseApiCacheController extends Controller
 
         return $highlight;
     }
-
+    function buildPaginateElastic ()
+    {
+        if($this->get_all){
+            return [
+                'size' => 10000,
+                'from' => 0,
+            ];
+        }
+        return [
+            'size' => $this->limit,
+            'from' => $this->start,
+        ];
+    }
     function buildSort($name)
     {
         $sort = [];
@@ -944,8 +1008,15 @@ class BaseApiCacheController extends Controller
                         $this->errors[$this->elastic_must_name] = $this->mess_format . ' Chỉ nhận giá trị thuộc mảng sau ' . implode(', ', $this->elastic_search_type_must_should_must_not);
                     }
                     foreach($this->elastic_must[$key][$key1] as $old_key => $old_value){
-                        $this->elastic_must[$key][$key1][camelToSnake($old_key)] = $old_value;
+                        if($key1 == 'range'){
+                            foreach($old_value as $key2 => $item2){
+                                if (!in_array($key2, $this->elastic_range_arr)) {
+                                    $this->errors[$this->elastic_must_name] = $this->mess_format . ' Chỉ nhận giá trị thuộc mảng sau ' . implode(', ', $this->elastic_range_arr);
+                                }
+                            }
+                        }
                         unset( $this->elastic_must[$key][$key1][$old_key]);
+                        $this->elastic_must[$key][$key1][camelToSnake($old_key)] = $old_value;
                     }
                 }
             }
@@ -959,8 +1030,15 @@ class BaseApiCacheController extends Controller
                         $this->errors[$this->elastic_should_name] = $this->mess_format . ' Chỉ nhận giá trị thuộc mảng sau ' . implode(', ', $this->elastic_search_type_must_should_must_not);
                     }
                     foreach($this->elastic_should[$key][$key1] as $old_key => $old_value){
-                        $this->elastic_should[$key][$key1][camelToSnake($old_key)] = $old_value;
+                        if($key1 == 'range'){
+                            foreach($old_value as $key2 => $item2){
+                                if (!in_array($key2, $this->elastic_range_arr)) {
+                                    $this->errors[$this->elastic_should_name] = $this->mess_format . ' Chỉ nhận giá trị thuộc mảng sau ' . implode(', ', $this->elastic_range_arr);
+                                }
+                            }
+                        }
                         unset( $this->elastic_should[$key][$key1][$old_key]);
+                        $this->elastic_should[$key][$key1][camelToSnake($old_key)] = $old_value;
                     }
                 }
             }
@@ -974,8 +1052,15 @@ class BaseApiCacheController extends Controller
                         $this->errors[$this->elastic_must_not_name] = $this->mess_format . ' Chỉ nhận giá trị thuộc mảng sau ' . implode(', ', $this->elastic_search_type_must_should_must_not);
                     }
                     foreach($this->elastic_must_not[$key][$key1] as $old_key => $old_value){
-                        $this->elastic_must_not[$key][$key1][camelToSnake($old_key)] = $old_value;
+                        if($key1 == 'range'){
+                            foreach($old_value as $key2 => $item2){
+                                if (!in_array($key2, $this->elastic_range_arr)) {
+                                    $this->errors[$this->elastic_must_not_name] = $this->mess_format . ' Chỉ nhận giá trị thuộc mảng sau ' . implode(', ', $this->elastic_range_arr);
+                                }
+                            }
+                        }
                         unset( $this->elastic_must_not[$key][$key1][$old_key]);
+                        $this->elastic_must_not[$key][$key1][camelToSnake($old_key)] = $old_value;
                     }
                 }
             }

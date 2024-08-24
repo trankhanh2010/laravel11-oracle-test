@@ -111,12 +111,12 @@ class BedController extends BaseApiCacheController
                 if ($this->elastic_search_type != null) {
                     $query = $this->buildSearchQuery($this->elastic_search_type, $this->elastic_field, $this->keyword, $this->bed_name);
                     $highlight = $this->buildHighlight($this->elastic_search_type);
+                    $paginate = $this->buildPaginateElastic();
                     $body = [
                         'query' => $query,
                         'highlight' => $highlight,
-                        'size' => $this->limit,
-                        'from' => $this->start,
                     ];
+                    $body = $body + $paginate;
                     if ($this->order_by_elastic != null) {
                         $body['sort'] = $this->buildSort($this->bed_name);
                     }
@@ -176,6 +176,7 @@ class BedController extends BaseApiCacheController
             ];
             return return_data_success($param_return, $data ?? ($data['data'] ?? null));
         } catch (\Exception $e) {
+            // dd($e);
             // Xử lý lỗi và trả về phản hồi lỗi
             return return_500_error();
         }
