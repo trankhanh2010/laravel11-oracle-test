@@ -10,9 +10,11 @@ use App\Http\Requests\ReceptionRoom\CreateReceptionRoomRequest;
 use App\Http\Requests\ReceptionRoom\UpdateReceptionRoomRequest;
 use App\Models\HIS\Room;
 use Illuminate\Support\Facades\DB;
+
 class ReceptionRoomController extends BaseApiCacheController
 {
-    public function __construct(Request $request){
+    public function __construct(Request $request)
+    {
         parent::__construct($request); // Gọi constructor của BaseController
         $this->reception_room = new ReceptionRoom();
         $this->room = new Room();
@@ -26,76 +28,85 @@ class ReceptionRoomController extends BaseApiCacheController
     }
     public function reception_room($id = null)
     {
-        $keyword = $this->keyword;
-        if ($keyword != null) {
-            $param = [
-                'room.department',
-                'room.area',
-                'room.default_cashier_room',
-            ];
-            $data = $this->reception_room;
-            $data = $data->where(function ($query) use ($keyword){
-                $query = $query
-                ->where(DB::connection('oracle_his')->raw('reception_room_code'), 'like', $keyword . '%')
-                ->orWhere(DB::connection('oracle_his')->raw('reception_room_name'), 'like', $keyword . '%');
-            });
-        if ($this->is_active !== null) {
-            $data = $data->where(function ($query) {
-                $query = $query->where(DB::connection('oracle_his')->raw('is_active'), $this->is_active);
-            });
-        } 
-            $count = $data->count();
-            if ($this->order_by != null) {
-                foreach ($this->order_by as $key => $item) {
-                    $data->orderBy($key, $item);
-                }
-            }
-            if($this->get_all){
-                $data = $data
-                ->with($param)
-                ->get();
-            }else{
-                $data = $data
-                ->skip($this->start)
-                ->take($this->limit)
-                ->with($param)
-                ->get();
-            }
-        } else {
-            if ($id == null) {
-                $name = $this->reception_room_name. '_start_' . $this->start . '_limit_' . $this->limit. $this->order_by_tring. '_is_active_' . $this->is_active. '_get_all_' . $this->get_all;
-                $param = [
-                    'room.department',
-                    'room.area',
-                    'room.default_cashier_room',
-                ];
-            } else {
-                if (!is_numeric($id)) {
-                    return return_id_error($id);
-                }
-                $check_id = $this->check_id($id, $this->reception_room, $this->reception_room_name);
-                if($check_id){
-                    return $check_id; 
-                }
-                $name = $this->reception_room_name . '_' . $id. '_is_active_' . $this->is_active;
-                $param = [
-                    'room.department',
-                    'room.area',
-                    'room.default_cashier_room',
-                ];
-            }
-            $data = get_cache_full($this->reception_room, $param, $name, $id, $this->time, $this->start, $this->limit, $this->order_by, $this->is_active, $this->get_all);
+        // Kiểm tra param và trả về lỗi nếu nó không hợp lệ
+        if ($this->check_param()) {
+            return $this->check_param();
         }
-        $param_return = [
-            $this->get_all_name => $this->get_all,
-            $this->start_name => ($this->get_all || !is_null($id)) ? null : $this->start,
-            $this->limit_name => ($this->get_all || !is_null($id)) ? null : $this->limit,
-            $this->count_name => $count ?? ($data['count'] ?? null),
-            $this->is_active_name => $this->is_active,
-            $this->keyword_name => $this->keyword,
-            $this->order_by_name => $this->order_by_request
-        ];
-        return return_data_success($param_return, $data?? ($data['data'] ?? null));
+        try {
+            $keyword = $this->keyword;
+            if ($keyword != null) {
+                $param = [
+                    'room.department',
+                    'room.area',
+                    'room.default_cashier_room',
+                ];
+                $data = $this->reception_room;
+                $data = $data->where(function ($query) use ($keyword) {
+                    $query = $query
+                        ->where(DB::connection('oracle_his')->raw('reception_room_code'), 'like', $keyword . '%')
+                        ->orWhere(DB::connection('oracle_his')->raw('reception_room_name'), 'like', $keyword . '%');
+                });
+                if ($this->is_active !== null) {
+                    $data = $data->where(function ($query) {
+                        $query = $query->where(DB::connection('oracle_his')->raw('is_active'), $this->is_active);
+                    });
+                }
+                $count = $data->count();
+                if ($this->order_by != null) {
+                    foreach ($this->order_by as $key => $item) {
+                        $data->orderBy($key, $item);
+                    }
+                }
+                if ($this->get_all) {
+                    $data = $data
+                        ->with($param)
+                        ->get();
+                } else {
+                    $data = $data
+                        ->skip($this->start)
+                        ->take($this->limit)
+                        ->with($param)
+                        ->get();
+                }
+            } else {
+                if ($id == null) {
+                    $name = $this->reception_room_name . '_start_' . $this->start . '_limit_' . $this->limit . $this->order_by_tring . '_is_active_' . $this->is_active . '_get_all_' . $this->get_all;
+                    $param = [
+                        'room.department',
+                        'room.area',
+                        'room.default_cashier_room',
+                    ];
+                } else {
+                    if (!is_numeric($id)) {
+                        return return_id_error($id);
+                    }
+                    $check_id = $this->check_id($id, $this->reception_room, $this->reception_room_name);
+                    if ($check_id) {
+                        return $check_id;
+                    }
+                    $name = $this->reception_room_name . '_' . $id . '_is_active_' . $this->is_active;
+                    $param = [
+                        'room.department',
+                        'room.area',
+                        'room.default_cashier_room',
+                    ];
+                }
+                $data = get_cache_full($this->reception_room, $param, $name, $id, $this->time, $this->start, $this->limit, $this->order_by, $this->is_active, $this->get_all);
+            }
+            $param_return = [
+                $this->get_all_name => $this->get_all,
+                $this->start_name => ($this->get_all || !is_null($id)) ? null : $this->start,
+                $this->limit_name => ($this->get_all || !is_null($id)) ? null : $this->limit,
+                $this->count_name => $count ?? ($data['count'] ?? null),
+                $this->is_active_name => $this->is_active,
+                $this->keyword_name => $this->keyword,
+                $this->order_by_name => $this->order_by_request
+            ];
+            return return_data_success($param_return, $data ?? ($data['data'] ?? null));
+        } catch (\Throwable $e) {
+            // Xử lý lỗi và trả về phản hồi lỗi
+            return return_500_error();
+        }
     }
     public function reception_room_create(CreateReceptionRoomRequest $request)
     {
@@ -135,7 +146,8 @@ class ReceptionRoomController extends BaseApiCacheController
             // Gọi event để xóa cache
             event(new DeleteCache($this->reception_room_name));
             return return_data_create_success(['data' => $data, 'room' => $room]);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
+            // Xử lý lỗi và trả về phản hồi lỗi
             // Rollback transaction nếu có lỗi
             DB::connection('oracle_his')->rollBack();
             return return_data_fail_transaction();
@@ -190,7 +202,8 @@ class ReceptionRoomController extends BaseApiCacheController
             // Gọi event để xóa cache
             event(new DeleteCache($this->reception_room_name));
             return return_data_update_success([$data, $room]);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
+            // Xử lý lỗi và trả về phản hồi lỗi
             // Rollback transaction nếu có lỗi
             DB::connection('oracle_his')->rollBack();
             return return_data_fail_transaction();
@@ -219,7 +232,8 @@ class ReceptionRoomController extends BaseApiCacheController
             // Gọi event để xóa cache
             event(new DeleteCache($this->reception_room_name));
             return return_data_delete_success();
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
+            // Xử lý lỗi và trả về phản hồi lỗi
             // Rollback transaction nếu có lỗi
             DB::connection('oracle_his')->rollBack();
             return return_data_fail_transaction();

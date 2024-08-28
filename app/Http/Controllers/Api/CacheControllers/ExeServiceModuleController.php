@@ -9,7 +9,8 @@ use Illuminate\Support\Facades\DB;
 
 class ExeServiceModuleController extends BaseApiCacheController
 {
-    public function __construct(Request $request){
+    public function __construct(Request $request)
+    {
         parent::__construct($request); // Gọi constructor của BaseController
         $this->exe_service_module = new ExeServiceModule();
 
@@ -22,67 +23,72 @@ class ExeServiceModuleController extends BaseApiCacheController
     }
     public function exe_service_module($id = null)
     {
-        $keyword = $this->keyword;
-        if ($keyword != null) {
-            $param = [
-            ];
-            $data = $this->exe_service_module;
-            $data = $data->where(function ($query) use ($keyword){
-                $query = $query
-                ->where(DB::connection('oracle_his')->raw('module_link'), 'like', $keyword . '%')
-                ->orWhere(DB::connection('oracle_his')->raw('exe_service_module_name'), 'like', $keyword . '%');
-            });
-        if ($this->is_active !== null) {
-            $data = $data->where(function ($query) {
-                $query = $query->where(DB::connection('oracle_his')->raw('is_active'), $this->is_active);
-            });
-        } 
-            $count = $data->count();
-            if ($this->order_by != null) {
-                foreach ($this->order_by as $key => $item) {
-                    $data->orderBy($key, $item);
-                }
-            }
-            if($this->get_all){
-                $data = $data
-                ->with($param)
-                ->get();
-            }else{
-                $data = $data
-                ->skip($this->start)
-                ->take($this->limit)
-                ->with($param)
-                ->get();
-            }
-        } else {
-            if ($id == null) {
-                $name = $this->exe_service_module_name. '_start_' . $this->start . '_limit_' . $this->limit. $this->order_by_tring. '_is_active_' . $this->is_active. '_get_all_' . $this->get_all;
-                $param = [
-                ];
-            } else {
-                if (!is_numeric($id)) {
-                    return return_id_error($id);
-                }
-                $check_id = $this->check_id($id, $this->exe_service_module, $this->exe_service_module_name);
-                if($check_id){
-                    return $check_id; 
-                }
-                $name = $this->exe_service_module_name . '_' . $id. '_is_active_' . $this->is_active;
-                $param = [
-                ];
-            }
-            $data = get_cache_full($this->exe_service_module, $param, $name, $id, $this->time, $this->start, $this->limit, $this->order_by, $this->is_active, $this->get_all);
+        // Kiểm tra param và trả về lỗi nếu nó không hợp lệ
+        if ($this->check_param()) {
+            return $this->check_param();
         }
-        $param_return = [
-            $this->get_all_name => $this->get_all,
-            $this->start_name => ($this->get_all || !is_null($id)) ? null : $this->start,
-            $this->limit_name => ($this->get_all || !is_null($id)) ? null : $this->limit,
-            $this->count_name => $count ?? ($data['count'] ?? null),
-            $this->is_active_name => $this->is_active,
-            $this->keyword_name => $this->keyword,
-            $this->order_by_name => $this->order_by_request
-        ];
-        return return_data_success($param_return, $data?? ($data['data'] ?? null));
+        try {
+            $keyword = $this->keyword;
+            if ($keyword != null) {
+                $param = [];
+                $data = $this->exe_service_module;
+                $data = $data->where(function ($query) use ($keyword) {
+                    $query = $query
+                        ->where(DB::connection('oracle_his')->raw('module_link'), 'like', $keyword . '%')
+                        ->orWhere(DB::connection('oracle_his')->raw('exe_service_module_name'), 'like', $keyword . '%');
+                });
+                if ($this->is_active !== null) {
+                    $data = $data->where(function ($query) {
+                        $query = $query->where(DB::connection('oracle_his')->raw('is_active'), $this->is_active);
+                    });
+                }
+                $count = $data->count();
+                if ($this->order_by != null) {
+                    foreach ($this->order_by as $key => $item) {
+                        $data->orderBy($key, $item);
+                    }
+                }
+                if ($this->get_all) {
+                    $data = $data
+                        ->with($param)
+                        ->get();
+                } else {
+                    $data = $data
+                        ->skip($this->start)
+                        ->take($this->limit)
+                        ->with($param)
+                        ->get();
+                }
+            } else {
+                if ($id == null) {
+                    $name = $this->exe_service_module_name . '_start_' . $this->start . '_limit_' . $this->limit . $this->order_by_tring . '_is_active_' . $this->is_active . '_get_all_' . $this->get_all;
+                    $param = [];
+                } else {
+                    if (!is_numeric($id)) {
+                        return return_id_error($id);
+                    }
+                    $check_id = $this->check_id($id, $this->exe_service_module, $this->exe_service_module_name);
+                    if ($check_id) {
+                        return $check_id;
+                    }
+                    $name = $this->exe_service_module_name . '_' . $id . '_is_active_' . $this->is_active;
+                    $param = [];
+                }
+                $data = get_cache_full($this->exe_service_module, $param, $name, $id, $this->time, $this->start, $this->limit, $this->order_by, $this->is_active, $this->get_all);
+            }
+            $param_return = [
+                $this->get_all_name => $this->get_all,
+                $this->start_name => ($this->get_all || !is_null($id)) ? null : $this->start,
+                $this->limit_name => ($this->get_all || !is_null($id)) ? null : $this->limit,
+                $this->count_name => $count ?? ($data['count'] ?? null),
+                $this->is_active_name => $this->is_active,
+                $this->keyword_name => $this->keyword,
+                $this->order_by_name => $this->order_by_request
+            ];
+            return return_data_success($param_return, $data ?? ($data['data'] ?? null));
+        } catch (\Throwable $e) {
+            // Xử lý lỗi và trả về phản hồi lỗi
+            return return_500_error();
+        }
     }
 }
-                   

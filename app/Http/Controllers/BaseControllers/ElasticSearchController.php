@@ -72,7 +72,8 @@ class ElasticSearchController extends Controller
                     'message' => 'Xong!'
                 ], 200);
             }
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
+            // Xử lý lỗi và trả về phản hồi lỗi
             return return_500_error();
         }
     }
@@ -84,7 +85,8 @@ class ElasticSearchController extends Controller
             $response = new ElasticMappingResource($this->client->indices()->getMapping($params)[$request->index]);
         
             return return_data_success([], $response);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
+            // Xử lý lỗi và trả về phản hồi lỗi
             return return_500_error();
         }
     }
@@ -109,7 +111,8 @@ class ElasticSearchController extends Controller
                     break;
             }
             return return_data_success([], $response);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
+            // Xử lý lỗi và trả về phản hồi lỗi
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }

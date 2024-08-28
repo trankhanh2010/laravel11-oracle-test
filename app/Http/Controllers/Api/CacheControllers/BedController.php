@@ -110,25 +110,12 @@ class BedController extends BaseApiCacheController
         $query = $this->buildSearchQuery($this->elastic_search_type, $this->elastic_field, $this->keyword, $this->bed_name);
         $highlight = $this->buildHighlight($this->elastic_search_type);
         $paginate = $this->buildPaginateElastic();
-
-        $body = [
-            'query' => $query,
-            'highlight' => $highlight,
-        ];
-        $body = array_merge($body, $paginate);
-
-        if ($this->order_by_elastic !== null) {
-            $body['sort'] = $this->buildSort($this->bed_name);
-        }
-
+        $body = $this->buildArrSearchBody($query, $highlight, $paginate, $this->bed_name);
         return $body;
     }
-    protected function executeSearch($index, $body)
+    protected function executeSearch($index, $body, $id)
     {
-        return $this->client->search([
-            'index' => $index,
-            'body' => $body,
-        ]);
+        return $this->buildSearch($index, $body, $id);
     }
     public function bed($id = null)
     {
@@ -138,12 +125,12 @@ class BedController extends BaseApiCacheController
         }
         try {
             $keyword = $this->keyword;
-            if ($keyword != null || $this->elastic_search_type != null) {
+            if (($keyword != null || $this->elastic_search_type != null) && !$this->cache) {
                 if ($this->elastic_search_type != null) {
                     $body = $this->buildSearchBody();
-                    $data = $this->executeSearch($this->bed_name, $body);
-                    $count = $data['hits']['total']['value'];
-                    $data = ElasticResource::collection($data['hits']['hits']);
+                    $data = $this->executeSearch($this->bed_name, $body, null);
+                    $count = $this->counting($data);
+                    $data = $this->applyResource($data);
                 } else {
                     $data = $this->applyJoins();
                     $data = $this->applyKeywordFilter($data, $keyword);
@@ -154,14 +141,24 @@ class BedController extends BaseApiCacheController
                 }
             } else {
                 if ($id == null) {
-                    $data = Cache::remember($this->bed_name . '_start_' . $this->start . '_limit_' . $this->limit . $this->order_by_tring . '_is_active_' . $this->is_active . '_get_all_' . $this->get_all, $this->time, function () {
-                        $data = $this->applyJoins();
-                        $data = $this->applyIsActiveFilter($data);
-                        $count = $data->count();
-                        $data = $this->applyOrdering($data);
-                        $data = $this->fetchData($data);
-                        return ['data' => $data, 'count' => $count];
-                    });
+                    if($this->elastic){
+                        $data = Cache::remember('elastic_'.$this->bed_name . '_start_' . $this->start . '_limit_' . $this->limit . $this->order_by_tring . '_is_active_' . $this->elastic_is_active . '_get_all_' . $this->get_all, $this->time, function () {
+                            $body = $this->buildSearchBody();
+                            $data = $this->executeSearch($this->bed_name, $body, null);
+                            $count = $this->counting($data);
+                            $data = $this->applyResource($data);
+                            return ['data' => $data, 'count' => $count];
+                        });
+                    }else{
+                        $data = Cache::remember($this->bed_name . '_start_' . $this->start . '_limit_' . $this->limit . $this->order_by_tring . '_is_active_' . $this->is_active . '_get_all_' . $this->get_all, $this->time, function () {
+                            $data = $this->applyJoins();
+                            $data = $this->applyIsActiveFilter($data);
+                            $count = $data->count();
+                            $data = $this->applyOrdering($data);
+                            $data = $this->fetchData($data);
+                            return ['data' => $data, 'count' => $count];
+                        });
+                    }
                 } else {
                     if (!is_numeric($id)) {
                         return return_id_error($id);
@@ -170,13 +167,22 @@ class BedController extends BaseApiCacheController
                     if ($check_id) {
                         return $check_id;
                     }
-                    $data = Cache::remember($this->bed_name . '_' . $id . '_is_active_' . $this->is_active, $this->time, function () use ($id) {
-                        $data = $this->applyJoins()
-                            ->where('his_bed.id', $id);
-                        $data = $this->applyIsActiveFilter($data);
-                        $data = $data->first();
-                        return $data;
-                    });
+                    if($this->elastic){
+                        $data = Cache::remember('elastic_'.$this->bed_name . '_' . $id . '_is_active_' . $this->elastic_is_active, $this->time, function () use ($id) {
+                            $body = $this->buildSearchBody();
+                            $data = $this->executeSearch($this->bed_name, $body, $id);
+                            $data = $this->applyResource($data);
+                            return $data;
+                        });
+                    }else{
+                        $data = Cache::remember($this->bed_name . '_' . $id . '_is_active_' . $this->is_active, $this->time, function () use ($id) {
+                            $data = $this->applyJoins()
+                                ->where('his_bed.id', $id);
+                            $data = $this->applyIsActiveFilter($data);
+                            $data = $data->first();
+                            return $data;
+                        });
+                    }
                 }
             }
             $param_return = [
@@ -189,8 +195,7 @@ class BedController extends BaseApiCacheController
                 $this->order_by_name => $this->order_by_request
             ];
             return return_data_success($param_return, $data ?? ($data['data'] ?? null));
-        } catch (\Exception $e) {
-            // dd($e);
+        } catch (\Throwable $e) {
             // Xử lý lỗi và trả về phản hồi lỗi
             return return_500_error();
         }
@@ -219,7 +224,8 @@ class BedController extends BaseApiCacheController
             // Gọi event để thêm index vào elastic
             event(new InsertBedIndex($data, $this->bed_name));
             return return_data_create_success($data);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
+            // Xử lý lỗi và trả về phản hồi lỗi
             return return_500_error();
         }
     }
@@ -247,7 +253,8 @@ class BedController extends BaseApiCacheController
             // Gọi event để thêm index vào elastic
             event(new InsertBedIndex($data, $this->bed_name));
             return return_data_update_success($data);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
+            // Xử lý lỗi và trả về phản hồi lỗi
             return return_500_error();
         }
     }
@@ -268,7 +275,8 @@ class BedController extends BaseApiCacheController
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->bed_name));
             return return_data_delete_success();
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
+            // Xử lý lỗi và trả về phản hồi lỗi
             return return_data_delete_fail();
         }
     }

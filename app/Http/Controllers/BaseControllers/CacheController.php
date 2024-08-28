@@ -21,7 +21,8 @@ class CacheController extends BaseApiCacheController
         try{
             event(new DeleteCache($this->$table_name));
             return return_clear_cache();
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
+            // Xử lý lỗi và trả về phản hồi lỗi
             return return_500_error();
         }
     }
@@ -29,7 +30,8 @@ class CacheController extends BaseApiCacheController
         try{
             event(new DeleteCache('elastic_index_keyword_'.$request->index));
             return return_clear_cache();
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
+            // Xử lý lỗi và trả về phản hồi lỗi
             return return_500_error();
         }
     }

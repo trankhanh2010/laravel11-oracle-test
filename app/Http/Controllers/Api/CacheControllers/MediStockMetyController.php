@@ -204,7 +204,7 @@ class MediStockMetyController extends BaseApiCacheController
                 $this->order_by_name => $this->order_by_request
             ];
             return return_data_success($param_return, $data ?? ($data['data'] ?? null) ?? null);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             // Xử lý lỗi và trả về phản hồi lỗi
             return return_500_error();
         }
@@ -309,7 +309,8 @@ class MediStockMetyController extends BaseApiCacheController
                 // Gọi event để xóa cache
                 event(new DeleteCache($this->medi_stock_mety_name));
                 return return_data_create_success([$data]);
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
+            // Xử lý lỗi và trả về phản hồi lỗi
                 // Rollback transaction nếu có lỗi
                 DB::connection('oracle_his')->rollBack();
                 return return_data_fail_transaction();
@@ -351,7 +352,8 @@ class MediStockMetyController extends BaseApiCacheController
                 // Gọi event để xóa cache
                 event(new DeleteCache($this->medi_stock_mety_name));
                 return return_data_create_success([$data]);
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
+            // Xử lý lỗi và trả về phản hồi lỗi
                 // Rollback transaction nếu có lỗi
                 DB::connection('oracle_his')->rollBack();
                 return return_data_fail_transaction();

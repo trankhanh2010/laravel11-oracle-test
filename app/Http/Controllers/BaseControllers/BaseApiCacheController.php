@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\BaseControllers;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Elastic\ElasticResource;
 use App\Models\ACS\Module;
 use App\Models\ACS\Role;
 use App\Models\HIS\ActiveIngredient;
@@ -435,6 +436,11 @@ class BaseApiCacheController extends Controller
 
     // Khai báo các biến cho Elastic
     protected $client;
+    protected $elastic;
+    protected $elastic_name = 'Elastic';
+    protected $cache;
+    protected $cache_name = 'Cache';
+    protected $elastic_is_active;
     protected $elastic_search_type_arr = ['match', 'term', 'wildcard', 'query_string', 'multi_match', 'match_phrase', 'prefix', 'bool',];
     protected $elastic_search_type_must_should_must_not = ['match', 'term', 'wildcard', 'match_phrase', 'prefix', 'query_string', 'range'];
     protected $elastic_range_arr = ['gt', 'gte', 'lt', 'lte'];
@@ -525,219 +531,220 @@ class BaseApiCacheController extends Controller
     function buildSearchQuery($searchType, $field, $value, $name_table)
     {
         $query = [];
-
-        switch ($searchType) {
-            case 'match':
-                $matchQuery = [
-                    'query' => $value,
-                ];
-                // Thêm 'operator' vào truy vấn chỉ khi nó có giá trị
-                if ($this->elastic_operator !== null) {
-                    $matchQuery['operator'] = $this->elastic_operator;
-                }
-                $query =  [
-                    'match' => [
-                        $field => $matchQuery
-                    ]
-                ];
-                break;
-            case 'term':
-                $query =  [
-                    'term' => [
-                        $field . '.keyword' => $value
-                    ]
-                ];
-                break;
-            case 'wildcard':
-                $query =  [
-                    'wildcard' => [
-                        $field . '.keyword' => '*' . $value . '*',
-                    ]
-                ];
-                break;
-            case 'query_string':
-                $query =  [
-                    'query_string' => [
-                        'query' =>  $value,
-                    ]
-                ];
-                break;
-            case 'match_phrase':
-                $query =  [
-                    'match_phrase' => [
-                        $field => $value
-                    ]
-                ];
-                break;
-            case 'prefix':
-                if(in_array($field, get_arr_elastic_index_keyword($name_table))){
+        if($searchType != null){
+            switch ($searchType) {
+                case 'match':
+                    $matchQuery = [
+                        'query' => $value,
+                    ];
+                    // Thêm 'operator' vào truy vấn chỉ khi nó có giá trị
+                    if ($this->elastic_operator !== null) {
+                        $matchQuery['operator'] = $this->elastic_operator;
+                    }
                     $query =  [
-                        'prefix' => [
+                        'match' => [
+                            $field => $matchQuery
+                        ]
+                    ];
+                    break;
+                case 'term':
+                    $query =  [
+                        'term' => [
                             $field . '.keyword' => $value
                         ]
                     ];
-                }else{
+                    break;
+                case 'wildcard':
                     $query =  [
-                        'prefix' => [
+                        'wildcard' => [
+                            $field . '.keyword' => '*' . $value . '*',
+                        ]
+                    ];
+                    break;
+                case 'query_string':
+                    $query =  [
+                        'query_string' => [
+                            'query' =>  $value,
+                        ]
+                    ];
+                    break;
+                case 'match_phrase':
+                    $query =  [
+                        'match_phrase' => [
                             $field => $value
                         ]
                     ];
-                }
-                break;
-            case 'multi_match':
-                $query = [
-                    'multi_match' =>  [
-                        'query' => $value,
-                        'fields' => $this->elastic_fields
-                    ]
-                ];
-                break;
-            case 'bool':
-                // Mảng kết quả sau khi đổi key
-                $updated_elastic_must = [];
-                $updated_elastic_should = [];
-                $updated_elastic_must_not = [];
-
-                // Lặp qua từng phần tử trong mảng ban đầu
-                if ($this->elastic_must != null) {
-                    foreach ($this->elastic_must as $key => $item) {
-                        // Tạo key mới bằng cách thêm '.keyword'
-                        foreach ($item as $key_item => $item2) {
-                            foreach ($item2 as $key_item2 => $item3) {
-                                if (in_array($key_item2, get_arr_elastic_index_keyword($name_table)) && in_array($key_item, ['term', 'wildcard', 'prefix'])) {
-                                    $newKey = $key_item2 . '.keyword';
-                                } else {
-                                    $newKey = $key_item2;
-                                }
-                                if(in_array($key_item, ['wildcard'])){
-                                    $item3 = '*'.$item3.'*';
-                                }
-                                if(in_array($key_item, ['query_string'])){
-                                    // Tách chuỗi thành các từ bằng khoảng trắng
-                                    $item3 = explode(' ', $item3);
-                                    // Biến từng từ thành dạng wildcard
-                                    $wildcards = array_map(function($word) {
-                                        return '*' . $word . '*';
-                                    }, $item3);
-                                    // Kết hợp các từ với toán tử OR (||)
-                                    $item3 = implode(' || ', $wildcards);
-                                }
-                                // Thêm phần tử vào mảng kết quả với key mới
-                                if(in_array($key_item, ['query_string'])){
-                                    $updated_elastic_must[$key][$key_item] = [
-                                        'query' => $item3,
-                                        'fields' => [$key_item2],
-                                    ];
-                                }else{
-                                    $updated_elastic_must[$key][$key_item] = [
-                                        $newKey => $item3,
-                                    ];
+                    break;
+                case 'prefix':
+                    if(in_array($field, get_arr_elastic_index_keyword($name_table))){
+                        $query =  [
+                            'prefix' => [
+                                $field . '.keyword' => $value
+                            ]
+                        ];
+                    }else{
+                        $query =  [
+                            'prefix' => [
+                                $field => $value
+                            ]
+                        ];
+                    }
+                    break;
+                case 'multi_match':
+                    $query = [
+                        'multi_match' =>  [
+                            'query' => $value,
+                            'fields' => $this->elastic_fields
+                        ]
+                    ];
+                    break;
+                case 'bool':
+                    // Mảng kết quả sau khi đổi key
+                    $updated_elastic_must = [];
+                    $updated_elastic_should = [];
+                    $updated_elastic_must_not = [];
+    
+                    // Lặp qua từng phần tử trong mảng ban đầu
+                    if ($this->elastic_must != null) {
+                        foreach ($this->elastic_must as $key => $item) {
+                            // Tạo key mới bằng cách thêm '.keyword'
+                            foreach ($item as $key_item => $item2) {
+                                foreach ($item2 as $key_item2 => $item3) {
+                                    if (in_array($key_item2, get_arr_elastic_index_keyword($name_table)) && in_array($key_item, ['term', 'wildcard', 'prefix'])) {
+                                        $newKey = $key_item2 . '.keyword';
+                                    } else {
+                                        $newKey = $key_item2;
+                                    }
+                                    if(in_array($key_item, ['wildcard'])){
+                                        $item3 = '*'.$item3.'*';
+                                    }
+                                    if(in_array($key_item, ['query_string'])){
+                                        // Tách chuỗi thành các từ bằng khoảng trắng
+                                        $item3 = explode(' ', $item3);
+                                        // Biến từng từ thành dạng wildcard
+                                        $wildcards = array_map(function($word) {
+                                            return '*' . $word . '*';
+                                        }, $item3);
+                                        // Kết hợp các từ với toán tử OR (||)
+                                        $item3 = implode(' || ', $wildcards);
+                                    }
+                                    // Thêm phần tử vào mảng kết quả với key mới
+                                    if(in_array($key_item, ['query_string'])){
+                                        $updated_elastic_must[$key][$key_item] = [
+                                            'query' => $item3,
+                                            'fields' => [$key_item2],
+                                        ];
+                                    }else{
+                                        $updated_elastic_must[$key][$key_item] = [
+                                            $newKey => $item3,
+                                        ];
+                                    }
                                 }
                             }
                         }
                     }
-                }
-
-                // Lặp qua từng phần tử trong mảng ban đầu
-                if ($this->elastic_should != null) {
-                    foreach ($this->elastic_should as $key => $item) {
-                        // Tạo key mới bằng cách thêm '.keyword'
-                        foreach ($item as $key_item => $item2) {
-                            foreach ($item2 as $key_item2 => $item3) {
-                                if (in_array($key_item2, get_arr_elastic_index_keyword($name_table)) && in_array($key_item, ['term', 'wildcard', 'prefix'])) {
-                                    $newKey = $key_item2 . '.keyword';
-                                } else {
-                                    $newKey = $key_item2;
-                                }
-                                if(in_array($key_item, ['wildcard'])){
-                                    $item3 = '*'.$item3.'*';
-                                }
-                                if(in_array($key_item, ['query_string'])){
-                                    // Tách chuỗi thành các từ bằng khoảng trắng
-                                    $item3 = explode(' ', $item3);
-                                    // Biến từng từ thành dạng wildcard
-                                    $wildcards = array_map(function($word) {
-                                        return '*' . $word . '*';
-                                    }, $item3);
-                                    // Kết hợp các từ với toán tử OR (||)
-                                    $item3 = implode(' || ', $wildcards);
-                                }
-                                // Thêm phần tử vào mảng kết quả với key mới
-                                if(in_array($key_item, ['query_string'])){
-                                    $updated_elastic_should[$key][$key_item] = [
-                                        'query' => $item3,
-                                        'fields' => [$key_item2],
-                                    ];
-                                }else{
-                                    $updated_elastic_should[$key][$key_item] = [
-                                        $newKey => $item3,
-                                    ];
-                                }
-                            }
-                        }
-                    }
-                }
-
-
-                // Lặp qua từng phần tử trong mảng ban đầu
-                if ($this->elastic_must_not != null) {
-                    foreach ($this->elastic_must_not as $key => $item) {
-                        // Tạo key mới bằng cách thêm '.keyword'
-                        foreach ($item as $key_item => $item2) {
-                            foreach ($item2 as $key_item2 => $item3) {
-                                if (in_array($key_item2, get_arr_elastic_index_keyword($name_table)) && in_array($key_item, ['term', 'wildcard', 'prefix'])) {
-                                    $newKey = $key_item2 . '.keyword';
-                                } else {
-                                    $newKey = $key_item2;
-                                }
-                                if(in_array($key_item, ['wildcard'])){
-                                    $item3 = '*'.$item3.'*';
-                                }
-                                if(in_array($key_item, ['query_string'])){
-                                    // Tách chuỗi thành các từ bằng khoảng trắng
-                                    $item3 = explode(' ', $item3);
-                                    // Biến từng từ thành dạng wildcard
-                                    $wildcards = array_map(function($word) {
-                                        return '*' . $word . '*';
-                                    }, $item3);
-                                    // Kết hợp các từ với toán tử OR (||)
-                                    $item3 = implode(' || ', $wildcards);
-                                }
-                                // Thêm phần tử vào mảng kết quả với key mới
-                                if(in_array($key_item, ['query_string'])){
-                                    $updated_elastic_must_not[$key][$key_item] = [
-                                        'query' => $item3,
-                                        'fields' => [$key_item2],
-                                    ];
-                                }else{
-                                    $updated_elastic_must_not[$key][$key_item] = [
-                                        $newKey => $item3,
-                                    ];
+    
+                    // Lặp qua từng phần tử trong mảng ban đầu
+                    if ($this->elastic_should != null) {
+                        foreach ($this->elastic_should as $key => $item) {
+                            // Tạo key mới bằng cách thêm '.keyword'
+                            foreach ($item as $key_item => $item2) {
+                                foreach ($item2 as $key_item2 => $item3) {
+                                    if (in_array($key_item2, get_arr_elastic_index_keyword($name_table)) && in_array($key_item, ['term', 'wildcard', 'prefix'])) {
+                                        $newKey = $key_item2 . '.keyword';
+                                    } else {
+                                        $newKey = $key_item2;
+                                    }
+                                    if(in_array($key_item, ['wildcard'])){
+                                        $item3 = '*'.$item3.'*';
+                                    }
+                                    if(in_array($key_item, ['query_string'])){
+                                        // Tách chuỗi thành các từ bằng khoảng trắng
+                                        $item3 = explode(' ', $item3);
+                                        // Biến từng từ thành dạng wildcard
+                                        $wildcards = array_map(function($word) {
+                                            return '*' . $word . '*';
+                                        }, $item3);
+                                        // Kết hợp các từ với toán tử OR (||)
+                                        $item3 = implode(' || ', $wildcards);
+                                    }
+                                    // Thêm phần tử vào mảng kết quả với key mới
+                                    if(in_array($key_item, ['query_string'])){
+                                        $updated_elastic_should[$key][$key_item] = [
+                                            'query' => $item3,
+                                            'fields' => [$key_item2],
+                                        ];
+                                    }else{
+                                        $updated_elastic_should[$key][$key_item] = [
+                                            $newKey => $item3,
+                                        ];
+                                    }
                                 }
                             }
                         }
                     }
-                }
-
-                $matchQuery = [];
-                if ($this->elastic_must !== null) {
-                    $matchQuery['must'] = $updated_elastic_must;
-                }
-                if ($this->elastic_should !== null) {
-                    $matchQuery['should'] = $updated_elastic_should;
-                }
-                if ($this->elastic_must_not !== null) {
-                    $matchQuery['must_not'] = $updated_elastic_must_not;
-                }
-                if ($this->elastic_filter !== null) {
-                    $matchQuery['filter'] = $this->elastic_filter;
-                }
-                $query =  [
-                    'bool' =>
-                    $matchQuery
-
-                ];
-                break;
+    
+    
+                    // Lặp qua từng phần tử trong mảng ban đầu
+                    if ($this->elastic_must_not != null) {
+                        foreach ($this->elastic_must_not as $key => $item) {
+                            // Tạo key mới bằng cách thêm '.keyword'
+                            foreach ($item as $key_item => $item2) {
+                                foreach ($item2 as $key_item2 => $item3) {
+                                    if (in_array($key_item2, get_arr_elastic_index_keyword($name_table)) && in_array($key_item, ['term', 'wildcard', 'prefix'])) {
+                                        $newKey = $key_item2 . '.keyword';
+                                    } else {
+                                        $newKey = $key_item2;
+                                    }
+                                    if(in_array($key_item, ['wildcard'])){
+                                        $item3 = '*'.$item3.'*';
+                                    }
+                                    if(in_array($key_item, ['query_string'])){
+                                        // Tách chuỗi thành các từ bằng khoảng trắng
+                                        $item3 = explode(' ', $item3);
+                                        // Biến từng từ thành dạng wildcard
+                                        $wildcards = array_map(function($word) {
+                                            return '*' . $word . '*';
+                                        }, $item3);
+                                        // Kết hợp các từ với toán tử OR (||)
+                                        $item3 = implode(' || ', $wildcards);
+                                    }
+                                    // Thêm phần tử vào mảng kết quả với key mới
+                                    if(in_array($key_item, ['query_string'])){
+                                        $updated_elastic_must_not[$key][$key_item] = [
+                                            'query' => $item3,
+                                            'fields' => [$key_item2],
+                                        ];
+                                    }else{
+                                        $updated_elastic_must_not[$key][$key_item] = [
+                                            $newKey => $item3,
+                                        ];
+                                    }
+                                }
+                            }
+                        }
+                    }
+    
+                    $matchQuery = [];
+                    if ($this->elastic_must !== null) {
+                        $matchQuery['must'] = $updated_elastic_must;
+                    }
+                    if ($this->elastic_should !== null) {
+                        $matchQuery['should'] = $updated_elastic_should;
+                    }
+                    if ($this->elastic_must_not !== null) {
+                        $matchQuery['must_not'] = $updated_elastic_must_not;
+                    }
+                    if ($this->elastic_filter !== null) {
+                        $matchQuery['filter'] = $this->elastic_filter;
+                    }
+                    $query =  [
+                        'bool' =>
+                        $matchQuery
+    
+                    ];
+                    break;
+            }
         }
 
         return $query;
@@ -835,17 +842,19 @@ class BaseApiCacheController extends Controller
                 break;
             case 'bool':
                 $fields = [];
-                foreach ($this->elastic_fields as $key => $item) {
-                    $fields[$item] = [
-                        'pre_tags' => ['<em>'],  // Tag mở đầu cho highlight
-                        'post_tags' => ['</em>'], // Tag kết thúc cho highlight
-                        'number_of_fragments' => 0, // Hiển thị toàn bộ văn bản
-                        'fragment_size' => 150  // Kích thước của mỗi đoạn highlight
+                if($this->elastic_fields != null){
+                    foreach ($this->elastic_fields as $key => $item) {
+                        $fields[$item] = [
+                            'pre_tags' => ['<em>'],  // Tag mở đầu cho highlight
+                            'post_tags' => ['</em>'], // Tag kết thúc cho highlight
+                            'number_of_fragments' => 0, // Hiển thị toàn bộ văn bản
+                            'fragment_size' => 150  // Kích thước của mỗi đoạn highlight
+                        ];
+                    }
+                    $highlight  = [
+                        'fields' => $fields
                     ];
                 }
-                $highlight  = [
-                    'fields' => $fields
-                ];
                 break;
         }
 
@@ -887,6 +896,50 @@ class BaseApiCacheController extends Controller
         }
         $sort = $updatedSortArray;
         return $sort;
+    }
+    function buildArrSearchBody($query, $highlight, $paginate, $index_name){
+        $body = [];
+        if ($query != null) {
+            $body['query'] = $query;
+        }
+        if ($highlight != null) {
+            $body['highlight'] = $highlight;
+        }
+        $body = array_merge($body, $paginate);
+        if ($this->order_by_elastic != null) {
+            $body['sort'] = $this->buildSort($index_name);
+        }
+        return $body;
+    }
+    function buildSearch($index, $body, $id = null){
+        $data = [];
+        if ($index != null) {
+            $data['index'] = $index;
+        }
+        if ($body != null) {
+            $data['body'] = $body;
+        }
+        if($id != null){
+            $data['body'] = [
+                'query' => [
+                    'bool' => [
+                        'must' => [
+                            ['term' => ['_id' => $id]],       // Truy vấn theo ID
+                            ['term' => ['is_active' => $this->is_active]],
+                        ]
+                    ]
+                ]
+            ];
+        }
+        return $this->client->search($data);
+    }
+    function applyResource($data){
+        $data = ElasticResource::collection($data['hits']['hits']);
+        return $data;
+    }
+    function counting($data){
+        $count = $data['hits']['total']['value'];
+        return $count;
     }
     public function __construct(Request $request)
     {
@@ -976,6 +1029,23 @@ class BaseApiCacheController extends Controller
         }
 
         // Elastic Search
+        if(isset($this->elastic_must)){
+            $this->elastic_is_active = $this->elastic_must[0]['term']['is_active'];
+        }else{
+            $this->elastic_is_active = null;
+        }
+        $this->elastic = $this->param_request['CommonParam']['Elastic'] ?? true;
+        if (!is_bool($this->elastic)) {
+            $this->errors[$this->elastic_name] = $this->mess_format;
+            $this->elastic = true;
+        }
+
+        $this->cache = $this->param_request['CommonParam']['Cache'] ?? false;
+        if (!is_bool($this->cache)) {
+            $this->errors[$this->cache_name] = $this->mess_format;
+            $this->cache = false;
+        }
+
         $this->elastic_search_type = strtolower($this->param_request['ApiData']['ElasticSearchType'] ?? null);
         if ($this->elastic_search_type != null) {
             if (!in_array($this->elastic_search_type, $this->elastic_search_type_arr)) {

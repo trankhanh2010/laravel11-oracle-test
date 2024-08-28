@@ -98,8 +98,8 @@ class DistrictController extends BaseApiCacheController
             $this->order_by_name => $this->order_by_request
         ];
         return return_data_success($param_return, $data?? ($data['data'] ?? null));
-    } catch (\Exception $e) {
-        // Xử lý lỗi và trả về phản hồi lỗi
+        } catch (\Throwable $e) {
+            // Xử lý lỗi và trả về phản hồi lỗi
         return return_500_error();
     }
     }
@@ -174,7 +174,8 @@ class DistrictController extends BaseApiCacheController
             // Gọi event để xóa cache
             event(new DeleteCache($this->district_name));
             return return_data_delete_success();
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
+            // Xử lý lỗi và trả về phản hồi lỗi
             return return_data_delete_fail();
         }
     }

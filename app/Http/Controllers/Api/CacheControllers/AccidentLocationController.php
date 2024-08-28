@@ -162,7 +162,7 @@ class AccidentLocationController extends BaseApiCacheController
                 $this->order_by_name => $this->order_by_request
             ];
             return return_data_success($param_return, $data ?? ($data['data'] ?? null) ?? null);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             // Xử lý lỗi và trả về phản hồi lỗi
             return return_500_error();
         }
@@ -236,7 +236,8 @@ class AccidentLocationController extends BaseApiCacheController
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->bed_name));
             return return_data_delete_success();
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
+            // Xử lý lỗi và trả về phản hồi lỗi
             return return_data_delete_fail();
         }
     }
