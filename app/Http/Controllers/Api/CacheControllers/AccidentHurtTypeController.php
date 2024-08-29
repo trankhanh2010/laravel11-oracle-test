@@ -2,23 +2,22 @@
 
 namespace App\Http\Controllers\Api\CacheControllers;
 
-use App\Events\Cache\DeleteCache;
-use App\Events\Elastic\AccidentHurtType\InsertAccidentHurtTypeIndex;
-use App\Events\Elastic\DeleteIndex;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
 use App\Http\Requests\AccidentHurtType\CreateAccidentHurtTypeRequest;
 use App\Http\Requests\AccidentHurtType\UpdateAccidentHurtTypeRequest;
-use App\Http\Resources\Elastic\ElasticResource;
 use App\Models\HIS\AccidentHurtType;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
 
+use App\Services\Elastic\ElasticsearchService;
+use App\Services\Model\AccidentHurtTypeService;
 class AccidentHurtTypeController extends BaseApiCacheController
 {
-    public function __construct(Request $request)
+    protected $accident_hurt_type_service;
+    public function __construct(Request $request, ElasticsearchService $elastic_search_service, AccidentHurtTypeService $accident_hurt_type_service)
     {
         parent::__construct($request); // Gọi constructor của BaseController
+        $this->elastic_search_service = $elastic_search_service;
+        $this->accident_hurt_type_service = $accident_hurt_type_service;
         $this->accident_hurt_type = new AccidentHurtType();
 
         // Kiểm tra tên trường trong bảng
@@ -28,128 +27,6 @@ class AccidentHurtTypeController extends BaseApiCacheController
             $this->order_by = $this->check_order_by($this->order_by, $columns, $this->order_by_join ?? []);
             $this->order_by_tring = arrayToCustomString($this->order_by);
         }
-    }
-    protected function applyJoins()
-    {
-        return $this->accident_hurt_type
-            ->select(
-                'his_accident_hurt_type.*',
-            );
-    }
-    public function applyKeywordFilter($query, $keyword)
-    {
-        return $query->where(function ($query) use ($keyword) {
-            $query->where(DB::connection('oracle_his')->raw('his_accident_hurt_type.accident_hurt_type_code'), 'like', $keyword . '%')
-                ->orWhere(DB::connection('oracle_his')->raw('his_accident_hurt_type.accident_hurt_type_name'), 'like', $keyword . '%');
-        });
-    }
-    protected function applyIsActiveFilter($query)
-    {
-        if ($this->is_active !== null) {
-            $query->where(DB::connection('oracle_his')->raw('his_accident_hurt_type.is_active'), $this->is_active);
-        }
-
-        return $query;
-    }
-    protected function applyOrdering($query)
-    {
-        if ($this->order_by != null) {
-            foreach ($this->order_by as $key => $item) {
-                if (in_array($key, $this->order_by_join)) {
-                } else {
-                    $query->orderBy('his_accident_hurt_type.' . $key, $item);
-                }
-            }
-        }
-
-        return $query;
-    }
-    protected function fetchData($query)
-    {
-        if ($this->get_all) {
-            // Lấy tất cả dữ liệu
-            return $query->get();
-        } else {
-            // Lấy dữ liệu phân trang
-            return $query
-                ->skip($this->start)
-                ->take($this->limit)
-                ->get();
-        }
-    }
-    protected function buildSearchBody()
-    {
-        $query = $this->buildSearchQuery($this->elastic_search_type, $this->elastic_field, $this->keyword, $this->accident_hurt_type_name);
-        $highlight = $this->buildHighlight($this->elastic_search_type);
-        $paginate = $this->buildPaginateElastic();
-        $body = $this->buildArrSearchBody($query, $highlight, $paginate, $this->accident_hurt_type_name);
-        return $body;
-    }
-    protected function executeSearch($index, $body, $id)
-    {
-        return $this->buildSearch($index, $body, $id);
-    }
-    protected function handleElasticSearchSearch($keyword)
-    {
-        $body = $this->buildSearchBody();
-        $data = $this->executeSearch($this->accident_hurt_type_name, $body, null);
-        $count = $this->counting($data);
-        $data = $this->applyResource($data);
-        return ['data' => $data, 'count' => $count];
-    }
-    protected function handleDataBaseSearch($keyword)
-    {
-        $data = $this->applyJoins();
-        $data = $this->applyKeywordFilter($data, $keyword);
-        $data = $this->applyIsActiveFilter($data);
-        $count = $data->count();
-        $data = $this->applyOrdering($data);
-        $data = $this->fetchData($data);
-        return ['data' => $data, 'count' => $count];
-    }
-    protected function handleElasticSearchGetAll()
-    {
-        $data = Cache::remember('elastic_'.$this->accident_hurt_type_name . '_start_' . $this->start . '_limit_' . $this->limit . $this->order_by_tring . '_is_active_' . $this->elastic_is_active . '_get_all_' . $this->get_all, $this->time, function () {
-            $body = $this->buildSearchBody();
-            $data = $this->executeSearch($this->accident_hurt_type_name, $body, null);
-            $count = $this->counting($data);
-            $data = $this->applyResource($data);
-            return ['data' => $data, 'count' => $count];
-        });
-        return $data;
-    }
-    protected function handleDataBaseGetAll()
-    {
-        $data = Cache::remember($this->accident_hurt_type_name . '_start_' . $this->start . '_limit_' . $this->limit . $this->order_by_tring . '_is_active_' . $this->is_active . '_get_all_' . $this->get_all, $this->time, function () {
-            $data = $this->applyJoins();
-            $data = $this->applyIsActiveFilter($data);
-            $count = $data->count();
-            $data = $this->applyOrdering($data);
-            $data = $this->fetchData($data);
-            return ['data' => $data, 'count' => $count];
-        });
-        return $data;
-    }
-    protected function handleElasticSearchGetWithId($id)
-    {
-        $data = Cache::remember('elastic_'.$this->accident_hurt_type_name . '_' . $id . '_is_active_' . $this->elastic_is_active, $this->time, function () use ($id) {
-            $body = $this->buildSearchBody();
-            $data = $this->executeSearch($this->accident_hurt_type_name, $body, $id);
-            $data = $this->applyResource($data);
-            return $data;
-        });
-        return $data;
-    }
-    protected function handleDataBaseGetWithId($id)
-    {
-        $data = Cache::remember($this->accident_hurt_type_name . '_' . $id . '_is_active_' . $this->is_active, $this->time, function () use ($id) {
-            $data = $this->applyJoins()
-                ->where('his_accident_hurt_type.id', $id);
-            $data = $this->applyIsActiveFilter($data);
-            $data = $data->first();
-            return $data;
-        });
-        return $data;
     }
     public function accident_hurt_type($id = null)
     {
@@ -161,18 +38,18 @@ class AccidentHurtTypeController extends BaseApiCacheController
             $keyword = $this->keyword;
             if (($keyword != null || $this->elastic_search_type != null) && !$this->cache) {
                 if ($this->elastic_search_type != null) {
-                    $data = $this->handleElasticSearchSearch($keyword)['data'];
-                    $count = $this->handleElasticSearchSearch($keyword)['count'];
+                    $data = $this->elastic_search_service->handleElasticSearchSearch($this->accident_hurt_type_name)['data'];
+                    $count = $this->elastic_search_service->handleElasticSearchSearch($this->accident_hurt_type_name)['count'];
                 } else {
-                    $data = $this->handleDataBaseSearch($keyword)['data'];
-                    $count = $this->handleDataBaseSearch($keyword)['count'];
+                    $data = $this->accident_hurt_type_service->handleDataBaseSearch($keyword, $this->is_active, $this->order_by, $this->order_by_join, $this->get_all, $this->start, $this->limit)['data'];
+                    $count = $this->accident_hurt_type_service->handleDataBaseSearch($keyword, $this->is_active, $this->order_by, $this->order_by_join, $this->get_all, $this->start, $this->limit)['count'];
                 }
             } else {
                 if ($id == null) {
                     if($this->elastic){
-                        $data = $this->handleElasticSearchGetAll();
+                        $data = $this->elastic_search_service->handleElasticSearchGetAll($this->accident_hurt_type_name);
                     }else{
-                        $data = $this->handleDataBaseGetAll();
+                        $data = $this->accident_hurt_type_service->handleDataBaseGetAll($this->accident_hurt_type_name, $this->is_active, $this->order_by, $this->order_by_join, $this->get_all, $this->start, $this->limit);
                     }
                 } else {
                     if (!is_numeric($id)) {
@@ -183,9 +60,9 @@ class AccidentHurtTypeController extends BaseApiCacheController
                         return $check_id;
                     }
                     if($this->elastic){
-                        $data = $this->handleElasticSearchGetWithId($id);
+                        $data = $this->elastic_search_service->handleElasticSearchGetWithId($this->accident_hurt_type_name, $id);
                     }else{
-                        $data = $this->handleDataBaseGetWithId($id);
+                        $data = $this->accident_hurt_type_service->handleDataBaseGetWithId($this->accident_hurt_type_name, $id, $this->is_active);
                     }
                 }
             }
@@ -206,78 +83,17 @@ class AccidentHurtTypeController extends BaseApiCacheController
     }
     public function accident_hurt_type_create(CreateAccidentHurtTypeRequest $request)
     {
-        try {
-            $data = $this->accident_hurt_type::create([
-                'create_time' => now()->format('Ymdhis'),
-                'modify_time' => now()->format('Ymdhis'),
-                'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
-                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
-                'app_creator' => $this->app_creator,
-                'app_modifier' => $this->app_modifier,
-                'is_active' => 1,
-                'is_delete' => 0,
-                'accident_hurt_type_code' => $request->accident_hurt_type_code,
-                'accident_hurt_type_name' => $request->accident_hurt_type_name,
-            ]);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->accident_hurt_type_name));
-            // Gọi event để thêm index vào elastic
-            event(new InsertAccidentHurtTypeIndex($data, $this->accident_hurt_type_name));
-            return return_data_create_success($data);
-        } catch (\Throwable $e) {
-            // Xử lý lỗi và trả về phản hồi lỗi
-            return return_500_error();
-        }
+        return $this->accident_hurt_type_service->createAccidentHurtType($request, $this->time, $this->app_creator, $this->app_modifier);
     }
 
     public function accident_hurt_type_update(UpdateAccidentHurtTypeRequest $request, $id)
     {
-        if (!is_numeric($id)) {
-            return return_id_error($id);
-        }
-        $data = $this->accident_hurt_type->find($id);
-        if ($data == null) {
-            return return_not_record($id);
-        }
-        try {
-            $data->update([
-                'modify_time' => now()->format('Ymdhis'),
-                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
-                'app_modifier' => $this->app_modifier,
-                'accident_hurt_type_code' => $request->accident_hurt_type_code,
-                'accident_hurt_type_name' => $request->accident_hurt_type_name,
-                'is_active' => $request->is_active
-            ]);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->accident_hurt_type_name));
-            // Gọi event để thêm index vào elastic
-            event(new InsertAccidentHurtTypeIndex($data, $this->accident_hurt_type_name));
-            return return_data_update_success($data);
-        } catch (\Throwable $e) {
-            // Xử lý lỗi và trả về phản hồi lỗi
-            return return_500_error();
-        }
+        return $this->accident_hurt_type_service->updateAccidentHurtType($this->accident_hurt_type_name, $id, $request, $this->time, $this->app_modifier);
     }
 
-    public function accident_hurt_type_delete(Request $request, $id)
+    public function accident_hurt_type_delete($id)
     {
-        if (!is_numeric($id)) {
-            return return_id_error($id);
-        }
-        $data = $this->accident_hurt_type->find($id);
-        if ($data == null) {
-            return return_not_record($id);
-        }
-        try {
-            $data->delete();
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->accident_hurt_type_name));
-            // Gọi event để xóa index trong elastic
-            event(new DeleteIndex($data, $this->accident_hurt_type_name));
-            return return_data_delete_success();
-        } catch (\Throwable $e) {
-            // Xử lý lỗi và trả về phản hồi lỗi
-            return return_data_delete_fail();
-        }
+        return $this->accident_hurt_type_service->deleteAccidentHurtType($this->accident_hurt_type_name, $id);
+
     }
 }

@@ -1,47 +1,37 @@
 <?php 
 namespace App\Repositories;
 
-use App\Models\HIS\Bed;
+use App\Models\HIS\AccidentHurtType;
 use Illuminate\Support\Facades\DB;
 
-class BedRepository
+class AccidentHurtTypeRepository
 {
-    protected $bed;
+    protected $accident_hurt_type;
 
-    public function __construct(Bed $bed)
+    public function __construct(AccidentHurtType $accident_hurt_type)
     {
-        $this->bed = $bed;
+        $this->accident_hurt_type = $accident_hurt_type;
     }
 
     public function applyJoins()
     {
-        return $this->bed
-            ->leftJoin('his_bed_type', 'his_bed.bed_type_id', '=', 'his_bed_type.id')
-            ->leftJoin('his_bed_room', 'his_bed.bed_room_id', '=', 'his_bed_room.id')
-            ->leftJoin('his_room', 'his_bed_room.room_id', '=', 'his_room.id')
-            ->leftJoin('his_department', 'his_room.department_id', '=', 'his_department.id')
+        return $this->accident_hurt_type
             ->select(
-                'his_bed.*',
-                'his_bed_type.bed_type_name',
-                'his_bed_type.bed_type_code',
-                'his_bed_room.bed_room_name',
-                'his_bed_room.bed_room_code',
-                'his_department.department_name',
-                'his_department.department_code'
+                'his_accident_hurt_type.*'
             );
     }
 
     public function applyKeywordFilter($query, $keyword)
     {
         return $query->where(function ($query) use ($keyword) {
-            $query->where(DB::connection('oracle_his')->raw('his_bed.bed_code'), 'like', $keyword . '%')
-                ->orWhere(DB::connection('oracle_his')->raw('his_bed.bed_name'), 'like', $keyword . '%');
+            $query->where(DB::connection('oracle_his')->raw('his_accident_hurt_type.accident_hurt_type_code'), 'like', $keyword . '%')
+                ->orWhere(DB::connection('oracle_his')->raw('his_accident_hurt_type.accident_hurt_type_name'), 'like', $keyword . '%');
         });
     }
     public function applyIsActiveFilter($query, $is_active)
     {
         if ($is_active !== null) {
-            $query->where(DB::connection('oracle_his')->raw('his_bed.is_active'), $is_active);
+            $query->where(DB::connection('oracle_his')->raw('his_accident_hurt_type.is_active'), $is_active);
         }
 
         return $query;
@@ -51,17 +41,9 @@ class BedRepository
         if ($order_by != null) {
             foreach ($order_by as $key => $item) {
                 if (in_array($key, $order_by_join)) {
-                    if (in_array($key, ['bed_type_name', 'bed_type_code'])) {
-                        $query->orderBy('his_bed_type.' . $key, $item);
-                    }
-                    if (in_array($key, ['bed_room_name', 'bed_room_code'])) {
-                        $query->orderBy('his_bed_room.' . $key, $item);
-                    }
-                    if (in_array($key, ['department_name', 'department_code'])) {
-                        $query->orderBy('his_department.' . $key, $item);
-                    }
+
                 } else {
-                    $query->orderBy('his_bed.' . $key, $item);
+                    $query->orderBy('his_accident_hurt_type.' . $key, $item);
                 }
             }
         }
@@ -83,10 +65,10 @@ class BedRepository
     }
     public function getById($id)
     {
-        return $this->bed->find($id);
+        return $this->accident_hurt_type->find($id);
     }
     public function create($request, $time, $app_creator, $app_modifier){
-        $data = $this->bed::create([
+        $data = $this->accident_hurt_type::create([
             'create_time' => now()->format('Ymdhis'),
             'modify_time' => now()->format('Ymdhis'),
             'creator' => get_loginname_with_token($request->bearerToken(), $time),
@@ -95,12 +77,12 @@ class BedRepository
             'app_modifier' => $app_modifier,
             'is_active' => 1,
             'is_delete' => 0,
-            'bed_code' => $request->bed_code,
-            'bed_name' => $request->bed_name,
-            'bed_type_id' => $request->bed_type_id,
-            'bed_room_id' => $request->bed_room_id,
+            'accident_hurt_type_code' => $request->accident_hurt_type_code,
+            'accident_hurt_type_name' => $request->accident_hurt_type_name,
+            'accident_hurt_type_type_id' => $request->accident_hurt_type_type_id,
+            'accident_hurt_type_room_id' => $request->accident_hurt_type_room_id,
             'max_capacity' => $request->max_capacity,
-            'is_bed_stretcher' => $request->is_bed_stretcher,
+            'is_accident_hurt_type_stretcher' => $request->is_accident_hurt_type_stretcher,
         ]);
         return $data;
     }
@@ -110,8 +92,8 @@ class BedRepository
             'modify_time' => now()->format('Ymdhis'),
             'modifier' => get_loginname_with_token($request->bearerToken(), $time),
             'app_modifier' => $app_modifier,
-            'bed_code' => $request->bed_code,
-            'bed_name' => $request->bed_name,
+            'accident_hurt_type_code' => $request->accident_hurt_type_code,
+            'accident_hurt_type_name' => $request->accident_hurt_type_name,
             'is_active' => $request->is_active
         ]);
         return $data;

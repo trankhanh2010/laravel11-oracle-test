@@ -11,7 +11,6 @@ use App\Repositories\BedRepository;
 
 class BedService extends BaseApiCacheController
 {
-    protected $model;
     protected $bed_repository;
     public function __construct(Request $request, BedRepository $bed_repository)
     {
@@ -55,7 +54,7 @@ class BedService extends BaseApiCacheController
 
     public function createBed($request, $time, $app_creator, $app_modifier){
         try {
-            $data = $this->bed_repository->createBed($request, $time, $app_creator, $app_modifier);
+            $data = $this->bed_repository->create($request, $time, $app_creator, $app_modifier);
             // Gọi event để xóa cache
             event(new DeleteCache($this->bed_name));
             // Gọi event để thêm index vào elastic
@@ -71,12 +70,12 @@ class BedService extends BaseApiCacheController
         if (!is_numeric($id)) {
             return return_id_error($id);
         }
-        $data = $this->bed_repository->getBedById($id);
+        $data = $this->bed_repository->getById($id);
         if ($data == null) {
             return return_not_record($id);
         }
         try {
-            $data = $this->bed_repository->updateBed($request, $data, $time, $app_modifier);
+            $data = $this->bed_repository->update($request, $data, $time, $app_modifier);
             // Gọi event để xóa cache
             event(new DeleteCache($bed_name));
             // Gọi event để thêm index vào elastic
@@ -92,12 +91,12 @@ class BedService extends BaseApiCacheController
         if (!is_numeric($id)) {
             return return_id_error($id);
         }
-        $data = $this->bed_repository->getBedById($id);
+        $data = $this->bed_repository->getById($id);
         if ($data == null) {
             return return_not_record($id);
         }
         try {
-            $data->delete();
+            $data = $this->bed_repository->delete($data);
             // Gọi event để xóa cache
             event(new DeleteCache($bed_name));
             // Gọi event để xóa index trong elastic
