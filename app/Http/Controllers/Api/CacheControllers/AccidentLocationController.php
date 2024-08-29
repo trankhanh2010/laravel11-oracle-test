@@ -83,25 +83,74 @@ class AccidentLocationController extends BaseApiCacheController
         $query = $this->buildSearchQuery($this->elastic_search_type, $this->elastic_field, $this->keyword, $this->accident_location_name);
         $highlight = $this->buildHighlight($this->elastic_search_type);
         $paginate = $this->buildPaginateElastic();
-
-        $body = [
-            'query' => $query,
-            'highlight' => $highlight,
-        ];
-        $body = array_merge($body, $paginate);
-
-        if ($this->order_by_elastic !== null) {
-            $body['sort'] = $this->buildSort($this->accident_location_name);
-        }
-
+        $body = $this->buildArrSearchBody($query, $highlight, $paginate, $this->accident_location_name);
         return $body;
     }
-    protected function executeSearch($index, $body)
+    protected function executeSearch($index, $body, $id)
     {
-        return $this->client->search([
-            'index' => $index,
-            'body' => $body,
-        ]);
+        return $this->buildSearch($index, $body, $id);
+    }
+    protected function handleElasticSearchSearch($keyword)
+    {
+        $body = $this->buildSearchBody();
+        $data = $this->executeSearch($this->accident_location_name, $body, null);
+        $count = $this->counting($data);
+        $data = $this->applyResource($data);
+        return ['data' => $data, 'count' => $count];
+    }
+    protected function handleDataBaseSearch($keyword)
+    {
+        $data = $this->applyJoins();
+        $data = $this->applyKeywordFilter($data, $keyword);
+        $data = $this->applyIsActiveFilter($data);
+        $count = $data->count();
+        $data = $this->applyOrdering($data);
+        $data = $this->fetchData($data);
+        return ['data' => $data, 'count' => $count];
+    }
+    protected function handleElasticSearchGetAll()
+    {
+        $data = Cache::remember('elastic_'.$this->accident_location_name . '_start_' . $this->start . '_limit_' . $this->limit . $this->order_by_tring . '_is_active_' . $this->elastic_is_active . '_get_all_' . $this->get_all, $this->time, function () {
+            $body = $this->buildSearchBody();
+            $data = $this->executeSearch($this->accident_location_name, $body, null);
+            $count = $this->counting($data);
+            $data = $this->applyResource($data);
+            return ['data' => $data, 'count' => $count];
+        });
+        return $data;
+    }
+    protected function handleDataBaseGetAll()
+    {
+        $data = Cache::remember($this->accident_location_name . '_start_' . $this->start . '_limit_' . $this->limit . $this->order_by_tring . '_is_active_' . $this->is_active . '_get_all_' . $this->get_all, $this->time, function () {
+            $data = $this->applyJoins();
+            $data = $this->applyIsActiveFilter($data);
+            $count = $data->count();
+            $data = $this->applyOrdering($data);
+            $data = $this->fetchData($data);
+            return ['data' => $data, 'count' => $count];
+        });
+        return $data;
+    }
+    protected function handleElasticSearchGetWithId($id)
+    {
+        $data = Cache::remember('elastic_'.$this->accident_location_name . '_' . $id . '_is_active_' . $this->elastic_is_active, $this->time, function () use ($id) {
+            $body = $this->buildSearchBody();
+            $data = $this->executeSearch($this->accident_location_name, $body, $id);
+            $data = $this->applyResource($data);
+            return $data;
+        });
+        return $data;
+    }
+    protected function handleDataBaseGetWithId($id)
+    {
+        $data = Cache::remember($this->accident_location_name . '_' . $id . '_is_active_' . $this->is_active, $this->time, function () use ($id) {
+            $data = $this->applyJoins()
+                ->where('his_accident_location.id', $id);
+            $data = $this->applyIsActiveFilter($data);
+            $data = $data->first();
+            return $data;
+        });
+        return $data;
     }
     public function accident_location($id = null)
     {
@@ -111,45 +160,34 @@ class AccidentLocationController extends BaseApiCacheController
         }
         try {
             $keyword = $this->keyword;
-            if ($keyword != null || $this->elastic_search_type != null) {
+            if (($keyword != null || $this->elastic_search_type != null) && !$this->cache) {
                 if ($this->elastic_search_type != null) {
-                    $body = $this->buildSearchBody();
-                    $data = $this->executeSearch($this->accident_location_name, $body);
-                    $count = $data['hits']['total']['value'];
-                    $data = ElasticResource::collection($data['hits']['hits']);
+                    $data = $this->handleElasticSearchSearch($keyword)['data'];
+                    $count = $this->handleElasticSearchSearch($keyword)['count'];
                 } else {
-                    $data = $this->applyJoins();
-                    $data = $this->applyKeywordFilter($data, $keyword);
-                    $data = $this->applyIsActiveFilter($data);
-                    $count = $data->count();
-                    $data = $this->applyOrdering($data);
-                    $data = $this->fetchData($data);
+                    $data = $this->handleDataBaseSearch($keyword)['data'];
+                    $count = $this->handleDataBaseSearch($keyword)['count'];
                 }
             } else {
                 if ($id == null) {
-                    $data = Cache::remember($this->accident_location_name . '_start_' . $this->start . '_limit_' . $this->limit . $this->order_by_tring . '_is_active_' . $this->is_active. '_get_all_' . $this->get_all, $this->time, function () {
-                        $data = $this->applyJoins();
-                        $data = $this->applyIsActiveFilter($data);
-                        $count = $data->count();
-                        $data = $this->applyOrdering($data);
-                        $data = $this->fetchData($data);
-                        return ['data' => $data, 'count' => $count];
-                    });
+                    if($this->elastic){
+                        $data = $this->handleElasticSearchGetAll();
+                    }else{
+                        $data = $this->handleDataBaseGetAll();
+                    }
                 } else {
                     if (!is_numeric($id)) {
                         return return_id_error($id);
                     }
                     $check_id = $this->check_id($id, $this->accident_location, $this->accident_location_name);
-                    if($check_id){
-                        return $check_id; 
+                    if ($check_id) {
+                        return $check_id;
                     }
-                    $data = Cache::remember($this->accident_location_name . '_' . $id . '_is_active_' . $this->is_active, $this->time, function () use ($id) {
-                        $data = $this->applyJoins()
-                        ->where('his_accident_location.id', $id);
-                        $data = $this->applyIsActiveFilter($data);
-                        $data = $data->first();
-                        return $data;
-                    });
+                    if($this->elastic){
+                        $data = $this->handleElasticSearchGetWithId($id);
+                    }else{
+                        $data = $this->handleDataBaseGetWithId($id);
+                    }
                 }
             }
             $param_return = [
@@ -185,7 +223,7 @@ class AccidentLocationController extends BaseApiCacheController
         // Gọi event để xóa cache
         event(new DeleteCache($this->accident_location_name));
         // Gọi event để thêm index vào elastic
-        event(new InsertAccidentLocationIndex($data, $this->bed_name));
+        event(new InsertAccidentLocationIndex($data, $this->accident_location_name));
         return return_data_create_success($data);
     } catch (\Exception $e) {
         return return_500_error();
@@ -213,7 +251,7 @@ class AccidentLocationController extends BaseApiCacheController
         // Gọi event để xóa cache
         event(new DeleteCache($this->accident_location_name));
         // Gọi event để thêm index vào elastic
-        event(new InsertAccidentLocationIndex($data, $this->bed_name));
+        event(new InsertAccidentLocationIndex($data, $this->accident_location_name));
         return return_data_update_success($data);
     } catch (\Exception $e) {
         return return_500_error();
@@ -234,7 +272,7 @@ class AccidentLocationController extends BaseApiCacheController
             // Gọi event để xóa cache
             event(new DeleteCache($this->accident_location_name));
             // Gọi event để xóa index trong elastic
-            event(new DeleteIndex($data, $this->bed_name));
+            event(new DeleteIndex($data, $this->accident_location_name));
             return return_data_delete_success();
         } catch (\Throwable $e) {
             // Xử lý lỗi và trả về phản hồi lỗi
