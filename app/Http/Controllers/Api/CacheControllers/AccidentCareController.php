@@ -40,11 +40,13 @@ class AccidentCareController extends BaseApiCacheController
             $keyword = $this->keyword;
             if (($keyword != null || $this->elastic_search_type != null) && !$this->cache) {
                 if ($this->elastic_search_type != null) {
-                    $data = $this->elastic_search_service->handleElasticSearchSearch($this->accident_care_name)['data'];
-                    $count = $this->elastic_search_service->handleElasticSearchSearch($this->accident_care_name)['count'];
+                    $data = $this->elastic_search_service->handleElasticSearchSearch($this->accident_care_name);
+                    $count = $data['count'];
+                    $data = $data['data'];
                 } else {
-                    $data = $this->accident_care_service->handleDataBaseSearch($keyword, $this->is_active, $this->order_by, $this->order_by_join, $this->get_all, $this->start, $this->limit)['data'];
-                    $count = $this->accident_care_service->handleDataBaseSearch($keyword, $this->is_active, $this->order_by, $this->order_by_join, $this->get_all, $this->start, $this->limit)['count'];
+                    $data = $this->accident_care_service->handleDataBaseSearch($keyword, $this->is_active, $this->order_by, $this->order_by_join, $this->get_all, $this->start, $this->limit);
+                    $count = $data['count'];
+                    $data = $data['data'];
                 }
             } else {
                 if ($id == null) {
@@ -54,12 +56,11 @@ class AccidentCareController extends BaseApiCacheController
                         $data = $this->accident_care_service->handleDataBaseGetAll($this->accident_care_name, $this->is_active, $this->order_by, $this->order_by_join, $this->get_all, $this->start, $this->limit);
                     }
                 } else {
-                    if (!is_numeric($id)) {
-                        return return_id_error($id);
-                    }
-                    $check_id = $this->check_id($id, $this->accident_care, $this->accident_care_name);
-                    if ($check_id) {
-                        return $check_id;
+                    if ($id !== null) {
+                        $validationError = $this->validateAndCheckId($id, $this->accident_care, $this->accident_care_name);
+                        if ($validationError) {
+                            return $validationError;
+                        }
                     }
                     if($this->elastic){
                         $data = $this->elastic_search_service->handleElasticSearchGetWithId($this->accident_care_name, $id);

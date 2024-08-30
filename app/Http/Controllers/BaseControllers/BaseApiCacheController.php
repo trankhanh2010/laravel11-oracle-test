@@ -505,6 +505,20 @@ class BaseApiCacheController extends Controller
         }
         return null;
     }
+    protected function validateAndCheckId($id, $model, $modelName)
+{
+    if (!is_numeric($id)) {
+        return return_id_error($id);
+    }
+
+    $check_id = $this->check_id($id, $model, $modelName);
+    if ($check_id) {
+        return $check_id;
+    }
+
+    return null; // Trả về null nếu không có lỗi
+}
+
     protected function get_columns_table($table)
     {
         $parts = explode('_', $table->getTable());
@@ -721,7 +735,7 @@ class BaseApiCacheController extends Controller
         if(isset($this->elastic_must) && isset($this->elastic_must[0]['term']['is_active'])){
             $this->elastic_is_active = $this->elastic_must[0]['term']['is_active'];
         }else{
-            $this->elastic_is_active = null;
+            $this->elastic_is_active = $this->is_active;
         }
         $this->service_type_ids = $this->param_request['ApiData']['ServiceTypeIds'] ?? null;
         if ($this->service_type_ids != null) {

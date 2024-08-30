@@ -428,12 +428,18 @@ class ElasticsearchService extends BaseApiCacheController
                     'bool' => [
                         'must' => [
                             ['term' => ['_id' => $id]],       // Truy vấn theo ID
-                            ['term' => ['is_active' => $this->is_active]],
                         ]
                     ]
                 ]
             ];
+            if($this->is_active !== null){
+                $data['body']['query']['bool']['must'] = [
+                    ['term' => ['_id' => $id]],       // Truy vấn theo ID
+                    ['term' => ['is_active' => $this->is_active]],
+                ];
+            }
         }
+
         return $this->client->search($data);
     }
     public function applyResource($data){

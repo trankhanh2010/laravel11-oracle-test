@@ -44,11 +44,13 @@ class BedController extends BaseApiCacheController
             $keyword = $this->keyword;
             if (($keyword != null || $this->elastic_search_type != null) && !$this->cache) {
                 if ($this->elastic_search_type != null) {
-                    $data = $this->elastic_search_service->handleElasticSearchSearch($this->bed_name)['data'];
-                    $count = $this->elastic_search_service->handleElasticSearchSearch($this->bed_name)['count'];
+                    $data = $this->elastic_search_service->handleElasticSearchSearch($this->bed_name);
+                    $count = $data['count'];
+                    $data = $data['data'];
                 } else {
-                    $data = $this->bed_service->handleDataBaseSearch($keyword, $this->is_active, $this->order_by, $this->order_by_join, $this->get_all, $this->start, $this->limit)['data'];
-                    $count = $this->bed_service->handleDataBaseSearch($keyword, $this->is_active, $this->order_by, $this->order_by_join, $this->get_all, $this->start, $this->limit)['count'];
+                    $data = $this->bed_service->handleDataBaseSearch($keyword, $this->is_active, $this->order_by, $this->order_by_join, $this->get_all, $this->start, $this->limit);
+                    $count = $data['count'];
+                    $data = $data['data'];
                 }
             } else {
                 if ($id == null) {
@@ -58,12 +60,11 @@ class BedController extends BaseApiCacheController
                         $data = $this->bed_service->handleDataBaseGetAll($this->bed_name, $this->is_active, $this->order_by, $this->order_by_join, $this->get_all, $this->start, $this->limit);
                     }
                 } else {
-                    if (!is_numeric($id)) {
-                        return return_id_error($id);
-                    }
-                    $check_id = $this->check_id($id, $this->bed, $this->bed_name);
-                    if ($check_id) {
-                        return $check_id;
+                    if ($id !== null) {
+                        $validationError = $this->validateAndCheckId($id, $this->bed, $this->bed_name);
+                        if ($validationError) {
+                            return $validationError;
+                        }
                     }
                     if($this->elastic){
                         $data = $this->elastic_search_service->handleElasticSearchGetWithId($this->bed_name, $id);

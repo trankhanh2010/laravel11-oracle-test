@@ -139,6 +139,7 @@ use App\Http\Controllers\Api\CacheControllers\MaterialTypeController;
 // Base Api
 use App\Http\Controllers\BaseControllers\CacheController;
 use App\Http\Controllers\BaseControllers\ElasticSearchController;
+use App\Http\Controllers\BaseControllers\LogController;
 
 // Data Controllers
 use App\Http\Controllers\Api\DataControllers\DebateController;
@@ -200,8 +201,11 @@ Route::fallback(function () {
     return return_404_error_page_not_found();
 });
 Route::group([
-    "middleware" => ["check_module:api"]
+    "middleware" => ["check_admin:api"]
 ], function () {
+    /// Log
+    Route::get("v1/log", [LogController::class, "get_log"])->name('.get_log');
+
     /// Cache
     Route::get("v1/clear-cache", [CacheController::class, "clear_cache"])->name('.clear_cache');
     Route::get("v1/clear-cache-elastic-index-keyword", [CacheController::class, "clear_cache_elatic_index_keyword"])->name('.clear_cache_elatic_index_keyword');
@@ -211,7 +215,10 @@ Route::group([
     Route::get("v1/get-mapping", [ElasticSearchController::class, "get_mapping"])->name('.get_mapping');
     Route::get("v1/get-setting", [ElasticSearchController::class, "get_index_settings"])->name('.get_index_settings');
     Route::delete("v1/delete-index", [ElasticSearchController::class, "delete_index"])->name('.delete_index');
-
+});
+Route::group([
+    "middleware" => ["check_module:api"]
+], function () {
     /// Khoa phòng
     Route::group(['as' => 'HIS.Desktop.Plugins.HisDepartment'], function () {
         Route::get("v1/department", [DepartmentController::class, "department"])->name('.get');

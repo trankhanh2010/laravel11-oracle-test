@@ -38,11 +38,13 @@ class AccidentHurtTypeController extends BaseApiCacheController
             $keyword = $this->keyword;
             if (($keyword != null || $this->elastic_search_type != null) && !$this->cache) {
                 if ($this->elastic_search_type != null) {
-                    $data = $this->elastic_search_service->handleElasticSearchSearch($this->accident_hurt_type_name)['data'];
-                    $count = $this->elastic_search_service->handleElasticSearchSearch($this->accident_hurt_type_name)['count'];
+                    $data = $this->elastic_search_service->handleElasticSearchSearch($this->accident_hurt_type_name);
+                    $count = $data['count'];
+                    $data = $data['data'];
                 } else {
-                    $data = $this->accident_hurt_type_service->handleDataBaseSearch($keyword, $this->is_active, $this->order_by, $this->order_by_join, $this->get_all, $this->start, $this->limit)['data'];
-                    $count = $this->accident_hurt_type_service->handleDataBaseSearch($keyword, $this->is_active, $this->order_by, $this->order_by_join, $this->get_all, $this->start, $this->limit)['count'];
+                    $data = $this->accident_hurt_type_service->handleDataBaseSearch($keyword, $this->is_active, $this->order_by, $this->order_by_join, $this->get_all, $this->start, $this->limit);
+                    $count = $data['count'];
+                    $data = $data['data'];
                 }
             } else {
                 if ($id == null) {
@@ -52,12 +54,11 @@ class AccidentHurtTypeController extends BaseApiCacheController
                         $data = $this->accident_hurt_type_service->handleDataBaseGetAll($this->accident_hurt_type_name, $this->is_active, $this->order_by, $this->order_by_join, $this->get_all, $this->start, $this->limit);
                     }
                 } else {
-                    if (!is_numeric($id)) {
-                        return return_id_error($id);
-                    }
-                    $check_id = $this->check_id($id, $this->accident_hurt_type, $this->accident_hurt_type_name);
-                    if ($check_id) {
-                        return $check_id;
+                    if ($id !== null) {
+                        $validationError = $this->validateAndCheckId($id, $this->accident_hurt_type, $this->accident_hurt_type_name);
+                        if ($validationError) {
+                            return $validationError;
+                        }
                     }
                     if($this->elastic){
                         $data = $this->elastic_search_service->handleElasticSearchGetWithId($this->accident_hurt_type_name, $id);
