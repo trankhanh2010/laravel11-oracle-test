@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 
 use App\Services\Elastic\ElasticsearchService;
 use App\Services\Model\AccidentHurtTypeService;
+
 class AccidentHurtTypeController extends BaseApiCacheController
 {
     protected $accident_hurt_type_service;
@@ -48,9 +49,9 @@ class AccidentHurtTypeController extends BaseApiCacheController
                 }
             } else {
                 if ($id == null) {
-                    if($this->elastic){
+                    if ($this->elastic) {
                         $data = $this->elastic_search_service->handleElasticSearchGetAll($this->accident_hurt_type_name);
-                    }else{
+                    } else {
                         $data = $this->accident_hurt_type_service->handleDataBaseGetAll($this->accident_hurt_type_name, $this->is_active, $this->order_by, $this->order_by_join, $this->get_all, $this->start, $this->limit);
                     }
                 } else {
@@ -60,9 +61,9 @@ class AccidentHurtTypeController extends BaseApiCacheController
                             return $validationError;
                         }
                     }
-                    if($this->elastic){
+                    if ($this->elastic) {
                         $data = $this->elastic_search_service->handleElasticSearchGetWithId($this->accident_hurt_type_name, $id);
-                    }else{
+                    } else {
                         $data = $this->accident_hurt_type_service->handleDataBaseGetWithId($this->accident_hurt_type_name, $id, $this->is_active);
                     }
                 }
@@ -84,17 +85,31 @@ class AccidentHurtTypeController extends BaseApiCacheController
     }
     public function accident_hurt_type_create(CreateAccidentHurtTypeRequest $request)
     {
-        return $this->accident_hurt_type_service->createAccidentHurtType($request, $this->time, $this->app_creator, $this->app_modifier);
+        try {
+            return $this->accident_hurt_type_service->createAccidentHurtType($request, $this->time, $this->app_creator, $this->app_modifier);
+        } catch (\Throwable $e) {
+            // Xử lý lỗi và trả về phản hồi lỗi
+            return return_500_error($e->getMessage());
+        }
     }
 
     public function accident_hurt_type_update(UpdateAccidentHurtTypeRequest $request, $id)
     {
-        return $this->accident_hurt_type_service->updateAccidentHurtType($this->accident_hurt_type_name, $id, $request, $this->time, $this->app_modifier);
+        try {
+            return $this->accident_hurt_type_service->updateAccidentHurtType($this->accident_hurt_type_name, $id, $request, $this->time, $this->app_modifier);
+        } catch (\Throwable $e) {
+            // Xử lý lỗi và trả về phản hồi lỗi
+            return return_500_error($e->getMessage());
+        }
     }
 
     public function accident_hurt_type_delete($id)
     {
-        return $this->accident_hurt_type_service->deleteAccidentHurtType($this->accident_hurt_type_name, $id);
-
+        try {
+            return $this->accident_hurt_type_service->deleteAccidentHurtType($this->accident_hurt_type_name, $id);
+        } catch (\Throwable $e) {
+            // Xử lý lỗi và trả về phản hồi lỗi
+            return return_500_error($e->getMessage());
+        }
     }
 }

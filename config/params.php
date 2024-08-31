@@ -138,5 +138,16 @@ return [
             'elasticsearch_service' => 'Có lỗi khi thực hiện thao tác với Elastic Search!'
         ]
     ],
+    'db_service' => [
+        'error' => [
+            'accident_body_part' => 'Có lỗi khi thực hiện thao tác với bảng AccidentBodyPart',
+            'accident_care' => 'Có lỗi khi thực hiện thao tác với bảng AccidentCare',
+            'accident_hurt_type' => 'Có lỗi khi thực hiện thao tác với bảng AccidentHurtType',
+            'accident_location' => 'Có lỗi khi thực hiện thao tác với bảng AccidentLocation',
+            'age_type' => 'Có lỗi khi thực hiện thao tác với bảng AgeType',
+
+            'bed' => 'Có lỗi khi thực hiện thao tác với bảng Bed',
+        ]
+    ]
     
 ];

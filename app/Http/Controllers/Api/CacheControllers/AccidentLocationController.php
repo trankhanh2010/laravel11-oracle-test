@@ -9,6 +9,7 @@ use App\Models\HIS\AccidentLocation;
 use Illuminate\Http\Request;
 use App\Services\Elastic\ElasticsearchService;
 use App\Services\Model\AccidentLocationService;
+
 class AccidentLocationController extends BaseApiCacheController
 {
     protected $accident_location_service;
@@ -44,12 +45,12 @@ class AccidentLocationController extends BaseApiCacheController
                     $data = $this->accident_location_service->handleDataBaseSearch($keyword, $this->is_active, $this->order_by, $this->order_by_join, $this->get_all, $this->start, $this->limit);
                     $count = $data['count'];
                     $data = $data['data'];
-                }   
+                }
             } else {
                 if ($id == null) {
-                    if($this->elastic){
+                    if ($this->elastic) {
                         $data = $this->elastic_search_service->handleElasticSearchGetAll($this->accident_location_name);
-                    }else{
+                    } else {
                         $data = $this->accident_location_service->handleDataBaseGetAll($this->accident_location_name, $this->is_active, $this->order_by, $this->order_by_join, $this->get_all, $this->start, $this->limit);
                     }
                 } else {
@@ -59,9 +60,9 @@ class AccidentLocationController extends BaseApiCacheController
                             return $validationError;
                         }
                     }
-                    if($this->elastic){
+                    if ($this->elastic) {
                         $data = $this->elastic_search_service->handleElasticSearchGetWithId($this->accident_location_name, $id);
-                    }else{
+                    } else {
                         $data = $this->accident_location_service->handleDataBaseGetWithId($this->accident_location_name, $id, $this->is_active);
                     }
                 }
@@ -83,16 +84,31 @@ class AccidentLocationController extends BaseApiCacheController
     }
     public function accident_location_create(CreateAccidentLocationRequest $request)
     {
-        return $this->accident_location_service->createAccidentLocation($request, $this->time, $this->app_creator, $this->app_modifier);
+        try {
+            return $this->accident_location_service->createAccidentLocation($request, $this->time, $this->app_creator, $this->app_modifier);
+        } catch (\Throwable $e) {
+            // Xử lý lỗi và trả về phản hồi lỗi
+            return return_500_error($e->getMessage());
+        }
     }
 
     public function accident_location_update(UpdateAccidentLocationRequest $request, $id)
     {
-        return $this->accident_location_service->updateAccidentLocation($this->accident_location_name, $id, $request, $this->time, $this->app_modifier);
+        try {
+            return $this->accident_location_service->updateAccidentLocation($this->accident_location_name, $id, $request, $this->time, $this->app_modifier);
+        } catch (\Throwable $e) {
+            // Xử lý lỗi và trả về phản hồi lỗi
+            return return_500_error($e->getMessage());
+        }
     }
 
     public function accident_location_delete($id)
     {
-        return $this->accident_location_service->deleteAccidentLocation($this->accident_location_name, $id);
+        try {
+            return $this->accident_location_service->deleteAccidentLocation($this->accident_location_name, $id);
+        } catch (\Throwable $e) {
+            // Xử lý lỗi và trả về phản hồi lỗi
+            return return_500_error($e->getMessage());
+        }
     }
 }

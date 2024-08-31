@@ -50,9 +50,9 @@ class AccidentBodyPartController extends BaseApiCacheController
                 }
             } else {
                 if ($id == null) {
-                    if($this->elastic){
+                    if ($this->elastic) {
                         $data = $this->elastic_search_service->handleElasticSearchGetAll($this->accident_body_part_name);
-                    }else{
+                    } else {
                         $data = $this->accident_body_part_service->handleDataBaseGetAll($this->accident_body_part_name, $this->is_active, $this->order_by, $this->order_by_join, $this->get_all, $this->start, $this->limit);
                     }
                 } else {
@@ -62,9 +62,9 @@ class AccidentBodyPartController extends BaseApiCacheController
                             return $validationError;
                         }
                     }
-                    if($this->elastic){
+                    if ($this->elastic) {
                         $data = $this->elastic_search_service->handleElasticSearchGetWithId($this->accident_body_part_name, $id);
-                    }else{
+                    } else {
                         $data = $this->accident_body_part_service->handleDataBaseGetWithId($this->accident_body_part_name, $id, $this->is_active);
                     }
                 }
@@ -86,16 +86,31 @@ class AccidentBodyPartController extends BaseApiCacheController
     }
     public function accident_body_part_create(CreateAccidentBodyPartRequest $request)
     {
-        return $this->accident_body_part_service->createAccidentBodyPart($request, $this->time, $this->app_creator, $this->app_modifier);
+        try {
+            return $this->accident_body_part_service->createAccidentBodyPart($request, $this->time, $this->app_creator, $this->app_modifier);
+        } catch (\Throwable $e) {
+            // Xử lý lỗi và trả về phản hồi lỗi
+            return return_500_error($e->getMessage());
+        }
     }
 
     public function accident_body_part_update(UpdateAccidentBodyPartRequest $request, $id)
     {
-        return $this->accident_body_part_service->updateAccidentBodyPart($this->accident_body_part_name, $id, $request, $this->time, $this->app_modifier);
+        try {
+            return $this->accident_body_part_service->updateAccidentBodyPart($this->accident_body_part_name, $id, $request, $this->time, $this->app_modifier);
+        } catch (\Throwable $e) {
+            // Xử lý lỗi và trả về phản hồi lỗi
+            return return_500_error($e->getMessage());
+        }
     }
 
     public function accident_body_part_delete(Request $request, $id)
     {
-        return $this->accident_body_part_service->deleteAccidentBodyPart($this->accident_body_part_name, $id);
+        try {
+            return $this->accident_body_part_service->deleteAccidentBodyPart($this->accident_body_part_name, $id);
+        } catch (\Throwable $e) {
+            // Xử lý lỗi và trả về phản hồi lỗi
+            return return_500_error($e->getMessage());
+        }
     }
 }

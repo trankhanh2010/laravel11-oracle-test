@@ -54,9 +54,9 @@ class BedController extends BaseApiCacheController
                 }
             } else {
                 if ($id == null) {
-                    if($this->elastic){
+                    if ($this->elastic) {
                         $data = $this->elastic_search_service->handleElasticSearchGetAll($this->bed_name);
-                    }else{
+                    } else {
                         $data = $this->bed_service->handleDataBaseGetAll($this->bed_name, $this->is_active, $this->order_by, $this->order_by_join, $this->get_all, $this->start, $this->limit);
                     }
                 } else {
@@ -66,9 +66,9 @@ class BedController extends BaseApiCacheController
                             return $validationError;
                         }
                     }
-                    if($this->elastic){
+                    if ($this->elastic) {
                         $data = $this->elastic_search_service->handleElasticSearchGetWithId($this->bed_name, $id);
-                    }else{
+                    } else {
                         $data = $this->bed_service->handleDataBaseGetWithId($this->bed_name, $id, $this->is_active);
                     }
                 }
@@ -86,21 +86,35 @@ class BedController extends BaseApiCacheController
         } catch (\Throwable $e) {
             // Xử lý lỗi và trả về phản hồi lỗi
             return return_500_error($e->getMessage());
-
         }
     }
     public function bed_create(CreateBedRequest $request)
     {
-        return $this->bed_service->createBed($request, $this->time, $this->app_creator, $this->app_modifier);
+        try {
+            return $this->bed_service->createBed($request, $this->time, $this->app_creator, $this->app_modifier);
+        } catch (\Throwable $e) {
+            // Xử lý lỗi và trả về phản hồi lỗi
+            return return_500_error($e->getMessage());
+        }
     }
 
     public function bed_update(UpdateBedRequest $request, $id)
     {
-        return $this->bed_service->updateBed($this->bed_name, $id, $request, $this->time, $this->app_modifier);
+        try {
+            return $this->bed_service->updateBed($this->bed_name, $id, $request, $this->time, $this->app_modifier);
+        } catch (\Throwable $e) {
+            // Xử lý lỗi và trả về phản hồi lỗi
+            return return_500_error($e->getMessage());
+        }
     }
 
     public function bed_delete($id)
     {
-        return $this->bed_service->deleteBed($this->bed_name, $id);
+        try {
+            return $this->bed_service->deleteBed($this->bed_name, $id);
+        } catch (\Throwable $e) {
+            // Xử lý lỗi và trả về phản hồi lỗi
+            return return_500_error($e->getMessage());
+        }
     }
 }

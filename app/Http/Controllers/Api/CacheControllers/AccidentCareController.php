@@ -50,9 +50,9 @@ class AccidentCareController extends BaseApiCacheController
                 }
             } else {
                 if ($id == null) {
-                    if($this->elastic){
+                    if ($this->elastic) {
                         $data = $this->elastic_search_service->handleElasticSearchGetAll($this->accident_care_name);
-                    }else{
+                    } else {
                         $data = $this->accident_care_service->handleDataBaseGetAll($this->accident_care_name, $this->is_active, $this->order_by, $this->order_by_join, $this->get_all, $this->start, $this->limit);
                     }
                 } else {
@@ -62,9 +62,9 @@ class AccidentCareController extends BaseApiCacheController
                             return $validationError;
                         }
                     }
-                    if($this->elastic){
+                    if ($this->elastic) {
                         $data = $this->elastic_search_service->handleElasticSearchGetWithId($this->accident_care_name, $id);
-                    }else{
+                    } else {
                         $data = $this->accident_care_service->handleDataBaseGetWithId($this->accident_care_name, $id, $this->is_active);
                     }
                 }
@@ -86,16 +86,31 @@ class AccidentCareController extends BaseApiCacheController
     }
     public function accident_care_create(CreateAccidentCareRequest $request)
     {
-        return $this->accident_care_service->createAccidentCare($request, $this->time, $this->app_creator, $this->app_modifier);
+        try {
+            return $this->accident_care_service->createAccidentCare($request, $this->time, $this->app_creator, $this->app_modifier);
+        } catch (\Throwable $e) {
+            // Xử lý lỗi và trả về phản hồi lỗi
+            return return_500_error($e->getMessage());
+        }
     }
 
     public function accident_care_update(UpdateAccidentCareRequest $request, $id)
     {
-        return $this->accident_care_service->updateAccidentCare($this->accident_care_name, $id, $request, $this->time, $this->app_modifier);
+        try {
+            return $this->accident_care_service->updateAccidentCare($this->accident_care_name, $id, $request, $this->time, $this->app_modifier);
+        } catch (\Throwable $e) {
+            // Xử lý lỗi và trả về phản hồi lỗi
+            return return_500_error($e->getMessage());
+        }
     }
 
-    public function accident_care_delete( $id)
+    public function accident_care_delete($id)
     {
-        return $this->accident_care_service->deleteAccidentCare($this->accident_care_name, $id);
+        try {
+            return $this->accident_care_service->deleteAccidentCare($this->accident_care_name, $id);
+        } catch (\Throwable $e) {
+            // Xử lý lỗi và trả về phản hồi lỗi
+            return return_500_error($e->getMessage());
+        }
     }
 }
