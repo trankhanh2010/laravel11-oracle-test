@@ -133,6 +133,10 @@ return [
             'his_treatment_type',
             'his_unlimit_reason',
             'his_work_place',
+        ],
+        'error' => [
+            'elasticsearch_service' => 'Có lỗi khi thực hiện thao tác với Elastic Search!'
         ]
-    ]
+    ],
+    
 ];

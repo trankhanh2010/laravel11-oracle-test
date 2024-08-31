@@ -469,6 +469,8 @@ class BaseApiCacheController extends Controller
     protected $mess_order_by_name;
     protected $mess_record_id;
     protected $mess_decode_param;
+    protected $line;
+    protected $line_name = 'Line';
 
     // Function kiểm tra lỗi và lấy thông báo lỗi
     protected function has_errors()
@@ -597,7 +599,12 @@ class BaseApiCacheController extends Controller
                 $this->keyword = null;
             }
         }
-
+        $this->line = $this->param_request['ApiData']['Line'] ?? null;
+        if($this->line !== null){
+            if (!is_int($this->line)) {
+                $this->errors[$this->line_name] = $this->mess_format;
+            }
+        }
         $this->get_all = $this->param_request['CommonParam']['GetAll'] ?? false;
         if (!is_bool($this->get_all)) {
             $this->errors[$this->get_all_name] = $this->mess_format;

@@ -128,7 +128,7 @@ class BhytBlacklistController extends BaseApiCacheController
             return return_data_success($param_return, $data ?? ($data['data'] ?? null) ?? null);
         } catch (\Throwable $e) {
             // Xử lý lỗi và trả về phản hồi lỗi
-            return return_500_error();
+            return return_500_error($e->getMessage());
         }
     }
     public function bhyt_blacklist_create(CreateBhytBlacklistRequest $request)
@@ -150,7 +150,7 @@ class BhytBlacklistController extends BaseApiCacheController
             return return_data_create_success($data);
         } catch (\Throwable $e) {
             // Xử lý lỗi và trả về phản hồi lỗi
-            return return_500_error();
+            return return_500_error($e->getMessage());
         }
     }
 
@@ -176,7 +176,7 @@ class BhytBlacklistController extends BaseApiCacheController
             return return_data_update_success($data);
         } catch (\Throwable $e) {
             // Xử lý lỗi và trả về phản hồi lỗi
-            return return_500_error();
+            return return_500_error($e->getMessage());
         }
     }
 

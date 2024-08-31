@@ -91,7 +91,7 @@ class RoomGroupController extends BaseApiCacheController
             return return_data_success($param_return, $data ?? ($data['data'] ?? null));
         } catch (\Throwable $e) {
             // Xử lý lỗi và trả về phản hồi lỗi
-            return return_500_error();
+            return return_500_error($e->getMessage());
         }
     }
 
@@ -113,7 +113,7 @@ class RoomGroupController extends BaseApiCacheController
             event(new DeleteCache($this->room_group_name));
             return return_data_create_success($data);
         } catch (\Exception $e) {
-            return return_500_error();
+            return return_500_error($e->getMessage());
         }
     }
 }

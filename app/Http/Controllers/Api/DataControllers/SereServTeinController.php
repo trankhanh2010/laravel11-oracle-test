@@ -271,7 +271,7 @@ class SereServTeinController extends BaseApiDataController
             return return_data_success($param_return, $data);
         } catch (\Throwable $e) {
             // Xử lý lỗi và trả về phản hồi lỗi
-            return return_500_error();
+            return return_500_error($e->getMessage());
         }
     }
     public function sere_serv_tein_get_view(Request $request)
@@ -540,7 +540,8 @@ class SereServTeinController extends BaseApiDataController
         return return_data_success($param_return, $data);
         } catch (\Throwable $e) {
             // Xử lý lỗi và trả về phản hồi lỗi
-        return return_500_error();
+                    return return_500_error($e->getMessage());
+
     }
     }
 }

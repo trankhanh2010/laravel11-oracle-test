@@ -74,7 +74,7 @@ class ElasticSearchController extends Controller
             }
         } catch (\Throwable $e) {
             // Xử lý lỗi và trả về phản hồi lỗi
-            return return_500_error();
+            return return_500_error($e->getMessage());
         }
     }
     public function get_mapping(Request $request){
@@ -87,7 +87,7 @@ class ElasticSearchController extends Controller
             return return_data_success([], $response);
         } catch (\Throwable $e) {
             // Xử lý lỗi và trả về phản hồi lỗi
-            return return_500_error();
+            return return_500_error($e->getMessage());
         }
     }
     public function get_index_settings(Request $request)

@@ -23,7 +23,7 @@ class CacheController extends BaseApiCacheController
             return return_clear_cache();
         } catch (\Throwable $e) {
             // Xử lý lỗi và trả về phản hồi lỗi
-            return return_500_error();
+            return return_500_error($e->getMessage());
         }
     }
     public function clear_cache_elatic_index_keyword(Request $request){
@@ -32,7 +32,7 @@ class CacheController extends BaseApiCacheController
             return return_clear_cache();
         } catch (\Throwable $e) {
             // Xử lý lỗi và trả về phản hồi lỗi
-            return return_500_error();
+            return return_500_error($e->getMessage());
         }
     }
 }
