@@ -11,6 +11,7 @@
         "php": "^8.2",
         "elasticsearch/elasticsearch": "8.15",
         "guzzlehttp/guzzle": "^7.0.1",
+        "irazasyed/telegram-bot-sdk": "^3.14",
         "laravel/framework": "^11.0",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.0",

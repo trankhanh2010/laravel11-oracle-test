@@ -19,6 +19,7 @@ use App\Events\Elastic\AtcGroup\InsertAtcGroupIndex;
 use App\Events\Elastic\Bed\CreateBedIndex;
 use App\Events\Elastic\Bed\InsertBedIndex;
 use App\Events\Elastic\DeleteIndex;
+use App\Events\Telegram\SendMessageToChannel;
 use App\Listeners\Cache\DeleteCache as CacheDeleteCache;
 use App\Listeners\Elastic\AccidentBodyPart\ElasticCreateAccidentBodyPartIndex;
 use App\Listeners\Elastic\AccidentBodyPart\ElasticInsertAccidentBodyPartIndex;
@@ -36,6 +37,7 @@ use App\Listeners\Elastic\AtcGroup\ElasticInsertAtcGroupIndex;
 use App\Listeners\Elastic\Bed\ElasticCreateBedIndex;
 use App\Listeners\Elastic\Bed\ElasticInsertBedIndex;
 use App\Listeners\Elastic\ElasticDeleteIndex;
+use App\Listeners\Telegram\TelegramSendMessageToChannel;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -56,6 +58,11 @@ class EventServiceProvider extends ServiceProvider
         // Cache
         DeleteCache::class => [
             CacheDeleteCache::class,
+        ],
+
+        // Telegram
+        SendMessageToChannel::class => [
+            TelegramSendMessageToChannel::class,
         ],
 
         // Elastic Search

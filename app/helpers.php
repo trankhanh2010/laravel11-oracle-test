@@ -1,11 +1,14 @@
 <?php
 
+use App\Events\Telegram\SendMessageToChannel;
+use App\Jobs\SendTelegramMessageJob;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Http\JsonResponse;
 use App\Models\ACS\Token;
 use App\Models\ACS\User;
 use App\Models\HIS\UserRoom;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Request;
 
 function create_slug($string)
     {
@@ -724,5 +727,36 @@ if (!function_exists('get_arr_elastic_index_keyword')) {
             return $keywordFields;
         });
         return $data;
+    }
+}
+
+// Logging
+if (!function_exists('write_and_throw_error')) {
+    function write_and_throw_error($mess_write, $mess_info, $e, $function_name, $class_name, $request)
+    {
+        $token = '';
+        $login_name = '';
+        $ip = '';
+        $hostname = '';
+        $token_header = $request->bearerToken();
+        if ($token_header) {
+            $token = get_token_header($request, $token_header);
+            $login_name = $token->login_name;
+            $ip =$request->ip();
+            $hostname = gethostbyaddr($ip);
+        }
+        $mess_log = $mess_write. ' Lỗi ở '.$class_name. ' trong '.$function_name;
+        Log::error($mess_log, [
+            'function' => $function_name,
+            'class' => $class_name,
+            'error' => $e->getMessage(),
+        ]);
+        $mess_tele = 
+              "<b>Thông báo: </b>"."$mess_log\n"
+            . "<b>Loginname: </b>". "$login_name\n"
+            . "<b>Tên máy: </b>" . "$hostname\n"
+            . "<b>IP: </b>". "$ip\n";
+        dispatch(new SendTelegramMessageJob($mess_tele));
+        return throw new \Exception($mess_info, 0, $e);
     }
 }

@@ -140,6 +140,7 @@ use App\Http\Controllers\Api\CacheControllers\MaterialTypeController;
 use App\Http\Controllers\BaseControllers\CacheController;
 use App\Http\Controllers\BaseControllers\ElasticSearchController;
 use App\Http\Controllers\BaseControllers\LogController;
+use App\Http\Controllers\BaseControllers\TelegramController;
 
 // Data Controllers
 use App\Http\Controllers\Api\DataControllers\DebateController;
@@ -203,6 +204,8 @@ Route::fallback(function () {
 Route::group([
     "middleware" => ["check_admin:api"]
 ], function () {
+    /// Telegram
+    Route::get('v1/updated-activity', [TelegramController::class, "updated_activity"])->name('.updated_activity');
     /// Log
     Route::get("v1/log", [LogController::class, "get_log"])->name('.get_log');
 
