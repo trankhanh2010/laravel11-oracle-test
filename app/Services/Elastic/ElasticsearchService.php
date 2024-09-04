@@ -19,16 +19,16 @@ class ElasticsearchService extends BaseApiCacheController
         $this->request = $request;
     }
 
-    public function buildSearchBody($table_name)
+    public function buildSearchBody($tableName)
     {
         try {
-            $query = $this->buildSearchQuery($this->elastic_search_type, $this->elastic_field, $this->keyword, $table_name);
-            $highlight = $this->buildHighlight($this->elastic_search_type);
+            $query = $this->buildSearchQuery($this->elasticSearchType, $this->elasticField, $this->keyword, $tableName);
+            $highlight = $this->buildHighlight($this->elasticSearchType);
             $paginate = $this->buildPaginateElastic();
-            $body = $this->buildArrSearchBody($query, $highlight, $paginate, $table_name);
+            $body = $this->buildArrSearchBody($query, $highlight, $paginate, $tableName);
             return $body;
         } catch (\Throwable $e) {
-            return write_and_throw_error(config('params')['elastic']['error']['elasticsearch_service'], config('params')['elastic']['error']['elasticsearch_service'], $e, __FUNCTION__, __CLASS__, $this->request );
+            return writeAndThrowError(config('params')['elastic']['error']['elasticsearch_service'], config('params')['elastic']['error']['elasticsearch_service'], $e, __FUNCTION__, __CLASS__, $this->request );
         }
     }
     public  function executeSearch($index, $body, $id)
@@ -36,11 +36,11 @@ class ElasticsearchService extends BaseApiCacheController
         try {
             return $this->buildSearch($index, $body, $id);
         } catch (\Throwable $e) {
-            return write_and_throw_error(config('params')['elastic']['error']['elasticsearch_service'], config('params')['elastic']['error']['elasticsearch_service'], $e, __FUNCTION__, __CLASS__, $this->request );
+            return writeAndThrowError(config('params')['elastic']['error']['elasticsearch_service'], config('params')['elastic']['error']['elasticsearch_service'], $e, __FUNCTION__, __CLASS__, $this->request );
         }
     }
 
-    public function buildSearchQuery($searchType, $field, $value, $name_table)
+    public function buildSearchQuery($searchType, $field, $value, $nameTable)
     {
         try {
             $query = [];
@@ -51,8 +51,8 @@ class ElasticsearchService extends BaseApiCacheController
                             'query' => $value,
                         ];
                         // Thêm 'operator' vào truy vấn chỉ khi nó có giá trị
-                        if ($this->elastic_operator !== null) {
-                            $matchQuery['operator'] = $this->elastic_operator;
+                        if ($this->elasticOperator !== null) {
+                            $matchQuery['operator'] = $this->elasticOperator;
                         }
                         $query =  [
                             'match' => [
@@ -89,7 +89,7 @@ class ElasticsearchService extends BaseApiCacheController
                         ];
                         break;
                     case 'prefix':
-                        if (in_array($field, get_arr_elastic_index_keyword($name_table))) {
+                        if (in_array($field, getArrElasticIndexKeyword($nameTable))) {
                             $query =  [
                                 'prefix' => [
                                     $field . '.keyword' => $value
@@ -107,31 +107,31 @@ class ElasticsearchService extends BaseApiCacheController
                         $query = [
                             'multi_match' =>  [
                                 'query' => $value,
-                                'fields' => $this->elastic_fields
+                                'fields' => $this->elasticFields
                             ]
                         ];
                         break;
                     case 'bool':
                         // Mảng kết quả sau khi đổi key
-                        $updated_elastic_must = [];
-                        $updated_elastic_should = [];
-                        $updated_elastic_must_not = [];
+                        $updatedElasticMust = [];
+                        $updatedElasticShould = [];
+                        $updatedElasticMustNot = [];
 
                         // Lặp qua từng phần tử trong mảng ban đầu
-                        if ($this->elastic_must != null) {
-                            foreach ($this->elastic_must as $key => $item) {
+                        if ($this->elasticMust != null) {
+                            foreach ($this->elasticMust as $key => $item) {
                                 // Tạo key mới bằng cách thêm '.keyword'
-                                foreach ($item as $key_item => $item2) {
-                                    foreach ($item2 as $key_item2 => $item3) {
-                                        if (in_array($key_item2, get_arr_elastic_index_keyword($name_table)) && in_array($key_item, ['term', 'wildcard', 'prefix'])) {
-                                            $newKey = $key_item2 . '.keyword';
+                                foreach ($item as $keyItem => $item2) {
+                                    foreach ($item2 as $keyItem2 => $item3) {
+                                        if (in_array($keyItem2, getArrElasticIndexKeyword($nameTable)) && in_array($keyItem, ['term', 'wildcard', 'prefix'])) {
+                                            $newKey = $keyItem2 . '.keyword';
                                         } else {
-                                            $newKey = $key_item2;
+                                            $newKey = $keyItem2;
                                         }
-                                        if (in_array($key_item, ['wildcard'])) {
+                                        if (in_array($keyItem, ['wildcard'])) {
                                             $item3 = '*' . $item3 . '*';
                                         }
-                                        if (in_array($key_item, ['query_string'])) {
+                                        if (in_array($keyItem, ['query_string'])) {
                                             // Tách chuỗi thành các từ bằng khoảng trắng
                                             $item3 = explode(' ', $item3);
                                             // Biến từng từ thành dạng wildcard
@@ -142,13 +142,13 @@ class ElasticsearchService extends BaseApiCacheController
                                             $item3 = implode(' || ', $wildcards);
                                         }
                                         // Thêm phần tử vào mảng kết quả với key mới
-                                        if (in_array($key_item, ['query_string'])) {
-                                            $updated_elastic_must[$key][$key_item] = [
+                                        if (in_array($keyItem, ['query_string'])) {
+                                            $updatedElasticMust[$key][$keyItem] = [
                                                 'query' => $item3,
-                                                'fields' => [$key_item2],
+                                                'fields' => [$keyItem2],
                                             ];
                                         } else {
-                                            $updated_elastic_must[$key][$key_item] = [
+                                            $updatedElasticMust[$key][$keyItem] = [
                                                 $newKey => $item3,
                                             ];
                                         }
@@ -158,20 +158,20 @@ class ElasticsearchService extends BaseApiCacheController
                         }
 
                         // Lặp qua từng phần tử trong mảng ban đầu
-                        if ($this->elastic_should != null) {
-                            foreach ($this->elastic_should as $key => $item) {
+                        if ($this->elasticShould != null) {
+                            foreach ($this->elasticShould as $key => $item) {
                                 // Tạo key mới bằng cách thêm '.keyword'
-                                foreach ($item as $key_item => $item2) {
-                                    foreach ($item2 as $key_item2 => $item3) {
-                                        if (in_array($key_item2, get_arr_elastic_index_keyword($name_table)) && in_array($key_item, ['term', 'wildcard', 'prefix'])) {
-                                            $newKey = $key_item2 . '.keyword';
+                                foreach ($item as $keyItem => $item2) {
+                                    foreach ($item2 as $keyItem2 => $item3) {
+                                        if (in_array($keyItem2, getArrElasticIndexKeyword($nameTable)) && in_array($keyItem, ['term', 'wildcard', 'prefix'])) {
+                                            $newKey = $keyItem2 . '.keyword';
                                         } else {
-                                            $newKey = $key_item2;
+                                            $newKey = $keyItem2;
                                         }
-                                        if (in_array($key_item, ['wildcard'])) {
+                                        if (in_array($keyItem, ['wildcard'])) {
                                             $item3 = '*' . $item3 . '*';
                                         }
-                                        if (in_array($key_item, ['query_string'])) {
+                                        if (in_array($keyItem, ['query_string'])) {
                                             // Tách chuỗi thành các từ bằng khoảng trắng
                                             $item3 = explode(' ', $item3);
                                             // Biến từng từ thành dạng wildcard
@@ -182,13 +182,13 @@ class ElasticsearchService extends BaseApiCacheController
                                             $item3 = implode(' || ', $wildcards);
                                         }
                                         // Thêm phần tử vào mảng kết quả với key mới
-                                        if (in_array($key_item, ['query_string'])) {
-                                            $updated_elastic_should[$key][$key_item] = [
+                                        if (in_array($keyItem, ['query_string'])) {
+                                            $updatedElasticShould[$key][$keyItem] = [
                                                 'query' => $item3,
-                                                'fields' => [$key_item2],
+                                                'fields' => [$keyItem2],
                                             ];
                                         } else {
-                                            $updated_elastic_should[$key][$key_item] = [
+                                            $updatedElasticShould[$key][$keyItem] = [
                                                 $newKey => $item3,
                                             ];
                                         }
@@ -199,20 +199,20 @@ class ElasticsearchService extends BaseApiCacheController
 
 
                         // Lặp qua từng phần tử trong mảng ban đầu
-                        if ($this->elastic_must_not != null) {
-                            foreach ($this->elastic_must_not as $key => $item) {
+                        if ($this->elasticMustNot != null) {
+                            foreach ($this->elasticMustNot as $key => $item) {
                                 // Tạo key mới bằng cách thêm '.keyword'
-                                foreach ($item as $key_item => $item2) {
-                                    foreach ($item2 as $key_item2 => $item3) {
-                                        if (in_array($key_item2, get_arr_elastic_index_keyword($name_table)) && in_array($key_item, ['term', 'wildcard', 'prefix'])) {
-                                            $newKey = $key_item2 . '.keyword';
+                                foreach ($item as $keyItem => $item2) {
+                                    foreach ($item2 as $keyItem2 => $item3) {
+                                        if (in_array($keyItem2, getArrElasticIndexKeyword($nameTable)) && in_array($keyItem, ['term', 'wildcard', 'prefix'])) {
+                                            $newKey = $keyItem2 . '.keyword';
                                         } else {
-                                            $newKey = $key_item2;
+                                            $newKey = $keyItem2;
                                         }
-                                        if (in_array($key_item, ['wildcard'])) {
+                                        if (in_array($keyItem, ['wildcard'])) {
                                             $item3 = '*' . $item3 . '*';
                                         }
-                                        if (in_array($key_item, ['query_string'])) {
+                                        if (in_array($keyItem, ['query_string'])) {
                                             // Tách chuỗi thành các từ bằng khoảng trắng
                                             $item3 = explode(' ', $item3);
                                             // Biến từng từ thành dạng wildcard
@@ -223,13 +223,13 @@ class ElasticsearchService extends BaseApiCacheController
                                             $item3 = implode(' || ', $wildcards);
                                         }
                                         // Thêm phần tử vào mảng kết quả với key mới
-                                        if (in_array($key_item, ['query_string'])) {
-                                            $updated_elastic_must_not[$key][$key_item] = [
+                                        if (in_array($keyItem, ['query_string'])) {
+                                            $updatedElasticMustNot[$key][$keyItem] = [
                                                 'query' => $item3,
-                                                'fields' => [$key_item2],
+                                                'fields' => [$keyItem2],
                                             ];
                                         } else {
-                                            $updated_elastic_must_not[$key][$key_item] = [
+                                            $updatedElasticMustNot[$key][$keyItem] = [
                                                 $newKey => $item3,
                                             ];
                                         }
@@ -239,17 +239,17 @@ class ElasticsearchService extends BaseApiCacheController
                         }
 
                         $matchQuery = [];
-                        if ($this->elastic_must !== null) {
-                            $matchQuery['must'] = $updated_elastic_must;
+                        if ($this->elasticMust !== null) {
+                            $matchQuery['must'] = $updatedElasticMust;
                         }
-                        if ($this->elastic_should !== null) {
-                            $matchQuery['should'] = $updated_elastic_should;
+                        if ($this->elasticShould !== null) {
+                            $matchQuery['should'] = $updatedElasticShould;
                         }
-                        if ($this->elastic_must_not !== null) {
-                            $matchQuery['must_not'] = $updated_elastic_must_not;
+                        if ($this->elasticMustNot !== null) {
+                            $matchQuery['must_not'] = $updatedElasticMustNot;
                         }
-                        if ($this->elastic_filter !== null) {
-                            $matchQuery['filter'] = $this->elastic_filter;
+                        if ($this->elasticFilter !== null) {
+                            $matchQuery['filter'] = $this->elasticFilter;
                         }
                         $query =  [
                             'bool' =>
@@ -262,7 +262,7 @@ class ElasticsearchService extends BaseApiCacheController
 
             return $query;
         } catch (\Throwable $e) {
-            return write_and_throw_error(config('params')['elastic']['error']['elasticsearch_service'], config('params')['elastic']['error']['elasticsearch_service'], $e, __FUNCTION__, __CLASS__, $this->request );
+            return writeAndThrowError(config('params')['elastic']['error']['elasticsearch_service'], config('params')['elastic']['error']['elasticsearch_service'], $e, __FUNCTION__, __CLASS__, $this->request );
         }
     }
     public function buildHighlight($searchType)
@@ -274,7 +274,7 @@ class ElasticsearchService extends BaseApiCacheController
                 case 'match':
                     $highlight  = [
                         'fields' => [
-                            $this->elastic_field => [
+                            $this->elasticField => [
                                 'pre_tags' => ['<em>'],  // Tag mở đầu cho highlight
                                 'post_tags' => ['</em>'], // Tag kết thúc cho highlight
                                 'number_of_fragments' => 0, // Hiển thị toàn bộ văn bản
@@ -286,7 +286,7 @@ class ElasticsearchService extends BaseApiCacheController
                 case 'term':
                     $highlight  = [
                         'fields' => [
-                            $this->elastic_field . '.keyword' => [
+                            $this->elasticField . '.keyword' => [
                                 'pre_tags' => ['<em>'],  // Tag mở đầu cho highlight
                                 'post_tags' => ['</em>'], // Tag kết thúc cho highlight
                                 'number_of_fragments' => 0, // Hiển thị toàn bộ văn bản
@@ -298,7 +298,7 @@ class ElasticsearchService extends BaseApiCacheController
                 case 'wildcard':
                     $highlight  = [
                         'fields' => [
-                            $this->elastic_field . '.keyword' => [
+                            $this->elasticField . '.keyword' => [
                                 'pre_tags' => ['<em>'],  // Tag mở đầu cho highlight
                                 'post_tags' => ['</em>'], // Tag kết thúc cho highlight
                                 'number_of_fragments' => 0, // Hiển thị toàn bộ văn bản
@@ -310,7 +310,7 @@ class ElasticsearchService extends BaseApiCacheController
                 case 'query_string':
                     $highlight  = [
                         'fields' => [
-                            $this->elastic_field => [
+                            $this->elasticField => [
                                 'pre_tags' => ['<em>'],  // Tag mở đầu cho highlight
                                 'post_tags' => ['</em>'], // Tag kết thúc cho highlight
                                 'number_of_fragments' => 0, // Hiển thị toàn bộ văn bản
@@ -322,7 +322,7 @@ class ElasticsearchService extends BaseApiCacheController
                 case 'match_phrase':
                     $highlight  = [
                         'fields' => [
-                            $this->elastic_field => [
+                            $this->elasticField => [
                                 'pre_tags' => ['<em>'],  // Tag mở đầu cho highlight
                                 'post_tags' => ['</em>'], // Tag kết thúc cho highlight
                                 'number_of_fragments' => 0, // Hiển thị toàn bộ văn bản
@@ -334,7 +334,7 @@ class ElasticsearchService extends BaseApiCacheController
                 case 'prefix':
                     $highlight  = [
                         'fields' => [
-                            $this->elastic_field => [
+                            $this->elasticField => [
                                 'pre_tags' => ['<em>'],  // Tag mở đầu cho highlight
                                 'post_tags' => ['</em>'], // Tag kết thúc cho highlight
                                 'number_of_fragments' => 0, // Hiển thị toàn bộ văn bản
@@ -345,7 +345,7 @@ class ElasticsearchService extends BaseApiCacheController
                     break;
                 case 'multi_match':
                     $fields = [];
-                    foreach ($this->elastic_fields as $key => $item) {
+                    foreach ($this->elasticFields as $key => $item) {
                         $fields[$item] = [
                             'pre_tags' => ['<em>'],  // Tag mở đầu cho highlight
                             'post_tags' => ['</em>'], // Tag kết thúc cho highlight
@@ -359,8 +359,8 @@ class ElasticsearchService extends BaseApiCacheController
                     break;
                 case 'bool':
                     $fields = [];
-                    if ($this->elastic_fields != null) {
-                        foreach ($this->elastic_fields as $key => $item) {
+                    if ($this->elasticFields != null) {
+                        foreach ($this->elasticFields as $key => $item) {
                             $fields[$item] = [
                                 'pre_tags' => ['<em>'],  // Tag mở đầu cho highlight
                                 'post_tags' => ['</em>'], // Tag kết thúc cho highlight
@@ -377,13 +377,13 @@ class ElasticsearchService extends BaseApiCacheController
 
             return $highlight;
         } catch (\Throwable $e) {
-            return write_and_throw_error(config('params')['elastic']['error']['elasticsearch_service'], config('params')['elastic']['error']['elasticsearch_service'], $e, __FUNCTION__, __CLASS__, $this->request );
+            return writeAndThrowError(config('params')['elastic']['error']['elasticsearch_service'], config('params')['elastic']['error']['elasticsearch_service'], $e, __FUNCTION__, __CLASS__, $this->request );
         }
     }
     public function buildPaginateElastic()
     {
         try {
-            if ($this->get_all) {
+            if ($this->getAll) {
                 return [
                     'size' => 10000,
                     'from' => 0,
@@ -394,7 +394,7 @@ class ElasticsearchService extends BaseApiCacheController
                 'from' => $this->start,
             ];
         } catch (\Throwable $e) {
-            return write_and_throw_error(config('params')['elastic']['error']['elasticsearch_service'], config('params')['elastic']['error']['elasticsearch_service'], $e, __FUNCTION__, __CLASS__, $this->request );
+            return writeAndThrowError(config('params')['elastic']['error']['elasticsearch_service'], config('params')['elastic']['error']['elasticsearch_service'], $e, __FUNCTION__, __CLASS__, $this->request );
         }
     }
     public function buildSort($name)
@@ -404,9 +404,9 @@ class ElasticsearchService extends BaseApiCacheController
             // Mảng kết quả sau khi đổi key
             $updatedSortArray = [];
             // Lặp qua từng phần tử trong mảng ban đầu
-            foreach ($this->order_by_elastic as $key => $order) {
+            foreach ($this->orderByElastic as $key => $order) {
                 // Tạo key mới bằng cách thêm '.keyword'
-                if (in_array($key, get_arr_elastic_index_keyword($name))) {
+                if (in_array($key, getArrElasticIndexKeyword($name))) {
                     $newKey = $key . '.keyword';
                 } else {
                     $newKey = $key;
@@ -422,7 +422,7 @@ class ElasticsearchService extends BaseApiCacheController
             $sort = $updatedSortArray;
             return $sort;
         } catch (\Throwable $e) {
-            return write_and_throw_error(config('params')['elastic']['error']['elasticsearch_service'], config('params')['elastic']['error']['elasticsearch_service'], $e, __FUNCTION__, __CLASS__, $this->request );
+            return writeAndThrowError(config('params')['elastic']['error']['elasticsearch_service'], config('params')['elastic']['error']['elasticsearch_service'], $e, __FUNCTION__, __CLASS__, $this->request );
         }
     }
     public function buildArrSearchBody($query, $highlight, $paginate, $index_name)
@@ -436,12 +436,12 @@ class ElasticsearchService extends BaseApiCacheController
                 $body['highlight'] = $highlight;
             }
             $body = array_merge($body, $paginate);
-            if ($this->order_by_elastic != null) {
+            if ($this->orderByElastic != null) {
                 $body['sort'] = $this->buildSort($index_name);
             }
             return $body;
         } catch (\Throwable $e) {
-            return write_and_throw_error(config('params')['elastic']['error']['elasticsearch_service'], config('params')['elastic']['error']['elasticsearch_service'], $e, __FUNCTION__, __CLASS__, $this->request );
+            return writeAndThrowError(config('params')['elastic']['error']['elasticsearch_service'], config('params')['elastic']['error']['elasticsearch_service'], $e, __FUNCTION__, __CLASS__, $this->request );
         }
     }
     public function buildSearch($index, $body, $id = null)
@@ -464,17 +464,17 @@ class ElasticsearchService extends BaseApiCacheController
                         ]
                     ]
                 ];
-                if ($this->is_active !== null) {
+                if ($this->isActive !== null) {
                     $data['body']['query']['bool']['must'] = [
                         ['term' => ['_id' => $id]],       // Truy vấn theo ID
-                        ['term' => ['is_active' => $this->is_active]],
+                        ['term' => ['is_active' => $this->isActive]],
                     ];
                 }
             }
 
             return $this->client->search($data);
         } catch (\Throwable $e) {
-            return write_and_throw_error(config('params')['elastic']['error']['elasticsearch_service'], config('params')['elastic']['error']['elasticsearch_service'], $e, __FUNCTION__, __CLASS__, $this->request );
+            return writeAndThrowError(config('params')['elastic']['error']['elasticsearch_service'], config('params')['elastic']['error']['elasticsearch_service'], $e, __FUNCTION__, __CLASS__, $this->request );
         }
     }
     public function applyResource($data)
@@ -483,7 +483,7 @@ class ElasticsearchService extends BaseApiCacheController
             $data = ElasticResource::collection($data['hits']['hits']);
             return $data;
         } catch (\Throwable $e) {
-            return write_and_throw_error(config('params')['elastic']['error']['elasticsearch_service'], config('params')['elastic']['error']['elasticsearch_service'], $e, __FUNCTION__, __CLASS__, $this->request );
+            return writeAndThrowError(config('params')['elastic']['error']['elasticsearch_service'], config('params')['elastic']['error']['elasticsearch_service'], $e, __FUNCTION__, __CLASS__, $this->request );
         }
     }
     public function counting($data)
@@ -492,50 +492,50 @@ class ElasticsearchService extends BaseApiCacheController
             $count = $data['hits']['total']['value'];
             return $count;
         } catch (\Throwable $e) {
-            return write_and_throw_error(config('params')['elastic']['error']['elasticsearch_service'], config('params')['elastic']['error']['elasticsearch_service'], $e, __FUNCTION__, __CLASS__, $this->request );
+            return writeAndThrowError(config('params')['elastic']['error']['elasticsearch_service'], config('params')['elastic']['error']['elasticsearch_service'], $e, __FUNCTION__, __CLASS__, $this->request );
         }
     }
 
-    public function handleElasticSearchSearch($table_name)
+    public function handleElasticSearchSearch($tableName)
     {
         try {
-            $body = $this->buildSearchBody($table_name);
-            $data = $this->executeSearch($table_name, $body, null);
+            $body = $this->buildSearchBody($tableName);
+            $data = $this->executeSearch($tableName, $body, null);
             $count = $this->counting($data);
             $data = $this->applyResource($data);
             return ['data' => $data, 'count' => $count];
         } catch (\Throwable $e) {
-            return write_and_throw_error(config('params')['elastic']['error']['elasticsearch_service'], config('params')['elastic']['error']['elasticsearch_service'], $e, __FUNCTION__, __CLASS__, $this->request );
+            return writeAndThrowError(config('params')['elastic']['error']['elasticsearch_service'], config('params')['elastic']['error']['elasticsearch_service'], $e, __FUNCTION__, __CLASS__, $this->request );
         }
     }
-    public function handleElasticSearchGetAll($table_name)
+    public function handleElasticSearchGetAll($tableName)
     {
         try {
-            $data = Cache::remember('elastic_' . $table_name . '_start_' . $this->start . '_limit_' . $this->limit . $this->order_by_tring . '_is_active_' . $this->elastic_is_active . '_get_all_' . $this->get_all, $this->time, function () use ($table_name) {
-                $body = $this->buildSearchBody($table_name);
-                $data = $this->executeSearch($table_name, $body, null);
+            $data = Cache::remember('elastic_' . $tableName . '_start_' . $this->start . '_limit_' . $this->limit . $this->orderByString . '_is_active_' . $this->elasticIsActive . '_get_all_' . $this->getAll, $this->time, function () use ($tableName) {
+                $body = $this->buildSearchBody($tableName);
+                $data = $this->executeSearch($tableName, $body, null);
                 $count = $this->counting($data);
                 $data = $this->applyResource($data);
                 return ['data' => $data, 'count' => $count];
             });
             return $data;
         } catch (\Throwable $e) {
-            return write_and_throw_error(config('params')['elastic']['error']['elasticsearch_service'], config('params')['elastic']['error']['elasticsearch_service'], $e, __FUNCTION__, __CLASS__, $this->request );
+            return writeAndThrowError(config('params')['elastic']['error']['elasticsearch_service'], config('params')['elastic']['error']['elasticsearch_service'], $e, __FUNCTION__, __CLASS__, $this->request );
         }
     }
 
-    public function handleElasticSearchGetWithId($table_name, $id)
+    public function handleElasticSearchGetWithId($tableName, $id)
     {
         try {
-            $data = Cache::remember('elastic_' . $table_name . '_' . $id . '_is_active_' . $this->elastic_is_active, $this->time, function () use ($table_name, $id) {
-                $body = $this->buildSearchBody($table_name);
-                $data = $this->executeSearch($table_name, $body, $id);
+            $data = Cache::remember('elastic_' . $tableName . '_' . $id . '_is_active_' . $this->elasticIsActive, $this->time, function () use ($tableName, $id) {
+                $body = $this->buildSearchBody($tableName);
+                $data = $this->executeSearch($tableName, $body, $id);
                 $data = $this->applyResource($data);
                 return $data;
             });
             return $data;
         } catch (\Throwable $e) {
-            return write_and_throw_error(config('params')['elastic']['error']['elasticsearch_service'], config('params')['elastic']['error']['elasticsearch_service'], $e, __FUNCTION__, __CLASS__, $this->request );
+            return writeAndThrowError(config('params')['elastic']['error']['elasticsearch_service'], config('params')['elastic']['error']['elasticsearch_service'], $e, __FUNCTION__, __CLASS__, $this->request );
         }
     }
 }

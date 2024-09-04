@@ -12,16 +12,16 @@ use Illuminate\Http\Request;
 
 class BedController extends BaseApiCacheController
 {
-    protected $bed_service;
-    public function __construct(Request $request, ElasticsearchService $elastic_search_service, BedService $bed_service)
+    protected $bedService;
+    public function __construct(Request $request, ElasticsearchService $elasticSearchService, BedService $bedService, Bed $bed)
     {
         parent::__construct($request); // Gọi constructor của BaseController
-        $this->elastic_search_service = $elastic_search_service;
-        $this->bed_service = $bed_service;
-        $this->bed = new Bed();
+        $this->elasticSearchService = $elasticSearchService;
+        $this->bedService = $bedService;
+        $this->bed = $bed;
         // Kiểm tra tên trường trong bảng
-        if ($this->order_by != null) {
-            $this->order_by_join = [
+        if ($this->orderBy != null) {
+            $this->orderByJoin = [
                 'bed_type_name',
                 'bed_type_code',
                 'bed_room_name',
@@ -29,92 +29,94 @@ class BedController extends BaseApiCacheController
                 'department_name',
                 'department_code',
             ];
-            $columns = $this->get_columns_table($this->bed);
-            $this->order_by = $this->check_order_by($this->order_by, $columns, $this->order_by_join ?? []);
-            $this->order_by_tring = arrayToCustomString($this->order_by);
+            $columns = $this->getColumnsTable($this->bed);
+            $this->orderBy = $this->checkOrderBy($this->orderBy, $columns, $this->orderByJoin ?? []);
+            $this->orderByString = arrayToCustomString($this->orderBy);
         }
     }
-    public function bed($id = null)
+    public function index()
     {
-        // Kiểm tra param và trả về lỗi nếu nó không hợp lệ
-        if ($this->check_param()) {
-            return $this->check_param();
+        if ($this->checkParam()) {
+            return $this->checkParam();
         }
         try {
             $keyword = $this->keyword;
-            if (($keyword != null || $this->elastic_search_type != null) && !$this->cache) {
-                if ($this->elastic_search_type != null) {
-                    $data = $this->elastic_search_service->handleElasticSearchSearch($this->bed_name);
-                    $count = $data['count'];
-                    $data = $data['data'];
+            if (($keyword != null || $this->elasticSearchType != null) && !$this->cache) {
+                if ($this->elasticSearchType != null) {
+                    $data = $this->elasticSearchService->handleElasticSearchSearch($this->bedName);
                 } else {
-                    $data = $this->bed_service->handleDataBaseSearch($keyword, $this->is_active, $this->order_by, $this->order_by_join, $this->get_all, $this->start, $this->limit);
-                    $count = $data['count'];
-                    $data = $data['data'];
+                    $data = $this->bedService->handleDataBaseSearch($keyword, $this->isActive, $this->orderBy, $this->orderByJoin, $this->getAll, $this->start, $this->limit);
                 }
             } else {
-                if ($id == null) {
-                    if ($this->elastic) {
-                        $data = $this->elastic_search_service->handleElasticSearchGetAll($this->bed_name);
-                    } else {
-                        $data = $this->bed_service->handleDataBaseGetAll($this->bed_name, $this->is_active, $this->order_by, $this->order_by_join, $this->get_all, $this->start, $this->limit);
-                    }
+                if ($this->elastic) {
+                    $data = $this->elasticSearchService->handleElasticSearchGetAll($this->bedName);
                 } else {
-                    if ($id !== null) {
-                        $validationError = $this->validateAndCheckId($id, $this->bed, $this->bed_name);
-                        if ($validationError) {
-                            return $validationError;
-                        }
-                    }
-                    if ($this->elastic) {
-                        $data = $this->elastic_search_service->handleElasticSearchGetWithId($this->bed_name, $id);
-                    } else {
-                        $data = $this->bed_service->handleDataBaseGetWithId($this->bed_name, $id, $this->is_active);
-                    }
+                    $data = $this->bedService->handleDataBaseGetAll($this->bedName, $this->isActive, $this->orderBy, $this->orderByJoin, $this->getAll, $this->start, $this->limit);
                 }
             }
-            $param_return = [
-                $this->get_all_name => $this->get_all,
-                $this->start_name => ($this->get_all || !is_null($id)) ? null : $this->start,
-                $this->limit_name => ($this->get_all || !is_null($id)) ? null : $this->limit,
-                $this->count_name => $count ?? ($data['count'] ?? null),
-                $this->is_active_name => $this->is_active,
-                $this->keyword_name => $this->keyword,
-                $this->order_by_name => $this->order_by_request
+            $paramReturn = [
+                $this->getAllName => $this->getAll,
+                $this->startName => $this->getAll ? null : $this->start,
+                $this->limitName => $this->getAll ? null : $this->limit,
+                $this->countName => $data['count'],
+                $this->isActiveName => $this->isActive,
+                $this->keywordName => $this->keyword,
+                $this->orderByName => $this->orderByRequest
             ];
-            return return_data_success($param_return, $data ?? ($data['data'] ?? null));
+            return returnDataSuccess($paramReturn, $data['data']);
         } catch (\Throwable $e) {
-            // Xử lý lỗi và trả về phản hồi lỗi
-            return return_500_error($e->getMessage());
-        }
-    }
-    public function bed_create(CreateBedRequest $request)
-    {
-        try {
-            return $this->bed_service->createBed($request, $this->time, $this->app_creator, $this->app_modifier);
-        } catch (\Throwable $e) {
-            // Xử lý lỗi và trả về phản hồi lỗi
-            return return_500_error($e->getMessage());
+            return return500Error($e->getMessage());
         }
     }
 
-    public function bed_update(UpdateBedRequest $request, $id)
+    public function show($id)
     {
+        if ($this->checkParam()) {
+            return $this->checkParam();
+        }
         try {
-            return $this->bed_service->updateBed($this->bed_name, $id, $request, $this->time, $this->app_modifier);
+            if ($id !== null) {
+                $validationError = $this->validateAndCheckId($id, $this->bed, $this->bedName);
+                if ($validationError) {
+                    return $validationError;
+                }
+            }
+            if ($this->elastic) {
+                $data = $this->elasticSearchService->handleElasticSearchGetWithId($this->bedName, $id);
+            } else {
+                $data = $this->bedService->handleDataBaseGetWithId($this->bedName, $id, $this->isActive);
+            }
+            $paramReturn = [
+                $this->idName => $id,
+                $this->isActiveName => $this->isActive,
+            ];
+            return returnDataSuccess($paramReturn, $data);
         } catch (\Throwable $e) {
-            // Xử lý lỗi và trả về phản hồi lỗi
-            return return_500_error($e->getMessage());
+            return return500Error($e->getMessage());
         }
     }
-
-    public function bed_delete($id)
+    public function store(CreateBedRequest $request)
     {
         try {
-            return $this->bed_service->deleteBed($this->bed_name, $id);
+            return $this->bedService->createBed($request, $this->time, $this->appCreator, $this->appModifier);
         } catch (\Throwable $e) {
-            // Xử lý lỗi và trả về phản hồi lỗi
-            return return_500_error($e->getMessage());
+            return return500Error($e->getMessage());
+        }
+    }
+    public function update(UpdateBedRequest $request, $id)
+    {
+        try {
+            return $this->bedService->updateBed($this->bedName, $id, $request, $this->time, $this->appModifier);
+        } catch (\Throwable $e) {
+            return return500Error($e->getMessage());
+        }
+    }
+    public function destroy($id)
+    {
+        try {
+            return $this->bedService->deleteBed($this->bedName, $id);
+        } catch (\Throwable $e) {
+            return return500Error($e->getMessage());
         }
     }
 }

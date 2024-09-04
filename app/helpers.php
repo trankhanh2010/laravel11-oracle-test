@@ -521,8 +521,8 @@ if (!function_exists('get_loginname_with_token')) {
     }
 }
 
-if (!function_exists('return_id_error')) {
-    function return_id_error($id)
+if (!function_exists('returnIdError')) {
+    function returnIdError($id)
     {
         return response()->json([
             'status'    => 422,
@@ -532,8 +532,8 @@ if (!function_exists('return_id_error')) {
     }
 }
 
-if (!function_exists('return_not_record')) {
-    function return_not_record($id)
+if (!function_exists('returnNotRecord')) {
+    function returnNotRecord($id)
     {
         return response()->json([
             'status'    => 422,
@@ -543,8 +543,8 @@ if (!function_exists('return_not_record')) {
     }
 }
 
-if (!function_exists('return_data_success')) {
-    function return_data_success($param_return, $data_return)
+if (!function_exists('returnDataSuccess')) {
+    function returnDataSuccess($param_return, $data_return)
     {
         if (is_array($data_return)) {
             $data_return = $data_return['data'] ?? $data_return;
@@ -566,8 +566,8 @@ if (!function_exists('return_data_success')) {
     }
 }
 
-if (!function_exists('return_data_create_success')) {
-    function return_data_create_success($data_return)
+if (!function_exists('returnDataCreateSuccess')) {
+    function returnDataCreateSuccess($data_return)
     {
         return response()->json([
             'status'    => 201,
@@ -577,8 +577,8 @@ if (!function_exists('return_data_create_success')) {
     }
 }
 
-if (!function_exists('return_data_update_success')) {
-    function return_data_update_success($data_return)
+if (!function_exists('returnDataUpdateSuccess')) {
+    function returnDataUpdateSuccess($data_return)
     {
         return response()->json([
             'status'    => 200,
@@ -588,8 +588,8 @@ if (!function_exists('return_data_update_success')) {
     }
 }
 
-if (!function_exists('return_data_delete_success')) {
-    function return_data_delete_success()
+if (!function_exists('returnDataDeleteSuccess')) {
+    function returnDataDeleteSuccess()
     {
         return response()->json([
             'status'    => 200,
@@ -642,8 +642,8 @@ if (!function_exists('return_403')) {
     }
 }
 
-if (!function_exists('return_400')) {
-    function return_400($mess)
+if (!function_exists('return400')) {
+    function return400($mess)
     {
         return response()->json([
             'status'    => 400,
@@ -676,8 +676,8 @@ if (!function_exists('return_param_error')) {
     }
 }
 
-if (!function_exists('return_500_error')) {
-    function return_500_error($mess = null)
+if (!function_exists('return500Error')) {
+    function return500Error($mess = null)
     {
         return response()->json([
             'status'    => 500,
@@ -701,8 +701,8 @@ if (!function_exists('return_404_error_page_not_found')) {
 
 // Elastic Search
 
-if (!function_exists('get_arr_elastic_index_keyword')) {
-    function get_arr_elastic_index_keyword($name)
+if (!function_exists('getArrElasticIndexKeyword')) {
+    function getArrElasticIndexKeyword($name)
     {
         $time = 144000;
         $data = Cache::remember('elastic_index_keyword_' . $name, $time, function () use ($name) {
@@ -723,8 +723,8 @@ if (!function_exists('get_arr_elastic_index_keyword')) {
 }
 
 // Logging
-if (!function_exists('write_and_throw_error')) {
-    function write_and_throw_error($mess_write, $mess_info, $e, $function_name, $class_name, $request)
+if (!function_exists('writeAndThrowError')) {
+    function writeAndThrowError($mess_write, $mess_info, $e, $function_name, $class_name, $request)
     {
         $token = '';
         $login_name = '';

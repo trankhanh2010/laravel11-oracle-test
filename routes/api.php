@@ -197,6 +197,7 @@ use App\Http\Controllers\Api\CacheControllers\ProcessingMethodController;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+Route::get("v1/test", function () { return 'hi';})->name('.get_test');
 
 Route::fallback(function () {
     return return_404_error_page_not_found();
@@ -605,11 +606,11 @@ Route::group([
 
     /// Giường
     Route::group(['as' => 'HIS.Desktop.Plugins.HisBed'], function () {
-        Route::get("v1/bed", [BedController::class, "bed"])->name('.get');
-        Route::get("v1/bed/{id}", [BedController::class, "bed"])->name('.get_id');
-        Route::post("v1/bed", [BedController::class, "bed_create"])->name('.create');
-        Route::put("v1/bed/{id}", [BedController::class, "bed_update"])->name('.update');
-        Route::delete("v1/bed/{id}", [BedController::class, "bed_delete"])->name('.delete');
+        Route::get("v1/bed", [BedController::class, "index"])->name('.get');
+        Route::get("v1/bed/{id}", [BedController::class, "show"])->name('.get_id');
+        Route::post("v1/bed", [BedController::class, "store"])->name('.create');
+        Route::put("v1/bed/{id}", [BedController::class, "update"])->name('.update');
+        Route::delete("v1/bed/{id}", [BedController::class, "destroy"])->name('.delete');
     });
 
     /// Giường - Dịch vụ giường

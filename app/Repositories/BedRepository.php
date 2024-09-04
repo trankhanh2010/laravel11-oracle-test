@@ -38,19 +38,19 @@ class BedRepository
                 ->orWhere(DB::connection('oracle_his')->raw('his_bed.bed_name'), 'like', $keyword . '%');
         });
     }
-    public function applyIsActiveFilter($query, $is_active)
+    public function applyIsActiveFilter($query, $isActive)
     {
-        if ($is_active !== null) {
-            $query->where(DB::connection('oracle_his')->raw('his_bed.is_active'), $is_active);
+        if ($isActive !== null) {
+            $query->where(DB::connection('oracle_his')->raw('his_bed.is_active'), $isActive);
         }
 
         return $query;
     }
-    public function applyOrdering($query, $order_by, $order_by_join)
+    public function applyOrdering($query, $orderBy, $orderByJoin)
     {
-        if ($order_by != null) {
-            foreach ($order_by as $key => $item) {
-                if (in_array($key, $order_by_join)) {
+        if ($orderBy != null) {
+            foreach ($orderBy as $key => $item) {
+                if (in_array($key, $orderByJoin)) {
                     if (in_array($key, ['bed_type_name', 'bed_type_code'])) {
                         $query->orderBy('his_bed_type.' . $key, $item);
                     }
@@ -68,9 +68,9 @@ class BedRepository
 
         return $query;
     }
-    public function fetchData($query, $get_all, $start, $limit)
+    public function fetchData($query, $getAll, $start, $limit)
     {
-        if ($get_all) {
+        if ($getAll) {
             // Lấy tất cả dữ liệu
             return $query->get();
         } else {
@@ -85,14 +85,14 @@ class BedRepository
     {
         return $this->bed->find($id);
     }
-    public function create($request, $time, $app_creator, $app_modifier){
+    public function create($request, $time, $appCreator, $appModifier){
         $data = $this->bed::create([
             'create_time' => now()->format('Ymdhis'),
             'modify_time' => now()->format('Ymdhis'),
             'creator' => get_loginname_with_token($request->bearerToken(), $time),
             'modifier' => get_loginname_with_token($request->bearerToken(), $time),
-            'app_creator' => $app_creator,
-            'app_modifier' => $app_modifier,
+            'app_creator' => $appCreator,
+            'app_modifier' => $appModifier,
             'is_active' => 1,
             'is_delete' => 0,
             'bed_code' => $request->bed_code,
@@ -105,11 +105,11 @@ class BedRepository
         return $data;
     }
 
-    public function update($request, $data, $time, $app_modifier){
+    public function update($request, $data, $time, $appModifier){
         $data->update([
             'modify_time' => now()->format('Ymdhis'),
             'modifier' => get_loginname_with_token($request->bearerToken(), $time),
-            'app_modifier' => $app_modifier,
+            'app_modifier' => $appModifier,
             'bed_code' => $request->bed_code,
             'bed_name' => $request->bed_name,
             'is_active' => $request->is_active

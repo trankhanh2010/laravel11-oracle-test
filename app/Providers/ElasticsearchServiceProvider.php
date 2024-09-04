@@ -14,9 +14,9 @@ class ElasticsearchServiceProvider extends ServiceProvider
     {
         $this->app->singleton('Elasticsearch', function ($app) {
             return ClientBuilder::create()
-            ->setHosts([env('ELASTICSEARCH_HOST').':'.env('ELASTICSEARCH_PORT')])
-            ->setBasicAuthentication(env('ELASTICSEARCH_USER'), env('ELASTICSEARCH_PASS'))
-            ->setCABundle(env('ELASTICSEARCH_CA'))
+            ->setHosts([config('database')['connections']['elasticsearch']['hosts']['host'].':'.config('database')['connections']['elasticsearch']['hosts']['port']])
+            ->setBasicAuthentication(config('database')['connections']['elasticsearch']['hosts']['user'], config('database')['connections']['elasticsearch']['hosts']['pass'])
+            ->setCABundle(config('database')['connections']['elasticsearch']['hosts']['ca'])
             ->build();
         });
     }

@@ -17,17 +17,17 @@ class Bed extends Model
         'id',
     ];
 
-    public function bed_room()
+    public function bedRoom()
     {
         return $this->belongsTo(BedRoom::class, 'bed_room_id');
     }
 
-    public function bed_type()
+    public function bedType()
     {
         return $this->belongsTo(BedType::class, 'bed_type_id');
     }
 
-    public function treatment_room()
+    public function treatmentRoom()
     {
         return $this->belongsTo(TreatmentRoom::class, 'treatment_room_id');
     }
@@ -36,7 +36,7 @@ class Bed extends Model
     {
         return $this->belongsToMany(Service::class, BedBsty::class, 'bed_id', 'bed_service_type_id');
     }
-    public static function get_data_from_db_to_elastic($id = null){
+    public static function getDataFromDbToElastic($id = null){
         $data = DB::connection('oracle_his')->table('his_bed')
         ->leftJoin('his_bed_type', 'his_bed.bed_type_id', '=', 'his_bed_type.id')
         ->leftJoin('his_bed_room', 'his_bed.bed_room_id', '=', 'his_bed_room.id')

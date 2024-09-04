@@ -12,114 +12,114 @@ use App\Repositories\BedRepository;
 
 class BedService extends BaseApiCacheController
 {
-    protected $bed_repository;
+    protected $bedRepository;
     protected $request;
-    public function __construct(Request $request, BedRepository $bed_repository)
+    public function __construct(Request $request, BedRepository $bedRepository)
     {
         parent::__construct($request);
-        $this->bed_repository = $bed_repository;
+        $this->bedRepository = $bedRepository;
         $this->request = $request;
     }
 
-    public function handleDataBaseSearch($keyword, $is_active, $order_by, $order_by_join, $get_all, $start, $limit)
+    public function handleDataBaseSearch($keyword, $isActive, $orderBy, $orderByJoin, $getAll, $start, $limit)
     {
         try {
-            $data = $this->bed_repository->applyJoins();
-            $data = $this->bed_repository->applyKeywordFilter($data, $keyword);
-            $data = $this->bed_repository->applyIsActiveFilter($data, $is_active);
+            $data = $this->bedRepository->applyJoins();
+            $data = $this->bedRepository->applyKeywordFilter($data, $keyword);
+            $data = $this->bedRepository->applyIsActiveFilter($data, $isActive);
             $count = $data->count();
-            $data = $this->bed_repository->applyOrdering($data, $order_by, $order_by_join);
-            $data = $this->bed_repository->fetchData($data, $get_all, $start, $limit);
+            $data = $this->bedRepository->applyOrdering($data, $orderBy, $orderByJoin);
+            $data = $this->bedRepository->fetchData($data, $getAll, $start, $limit);
             return ['data' => $data, 'count' => $count];
         } catch (\Throwable $e) {
-            return write_and_throw_error(config('params')['db_service']['error']['bed'], config('params')['db_service']['error']['bed'], $e, __FUNCTION__, __CLASS__, $this->request);
+            return writeAndThrowError(config('params')['db_service']['error']['bed'], config('params')['db_service']['error']['bed'], $e, __FUNCTION__, __CLASS__, $this->request);
         }
     }
-    public function handleDataBaseGetAll($bed_name, $is_active, $order_by, $order_by_join, $get_all, $start, $limit)
+    public function handleDataBaseGetAll($bedName, $isActive, $orderBy, $orderByJoin, $getAll, $start, $limit)
     {
         try {
-            $data = Cache::remember($bed_name . '_start_' . $this->start . '_limit_' . $this->limit . $this->order_by_tring . '_is_active_' . $this->is_active . '_get_all_' . $this->get_all, $this->time, function () use ($is_active, $order_by, $order_by_join, $get_all, $start, $limit) {
-                $data = $this->bed_repository->applyJoins();
-                $data = $this->bed_repository->applyIsActiveFilter($data, $is_active);
+            $data = Cache::remember($bedName . '_start_' . $this->start . '_limit_' . $this->limit . $this->orderByString . '_is_active_' . $this->isActive . '_get_all_' . $this->getAll, $this->time, function () use ($isActive, $orderBy, $orderByJoin, $getAll, $start, $limit) {
+                $data = $this->bedRepository->applyJoins();
+                $data = $this->bedRepository->applyIsActiveFilter($data, $isActive);
                 $count = $data->count();
-                $data = $this->bed_repository->applyOrdering($data, $order_by, $order_by_join);
-                $data = $this->bed_repository->fetchData($data, $get_all, $start, $limit);
+                $data = $this->bedRepository->applyOrdering($data, $orderBy, $orderByJoin);
+                $data = $this->bedRepository->fetchData($data, $getAll, $start, $limit);
                 return ['data' => $data, 'count' => $count];
             });
             return $data;
         } catch (\Throwable $e) {
-            return write_and_throw_error(config('params')['db_service']['error']['bed'], config('params')['db_service']['error']['bed'], $e, __FUNCTION__, __CLASS__, $this->request);
+            return writeAndThrowError(config('params')['db_service']['error']['bed'], config('params')['db_service']['error']['bed'], $e, __FUNCTION__, __CLASS__, $this->request);
         }
     }
-    public function handleDataBaseGetWithId($bed_name, $id, $is_active)
+    public function handleDataBaseGetWithId($bedName, $id, $isActive)
     {
         try {
-            $data = Cache::remember($bed_name . '_' . $id . '_is_active_' . $this->is_active, $this->time, function () use ($id, $is_active) {
-                $data = $this->bed_repository->applyJoins()
+            $data = Cache::remember($bedName . '_' . $id . '_is_active_' . $this->isActive, $this->time, function () use ($id, $isActive) {
+                $data = $this->bedRepository->applyJoins()
                     ->where('his_bed.id', $id);
-                $data = $this->bed_repository->applyIsActiveFilter($data, $is_active);
+                $data = $this->bedRepository->applyIsActiveFilter($data, $isActive);
                 $data = $data->first();
                 return $data;
             });
             return $data;
         } catch (\Throwable $e) {
-            return write_and_throw_error(config('params')['db_service']['error']['bed'], config('params')['db_service']['error']['bed'], $e, __FUNCTION__, __CLASS__, $this->request);
+            return writeAndThrowError(config('params')['db_service']['error']['bed'], config('params')['db_service']['error']['bed'], $e, __FUNCTION__, __CLASS__, $this->request);
         }
     }
 
-    public function createBed($request, $time, $app_creator, $app_modifier)
+    public function createBed($request, $time, $appCreator, $appModifier)
     {
         try {
-            $data = $this->bed_repository->create($request, $time, $app_creator, $app_modifier);
+            $data = $this->bedRepository->create($request, $time, $appCreator, $appModifier);
             // Gọi event để xóa cache
-            event(new DeleteCache($this->bed_name));
+            event(new DeleteCache($this->bedName));
             // Gọi event để thêm index vào elastic
-            event(new InsertBedIndex($data, $this->bed_name));
-            return return_data_create_success($data);
+            event(new InsertBedIndex($data, $this->bedName));
+            return returnDataCreateSuccess($data);
         } catch (\Throwable $e) {
-            return write_and_throw_error(config('params')['db_service']['error']['bed'], config('params')['db_service']['error']['bed'], $e, __FUNCTION__, __CLASS__, $this->request);
+            return writeAndThrowError(config('params')['db_service']['error']['bed'], config('params')['db_service']['error']['bed'], $e, __FUNCTION__, __CLASS__, $this->request);
         }
     }
 
-    public function updateBed($bed_name, $id, $request, $time, $app_modifier)
+    public function updateBed($bedName, $id, $request, $time, $appModifier)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
-        $data = $this->bed_repository->getById($id);
+        $data = $this->bedRepository->getById($id);
         if ($data == null) {
-            return return_not_record($id);
+            return returnNotRecord($id);
         }
         try {
-            $data = $this->bed_repository->update($request, $data, $time, $app_modifier);
+            $data = $this->bedRepository->update($request, $data, $time, $appModifier);
             // Gọi event để xóa cache
-            event(new DeleteCache($bed_name));
+            event(new DeleteCache($bedName));
             // Gọi event để thêm index vào elastic
-            event(new InsertBedIndex($data, $bed_name));
-            return return_data_update_success($data);
+            event(new InsertBedIndex($data, $bedName));
+            return returnDataUpdateSuccess($data);
         } catch (\Throwable $e) {
-            return write_and_throw_error(config('params')['db_service']['error']['bed'], config('params')['db_service']['error']['bed'], $e, __FUNCTION__, __CLASS__, $this->request);
+            return writeAndThrowError(config('params')['db_service']['error']['bed'], config('params')['db_service']['error']['bed'], $e, __FUNCTION__, __CLASS__, $this->request);
         }
     }
 
-    public function deleteBed($bed_name, $id)
+    public function deleteBed($bedName, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
-        $data = $this->bed_repository->getById($id);
+        $data = $this->bedRepository->getById($id);
         if ($data == null) {
-            return return_not_record($id);
+            return returnNotRecord($id);
         }
         try {
-            $data = $this->bed_repository->delete($data);
+            $data = $this->bedRepository->delete($data);
             // Gọi event để xóa cache
-            event(new DeleteCache($bed_name));
+            event(new DeleteCache($bedName));
             // Gọi event để xóa index trong elastic
-            event(new DeleteIndex($data, $bed_name));
-            return return_data_delete_success();
+            event(new DeleteIndex($data, $bedName));
+            return returnDataDeleteSuccess();
         } catch (\Throwable $e) {
-            return write_and_throw_error(config('params')['db_service']['error']['bed'], config('params')['db_service']['error']['bed'], $e, __FUNCTION__, __CLASS__, $this->request);
+            return writeAndThrowError(config('params')['db_service']['error']['bed'], config('params')['db_service']['error']['bed'], $e, __FUNCTION__, __CLASS__, $this->request);
         }
     }
 }
