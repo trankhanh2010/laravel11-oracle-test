@@ -65,6 +65,8 @@ class BedController extends BaseApiCacheController
             ];
             return returnDataSuccess($paramReturn, $data['data']);
         } catch (\Throwable $e) {
+            logError($e);
+            sendErrorToTelegram($e);
             return return500Error($e->getMessage());
         }
     }
@@ -92,6 +94,8 @@ class BedController extends BaseApiCacheController
             ];
             return returnDataSuccess($paramReturn, $data);
         } catch (\Throwable $e) {
+            logError($e);
+            sendErrorToTelegram($e);
             return return500Error($e->getMessage());
         }
     }
@@ -100,6 +104,8 @@ class BedController extends BaseApiCacheController
         try {
             return $this->bedService->createBed($request, $this->time, $this->appCreator, $this->appModifier);
         } catch (\Throwable $e) {
+            logError($e);
+            sendErrorToTelegram($e);
             return return500Error($e->getMessage());
         }
     }
@@ -108,6 +114,8 @@ class BedController extends BaseApiCacheController
         try {
             return $this->bedService->updateBed($this->bedName, $id, $request, $this->time, $this->appModifier);
         } catch (\Throwable $e) {
+            logError($e);
+            sendErrorToTelegram($e);
             return return500Error($e->getMessage());
         }
     }
@@ -116,6 +124,8 @@ class BedController extends BaseApiCacheController
         try {
             return $this->bedService->deleteBed($this->bedName, $id);
         } catch (\Throwable $e) {
+            logError($e);
+            sendErrorToTelegram($e);
             return return500Error($e->getMessage());
         }
     }

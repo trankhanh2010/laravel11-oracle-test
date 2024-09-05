@@ -4,17 +4,20 @@ namespace App\Listeners\Elastic;
 
 use App\Events\Elastic\DeleteIndex;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Http\Request;
 use Illuminate\Queue\InteractsWithQueue;
 
 class ElasticDeleteIndex
 {
     protected $client;
+    protected $request;
     /**
      * Create the event listener.
      */
-    public function __construct()
+    public function __construct(Request $request)
     {
         $this->client = app('Elasticsearch');
+        $this->request = $request;
     }
 
     /**
@@ -22,14 +25,16 @@ class ElasticDeleteIndex
      */
     public function handle(DeleteIndex $event): void
     {
-        $record = $event->record;
-
-        // Tạo chỉ mục hoặc cập nhật dữ liệu
-        $params = [
-            'index' => $event->model_name, // Chỉ mục bạn muốn tạo hoặc cập nhật
-            'id'    => $record->id, // ID của bản ghi
-        ];
-
-        $this->client->delete($params);
+        try {
+            $record = $event->record;
+            // Tạo chỉ mục hoặc cập nhật dữ liệu
+            $params = [
+                'index' => $event->modelName, // Chỉ mục bạn muốn tạo hoặc cập nhật
+                'id'    => $record->id, // ID của bản ghi
+            ];
+            $this->client->delete($params);
+        } catch (\Throwable $e) {
+            writeAndThrowError(config('params')['elastic']['error']['delete_index'], $e);
+        }
     }
 }

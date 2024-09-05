@@ -11,8 +11,8 @@ class LogController extends BaseApiCacheController
     function get_log(Request $request)
     {
         // Kiểm tra param và trả về lỗi nếu nó không hợp lệ
-        if ($this->check_param()) {
-            return $this->check_param();
+        if ($this->checkParam()) {
+            return $this->checkParam();
         }
 
         $filePath = storage_path('logs/laravel.log'); // Đường dẫn đến file log
@@ -76,8 +76,12 @@ class LogController extends BaseApiCacheController
 
                 $logEntry = [
                     'timestamp' => '',
+                    'api' => '',
+                    'loginname' => '',
+                    'hostname' => '',
+                    'ip' => '',
                     'log_text' => '',
-                    'detail' => null,
+                    'detail' => '...',
                     'start_line' => $startLine
                 ];
 
@@ -91,6 +95,29 @@ class LogController extends BaseApiCacheController
                     if ($jsonStartPos !== false) {
                         // Phần text trước dấu {
                         $logEntry['log_text'] = trim(substr($remainingText, 0, $jsonStartPos));
+                        // Api
+                        $pattern = '/Api:\s*(.*?)\s*; Loginame:/';
+                        preg_match($pattern, $logEntry['log_text'], $matches);
+                        $logEntry['api'] = $matches[1] ?? null;
+                        // Loginname
+                        $pattern = '/Loginame:\s*(.*?)\s*; Hostname:/';
+                        preg_match($pattern, $logEntry['log_text'], $matches);
+                        $logEntry['loginname'] = $matches[1] ?? null;
+                        // Hostname
+                        $pattern = '/Hostname:\s*(.*?)\s*; IP máy:/';
+                        preg_match($pattern, $logEntry['log_text'], $matches);
+                        $logEntry['hostname'] = $matches[1] ?? null;
+                        // Ip
+                        $pattern = '/IP máy:\s*(.*?)\s*; Mô tả:/';
+                        preg_match($pattern, $logEntry['log_text'], $matches);
+                        $logEntry['ip'] = $matches[1] ?? null;
+
+                        if($logEntry['api'] != null || $logEntry['loginname'] != null || $logEntry['hostname'] != null || $logEntry['ip'] != null){
+                            // Info
+                            $pattern = '/Mô tả:\s*(.*)$/s';
+                            preg_match($pattern, $logEntry['log_text'], $matches);
+                            $logEntry['log_text'] = $matches[1] ?? null;
+                        }
                     } else {
                         // Nếu không có dấu {, giữ nguyên toàn bộ văn bản
                         $logEntry['log_text'] = $remainingText;
@@ -114,8 +141,18 @@ class LogController extends BaseApiCacheController
 
                 $logEntry = [
                     'timestamp' => '',
+                    'api' => '',
+                    'loginname' => '',
+                    'hostname' => '',
+                    'ip' => '',
                     'log_text' => '',
-                    'detail' => null,
+                    'message' => '',
+                    'file' => '',
+                    'line' => '',
+                    'trace' => '',
+                    'url' => '',
+                    'request_data' => '',
+                    'detail' => '...',
                     'start_line' => $startLine
                 ];
 
@@ -129,9 +166,55 @@ class LogController extends BaseApiCacheController
                     if ($jsonStartPos !== false) {
                         // Phần text trước dấu {
                         $logEntry['log_text'] = trim(substr($remainingText, 0, $jsonStartPos));
+                        // Api
+                        $pattern = '/Api:\s*(.*?)\s*; Loginame:/';
+                        preg_match($pattern, $logEntry['log_text'], $matches);
+                        $logEntry['api'] = $matches[1] ?? null;
+                        // Loginname
+                        $pattern = '/Loginame:\s*(.*?)\s*; Hostname:/';
+                        preg_match($pattern, $logEntry['log_text'], $matches);
+                        $logEntry['loginname'] = $matches[1] ?? null;
+                        // Hostname
+                        $pattern = '/Hostname:\s*(.*?)\s*; IP máy:/';
+                        preg_match($pattern, $logEntry['log_text'], $matches);
+                        $logEntry['hostname'] = $matches[1] ?? null;
+                        // Ip
+                        $pattern = '/IP máy:\s*(.*?)\s*; Mô tả:/';
+                        preg_match($pattern, $logEntry['log_text'], $matches);
+                        $logEntry['ip'] = $matches[1] ?? null;
 
+                        if($logEntry['api'] != null || $logEntry['loginname'] != null || $logEntry['hostname'] != null || $logEntry['ip'] != null){
+                            // Info
+                            $pattern = '/Mô tả:\s*(.*)$/s';
+                            preg_match($pattern, $logEntry['log_text'], $matches);
+                            $logEntry['log_text'] = $matches[1] ?? null;
+                        }
                         // Phần detail từ dấu { trở đi
                         $logEntry['detail'] = trim(substr($remainingText, $jsonStartPos));
+                        // Lấy message
+                        $pattern = '/{"message":\s*"([^"]*)"\s*,\s*"file"/';
+                        preg_match($pattern, $logEntry['detail'], $matches);
+                        $logEntry['message'] = $matches[1] ?? null;
+                        // Lấy file
+                        $pattern = '/"file":\s*"([^"]*)"\s*,\s*"line"/';
+                        preg_match($pattern, $logEntry['detail'], $matches);
+                        $logEntry['file'] = $matches[1] ?? null;
+                        // Lấy line
+                        $pattern = '/"line":\s*"([^"]*)"\s*,\s*"trace"/';
+                        preg_match($pattern, $logEntry['detail'], $matches);
+                        $logEntry['line'] = $matches[1] ?? null;
+                        // Lấy trace
+                        $pattern = '/"trace":\s*"([^"]*)"\s*,\s*"url"/';
+                        preg_match($pattern, $logEntry['detail'], $matches);
+                        $logEntry['trace'] = $matches[1] ?? null;
+                        // Lấy url
+                        $pattern = '/"url":\s*"([^"]*)"\s*,\s*"request_data"/';
+                        preg_match($pattern, $logEntry['detail'], $matches);
+                        $logEntry['url'] = $matches[1] ?? null;
+                        // Lấy data
+                        $pattern = '/"request_data"\s*(.*)$/s';
+                        preg_match($pattern, $logEntry['detail'], $matches);
+                        $logEntry['request_data'] = $matches[1] ?? null;
                     } else {
                         // Nếu không có dấu {, giữ nguyên toàn bộ văn bản
                         $logEntry['log_text'] = $remainingText;
@@ -153,6 +236,6 @@ class LogController extends BaseApiCacheController
             'limit' => $this->limit,
             'total_lines' => $totalLines
         ];
-        return return_data_success($param_return, $logEntries);
+        return returnDataSuccess($param_return, $logEntries);
     }
 }

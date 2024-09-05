@@ -18,11 +18,11 @@ class DeleteIndex
      * Create a new event instance.
      */
     public $record;
-    public $model_name;
-    public function __construct($record, $model_name)
+    public $modelName;
+    public function __construct($record, $modelName)
     {
         $this->record = $record;
-        $this->model_name = $model_name;
+        $this->modelName = $modelName;
     }
     /**
      * Get the channels the event should broadcast on.

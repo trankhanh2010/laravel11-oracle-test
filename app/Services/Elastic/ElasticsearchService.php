@@ -28,7 +28,7 @@ class ElasticsearchService extends BaseApiCacheController
             $body = $this->buildArrSearchBody($query, $highlight, $paginate, $tableName);
             return $body;
         } catch (\Throwable $e) {
-            return writeAndThrowError(config('params')['elastic']['error']['elasticsearch_service'], config('params')['elastic']['error']['elasticsearch_service'], $e, __FUNCTION__, __CLASS__, $this->request );
+            return writeAndThrowError(config('params')['elastic']['error']['build_search_body'], $e);
         }
     }
     public  function executeSearch($index, $body, $id)
@@ -36,7 +36,7 @@ class ElasticsearchService extends BaseApiCacheController
         try {
             return $this->buildSearch($index, $body, $id);
         } catch (\Throwable $e) {
-            return writeAndThrowError(config('params')['elastic']['error']['elasticsearch_service'], config('params')['elastic']['error']['elasticsearch_service'], $e, __FUNCTION__, __CLASS__, $this->request );
+            return writeAndThrowError(config('params')['elastic']['error']['execute_search'], $e);
         }
     }
 
@@ -262,7 +262,7 @@ class ElasticsearchService extends BaseApiCacheController
 
             return $query;
         } catch (\Throwable $e) {
-            return writeAndThrowError(config('params')['elastic']['error']['elasticsearch_service'], config('params')['elastic']['error']['elasticsearch_service'], $e, __FUNCTION__, __CLASS__, $this->request );
+            return writeAndThrowError(config('params')['elastic']['error']['build_search_query'], $e);
         }
     }
     public function buildHighlight($searchType)
@@ -377,7 +377,7 @@ class ElasticsearchService extends BaseApiCacheController
 
             return $highlight;
         } catch (\Throwable $e) {
-            return writeAndThrowError(config('params')['elastic']['error']['elasticsearch_service'], config('params')['elastic']['error']['elasticsearch_service'], $e, __FUNCTION__, __CLASS__, $this->request );
+            return writeAndThrowError(config('params')['elastic']['error']['build_highlight'], $e);
         }
     }
     public function buildPaginateElastic()
@@ -394,7 +394,7 @@ class ElasticsearchService extends BaseApiCacheController
                 'from' => $this->start,
             ];
         } catch (\Throwable $e) {
-            return writeAndThrowError(config('params')['elastic']['error']['elasticsearch_service'], config('params')['elastic']['error']['elasticsearch_service'], $e, __FUNCTION__, __CLASS__, $this->request );
+            return writeAndThrowError(config('params')['elastic']['error']['build_paginate_elastic'], $e);
         }
     }
     public function buildSort($name)
@@ -422,7 +422,7 @@ class ElasticsearchService extends BaseApiCacheController
             $sort = $updatedSortArray;
             return $sort;
         } catch (\Throwable $e) {
-            return writeAndThrowError(config('params')['elastic']['error']['elasticsearch_service'], config('params')['elastic']['error']['elasticsearch_service'], $e, __FUNCTION__, __CLASS__, $this->request );
+            return writeAndThrowError(config('params')['elastic']['error']['build_sort'], $e);
         }
     }
     public function buildArrSearchBody($query, $highlight, $paginate, $index_name)
@@ -441,7 +441,7 @@ class ElasticsearchService extends BaseApiCacheController
             }
             return $body;
         } catch (\Throwable $e) {
-            return writeAndThrowError(config('params')['elastic']['error']['elasticsearch_service'], config('params')['elastic']['error']['elasticsearch_service'], $e, __FUNCTION__, __CLASS__, $this->request );
+            return writeAndThrowError(config('params')['elastic']['error']['build_arr_search_body'], $e);
         }
     }
     public function buildSearch($index, $body, $id = null)
@@ -474,7 +474,7 @@ class ElasticsearchService extends BaseApiCacheController
 
             return $this->client->search($data);
         } catch (\Throwable $e) {
-            return writeAndThrowError(config('params')['elastic']['error']['elasticsearch_service'], config('params')['elastic']['error']['elasticsearch_service'], $e, __FUNCTION__, __CLASS__, $this->request );
+            return writeAndThrowError(config('params')['elastic']['error']['build_search'], $e);
         }
     }
     public function applyResource($data)
@@ -483,7 +483,7 @@ class ElasticsearchService extends BaseApiCacheController
             $data = ElasticResource::collection($data['hits']['hits']);
             return $data;
         } catch (\Throwable $e) {
-            return writeAndThrowError(config('params')['elastic']['error']['elasticsearch_service'], config('params')['elastic']['error']['elasticsearch_service'], $e, __FUNCTION__, __CLASS__, $this->request );
+            return writeAndThrowError(config('params')['elastic']['error']['apply_resource'], $e);
         }
     }
     public function counting($data)
@@ -492,7 +492,7 @@ class ElasticsearchService extends BaseApiCacheController
             $count = $data['hits']['total']['value'];
             return $count;
         } catch (\Throwable $e) {
-            return writeAndThrowError(config('params')['elastic']['error']['elasticsearch_service'], config('params')['elastic']['error']['elasticsearch_service'], $e, __FUNCTION__, __CLASS__, $this->request );
+            return writeAndThrowError(config('params')['elastic']['error']['counting'], $e);
         }
     }
 
@@ -505,7 +505,7 @@ class ElasticsearchService extends BaseApiCacheController
             $data = $this->applyResource($data);
             return ['data' => $data, 'count' => $count];
         } catch (\Throwable $e) {
-            return writeAndThrowError(config('params')['elastic']['error']['elasticsearch_service'], config('params')['elastic']['error']['elasticsearch_service'], $e, __FUNCTION__, __CLASS__, $this->request );
+            return writeAndThrowError(config('params')['elastic']['error']['handle_elastic_search_search'], $e);
         }
     }
     public function handleElasticSearchGetAll($tableName)
@@ -520,10 +520,11 @@ class ElasticsearchService extends BaseApiCacheController
             });
             return $data;
         } catch (\Throwable $e) {
-            return writeAndThrowError(config('params')['elastic']['error']['elasticsearch_service'], config('params')['elastic']['error']['elasticsearch_service'], $e, __FUNCTION__, __CLASS__, $this->request );
+            return writeAndThrowError(config('params')['elastic']['error']['handle_elastic_search_get_all'], $e);
         }
     }
 
+    
     public function handleElasticSearchGetWithId($tableName, $id)
     {
         try {
@@ -535,7 +536,7 @@ class ElasticsearchService extends BaseApiCacheController
             });
             return $data;
         } catch (\Throwable $e) {
-            return writeAndThrowError(config('params')['elastic']['error']['elasticsearch_service'], config('params')['elastic']['error']['elasticsearch_service'], $e, __FUNCTION__, __CLASS__, $this->request );
+            return writeAndThrowError(config('params')['elastic']['error']['handle_elastic_search_get_with_id'], $e);
         }
     }
 }

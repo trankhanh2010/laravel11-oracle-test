@@ -724,8 +724,18 @@ if (!function_exists('getArrElasticIndexKeyword')) {
 
 // Logging
 if (!function_exists('writeAndThrowError')) {
-    function writeAndThrowError($mess_write, $mess_info, $e, $function_name, $class_name, $request)
+    function writeAndThrowError($mess_write, $e)
     {
+        $mess_write = $mess_write . ' ' . $e->getMessage();
+        throw new \Exception($mess_write, 0, $e);
+    }
+}
+
+if (!function_exists('sendErrorToTelegram')) {
+    function sendErrorToTelegram($e)
+    {
+        $request = request();
+        $mess_write = $e->getMessage();
         $token = '';
         $login_name = '';
         $ip = '';
@@ -739,12 +749,6 @@ if (!function_exists('writeAndThrowError')) {
             $hostname = gethostbyaddr($ip);
             $path =  $request->path();
         }
-        $mess_log = $path . ' ' . $login_name . ' ' . $hostname . ' ' . $ip . '. ' . $mess_write . ' Lỗi ở ' . $class_name . ' trong ' . $function_name;
-        Log::error($mess_log, [
-            'function' => $function_name,
-            'class' => $class_name,
-            'error' => $e->getMessage(),
-        ]);
         $mess_tele =
             "<b>Thông báo: </b>" . "$mess_write\n"
             . "<b>Path: </b>" . "$path\n"
@@ -752,6 +756,43 @@ if (!function_exists('writeAndThrowError')) {
             . "<b>Tên máy: </b>" . "$hostname\n"
             . "<b>IP: </b>" . "$ip\n";
         dispatch(new SendTelegramMessageJob($mess_tele));
-        return throw new \Exception($mess_info, 0, $e);
+    }
+}
+
+if (!function_exists('logError')) {
+    function logError($e)
+    {
+        $request = request();
+        $mess_write = $e->getMessage();
+        $token = '';
+        $login_name = '';
+        $ip = '';
+        $hostname = '';
+        $path = '';
+        $token_header = $request->bearerToken();
+        if ($token_header) {
+            $token = get_token_header($request, $token_header);
+            $login_name = $token->login_name;
+            $ip = $request->ip();
+            $hostname = gethostbyaddr($ip);
+            $path =  $request->path();
+        }
+        $mess_log = 'Api: ' . $path .
+            '; Loginame: ' . $login_name .
+            '; Hostname: ' . $hostname .
+            '; IP máy: ' . $ip .
+            '; Mô tả: ' . $mess_write;
+        // Lặp qua chuỗi các ngoại lệ để tìm ngoại lệ gốc
+        while ($e->getPrevious()) {
+            $e = $e->getPrevious();
+        }
+        Log::error($mess_log, [
+            'message' => $e->getMessage(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine(),
+            'trace' => $e->getTraceAsString(),
+            'url' => request()->fullUrl(),
+            'request_data' => request()->all(),
+        ]);
     }
 }

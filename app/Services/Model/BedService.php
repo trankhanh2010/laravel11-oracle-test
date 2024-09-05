@@ -32,7 +32,7 @@ class BedService extends BaseApiCacheController
             $data = $this->bedRepository->fetchData($data, $getAll, $start, $limit);
             return ['data' => $data, 'count' => $count];
         } catch (\Throwable $e) {
-            return writeAndThrowError(config('params')['db_service']['error']['bed'], config('params')['db_service']['error']['bed'], $e, __FUNCTION__, __CLASS__, $this->request);
+            return writeAndThrowError(config('params')['db_service']['error']['bed'], $e);
         }
     }
     public function handleDataBaseGetAll($bedName, $isActive, $orderBy, $orderByJoin, $getAll, $start, $limit)
@@ -48,7 +48,7 @@ class BedService extends BaseApiCacheController
             });
             return $data;
         } catch (\Throwable $e) {
-            return writeAndThrowError(config('params')['db_service']['error']['bed'], config('params')['db_service']['error']['bed'], $e, __FUNCTION__, __CLASS__, $this->request);
+            return writeAndThrowError(config('params')['db_service']['error']['bed'], $e);
         }
     }
     public function handleDataBaseGetWithId($bedName, $id, $isActive)
@@ -63,7 +63,7 @@ class BedService extends BaseApiCacheController
             });
             return $data;
         } catch (\Throwable $e) {
-            return writeAndThrowError(config('params')['db_service']['error']['bed'], config('params')['db_service']['error']['bed'], $e, __FUNCTION__, __CLASS__, $this->request);
+            return writeAndThrowError(config('params')['db_service']['error']['bed'], $e);
         }
     }
 
@@ -77,7 +77,7 @@ class BedService extends BaseApiCacheController
             event(new InsertBedIndex($data, $this->bedName));
             return returnDataCreateSuccess($data);
         } catch (\Throwable $e) {
-            return writeAndThrowError(config('params')['db_service']['error']['bed'], config('params')['db_service']['error']['bed'], $e, __FUNCTION__, __CLASS__, $this->request);
+            return writeAndThrowError(config('params')['db_service']['error']['bed'], $e);
         }
     }
 
@@ -98,7 +98,7 @@ class BedService extends BaseApiCacheController
             event(new InsertBedIndex($data, $bedName));
             return returnDataUpdateSuccess($data);
         } catch (\Throwable $e) {
-            return writeAndThrowError(config('params')['db_service']['error']['bed'], config('params')['db_service']['error']['bed'], $e, __FUNCTION__, __CLASS__, $this->request);
+            return writeAndThrowError(config('params')['db_service']['error']['bed'], $e);
         }
     }
 
@@ -119,7 +119,7 @@ class BedService extends BaseApiCacheController
             event(new DeleteIndex($data, $bedName));
             return returnDataDeleteSuccess();
         } catch (\Throwable $e) {
-            return writeAndThrowError(config('params')['db_service']['error']['bed'], config('params')['db_service']['error']['bed'], $e, __FUNCTION__, __CLASS__, $this->request);
+            return writeAndThrowError(config('params')['db_service']['error']['bed'], $e);
         }
     }
 }

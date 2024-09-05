@@ -135,18 +135,35 @@ return [
             'his_work_place',
         ],
         'error' => [
-            'elasticsearch_service' => 'Có lỗi khi thực hiện thao tác với Elastic Search!'
+            'elasticsearch_service' => 'Có lỗi khi thực hiện thao tác với Elastic Search!',
+            'build_search_body' => 'Có lỗi khi xây dựng body trong thao tác với Elastic Search!',
+            'execute_search' => 'Có lỗi khi thực thi tìm kiếm với Elastic Search!',
+            'build_search_query' => 'Có lỗi khi xây dựng query trong thao tác với Elastic Search!',
+            'build_highlight' => 'Có lỗi khi xây dựng highlight trong thao tác với Elastic Search!',
+            'build_paginate_elastic' => 'Có lỗi khi xây dựng paginate trong thao tác với Elastic Search!',
+            'build_sort' => 'Có lỗi khi xây dựng sort trong thao tác với Elastic Search!',
+            'build_arr_search_body' => 'Có lỗi khi kết hợp các phần của body trong thao tác với Elastic Search!',
+            'build_search' => 'Có lỗi trong lúc tìm kiếm với Elastic Search!',
+            'apply_resource' => 'Có lỗi khi điều chỉnh tên trường trả về với Elastic Search!',
+            'counting' => 'Có lỗi khi đếm tổng số bản ghi trả về với Elastic Search!',
+            'handle_elastic_search_search' => 'Có lỗi khi lấy danh sách Document theo từ khóa với Elastic Search!',
+            'handle_elastic_search_get_all' => 'Có lỗi khi lấy danh sách Document với Elastic Search!',
+            'handle_elastic_search_get_with_id' => 'Có lỗi khi lấy Document theo id với Elastic Search!',
+
+            'connection' => 'Có lỗi khi kết nối đến Elastic Search!',
+            'insert_index' => 'Có lỗi khi thực hiện thêm Document vào Index!',
+            'delete_index' => 'Có lỗi khi thực hiện xóa Document trong Index!',
         ]
     ],
     'db_service' => [
         'error' => [
-            'accident_body_part' => 'Có lỗi khi thực hiện thao tác với bảng AccidentBodyPart',
-            'accident_care' => 'Có lỗi khi thực hiện thao tác với bảng AccidentCare',
-            'accident_hurt_type' => 'Có lỗi khi thực hiện thao tác với bảng AccidentHurtType',
-            'accident_location' => 'Có lỗi khi thực hiện thao tác với bảng AccidentLocation',
-            'age_type' => 'Có lỗi khi thực hiện thao tác với bảng AgeType',
+            'accident_body_part' => 'Có lỗi khi thực hiện thao tác với bảng AccidentBodyPart!',
+            'accident_care' => 'Có lỗi khi thực hiện thao tác với bảng AccidentCare!',
+            'accident_hurt_type' => 'Có lỗi khi thực hiện thao tác với bảng AccidentHurtType!',
+            'accident_location' => 'Có lỗi khi thực hiện thao tác với bảng AccidentLocation!',
+            'age_type' => 'Có lỗi khi thực hiện thao tác với bảng AgeType!',
 
-            'bed' => 'Có lỗi khi thực hiện thao tác với bảng Bed',
+            'bed' => 'Có lỗi khi thực hiện thao tác với bảng Bed!',
         ]
     ]
     
