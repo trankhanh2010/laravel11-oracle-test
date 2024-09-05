@@ -3,7 +3,8 @@
 namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-
+use Throwable;
+use Illuminate\Http\Request;
 class Handler extends ExceptionHandler
 {
     /**
@@ -32,6 +33,18 @@ class Handler extends ExceptionHandler
      */
     public function register()
     {
-        //
+        $this->renderable(function (Throwable $e, Request $request) {
+            // Ghi lỗi vào log
+            logError($e);
+            // Gửi lỗi qua Telegram 
+            sendErrorToTelegram($e);
+            // Trả về lỗi theo định dạng 
+            return return500Error($e->getMessage());
+        });
+    }
+    public function render($request, Throwable $exception)
+    {
+        // Xử lý các loại exception khác nếu cần thiết
+        return parent::render($request, $exception);
     }
 }

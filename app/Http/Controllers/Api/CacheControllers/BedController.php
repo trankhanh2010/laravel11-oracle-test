@@ -39,36 +39,30 @@ class BedController extends BaseApiCacheController
         if ($this->checkParam()) {
             return $this->checkParam();
         }
-        try {
-            $keyword = $this->keyword;
-            if (($keyword != null || $this->elasticSearchType != null) && !$this->cache) {
-                if ($this->elasticSearchType != null) {
-                    $data = $this->elasticSearchService->handleElasticSearchSearch($this->bedName);
-                } else {
-                    $data = $this->bedService->handleDataBaseSearch($keyword, $this->isActive, $this->orderBy, $this->orderByJoin, $this->getAll, $this->start, $this->limit);
-                }
+        $keyword = $this->keyword;
+        if (($keyword != null || $this->elasticSearchType != null) && !$this->cache) {
+            if ($this->elasticSearchType != null) {
+                $data = $this->elasticSearchService->handleElasticSearchSearch($this->bedName);
             } else {
-                if ($this->elastic) {
-                    $data = $this->elasticSearchService->handleElasticSearchGetAll($this->bedName);
-                } else {
-                    $data = $this->bedService->handleDataBaseGetAll($this->bedName, $this->isActive, $this->orderBy, $this->orderByJoin, $this->getAll, $this->start, $this->limit);
-                }
+                $data = $this->bedService->handleDataBaseSearch($keyword, $this->isActive, $this->orderBy, $this->orderByJoin, $this->getAll, $this->start, $this->limit);
             }
-            $paramReturn = [
-                $this->getAllName => $this->getAll,
-                $this->startName => $this->getAll ? null : $this->start,
-                $this->limitName => $this->getAll ? null : $this->limit,
-                $this->countName => $data['count'],
-                $this->isActiveName => $this->isActive,
-                $this->keywordName => $this->keyword,
-                $this->orderByName => $this->orderByRequest
-            ];
-            return returnDataSuccess($paramReturn, $data['data']);
-        } catch (\Throwable $e) {
-            logError($e);
-            sendErrorToTelegram($e);
-            return return500Error($e->getMessage());
+        } else {
+            if ($this->elastic) {
+                $data = $this->elasticSearchService->handleElasticSearchGetAll($this->bedName);
+            } else {
+                $data = $this->bedService->handleDataBaseGetAll($this->bedName, $this->isActive, $this->orderBy, $this->orderByJoin, $this->getAll, $this->start, $this->limit);
+            }
         }
+        $paramReturn = [
+            $this->getAllName => $this->getAll,
+            $this->startName => $this->getAll ? null : $this->start,
+            $this->limitName => $this->getAll ? null : $this->limit,
+            $this->countName => $data['count'],
+            $this->isActiveName => $this->isActive,
+            $this->keywordName => $this->keyword,
+            $this->orderByName => $this->orderByRequest
+        ];
+        return returnDataSuccess($paramReturn, $data['data']);
     }
 
     public function show($id)
@@ -76,57 +70,33 @@ class BedController extends BaseApiCacheController
         if ($this->checkParam()) {
             return $this->checkParam();
         }
-        try {
-            if ($id !== null) {
-                $validationError = $this->validateAndCheckId($id, $this->bed, $this->bedName);
-                if ($validationError) {
-                    return $validationError;
-                }
+        if ($id !== null) {
+            $validationError = $this->validateAndCheckId($id, $this->bed, $this->bedName);
+            if ($validationError) {
+                return $validationError;
             }
-            if ($this->elastic) {
-                $data = $this->elasticSearchService->handleElasticSearchGetWithId($this->bedName, $id);
-            } else {
-                $data = $this->bedService->handleDataBaseGetWithId($this->bedName, $id, $this->isActive);
-            }
-            $paramReturn = [
-                $this->idName => $id,
-                $this->isActiveName => $this->isActive,
-            ];
-            return returnDataSuccess($paramReturn, $data);
-        } catch (\Throwable $e) {
-            logError($e);
-            sendErrorToTelegram($e);
-            return return500Error($e->getMessage());
         }
+        if ($this->elastic) {
+            $data = $this->elasticSearchService->handleElasticSearchGetWithId($this->bedName, $id);
+        } else {
+            $data = $this->bedService->handleDataBaseGetWithId($this->bedName, $id, $this->isActive);
+        }
+        $paramReturn = [
+            $this->idName => $id,
+            $this->isActiveName => $this->isActive,
+        ];
+        return returnDataSuccess($paramReturn, $data);
     }
     public function store(CreateBedRequest $request)
     {
-        try {
-            return $this->bedService->createBed($request, $this->time, $this->appCreator, $this->appModifier);
-        } catch (\Throwable $e) {
-            logError($e);
-            sendErrorToTelegram($e);
-            return return500Error($e->getMessage());
-        }
+        return $this->bedService->createBed($request, $this->time, $this->appCreator, $this->appModifier);
     }
     public function update(UpdateBedRequest $request, $id)
     {
-        try {
-            return $this->bedService->updateBed($this->bedName, $id, $request, $this->time, $this->appModifier);
-        } catch (\Throwable $e) {
-            logError($e);
-            sendErrorToTelegram($e);
-            return return500Error($e->getMessage());
-        }
+        return $this->bedService->updateBed($this->bedName, $id, $request, $this->time, $this->appModifier);
     }
     public function destroy($id)
     {
-        try {
-            return $this->bedService->deleteBed($this->bedName, $id);
-        } catch (\Throwable $e) {
-            logError($e);
-            sendErrorToTelegram($e);
-            return return500Error($e->getMessage());
-        }
+        return $this->bedService->deleteBed($this->bedName, $id);
     }
 }
