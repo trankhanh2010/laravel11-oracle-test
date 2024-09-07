@@ -94,7 +94,7 @@ class TranPatiTechController extends BaseApiCacheController
                     });
                 } else {
                     if (!is_numeric($id)) {
-                        return return_id_error($id);
+                        return returnIdError($id);
                     }
                     $check_id = $this->check_id($id, $this->tran_pati_tech, $this->tran_pati_tech_name);
                     if($check_id){
@@ -159,7 +159,7 @@ class TranPatiTechController extends BaseApiCacheController
     public function tran_pati_tech_update(UpdateTranPatiTechRequest $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->tran_pati_tech->find($id);
         if ($data == null) {
@@ -188,7 +188,7 @@ class TranPatiTechController extends BaseApiCacheController
     public function tran_pati_tech_delete(Request $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->tran_pati_tech->find($id);
         if ($data == null) {

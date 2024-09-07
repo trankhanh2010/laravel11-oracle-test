@@ -27,15 +27,15 @@ class UpdateExecuteRoleRequest extends FormRequest
     public function rules()
     {
         // Kiểm tra Id nhập vào của người dùng trước khi dùng Rule
-        if(!is_numeric($this->id)){
-            throw new HttpResponseException(return_id_error($this->id));
+        if(!is_numeric($this->execute_role)){
+            throw new HttpResponseException(returnIdError($this->execute_role));
         }
         return [
             'execute_role_code' =>      [
                 'required',
                 'string',
                 'max:10',
-                Rule::unique('App\Models\HIS\ExecuteRole')->ignore($this->id),
+                Rule::unique('App\Models\HIS\ExecuteRole')->ignore($this->execute_role),
             ],
             'execute_role_name' =>      'required|string|max:200',
             'is_title' =>               'nullable|integer|in:0,1',

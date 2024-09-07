@@ -20,7 +20,7 @@ class CheckReceptionRoomController extends BaseValidateController
             $exists = $this->reception_room::where('reception_room_code', $code);
             if ($id) {
                 if (!is_numeric($id)) {
-                    return return_id_error($id);
+                    return returnIdError($id);
                 }
                 $exists->where('id', '!=', $id);
             }

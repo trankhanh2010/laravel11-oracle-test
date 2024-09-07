@@ -26,15 +26,15 @@ class UpdateAccidentBodyPartRequest extends FormRequest
     public function rules()
     {
         // Kiểm tra Id nhập vào của người dùng trước khi dùng Rule
-        if(!is_numeric($this->id)){
-            throw new HttpResponseException(return_id_error($this->id));
+        if(!is_numeric($this->accident_body_part)){
+            throw new HttpResponseException(returnIdError($this->accident_body_part));
         }
         return [
             'accident_body_part_code' =>        [
                                                     'required',
                                                     'string',
                                                     'max:2',
-                                                    Rule::unique('App\Models\HIS\AccidentBodyPart')->ignore($this->id),
+                                                    Rule::unique('App\Models\HIS\AccidentBodyPart')->ignore($this->accident_body_part),
                                                 ],
             'accident_body_part_name' =>        'required|string|max:100',
             'is_active' =>                      'required|integer|in:0,1'

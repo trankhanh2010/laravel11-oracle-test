@@ -72,7 +72,7 @@ class EthnicController extends BaseApiCacheController
                 ];
             } else {
                 if (!is_numeric($id)) {
-                    return return_id_error($id);
+                    return returnIdError($id);
                 }
                 $check_id = $this->check_id($id, $this->ethnic, $this->ethnic_name);
                 if($check_id){
@@ -130,7 +130,7 @@ class EthnicController extends BaseApiCacheController
     public function ethnic_update(UpdateEthnicRequest $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->ethnic->find($id);
         if ($data == null) {
@@ -158,7 +158,7 @@ class EthnicController extends BaseApiCacheController
     public function ethnic_delete(Request $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->ethnic->find($id);
         if ($data == null) {

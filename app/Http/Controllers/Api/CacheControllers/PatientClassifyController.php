@@ -74,7 +74,7 @@ class PatientClassifyController extends BaseApiCacheController
                     ];
                 } else {
                     if (!is_numeric($id)) {
-                        return return_id_error($id);
+                        return returnIdError($id);
                     }
                     $check_id = $this->check_id($id, $this->patient_classify, $this->patient_classify_name);
                     if ($check_id) {
@@ -136,7 +136,7 @@ class PatientClassifyController extends BaseApiCacheController
     public function patient_classify_update(UpdatePatientClassifyRequest $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->patient_classify->find($id);
         if ($data == null) {
@@ -171,7 +171,7 @@ class PatientClassifyController extends BaseApiCacheController
     public function patient_classify_delete(Request $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->patient_classify->find($id);
         if ($data == null) {

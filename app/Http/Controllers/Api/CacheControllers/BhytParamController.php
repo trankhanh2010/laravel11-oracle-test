@@ -94,7 +94,7 @@ class BhytParamController extends BaseApiCacheController
                     });
                 } else {
                     if (!is_numeric($id)) {
-                        return return_id_error($id);
+                        return returnIdError($id);
                     }
                     $check_id = $this->check_id($id, $this->bhyt_param, $this->bhyt_param_name);
                     if($check_id){
@@ -164,7 +164,7 @@ class BhytParamController extends BaseApiCacheController
     public function bhyt_param_update(UpdateBhytParamRequest $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->bhyt_param->find($id);
         if ($data == null) {
@@ -196,7 +196,7 @@ class BhytParamController extends BaseApiCacheController
     public function bhyt_param_delete(Request $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->bhyt_param->find($id);
         if ($data == null) {

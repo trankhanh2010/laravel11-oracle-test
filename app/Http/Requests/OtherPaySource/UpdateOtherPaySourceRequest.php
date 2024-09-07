@@ -26,15 +26,15 @@ class UpdateOtherPaySourceRequest extends FormRequest
     public function rules()
     {
         // Kiểm tra Id nhập vào của người dùng trước khi dùng Rule
-        if(!is_numeric($this->id)){
-            throw new HttpResponseException(return_id_error($this->id));
+        if(!is_numeric($this->other_pay_source)){
+            throw new HttpResponseException(returnIdError($this->other_pay_source));
         }
         return [
             'other_pay_source_code' =>      [
                                                 'required',
                                                 'string',
                                                 'max:20',
-                                                Rule::unique('App\Models\HIS\OtherPaySource')->ignore($this->id),
+                                                Rule::unique('App\Models\HIS\OtherPaySource')->ignore($this->other_pay_source),
                                             ],
             'other_pay_source_name' =>      'required|string|max:200',
             'hein_pay_source_type_id' =>    'nullable|integer|in:1,2,3',

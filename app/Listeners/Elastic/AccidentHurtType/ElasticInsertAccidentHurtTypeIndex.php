@@ -23,15 +23,19 @@ class ElasticInsertAccidentHurtTypeIndex
      */
     public function handle(InsertAccidentHurtTypeIndex $event): void
     {
-        $record = $event->record;
-        $data = AccidentHurtType::get_data_from_db_to_elastic($record->id);
-        // Tạo chỉ mục hoặc cập nhật dữ liệu
-        $params = [
-            'index' => $event->model_name, // Chỉ mục bạn muốn tạo hoặc cập nhật
-            'id'    => $record->id, // ID của bản ghi
-            'body'  => $data, 
-        ];
+        try {
+            $record = $event->record;
+            $data = AccidentHurtType::getDataFromDbToElastic($record->id);
+            // Tạo chỉ mục hoặc cập nhật dữ liệu
+            $params = [
+                'index' => $event->model_name, // Chỉ mục bạn muốn tạo hoặc cập nhật
+                'id'    => $record->id, // ID của bản ghi
+                'body'  => $data,
+            ];
 
-        $this->client->index($params);
+            $this->client->index($params);
+        } catch (\Throwable $e) {
+            writeAndThrowError(config('params')['elastic']['error']['insert_index'], $e);
+        }
     }
 }

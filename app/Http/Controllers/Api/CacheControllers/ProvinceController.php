@@ -72,7 +72,7 @@ class ProvinceController extends BaseApiCacheController
                     ];
                 } else {
                     if (!is_numeric($id)) {
-                        return return_id_error($id);
+                        return returnIdError($id);
                     }
                     $check_id = $this->check_id($id, $this->province, $this->province_name);
                     if ($check_id) {
@@ -127,7 +127,7 @@ class ProvinceController extends BaseApiCacheController
     public function province_update(UpdateProvinceRequest $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->province->find($id);
         if ($data == null) {
@@ -158,7 +158,7 @@ class ProvinceController extends BaseApiCacheController
     public function province_delete(Request $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->province->find($id);
         if ($data == null) {

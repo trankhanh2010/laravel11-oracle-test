@@ -26,15 +26,15 @@ class UpdateServiceUnitRequest extends FormRequest
     public function rules()
     {
         // Kiểm tra Id nhập vào của người dùng trước khi dùng Rule
-        if(!is_numeric($this->id)){
-            throw new HttpResponseException(return_id_error($this->id));
+        if(!is_numeric($this->service_unit)){
+            throw new HttpResponseException(returnIdError($this->service_unit));
         }
         return [
             'service_unit_code' => [
                 'required',
                 'string',
                 'max:3',
-                Rule::unique('App\Models\HIS\ServiceUnit')->ignore($this->id),
+                Rule::unique('App\Models\HIS\ServiceUnit')->ignore($this->service_unit),
             ],
             'service_unit_name' =>      'required|string|max:100',
             'service_unit_symbol' =>      'nullable|string|max:10',

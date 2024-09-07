@@ -94,7 +94,7 @@ class WorkPlaceController extends BaseApiCacheController
                     });
                 } else {
                     if (!is_numeric($id)) {
-                        return return_id_error($id);
+                        return returnIdError($id);
                     }
                     $check_id = $this->check_id($id, $this->work_place, $this->work_place_name);
                     if($check_id){
@@ -167,7 +167,7 @@ class WorkPlaceController extends BaseApiCacheController
     public function work_place_update(UpdateWorkPlaceRequest $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->work_place->find($id);
         if ($data == null) {
@@ -203,7 +203,7 @@ class WorkPlaceController extends BaseApiCacheController
     public function work_place_delete(Request $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->work_place->find($id);
         if ($data == null) {

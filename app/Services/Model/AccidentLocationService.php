@@ -84,7 +84,7 @@ class AccidentLocationService extends BaseApiCacheController
     public function updateAccidentLocation($accident_location_name, $id, $request, $time, $app_modifier)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->accident_location_repository->getById($id);
         if ($data == null) {
@@ -105,7 +105,7 @@ class AccidentLocationService extends BaseApiCacheController
     public function deleteAccidentLocation($accident_location_name, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->accident_location_repository->getById($id);
         if ($data == null) {

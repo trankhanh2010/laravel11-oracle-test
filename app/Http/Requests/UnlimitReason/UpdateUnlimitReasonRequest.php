@@ -26,15 +26,15 @@ class UpdateUnlimitReasonRequest extends FormRequest
     public function rules()
     {
         // Kiểm tra Id nhập vào của người dùng trước khi dùng Rule
-        if(!is_numeric($this->id)){
-            throw new HttpResponseException(return_id_error($this->id));
+        if(!is_numeric($this->unlimit_reason)){
+            throw new HttpResponseException(returnIdError($this->unlimit_reason));
         }
         return [
             'unlimit_reason' => [
                 'required',
                 'string',
                 'max:500',
-                Rule::unique('App\Models\HIS\UnlimitReason')->ignore($this->id),
+                Rule::unique('App\Models\HIS\UnlimitReason')->ignore($this->unlimit_reason),
             ],
             'is_active' =>               'required|integer|in:0,1'
 

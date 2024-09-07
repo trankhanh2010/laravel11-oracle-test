@@ -26,15 +26,15 @@ class UpdateRoleRequest extends FormRequest
     public function rules()
     {
         // Kiểm tra Id nhập vào của người dùng trước khi dùng Rule
-        if(!is_numeric($this->id)){
-            throw new HttpResponseException(return_id_error($this->id));
+        if(!is_numeric($this->role)){
+            throw new HttpResponseException(returnIdError($this->role));
         }
         return [
             'role_code' => [
                 'required',
                 'string',
                 'max:8',
-                Rule::unique('App\Models\ACS\Role')->ignore($this->id),
+                Rule::unique('App\Models\ACS\Role')->ignore($this->role),
             ],
             'role_name' =>      'required|string|max:100',
             'is_full' =>        'nullable|integer|in:0,1',

@@ -94,7 +94,7 @@ class SupplierController extends BaseApiCacheController
                     });
                 } else {
                     if (!is_numeric($id)) {
-                        return return_id_error($id);
+                        return returnIdError($id);
                     }
                     $check_id = $this->check_id($id, $this->supplier, $this->supplier_name);
                     if($check_id){
@@ -189,7 +189,7 @@ class SupplierController extends BaseApiCacheController
     public function supplier_update(UpdateSupplierRequest $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->supplier->find($id);
         if ($data == null) {
@@ -234,7 +234,7 @@ class SupplierController extends BaseApiCacheController
     public function supplier_delete(Request $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->supplier->find($id);
         if ($data == null) {

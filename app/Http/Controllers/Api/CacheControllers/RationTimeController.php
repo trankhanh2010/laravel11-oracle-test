@@ -64,7 +64,7 @@ class RationTimeController extends BaseApiCacheController
                     $data = get_cache_full($this->ration_time, [], $this->ration_time_name . '_start_' . $this->start . '_limit_' . $this->limit . $this->order_by_tring . '_is_active_' . $this->is_active . '_get_all_' . $this->get_all, null, $this->time, $this->start, $this->limit, $this->order_by, $this->is_active, $this->get_all);
                 } else {
                     if (!is_numeric($id)) {
-                        return return_id_error($id);
+                        return returnIdError($id);
                     }
                     $check_id = $this->check_id($id, $this->ration_time, $this->ration_time_name);
                     if ($check_id) {
@@ -115,7 +115,7 @@ class RationTimeController extends BaseApiCacheController
     public function ration_time_update(UpdateRationTimeRequest $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->ration_time->find($id);
         if ($data == null) {
@@ -142,7 +142,7 @@ class RationTimeController extends BaseApiCacheController
     public function ration_time_delete(Request $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->ration_time->find($id);
         if ($data == null) {

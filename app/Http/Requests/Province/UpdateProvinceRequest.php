@@ -27,15 +27,15 @@ class UpdateProvinceRequest extends FormRequest
      */
     public function rules()
     {
-        if(!is_numeric($this->id)){
-            throw new HttpResponseException(return_id_error($this->id));
+        if(!is_numeric($this->province)){
+            throw new HttpResponseException(returnIdError($this->province));
         }
         return [
             'province_code' => [
                 'required',
                 'string',
                 'max:3',
-                Rule::unique('App\Models\SDA\Province')->ignore($this->id),
+                Rule::unique('App\Models\SDA\Province')->ignore($this->province),
             ],
             'province_name' =>                  'required|string|max:100',
             'search_code' =>                    'nullable|string|max:10',

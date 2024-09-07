@@ -95,7 +95,7 @@ class InteractionReasonController extends BaseApiCacheController
                     });
                 } else {
                     if (!is_numeric($id)) {
-                        return return_id_error($id);
+                        return returnIdError($id);
                     }
                     $check_id = $this->check_id($id, $this->interaction_reason, $this->interaction_reason_name);
                     if($check_id){
@@ -159,7 +159,7 @@ class InteractionReasonController extends BaseApiCacheController
     public function interaction_reason_update(UpdateInteractionReasonRequest $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->interaction_reason->find($id);
         if ($data == null) {
@@ -186,7 +186,7 @@ class InteractionReasonController extends BaseApiCacheController
     public function interaction_reason_delete(Request $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->interaction_reason->find($id);
         if ($data == null) {

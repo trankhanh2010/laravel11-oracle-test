@@ -125,7 +125,7 @@ class PatientTypeAllowController extends BaseApiCacheController
                     });
                 } else {
                     if (!is_numeric($id)) {
-                        return return_id_error($id);
+                        return returnIdError($id);
                     }
                     $check_id = $this->check_id($id, $this->patient_type_allow, $this->patient_type_allow_name);
                     if($check_id){

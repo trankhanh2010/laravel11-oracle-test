@@ -27,15 +27,15 @@ class UpdateIcdRequest extends FormRequest
     public function rules()
     {
         // Kiểm tra Id nhập vào của người dùng trước khi dùng Rule
-        if(!is_numeric($this->id)){
-            throw new HttpResponseException(return_id_error($this->id));
+        if(!is_numeric($this->icd)){
+            throw new HttpResponseException(returnIdError($this->icd));
         }
         return [
             'icd_code' => [
                                 'required',
                                 'string',
                                 'max:10',
-                                Rule::unique('App\Models\HIS\Icd')->ignore($this->id),
+                                Rule::unique('App\Models\HIS\Icd')->ignore($this->icd),
                             ],
             'icd_name' =>           'required|string|max:500',
             'icd_name_en' =>        'nullable|string|max:500',
@@ -176,7 +176,7 @@ class UpdateIcdRequest extends FormRequest
     {
         $validator->after(function ($validator) {
             if ($this->has('attach_icd_codes_list') && ($this->attach_icd_codes_list[0] != null)) {
-                $icd_code_parent = Icd::where('id',$this->id)->value('icd_code') ?? '';
+                $icd_code_parent = Icd::where('id',$this->icd)->value('icd_code') ?? '';
                 foreach ($this->attach_icd_codes_list as $id) {
                     if ($id == $icd_code_parent) {
                         $validator->errors()->add('attach_icd_codes', 'Không thể nhận ICD đi kèm với mã = ' . $id);

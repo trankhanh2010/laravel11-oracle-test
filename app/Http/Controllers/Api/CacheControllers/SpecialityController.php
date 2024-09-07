@@ -68,7 +68,7 @@ class SpecialityController extends BaseApiCacheController
                     $param = [];
                 } else {
                     if (!is_numeric($id)) {
-                        return return_id_error($id);
+                        return returnIdError($id);
                     }
                     $check_id = $this->check_id($id, $this->speciality, $this->speciality_name);
                     if ($check_id) {
@@ -120,7 +120,7 @@ class SpecialityController extends BaseApiCacheController
     public function speciality_update(UpdateSpecialityRequest $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->speciality->find($id);
         if ($data == null) {
@@ -150,7 +150,7 @@ class SpecialityController extends BaseApiCacheController
     public function speciality_delete(Request $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->speciality->find($id);
         if ($data == null) {

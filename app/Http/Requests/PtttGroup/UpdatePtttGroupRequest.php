@@ -27,21 +27,21 @@ class UpdatePtttGroupRequest extends FormRequest
     public function rules()
     {
         // Kiểm tra Id nhập vào của người dùng trước khi dùng Rule
-        if(!is_numeric($this->id)){
-            throw new HttpResponseException(return_id_error($this->id));
+        if(!is_numeric($this->pttt_group)){
+            throw new HttpResponseException(returnIdError($this->pttt_group));
         }
         return [
             'pttt_group_code' => [
                                         'required',
                                         'string',
                                         'max:2',
-                                        Rule::unique('App\Models\HIS\PtttGroup')->ignore($this->id),
+                                        Rule::unique('App\Models\HIS\PtttGroup')->ignore($this->pttt_group),
                                     ],
             'pttt_group_name' =>      'required|string|max:100',
             'num_order' => [
                                     'nullable',
                                     'integer',
-                                    Rule::unique('App\Models\HIS\PtttGroup')->ignore($this->id),
+                                    Rule::unique('App\Models\HIS\PtttGroup')->ignore($this->pttt_group),
                                 ],
             'remuneration' =>         'nullable|numeric|regex:/^\d{1,15}(\.\d{1,4})?$/|min:0', 
             'bed_service_type_ids' => 'nullable|string|max:4000',

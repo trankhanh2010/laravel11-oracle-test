@@ -26,15 +26,15 @@ class UpdateInteractionReasonRequest extends FormRequest
     public function rules()
     {
         // Kiểm tra Id nhập vào của người dùng trước khi dùng Rule
-        if(!is_numeric($this->id)){
-            throw new HttpResponseException(return_id_error($this->id));
+        if(!is_numeric($this->interaction_reason)){
+            throw new HttpResponseException(returnIdError($this->interaction_reason));
         }
         return [
             'interaction_reason_code' => [
                             'required',
                             'string',
                             'max:10',
-                            Rule::unique('App\Models\HIS\InteractionReason')->ignore($this->id),
+                            Rule::unique('App\Models\HIS\InteractionReason')->ignore($this->interaction_reason),
                         ],
             'interaction_reason_name' =>      'required|string|max:1000',
             'is_active' =>               'required|integer|in:0,1'

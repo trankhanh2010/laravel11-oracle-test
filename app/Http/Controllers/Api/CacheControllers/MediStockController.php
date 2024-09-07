@@ -86,7 +86,7 @@ class MediStockController extends BaseApiCacheController
                 } else {
                     if ($id != 'deleted') {
                         if (!is_numeric($id)) {
-                            return return_id_error($id);
+                            return returnIdError($id);
                         }
                         $check_id = $this->check_id($id, $this->medi_stock, $this->medi_stock_name);
                         if ($check_id) {
@@ -124,7 +124,7 @@ class MediStockController extends BaseApiCacheController
     public function medi_stock_restore($id = null, Request $request)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->medi_stock::withDeleted()->find($id);
         if ($data == null) {
@@ -255,7 +255,7 @@ class MediStockController extends BaseApiCacheController
     public function medi_stock_update(UpdateMediStockRequest $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->medi_stock->find($id);
         if ($data == null) {
@@ -357,7 +357,7 @@ class MediStockController extends BaseApiCacheController
     public function medi_stock_delete(Request $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->medi_stock->find($id);
         if ($data == null) {

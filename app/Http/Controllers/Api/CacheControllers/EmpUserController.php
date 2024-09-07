@@ -75,7 +75,7 @@ class EmpUserController extends BaseApiCacheController
                 ];
             } else {
                 if (!is_numeric($id)) {
-                    return return_id_error($id);
+                    return returnIdError($id);
                 }
                 $check_id = $this->check_id($id, $this->emp_user, $this->emp_user_name);
                 if($check_id){
@@ -176,7 +176,7 @@ class EmpUserController extends BaseApiCacheController
     public function emp_user_update(UpdateEmployeeRequest $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->emp_user->find($id);
         if ($data == null) {
@@ -243,7 +243,7 @@ class EmpUserController extends BaseApiCacheController
     public function emp_user_delete(Request $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->emp_user->find($id);
         if ($data == null) {

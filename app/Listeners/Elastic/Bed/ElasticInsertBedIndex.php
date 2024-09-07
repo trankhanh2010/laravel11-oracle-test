@@ -11,14 +11,12 @@ use Illuminate\Queue\InteractsWithQueue;
 class ElasticInsertBedIndex
 {
     protected $client;
-    protected $request;
     /**
      * Create the event listener.
      */
-    public function __construct(Request $request)
+    public function __construct()
     {
         $this->client = app('Elasticsearch');
-        $this->request = $request;
     }
 
     /**

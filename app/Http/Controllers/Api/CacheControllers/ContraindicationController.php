@@ -94,7 +94,7 @@ class ContraindicationController extends BaseApiCacheController
                     });
                 } else {
                     if (!is_numeric($id)) {
-                        return return_id_error($id);
+                        return returnIdError($id);
                     }
                     $check_id = $this->check_id($id, $this->contraindication, $this->contraindication_name);
                     if($check_id){
@@ -158,7 +158,7 @@ class ContraindicationController extends BaseApiCacheController
     public function contraindication_update(UpdateContraindicationRequest $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->contraindication->find($id);
         if ($data == null) {
@@ -185,7 +185,7 @@ class ContraindicationController extends BaseApiCacheController
     public function contraindication_delete(Request $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->contraindication->find($id);
         if ($data == null) {

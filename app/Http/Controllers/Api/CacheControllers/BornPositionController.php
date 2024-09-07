@@ -94,7 +94,7 @@ class BornPositionController extends BaseApiCacheController
                     });
                 } else {
                     if (!is_numeric($id)) {
-                        return return_id_error($id);
+                        return returnIdError($id);
                     }
                     $check_id = $this->check_id($id, $this->born_position, $this->born_position_name);
                     if($check_id){
@@ -158,7 +158,7 @@ class BornPositionController extends BaseApiCacheController
     public function born_position_update(UpdateBornPositionRequest $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->born_position->find($id);
         if ($data == null) {
@@ -185,7 +185,7 @@ class BornPositionController extends BaseApiCacheController
     public function born_position_delete(Request $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->born_position->find($id);
         if ($data == null) {

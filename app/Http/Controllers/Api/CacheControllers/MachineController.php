@@ -67,7 +67,7 @@ class MachineController extends BaseApiCacheController
                     $data = get_cache_full($this->machine, $param, $this->machine_name . '_start_' . $this->start . '_limit_' . $this->limit . $this->order_by_tring . '_is_active_' . $this->is_active . '_get_all_' . $this->get_all, null, $this->time, $this->start, $this->limit, $this->order_by, $this->is_active, $this->get_all);
                 } else {
                     if (!is_numeric($id)) {
-                        return return_id_error($id);
+                        return returnIdError($id);
                     }
                     $check_id = $this->check_id($id, $this->machine, $this->machine_name);
                     if ($check_id) {
@@ -135,7 +135,7 @@ class MachineController extends BaseApiCacheController
     public function machine_update(UpdateMachineRequest $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->machine->find($id);
         if ($data == null) {
@@ -180,7 +180,7 @@ class MachineController extends BaseApiCacheController
     public function machine_delete(Request $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->machine->find($id);
         if ($data == null) {

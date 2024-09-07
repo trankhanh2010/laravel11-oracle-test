@@ -26,15 +26,15 @@ class UpdateAccidentHurtTypeRequest extends FormRequest
     public function rules()
     {
         // Kiểm tra Id nhập vào của người dùng trước khi dùng Rule
-        if(!is_numeric($this->id)){
-            throw new HttpResponseException(return_id_error($this->id));
+        if(!is_numeric($this->accident_hurt_type)){
+            throw new HttpResponseException(returnIdError($this->accident_hurt_type));
         }
         return [
             'accident_hurt_type_code' =>        [
                                                     'required',
                                                     'string',
                                                     'max:10',
-                                                    Rule::unique('App\Models\HIS\AccidentHurtType')->ignore($this->id),
+                                                    Rule::unique('App\Models\HIS\AccidentHurtType')->ignore($this->accident_hurt_type),
                                                 ],
             'accident_hurt_type_name' =>        'required|string|max:100',
             'is_active' =>                      'required|integer|in:0,1'

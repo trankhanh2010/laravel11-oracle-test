@@ -94,7 +94,7 @@ class AwarenessController extends BaseApiCacheController
                     });
                 } else {
                     if (!is_numeric($id)) {
-                        return return_id_error($id);
+                        return returnIdError($id);
                     }
                     $check_id = $this->check_id($id, $this->awareness, $this->awareness_name);
                     if($check_id){
@@ -158,7 +158,7 @@ class AwarenessController extends BaseApiCacheController
     public function awareness_update(UpdateAwarenessRequest $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->awareness->find($id);
         if ($data == null) {
@@ -185,7 +185,7 @@ class AwarenessController extends BaseApiCacheController
     public function awareness_delete(Request $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->awareness->find($id);
         if ($data == null) {

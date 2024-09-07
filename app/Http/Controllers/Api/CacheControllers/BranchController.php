@@ -66,7 +66,7 @@ class BranchController extends BaseApiCacheController
                 $param = [];
             } else {
                 if (!is_numeric($id)) {
-                    return return_id_error($id);
+                    return returnIdError($id);
                 }
                 $check_id = $this->check_id($id, $this->branch, $this->branch_name);
                 if($check_id){
@@ -153,7 +153,7 @@ class BranchController extends BaseApiCacheController
     public function branch_update(UpdateBranchRequest $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->branch->find($id);
         if ($data == null) {
@@ -216,7 +216,7 @@ class BranchController extends BaseApiCacheController
     public function branch_delete(Request $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->branch->find($id);
         if ($data == null) {

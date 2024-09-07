@@ -94,7 +94,7 @@ class FileTypeController extends BaseApiCacheController
                     });
                 } else {
                     if (!is_numeric($id)) {
-                        return return_id_error($id);
+                        return returnIdError($id);
                     }
                     $check_id = $this->check_id($id, $this->file_type, $this->file_type_name);
                     if($check_id){
@@ -171,7 +171,7 @@ class FileTypeController extends BaseApiCacheController
     public function file_type_update(UpdateFileTypeRequest $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->file_type->find($id);
         if ($data == null) {
@@ -198,7 +198,7 @@ class FileTypeController extends BaseApiCacheController
     public function file_type_delete(Request $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->file_type->find($id);
         if ($data == null) {

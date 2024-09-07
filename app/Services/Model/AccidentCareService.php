@@ -12,114 +12,114 @@ use App\Repositories\AccidentCareRepository;
 
 class AccidentCareService extends BaseApiCacheController
 {
-    protected $accident_care_repository;
+    protected $accidentCareRepository;
     protected $request;
-    public function __construct(Request $request, AccidentCareRepository $accident_care_repository)
+    public function __construct(Request $request, AccidentCareRepository $accidentCareRepository)
     {
         parent::__construct($request);
+        $this->accidentCareRepository = $accidentCareRepository;
         $this->request = $request;
-        $this->accident_care_repository = $accident_care_repository;
     }
 
-    public function handleDataBaseSearch($keyword, $is_active, $order_by, $order_by_join, $get_all, $start, $limit)
+    public function handleDataBaseSearch($keyword, $isActive, $orderBy, $orderByJoin, $getAll, $start, $limit)
     {
         try {
-            $data = $this->accident_care_repository->applyJoins();
-            $data = $this->accident_care_repository->applyKeywordFilter($data, $keyword);
-            $data = $this->accident_care_repository->applyIsActiveFilter($data, $is_active);
+            $data = $this->accidentCareRepository->applyJoins();
+            $data = $this->accidentCareRepository->applyKeywordFilter($data, $keyword);
+            $data = $this->accidentCareRepository->applyIsActiveFilter($data, $isActive);
             $count = $data->count();
-            $data = $this->accident_care_repository->applyOrdering($data, $order_by, $order_by_join);
-            $data = $this->accident_care_repository->fetchData($data, $get_all, $start, $limit);
+            $data = $this->accidentCareRepository->applyOrdering($data, $orderBy, $orderByJoin);
+            $data = $this->accidentCareRepository->fetchData($data, $getAll, $start, $limit);
             return ['data' => $data, 'count' => $count];
         } catch (\Throwable $e) {
-            return write_and_throw_error(config('params')['db_service']['error']['accident_care'], config('params')['db_service']['error']['accident_care'], $e, __FUNCTION__, __CLASS__, $this->request);
+            return writeAndThrowError(config('params')['db_service']['error']['accident_care'], $e);
         }
     }
-    public function handleDataBaseGetAll($accident_care_name, $is_active, $order_by, $order_by_join, $get_all, $start, $limit)
+    public function handleDataBaseGetAll($accidentCareName, $isActive, $orderBy, $orderByJoin, $getAll, $start, $limit)
     {
         try {
-            $data = Cache::remember($accident_care_name . '_start_' . $this->start . '_limit_' . $this->limit . $this->order_by_tring . '_is_active_' . $this->is_active . '_get_all_' . $this->get_all, $this->time, function () use ($is_active, $order_by, $order_by_join, $get_all, $start, $limit) {
-                $data = $this->accident_care_repository->applyJoins();
-                $data = $this->accident_care_repository->applyIsActiveFilter($data, $is_active);
+            $data = Cache::remember($accidentCareName . '_start_' . $this->start . '_limit_' . $this->limit . $this->orderByString . '_is_active_' . $this->isActive . '_get_all_' . $this->getAll, $this->time, function () use ($isActive, $orderBy, $orderByJoin, $getAll, $start, $limit) {
+                $data = $this->accidentCareRepository->applyJoins();
+                $data = $this->accidentCareRepository->applyIsActiveFilter($data, $isActive);
                 $count = $data->count();
-                $data = $this->accident_care_repository->applyOrdering($data, $order_by, $order_by_join);
-                $data = $this->accident_care_repository->fetchData($data, $get_all, $start, $limit);
+                $data = $this->accidentCareRepository->applyOrdering($data, $orderBy, $orderByJoin);
+                $data = $this->accidentCareRepository->fetchData($data, $getAll, $start, $limit);
                 return ['data' => $data, 'count' => $count];
             });
             return $data;
         } catch (\Throwable $e) {
-            return write_and_throw_error(config('params')['db_service']['error']['accident_care'], config('params')['db_service']['error']['accident_care'], $e, __FUNCTION__, __CLASS__, $this->request);
+            return writeAndThrowError(config('params')['db_service']['error']['accident_care'], $e);
         }
     }
-    public function handleDataBaseGetWithId($accident_care_name, $id, $is_active)
+    public function handleDataBaseGetWithId($accidentCareName, $id, $isActive)
     {
         try {
-            $data = Cache::remember($accident_care_name . '_' . $id . '_is_active_' . $this->is_active, $this->time, function () use ($id, $is_active) {
-                $data = $this->accident_care_repository->applyJoins()
+            $data = Cache::remember($accidentCareName . '_' . $id . '_is_active_' . $this->isActive, $this->time, function () use ($id, $isActive) {
+                $data = $this->accidentCareRepository->applyJoins()
                     ->where('his_accident_care.id', $id);
-                $data = $this->accident_care_repository->applyIsActiveFilter($data, $is_active);
+                $data = $this->accidentCareRepository->applyIsActiveFilter($data, $isActive);
                 $data = $data->first();
                 return $data;
             });
             return $data;
         } catch (\Throwable $e) {
-            return write_and_throw_error(config('params')['db_service']['error']['accident_care'], config('params')['db_service']['error']['accident_care'], $e, __FUNCTION__, __CLASS__, $this->request);
+            return writeAndThrowError(config('params')['db_service']['error']['accident_care'], $e);
         }
     }
 
-    public function createAccidentCare($request, $time, $app_creator, $app_modifier)
+    public function createAccidentCare($request, $time, $appCreator, $appModifier)
     {
         try {
-            $data = $this->accident_care_repository->create($request, $time, $app_creator, $app_modifier);
+            $data = $this->accidentCareRepository->create($request, $time, $appCreator, $appModifier);
             // Gọi event để xóa cache
-            event(new DeleteCache($this->accident_care_name));
+            event(new DeleteCache($this->accidentCareName));
             // Gọi event để thêm index vào elastic
-            event(new InsertAccidentCareIndex($data, $this->accident_care_name));
-            return return_data_create_success($data);
+            event(new InsertAccidentCareIndex($data, $this->accidentCareName));
+            return returnDataCreateSuccess($data);
         } catch (\Throwable $e) {
-            return write_and_throw_error(config('params')['db_service']['error']['accident_care'], config('params')['db_service']['error']['accident_care'], $e, __FUNCTION__, __CLASS__, $this->request);
+            return writeAndThrowError(config('params')['db_service']['error']['accident_care'], $e);
         }
     }
 
-    public function updateAccidentCare($accident_care_name, $id, $request, $time, $app_modifier)
+    public function updateAccidentCare($accidentCareName, $id, $request, $time, $appModifier)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
-        $data = $this->accident_care_repository->getById($id);
+        $data = $this->accidentCareRepository->getById($id);
         if ($data == null) {
-            return return_not_record($id);
+            return returnNotRecord($id);
         }
         try {
-            $data = $this->accident_care_repository->update($request, $data, $time, $app_modifier);
+            $data = $this->accidentCareRepository->update($request, $data, $time, $appModifier);
             // Gọi event để xóa cache
-            event(new DeleteCache($accident_care_name));
+            event(new DeleteCache($accidentCareName));
             // Gọi event để thêm index vào elastic
-            event(new InsertAccidentCareIndex($data, $accident_care_name));
-            return return_data_update_success($data);
+            event(new InsertAccidentCareIndex($data, $accidentCareName));
+            return returnDataUpdateSuccess($data);
         } catch (\Throwable $e) {
-            return write_and_throw_error(config('params')['db_service']['error']['accident_care'], config('params')['db_service']['error']['accident_care'], $e, __FUNCTION__, __CLASS__, $this->request);
+            return writeAndThrowError(config('params')['db_service']['error']['accident_care'], $e);
         }
     }
 
-    public function deleteAccidentCare($accident_care_name, $id)
+    public function deleteAccidentCare($accidentCareName, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
-        $data = $this->accident_care_repository->getById($id);
+        $data = $this->accidentCareRepository->getById($id);
         if ($data == null) {
-            return return_not_record($id);
+            return returnNotRecord($id);
         }
         try {
-            $data = $this->accident_care_repository->delete($data);
+            $data = $this->accidentCareRepository->delete($data);
             // Gọi event để xóa cache
-            event(new DeleteCache($accident_care_name));
+            event(new DeleteCache($accidentCareName));
             // Gọi event để xóa index trong elastic
-            event(new DeleteIndex($data, $accident_care_name));
-            return return_data_delete_success();
+            event(new DeleteIndex($data, $accidentCareName));
+            return returnDataDeleteSuccess();
         } catch (\Throwable $e) {
-            return write_and_throw_error(config('params')['db_service']['error']['accident_care'], config('params')['db_service']['error']['accident_care'], $e, __FUNCTION__, __CLASS__, $this->request);
+            return writeAndThrowError(config('params')['db_service']['error']['accident_care'], $e);
         }
     }
 }

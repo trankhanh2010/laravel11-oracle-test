@@ -26,15 +26,15 @@ class UpdateManufacturerRequest extends FormRequest
     public function rules()
     {
         // Kiểm tra Id nhập vào của người dùng trước khi dùng Rule
-        if(!is_numeric($this->id)){
-            throw new HttpResponseException(return_id_error($this->id));
+        if(!is_numeric($this->manufacturer)){
+            throw new HttpResponseException(returnIdError($this->manufacturer));
         }
         return [
             'manufacturer_code' => [
                                     'required',
                                     'string',
                                     'max:6',
-                                    Rule::unique('App\Models\HIS\Manufacturer')->ignore($this->id),
+                                    Rule::unique('App\Models\HIS\Manufacturer')->ignore($this->manufacturer),
                                 ],
             'manufacturer_name' =>      'required|string|max:1000',
             'manufacturer_short_name' =>    'nullable|string|max:50',

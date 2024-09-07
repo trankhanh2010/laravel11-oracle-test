@@ -94,7 +94,7 @@ class UnlimitReasonController extends BaseApiCacheController
                     });
                 } else {
                     if (!is_numeric($id)) {
-                        return return_id_error($id);
+                        return returnIdError($id);
                     }
                     $check_id = $this->check_id($id, $this->unlimit_reason, $this->unlimit_reason_name);
                     if($check_id){
@@ -157,7 +157,7 @@ class UnlimitReasonController extends BaseApiCacheController
     public function unlimit_reason_update(UpdateUnlimitReasonRequest $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->unlimit_reason->find($id);
         if ($data == null) {
@@ -183,7 +183,7 @@ class UnlimitReasonController extends BaseApiCacheController
     public function unlimit_reason_delete(Request $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->unlimit_reason->find($id);
         if ($data == null) {

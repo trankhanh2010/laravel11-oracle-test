@@ -26,15 +26,15 @@ class UpdateContraindicationRequest extends FormRequest
     public function rules()
     {
         // Kiểm tra Id nhập vào của người dùng trước khi dùng Rule
-        if(!is_numeric($this->id)){
-            throw new HttpResponseException(return_id_error($this->id));
+        if(!is_numeric($this->contraindication)){
+            throw new HttpResponseException(returnIdError($this->contraindication));
         }
         return [
             'contraindication_code' =>        [
                                             'required',
                                             'string',
                                             'max:10',
-                                            Rule::unique('App\Models\HIS\Contraindication')->ignore($this->id),
+                                            Rule::unique('App\Models\HIS\Contraindication')->ignore($this->contraindication),
                                         ],
             'contraindication_name' =>      'required|string|max:500',
             'is_active' =>               'required|integer|in:0,1'

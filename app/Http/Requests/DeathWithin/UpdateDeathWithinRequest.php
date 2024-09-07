@@ -26,15 +26,15 @@ class UpdateDeathWithinRequest extends FormRequest
     public function rules()
     {
         // Kiểm tra Id nhập vào của người dùng trước khi dùng Rule
-        if(!is_numeric($this->id)){
-            throw new HttpResponseException(return_id_error($this->id));
+        if(!is_numeric($this->death_within)){
+            throw new HttpResponseException(returnIdError($this->death_within));
         }
         return [
             'death_within_code' =>        [
                                                 'required',
                                                 'string',
                                                 'max:10',
-                                                Rule::unique('App\Models\HIS\DeathWithin')->ignore($this->id),
+                                                Rule::unique('App\Models\HIS\DeathWithin')->ignore($this->death_within),
                                             ],
             'death_within_name' =>      'required|string|max:500',
             'is_active' =>               'required|integer|in:0,1'

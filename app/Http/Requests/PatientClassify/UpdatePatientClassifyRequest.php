@@ -28,15 +28,15 @@ class UpdatePatientClassifyRequest extends FormRequest
     public function rules()
     {
         // Kiểm tra Id nhập vào của người dùng trước khi dùng Rule
-        if(!is_numeric($this->id)){
-            throw new HttpResponseException(return_id_error($this->id));
+        if(!is_numeric($this->patient_classify)){
+            throw new HttpResponseException(returnIdError($this->patient_classify));
         }
         return [
             'patient_classify_code' =>      [
                                                 'required',
                                                 'string',
                                                 'max:10',
-                                                Rule::unique('App\Models\HIS\PatientClassify')->ignore($this->id),
+                                                Rule::unique('App\Models\HIS\PatientClassify')->ignore($this->patient_classify),
                                             ],
             'patient_classify_name' =>      'required|string|max:100',
             'display_color' =>              'required|string|max:20|rgb_color',

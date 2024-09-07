@@ -137,7 +137,7 @@ class AreaController extends BaseApiCacheController
                     });
                 } else {
                     if (!is_numeric($id)) {
-                        return return_id_error($id);
+                        return returnIdError($id);
                     }
                     $check_id = $this->check_id($id, $this->area, $this->area_name);
                     if ($check_id) {
@@ -198,7 +198,7 @@ class AreaController extends BaseApiCacheController
     public function area_update(UpdateAreaRequest $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->area->find($id);
         if ($data == null) {
@@ -228,7 +228,7 @@ class AreaController extends BaseApiCacheController
     public function area_delete(Request $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->area->find($id);
         if ($data == null) {

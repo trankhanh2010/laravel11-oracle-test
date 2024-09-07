@@ -233,7 +233,7 @@ class ServicePatyController extends BaseApiCacheController
                     });
                 } else {
                     if (!is_numeric($id)) {
-                        return return_id_error($id);
+                        return returnIdError($id);
                     }
                     $check_id = $this->check_id($id, $this->service_paty, $this->service_paty_name);
                     if ($check_id) {

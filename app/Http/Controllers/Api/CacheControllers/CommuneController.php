@@ -101,7 +101,7 @@ class CommuneController extends BaseApiCacheController
                 });
             } else {
                 if (!is_numeric($id)) {
-                    return return_id_error($id);
+                    return returnIdError($id);
                 }
                 $check_id = $this->check_id($id, $this->commune, $this->commune_name);
                 if($check_id){
@@ -170,7 +170,7 @@ class CommuneController extends BaseApiCacheController
     public function commune_update(UpdateCommuneRequest $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->commune->find($id);
         if ($data == null) {
@@ -203,7 +203,7 @@ class CommuneController extends BaseApiCacheController
     public function commune_delete(Request $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->commune->find($id);
         if ($data == null) {

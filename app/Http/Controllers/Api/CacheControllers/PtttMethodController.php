@@ -102,7 +102,7 @@ class PtttMethodController extends BaseApiCacheController
                     });
                 } else {
                     if (!is_numeric($id)) {
-                        return return_id_error($id);
+                        return returnIdError($id);
                     }
                     $check_id = $this->check_id($id, $this->pttt_method, $this->pttt_method_name);
                     if ($check_id) {
@@ -159,7 +159,7 @@ class PtttMethodController extends BaseApiCacheController
     public function pttt_method_update(UpdatePtttMethodRequest $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->pttt_method->find($id);
         if ($data == null) {
@@ -189,7 +189,7 @@ class PtttMethodController extends BaseApiCacheController
     public function pttt_method_delete(Request $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->pttt_method->find($id);
         if ($data == null) {

@@ -27,15 +27,15 @@ class UpdateSpecialityRequest extends FormRequest
     public function rules()
     {
         // Kiểm tra Id nhập vào của người dùng trước khi dùng Rule
-        if(!is_numeric($this->id)){
-            throw new HttpResponseException(return_id_error($this->id));
+        if(!is_numeric($this->speciality)){
+            throw new HttpResponseException(returnIdError($this->speciality));
         }
         return [
             'speciality_code' =>              [
                 'required',
                 'string',
                 'max:50',
-                Rule::unique('App\Models\HIS\Speciality')->ignore($this->id),
+                Rule::unique('App\Models\HIS\Speciality')->ignore($this->speciality),
             ],
             'speciality_name' =>              'required|string|max:200',
             'bhyt_limit' =>                   'nullable|integer|min:0',

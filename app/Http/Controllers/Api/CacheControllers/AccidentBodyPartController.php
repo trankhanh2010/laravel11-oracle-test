@@ -14,103 +14,85 @@ use Illuminate\Http\Request;
 
 class AccidentBodyPartController extends BaseApiCacheController
 {
-    protected $accident_body_part_service;
-    public function __construct(Request $request, ElasticsearchService $elastic_search_service, AccidentBodyPartService $accident_body_part_service)
+    protected $accidentBodyPartService;
+    public function __construct(Request $request, ElasticsearchService $elasticSearchService, AccidentBodyPartService $accidentBodyPartService, AccidentBodyPart $accidentBodyPart)
     {
         parent::__construct($request); // Gọi constructor của BaseController
-        $this->elastic_search_service = $elastic_search_service;
-        $this->accident_body_part_service = $accident_body_part_service;
-        $this->accident_body_part = new AccidentBodyPart();
+        $this->elasticSearchService = $elasticSearchService;
+        $this->accidentBodyPartService = $accidentBodyPartService;
+        $this->accidentBodyPart = $accidentBodyPart;
         // Kiểm tra tên trường trong bảng
-        if ($this->order_by != null) {
-            $this->order_by_join = [];
-            $columns = $this->get_columns_table($this->accident_body_part);
-            $this->order_by = $this->check_order_by($this->order_by, $columns, $this->order_by_join ?? []);
-            $this->order_by_tring = arrayToCustomString($this->order_by);
-        }
-    }
-
-    public function accident_body_part($id = null)
-    {
-        // Kiểm tra param và trả về lỗi nếu nó không hợp lệ
-        if ($this->check_param()) {
-            return $this->check_param();
-        }
-        try {
-            $keyword = $this->keyword;
-            if (($keyword != null || $this->elastic_search_type != null) && !$this->cache) {
-                if ($this->elastic_search_type != null) {
-                    $data = $this->elastic_search_service->handleElasticSearchSearch($this->accident_body_part_name);
-                    $count = $data['count'];
-                    $data = $data['data'];
-                } else {
-                    $data = $this->accident_body_part_service->handleDataBaseSearch($keyword, $this->is_active, $this->order_by, $this->order_by_join, $this->get_all, $this->start, $this->limit);
-                    $count = $data['count'];
-                    $data = $data['data'];
-                }
-            } else {
-                if ($id == null) {
-                    if ($this->elastic) {
-                        $data = $this->elastic_search_service->handleElasticSearchGetAll($this->accident_body_part_name);
-                    } else {
-                        $data = $this->accident_body_part_service->handleDataBaseGetAll($this->accident_body_part_name, $this->is_active, $this->order_by, $this->order_by_join, $this->get_all, $this->start, $this->limit);
-                    }
-                } else {
-                    if ($id !== null) {
-                        $validationError = $this->validateAndCheckId($id, $this->accident_body_part, $this->accident_body_part_name);
-                        if ($validationError) {
-                            return $validationError;
-                        }
-                    }
-                    if ($this->elastic) {
-                        $data = $this->elastic_search_service->handleElasticSearchGetWithId($this->accident_body_part_name, $id);
-                    } else {
-                        $data = $this->accident_body_part_service->handleDataBaseGetWithId($this->accident_body_part_name, $id, $this->is_active);
-                    }
-                }
-            }
-            $param_return = [
-                $this->get_all_name => $this->get_all,
-                $this->start_name => ($this->get_all || !is_null($id)) ? null : $this->start,
-                $this->limit_name => ($this->get_all || !is_null($id)) ? null : $this->limit,
-                $this->count_name => $count ?? ($data['count'] ?? null),
-                $this->is_active_name => $this->is_active,
-                $this->keyword_name => $this->keyword,
-                $this->order_by_name => $this->order_by_request
+        if ($this->orderBy != null) {
+            $this->orderByJoin = [
             ];
-            return return_data_success($param_return, $data ?? ($data['data'] ?? null) ?? null);
-        } catch (\Throwable $e) {
-            // Xử lý lỗi và trả về phản hồi lỗi
-            return return_500_error($e->getMessage());
+            $columns = $this->getColumnsTable($this->accidentBodyPart);
+            $this->orderBy = $this->checkOrderBy($this->orderBy, $columns, $this->orderByJoin ?? []);
+            $this->orderByString = arrayToCustomString($this->orderBy);
         }
     }
-    public function accident_body_part_create(CreateAccidentBodyPartRequest $request)
+    public function index()
     {
-        try {
-            return $this->accident_body_part_service->createAccidentBodyPart($request, $this->time, $this->app_creator, $this->app_modifier);
-        } catch (\Throwable $e) {
-            // Xử lý lỗi và trả về phản hồi lỗi
-            return return_500_error($e->getMessage());
+        if ($this->checkParam()) {
+            return $this->checkParam();
         }
+        $keyword = $this->keyword;
+        if (($keyword != null || $this->elasticSearchType != null) && !$this->cache) {
+            if ($this->elasticSearchType != null) {
+                $data = $this->elasticSearchService->handleElasticSearchSearch($this->accidentBodyPartName);
+            } else {
+                $data = $this->accidentBodyPartService->handleDataBaseSearch($keyword, $this->isActive, $this->orderBy, $this->orderByJoin, $this->getAll, $this->start, $this->limit);
+            }
+        } else {
+            if ($this->elastic) {
+                $data = $this->elasticSearchService->handleElasticSearchGetAll($this->accidentBodyPartName);
+            } else {
+                $data = $this->accidentBodyPartService->handleDataBaseGetAll($this->accidentBodyPartName, $this->isActive, $this->orderBy, $this->orderByJoin, $this->getAll, $this->start, $this->limit);
+            }
+        }
+        $paramReturn = [
+            $this->getAllName => $this->getAll,
+            $this->startName => $this->getAll ? null : $this->start,
+            $this->limitName => $this->getAll ? null : $this->limit,
+            $this->countName => $data['count'],
+            $this->isActiveName => $this->isActive,
+            $this->keywordName => $this->keyword,
+            $this->orderByName => $this->orderByRequest
+        ];
+        return returnDataSuccess($paramReturn, $data['data']);
     }
 
-    public function accident_body_part_update(UpdateAccidentBodyPartRequest $request, $id)
+    public function show($id)
     {
-        try {
-            return $this->accident_body_part_service->updateAccidentBodyPart($this->accident_body_part_name, $id, $request, $this->time, $this->app_modifier);
-        } catch (\Throwable $e) {
-            // Xử lý lỗi và trả về phản hồi lỗi
-            return return_500_error($e->getMessage());
+        if ($this->checkParam()) {
+            return $this->checkParam();
         }
+        if ($id !== null) {
+            $validationError = $this->validateAndCheckId($id, $this->accidentBodyPart, $this->accidentBodyPartName);
+            if ($validationError) {
+                return $validationError;
+            }
+        }
+        if ($this->elastic) {
+            $data = $this->elasticSearchService->handleElasticSearchGetWithId($this->accidentBodyPartName, $id);
+        } else {
+            $data = $this->accidentBodyPartService->handleDataBaseGetWithId($this->accidentBodyPartName, $id, $this->isActive);
+        }
+        $paramReturn = [
+            $this->idName => $id,
+            $this->isActiveName => $this->isActive,
+        ];
+        return returnDataSuccess($paramReturn, $data);
     }
-
-    public function accident_body_part_delete(Request $request, $id)
+    public function store(CreateAccidentBodyPartRequest $request)
     {
-        try {
-            return $this->accident_body_part_service->deleteAccidentBodyPart($this->accident_body_part_name, $id);
-        } catch (\Throwable $e) {
-            // Xử lý lỗi và trả về phản hồi lỗi
-            return return_500_error($e->getMessage());
-        }
+        return $this->accidentBodyPartService->createAccidentBodyPart($request, $this->time, $this->appCreator, $this->appModifier);
+    }
+    public function update(UpdateAccidentBodyPartRequest $request, $id)
+    {
+        return $this->accidentBodyPartService->updateAccidentBodyPart($this->accidentBodyPartName, $id, $request, $this->time, $this->appModifier);
+    }
+    public function destroy($id)
+    {
+        return $this->accidentBodyPartService->deleteAccidentBodyPart($this->accidentBodyPartName, $id);
     }
 }

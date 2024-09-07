@@ -92,7 +92,7 @@ class IcdGroupController extends BaseApiCacheController
                     });
                 } else {
                     if (!is_numeric($id)) {
-                        return return_id_error($id);
+                        return returnIdError($id);
                     }
                     $check_id = $this->check_id($id, $this->icd_group, $this->icd_group_name);
                     if($check_id){

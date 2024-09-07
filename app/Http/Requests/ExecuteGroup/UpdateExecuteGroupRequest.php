@@ -26,15 +26,15 @@ class UpdateExecuteGroupRequest extends FormRequest
      */
     public function rules()
     {
-        if(!is_numeric($this->id)){
-            throw new HttpResponseException(return_id_error($this->id));
+        if(!is_numeric($this->execute_group)){
+            throw new HttpResponseException(returnIdError($this->execute_group));
         }
         return [
             'execute_group_code' => [
                 'required',
                 'string',
                 'max:10',
-                Rule::unique('App\Models\HIS\ExecuteGroup')->ignore($this->id),
+                Rule::unique('App\Models\HIS\ExecuteGroup')->ignore($this->execute_group),
             ],
             'execute_group_name' =>             'required|string|max:100',
             'is_active' =>                      'required|integer|in:0,1'

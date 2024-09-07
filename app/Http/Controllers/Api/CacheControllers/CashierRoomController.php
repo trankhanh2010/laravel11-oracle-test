@@ -72,7 +72,7 @@ class CashierRoomController extends BaseApiCacheController
                 ];
             } else {
                 if (!is_numeric($id)) {
-                    return return_id_error($id);
+                    return returnIdError($id);
                 }
                 $check_id = $this->check_id($id, $this->cashier_room, $this->cashier_room_name);
                 if($check_id){
@@ -148,7 +148,7 @@ class CashierRoomController extends BaseApiCacheController
     public function cashier_room_update(UpdateCashierRoomRequest $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->cashier_room->find($id);
         if ($data == null) {
@@ -200,7 +200,7 @@ class CashierRoomController extends BaseApiCacheController
     public function cashier_room_delete(Request $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->cashier_room->find($id);
         if ($data == null) {

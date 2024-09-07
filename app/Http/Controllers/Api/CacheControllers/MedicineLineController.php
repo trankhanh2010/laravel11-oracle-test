@@ -91,7 +91,7 @@ class MedicineLineController extends BaseApiCacheController
                     });
                 } else {
                     if (!is_numeric($id)) {
-                        return return_id_error($id);
+                        return returnIdError($id);
                     }
                     $check_id = $this->check_id($id, $this->medicine_line, $this->medicine_line_name);
                     if($check_id){

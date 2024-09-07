@@ -28,15 +28,15 @@ class UpdateMachineRequest extends FormRequest
     public function rules()
     {
         // Kiểm tra Id nhập vào của người dùng trước khi dùng Rule
-        if(!is_numeric($this->id)){
-            throw new HttpResponseException(return_id_error($this->id));
+        if(!is_numeric($this->machine)){
+            throw new HttpResponseException(returnIdError($this->machine));
         }
         return [
             'machine_code' => [
                                             'required',
                                             'string',
                                             'max:100',
-                                            Rule::unique('App\Models\HIS\Machine')->ignore($this->id),
+                                            Rule::unique('App\Models\HIS\Machine')->ignore($this->machine),
                                         ],
             'machine_name' =>       'required|string|max:200',
             'serial_number' =>      'nullable|string|max:200',

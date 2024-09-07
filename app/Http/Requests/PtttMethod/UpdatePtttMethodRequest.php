@@ -26,15 +26,15 @@ class UpdatePtttMethodRequest extends FormRequest
     public function rules()
     {
         // Kiểm tra Id nhập vào của người dùng trước khi dùng Rule
-        if(!is_numeric($this->id)){
-            throw new HttpResponseException(return_id_error($this->id));
+        if(!is_numeric($this->pttt_method)){
+            throw new HttpResponseException(returnIdError($this->pttt_method));
         }
         return [
             'pttt_method_code' => [
                                     'required',
                                     'string',
                                     'max:6',
-                                    Rule::unique('App\Models\HIS\PtttMethod')->ignore($this->id),
+                                    Rule::unique('App\Models\HIS\PtttMethod')->ignore($this->pttt_method),
                                 ],
             'pttt_method_name' =>      'required|string|max:200',
             'pttt_group_id' =>  [

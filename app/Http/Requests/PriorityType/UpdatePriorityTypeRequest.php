@@ -26,15 +26,15 @@ class UpdatePriorityTypeRequest extends FormRequest
     public function rules()
     {
         // Kiểm tra Id nhập vào của người dùng trước khi dùng Rule
-        if(!is_numeric($this->id)){
-            throw new HttpResponseException(return_id_error($this->id));
+        if(!is_numeric($this->priority_type)){
+            throw new HttpResponseException(returnIdError($this->priority_type));
         }
         return [
             'priority_type_code' => [
                                                 'required',
                                                 'string',
                                                 'max:2',
-                                                Rule::unique('App\Models\HIS\PriorityType')->ignore($this->id),
+                                                Rule::unique('App\Models\HIS\PriorityType')->ignore($this->priority_type),
                                             ],
             'priority_type_name' =>         'required|string|max:100',
             'age_from' =>                   'nullable|integer|min:0',

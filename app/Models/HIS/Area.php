@@ -33,7 +33,7 @@ class Area extends Model
     {
         return $this->hasOne(Department::class);
     }
-    public static function get_data_from_db_to_elastic($id = null){
+    public static function getDataFromDbToElastic($id = null){
         $data = DB::connection('oracle_his')->table('his_area')
         ->select(
             'his_area.*'

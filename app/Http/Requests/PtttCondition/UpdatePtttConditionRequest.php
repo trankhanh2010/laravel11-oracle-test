@@ -26,15 +26,15 @@ class UpdatePtttConditionRequest extends FormRequest
     public function rules()
     {
         // Kiểm tra Id nhập vào của người dùng trước khi dùng Rule
-        if(!is_numeric($this->id)){
-            throw new HttpResponseException(return_id_error($this->id));
+        if(!is_numeric($this->pttt_condition)){
+            throw new HttpResponseException(returnIdError($this->pttt_condition));
         }
         return [
             'pttt_condition_code' => [
                                             'required',
                                             'string',
                                             'max:2',
-                                            Rule::unique('App\Models\HIS\PtttCondition')->ignore($this->id),
+                                            Rule::unique('App\Models\HIS\PtttCondition')->ignore($this->pttt_condition),
                                         ],
             'pttt_condition_name' =>      'required|string|max:100',
             'is_active' =>               'required|integer|in:0,1'

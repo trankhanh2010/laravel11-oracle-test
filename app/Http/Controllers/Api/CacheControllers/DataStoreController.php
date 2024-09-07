@@ -84,7 +84,7 @@ class DataStoreController extends BaseApiCacheController
                 ];
             } else {
                 if (!is_numeric($id)) {
-                    return return_id_error($id);
+                    return returnIdError($id);
                 }
                 $check_id = $this->check_id($id, $this->data_store, $this->data_store_name);
                 if($check_id){
@@ -164,7 +164,7 @@ class DataStoreController extends BaseApiCacheController
     public function data_store_update(UpdateDataStoreRequest $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->data_store->find($id);
         if ($data == null) {
@@ -217,7 +217,7 @@ class DataStoreController extends BaseApiCacheController
     public function data_store_delete(Request $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->data_store->find($id);
         if ($data == null) {

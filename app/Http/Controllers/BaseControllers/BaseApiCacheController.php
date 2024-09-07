@@ -503,7 +503,6 @@ class BaseApiCacheController extends Controller
                 return $model->where('id', $id)->exists();
             });
         }
-
         if (!$data) {
             return returnNotRecord($id);
         }
@@ -549,7 +548,11 @@ class BaseApiCacheController extends Controller
     public function __construct(Request $request)
     {
         // Khai báo các biến
-        $this->client = app('Elasticsearch');
+        try{
+            $this->client = app('Elasticsearch');
+        } catch (\Throwable $e) {
+            writeAndThrowError(config('params')['elastic']['error']['connection'], $e);
+        }
         // Thời gian tồn tại của cache
         $this->time = now()->addMinutes(10080);
         $this->columnsTime = now()->addMinutes(20000);

@@ -26,15 +26,15 @@ class UpdateEthnicRequest extends FormRequest
     public function rules()
     {
                 // Kiểm tra Id nhập vào của người dùng trước khi dùng Rule
-        if(!is_numeric($this->id)){
-            throw new HttpResponseException(return_id_error($this->id));
+        if(!is_numeric($this->ethnic)){
+            throw new HttpResponseException(returnIdError($this->ethnic));
         }   
         return [
             'ethnic_code' =>        [
                                         'required',
                                         'string',
                                         'max:3',
-                                        Rule::unique('App\Models\SDA\Ethnic')->ignore($this->id),
+                                        Rule::unique('App\Models\SDA\Ethnic')->ignore($this->ethnic),
                                     ],
             'ethnic_name' =>      'required|string|max:100',
             'other_name' =>       'nullable|string|max:500',

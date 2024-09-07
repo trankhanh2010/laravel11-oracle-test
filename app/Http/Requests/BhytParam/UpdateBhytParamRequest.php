@@ -26,8 +26,8 @@ class UpdateBhytParamRequest extends FormRequest
     public function rules()
     {
         // Kiểm tra Id nhập vào của người dùng trước khi dùng Rule
-        if(!is_numeric($this->id)){
-            throw new HttpResponseException(return_id_error($this->id));
+        if(!is_numeric($this->bhyt_param)){
+            throw new HttpResponseException(returnIdError($this->bhyt_param));
         }
         return [
             'base_salary' =>        [
@@ -35,7 +35,7 @@ class UpdateBhytParamRequest extends FormRequest
                                         'numeric',
                                         'regex:/^\d{1,15}(\.\d{1,4})?$/',
                                         'min:0',
-                                        Rule::unique('App\Models\HIS\BHYTParam')->ignore($this->id),
+                                        Rule::unique('App\Models\HIS\BHYTParam')->ignore($this->bhyt_param),
                                     ],   
             'min_total_by_salary' =>            'required|numeric|regex:/^\d{1,15}(\.\d{1,4})?$/|min:0', 
             'max_total_package_by_salary' =>    'required|numeric|regex:/^\d{1,15}(\.\d{1,4})?$/|min:0', 

@@ -26,15 +26,15 @@ class UpdatePositionRequest extends FormRequest
     public function rules()
     {
         // Kiểm tra Id nhập vào của người dùng trước khi dùng Rule
-        if(!is_numeric($this->id)){
-            throw new HttpResponseException(return_id_error($this->id));
+        if(!is_numeric($this->position)){
+            throw new HttpResponseException(returnIdError($this->position));
         }
         return [
             'position_code' => [
                                             'required',
                                             'string',
                                             'max:15',
-                                            Rule::unique('App\Models\HIS\Position')->ignore($this->id),
+                                            Rule::unique('App\Models\HIS\Position')->ignore($this->position),
                                         ],
             'position_name' =>      'required|string|max:100',
             'description' =>        'nullable|string|max:500',

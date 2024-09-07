@@ -69,7 +69,7 @@ class SaleProfitCfgController extends BaseApiCacheController
                     $param = [];
                 } else {
                     if (!is_numeric($id)) {
-                        return return_id_error($id);
+                        return returnIdError($id);
                     }
                     $check_id = $this->check_id($id, $this->sale_profit_cfg, $this->sale_profit_cfg_name);
                     if ($check_id) {
@@ -131,7 +131,7 @@ class SaleProfitCfgController extends BaseApiCacheController
     public function sale_profit_cfg_update(UpdateSaleProfitCfgRequest $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->sale_profit_cfg->find($id);
         if ($data == null) {
@@ -164,7 +164,7 @@ class SaleProfitCfgController extends BaseApiCacheController
     public function sale_profit_cfg_delete(Request $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->sale_profit_cfg->find($id);
         if ($data == null) {

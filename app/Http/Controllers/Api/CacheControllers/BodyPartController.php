@@ -67,7 +67,7 @@ class BodyPartController extends BaseApiCacheController
                 ];
             } else {
                 if (!is_numeric($id)) {
-                    return return_id_error($id);
+                    return returnIdError($id);
                 }
                 $check_id = $this->check_id($id, $this->body_part, $this->body_part_name);
                 if($check_id){
@@ -121,7 +121,7 @@ class BodyPartController extends BaseApiCacheController
     public function body_part_update(UpdateBodyPartRequest $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->body_part->find($id);
         if ($data == null) {
@@ -151,7 +151,7 @@ class BodyPartController extends BaseApiCacheController
     public function body_part_delete(Request $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->body_part->find($id);
         if ($data == null) {

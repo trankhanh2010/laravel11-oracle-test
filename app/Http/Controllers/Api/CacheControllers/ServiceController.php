@@ -104,7 +104,7 @@ class ServiceController extends BaseApiCacheController
                     });
                 } else {
                     if (!is_numeric($id)) {
-                        return return_id_error($id);
+                        return returnIdError($id);
                     }
                     $check_id = $this->check_id($id, $this->service, $this->service_name);
                     if ($check_id) {
@@ -198,7 +198,7 @@ class ServiceController extends BaseApiCacheController
     // public function service($id)
     // {
     //     if (!is_numeric($id)) {
-    //         return return_id_error($id);
+    //         return returnIdError($id);
     //     }
     //     $data = $this->service->find($id);
     //     if ($data == null) {
@@ -278,7 +278,7 @@ class ServiceController extends BaseApiCacheController
     // public function service_by_service_type($id)
     // {
     //     if (!is_numeric($id)) {
-    //         return return_id_error($id);
+    //         return returnIdError($id);
     //     }
     //     $data = $this->service_type->find($id);
     //     if ($data == null) {
@@ -443,7 +443,7 @@ class ServiceController extends BaseApiCacheController
     public function service_update(UpdateServiceRequest $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->service->find($id);
         if ($data == null) {
@@ -561,7 +561,7 @@ class ServiceController extends BaseApiCacheController
     public function service_delete(Request $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->service->find($id);
         if ($data == null) {

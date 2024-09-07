@@ -72,7 +72,7 @@ class ServiceUnitController extends BaseApiCacheController
                     ];
                 } else {
                     if (!is_numeric($id)) {
-                        return return_id_error($id);
+                        return returnIdError($id);
                     }
                     $check_id = $this->check_id($id, $this->service_unit, $this->service_unit_name);
                     if ($check_id) {
@@ -134,7 +134,7 @@ class ServiceUnitController extends BaseApiCacheController
     public function service_unit_update(UpdateServiceUnitRequest $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->service_unit->find($id);
         if ($data == null) {
@@ -169,7 +169,7 @@ class ServiceUnitController extends BaseApiCacheController
     public function service_unit_delete(Request $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->service_unit->find($id);
         if ($data == null) {

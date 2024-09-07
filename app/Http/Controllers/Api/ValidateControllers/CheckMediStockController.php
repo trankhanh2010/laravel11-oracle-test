@@ -20,7 +20,7 @@ class CheckMediStockController extends BaseValidateController
             $exists = $this->medi_stock::where('medi_stock_code', $code);
             if ($id) {
                 if (!is_numeric($id)) {
-                    return return_id_error($id);
+                    return returnIdError($id);
                 }
                 $exists->where('id', '!=', $id);
             }

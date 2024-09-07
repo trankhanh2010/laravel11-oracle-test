@@ -236,7 +236,7 @@ class RoomController extends BaseApiCacheController
     // public function room_with_department($id)
     // {
     //     if (!is_numeric($id)) {
-    //         return return_id_error($id);
+    //         return returnIdError($id);
     //     }
     //     $data = $this->department->find($id);
     //     if ($data == null) {

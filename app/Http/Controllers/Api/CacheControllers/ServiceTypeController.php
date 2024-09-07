@@ -69,7 +69,7 @@ class ServiceTypeController extends BaseApiCacheController
                     ];
                 } else {
                     if (!is_numeric($id)) {
-                        return return_id_error($id);
+                        return returnIdError($id);
                     }
                     $check_id = $this->check_id($id, $this->service_type, $this->service_type_name);
                     if ($check_id) {

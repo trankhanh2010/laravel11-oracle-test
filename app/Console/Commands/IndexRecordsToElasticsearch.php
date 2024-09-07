@@ -76,35 +76,35 @@ class IndexRecordsToElasticsearch extends Command
         $client = app('Elasticsearch');
         switch ($table) {
             case 'his_accident_body_part':
-                $results = AccidentBodyPart::get_data_from_db_to_elastic(null);
+                $results = AccidentBodyPart::getDataFromDbToElastic(null);
                 event(new CreateAccidentBodyPartIndex($name_table));
                 break;
             case 'his_accident_care':
-                $results = AccidentCare::get_data_from_db_to_elastic(null);
+                $results = AccidentCare::getDataFromDbToElastic(null);
                 event(new CreateAccidentCareIndex($name_table));
                 break;    
             case 'his_accident_hurt_type':
-                $results = AccidentHurtType::get_data_from_db_to_elastic(null);
+                $results = AccidentHurtType::getDataFromDbToElastic(null);
                 event(new CreateAccidentHurtTypeIndex($name_table));
                 break;    
             case 'his_accident_location':
-                $results = AccidentLocation::get_data_from_db_to_elastic(null);
+                $results = AccidentLocation::getDataFromDbToElastic(null);
                 event(new CreateAccidentLocationIndex($name_table));
                 break;     
             case 'his_age_type':
-                $results = AgeType::get_data_from_db_to_elastic(null);
+                $results = AgeType::getDataFromDbToElastic(null);
                 event(new CreateAgeTypeIndex($name_table));
                 break;     
             case 'his_area':
-                $results = Area::get_data_from_db_to_elastic(null);
+                $results = Area::getDataFromDbToElastic(null);
                 event(new CreateAreaIndex($name_table));
                 break;        
             case 'his_atc_group':
-                $results = AtcGroup::get_data_from_db_to_elastic(null);
+                $results = AtcGroup::getDataFromDbToElastic(null);
                 event(new CreateAtcGroupIndex($name_table));
                 break;  
             case 'his_bed':
-                $results = Bed::get_data_from_db_to_elastic(null);
+                $results = Bed::getDataFromDbToElastic(null);
                 event(new CreateBedIndex($name_table));
                 break;
 

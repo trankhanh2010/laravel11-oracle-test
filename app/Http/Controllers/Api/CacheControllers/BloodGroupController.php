@@ -94,7 +94,7 @@ class BloodGroupController extends BaseApiCacheController
                     });
                 } else {
                     if (!is_numeric($id)) {
-                        return return_id_error($id);
+                        return returnIdError($id);
                     }
                     $check_id = $this->check_id($id, $this->blood_group, $this->blood_group_name);
                     if($check_id){
@@ -161,7 +161,7 @@ class BloodGroupController extends BaseApiCacheController
     public function blood_group_update(UpdateBloodGroupRequest $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->blood_group->find($id);
         if ($data == null) {
@@ -190,7 +190,7 @@ class BloodGroupController extends BaseApiCacheController
     public function blood_group_delete(Request $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->blood_group->find($id);
         if ($data == null) {

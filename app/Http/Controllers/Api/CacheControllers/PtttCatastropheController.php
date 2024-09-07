@@ -94,7 +94,7 @@ class PtttCatastropheController extends BaseApiCacheController
                     });
                 } else {
                     if (!is_numeric($id)) {
-                        return return_id_error($id);
+                        return returnIdError($id);
                     }
                     $check_id = $this->check_id($id, $this->pttt_catastrophe, $this->pttt_catastrophe_name);
                     if($check_id){
@@ -158,7 +158,7 @@ class PtttCatastropheController extends BaseApiCacheController
     public function pttt_catastrophe_update(UpdatePtttCatastropheRequest $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->pttt_catastrophe->find($id);
         if ($data == null) {
@@ -186,7 +186,7 @@ class PtttCatastropheController extends BaseApiCacheController
     public function pttt_catastrophe_delete(Request $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->pttt_catastrophe->find($id);
         if ($data == null) {

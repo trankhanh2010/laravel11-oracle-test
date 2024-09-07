@@ -26,15 +26,15 @@ class UpdateLicenseClassRequest extends FormRequest
     public function rules()
     {
         // Kiểm tra Id nhập vào của người dùng trước khi dùng Rule
-        if(!is_numeric($this->id)){
-            throw new HttpResponseException(return_id_error($this->id));
+        if(!is_numeric($this->license_class)){
+            throw new HttpResponseException(returnIdError($this->license_class));
         }
         return [
             'license_class_code' => [
                                             'required',
                                             'string',
                                             'max:5',
-                                            Rule::unique('App\Models\HIS\LicenseClass')->ignore($this->id),
+                                            Rule::unique('App\Models\HIS\LicenseClass')->ignore($this->license_class),
                                         ],
             'license_class_name' =>      'required|string|max:100',
             'is_active' =>               'required|integer|in:0,1'

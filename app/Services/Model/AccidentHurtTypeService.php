@@ -84,7 +84,7 @@ class AccidentHurtTypeService extends BaseApiCacheController
     public function updateAccidentHurtType($accident_hurt_type_name, $id, $request, $time, $app_modifier)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->accident_hurt_type_repository->getById($id);
         if ($data == null) {
@@ -105,7 +105,7 @@ class AccidentHurtTypeService extends BaseApiCacheController
     public function deleteAccidentHurtType($accident_hurt_type_name, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->accident_hurt_type_repository->getById($id);
         if ($data == null) {

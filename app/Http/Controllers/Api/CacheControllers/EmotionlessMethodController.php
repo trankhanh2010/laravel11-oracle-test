@@ -94,7 +94,7 @@ class EmotionlessMethodController extends BaseApiCacheController
                     });
                 } else {
                     if (!is_numeric($id)) {
-                        return return_id_error($id);
+                        return returnIdError($id);
                     }
                     $check_id = $this->check_id($id, $this->emotionless_method, $this->emotionless_method_name);
                     if($check_id){
@@ -171,7 +171,7 @@ class EmotionlessMethodController extends BaseApiCacheController
     public function emotionless_method_update(UpdateEmotionlessMethodRequest $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->emotionless_method->find($id);
         if ($data == null) {
@@ -209,7 +209,7 @@ class EmotionlessMethodController extends BaseApiCacheController
     public function emotionless_method_delete(Request $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->emotionless_method->find($id);
         if ($data == null) {

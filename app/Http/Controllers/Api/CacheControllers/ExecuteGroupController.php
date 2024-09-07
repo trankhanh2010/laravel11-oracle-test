@@ -72,7 +72,7 @@ class ExecuteGroupController extends BaseApiCacheController
                 ];
             } else {
                 if (!is_numeric($id)) {
-                    return return_id_error($id);
+                    return returnIdError($id);
                 }
                 $check_id = $this->check_id($id, $this->execute_group, $this->execute_group_name);
                 if($check_id){
@@ -125,7 +125,7 @@ class ExecuteGroupController extends BaseApiCacheController
     public function execute_group_update(UpdateExecuteGroupRequest $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->execute_group->find($id);
         if ($data == null) {
@@ -155,7 +155,7 @@ class ExecuteGroupController extends BaseApiCacheController
     public function execute_group_delete(Request $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->execute_group->find($id);
         if ($data == null) {

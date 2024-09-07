@@ -103,7 +103,7 @@ class PtttGroupController extends BaseApiCacheController
                         'bed_services:service_name,service_code'
                     ];
                     if (!is_numeric($id)) {
-                        return return_id_error($id);
+                        return returnIdError($id);
                     }
                     $check_id = $this->check_id($id, $this->pttt_group, $this->pttt_group_name);
                     if($check_id){
@@ -189,7 +189,7 @@ class PtttGroupController extends BaseApiCacheController
     public function pttt_group_update(UpdatePtttGroupRequest $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->pttt_group->find($id);
         if ($data == null) {
@@ -245,7 +245,7 @@ class PtttGroupController extends BaseApiCacheController
     public function pttt_group_delete(Request $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->pttt_group->find($id);
         if ($data == null) {

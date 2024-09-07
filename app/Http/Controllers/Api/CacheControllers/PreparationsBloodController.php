@@ -94,7 +94,7 @@ class PreparationsBloodController extends BaseApiCacheController
                     });
                 } else {
                     if (!is_numeric($id)) {
-                        return return_id_error($id);
+                        return returnIdError($id);
                     }
                     $check_id = $this->check_id($id, $this->preparations_blood, $this->preparations_blood_name);
                     if($check_id){
@@ -158,7 +158,7 @@ class PreparationsBloodController extends BaseApiCacheController
     public function preparations_blood_update(UpdatePreparationsBloodRequest $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->preparations_blood->find($id);
         if ($data == null) {
@@ -184,7 +184,7 @@ class PreparationsBloodController extends BaseApiCacheController
     public function preparations_blood_delete(Request $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->preparations_blood->find($id);
         if ($data == null) {

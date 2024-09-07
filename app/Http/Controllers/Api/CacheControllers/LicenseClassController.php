@@ -94,7 +94,7 @@ class LicenseClassController extends BaseApiCacheController
                     });
                 } else {
                     if (!is_numeric($id)) {
-                        return return_id_error($id);
+                        return returnIdError($id);
                     }
                     $check_id = $this->check_id($id, $this->license_class, $this->license_class_name);
                     if($check_id){
@@ -158,7 +158,7 @@ class LicenseClassController extends BaseApiCacheController
     public function license_class_update(UpdateLicenseClassRequest $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->license_class->find($id);
         if ($data == null) {
@@ -185,7 +185,7 @@ class LicenseClassController extends BaseApiCacheController
     public function license_class_delete(Request $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->license_class->find($id);
         if ($data == null) {

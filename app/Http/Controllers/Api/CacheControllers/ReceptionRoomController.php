@@ -78,7 +78,7 @@ class ReceptionRoomController extends BaseApiCacheController
                     ];
                 } else {
                     if (!is_numeric($id)) {
-                        return return_id_error($id);
+                        return returnIdError($id);
                     }
                     $check_id = $this->check_id($id, $this->reception_room, $this->reception_room_name);
                     if ($check_id) {
@@ -157,7 +157,7 @@ class ReceptionRoomController extends BaseApiCacheController
     public function reception_room_update(UpdateReceptionRoomRequest $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->reception_room->find($id);
         if ($data == null) {
@@ -213,7 +213,7 @@ class ReceptionRoomController extends BaseApiCacheController
     public function reception_room_delete(Request $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->reception_room->find($id);
         if ($data == null) {

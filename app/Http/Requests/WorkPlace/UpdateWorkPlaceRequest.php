@@ -26,15 +26,15 @@ class UpdateWorkPlaceRequest extends FormRequest
     public function rules()
     {
         // Kiểm tra Id nhập vào của người dùng trước khi dùng Rule
-        if(!is_numeric($this->id)){
-            throw new HttpResponseException(return_id_error($this->id));
+        if(!is_numeric($this->work_place)){
+            throw new HttpResponseException(returnIdError($this->work_place));
         }
         return [
             'work_place_code' => [
                 'required',
                 'string',
                 'max:20',
-                Rule::unique('App\Models\HIS\WorkPlace')->ignore($this->id),
+                Rule::unique('App\Models\HIS\WorkPlace')->ignore($this->work_place),
             ],
             'work_place_name' =>      'required|string|max:500',
             'address' =>        'nullable|string|max:500',

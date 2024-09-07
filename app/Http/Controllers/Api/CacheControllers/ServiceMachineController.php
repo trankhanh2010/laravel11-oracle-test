@@ -138,7 +138,7 @@ class ServiceMachineController extends BaseApiCacheController
                     });
                 } else {
                     if (!is_numeric($id)) {
-                        return return_id_error($id);
+                        return returnIdError($id);
                     }
                     $check_id = $this->check_id($id, $this->service_machine, $this->service_machine_name);
                     if ($check_id) {

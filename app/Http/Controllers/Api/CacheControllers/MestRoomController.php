@@ -207,7 +207,7 @@ class MestRoomController extends BaseApiCacheController
                     });
                 } else {
                     if (!is_numeric($id)) {
-                        return return_id_error($id);
+                        return returnIdError($id);
                     }
                     $check_id = $this->check_id($id, $this->mest_room, $this->mest_room_name);
                     if($check_id){
@@ -359,7 +359,7 @@ class MestRoomController extends BaseApiCacheController
         if($request->medi_stock_id != null){
             $id = $request->medi_stock_id;
             if (!is_numeric($id)) {
-                return return_id_error($id);
+                return returnIdError($id);
             } 
             $data = $this->medi_stock->find($id);
             if ($data == null) {
@@ -400,7 +400,7 @@ class MestRoomController extends BaseApiCacheController
         }else{
             $id = $request->room_id;
             if (!is_numeric($id)) {
-                return return_id_error($id);
+                return returnIdError($id);
             }
             $data = $this->room->find($id);
             if ($data == null) {

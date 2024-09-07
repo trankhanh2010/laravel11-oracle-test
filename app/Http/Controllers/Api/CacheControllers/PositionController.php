@@ -94,7 +94,7 @@ class PositionController extends BaseApiCacheController
                     });
                 } else {
                     if (!is_numeric($id)) {
-                        return return_id_error($id);
+                        return returnIdError($id);
                     }
                     $check_id = $this->check_id($id, $this->position, $this->position_name);
                     if($check_id){
@@ -160,7 +160,7 @@ class PositionController extends BaseApiCacheController
     public function position_update(UpdatePositionRequest $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->position->find($id);
         if ($data == null) {
@@ -190,7 +190,7 @@ class PositionController extends BaseApiCacheController
     public function position_delete(Request $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->position->find($id);
         if ($data == null) {

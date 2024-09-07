@@ -74,7 +74,7 @@ class DistrictController extends BaseApiCacheController
                 ];
             } else {
                 if (!is_numeric($id)) {
-                    return return_id_error($id);
+                    return returnIdError($id);
                 }
                 $check_id = $this->check_id($id, $this->district, $this->district_name);
                 if($check_id){
@@ -133,7 +133,7 @@ class DistrictController extends BaseApiCacheController
     public function district_update(UpdateDistrictRequest $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->district->find($id);
         if ($data == null) {
@@ -166,7 +166,7 @@ class DistrictController extends BaseApiCacheController
     public function district_delete(Request $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->district->find($id);
         if ($data == null) {

@@ -97,8 +97,8 @@ class UpdateServiceRequest extends FormRequest
     public function rules()
     {
         // Kiểm tra Id nhập vào của người dùng trước khi dùng Rule
-        if(!is_numeric($this->id)){
-            throw new HttpResponseException(return_id_error($this->id));
+        if(!is_numeric($this->service)){
+            throw new HttpResponseException(returnIdError($this->service));
         }
 
         $this->speciality_code_check_id = ServiceType::select('id')->whereIn('service_type_code', $this->speciality_code_check)->pluck('id')->implode(',');
@@ -169,7 +169,7 @@ class UpdateServiceRequest extends FormRequest
                                                     'required',
                                                     'string',
                                                     'max:25',
-                                                    Rule::unique('App\Models\HIS\Service')->ignore($this->id),
+                                                    Rule::unique('App\Models\HIS\Service')->ignore($this->service),
                                                 ],
             'service_name' =>                   'required|string|max:1500',
             'service_unit_id' =>                [
@@ -215,7 +215,7 @@ class UpdateServiceRequest extends FormRequest
                                                         ->where(DB::connection('oracle_his')->raw("is_active"), 1)
                                                         ->where(DB::connection('oracle_his')->raw("service_type_id"), $service_type_id);
                                                     }),
-                                                    'not_in:'.$this->id,
+                                                    'not_in:'.$this->service,
                                                 ], 
             'package_id' =>                     [
                                                     'nullable',

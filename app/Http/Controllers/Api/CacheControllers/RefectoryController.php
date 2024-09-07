@@ -77,7 +77,7 @@ class RefectoryController extends BaseApiCacheController
                     ];
                 } else {
                     if (!is_numeric($id)) {
-                        return return_id_error($id);
+                        return returnIdError($id);
                     }
                     $check_id = $this->check_id($id, $this->refectory, $this->refectory_name);
                     if ($check_id) {
@@ -147,7 +147,7 @@ class RefectoryController extends BaseApiCacheController
     public function refectory_update(UpdateRefectoryRequest $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->refectory->find($id);
         if ($data == null) {
@@ -196,7 +196,7 @@ class RefectoryController extends BaseApiCacheController
     public function refectory_delete(Request $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->refectory->find($id);
         if ($data == null) {

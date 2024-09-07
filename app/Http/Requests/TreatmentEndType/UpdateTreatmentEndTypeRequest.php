@@ -26,15 +26,15 @@ class UpdateTreatmentEndTypeRequest extends FormRequest
     public function rules()
     {
         // Kiểm tra Id nhập vào của người dùng trước khi dùng Rule
-        if(!is_numeric($this->id)){
-            throw new HttpResponseException(return_id_error($this->id));
+        if(!is_numeric($this->treatment_end_type)){
+            throw new HttpResponseException(returnIdError($this->treatment_end_type));
         }
         return [
             'treatment_end_type_code' => [
                 'nullable',
                 'string',
                 'max:3',
-                Rule::unique('App\Models\HIS\TreatmentEndType')->ignore($this->id),
+                Rule::unique('App\Models\HIS\TreatmentEndType')->ignore($this->treatment_end_type),
             ],
             'treatment_end_type_name' =>        'nullable|string|max:100',
             'end_code_prefix' =>                'nullable|string|max:5',

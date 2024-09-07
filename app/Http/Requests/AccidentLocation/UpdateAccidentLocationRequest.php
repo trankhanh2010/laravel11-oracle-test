@@ -26,15 +26,15 @@ class UpdateAccidentLocationRequest extends FormRequest
     public function rules()
     {
         // Kiểm tra Id nhập vào của người dùng trước khi dùng Rule
-        if(!is_numeric($this->id)){
-            throw new HttpResponseException(return_id_error($this->id));
+        if(!is_numeric($this->accident_location)){
+            throw new HttpResponseException(returnIdError($this->accident_location));
         }
         return [
             'accident_location_code' =>        [
                                                     'required',
                                                     'string',
                                                     'max:2',
-                                                    Rule::unique('App\Models\HIS\AccidentLocation')->ignore($this->id),
+                                                    Rule::unique('App\Models\HIS\AccidentLocation')->ignore($this->accident_location),
                                                 ],
             'accident_location_name' =>        'required|string|max:100',
             'is_active' =>                      'required|integer|in:0,1'

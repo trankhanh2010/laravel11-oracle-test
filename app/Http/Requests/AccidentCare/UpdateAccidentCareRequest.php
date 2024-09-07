@@ -26,15 +26,15 @@ class UpdateAccidentCareRequest extends FormRequest
     public function rules()
     {
         // Kiểm tra Id nhập vào của người dùng trước khi dùng Rule
-        if(!is_numeric($this->id)){
-            throw new HttpResponseException(return_id_error($this->id));
+        if(!is_numeric($this->accident_care)){
+            throw new HttpResponseException(returnIdError($this->accident_care));
         }
         return [
             'accident_care_code' =>        [
                                                     'required',
                                                     'string',
                                                     'max:2',
-                                                    Rule::unique('App\Models\HIS\AccidentCare')->ignore($this->id),
+                                                    Rule::unique('App\Models\HIS\AccidentCare')->ignore($this->accident_care),
                                                 ],
             'accident_care_name' =>        'required|string|max:100',
             'is_active' =>                      'required|integer|in:0,1'

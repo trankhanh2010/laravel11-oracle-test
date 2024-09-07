@@ -151,6 +151,7 @@ return [
             'handle_elastic_search_get_with_id' => 'Có lỗi khi lấy Document theo id với Elastic Search!',
 
             'connection' => 'Có lỗi khi kết nối đến Elastic Search!',
+            'create_index' => 'Có lỗi khi thực hiện tạo Index!',
             'insert_index' => 'Có lỗi khi thực hiện thêm Document vào Index!',
             'delete_index' => 'Có lỗi khi thực hiện xóa Document trong Index!',
         ]

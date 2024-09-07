@@ -25,16 +25,15 @@ class UpdateBedRequest extends FormRequest
      */
     public function rules()
     {
-        // Kiểm tra Id nhập vào của người dùng trước khi dùng Rule
-        if(!is_numeric($this->id)){
-            throw new HttpResponseException(return_id_error($this->id));
+        if(!is_numeric($this->bed)){
+            throw new HttpResponseException(returnIdError($this->bed));
         }
         return [
             'bed_code' =>        [
                                     'required',
                                     'string',
                                     'max:10',
-                                    Rule::unique('App\Models\HIS\Bed')->ignore($this->id),
+                                    Rule::unique('App\Models\HIS\Bed')->ignore($this->bed),
                                 ],            
             'bed_name' =>      'required|string|max:200',
             'bed_type_id' =>  [

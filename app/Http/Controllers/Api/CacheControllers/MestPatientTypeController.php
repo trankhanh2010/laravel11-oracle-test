@@ -129,7 +129,7 @@ class MestPatientTypeController extends BaseApiCacheController
                     });
                 } else {
                     if (!is_numeric($id)) {
-                        return return_id_error($id);
+                        return returnIdError($id);
                     }
                     $check_id = $this->check_id($id, $this->mest_patient_type, $this->mest_patient_type_name);
                     if($check_id){
@@ -235,7 +235,7 @@ class MestPatientTypeController extends BaseApiCacheController
         if($request->medi_stock_id != null){
             $id = $request->medi_stock_id;
             if (!is_numeric($id)) {
-                return return_id_error($id);
+                return returnIdError($id);
             }
             $data = $this->medi_stock->find($id);
             if ($data == null) {
@@ -275,7 +275,7 @@ class MestPatientTypeController extends BaseApiCacheController
         }else{
             $id = $request->patient_type_id;
             if (!is_numeric($id)) {
-                return return_id_error($id);
+                return returnIdError($id);
             }
             $data = $this->patient_type->find($id);
             if ($data == null) {

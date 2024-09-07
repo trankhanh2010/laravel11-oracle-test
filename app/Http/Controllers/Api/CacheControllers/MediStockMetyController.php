@@ -152,7 +152,7 @@ class MediStockMetyController extends BaseApiCacheController
                     });
                 } else {
                     if (!is_numeric($id)) {
-                        return return_id_error($id);
+                        return returnIdError($id);
                     }
                     $check_id = $this->check_id($id, $this->medi_stock_mety, $this->medi_stock_mety_name);
                     if($check_id){
@@ -275,7 +275,7 @@ class MediStockMetyController extends BaseApiCacheController
         if($request->medi_stock_id != null){
             $id = $request->medi_stock_id;
             if (!is_numeric($id)) {
-                return return_id_error($id);
+                return returnIdError($id);
             }
             $data = $this->medi_stock->find($id);
             if ($data == null) {
@@ -318,7 +318,7 @@ class MediStockMetyController extends BaseApiCacheController
         }else{
             $id = $request->medicine_type_id;
             if (!is_numeric($id)) {
-                return return_id_error($id);
+                return returnIdError($id);
             }
             $data = $this->medicine_type->find($id);
             if ($data == null) {

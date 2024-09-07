@@ -68,7 +68,7 @@ class NationalController extends BaseApiCacheController
                     $param = [];
                 } else {
                     if (!is_numeric($id)) {
-                        return return_id_error($id);
+                        return returnIdError($id);
                     }
                     $check_id = $this->check_id($id, $this->national, $this->national_name);
                     if ($check_id) {
@@ -119,7 +119,7 @@ class NationalController extends BaseApiCacheController
     public function national_update(UpdateNationalRequest $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->national->find($id);
         if ($data == null) {
@@ -149,7 +149,7 @@ class NationalController extends BaseApiCacheController
     public function national_delete(Request $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->national->find($id);
         if ($data == null) {

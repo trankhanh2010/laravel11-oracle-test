@@ -26,15 +26,15 @@ class UpdatePtttCatastropheRequest extends FormRequest
     public function rules()
     {
         // Kiểm tra Id nhập vào của người dùng trước khi dùng Rule
-        if(!is_numeric($this->id)){
-            throw new HttpResponseException(return_id_error($this->id));
+        if(!is_numeric($this->pttt_catastrophe)){
+            throw new HttpResponseException(returnIdError($this->pttt_catastrophe));
         }
         return [
             'pttt_catastrophe_code' => [
                                         'required',
                                         'string',
                                         'max:2',
-                                        Rule::unique('App\Models\HIS\PtttCatastrophe')->ignore($this->id),
+                                        Rule::unique('App\Models\HIS\PtttCatastrophe')->ignore($this->pttt_catastrophe),
                                     ],
             'pttt_catastrophe_name' =>      'required|string|max:100',
             'is_active' =>               'required|integer|in:0,1'

@@ -197,7 +197,7 @@ use App\Http\Controllers\Api\CacheControllers\ProcessingMethodController;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-Route::get("v1/test", function () { return 'hi';})->name('.get_test');
+Route::get("v1/test", function () { return microtime(true) - LARAVEL_START;})->name('.get_test');
 
 Route::fallback(function () {
     return return_404_error_page_not_found();
@@ -606,11 +606,7 @@ Route::group([
 
     /// Giường
     Route::group(['as' => 'HIS.Desktop.Plugins.HisBed'], function () {
-        Route::get("v1/bed", [BedController::class, "index"])->name('.get');
-        Route::get("v1/bed/{id}", [BedController::class, "show"])->name('.get_id');
-        Route::post("v1/bed", [BedController::class, "store"])->name('.create');
-        Route::put("v1/bed/{id}", [BedController::class, "update"])->name('.update');
-        Route::delete("v1/bed/{id}", [BedController::class, "destroy"])->name('.delete');
+        Route::apiResource('v1/bed', BedController::class);
     });
 
     /// Giường - Dịch vụ giường
@@ -973,11 +969,7 @@ Route::group([
 
     /// Bộ phận thương tích
     Route::group(['as' => 'HIS.Desktop.Plugins.HisAccidentBodyPart'], function () {
-        Route::get("v1/accident-body-part", [AccidentBodyPartController::class, "accident_body_part"])->name('.get');
-        Route::get("v1/accident-body-part/{id}", [AccidentBodyPartController::class, "accident_body_part"])->name('.get_id');
-        Route::post("v1/accident-body-part", [AccidentBodyPartController::class, "accident_body_part_create"])->name('.create');
-        Route::put("v1/accident-body-part/{id}", [AccidentBodyPartController::class, "accident_body_part_update"])->name('.update');
-        Route::delete("v1/accident-body-part/{id}", [AccidentBodyPartController::class, "accident_body_part_delete"])->name('.delete');
+        Route::apiResource('v1/accident-body-part', AccidentBodyPartController::class);
     });
 
     /// Chế phẩm máu
@@ -1183,11 +1175,7 @@ Route::group([
 
     /// Xử lý sau tai nạn
     Route::group(['as' => 'HIS.Desktop.Plugins.HisAccidentCare'], function () {
-        Route::get("v1/accident-care", [AccidentCareController::class, "accident_care"])->name('.get');
-        Route::get("v1/accident-care/{id}", [AccidentCareController::class, "accident_care"])->name('.get_id');
-        Route::post("v1/accident-care", [AccidentCareController::class, "accident_care_create"])->name('.create');
-        Route::put("v1/accident-care/{id}", [AccidentCareController::class, "accident_care_update"])->name('.update');
-        Route::delete("v1/accident-care/{id}", [AccidentCareController::class, "accident_care_delete"])->name('.delete');
+        Route::apiResource('v1/accident-care', AccidentCareController::class);
     });
 
     /// Bàn mổ

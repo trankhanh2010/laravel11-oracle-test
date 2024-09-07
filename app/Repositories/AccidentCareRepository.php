@@ -6,16 +6,16 @@ use Illuminate\Support\Facades\DB;
 
 class AccidentCareRepository
 {
-    protected $accident_care;
+    protected $accidentCare;
 
-    public function __construct(AccidentCare $accident_care)
+    public function __construct(AccidentCare $accidentCare)
     {
-        $this->accident_care = $accident_care;
+        $this->accidentCare = $accidentCare;
     }
 
     public function applyJoins()
     {
-        return $this->accident_care
+        return $this->accidentCare
             ->select(
                 'his_accident_care.*'
             );
@@ -65,10 +65,10 @@ class AccidentCareRepository
     }
     public function getById($id)
     {
-        return $this->accident_care->find($id);
+        return $this->accidentCare->find($id);
     }
     public function create($request, $time, $app_creator, $app_modifier){
-        $data = $this->accident_care::create([
+        $data = $this->accidentCare::create([
             'create_time' => now()->format('Ymdhis'),
             'modify_time' => now()->format('Ymdhis'),
             'creator' => get_loginname_with_token($request->bearerToken(), $time),

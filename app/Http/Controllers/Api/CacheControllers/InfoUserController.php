@@ -37,7 +37,7 @@ class InfoUserController extends BaseApiCacheController
         $id = $this->employee->where('loginname', $login_name)->first()->id;
         try {
             if (!is_numeric($id)) {
-                return return_id_error($id);
+                return returnIdError($id);
             }
             $check_id = $this->check_id($id, $this->employee, $this->employee_name);
             if($check_id){
@@ -90,7 +90,7 @@ class InfoUserController extends BaseApiCacheController
         $login_name = $this->token->where('token_code', $request->bearerToken())->first()->login_name;
         $id = $this->employee->where('loginname', $login_name)->first()->id;
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->employee->find($id);
         if ($data == null) {

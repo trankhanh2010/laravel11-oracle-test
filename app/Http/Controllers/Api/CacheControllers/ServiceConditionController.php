@@ -102,7 +102,7 @@ class ServiceConditionController extends BaseApiCacheController
                     });
                 } else {
                     if (!is_numeric($id)) {
-                        return return_id_error($id);
+                        return returnIdError($id);
                     }
                     $check_id = $this->check_id($id, $this->service_condition, $this->service_condition_name);
                     if ($check_id) {
@@ -171,7 +171,7 @@ class ServiceConditionController extends BaseApiCacheController
     public function service_condition_update(UpdateServiceConditionRequest $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->service_condition->find($id);
         if ($data == null) {
@@ -202,7 +202,7 @@ class ServiceConditionController extends BaseApiCacheController
     public function service_condition_delete(Request $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->service_condition->find($id);
         if ($data == null) {

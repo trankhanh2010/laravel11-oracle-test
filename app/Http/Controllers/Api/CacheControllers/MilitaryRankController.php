@@ -65,7 +65,7 @@ class MilitaryRankController extends BaseApiCacheController
                     $param = [];
                 } else {
                     if (!is_numeric($id)) {
-                        return return_id_error($id);
+                        return returnIdError($id);
                     }
                     $check_id = $this->check_id($id, $this->military_rank, $this->military_rank_name);
                     if ($check_id) {

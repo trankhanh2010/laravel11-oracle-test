@@ -26,15 +26,15 @@ class UpdateEmotionlessMethodRequest extends FormRequest
     public function rules()
     {
         // Kiểm tra Id nhập vào của người dùng trước khi dùng Rule
-        if(!is_numeric($this->id)){
-            throw new HttpResponseException(return_id_error($this->id));
+        if(!is_numeric($this->emotionless_method)){
+            throw new HttpResponseException(returnIdError($this->emotionless_method));
         }    
         return [
             'emotionless_method_code' =>        [
                                                 'required',
                                                 'string',
                                                 'max:6',
-                                                Rule::unique('App\Models\HIS\EmotionlessMethod')->ignore($this->id),
+                                                Rule::unique('App\Models\HIS\EmotionlessMethod')->ignore($this->emotionless_method),
                                             ],
             'emotionless_method_name' =>      'required|string|max:100',
             'is_first' =>                     'nullable|integer|in:0,1',

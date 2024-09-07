@@ -142,7 +142,7 @@ class MediStockMatyController extends BaseApiCacheController
                     });
                 } else {
                     if (!is_numeric($id)) {
-                        return return_id_error($id);
+                        return returnIdError($id);
                     }
                     $check_id = $this->check_id($id, $this->medi_stock_maty, $this->medi_stock_maty_name);
                     if($check_id){
@@ -258,7 +258,7 @@ class MediStockMatyController extends BaseApiCacheController
         if($request->medi_stock_id != null){
             $id = $request->medi_stock_id;
             if (!is_numeric($id)) {
-                return return_id_error($id);
+                return returnIdError($id);
             } 
             $data = $this->medi_stock->find($id);
             if ($data == null) {
@@ -300,7 +300,7 @@ class MediStockMatyController extends BaseApiCacheController
         }else{
             $id = $request->material_type_id;
             if (!is_numeric($id)) {
-                return return_id_error($id);
+                return returnIdError($id);
             }
             $data = $this->material_type->find($id);
             if ($data == null) {

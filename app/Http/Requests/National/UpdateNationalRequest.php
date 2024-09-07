@@ -26,15 +26,15 @@ class UpdateNationalRequest extends FormRequest
      */
     public function rules()
     {
-        if(!is_numeric($this->id)){
-            throw new HttpResponseException(return_id_error($this->id));
+        if(!is_numeric($this->national)){
+            throw new HttpResponseException(returnIdError($this->national));
         }
         return [
             'national_code' => [
                 'required',
                 'string',
                 'max:3',
-                Rule::unique('App\Models\SDA\National')->ignore($this->id),
+                Rule::unique('App\Models\SDA\National')->ignore($this->national),
             ],
             'national_name' =>                  'required|string|max:100',
             'mps_national_code' =>              'nullable|string|max:3',

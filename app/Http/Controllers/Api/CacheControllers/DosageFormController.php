@@ -94,7 +94,7 @@ class DosageFormController extends BaseApiCacheController
                     });
                 } else {
                     if (!is_numeric($id)) {
-                        return return_id_error($id);
+                        return returnIdError($id);
                     }
                     $check_id = $this->check_id($id, $this->dosage_form, $this->dosage_form_name);
                     if($check_id){
@@ -158,7 +158,7 @@ class DosageFormController extends BaseApiCacheController
     public function dosage_form_update(UpdateDosageFormRequest $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->dosage_form->find($id);
         if ($data == null) {
@@ -184,7 +184,7 @@ class DosageFormController extends BaseApiCacheController
     public function dosage_form_delete(Request $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->dosage_form->find($id);
         if ($data == null) {

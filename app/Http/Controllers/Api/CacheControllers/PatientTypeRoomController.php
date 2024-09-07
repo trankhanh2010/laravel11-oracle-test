@@ -207,7 +207,7 @@ class PatientTypeRoomController extends BaseApiCacheController
                     });
                 } else {
                     if (!is_numeric($id)) {
-                        return return_id_error($id);
+                        return returnIdError($id);
                     }
                     $check_id = $this->check_id($id, $this->patient_type_room, $this->patient_type_room_name);
                     if($check_id){
@@ -363,7 +363,7 @@ class PatientTypeRoomController extends BaseApiCacheController
         if($request->patient_type_id != null){
             $id = $request->patient_type_id;
             if (!is_numeric($id)) {
-                return return_id_error($id);
+                return returnIdError($id);
             } 
             $data = $this->patient_type->find($id);
             if ($data == null) {
@@ -404,7 +404,7 @@ class PatientTypeRoomController extends BaseApiCacheController
         }else{
             $id = $request->room_id;
             if (!is_numeric($id)) {
-                return return_id_error($id);
+                return returnIdError($id);
             }
             $data = $this->room->find($id);
             if ($data == null) {

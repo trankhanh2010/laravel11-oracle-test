@@ -26,15 +26,15 @@ class UpdateDebateReasonRequest extends FormRequest
     public function rules()
     {
         // Kiểm tra Id nhập vào của người dùng trước khi dùng Rule
-        if(!is_numeric($this->id)){
-            throw new HttpResponseException(return_id_error($this->id));
+        if(!is_numeric($this->debate_reason)){
+            throw new HttpResponseException(returnIdError($this->debate_reason));
         }        
         return [
             'debate_reason_code' =>        [
                                             'required',
                                             'string',
                                             'max:10',
-                                            Rule::unique('App\Models\HIS\DebateReason')->ignore($this->id),
+                                            Rule::unique('App\Models\HIS\DebateReason')->ignore($this->debate_reason),
                                         ],
             'debate_reason_name' =>      'required|string|max:100',
             'is_active' =>               'required|integer|in:0,1'

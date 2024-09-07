@@ -726,7 +726,9 @@ if (!function_exists('getArrElasticIndexKeyword')) {
 if (!function_exists('writeAndThrowError')) {
     function writeAndThrowError($mess_write, $e)
     {
-        $mess_write = $mess_write . ' ' . $e->getMessage();
+        if (preg_match('/Có lỗi/', $e->getMessage())) {
+            $mess_write = $mess_write . ' ' . $e->getMessage();
+        }
         throw new \Exception($mess_write, 0, $e);
     }
 }

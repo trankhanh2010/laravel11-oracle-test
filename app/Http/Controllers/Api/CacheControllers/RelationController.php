@@ -69,7 +69,7 @@ class RelationController extends BaseApiCacheController
                     $param = [];
                 } else {
                     if (!is_numeric($id)) {
-                        return return_id_error($id);
+                        return returnIdError($id);
                     }
                     $check_id = $this->check_id($id, $this->relation_list, $this->relation_list_name);
                     if ($check_id) {
@@ -123,7 +123,7 @@ class RelationController extends BaseApiCacheController
     public function relation_list_update(UpdateRelationListRequest $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->relation_list->find($id);
         if ($data == null) {
@@ -150,7 +150,7 @@ class RelationController extends BaseApiCacheController
     public function relation_list_delete(Request $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->relation_list->find($id);
         if ($data == null) {

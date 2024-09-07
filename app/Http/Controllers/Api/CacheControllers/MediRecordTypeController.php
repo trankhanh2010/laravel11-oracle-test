@@ -94,7 +94,7 @@ class MediRecordTypeController extends BaseApiCacheController
                     });
                 } else {
                     if (!is_numeric($id)) {
-                        return return_id_error($id);
+                        return returnIdError($id);
                     }
                     $check_id = $this->check_id($id, $this->medi_record_type, $this->medi_record_type_name);
                     if($check_id){
@@ -158,7 +158,7 @@ class MediRecordTypeController extends BaseApiCacheController
     public function medi_record_type_update(UpdateMediRecordTypeRequest $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->medi_record_type->find($id);
         if ($data == null) {
@@ -185,7 +185,7 @@ class MediRecordTypeController extends BaseApiCacheController
     public function medi_record_type_delete(Request $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->medi_record_type->find($id);
         if ($data == null) {

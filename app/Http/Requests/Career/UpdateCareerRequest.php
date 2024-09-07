@@ -26,15 +26,15 @@ class UpdateCareerRequest extends FormRequest
     public function rules()
     {
         // Kiểm tra Id nhập vào của người dùng trước khi dùng Rule
-        if(!is_numeric($this->id)){
-            throw new HttpResponseException(return_id_error($this->id));
+        if(!is_numeric($this->career)){
+            throw new HttpResponseException(returnIdError($this->career));
         }
         return [
             'career_code' =>        [
                                         'required',
                                         'string',
                                         'max:10',
-                                        Rule::unique('App\Models\HIS\Career')->ignore($this->id),
+                                        Rule::unique('App\Models\HIS\Career')->ignore($this->career),
                                     ],
             'career_name' =>      'required|string|max:1000',
             'is_active' =>               'required|integer|in:0,1'

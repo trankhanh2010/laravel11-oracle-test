@@ -70,7 +70,7 @@ class CareerController extends BaseApiCacheController
                     $param = [];
                 } else {
                     if (!is_numeric($id)) {
-                        return return_id_error($id);
+                        return returnIdError($id);
                     }
                     $check_id = $this->check_id($id, $this->career, $this->career_name);
                     if ($check_id) {
@@ -124,7 +124,7 @@ class CareerController extends BaseApiCacheController
     public function career_update(UpdateCareerRequest $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->career->find($id);
         if ($data == null) {
@@ -151,7 +151,7 @@ class CareerController extends BaseApiCacheController
     public function career_delete(Request $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->career->find($id);
         if ($data == null) {

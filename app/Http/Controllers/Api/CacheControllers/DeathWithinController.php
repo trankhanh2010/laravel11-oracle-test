@@ -94,7 +94,7 @@ class DeathWithinController extends BaseApiCacheController
                     });
                 } else {
                     if (!is_numeric($id)) {
-                        return return_id_error($id);
+                        return returnIdError($id);
                     }
                     $check_id = $this->check_id($id, $this->death_within, $this->death_within_name);
                     if($check_id){
@@ -158,7 +158,7 @@ class DeathWithinController extends BaseApiCacheController
     public function death_within_update(UpdateDeathWithinRequest $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->death_within->find($id);
         if ($data == null) {
@@ -185,7 +185,7 @@ class DeathWithinController extends BaseApiCacheController
     public function death_within_delete(Request $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->death_within->find($id);
         if ($data == null) {

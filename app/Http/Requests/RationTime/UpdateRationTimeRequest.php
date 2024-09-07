@@ -26,15 +26,15 @@ class UpdateRationTimeRequest extends FormRequest
     public function rules()
     {
         // Kiểm tra Id nhập vào của người dùng trước khi dùng Rule
-        if(!is_numeric($this->id)){
-            throw new HttpResponseException(return_id_error($this->id));
+        if(!is_numeric($this->ration_time)){
+            throw new HttpResponseException(returnIdError($this->ration_time));
         }
         return [
             'ration_time_code' => [
                 'required',
                 'string',
                 'max:2',
-                Rule::unique('App\Models\HIS\RationTime')->ignore($this->id),
+                Rule::unique('App\Models\HIS\RationTime')->ignore($this->ration_time),
             ],
             'ration_time_name' =>      'required|string|max:100',
             'is_active' =>             'required|integer|in:0,1'

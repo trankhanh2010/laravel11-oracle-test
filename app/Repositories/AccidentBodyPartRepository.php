@@ -6,15 +6,16 @@ use Illuminate\Support\Facades\DB;
 
 class AccidentBodyPartRepository
 {
-    protected $accident_body_part;
+    protected $accidentBodyPart;
 
-    public function __construct(AccidentBodyPart $accident_body_part)
+    public function __construct(AccidentBodyPart $accidentBodyPart)
     {
-        $this->accident_body_part = $accident_body_part;
+        $this->accidentBodyPart = $accidentBodyPart;
     }
+
     public function applyJoins()
     {
-        return $this->accident_body_part
+        return $this->accidentBodyPart
             ->select(
                 'his_accident_body_part.*'
             );
@@ -27,20 +28,19 @@ class AccidentBodyPartRepository
                 ->orWhere(DB::connection('oracle_his')->raw('his_accident_body_part.accident_body_part_name'), 'like', $keyword . '%');
         });
     }
-    public function applyIsActiveFilter($query, $is_active)
+    public function applyIsActiveFilter($query, $isActive)
     {
-        if ($is_active !== null) {
-            $query->where(DB::connection('oracle_his')->raw('his_accident_body_part.is_active'), $is_active);
+        if ($isActive !== null) {
+            $query->where(DB::connection('oracle_his')->raw('his_accident_body_part.is_active'), $isActive);
         }
 
         return $query;
     }
-    public function applyOrdering($query, $order_by, $order_by_join)
+    public function applyOrdering($query, $orderBy, $orderByJoin)
     {
-        if ($order_by != null) {
-            foreach ($order_by as $key => $item) {
-                if (in_array($key, $order_by_join)) {
-            
+        if ($orderBy != null) {
+            foreach ($orderBy as $key => $item) {
+                if (in_array($key, $orderByJoin)) {
                 } else {
                     $query->orderBy('his_accident_body_part.' . $key, $item);
                 }
@@ -49,9 +49,9 @@ class AccidentBodyPartRepository
 
         return $query;
     }
-    public function fetchData($query, $get_all, $start, $limit)
+    public function fetchData($query, $getAll, $start, $limit)
     {
-        if ($get_all) {
+        if ($getAll) {
             // Lấy tất cả dữ liệu
             return $query->get();
         } else {
@@ -64,16 +64,16 @@ class AccidentBodyPartRepository
     }
     public function getById($id)
     {
-        return $this->accident_body_part->find($id);
+        return $this->accidentBodyPart->find($id);
     }
-    public function create($request, $time, $app_creator, $app_modifier){
-        $data = $this->accident_body_part::create([
+    public function create($request, $time, $appCreator, $appModifier){
+        $data = $this->accidentBodyPart::create([
             'create_time' => now()->format('Ymdhis'),
             'modify_time' => now()->format('Ymdhis'),
             'creator' => get_loginname_with_token($request->bearerToken(), $time),
             'modifier' => get_loginname_with_token($request->bearerToken(), $time),
-            'app_creator' => $app_creator,
-            'app_modifier' => $app_modifier,
+            'app_creator' => $appCreator,
+            'app_modifier' => $appModifier,
             'is_active' => 1,
             'is_delete' => 0,
             'accident_body_part_code' => $request->accident_body_part_code,
@@ -82,11 +82,11 @@ class AccidentBodyPartRepository
         return $data;
     }
 
-    public function update($request, $data, $time, $app_modifier){
+    public function update($request, $data, $time, $appModifier){
         $data->update([
             'modify_time' => now()->format('Ymdhis'),
             'modifier' => get_loginname_with_token($request->bearerToken(), $time),
-            'app_modifier' => $app_modifier,
+            'app_modifier' => $appModifier,
             'accident_body_part_code' => $request->accident_body_part_code,
             'accident_body_part_name' => $request->accident_body_part_name,
             'is_active' => $request->is_active

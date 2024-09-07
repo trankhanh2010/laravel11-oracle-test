@@ -64,7 +64,7 @@ class TestSampleTypeController extends BaseApiCacheController
                     $param = [];
                 } else {
                     if (!is_numeric($id)) {
-                        return return_id_error($id);
+                        return returnIdError($id);
                     }
                     $check_id = $this->check_id($id, $this->test_sample_type, $this->test_sample_type_name);
                     if ($check_id) {

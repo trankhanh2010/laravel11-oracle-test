@@ -72,7 +72,7 @@ class TreatmentTypeController extends BaseApiCacheController
                     ];
                 } else {
                     if (!is_numeric($id)) {
-                        return return_id_error($id);
+                        return returnIdError($id);
                     }
                     $check_id = $this->check_id($id, $this->treatment_type, $this->treatment_type_name);
                     if ($check_id) {
@@ -139,7 +139,7 @@ class TreatmentTypeController extends BaseApiCacheController
     public function treatment_type_update(UpdateTreatmentTypeRequest $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->treatment_type->find($id);
         if ($data == null) {
@@ -180,7 +180,7 @@ class TreatmentTypeController extends BaseApiCacheController
     public function treatment_type_delete(Request $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->treatment_type->find($id);
         if ($data == null) {

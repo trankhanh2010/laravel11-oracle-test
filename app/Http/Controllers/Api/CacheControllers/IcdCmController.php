@@ -70,7 +70,7 @@ class IcdCmController extends BaseApiCacheController
                     $param = [];
                 } else {
                     if (!is_numeric($id)) {
-                        return return_id_error($id);
+                        return returnIdError($id);
                     }
                     $check_id = $this->check_id($id, $this->icd_cm, $this->icd_cm_name);
                     if ($check_id) {
@@ -126,7 +126,7 @@ class IcdCmController extends BaseApiCacheController
     public function icd_cm_update(UpdateIcdCmRequest $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->icd_cm->find($id);
         if ($data == null) {
@@ -161,7 +161,7 @@ class IcdCmController extends BaseApiCacheController
     public function icd_cm_delete(Request $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->icd_cm->find($id);
         if ($data == null) {

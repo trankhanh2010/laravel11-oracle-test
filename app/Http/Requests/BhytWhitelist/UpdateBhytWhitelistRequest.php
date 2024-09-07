@@ -26,15 +26,15 @@ class UpdateBhytWhitelistRequest extends FormRequest
     public function rules()
     {
         // Kiểm tra Id nhập vào của người dùng trước khi dùng Rule
-        if(!is_numeric($this->id)){
-            throw new HttpResponseException(return_id_error($this->id));
+        if(!is_numeric($this->bhyt_whitelist)){
+            throw new HttpResponseException(returnIdError($this->bhyt_whitelist));
         }
         return [
             'bhyt_whitelist_code' =>        [
                                                 'required',
                                                 'string',
                                                 'max:3',
-                                                Rule::unique('App\Models\HIS\BHYTWhitelist')->ignore($this->id),
+                                                Rule::unique('App\Models\HIS\BHYTWhitelist')->ignore($this->bhyt_whitelist),
                                             ],
             'career_id' =>  [                   'nullable',
                                                 'integer',

@@ -68,7 +68,7 @@ class MediOrgController extends BaseApiCacheController
                     $param = [];
                 } else {
                     if (!is_numeric($id)) {
-                        return return_id_error($id);
+                        return returnIdError($id);
                     }
                     $check_id = $this->check_id($id, $this->medi_org, $this->medi_org_name);
                     if ($check_id) {
@@ -128,7 +128,7 @@ class MediOrgController extends BaseApiCacheController
     public function medi_org_update(UpdateMediOrgRequest $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->medi_org->find($id);
         if ($data == null) {
@@ -166,7 +166,7 @@ class MediOrgController extends BaseApiCacheController
     public function medi_org_delete(Request $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->medi_org->find($id);
         if ($data == null) {

@@ -94,7 +94,7 @@ class CancelReasonController extends BaseApiCacheController
                     });
                 } else {
                     if (!is_numeric($id)) {
-                        return return_id_error($id);
+                        return returnIdError($id);
                     }
                     $check_id = $this->check_id($id, $this->cancel_reason, $this->cancel_reason_name);
                     if($check_id){
@@ -158,7 +158,7 @@ class CancelReasonController extends BaseApiCacheController
     public function cancel_reason_update(UpdateCancelReasonRequest $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->cancel_reason->find($id);
         if ($data == null) {
@@ -185,7 +185,7 @@ class CancelReasonController extends BaseApiCacheController
     public function cancel_reason_delete(Request $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->cancel_reason->find($id);
         if ($data == null) {

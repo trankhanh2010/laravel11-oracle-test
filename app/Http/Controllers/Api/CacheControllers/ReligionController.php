@@ -68,7 +68,7 @@ class ReligionController extends BaseApiCacheController
                     $param = [];
                 } else {
                     if (!is_numeric($id)) {
-                        return return_id_error($id);
+                        return returnIdError($id);
                     }
                     $check_id = $this->check_id($id, $this->religion, $this->religion_name);
                     if ($check_id) {
@@ -122,7 +122,7 @@ class ReligionController extends BaseApiCacheController
     public function religion_update(UpdateReligionRequest $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->religion->find($id);
         if ($data == null) {
@@ -149,7 +149,7 @@ class ReligionController extends BaseApiCacheController
     public function religion_delete(Request $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->religion->find($id);
         if ($data == null) {

@@ -94,7 +94,7 @@ class CareerTitleController extends BaseApiCacheController
                     });
                 } else {
                     if (!is_numeric($id)) {
-                        return return_id_error($id);
+                        return returnIdError($id);
                     }
                     $check_id = $this->check_id($id, $this->career_title, $this->career_title_name);
                     if($check_id){
@@ -158,7 +158,7 @@ class CareerTitleController extends BaseApiCacheController
     public function career_title_update(UpdateCareerTitleRequest $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->career_title->find($id);
         if ($data == null) {
@@ -185,7 +185,7 @@ class CareerTitleController extends BaseApiCacheController
     public function career_title_delete(Request $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->career_title->find($id);
         if ($data == null) {

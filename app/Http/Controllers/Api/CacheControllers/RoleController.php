@@ -70,7 +70,7 @@ class RoleController extends BaseApiCacheController
                     $param = [];
                 } else {
                     if (!is_numeric($id)) {
-                        return return_id_error($id);
+                        return returnIdError($id);
                     }
                     $check_id = $this->check_id($id, $this->role, $this->role_name);
                     if ($check_id) {
@@ -127,7 +127,7 @@ class RoleController extends BaseApiCacheController
     public function role_update(UpdateRoleRequest $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->role->find($id);
         if ($data == null) {
@@ -155,7 +155,7 @@ class RoleController extends BaseApiCacheController
     public function role_delete(Request $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->role->find($id);
         if ($data == null) {

@@ -94,7 +94,7 @@ class DebateReasonController extends BaseApiCacheController
                     });
                 } else {
                     if (!is_numeric($id)) {
-                        return return_id_error($id);
+                        return returnIdError($id);
                     }
                     $check_id = $this->check_id($id, $this->debate_reason, $this->debate_reason_name);
                     if($check_id){
@@ -158,7 +158,7 @@ class DebateReasonController extends BaseApiCacheController
     public function debate_reason_update(UpdateDebateReasonRequest $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->debate_reason->find($id);
         if ($data == null) {
@@ -185,7 +185,7 @@ class DebateReasonController extends BaseApiCacheController
     public function debate_reason_delete(Request $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->debate_reason->find($id);
         if ($data == null) {

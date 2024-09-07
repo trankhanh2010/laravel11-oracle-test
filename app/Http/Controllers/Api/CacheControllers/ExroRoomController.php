@@ -219,7 +219,7 @@ class ExroRoomController extends BaseApiCacheController
                     });
                 } else {
                     if (!is_numeric($id)) {
-                        return return_id_error($id);
+                        return returnIdError($id);
                     }
                     $check_id = $this->check_id($id, $this->exro_room, $this->exro_room_name);
                     if($check_id){
@@ -385,7 +385,7 @@ class ExroRoomController extends BaseApiCacheController
         if($request->execute_room_id != null){
             $id = $request->execute_room_id;
             if (!is_numeric($id)) {
-                return return_id_error($id);
+                return returnIdError($id);
             } 
             $data = $this->execute_room->find($id);
             if ($data == null) {
@@ -428,7 +428,7 @@ class ExroRoomController extends BaseApiCacheController
         }else{
             $id = $request->room_id;
             if (!is_numeric($id)) {
-                return return_id_error($id);
+                return returnIdError($id);
             }
             $data = $this->room->find($id);
             if ($data == null) {

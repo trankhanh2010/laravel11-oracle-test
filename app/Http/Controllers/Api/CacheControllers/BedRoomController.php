@@ -153,7 +153,7 @@ class BedRoomController extends BaseApiCacheController
                 });
             } else {
                 if (!is_numeric($id)) {
-                    return return_id_error($id);
+                    return returnIdError($id);
                 }
                 $check_id = $this->check_id($id, $this->bed_room, $this->bed_room_name);
                 if($check_id){
@@ -240,7 +240,7 @@ class BedRoomController extends BaseApiCacheController
     public function bed_room_update(UpdateBedRoomRequest $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->bed_room->find($id);
         if ($data == null) {
@@ -298,7 +298,7 @@ class BedRoomController extends BaseApiCacheController
     public function bed_room_delete(Request $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->bed_room->find($id);
         if ($data == null) {

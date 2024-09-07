@@ -94,7 +94,7 @@ class BhytBlacklistController extends BaseApiCacheController
                     });
                 } else {
                     if (!is_numeric($id)) {
-                        return return_id_error($id);
+                        return returnIdError($id);
                     }
                     $check_id = $this->check_id($id, $this->bhyt_blacklist, $this->bhyt_blacklist_name);
                     if ($check_id) {
@@ -157,7 +157,7 @@ class BhytBlacklistController extends BaseApiCacheController
     public function bhyt_blacklist_update(UpdateBhytBlacklistRequest $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->bhyt_blacklist->find($id);
         if ($data == null) {
@@ -183,7 +183,7 @@ class BhytBlacklistController extends BaseApiCacheController
     public function bhyt_blacklist_delete(Request $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->bhyt_blacklist->find($id);
         if ($data == null) {

@@ -28,15 +28,15 @@ class UpdateMediStockRequest extends FormRequest
     public function rules()
     {
         // Kiểm tra Id nhập vào của người dùng trước khi dùng Rule
-        if(!is_numeric($this->id)){
-            throw new HttpResponseException(return_id_error($this->id));
+        if(!is_numeric($this->medi_stock)){
+            throw new HttpResponseException(returnIdError($this->medi_stock));
         }
         return [
             'medi_stock_code' =>                [
                                                     'required',
                                                     'string',
                                                     'max:20',
-                                                    Rule::unique('App\Models\HIS\MediStock')->ignore($this->id),
+                                                    Rule::unique('App\Models\HIS\MediStock')->ignore($this->medi_stock),
                                                 ],
             'medi_stock_name' =>                'required|string|max:100',
             'department_id' =>                  [
@@ -67,7 +67,7 @@ class UpdateMediStockRequest extends FormRequest
                                                         $query = $query
                                                         ->where(DB::connection('oracle_his')->raw("is_active"), 1);
                                                     }),
-                                                    'not_in:'.$this->id,
+                                                    'not_in:'.$this->medi_stock,
                                                 ],
             'is_allow_imp_supplier' =>          'nullable|integer|in:0,1',
             'do_not_imp_medicine' =>            'nullable|integer|in:0,1',

@@ -26,8 +26,8 @@ class UpdateBloodVolumeRequest extends FormRequest
     public function rules()
     {
                 // Kiểm tra Id nhập vào của người dùng trước khi dùng Rule
-        if(!is_numeric($this->id)){
-            throw new HttpResponseException(return_id_error($this->id));
+        if(!is_numeric($this->blood_volume)){
+            throw new HttpResponseException(returnIdError($this->blood_volume));
         }
         return [
             'volume' =>        [
@@ -35,7 +35,7 @@ class UpdateBloodVolumeRequest extends FormRequest
                                                     'numeric',
                                                     'min:0',
                                                     'regex:/^\d{1,17}(\.\d{1,2})?$/',
-                                                    Rule::unique('App\Models\HIS\BloodVolume')->ignore($this->id),
+                                                    Rule::unique('App\Models\HIS\BloodVolume')->ignore($this->blood_volume),
                                                 ],
             'is_donation' =>        'nullable|integer|in:0,1',
             'is_active' =>          'required|integer|in:0,1'

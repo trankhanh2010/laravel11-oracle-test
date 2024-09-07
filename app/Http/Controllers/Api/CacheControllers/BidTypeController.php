@@ -94,7 +94,7 @@ class BidTypeController extends BaseApiCacheController
                     });
                 } else {
                     if (!is_numeric($id)) {
-                        return return_id_error($id);
+                        return returnIdError($id);
                     }
                     $check_id = $this->check_id($id, $this->bid_type, $this->bid_type_name);
                     if($check_id){
@@ -158,7 +158,7 @@ class BidTypeController extends BaseApiCacheController
     public function bid_type_update( UpdateBidTypeRequest $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->bid_type->find($id);
         if ($data == null) {
@@ -185,7 +185,7 @@ class BidTypeController extends BaseApiCacheController
     public function bid_type_delete(Request $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->bid_type->find($id);
         if ($data == null) {

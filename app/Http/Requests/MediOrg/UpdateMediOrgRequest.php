@@ -31,15 +31,15 @@ class UpdateMediOrgRequest extends FormRequest
     public function rules()
     {
         // Kiểm tra Id nhập vào của người dùng trước khi dùng Rule
-        if(!is_numeric($this->id)){
-            throw new HttpResponseException(return_id_error($this->id));
+        if(!is_numeric($this->medi_org)){
+            throw new HttpResponseException(returnIdError($this->medi_org));
         }
         return [
             'medi_org_code' =>                  [
                                                     'required',
                                                     'string',
                                                     'max:6',
-                                                    Rule::unique('App\Models\HIS\MediOrg', 'medi_org_code')->ignore($this->id)
+                                                    Rule::unique('App\Models\HIS\MediOrg', 'medi_org_code')->ignore($this->medi_org)
                                                 ],
             'medi_org_name' =>                  'required|string|max:500',
             'province_code' =>                  [

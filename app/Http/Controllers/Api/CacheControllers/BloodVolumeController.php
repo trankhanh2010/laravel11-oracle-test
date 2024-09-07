@@ -94,7 +94,7 @@ class BloodVolumeController extends BaseApiCacheController
                     });
                 } else {
                     if (!is_numeric($id)) {
-                        return return_id_error($id);
+                        return returnIdError($id);
                     }
                     $check_id = $this->check_id($id, $this->blood_volume, $this->blood_volume_name);
                     if($check_id){
@@ -158,7 +158,7 @@ class BloodVolumeController extends BaseApiCacheController
     public function blood_volume_update(UpdateBloodVolumeRequest $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->blood_volume->find($id);
         if ($data == null) {
@@ -185,7 +185,7 @@ class BloodVolumeController extends BaseApiCacheController
     public function blood_volume_delete(Request $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->blood_volume->find($id);
         if ($data == null) {

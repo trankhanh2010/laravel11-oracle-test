@@ -27,15 +27,15 @@ class UpdateIcdCmRequest extends FormRequest
     public function rules()
     {
         // Kiểm tra Id nhập vào của người dùng trước khi dùng Rule
-        if(!is_numeric($this->id)){
-            throw new HttpResponseException(return_id_error($this->id));
+        if(!is_numeric($this->icd_cm)){
+            throw new HttpResponseException(returnIdError($this->icd_cm));
         }
         return [
             'icd_cm_code' =>                  [
                 'required',
                 'string',
                 'max:10',
-                Rule::unique('App\Models\HIS\IcdCm')->ignore($this->id),
+                Rule::unique('App\Models\HIS\IcdCm')->ignore($this->icd_cm),
             ],
             'icd_cm_name' =>                  'required|string|max:1000',
             'icd_cm_chapter_code' =>          'nullable|string|max:10',

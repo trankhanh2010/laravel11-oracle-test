@@ -79,7 +79,7 @@ class DepartmentController extends BaseApiCacheController
             } else {
                 // if ($id != 'deleted') {
                 if (!is_numeric($id)) {
-                    return return_id_error($id);
+                    return returnIdError($id);
                 }
                 $check_id = $this->check_id($id, $this->department, $this->department_name);
                 if($check_id){
@@ -160,7 +160,7 @@ class DepartmentController extends BaseApiCacheController
     public function department_update(UpdateDepartmentRequest $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->department->find($id);
         if ($data == null) {
@@ -210,7 +210,7 @@ class DepartmentController extends BaseApiCacheController
     public function department_delete(Request $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->department->find($id);
         if ($data == null) {
@@ -232,7 +232,7 @@ class DepartmentController extends BaseApiCacheController
     // public function department_delete(Request $request, $id)
     // {
     //     if (!is_numeric($id)) {
-    //         return return_id_error($id);
+    //         return returnIdError($id);
     //     }
     //     $data = $this->department->find($id);
     //     if ($data == null) {
@@ -252,7 +252,7 @@ class DepartmentController extends BaseApiCacheController
     // public function department_restore($id = null, Request $request)
     // {
     //     if (!is_numeric($id)) {
-    //         return return_id_error($id);
+    //         return returnIdError($id);
     //     }
     //     $data = $this->department::withDeleted()->find($id);
     //     if ($data == null) {

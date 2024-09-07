@@ -68,7 +68,7 @@ class RationGroupController extends BaseApiCacheController
                     $param = [];
                 } else {
                     if (!is_numeric($id)) {
-                        return return_id_error($id);
+                        return returnIdError($id);
                     }
                     $check_id = $this->check_id($id, $this->ration_group, $this->ration_group_name);
                     if ($check_id) {
@@ -121,7 +121,7 @@ class RationGroupController extends BaseApiCacheController
     public function ration_group_update(UpdateRationGroupRequest $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->ration_group->find($id);
         if ($data == null) {
@@ -148,7 +148,7 @@ class RationGroupController extends BaseApiCacheController
     public function ration_group_delete(Request $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->ration_group->find($id);
         if ($data == null) {

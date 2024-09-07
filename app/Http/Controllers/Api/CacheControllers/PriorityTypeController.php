@@ -68,7 +68,7 @@ class PriorityTypeController extends BaseApiCacheController
                     $param = [];
                 } else {
                     if (!is_numeric($id)) {
-                        return return_id_error($id);
+                        return returnIdError($id);
                     }
                     $check_id = $this->check_id($id, $this->priority_type, $this->priority_type_name);
                     if ($check_id) {
@@ -129,7 +129,7 @@ class PriorityTypeController extends BaseApiCacheController
     public function priority_type_update(UpdatePriorityTypeRequest $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->priority_type->find($id);
         if ($data == null) {
@@ -163,7 +163,7 @@ class PriorityTypeController extends BaseApiCacheController
     public function priority_type_delete(Request $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->priority_type->find($id);
         if ($data == null) {

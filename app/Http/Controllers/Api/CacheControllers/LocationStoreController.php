@@ -100,7 +100,7 @@ class LocationStoreController extends BaseApiCacheController
                     });
                 } else {
                     if (!is_numeric($id)) {
-                        return return_id_error($id);
+                        return returnIdError($id);
                     }
                     $check_id = $this->check_id($id, $this->location_store, $this->location_store_name);
                     if($check_id){
@@ -168,7 +168,7 @@ class LocationStoreController extends BaseApiCacheController
     public function location_treatment_update(UpdateLocationTreatmentRequest $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->location_store->find($id);
         if ($data == null) {
@@ -195,7 +195,7 @@ class LocationStoreController extends BaseApiCacheController
     public function location_treatment_delete(Request $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->location_store->find($id);
         if ($data == null) {

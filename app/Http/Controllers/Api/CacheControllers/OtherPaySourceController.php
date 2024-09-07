@@ -68,7 +68,7 @@ class OtherPaySourceController extends BaseApiCacheController
                     $param = [];
                 } else {
                     if (!is_numeric($id)) {
-                        return return_id_error($id);
+                        return returnIdError($id);
                     }
                     $check_id = $this->check_id($id, $this->other_pay_source, $this->other_pay_source_name);
                     if ($check_id) {
@@ -124,7 +124,7 @@ class OtherPaySourceController extends BaseApiCacheController
     {
         try {
             if (!is_numeric($id)) {
-                return return_id_error($id);
+                return returnIdError($id);
             }
             $data = $this->other_pay_source->find($id);
             if ($data == null) {
@@ -156,7 +156,7 @@ class OtherPaySourceController extends BaseApiCacheController
     public function other_pay_source_delete(Request $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->other_pay_source->find($id);
         if ($data == null) {

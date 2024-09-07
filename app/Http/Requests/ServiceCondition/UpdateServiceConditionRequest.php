@@ -26,15 +26,15 @@ class UpdateServiceConditionRequest extends FormRequest
     public function rules()
     {
         // Kiểm tra Id nhập vào của người dùng trước khi dùng Rule
-        if(!is_numeric($this->id)){
-            throw new HttpResponseException(return_id_error($this->id));
+        if(!is_numeric($this->service_condition)){
+            throw new HttpResponseException(returnIdError($this->service_condition));
         }
         return [
             'service_condition_code' => [
                 'required',
                 'string',
                 'max:20',
-                Rule::unique('App\Models\HIS\ServiceCondition')->ignore($this->id),
+                Rule::unique('App\Models\HIS\ServiceCondition')->ignore($this->service_condition),
             ],
             'service_condition_name' =>      'required|string|max:1000',
             'hein_ratio' =>            'nullable|numeric|regex:/^\d{1,15}(\.\d{1,4})?$/|min:0|max:1', 

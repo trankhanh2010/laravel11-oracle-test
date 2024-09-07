@@ -65,7 +65,7 @@ class BhytWhitelistController extends BaseApiCacheController
                     $data = get_cache_full($this->bhyt_whitelist, [], $this->bhyt_whitelist_name . '_start_' . $this->start . '_limit_' . $this->limit . $this->order_by_tring . '_is_active_' . $this->is_active . '_get_all_' . $this->get_all, null, $this->time, $this->start, $this->limit, $this->order_by, $this->is_active, $this->get_all);
                 } else {
                     if (!is_numeric($id)) {
-                        return return_id_error($id);
+                        return returnIdError($id);
                     }
                     $check_id = $this->check_id($id, $this->bhyt_whitelist, $this->bhyt_whitelist_name);
                     if ($check_id) {
@@ -118,7 +118,7 @@ class BhytWhitelistController extends BaseApiCacheController
     public function bhyt_whitelist_update(UpdateBhytWhitelistRequest $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->bhyt_whitelist->find($id);
         if ($data == null) {
@@ -146,7 +146,7 @@ class BhytWhitelistController extends BaseApiCacheController
     public function bhyt_whitelist_delete(Request $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->bhyt_whitelist->find($id);
         if ($data == null) {

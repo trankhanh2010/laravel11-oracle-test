@@ -22,11 +22,15 @@ class ElasticCreateAgeTypeIndex
      */
     public function handle(CreateAgeTypeIndex $event): void
     {
-        // Kiểm tra xem có tồn tại Index chưa
-        $exists = $this->client->indices()->exists(['index' => $event->model_name])->asBool();
-        if(!$exists){
-            // Tạo chỉ mục
-            $this->client->indices()->create($event->params);
+        try {
+            // Kiểm tra xem có tồn tại Index chưa
+            $exists = $this->client->indices()->exists(['index' => $event->model_name])->asBool();
+            if (!$exists) {
+                // Tạo chỉ mục
+                $this->client->indices()->create($event->params);
+            }
+        } catch (\Throwable $e) {
+            writeAndThrowError(config('params')['elastic']['error']['create_index'], $e);
         }
     }
 }

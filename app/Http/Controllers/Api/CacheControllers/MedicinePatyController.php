@@ -136,7 +136,7 @@ class MedicinePatyController extends BaseApiCacheController
                     });
                 } else {
                     if (!is_numeric($id)) {
-                        return return_id_error($id);
+                        return returnIdError($id);
                     }
                     $check_id = $this->check_id($id, $this->medicine_paty, $this->medicine_paty_name);
                     if($check_id){
@@ -246,7 +246,7 @@ class MedicinePatyController extends BaseApiCacheController
     public function medicine_paty_update(UpdateMedicinePatyRequest $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->medicine_paty->find($id);
         if ($data == null) {
@@ -277,7 +277,7 @@ class MedicinePatyController extends BaseApiCacheController
     public function medicine_paty_delete(Request $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->medicine_paty->find($id);
         if ($data == null) {

@@ -94,7 +94,7 @@ class MedicineUseFormController extends BaseApiCacheController
                     });
                 } else {
                     if (!is_numeric($id)) {
-                        return return_id_error($id);
+                        return returnIdError($id);
                     }
                     $check_id = $this->check_id($id, $this->medicine_use_form, $this->medicine_use_form_name);
                     if($check_id){
@@ -161,7 +161,7 @@ class MedicineUseFormController extends BaseApiCacheController
     public function medicine_use_form_update(UpdateMedicineUseFormRequest $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->medicine_use_form->find($id);
         if ($data == null) {
@@ -191,7 +191,7 @@ class MedicineUseFormController extends BaseApiCacheController
     public function medicine_use_form_delete(Request $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->medicine_use_form->find($id);
         if ($data == null) {

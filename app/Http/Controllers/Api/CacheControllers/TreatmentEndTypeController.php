@@ -95,7 +95,7 @@ class TreatmentEndTypeController extends BaseApiCacheController
                     });
                 } else {
                     if (!is_numeric($id)) {
-                        return return_id_error($id);
+                        return returnIdError($id);
                     }
                     $check_id = $this->check_id($id, $this->treatment_end_type, $this->treatment_end_type_name);
                     if($check_id){
@@ -177,7 +177,7 @@ class TreatmentEndTypeController extends BaseApiCacheController
     public function treatment_end_type_update(UpdateTreatmentEndTypeRequest $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->treatment_end_type->find($id);
         if ($data == null) {
@@ -221,7 +221,7 @@ class TreatmentEndTypeController extends BaseApiCacheController
     public function treatment_end_type_delete(Request $request, $id)
     {
         if (!is_numeric($id)) {
-            return return_id_error($id);
+            return returnIdError($id);
         }
         $data = $this->treatment_end_type->find($id);
         if ($data == null) {
