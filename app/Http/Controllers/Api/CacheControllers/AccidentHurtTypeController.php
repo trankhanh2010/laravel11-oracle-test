@@ -13,103 +13,84 @@ use App\Services\Model\AccidentHurtTypeService;
 
 class AccidentHurtTypeController extends BaseApiCacheController
 {
-    protected $accident_hurt_type_service;
-    public function __construct(Request $request, ElasticsearchService $elastic_search_service, AccidentHurtTypeService $accident_hurt_type_service)
+    protected $accidentHurtTypeService;
+    public function __construct(Request $request, ElasticsearchService $elasticSearchService, AccidentHurtTypeService $accidentHurtTypeService, AccidentHurtType $accidentHurtType)
     {
         parent::__construct($request); // Gọi constructor của BaseController
-        $this->elastic_search_service = $elastic_search_service;
-        $this->accident_hurt_type_service = $accident_hurt_type_service;
-        $this->accident_hurt_type = new AccidentHurtType();
-
+        $this->elasticSearchService = $elasticSearchService;
+        $this->accidentHurtTypeService = $accidentHurtTypeService;
+        $this->accidentHurtType = $accidentHurtType;
         // Kiểm tra tên trường trong bảng
-        if ($this->order_by != null) {
-            $this->order_by_join = [];
-            $columns = $this->get_columns_table($this->accident_hurt_type);
-            $this->order_by = $this->check_order_by($this->order_by, $columns, $this->order_by_join ?? []);
-            $this->order_by_tring = arrayToCustomString($this->order_by);
+        if ($this->orderBy != null) {
+            $this->orderByJoin = [];
+            $columns = $this->getColumnsTable($this->accidentHurtType);
+            $this->orderBy = $this->checkOrderBy($this->orderBy, $columns, $this->orderByJoin ?? []);
+            $this->orderByString = arrayToCustomString($this->orderBy);
         }
     }
-    public function accident_hurt_type($id = null)
+    public function index()
     {
-        // Kiểm tra param và trả về lỗi nếu nó không hợp lệ
-        if ($this->check_param()) {
-            return $this->check_param();
+        if ($this->checkParam()) {
+            return $this->checkParam();
         }
-        try {
-            $keyword = $this->keyword;
-            if (($keyword != null || $this->elastic_search_type != null) && !$this->cache) {
-                if ($this->elastic_search_type != null) {
-                    $data = $this->elastic_search_service->handleElasticSearchSearch($this->accident_hurt_type_name);
-                    $count = $data['count'];
-                    $data = $data['data'];
-                } else {
-                    $data = $this->accident_hurt_type_service->handleDataBaseSearch($keyword, $this->is_active, $this->order_by, $this->order_by_join, $this->get_all, $this->start, $this->limit);
-                    $count = $data['count'];
-                    $data = $data['data'];
-                }
+        $keyword = $this->keyword;
+        if (($keyword != null || $this->elasticSearchType != null) && !$this->cache) {
+            if ($this->elasticSearchType != null) {
+                $data = $this->elasticSearchService->handleElasticSearchSearch($this->accidentHurtTypeName);
             } else {
-                if ($id == null) {
-                    if ($this->elastic) {
-                        $data = $this->elastic_search_service->handleElasticSearchGetAll($this->accident_hurt_type_name);
-                    } else {
-                        $data = $this->accident_hurt_type_service->handleDataBaseGetAll($this->accident_hurt_type_name, $this->is_active, $this->order_by, $this->order_by_join, $this->get_all, $this->start, $this->limit);
-                    }
-                } else {
-                    if ($id !== null) {
-                        $validationError = $this->validateAndCheckId($id, $this->accident_hurt_type, $this->accident_hurt_type_name);
-                        if ($validationError) {
-                            return $validationError;
-                        }
-                    }
-                    if ($this->elastic) {
-                        $data = $this->elastic_search_service->handleElasticSearchGetWithId($this->accident_hurt_type_name, $id);
-                    } else {
-                        $data = $this->accident_hurt_type_service->handleDataBaseGetWithId($this->accident_hurt_type_name, $id, $this->is_active);
-                    }
-                }
+                $data = $this->accidentHurtTypeService->handleDataBaseSearch($keyword, $this->isActive, $this->orderBy, $this->orderByJoin, $this->getAll, $this->start, $this->limit);
             }
-            $param_return = [
-                $this->get_all_name => $this->get_all,
-                $this->start_name => ($this->get_all || !is_null($id)) ? null : $this->start,
-                $this->limit_name => ($this->get_all || !is_null($id)) ? null : $this->limit,
-                $this->count_name => $count ?? ($data['count'] ?? null),
-                $this->is_active_name => $this->is_active,
-                $this->keyword_name => $this->keyword,
-                $this->order_by_name => $this->order_by_request
-            ];
-            return return_data_success($param_return, $data ?? ($data['data'] ?? null) ?? null);
-        } catch (\Throwable $e) {
-            // Xử lý lỗi và trả về phản hồi lỗi
-            return return_500_error($e->getMessage());
+        } else {
+            if ($this->elastic) {
+                $data = $this->elasticSearchService->handleElasticSearchGetAll($this->accidentHurtTypeName);
+            } else {
+                $data = $this->accidentHurtTypeService->handleDataBaseGetAll($this->accidentHurtTypeName, $this->isActive, $this->orderBy, $this->orderByJoin, $this->getAll, $this->start, $this->limit);
+            }
         }
-    }
-    public function accident_hurt_type_create(CreateAccidentHurtTypeRequest $request)
-    {
-        try {
-            return $this->accident_hurt_type_service->createAccidentHurtType($request, $this->time, $this->app_creator, $this->app_modifier);
-        } catch (\Throwable $e) {
-            // Xử lý lỗi và trả về phản hồi lỗi
-            return return_500_error($e->getMessage());
-        }
+        $paramReturn = [
+            $this->getAllName => $this->getAll,
+            $this->startName => $this->getAll ? null : $this->start,
+            $this->limitName => $this->getAll ? null : $this->limit,
+            $this->countName => $data['count'],
+            $this->isActiveName => $this->isActive,
+            $this->keywordName => $this->keyword,
+            $this->orderByName => $this->orderByRequest
+        ];
+        return returnDataSuccess($paramReturn, $data['data']);
     }
 
-    public function accident_hurt_type_update(UpdateAccidentHurtTypeRequest $request, $id)
+    public function show($id)
     {
-        try {
-            return $this->accident_hurt_type_service->updateAccidentHurtType($this->accident_hurt_type_name, $id, $request, $this->time, $this->app_modifier);
-        } catch (\Throwable $e) {
-            // Xử lý lỗi và trả về phản hồi lỗi
-            return return_500_error($e->getMessage());
+        if ($this->checkParam()) {
+            return $this->checkParam();
         }
+        if ($id !== null) {
+            $validationError = $this->validateAndCheckId($id, $this->accidentHurtType, $this->accidentHurtTypeName);
+            if ($validationError) {
+                return $validationError;
+            }
+        }
+        if ($this->elastic) {
+            $data = $this->elasticSearchService->handleElasticSearchGetWithId($this->accidentHurtTypeName, $id);
+        } else {
+            $data = $this->accidentHurtTypeService->handleDataBaseGetWithId($this->accidentHurtTypeName, $id, $this->isActive);
+        }
+        $paramReturn = [
+            $this->idName => $id,
+            $this->isActiveName => $this->isActive,
+        ];
+        return returnDataSuccess($paramReturn, $data);
     }
-
-    public function accident_hurt_type_delete($id)
+    public function store(CreateAccidentHurtTypeRequest $request)
     {
-        try {
-            return $this->accident_hurt_type_service->deleteAccidentHurtType($this->accident_hurt_type_name, $id);
-        } catch (\Throwable $e) {
-            // Xử lý lỗi và trả về phản hồi lỗi
-            return return_500_error($e->getMessage());
-        }
+        return $this->accidentHurtTypeService->createAccidentHurtType($request, $this->time, $this->appCreator, $this->appModifier);
+    }
+    public function update(UpdateAccidentHurtTypeRequest $request, $id)
+    {
+        return $this->accidentHurtTypeService->updateAccidentHurtType($this->accidentHurtTypeName, $id, $request, $this->time, $this->appModifier);
+    }
+    public function destroy($id)
+    {
+        return $this->accidentHurtTypeService->deleteAccidentHurtType($this->accidentHurtTypeName, $id);
     }
 }

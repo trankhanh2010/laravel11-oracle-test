@@ -4,6 +4,7 @@ namespace App\Listeners\Elastic\AccidentCare;
 
 use App\Events\Elastic\AccidentCare\InsertAccidentCareIndex;
 use App\Models\HIS\AccidentCare;
+use App\Repositories\AccidentCareRepository;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 
@@ -25,10 +26,10 @@ class ElasticInsertAccidentCareIndex
     {
         try {
             $record = $event->record;
-            $data = AccidentCare::getDataFromDbToElastic($record->id);
+            $data = AccidentCareRepository::getDataFromDbToElastic($record->id);
             // Tạo chỉ mục hoặc cập nhật dữ liệu
             $params = [
-                'index' => $event->model_name, // Chỉ mục bạn muốn tạo hoặc cập nhật
+                'index' => $event->modelName, // Chỉ mục bạn muốn tạo hoặc cập nhật
                 'id'    => $record->id, // ID của bản ghi
                 'body'  => $data,
             ];

@@ -14,16 +14,4 @@ class AgeType extends Model
     protected $table = 'HIS_Age_Type';
     protected $fillable = [
     ];
-    public static function getDataFromDbToElastic($id = null){
-        $data = DB::connection('oracle_his')->table('his_age_type')
-        ->select(
-            'his_age_type.*'
-        );
-        if($id != null){
-            $data = $data->where('his_age_type.id','=', $id)->first();
-        }else{
-            $data = $data->get();
-        }
-        return $data;
-    }
 }

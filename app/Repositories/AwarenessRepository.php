@@ -1,35 +1,35 @@
 <?php 
 namespace App\Repositories;
 
-use App\Models\HIS\AccidentHurtType;
+use App\Models\HIS\Awareness;
 use Illuminate\Support\Facades\DB;
 
-class AccidentHurtTypeRepository
+class AwarenessRepository
 {
-    protected $accidentHurtType;
-    public function __construct(AccidentHurtType $accidentHurtType)
+    protected $awareness;
+    public function __construct(Awareness $awareness)
     {
-        $this->accidentHurtType = $accidentHurtType;
+        $this->awareness = $awareness;
     }
 
     public function applyJoins()
     {
-        return $this->accidentHurtType
+        return $this->awareness
             ->select(
-                'his_accident_hurt_type.*'
+                'his_awareness.*'
             );
     }
     public function applyKeywordFilter($query, $keyword)
     {
         return $query->where(function ($query) use ($keyword) {
-            $query->where(DB::connection('oracle_his')->raw('his_accident_hurt_type.accident_hurt_type_code'), 'like', $keyword . '%')
-                ->orWhere(DB::connection('oracle_his')->raw('his_accident_hurt_type.accident_hurt_type_name'), 'like', $keyword . '%');
+            $query->where(DB::connection('oracle_his')->raw('his_awareness.awareness_code'), 'like', $keyword . '%')
+                ->orWhere(DB::connection('oracle_his')->raw('his_awareness.awareness_name'), 'like', $keyword . '%');
         });
     }
     public function applyIsActiveFilter($query, $isActive)
     {
         if ($isActive !== null) {
-            $query->where(DB::connection('oracle_his')->raw('his_accident_hurt_type.is_active'), $isActive);
+            $query->where(DB::connection('oracle_his')->raw('his_awareness.is_active'), $isActive);
         }
 
         return $query;
@@ -40,7 +40,7 @@ class AccidentHurtTypeRepository
             foreach ($orderBy as $key => $item) {
                 if (in_array($key, $orderByJoin)) {
                 } else {
-                    $query->orderBy('his_accident_hurt_type.' . $key, $item);
+                    $query->orderBy('his_awareness.' . $key, $item);
                 }
             }
         }
@@ -62,10 +62,10 @@ class AccidentHurtTypeRepository
     }
     public function getById($id)
     {
-        return $this->accidentHurtType->find($id);
+        return $this->awareness->find($id);
     }
     public function create($request, $time, $appCreator, $appModifier){
-        $data = $this->accidentHurtType::create([
+        $data = $this->awareness::create([
             'create_time' => now()->format('Ymdhis'),
             'modify_time' => now()->format('Ymdhis'),
             'creator' => get_loginname_with_token($request->bearerToken(), $time),
@@ -74,8 +74,8 @@ class AccidentHurtTypeRepository
             'app_modifier' => $appModifier,
             'is_active' => 1,
             'is_delete' => 0,
-            'accident_hurt_type_code' => $request->accident_hurt_type_code,
-            'accident_hurt_type_name' => $request->accident_hurt_type_name,
+            'awareness_code' => $request->awareness_code,
+            'awareness_name' => $request->awareness_name,
         ]);
         return $data;
     }
@@ -84,8 +84,8 @@ class AccidentHurtTypeRepository
             'modify_time' => now()->format('Ymdhis'),
             'modifier' => get_loginname_with_token($request->bearerToken(), $time),
             'app_modifier' => $appModifier,
-            'accident_hurt_type_code' => $request->accident_hurt_type_code,
-            'accident_hurt_type_name' => $request->accident_hurt_type_name,
+            'awareness_code' => $request->awareness_code,
+            'awareness_name' => $request->awareness_name,
             'is_active' => $request->is_active
         ]);
         return $data;
@@ -95,12 +95,12 @@ class AccidentHurtTypeRepository
         return $data;
     }
     public static function getDataFromDbToElastic($id = null){
-        $data = DB::connection('oracle_his')->table('his_accident_hurt_type')
+        $data = DB::connection('oracle_his')->table('his_awareness')
         ->select(
-            'his_accident_hurt_type.*'
+            'his_awareness.*'
         );
         if($id != null){
-            $data = $data->where('his_accident_hurt_type.id','=', $id)->first();
+            $data = $data->where('his_awareness.id','=', $id)->first();
         }else{
             $data = $data->get();
         }

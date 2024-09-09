@@ -2,11 +2,8 @@
 
 namespace App\Events\Elastic\AccidentBodyPart;
 
-use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Broadcasting\PrivateChannel;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
@@ -18,11 +15,11 @@ class InsertAccidentBodyPartIndex
      * Create a new event instance.
      */
     public $record;
-    public $model_name;
-    public function __construct($record, $model_name)
+    public $modelName;
+    public function __construct($record, $modelName)
     {
         $this->record = $record;
-        $this->model_name = $model_name;
+        $this->modelName = $modelName;
     }
 
     /**

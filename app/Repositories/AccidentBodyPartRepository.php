@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\DB;
 class AccidentBodyPartRepository
 {
     protected $accidentBodyPart;
-
     public function __construct(AccidentBodyPart $accidentBodyPart)
     {
         $this->accidentBodyPart = $accidentBodyPart;
@@ -20,7 +19,6 @@ class AccidentBodyPartRepository
                 'his_accident_body_part.*'
             );
     }
-
     public function applyKeywordFilter($query, $keyword)
     {
         return $query->where(function ($query) use ($keyword) {
@@ -81,7 +79,6 @@ class AccidentBodyPartRepository
         ]);
         return $data;
     }
-
     public function update($request, $data, $time, $appModifier){
         $data->update([
             'modify_time' => now()->format('Ymdhis'),
@@ -93,9 +90,20 @@ class AccidentBodyPartRepository
         ]);
         return $data;
     }
-
     public function delete($data){
         $data->delete();
+        return $data;
+    }
+    public static function getDataFromDbToElastic($id = null){
+        $data = DB::connection('oracle_his')->table('his_accident_body_part')
+        ->select(
+            'his_accident_body_part.*'
+        );
+        if($id != null){
+            $data = $data->where('his_accident_body_part.id','=', $id)->first();
+        }else{
+            $data = $data->get();
+        }
         return $data;
     }
 }

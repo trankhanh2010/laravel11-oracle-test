@@ -2,11 +2,8 @@
 
 namespace App\Events\Elastic\AccidentBodyPart;
 
-use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Broadcasting\PrivateChannel;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
@@ -17,13 +14,13 @@ class CreateAccidentBodyPartIndex
     /**
      * Create a new event instance.
      */
-    public $model_name;
+    public $modelName;
     public $params;
-    public function __construct($model_name)
+    public function __construct($modelName)
     {
-        $this->model_name = $model_name;
+        $this->modelName = $modelName;
         $this->params =  [
-            'index' => $this->model_name,
+            'index' => $this->modelName,
             'body' => [
                 'settings' => [
                     'analysis' => [

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Events\Elastic\AtcGroup;
+namespace App\Events\Elastic\Awareness;
 
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
@@ -10,7 +10,7 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class InsertAtcGroupIndex
+class InsertAwarenessIndex
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -33,7 +33,7 @@ class InsertAtcGroupIndex
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('elastic-atc-group-index'),
+            new PrivateChannel('elastic-awareness-insert-index'),
         ];
     }
 }

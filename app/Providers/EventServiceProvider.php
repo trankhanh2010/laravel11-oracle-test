@@ -16,6 +16,8 @@ use App\Events\Elastic\Area\CreateAreaIndex;
 use App\Events\Elastic\Area\InsertAreaIndex;
 use App\Events\Elastic\AtcGroup\CreateAtcGroupIndex;
 use App\Events\Elastic\AtcGroup\InsertAtcGroupIndex;
+use App\Events\Elastic\Awareness\CreateAwarenessIndex;
+use App\Events\Elastic\Awareness\InsertAwarenessIndex;
 use App\Events\Elastic\Bed\CreateBedIndex;
 use App\Events\Elastic\Bed\InsertBedIndex;
 use App\Events\Elastic\DeleteIndex;
@@ -34,6 +36,8 @@ use App\Listeners\Elastic\Area\ElasticCreateAreaIndex;
 use App\Listeners\Elastic\Area\ElasticInsertAreaIndex;
 use App\Listeners\Elastic\AtcGroup\ElasticCreateAtcGroupIndex;
 use App\Listeners\Elastic\AtcGroup\ElasticInsertAtcGroupIndex;
+use App\Listeners\Elastic\Awareness\ElasticCreateAwarenessIndex;
+use App\Listeners\Elastic\Awareness\ElasticInsertAwarenessIndex;
 use App\Listeners\Elastic\Bed\ElasticCreateBedIndex;
 use App\Listeners\Elastic\Bed\ElasticInsertBedIndex;
 use App\Listeners\Elastic\ElasticDeleteIndex;
@@ -114,6 +118,13 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertAtcGroupIndex::class => [
             ElasticInsertAtcGroupIndex::class,
+        ],
+
+        CreateAwarenessIndex::class => [
+            ElasticCreateAwarenessIndex::class,
+        ],
+        InsertAwarenessIndex::class => [
+            ElasticInsertAwarenessIndex::class,
         ],
 
         CreateBedIndex::class => [

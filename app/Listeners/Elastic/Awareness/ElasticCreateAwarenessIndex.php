@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Listeners\Elastic\AccidentBodyPart;
+namespace App\Listeners\Elastic\Awareness;
 
-use App\Events\Elastic\AccidentBodyPart\CreateAccidentBodyPartIndex;
+use App\Events\Elastic\Awareness\CreateAwarenessIndex;
 
-class ElasticCreateAccidentBodyPartIndex
+class ElasticCreateAwarenessIndex
 {
     /**
      * Create the event listener.
@@ -18,7 +18,7 @@ class ElasticCreateAccidentBodyPartIndex
     /**
      * Handle the event.
      */
-    public function handle(CreateAccidentBodyPartIndex $event): void
+    public function handle(CreateAwarenessIndex $event): void
     {
         try {
             // Kiểm tra xem có tồn tại Index chưa

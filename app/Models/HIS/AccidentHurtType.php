@@ -16,16 +16,4 @@ class AccidentHurtType extends Model
     protected $guarded = [
         'id',
     ];
-    public static function getDataFromDbToElastic($id = null){
-        $data = DB::connection('oracle_his')->table('his_accident_hurt_type')
-        ->select(
-            'his_accident_hurt_type.*'
-        );
-        if($id != null){
-            $data = $data->where('his_accident_hurt_type.id','=', $id)->first();
-        }else{
-            $data = $data->get();
-        }
-        return $data;
-    }
 }

@@ -16,16 +16,4 @@ class AccidentLocation extends Model
     protected $guarded = [
         'id',
     ];
-    public static function getDataFromDbToElastic($id = null){
-        $data = DB::connection('oracle_his')->table('his_accident_location')
-        ->select(
-            'his_accident_location.*'
-        );
-        if($id != null){
-            $data = $data->where('his_accident_location.id','=', $id)->first();
-        }else{
-            $data = $data->get();
-        }
-        return $data;
-    }
 }

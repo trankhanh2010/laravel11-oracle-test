@@ -4,6 +4,7 @@ namespace App\Listeners\Elastic\Bed;
 
 use App\Events\Elastic\Bed\InsertBedIndex;
 use App\Models\HIS\Bed;
+use App\Repositories\BedRepository;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Http\Request;
 use Illuminate\Queue\InteractsWithQueue;
@@ -26,7 +27,7 @@ class ElasticInsertBedIndex
     {
         try {
             $record = $event->record;
-            $data = Bed::getDataFromDbToElastic($record->id);
+            $data = BedRepository::getDataFromDbToElastic($record->id);
             // Tạo chỉ mục hoặc cập nhật dữ liệu
             $params = [
                 'index' => $event->modelName, // Chỉ mục bạn muốn tạo hoặc cập nhật

@@ -16,16 +16,4 @@ class AccidentBodyPart extends Model
     protected $guarded = [
         'id',
     ];
-    public static function getDataFromDbToElastic($id = null){
-        $data = DB::connection('oracle_his')->table('his_accident_body_part')
-        ->select(
-            'his_accident_body_part.*'
-        );
-        if($id != null){
-            $data = $data->where('his_accident_body_part.id','=', $id)->first();
-        }else{
-            $data = $data->get();
-        }
-        return $data;
-    }
 }

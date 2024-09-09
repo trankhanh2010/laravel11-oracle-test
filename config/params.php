@@ -163,7 +163,9 @@ return [
             'accident_hurt_type' => 'Có lỗi khi thực hiện thao tác với bảng AccidentHurtType!',
             'accident_location' => 'Có lỗi khi thực hiện thao tác với bảng AccidentLocation!',
             'age_type' => 'Có lỗi khi thực hiện thao tác với bảng AgeType!',
-
+            'area' => 'Có lỗi khi thực hiện thao tác với bảng Area!',
+            'atc_group' => 'Có lỗi khi thực hiện thao tác với bảng AtcGroup!',
+            'awareness' => 'Có lỗi khi thực hiện thao tác với bảng Awareness!',
             'bed' => 'Có lỗi khi thực hiện thao tác với bảng Bed!',
         ]
     ]

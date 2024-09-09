@@ -4,6 +4,7 @@ namespace App\Listeners\Elastic\AccidentHurtType;
 
 use App\Events\Elastic\AccidentHurtType\InsertAccidentHurtTypeIndex;
 use App\Models\HIS\AccidentHurtType;
+use App\Repositories\AccidentHurtTypeRepository;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 
@@ -25,10 +26,10 @@ class ElasticInsertAccidentHurtTypeIndex
     {
         try {
             $record = $event->record;
-            $data = AccidentHurtType::getDataFromDbToElastic($record->id);
+            $data = AccidentHurtTypeRepository::getDataFromDbToElastic($record->id);
             // Tạo chỉ mục hoặc cập nhật dữ liệu
             $params = [
-                'index' => $event->model_name, // Chỉ mục bạn muốn tạo hoặc cập nhật
+                'index' => $event->modelName, // Chỉ mục bạn muốn tạo hoặc cập nhật
                 'id'    => $record->id, // ID của bản ghi
                 'body'  => $data,
             ];

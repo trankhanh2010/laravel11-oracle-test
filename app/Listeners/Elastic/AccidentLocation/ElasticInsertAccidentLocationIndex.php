@@ -4,6 +4,7 @@ namespace App\Listeners\Elastic\AccidentLocation;
 
 use App\Events\Elastic\AccidentLocation\InsertAccidentLocationIndex;
 use App\Models\HIS\AccidentLocation;
+use App\Repositories\AccidentLocationRepository;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 
@@ -25,10 +26,10 @@ class ElasticInsertAccidentLocationIndex
     {
         try {
             $record = $event->record;
-            $data = AccidentLocation::getDataFromDbToElastic($record->id);
+            $data = AccidentLocationRepository::getDataFromDbToElastic($record->id);
             // Tạo chỉ mục hoặc cập nhật dữ liệu
             $params = [
-                'index' => $event->model_name, // Chỉ mục bạn muốn tạo hoặc cập nhật
+                'index' => $event->modelName, // Chỉ mục bạn muốn tạo hoặc cập nhật
                 'id'    => $record->id, // ID của bản ghi
                 'body'  => $data,
             ];

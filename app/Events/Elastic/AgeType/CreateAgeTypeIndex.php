@@ -17,13 +17,13 @@ class CreateAgeTypeIndex
     /**
      * Create a new event instance.
      */
-    public $model_name;
+    public $modelName;
     public $params;
-    public function __construct($model_name)
+    public function __construct($modelName)
     {
-        $this->model_name = $model_name;
+        $this->modelName = $modelName;
         $this->params =  [
-            'index' => $this->model_name,
+            'index' => $this->modelName,
             'body' => [
                 'settings' => [
                     'analysis' => [

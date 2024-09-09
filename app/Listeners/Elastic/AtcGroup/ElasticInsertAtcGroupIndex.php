@@ -6,6 +6,7 @@ use App\Events\Elastic\AtcGroup\InsertAtcGroupIndex;
 use App\Models\HIS\AtcGroup;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
+use App\Repositories\AtcGroupRepository;
 
 class ElasticInsertAtcGroupIndex
 {
@@ -25,10 +26,10 @@ class ElasticInsertAtcGroupIndex
     {
         try {
             $record = $event->record;
-            $data = AtcGroup::getDataFromDbToElastic($record->id);
+            $data = AtcGroupRepository::getDataFromDbToElastic($record->id);
             // Tạo chỉ mục hoặc cập nhật dữ liệu
             $params = [
-                'index' => $event->model_name, // Chỉ mục bạn muốn tạo hoặc cập nhật
+                'index' => $event->modelName, // Chỉ mục bạn muốn tạo hoặc cập nhật
                 'id'    => $record->id, // ID của bản ghi
                 'body'  => $data,
             ];

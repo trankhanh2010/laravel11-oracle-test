@@ -19,10 +19,10 @@ class DeleteCache
      *
      * @return void
      */
-    public $model_name;
-    public function __construct($model_name)
+    public $modelName;
+    public function __construct($modelName)
     {
-        $this->model_name = $model_name;
+        $this->modelName = $modelName;
     }
 
     /**

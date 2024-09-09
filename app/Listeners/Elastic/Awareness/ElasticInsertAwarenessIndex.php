@@ -1,19 +1,22 @@
 <?php
 
-namespace App\Listeners\Elastic\Area;
+namespace App\Listeners\Elastic\Awareness;
 
-use App\Events\Elastic\Area\InsertAreaIndex;
-use App\Models\HIS\Area;
-use App\Repositories\AreaRepository;
+use App\Events\Elastic\Awareness\InsertAwarenessIndex;
+use App\Models\HIS\Awareness;
+use App\Repositories\AwarenessRepository;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 
-class ElasticInsertAreaIndex
+class ElasticInsertAwarenessIndex
 {
     /**
      * Create the event listener.
      */
     protected $client;
+    /**
+     * Create the event listener.
+     */
     public function __construct()
     {
         $this->client = app('Elasticsearch');
@@ -22,11 +25,11 @@ class ElasticInsertAreaIndex
     /**
      * Handle the event.
      */
-    public function handle(InsertAreaIndex $event): void
+    public function handle(InsertAwarenessIndex $event): void
     {
         try {
             $record = $event->record;
-            $data = AreaRepository::getDataFromDbToElastic($record->id);
+            $data = AwarenessRepository::getDataFromDbToElastic($record->id);
             // Tạo chỉ mục hoặc cập nhật dữ liệu
             $params = [
                 'index' => $event->modelName, // Chỉ mục bạn muốn tạo hoặc cập nhật

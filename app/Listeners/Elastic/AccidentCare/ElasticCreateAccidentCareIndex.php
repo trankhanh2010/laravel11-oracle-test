@@ -24,7 +24,7 @@ class ElasticCreateAccidentCareIndex
     {
         try {
             // Kiểm tra xem có tồn tại Index chưa
-            $exists = $this->client->indices()->exists(['index' => $event->model_name])->asBool();
+            $exists = $this->client->indices()->exists(['index' => $event->modelName])->asBool();
             if (!$exists) {
                 // Tạo chỉ mục
                 $this->client->indices()->create($event->params);

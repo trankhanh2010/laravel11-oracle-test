@@ -9,74 +9,72 @@ use App\Services\Elastic\ElasticsearchService;
 use App\Services\Model\AgeTypeService;
 class AgeTypeController extends BaseApiCacheController
 {
-    protected $age_type_service;
-    public function __construct(Request $request, ElasticsearchService $elastic_search_service, AgeTypeService $age_type_service)
+    protected $ageTypeService;
+    public function __construct(Request $request, ElasticsearchService $elasticSearchService, AgeTypeService $ageTypeService, AgeType $ageType)
     {
         parent::__construct($request); // Gọi constructor của BaseController
-        $this->elastic_search_service = $elastic_search_service;
-        $this->age_type_service = $age_type_service;
-        $this->age_type = new AgeType();
-
+        $this->elasticSearchService = $elasticSearchService;
+        $this->ageTypeService = $ageTypeService;
+        $this->ageType = $ageType;
         // Kiểm tra tên trường trong bảng
-        if ($this->order_by != null) {
-            $this->order_by_join = [];
-            $columns = $this->get_columns_table($this->age_type);
-            $this->order_by = $this->check_order_by($this->order_by, $columns, $this->order_by_join ?? []);
-            $this->order_by_tring = arrayToCustomString($this->order_by);
+        if ($this->orderBy != null) {
+            $this->orderByJoin = [];
+            $columns = $this->getColumnsTable($this->ageType);
+            $this->orderBy = $this->checkOrderBy($this->orderBy, $columns, $this->orderByJoin ?? []);
+            $this->orderByString = arrayToCustomString($this->orderBy);
         }
     }
-    public function age_type($id = null)
+    public function index()
     {
-        // Kiểm tra param và trả về lỗi nếu nó không hợp lệ
-        if ($this->check_param()) {
-            return $this->check_param();
+        if ($this->checkParam()) {
+            return $this->checkParam();
         }
-        try {
-            $keyword = $this->keyword;
-            if (($keyword != null || $this->elastic_search_type != null) && !$this->cache) {
-                if ($this->elastic_search_type != null) {
-                    $data = $this->elastic_search_service->handleElasticSearchSearch($this->age_type_name);
-                    $count = $data['count'];
-                    $data = $data['data'];
-                } else {
-                    $data = $this->age_type_service->handleDataBaseSearch($keyword, $this->is_active, $this->order_by, $this->order_by_join, $this->get_all, $this->start, $this->limit);
-                    $count = $data['count'];
-                    $data = $data['data'];
-                }
+        $keyword = $this->keyword;
+        if (($keyword != null || $this->elasticSearchType != null) && !$this->cache) {
+            if ($this->elasticSearchType != null) {
+                $data = $this->elasticSearchService->handleElasticSearchSearch($this->ageTypeName);
             } else {
-                if ($id == null) {
-                    if($this->elastic){
-                        $data = $this->elastic_search_service->handleElasticSearchGetAll($this->age_type_name);
-                    }else{
-                        $data = $this->age_type_service->handleDataBaseGetAll($this->age_type_name, $this->is_active, $this->order_by, $this->order_by_join, $this->get_all, $this->start, $this->limit);
-                    }
-                } else {
-                    if ($id !== null) {
-                        $validationError = $this->validateAndCheckId($id, $this->age_type, $this->age_type_name);
-                        if ($validationError) {
-                            return $validationError;
-                        }
-                    }
-                    if($this->elastic){
-                        $data = $this->elastic_search_service->handleElasticSearchGetWithId($this->age_type_name, $id);
-                    }else{
-                        $data = $this->age_type_service->handleDataBaseGetWithId($this->age_type_name, $id, $this->is_active);
-                    }
-                }
+                $data = $this->ageTypeService->handleDataBaseSearch($keyword, $this->isActive, $this->orderBy, $this->orderByJoin, $this->getAll, $this->start, $this->limit);
             }
-            $param_return = [
-                $this->get_all_name => $this->get_all,
-                $this->start_name => ($this->get_all || !is_null($id)) ? null : $this->start,
-                $this->limit_name => ($this->get_all || !is_null($id)) ? null : $this->limit,
-                $this->count_name => $count ?? ($data['count'] ?? null),
-                $this->is_active_name => $this->is_active,
-                $this->keyword_name => $this->keyword,
-                $this->order_by_name => $this->order_by_request
-            ];
-            return return_data_success($param_return, $data ?? ($data['data'] ?? null) ?? null);
-        } catch (\Throwable $e) {
-            // Xử lý lỗi và trả về phản hồi lỗi
-            return return_500_error($e->getMessage());
+        } else {
+            if ($this->elastic) {
+                $data = $this->elasticSearchService->handleElasticSearchGetAll($this->ageTypeName);
+            } else {
+                $data = $this->ageTypeService->handleDataBaseGetAll($this->ageTypeName, $this->isActive, $this->orderBy, $this->orderByJoin, $this->getAll, $this->start, $this->limit);
+            }
         }
+        $paramReturn = [
+            $this->getAllName => $this->getAll,
+            $this->startName => $this->getAll ? null : $this->start,
+            $this->limitName => $this->getAll ? null : $this->limit,
+            $this->countName => $data['count'],
+            $this->isActiveName => $this->isActive,
+            $this->keywordName => $this->keyword,
+            $this->orderByName => $this->orderByRequest
+        ];
+        return returnDataSuccess($paramReturn, $data['data']);
+    }
+
+    public function show($id)
+    {
+        if ($this->checkParam()) {
+            return $this->checkParam();
+        }
+        if ($id !== null) {
+            $validationError = $this->validateAndCheckId($id, $this->ageType, $this->ageTypeName);
+            if ($validationError) {
+                return $validationError;
+            }
+        }
+        if ($this->elastic) {
+            $data = $this->elasticSearchService->handleElasticSearchGetWithId($this->ageTypeName, $id);
+        } else {
+            $data = $this->ageTypeService->handleDataBaseGetWithId($this->ageTypeName, $id, $this->isActive);
+        }
+        $paramReturn = [
+            $this->idName => $id,
+            $this->isActiveName => $this->isActive,
+        ];
+        return returnDataSuccess($paramReturn, $data);
     }
 }

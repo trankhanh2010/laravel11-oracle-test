@@ -1,16 +1,13 @@
 <?php
 
-namespace App\Events\Elastic\AccidentHurtType;
+namespace App\Events\Elastic\Awareness;
 
-use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Broadcasting\PrivateChannel;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class CreateAccidentHurtTypeIndex
+class CreateAwarenessIndex
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -80,7 +77,7 @@ class CreateAccidentHurtTypeIndex
                         'group_code' => [
                             'type' => 'keyword'  // Chuỗi không phân tích, lưu trữ giá trị chính xác, có thể là null
                         ],
-                        'accident_hurt_type_code' => [
+                        'awareness_code' => [
                             'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
                             'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
                             'fields' => [
@@ -89,16 +86,7 @@ class CreateAccidentHurtTypeIndex
                                 ]
                             ]
                         ],
-                        'accident_hurt_type_name' => [
-                            'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
-                            'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
-                            'fields' => [
-                                'keyword' => [  // Phân tích không để sắp xếp và tìm kiếm chính xác
-                                    'type' => 'keyword'
-                                ]
-                            ]
-                        ],
-                        'bhyt_code' => [
+                        'awareness_name' => [
                             'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
                             'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
                             'fields' => [
@@ -121,7 +109,7 @@ class CreateAccidentHurtTypeIndex
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('elastic-accident-hurt-type-create-index'),
+            new PrivateChannel('elastic-accident-body-part-create-index'),
         ];
     }
 }

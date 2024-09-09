@@ -9,18 +9,20 @@ use App\Events\Elastic\AccidentLocation\CreateAccidentLocationIndex;
 use App\Events\Elastic\AgeType\CreateAgeTypeIndex;
 use App\Events\Elastic\Area\CreateAreaIndex;
 use App\Events\Elastic\AtcGroup\CreateAtcGroupIndex;
-use App\Providers\ElasticsearchServiceProvider;
+use App\Events\Elastic\Awareness\CreateAwarenessIndex;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use App\Events\Elastic\Bed\CreateBedIndex;
-use App\Models\HIS\AccidentBodyPart;
-use App\Models\HIS\AccidentCare;
-use App\Models\HIS\AccidentHurtType;
-use App\Models\HIS\AccidentLocation;
-use App\Models\HIS\AgeType;
-use App\Models\HIS\Area;
-use App\Models\HIS\AtcGroup;
-use App\Models\HIS\Bed;
+
+use App\Repositories\AccidentBodyPartRepository;
+use App\Repositories\AccidentCareRepository;
+use App\Repositories\AccidentHurtTypeRepository;
+use App\Repositories\AccidentLocationRepository;
+use App\Repositories\AgeTypeRepository;
+use App\Repositories\AreaRepository;
+use App\Repositories\AtcGroupRepository;
+use App\Repositories\AwarenessRepository;
+use App\Repositories\BedRepository;
 
 class IndexRecordsToElasticsearch extends Command
 {
@@ -76,35 +78,39 @@ class IndexRecordsToElasticsearch extends Command
         $client = app('Elasticsearch');
         switch ($table) {
             case 'his_accident_body_part':
-                $results = AccidentBodyPart::getDataFromDbToElastic(null);
+                $results = AccidentBodyPartRepository::getDataFromDbToElastic(null);
                 event(new CreateAccidentBodyPartIndex($name_table));
                 break;
             case 'his_accident_care':
-                $results = AccidentCare::getDataFromDbToElastic(null);
+                $results = AccidentCareRepository::getDataFromDbToElastic(null);
                 event(new CreateAccidentCareIndex($name_table));
                 break;    
             case 'his_accident_hurt_type':
-                $results = AccidentHurtType::getDataFromDbToElastic(null);
+                $results = AccidentHurtTypeRepository::getDataFromDbToElastic(null);
                 event(new CreateAccidentHurtTypeIndex($name_table));
                 break;    
             case 'his_accident_location':
-                $results = AccidentLocation::getDataFromDbToElastic(null);
+                $results = AccidentLocationRepository::getDataFromDbToElastic(null);
                 event(new CreateAccidentLocationIndex($name_table));
                 break;     
             case 'his_age_type':
-                $results = AgeType::getDataFromDbToElastic(null);
+                $results = AgeTypeRepository::getDataFromDbToElastic(null);
                 event(new CreateAgeTypeIndex($name_table));
                 break;     
             case 'his_area':
-                $results = Area::getDataFromDbToElastic(null);
+                $results = AreaRepository::getDataFromDbToElastic(null);
                 event(new CreateAreaIndex($name_table));
                 break;        
             case 'his_atc_group':
-                $results = AtcGroup::getDataFromDbToElastic(null);
+                $results = AtcGroupRepository::getDataFromDbToElastic(null);
                 event(new CreateAtcGroupIndex($name_table));
                 break;  
+            case 'his_awareness':
+                $results = AwarenessRepository::getDataFromDbToElastic(null);
+                event(new CreateAwarenessIndex($name_table));
+                break;  
             case 'his_bed':
-                $results = Bed::getDataFromDbToElastic(null);
+                $results = BedRepository::getDataFromDbToElastic(null);
                 event(new CreateBedIndex($name_table));
                 break;
 

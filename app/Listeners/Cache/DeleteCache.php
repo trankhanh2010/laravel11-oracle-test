@@ -29,7 +29,7 @@ class DeleteCache
     {
 
  // Lấy tất cả các khóa chứa từ khóa
-        $keys = Redis::keys('*'.$event->model_name.'*');
+        $keys = Redis::keys('*'.$event->modelName.'*');
         // Xóa từng khóa
         Redis::pipeline(function ($pipe) use ($keys) {
             foreach ($keys as $key) {
