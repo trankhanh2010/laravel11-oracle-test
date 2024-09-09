@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Api\CacheControllers;
 
-
+use App\DTOs\AccidentBodyPartDTO;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
 use App\Http\Requests\AccidentBodyPart\CreateAccidentBodyPartRequest;
 use App\Http\Requests\AccidentBodyPart\UpdateAccidentBodyPartRequest;
@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 class AccidentBodyPartController extends BaseApiCacheController
 {
     protected $accidentBodyPartService;
+    protected $accidentBodyPartDTO;
     public function __construct(Request $request, ElasticsearchService $elasticSearchService, AccidentBodyPartService $accidentBodyPartService, AccidentBodyPart $accidentBodyPart)
     {
         parent::__construct($request); // Gọi constructor của BaseController
@@ -27,8 +28,24 @@ class AccidentBodyPartController extends BaseApiCacheController
             ];
             $columns = $this->getColumnsTable($this->accidentBodyPart);
             $this->orderBy = $this->checkOrderBy($this->orderBy, $columns, $this->orderByJoin ?? []);
-            $this->orderByString = arrayToCustomString($this->orderBy);
         }
+        // Thêm tham số vào service
+        $this->accidentBodyPartDTO = new AccidentBodyPartDTO(
+            $this->accidentBodyPartName,
+            $this->keyword,
+            $this->isActive,
+            $this->orderBy,
+            $this->orderByJoin,
+            $this->orderByString,
+            $this->getAll,
+            $this->start,
+            $this->limit,
+            $request,
+            $this->appCreator, 
+            $this->appModifier, 
+            $this->time,
+        );
+        $this->accidentBodyPartService->withParams($this->accidentBodyPartDTO);
     }
     public function index()
     {
@@ -40,13 +57,13 @@ class AccidentBodyPartController extends BaseApiCacheController
             if ($this->elasticSearchType != null) {
                 $data = $this->elasticSearchService->handleElasticSearchSearch($this->accidentBodyPartName);
             } else {
-                $data = $this->accidentBodyPartService->handleDataBaseSearch($keyword, $this->isActive, $this->orderBy, $this->orderByJoin, $this->getAll, $this->start, $this->limit);
+                $data = $this->accidentBodyPartService->handleDataBaseSearch();
             }
         } else {
             if ($this->elastic) {
                 $data = $this->elasticSearchService->handleElasticSearchGetAll($this->accidentBodyPartName);
             } else {
-                $data = $this->accidentBodyPartService->handleDataBaseGetAll($this->accidentBodyPartName, $this->isActive, $this->orderBy, $this->orderByJoin, $this->getAll, $this->start, $this->limit);
+                $data = $this->accidentBodyPartService->handleDataBaseGetAll();
             }
         }
         $paramReturn = [
@@ -75,7 +92,7 @@ class AccidentBodyPartController extends BaseApiCacheController
         if ($this->elastic) {
             $data = $this->elasticSearchService->handleElasticSearchGetWithId($this->accidentBodyPartName, $id);
         } else {
-            $data = $this->accidentBodyPartService->handleDataBaseGetWithId($this->accidentBodyPartName, $id, $this->isActive);
+            $data = $this->accidentBodyPartService->handleDataBaseGetWithId($id);
         }
         $paramReturn = [
             $this->idName => $id,
@@ -85,14 +102,14 @@ class AccidentBodyPartController extends BaseApiCacheController
     }
     public function store(CreateAccidentBodyPartRequest $request)
     {
-        return $this->accidentBodyPartService->createAccidentBodyPart($request, $this->time, $this->appCreator, $this->appModifier);
+        return $this->accidentBodyPartService->createAccidentBodyPart($request);
     }
     public function update(UpdateAccidentBodyPartRequest $request, $id)
     {
-        return $this->accidentBodyPartService->updateAccidentBodyPart($this->accidentBodyPartName, $id, $request, $this->time, $this->appModifier);
+        return $this->accidentBodyPartService->updateAccidentBodyPart($id, $request);
     }
     public function destroy($id)
     {
-        return $this->accidentBodyPartService->deleteAccidentBodyPart($this->accidentBodyPartName, $id);
+        return $this->accidentBodyPartService->deleteAccidentBodyPart($id);
     }
 }

@@ -253,6 +253,10 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisAwareness'], function () {
         Route::apiResource('v1/awareness', AwarenessController::class);
     });
+    /// Giường - Dịch vụ giường
+    Route::group(['as' => 'HIS.Desktop.Plugins.BedBsty'], function () {
+        Route::apiResource('v1/bed-bsty', BedBstyController::class)->only(['index', 'show']);
+    });
     /// Khoa phòng
     Route::group(['as' => 'HIS.Desktop.Plugins.HisDepartment'], function () {
         Route::get("v1/department", [DepartmentController::class, "department"])->name('.get');
@@ -623,19 +627,6 @@ Route::group([
     /// Giường
     Route::group(['as' => 'HIS.Desktop.Plugins.HisBed'], function () {
         Route::apiResource('v1/bed', BedController::class);
-    });
-
-    /// Giường - Dịch vụ giường
-    Route::group(['as' => 'HIS.Desktop.Plugins.BedBsty'], function () {
-        // Trả về tất cả mối quan hệ
-        Route::get("v1/bed-bsty", [BedBstyController::class, "bed_bsty"])->name('.get');
-        Route::get("v1/bed-bsty/{id}", [BedBstyController::class, "bed_bsty"])->name('.get_id');
-        // // Trả về tất cả dịch vụ cùng giường
-        // Route::get("v1/service/all/bed", [HISController::class, "service_with_bed"]);
-        // Route::get("v1/service/{id}/bed", [HISController::class, "service_with_bed"]);
-        // // Trả về tất cả giường cùng dịch vụ
-        // Route::get("v1/bed/all/service", [HISController::class, "bed_with_service"]);
-        // Route::get("v1/bed/{id}/service", [HISController::class, "bed_with_service"]);
     });
 
     /// Loại giường

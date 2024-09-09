@@ -2,48 +2,49 @@
 
 namespace App\Services\Model;
 
+use App\DTOs\AtcGroupDTO;
 use App\Events\Cache\DeleteCache;
 use App\Events\Elastic\AtcGroup\InsertAtcGroupIndex;
 use App\Events\Elastic\DeleteIndex;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Http\Request;
-use App\Http\Controllers\BaseControllers\BaseApiCacheController;
 use App\Repositories\AtcGroupRepository;
 
-class AtcGroupService extends BaseApiCacheController
+class AtcGroupService 
 {
     protected $atcGroupRepository;
-    protected $request;
-    public function __construct(Request $request, AtcGroupRepository $atcGroupRepository)
+    protected $params;
+    public function __construct(AtcGroupRepository $atcGroupRepository)
     {
-        parent::__construct($request);
         $this->atcGroupRepository = $atcGroupRepository;
-        $this->request = $request;
     }
-
-    public function handleDataBaseSearch($keyword, $isActive, $orderBy, $orderByJoin, $getAll, $start, $limit)
+    public function withParams(AtcGroupDTO $params)
+    {
+        $this->params = $params;
+        return $this;
+    }
+    public function handleDataBaseSearch()
     {
         try {
             $data = $this->atcGroupRepository->applyJoins();
-            $data = $this->atcGroupRepository->applyKeywordFilter($data, $keyword);
-            $data = $this->atcGroupRepository->applyIsActiveFilter($data, $isActive);
+            $data = $this->atcGroupRepository->applyKeywordFilter($data, $this->params->keyword);
+            $data = $this->atcGroupRepository->applyIsActiveFilter($data, $this->params->isActive);
             $count = $data->count();
-            $data = $this->atcGroupRepository->applyOrdering($data, $orderBy, $orderByJoin);
-            $data = $this->atcGroupRepository->fetchData($data, $getAll, $start, $limit);
+            $data = $this->atcGroupRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+            $data = $this->atcGroupRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
             return ['data' => $data, 'count' => $count];
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['atc_group'], $e);
         }
     }
-    public function handleDataBaseGetAll($atcGroupName, $isActive, $orderBy, $orderByJoin, $getAll, $start, $limit)
+    public function handleDataBaseGetAll()
     {
         try {
-            $data = Cache::remember($atcGroupName . '_start_' . $this->start . '_limit_' . $this->limit . $this->orderByString . '_is_active_' . $this->isActive . '_get_all_' . $this->getAll, $this->time, function () use ($isActive, $orderBy, $orderByJoin, $getAll, $start, $limit) {
+            $data = Cache::remember($this->params->atcGroupName . '_start_' . $this->params->start . '_limit_' . $this->params->limit . $this->params->orderByString . '_is_active_' . $this->params->isActive . '_get_all_' . $this->params->getAll, $this->params->time, function () {
                 $data = $this->atcGroupRepository->applyJoins();
-                $data = $this->atcGroupRepository->applyIsActiveFilter($data, $isActive);
+                $data = $this->atcGroupRepository->applyIsActiveFilter($data, $this->params->isActive);
                 $count = $data->count();
-                $data = $this->atcGroupRepository->applyOrdering($data, $orderBy, $orderByJoin);
-                $data = $this->atcGroupRepository->fetchData($data, $getAll, $start, $limit);
+                $data = $this->atcGroupRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+                $data = $this->atcGroupRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
                 return ['data' => $data, 'count' => $count];
             });
             return $data;
@@ -51,13 +52,13 @@ class AtcGroupService extends BaseApiCacheController
             return writeAndThrowError(config('params')['db_service']['error']['atc_group'], $e);
         }
     }
-    public function handleDataBaseGetWithId($atcGroupName, $id, $isActive)
+    public function handleDataBaseGetWithId($id)
     {
         try {
-            $data = Cache::remember($atcGroupName . '_' . $id . '_is_active_' . $this->isActive, $this->time, function () use ($id, $isActive) {
+            $data = Cache::remember($this->params->atcGroupName . '_' . $id . '_is_active_' . $this->params->isActive, $this->params->time, function () use ($id) {
                 $data = $this->atcGroupRepository->applyJoins()
                     ->where('his_atc_group.id', $id);
-                $data = $this->atcGroupRepository->applyIsActiveFilter($data, $isActive);
+                $data = $this->atcGroupRepository->applyIsActiveFilter($data, $this->params->isActive);
                 $data = $data->first();
                 return $data;
             });
@@ -67,21 +68,21 @@ class AtcGroupService extends BaseApiCacheController
         }
     }
 
-    public function createAtcGroup($request, $time, $appCreator, $appModifier)
+    public function createAtcGroup($request)
     {
         try {
-            $data = $this->atcGroupRepository->create($request, $time, $appCreator, $appModifier);
+            $data = $this->atcGroupRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
             // Gọi event để xóa cache
-            event(new DeleteCache($this->atcGroupName));
+            event(new DeleteCache($this->params->atcGroupName));
             // Gọi event để thêm index vào elastic
-            event(new InsertAtcGroupIndex($data, $this->atcGroupName));
+            event(new InsertAtcGroupIndex($data, $this->params->atcGroupName));
             return returnDataCreateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['atc_group'], $e);
         }
     }
 
-    public function updateAtcGroup($atcGroupName, $id, $request, $time, $appModifier)
+    public function updateAtcGroup($id, $request)
     {
         if (!is_numeric($id)) {
             return returnIdError($id);
@@ -91,18 +92,18 @@ class AtcGroupService extends BaseApiCacheController
             return returnNotRecord($id);
         }
         try {
-            $data = $this->atcGroupRepository->update($request, $data, $time, $appModifier);
+            $data = $this->atcGroupRepository->update($request, $data, $this->params->time, $this->params->appModifier);
             // Gọi event để xóa cache
-            event(new DeleteCache($atcGroupName));
+            event(new DeleteCache($this->params->atcGroupName));
             // Gọi event để thêm index vào elastic
-            event(new InsertAtcGroupIndex($data, $atcGroupName));
+            event(new InsertAtcGroupIndex($data, $this->params->atcGroupName));
             return returnDataUpdateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['atc_group'], $e);
         }
     }
 
-    public function deleteAtcGroup($atcGroupName, $id)
+    public function deleteAtcGroup($id)
     {
         if (!is_numeric($id)) {
             return returnIdError($id);
@@ -114,9 +115,9 @@ class AtcGroupService extends BaseApiCacheController
         try {
             $data = $this->atcGroupRepository->delete($data);
             // Gọi event để xóa cache
-            event(new DeleteCache($atcGroupName));
+            event(new DeleteCache($this->params->atcGroupName));
             // Gọi event để xóa index trong elastic
-            event(new DeleteIndex($data, $atcGroupName));
+            event(new DeleteIndex($data, $this->params->atcGroupName));
             return returnDataDeleteSuccess();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['atc_group'], $e);

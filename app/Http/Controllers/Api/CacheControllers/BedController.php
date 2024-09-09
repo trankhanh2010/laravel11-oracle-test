@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\CacheControllers;
 
+use App\DTOs\BedDTO;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
 use App\Http\Requests\Bed\CreateBedRequest;
 use App\Http\Requests\Bed\UpdateBedRequest;
@@ -13,6 +14,7 @@ use Illuminate\Http\Request;
 class BedController extends BaseApiCacheController
 {
     protected $bedService;
+    protected $bedDTO;
     public function __construct(Request $request, ElasticsearchService $elasticSearchService, BedService $bedService, Bed $bed)
     {
         parent::__construct($request); // Gọi constructor của BaseController
@@ -31,8 +33,24 @@ class BedController extends BaseApiCacheController
             ];
             $columns = $this->getColumnsTable($this->bed);
             $this->orderBy = $this->checkOrderBy($this->orderBy, $columns, $this->orderByJoin ?? []);
-            $this->orderByString = arrayToCustomString($this->orderBy);
         }
+        // Thêm tham số vào service
+        $this->bedDTO = new BedDTO(
+            $this->bedName,
+            $this->keyword,
+            $this->isActive,
+            $this->orderBy,
+            $this->orderByJoin,
+            $this->orderByString,
+            $this->getAll,
+            $this->start,
+            $this->limit,
+            $request,
+            $this->appCreator, 
+            $this->appModifier, 
+            $this->time,
+        );
+        $this->bedService->withParams($this->bedDTO);
     }
     public function index()
     {
@@ -44,13 +62,13 @@ class BedController extends BaseApiCacheController
             if ($this->elasticSearchType != null) {
                 $data = $this->elasticSearchService->handleElasticSearchSearch($this->bedName);
             } else {
-                $data = $this->bedService->handleDataBaseSearch($keyword, $this->isActive, $this->orderBy, $this->orderByJoin, $this->getAll, $this->start, $this->limit);
+                $data = $this->bedService->handleDataBaseSearch();
             }
         } else {
             if ($this->elastic) {
                 $data = $this->elasticSearchService->handleElasticSearchGetAll($this->bedName);
             } else {
-                $data = $this->bedService->handleDataBaseGetAll($this->bedName, $this->isActive, $this->orderBy, $this->orderByJoin, $this->getAll, $this->start, $this->limit);
+                $data = $this->bedService->handleDataBaseGetAll();
             }
         }
         $paramReturn = [
@@ -79,7 +97,7 @@ class BedController extends BaseApiCacheController
         if ($this->elastic) {
             $data = $this->elasticSearchService->handleElasticSearchGetWithId($this->bedName, $id);
         } else {
-            $data = $this->bedService->handleDataBaseGetWithId($this->bedName, $id, $this->isActive);
+            $data = $this->bedService->handleDataBaseGetWithId($id);
         }
         $paramReturn = [
             $this->idName => $id,
@@ -89,14 +107,14 @@ class BedController extends BaseApiCacheController
     }
     public function store(CreateBedRequest $request)
     {
-        return $this->bedService->createBed($request, $this->time, $this->appCreator, $this->appModifier);
+        return $this->bedService->createBed($request);
     }
     public function update(UpdateBedRequest $request, $id)
     {
-        return $this->bedService->updateBed($this->bedName, $id, $request, $this->time, $this->appModifier);
+        return $this->bedService->updateBed($id, $request);
     }
     public function destroy($id)
     {
-        return $this->bedService->deleteBed($this->bedName, $id);
+        return $this->bedService->deleteBed($id);
     }
 }

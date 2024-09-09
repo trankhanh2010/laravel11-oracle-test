@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\CacheControllers;
 
+use App\DTOs\AtcGroupDTO;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
 use App\Http\Requests\AtcGroup\CreateAtcGroupRequest;
 use App\Http\Requests\AtcGroup\UpdateAtcGroupRequest;
@@ -13,6 +14,7 @@ use Illuminate\Http\Request;
 class AtcGroupController extends BaseApiCacheController
 {
     protected $atcGroupService;
+    protected $atcGroupDTO;
     public function __construct(Request $request, ElasticsearchService $elasticSearchService, AtcGroupService $atcGroupService, AtcGroup $atcGroup)
     {
         parent::__construct($request); // Gọi constructor của BaseController
@@ -27,6 +29,23 @@ class AtcGroupController extends BaseApiCacheController
             $this->orderBy = $this->checkOrderBy($this->orderBy, $columns, $this->orderByJoin ?? []);
             $this->orderByString = arrayToCustomString($this->orderBy);
         }
+        // Thêm tham số vào service
+        $this->atcGroupDTO = new AtcGroupDTO(
+            $this->atcGroupName,
+            $this->keyword,
+            $this->isActive,
+            $this->orderBy,
+            $this->orderByJoin,
+            $this->orderByString,
+            $this->getAll,
+            $this->start,
+            $this->limit,
+            $request,
+            $this->appCreator, 
+            $this->appModifier, 
+            $this->time,
+        );
+        $this->atcGroupService->withParams($this->atcGroupDTO);
     }
     public function index()
     {
@@ -38,13 +57,13 @@ class AtcGroupController extends BaseApiCacheController
             if ($this->elasticSearchType != null) {
                 $data = $this->elasticSearchService->handleElasticSearchSearch($this->atcGroupName);
             } else {
-                $data = $this->atcGroupService->handleDataBaseSearch($keyword, $this->isActive, $this->orderBy, $this->orderByJoin, $this->getAll, $this->start, $this->limit);
+                $data = $this->atcGroupService->handleDataBaseSearch();
             }
         } else {
             if ($this->elastic) {
                 $data = $this->elasticSearchService->handleElasticSearchGetAll($this->atcGroupName);
             } else {
-                $data = $this->atcGroupService->handleDataBaseGetAll($this->atcGroupName, $this->isActive, $this->orderBy, $this->orderByJoin, $this->getAll, $this->start, $this->limit);
+                $data = $this->atcGroupService->handleDataBaseGetAll();
             }
         }
         $paramReturn = [
@@ -73,7 +92,7 @@ class AtcGroupController extends BaseApiCacheController
         if ($this->elastic) {
             $data = $this->elasticSearchService->handleElasticSearchGetWithId($this->atcGroupName, $id);
         } else {
-            $data = $this->atcGroupService->handleDataBaseGetWithId($this->atcGroupName, $id, $this->isActive);
+            $data = $this->atcGroupService->handleDataBaseGetWithId($id);
         }
         $paramReturn = [
             $this->idName => $id,
@@ -83,14 +102,14 @@ class AtcGroupController extends BaseApiCacheController
     }
     public function store(CreateAtcGroupRequest $request)
     {
-        return $this->atcGroupService->createAtcGroup($request, $this->time, $this->appCreator, $this->appModifier);
+        return $this->atcGroupService->createAtcGroup($request);
     }
     public function update(UpdateAtcGroupRequest $request, $id)
     {
-        return $this->atcGroupService->updateAtcGroup($this->atcGroupName, $id, $request, $this->time, $this->appModifier);
+        return $this->atcGroupService->updateAtcGroup($id, $request);
     }
     public function destroy($id)
     {
-        return $this->atcGroupService->deleteAtcGroup($this->atcGroupName, $id);
+        return $this->atcGroupService->deleteAtcGroup($id);
     }
 }

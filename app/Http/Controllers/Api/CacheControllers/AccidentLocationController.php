@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\CacheControllers;
 
+use App\DTOs\AccidentLocationDTO;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
 use App\Http\Requests\AccidentLocation\CreateAccidentLocationRequest;
 use App\Http\Requests\AccidentLocation\UpdateAccidentLocationRequest;
@@ -13,6 +14,7 @@ use App\Services\Model\AccidentLocationService;
 class AccidentLocationController extends BaseApiCacheController
 {
     protected $accidentLocationService;
+    protected $accidentLocationDTO;
     public function __construct(Request $request, ElasticsearchService $elasticSearchService, AccidentLocationService $accidentLocationService, AccidentLocation $accidentLocation)
     {
         parent::__construct($request); // Gọi constructor của BaseController
@@ -24,8 +26,24 @@ class AccidentLocationController extends BaseApiCacheController
             $this->orderByJoin = [];
             $columns = $this->getColumnsTable($this->accidentLocation);
             $this->orderBy = $this->checkOrderBy($this->orderBy, $columns, $this->orderByJoin ?? []);
-            $this->orderByString = arrayToCustomString($this->orderBy);
         }
+        // Thêm tham số vào service
+        $this->accidentLocationDTO = new AccidentLocationDTO(
+            $this->accidentLocationName,
+            $this->keyword,
+            $this->isActive,
+            $this->orderBy,
+            $this->orderByJoin,
+            $this->orderByString,
+            $this->getAll,
+            $this->start,
+            $this->limit,
+            $request,
+            $this->appCreator, 
+            $this->appModifier, 
+            $this->time,
+        );
+        $this->accidentLocationService->withParams($this->accidentLocationDTO);
     }
     public function index()
     {
@@ -37,13 +55,13 @@ class AccidentLocationController extends BaseApiCacheController
             if ($this->elasticSearchType != null) {
                 $data = $this->elasticSearchService->handleElasticSearchSearch($this->accidentLocationName);
             } else {
-                $data = $this->accidentLocationService->handleDataBaseSearch($keyword, $this->isActive, $this->orderBy, $this->orderByJoin, $this->getAll, $this->start, $this->limit);
+                $data = $this->accidentLocationService->handleDataBaseSearch();
             }
         } else {
             if ($this->elastic) {
                 $data = $this->elasticSearchService->handleElasticSearchGetAll($this->accidentLocationName);
             } else {
-                $data = $this->accidentLocationService->handleDataBaseGetAll($this->accidentLocationName, $this->isActive, $this->orderBy, $this->orderByJoin, $this->getAll, $this->start, $this->limit);
+                $data = $this->accidentLocationService->handleDataBaseGetAll();
             }
         }
         $paramReturn = [
@@ -72,7 +90,7 @@ class AccidentLocationController extends BaseApiCacheController
         if ($this->elastic) {
             $data = $this->elasticSearchService->handleElasticSearchGetWithId($this->accidentLocationName, $id);
         } else {
-            $data = $this->accidentLocationService->handleDataBaseGetWithId($this->accidentLocationName, $id, $this->isActive);
+            $data = $this->accidentLocationService->handleDataBaseGetWithId($id);
         }
         $paramReturn = [
             $this->idName => $id,
@@ -82,14 +100,14 @@ class AccidentLocationController extends BaseApiCacheController
     }
     public function store(CreateAccidentLocationRequest $request)
     {
-        return $this->accidentLocationService->createAccidentLocation($request, $this->time, $this->appCreator, $this->appModifier);
+        return $this->accidentLocationService->createAccidentLocation($request);
     }
     public function update(UpdateAccidentLocationRequest $request, $id)
     {
-        return $this->accidentLocationService->updateAccidentLocation($this->accidentLocationName, $id, $request, $this->time, $this->appModifier);
+        return $this->accidentLocationService->updateAccidentLocation($id, $request);
     }
     public function destroy($id)
     {
-        return $this->accidentLocationService->deleteAccidentLocation($this->accidentLocationName, $id);
+        return $this->accidentLocationService->deleteAccidentLocation($id);
     }
 }

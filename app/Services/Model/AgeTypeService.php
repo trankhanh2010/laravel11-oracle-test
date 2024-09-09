@@ -2,48 +2,46 @@
 
 namespace App\Services\Model;
 
-use App\Events\Cache\DeleteCache;
-use App\Events\Elastic\AgeType\InsertAgeTypeIndex;
-use App\Events\Elastic\DeleteIndex;
+use App\DTOs\AgeTypeDTO;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Http\Request;
-use App\Http\Controllers\BaseControllers\BaseApiCacheController;
 use App\Repositories\AgeTypeRepository;
 
-class AgeTypeService extends BaseApiCacheController
+class AgeTypeService 
 {
     protected $ageTypeRepository;
-    protected $request;
-    public function __construct(Request $request, AgeTypeRepository $ageTypeRepository)
+    protected $params;
+    public function __construct(AgeTypeRepository $ageTypeRepository)
     {
-        parent::__construct($request);
         $this->ageTypeRepository = $ageTypeRepository;
-        $this->request = $request;
     }
-
-    public function handleDataBaseSearch($keyword, $isActive, $orderBy, $orderByJoin, $getAll, $start, $limit)
+    public function withParams(AgeTypeDTO $params)
+    {
+        $this->params = $params;
+        return $this;
+    }
+    public function handleDataBaseSearch()
     {
         try {
             $data = $this->ageTypeRepository->applyJoins();
-            $data = $this->ageTypeRepository->applyKeywordFilter($data, $keyword);
-            $data = $this->ageTypeRepository->applyIsActiveFilter($data, $isActive);
+            $data = $this->ageTypeRepository->applyKeywordFilter($data, $this->params->keyword);
+            $data = $this->ageTypeRepository->applyIsActiveFilter($data, $this->params->isActive);
             $count = $data->count();
-            $data = $this->ageTypeRepository->applyOrdering($data, $orderBy, $orderByJoin);
-            $data = $this->ageTypeRepository->fetchData($data, $getAll, $start, $limit);
+            $data = $this->ageTypeRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+            $data = $this->ageTypeRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
             return ['data' => $data, 'count' => $count];
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['age_type'], $e);
         }
     }
-    public function handleDataBaseGetAll($ageTypeName, $isActive, $orderBy, $orderByJoin, $getAll, $start, $limit)
+    public function handleDataBaseGetAll()
     {
         try {
-            $data = Cache::remember($ageTypeName . '_start_' . $this->start . '_limit_' . $this->limit . $this->orderByString . '_is_active_' . $this->isActive . '_get_all_' . $this->getAll, $this->time, function () use ($isActive, $orderBy, $orderByJoin, $getAll, $start, $limit) {
+            $data = Cache::remember($this->params->ageTypeName . '_start_' . $this->params->start . '_limit_' . $this->params->limit . $this->params->orderByString . '_is_active_' . $this->params->isActive . '_get_all_' . $this->params->getAll, $this->params->time, function () {
                 $data = $this->ageTypeRepository->applyJoins();
-                $data = $this->ageTypeRepository->applyIsActiveFilter($data, $isActive);
+                $data = $this->ageTypeRepository->applyIsActiveFilter($data, $this->params->isActive);
                 $count = $data->count();
-                $data = $this->ageTypeRepository->applyOrdering($data, $orderBy, $orderByJoin);
-                $data = $this->ageTypeRepository->fetchData($data, $getAll, $start, $limit);
+                $data = $this->ageTypeRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+                $data = $this->ageTypeRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
                 return ['data' => $data, 'count' => $count];
             });
             return $data;
@@ -51,13 +49,13 @@ class AgeTypeService extends BaseApiCacheController
             return writeAndThrowError(config('params')['db_service']['error']['age_type'], $e);
         }
     }
-    public function handleDataBaseGetWithId($ageTypeName, $id, $isActive)
+    public function handleDataBaseGetWithId($id)
     {
         try {
-            $data = Cache::remember($ageTypeName . '_' . $id . '_is_active_' . $this->isActive, $this->time, function () use ($id, $isActive) {
+            $data = Cache::remember($this->params->ageTypeName . '_' . $id . '_is_active_' . $this->params->isActive, $this->params->time, function () use ($id) {
                 $data = $this->ageTypeRepository->applyJoins()
                     ->where('his_age_type.id', $id);
-                $data = $this->ageTypeRepository->applyIsActiveFilter($data, $isActive);
+                $data = $this->ageTypeRepository->applyIsActiveFilter($data, $this->params->isActive);
                 $data = $data->first();
                 return $data;
             });

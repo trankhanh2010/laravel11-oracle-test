@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\CacheControllers;
 
+use App\DTOs\AccidentHurtTypeDTO;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
 use App\Http\Requests\AccidentHurtType\CreateAccidentHurtTypeRequest;
 use App\Http\Requests\AccidentHurtType\UpdateAccidentHurtTypeRequest;
@@ -14,6 +15,7 @@ use App\Services\Model\AccidentHurtTypeService;
 class AccidentHurtTypeController extends BaseApiCacheController
 {
     protected $accidentHurtTypeService;
+    protected $accidentHurtTypeDTO;
     public function __construct(Request $request, ElasticsearchService $elasticSearchService, AccidentHurtTypeService $accidentHurtTypeService, AccidentHurtType $accidentHurtType)
     {
         parent::__construct($request); // Gọi constructor của BaseController
@@ -25,8 +27,24 @@ class AccidentHurtTypeController extends BaseApiCacheController
             $this->orderByJoin = [];
             $columns = $this->getColumnsTable($this->accidentHurtType);
             $this->orderBy = $this->checkOrderBy($this->orderBy, $columns, $this->orderByJoin ?? []);
-            $this->orderByString = arrayToCustomString($this->orderBy);
         }
+        // Thêm tham số vào service
+        $this->accidentHurtTypeDTO = new AccidentHurtTypeDTO(
+            $this->accidentHurtTypeName,
+            $this->keyword,
+            $this->isActive,
+            $this->orderBy,
+            $this->orderByJoin,
+            $this->orderByString,
+            $this->getAll,
+            $this->start,
+            $this->limit,
+            $request,
+            $this->appCreator, 
+            $this->appModifier, 
+            $this->time,
+        );
+        $this->accidentHurtTypeService->withParams($this->accidentHurtTypeDTO);
     }
     public function index()
     {
@@ -38,13 +56,13 @@ class AccidentHurtTypeController extends BaseApiCacheController
             if ($this->elasticSearchType != null) {
                 $data = $this->elasticSearchService->handleElasticSearchSearch($this->accidentHurtTypeName);
             } else {
-                $data = $this->accidentHurtTypeService->handleDataBaseSearch($keyword, $this->isActive, $this->orderBy, $this->orderByJoin, $this->getAll, $this->start, $this->limit);
+                $data = $this->accidentHurtTypeService->handleDataBaseSearch();
             }
         } else {
             if ($this->elastic) {
                 $data = $this->elasticSearchService->handleElasticSearchGetAll($this->accidentHurtTypeName);
             } else {
-                $data = $this->accidentHurtTypeService->handleDataBaseGetAll($this->accidentHurtTypeName, $this->isActive, $this->orderBy, $this->orderByJoin, $this->getAll, $this->start, $this->limit);
+                $data = $this->accidentHurtTypeService->handleDataBaseGetAll();
             }
         }
         $paramReturn = [
@@ -73,7 +91,7 @@ class AccidentHurtTypeController extends BaseApiCacheController
         if ($this->elastic) {
             $data = $this->elasticSearchService->handleElasticSearchGetWithId($this->accidentHurtTypeName, $id);
         } else {
-            $data = $this->accidentHurtTypeService->handleDataBaseGetWithId($this->accidentHurtTypeName, $id, $this->isActive);
+            $data = $this->accidentHurtTypeService->handleDataBaseGetWithId($id);
         }
         $paramReturn = [
             $this->idName => $id,
@@ -83,14 +101,14 @@ class AccidentHurtTypeController extends BaseApiCacheController
     }
     public function store(CreateAccidentHurtTypeRequest $request)
     {
-        return $this->accidentHurtTypeService->createAccidentHurtType($request, $this->time, $this->appCreator, $this->appModifier);
+        return $this->accidentHurtTypeService->createAccidentHurtType($request);
     }
     public function update(UpdateAccidentHurtTypeRequest $request, $id)
     {
-        return $this->accidentHurtTypeService->updateAccidentHurtType($this->accidentHurtTypeName, $id, $request, $this->time, $this->appModifier);
+        return $this->accidentHurtTypeService->updateAccidentHurtType($id, $request);
     }
     public function destroy($id)
     {
-        return $this->accidentHurtTypeService->deleteAccidentHurtType($this->accidentHurtTypeName, $id);
+        return $this->accidentHurtTypeService->deleteAccidentHurtType($id);
     }
 }

@@ -2,48 +2,49 @@
 
 namespace App\Services\Model;
 
+use App\DTOs\AccidentLocationDTO;
 use App\Events\Cache\DeleteCache;
 use App\Events\Elastic\AccidentLocation\InsertAccidentLocationIndex;
 use App\Events\Elastic\DeleteIndex;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Http\Request;
-use App\Http\Controllers\BaseControllers\BaseApiCacheController;
 use App\Repositories\AccidentLocationRepository;
 
-class AccidentLocationService extends BaseApiCacheController
+class AccidentLocationService 
 {
     protected $accidentLocationRepository;
-    protected $request;
-    public function __construct(Request $request, AccidentLocationRepository $accidentLocationRepository)
+    protected $params;
+    public function __construct(AccidentLocationRepository $accidentLocationRepository)
     {
-        parent::__construct($request);
         $this->accidentLocationRepository = $accidentLocationRepository;
-        $this->request = $request;
     }
-
-    public function handleDataBaseSearch($keyword, $isActive, $orderBy, $orderByJoin, $getAll, $start, $limit)
+    public function withParams(AccidentLocationDTO $params)
+    {
+        $this->params = $params;
+        return $this;
+    }
+    public function handleDataBaseSearch()
     {
         try {
             $data = $this->accidentLocationRepository->applyJoins();
-            $data = $this->accidentLocationRepository->applyKeywordFilter($data, $keyword);
-            $data = $this->accidentLocationRepository->applyIsActiveFilter($data, $isActive);
+            $data = $this->accidentLocationRepository->applyKeywordFilter($data, $this->params->keyword);
+            $data = $this->accidentLocationRepository->applyIsActiveFilter($data, $this->params->isActive);
             $count = $data->count();
-            $data = $this->accidentLocationRepository->applyOrdering($data, $orderBy, $orderByJoin);
-            $data = $this->accidentLocationRepository->fetchData($data, $getAll, $start, $limit);
+            $data = $this->accidentLocationRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+            $data = $this->accidentLocationRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
             return ['data' => $data, 'count' => $count];
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['accident_location'], $e);
         }
     }
-    public function handleDataBaseGetAll($accidentLocationName, $isActive, $orderBy, $orderByJoin, $getAll, $start, $limit)
+    public function handleDataBaseGetAll()
     {
         try {
-            $data = Cache::remember($accidentLocationName . '_start_' . $this->start . '_limit_' . $this->limit . $this->orderByString . '_is_active_' . $this->isActive . '_get_all_' . $this->getAll, $this->time, function () use ($isActive, $orderBy, $orderByJoin, $getAll, $start, $limit) {
+            $data = Cache::remember($this->params->accidentLocationName . '_start_' . $this->params->start . '_limit_' . $this->params->limit . $this->params->orderByString . '_is_active_' . $this->params->isActive . '_get_all_' . $this->params->getAll, $this->params->time, function () {
                 $data = $this->accidentLocationRepository->applyJoins();
-                $data = $this->accidentLocationRepository->applyIsActiveFilter($data, $isActive);
+                $data = $this->accidentLocationRepository->applyIsActiveFilter($data, $this->params->isActive);
                 $count = $data->count();
-                $data = $this->accidentLocationRepository->applyOrdering($data, $orderBy, $orderByJoin);
-                $data = $this->accidentLocationRepository->fetchData($data, $getAll, $start, $limit);
+                $data = $this->accidentLocationRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+                $data = $this->accidentLocationRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
                 return ['data' => $data, 'count' => $count];
             });
             return $data;
@@ -51,13 +52,13 @@ class AccidentLocationService extends BaseApiCacheController
             return writeAndThrowError(config('params')['db_service']['error']['accident_location'], $e);
         }
     }
-    public function handleDataBaseGetWithId($accidentLocationName, $id, $isActive)
+    public function handleDataBaseGetWithId($id)
     {
         try {
-            $data = Cache::remember($accidentLocationName . '_' . $id . '_is_active_' . $this->isActive, $this->time, function () use ($id, $isActive) {
+            $data = Cache::remember($this->params->accidentLocationName . '_' . $id . '_is_active_' . $this->params->isActive, $this->params->time, function () use ($id) {
                 $data = $this->accidentLocationRepository->applyJoins()
                     ->where('his_accident_location.id', $id);
-                $data = $this->accidentLocationRepository->applyIsActiveFilter($data, $isActive);
+                $data = $this->accidentLocationRepository->applyIsActiveFilter($data, $this->params->isActive);
                 $data = $data->first();
                 return $data;
             });
@@ -67,21 +68,21 @@ class AccidentLocationService extends BaseApiCacheController
         }
     }
 
-    public function createAccidentLocation($request, $time, $appCreator, $appModifier)
+    public function createAccidentLocation($request)
     {
         try {
-            $data = $this->accidentLocationRepository->create($request, $time, $appCreator, $appModifier);
+            $data = $this->accidentLocationRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
             // Gọi event để xóa cache
-            event(new DeleteCache($this->accidentLocationName));
+            event(new DeleteCache($this->params->accidentLocationName));
             // Gọi event để thêm index vào elastic
-            event(new InsertAccidentLocationIndex($data, $this->accidentLocationName));
+            event(new InsertAccidentLocationIndex($data, $this->params->accidentLocationName));
             return returnDataCreateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['accident_location'], $e);
         }
     }
 
-    public function updateAccidentLocation($accidentLocationName, $id, $request, $time, $appModifier)
+    public function updateAccidentLocation($id, $request)
     {
         if (!is_numeric($id)) {
             return returnIdError($id);
@@ -91,18 +92,18 @@ class AccidentLocationService extends BaseApiCacheController
             return returnNotRecord($id);
         }
         try {
-            $data = $this->accidentLocationRepository->update($request, $data, $time, $appModifier);
+            $data = $this->accidentLocationRepository->update($request, $data, $this->params->time, $this->params->appModifier);
             // Gọi event để xóa cache
-            event(new DeleteCache($accidentLocationName));
+            event(new DeleteCache($this->params->accidentLocationName));
             // Gọi event để thêm index vào elastic
-            event(new InsertAccidentLocationIndex($data, $accidentLocationName));
+            event(new InsertAccidentLocationIndex($data, $this->params->accidentLocationName));
             return returnDataUpdateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['accident_location'], $e);
         }
     }
 
-    public function deleteAccidentLocation($accidentLocationName, $id)
+    public function deleteAccidentLocation($id)
     {
         if (!is_numeric($id)) {
             return returnIdError($id);
@@ -114,9 +115,9 @@ class AccidentLocationService extends BaseApiCacheController
         try {
             $data = $this->accidentLocationRepository->delete($data);
             // Gọi event để xóa cache
-            event(new DeleteCache($accidentLocationName));
+            event(new DeleteCache($this->params->accidentLocationName));
             // Gọi event để xóa index trong elastic
-            event(new DeleteIndex($data, $accidentLocationName));
+            event(new DeleteIndex($data, $this->params->accidentLocationName));
             return returnDataDeleteSuccess();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['accident_location'], $e);

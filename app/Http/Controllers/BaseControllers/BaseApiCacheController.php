@@ -624,6 +624,7 @@ class BaseApiCacheController extends Controller
                     $this->errors[$this->orderByName] = $this->messFormat;
                 }
             }
+            $this->orderByString = arrayToCustomString($this->orderBy);
         }
         $this->orderByElastic = $this->orderBy;
 

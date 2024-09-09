@@ -2,48 +2,49 @@
 
 namespace App\Services\Model;
 
+use App\DTOs\AccidentHurtTypeDTO;
 use App\Events\Cache\DeleteCache;
 use App\Events\Elastic\AccidentHurtType\InsertAccidentHurtTypeIndex;
 use App\Events\Elastic\DeleteIndex;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Http\Request;
-use App\Http\Controllers\BaseControllers\BaseApiCacheController;
 use App\Repositories\AccidentHurtTypeRepository;
 
-class AccidentHurtTypeService extends BaseApiCacheController
+class AccidentHurtTypeService 
 {
     protected $accidentHurtTypeRepository;
-    protected $request;
-    public function __construct(Request $request, AccidentHurtTypeRepository $accidentHurtTypeRepository)
+    protected $params;
+    public function __construct( AccidentHurtTypeRepository $accidentHurtTypeRepository)
     {
-        parent::__construct($request);
         $this->accidentHurtTypeRepository = $accidentHurtTypeRepository;
-        $this->request = $request;
     }
-
-    public function handleDataBaseSearch($keyword, $isActive, $orderBy, $orderByJoin, $getAll, $start, $limit)
+    public function withParams(AccidentHurtTypeDTO $params)
+    {
+        $this->params = $params;
+        return $this;
+    }
+    public function handleDataBaseSearch()
     {
         try {
             $data = $this->accidentHurtTypeRepository->applyJoins();
-            $data = $this->accidentHurtTypeRepository->applyKeywordFilter($data, $keyword);
-            $data = $this->accidentHurtTypeRepository->applyIsActiveFilter($data, $isActive);
+            $data = $this->accidentHurtTypeRepository->applyKeywordFilter($data, $this->params->keyword);
+            $data = $this->accidentHurtTypeRepository->applyIsActiveFilter($data, $this->params->isActive);
             $count = $data->count();
-            $data = $this->accidentHurtTypeRepository->applyOrdering($data, $orderBy, $orderByJoin);
-            $data = $this->accidentHurtTypeRepository->fetchData($data, $getAll, $start, $limit);
+            $data = $this->accidentHurtTypeRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+            $data = $this->accidentHurtTypeRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
             return ['data' => $data, 'count' => $count];
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['accident_hurt_type'], $e);
         }
     }
-    public function handleDataBaseGetAll($accidentHurtTypeName, $isActive, $orderBy, $orderByJoin, $getAll, $start, $limit)
+    public function handleDataBaseGetAll()
     {
         try {
-            $data = Cache::remember($accidentHurtTypeName . '_start_' . $this->start . '_limit_' . $this->limit . $this->orderByString . '_is_active_' . $this->isActive . '_get_all_' . $this->getAll, $this->time, function () use ($isActive, $orderBy, $orderByJoin, $getAll, $start, $limit) {
+            $data = Cache::remember($this->params->accidentHurtTypeName . '_start_' . $this->params->start . '_limit_' . $this->params->limit . $this->params->orderByString . '_is_active_' . $this->params->isActive . '_get_all_' . $this->params->getAll, $this->params->time, function () {
                 $data = $this->accidentHurtTypeRepository->applyJoins();
-                $data = $this->accidentHurtTypeRepository->applyIsActiveFilter($data, $isActive);
+                $data = $this->accidentHurtTypeRepository->applyIsActiveFilter($data, $this->params->isActive);
                 $count = $data->count();
-                $data = $this->accidentHurtTypeRepository->applyOrdering($data, $orderBy, $orderByJoin);
-                $data = $this->accidentHurtTypeRepository->fetchData($data, $getAll, $start, $limit);
+                $data = $this->accidentHurtTypeRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+                $data = $this->accidentHurtTypeRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
                 return ['data' => $data, 'count' => $count];
             });
             return $data;
@@ -51,13 +52,13 @@ class AccidentHurtTypeService extends BaseApiCacheController
             return writeAndThrowError(config('params')['db_service']['error']['accident_hurt_type'], $e);
         }
     }
-    public function handleDataBaseGetWithId($accidentHurtTypeName, $id, $isActive)
+    public function handleDataBaseGetWithId($id)
     {
         try {
-            $data = Cache::remember($accidentHurtTypeName . '_' . $id . '_is_active_' . $this->isActive, $this->time, function () use ($id, $isActive) {
+            $data = Cache::remember($this->params->accidentHurtTypeName . '_' . $id . '_is_active_' . $this->params->isActive, $this->params->time, function () use ($id) {
                 $data = $this->accidentHurtTypeRepository->applyJoins()
                     ->where('his_accident_hurt_type.id', $id);
-                $data = $this->accidentHurtTypeRepository->applyIsActiveFilter($data, $isActive);
+                $data = $this->accidentHurtTypeRepository->applyIsActiveFilter($data, $this->params->isActive);
                 $data = $data->first();
                 return $data;
             });
@@ -67,21 +68,21 @@ class AccidentHurtTypeService extends BaseApiCacheController
         }
     }
 
-    public function createAccidentHurtType($request, $time, $appCreator, $appModifier)
+    public function createAccidentHurtType($request)
     {
         try {
-            $data = $this->accidentHurtTypeRepository->create($request, $time, $appCreator, $appModifier);
+            $data = $this->accidentHurtTypeRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
             // Gọi event để xóa cache
-            event(new DeleteCache($this->accidentHurtTypeName));
+            event(new DeleteCache($this->params->accidentHurtTypeName));
             // Gọi event để thêm index vào elastic
-            event(new InsertAccidentHurtTypeIndex($data, $this->accidentHurtTypeName));
+            event(new InsertAccidentHurtTypeIndex($data, $this->params->accidentHurtTypeName));
             return returnDataCreateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['accident_hurt_type'], $e);
         }
     }
 
-    public function updateAccidentHurtType($accidentHurtTypeName, $id, $request, $time, $appModifier)
+    public function updateAccidentHurtType($id, $request)
     {
         if (!is_numeric($id)) {
             return returnIdError($id);
@@ -91,18 +92,18 @@ class AccidentHurtTypeService extends BaseApiCacheController
             return returnNotRecord($id);
         }
         try {
-            $data = $this->accidentHurtTypeRepository->update($request, $data, $time, $appModifier);
+            $data = $this->accidentHurtTypeRepository->update($request, $data, $this->params->time, $this->params->appModifier);
             // Gọi event để xóa cache
-            event(new DeleteCache($accidentHurtTypeName));
+            event(new DeleteCache($this->params->accidentHurtTypeName));
             // Gọi event để thêm index vào elastic
-            event(new InsertAccidentHurtTypeIndex($data, $accidentHurtTypeName));
+            event(new InsertAccidentHurtTypeIndex($data, $this->params->accidentHurtTypeName));
             return returnDataUpdateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['accident_hurt_type'], $e);
         }
     }
 
-    public function deleteAccidentHurtType($accidentHurtTypeName, $id)
+    public function deleteAccidentHurtType($id)
     {
         if (!is_numeric($id)) {
             return returnIdError($id);
@@ -114,9 +115,9 @@ class AccidentHurtTypeService extends BaseApiCacheController
         try {
             $data = $this->accidentHurtTypeRepository->delete($data);
             // Gọi event để xóa cache
-            event(new DeleteCache($accidentHurtTypeName));
+            event(new DeleteCache($this->params->accidentHurtTypeName));
             // Gọi event để xóa index trong elastic
-            event(new DeleteIndex($data, $accidentHurtTypeName));
+            event(new DeleteIndex($data, $this->params->accidentHurtTypeName));
             return returnDataDeleteSuccess();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['accident_hurt_type'], $e);

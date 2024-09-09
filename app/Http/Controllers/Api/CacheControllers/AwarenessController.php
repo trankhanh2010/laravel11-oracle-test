@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\CacheControllers;
 
+use App\DTOs\AwarenessDTO;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
 use App\Http\Requests\Awareness\CreateAwarenessRequest;
 use App\Http\Requests\Awareness\UpdateAwarenessRequest;
@@ -14,6 +15,7 @@ use Illuminate\Http\Request;
 class AwarenessController extends BaseApiCacheController
 {
     protected $awarenessService;
+    protected $awarenessDTO;
     public function __construct(Request $request, ElasticsearchService $elasticSearchService, AwarenessService $awarenessService, Awareness $awareness)
     {
         parent::__construct($request); // Gọi constructor của BaseController
@@ -26,8 +28,24 @@ class AwarenessController extends BaseApiCacheController
             ];
             $columns = $this->getColumnsTable($this->awareness);
             $this->orderBy = $this->checkOrderBy($this->orderBy, $columns, $this->orderByJoin ?? []);
-            $this->orderByString = arrayToCustomString($this->orderBy);
         }
+        // Thêm tham số vào service
+        $this->awarenessDTO = new AwarenessDTO(
+            $this->awarenessName,
+            $this->keyword,
+            $this->isActive,
+            $this->orderBy,
+            $this->orderByJoin,
+            $this->orderByString,
+            $this->getAll,
+            $this->start,
+            $this->limit,
+            $request,
+            $this->appCreator, 
+            $this->appModifier, 
+            $this->time,
+        );
+        $this->awarenessService->withParams($this->awarenessDTO);
     }
     public function index()
     {
@@ -39,13 +57,13 @@ class AwarenessController extends BaseApiCacheController
             if ($this->elasticSearchType != null) {
                 $data = $this->elasticSearchService->handleElasticSearchSearch($this->awarenessName);
             } else {
-                $data = $this->awarenessService->handleDataBaseSearch($keyword, $this->isActive, $this->orderBy, $this->orderByJoin, $this->getAll, $this->start, $this->limit);
+                $data = $this->awarenessService->handleDataBaseSearch();
             }
         } else {
             if ($this->elastic) {
                 $data = $this->elasticSearchService->handleElasticSearchGetAll($this->awarenessName);
             } else {
-                $data = $this->awarenessService->handleDataBaseGetAll($this->awarenessName, $this->isActive, $this->orderBy, $this->orderByJoin, $this->getAll, $this->start, $this->limit);
+                $data = $this->awarenessService->handleDataBaseGetAll();
             }
         }
         $paramReturn = [
@@ -73,7 +91,7 @@ class AwarenessController extends BaseApiCacheController
         if ($this->elastic) {
             $data = $this->elasticSearchService->handleElasticSearchGetWithId($this->awarenessName, $id);
         } else {
-            $data = $this->awarenessService->handleDataBaseGetWithId($this->awarenessName, $id, $this->isActive);
+            $data = $this->awarenessService->handleDataBaseGetWithId($id);
         }
         $paramReturn = [
             $this->idName => $id,
@@ -83,15 +101,15 @@ class AwarenessController extends BaseApiCacheController
     }
     public function store(CreateAwarenessRequest $request)
     {
-        return $this->awarenessService->createAwareness($request, $this->time, $this->appCreator, $this->appModifier);
+        return $this->awarenessService->createAwareness($request);
     }
     public function update(UpdateAwarenessRequest $request, $id)
     {
-        return $this->awarenessService->updateAwareness($this->awarenessName, $id, $request, $this->time, $this->appModifier);
+        return $this->awarenessService->updateAwareness($id, $request);
     }
     public function destroy($id)
     {
-        return $this->awarenessService->deleteAwareness($this->awarenessName, $id);
+        return $this->awarenessService->deleteAwareness($id);
     }
 }
 

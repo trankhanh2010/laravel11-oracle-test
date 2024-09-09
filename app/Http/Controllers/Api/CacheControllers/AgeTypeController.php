@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\CacheControllers;
 
+use App\DTOs\AgeTypeDTO;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
 use App\Models\HIS\AgeType;
 use Illuminate\Http\Request;
@@ -10,6 +11,7 @@ use App\Services\Model\AgeTypeService;
 class AgeTypeController extends BaseApiCacheController
 {
     protected $ageTypeService;
+    protected $ageTypeDTO;
     public function __construct(Request $request, ElasticsearchService $elasticSearchService, AgeTypeService $ageTypeService, AgeType $ageType)
     {
         parent::__construct($request); // Gọi constructor của BaseController
@@ -21,8 +23,24 @@ class AgeTypeController extends BaseApiCacheController
             $this->orderByJoin = [];
             $columns = $this->getColumnsTable($this->ageType);
             $this->orderBy = $this->checkOrderBy($this->orderBy, $columns, $this->orderByJoin ?? []);
-            $this->orderByString = arrayToCustomString($this->orderBy);
         }
+        // Thêm tham số vào service
+        $this->ageTypeDTO = new AgeTypeDTO(
+            $this->ageTypeName,
+            $this->keyword,
+            $this->isActive,
+            $this->orderBy,
+            $this->orderByJoin,
+            $this->orderByString,
+            $this->getAll,
+            $this->start,
+            $this->limit,
+            $request,
+            $this->appCreator, 
+            $this->appModifier, 
+            $this->time,
+        );
+        $this->ageTypeService->withParams($this->ageTypeDTO);
     }
     public function index()
     {
@@ -34,13 +52,13 @@ class AgeTypeController extends BaseApiCacheController
             if ($this->elasticSearchType != null) {
                 $data = $this->elasticSearchService->handleElasticSearchSearch($this->ageTypeName);
             } else {
-                $data = $this->ageTypeService->handleDataBaseSearch($keyword, $this->isActive, $this->orderBy, $this->orderByJoin, $this->getAll, $this->start, $this->limit);
+                $data = $this->ageTypeService->handleDataBaseSearch();
             }
         } else {
             if ($this->elastic) {
                 $data = $this->elasticSearchService->handleElasticSearchGetAll($this->ageTypeName);
             } else {
-                $data = $this->ageTypeService->handleDataBaseGetAll($this->ageTypeName, $this->isActive, $this->orderBy, $this->orderByJoin, $this->getAll, $this->start, $this->limit);
+                $data = $this->ageTypeService->handleDataBaseGetAll();
             }
         }
         $paramReturn = [
@@ -69,7 +87,7 @@ class AgeTypeController extends BaseApiCacheController
         if ($this->elastic) {
             $data = $this->elasticSearchService->handleElasticSearchGetWithId($this->ageTypeName, $id);
         } else {
-            $data = $this->ageTypeService->handleDataBaseGetWithId($this->ageTypeName, $id, $this->isActive);
+            $data = $this->ageTypeService->handleDataBaseGetWithId($id);
         }
         $paramReturn = [
             $this->idName => $id,

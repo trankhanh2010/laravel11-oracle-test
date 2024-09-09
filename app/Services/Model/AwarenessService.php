@@ -2,48 +2,49 @@
 
 namespace App\Services\Model;
 
+use App\DTOs\AwarenessDTO;
 use App\Events\Cache\DeleteCache;
 use App\Events\Elastic\Awareness\InsertAwarenessIndex;
 use App\Events\Elastic\DeleteIndex;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Http\Request;
-use App\Http\Controllers\BaseControllers\BaseApiCacheController;
 use App\Repositories\AwarenessRepository;
 
-class AwarenessService extends BaseApiCacheController
+class AwarenessService 
 {
     protected $awarenessRepository;
-    protected $request;
-    public function __construct(Request $request, AwarenessRepository $awarenessRepository)
+    protected $params;
+    public function __construct(AwarenessRepository $awarenessRepository)
     {
-        parent::__construct($request);
         $this->awarenessRepository = $awarenessRepository;
-        $this->request = $request;
     }
-
-    public function handleDataBaseSearch($keyword, $isActive, $orderBy, $orderByJoin, $getAll, $start, $limit)
+    public function withParams(AwarenessDTO $params)
+    {
+        $this->params = $params;
+        return $this;
+    }
+    public function handleDataBaseSearch()
     {
         try {
             $data = $this->awarenessRepository->applyJoins();
-            $data = $this->awarenessRepository->applyKeywordFilter($data, $keyword);
-            $data = $this->awarenessRepository->applyIsActiveFilter($data, $isActive);
+            $data = $this->awarenessRepository->applyKeywordFilter($data, $this->params->keyword);
+            $data = $this->awarenessRepository->applyIsActiveFilter($data, $this->params->isActive);
             $count = $data->count();
-            $data = $this->awarenessRepository->applyOrdering($data, $orderBy, $orderByJoin);
-            $data = $this->awarenessRepository->fetchData($data, $getAll, $start, $limit);
+            $data = $this->awarenessRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+            $data = $this->awarenessRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
             return ['data' => $data, 'count' => $count];
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['awareness'], $e);
         }
     }
-    public function handleDataBaseGetAll($awarenessName, $isActive, $orderBy, $orderByJoin, $getAll, $start, $limit)
+    public function handleDataBaseGetAll()
     {
         try {
-            $data = Cache::remember($awarenessName . '_start_' . $this->start . '_limit_' . $this->limit . $this->orderByString . '_is_active_' . $this->isActive . '_get_all_' . $this->getAll, $this->time, function () use ($isActive, $orderBy, $orderByJoin, $getAll, $start, $limit) {
+            $data = Cache::remember($this->params->awarenessName . '_start_' . $this->params->start . '_limit_' . $this->params->limit . $this->params->orderByString . '_is_active_' . $this->params->isActive . '_get_all_' . $this->params->getAll, $this->params->time, function () {
                 $data = $this->awarenessRepository->applyJoins();
-                $data = $this->awarenessRepository->applyIsActiveFilter($data, $isActive);
+                $data = $this->awarenessRepository->applyIsActiveFilter($data, $this->params->isActive);
                 $count = $data->count();
-                $data = $this->awarenessRepository->applyOrdering($data, $orderBy, $orderByJoin);
-                $data = $this->awarenessRepository->fetchData($data, $getAll, $start, $limit);
+                $data = $this->awarenessRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+                $data = $this->awarenessRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
                 return ['data' => $data, 'count' => $count];
             });
             return $data;
@@ -51,13 +52,13 @@ class AwarenessService extends BaseApiCacheController
             return writeAndThrowError(config('params')['db_service']['error']['awareness'], $e);
         }
     }
-    public function handleDataBaseGetWithId($awarenessName, $id, $isActive)
+    public function handleDataBaseGetWithId($id)
     {
         try {
-            $data = Cache::remember($awarenessName . '_' . $id . '_is_active_' . $this->isActive, $this->time, function () use ($id, $isActive) {
+            $data = Cache::remember($this->params->awarenessName . '_' . $id . '_is_active_' . $this->params->isActive, $this->params->time, function () use ($id) {
                 $data = $this->awarenessRepository->applyJoins()
                     ->where('his_awareness.id', $id);
-                $data = $this->awarenessRepository->applyIsActiveFilter($data, $isActive);
+                $data = $this->awarenessRepository->applyIsActiveFilter($data, $this->params->isActive);
                 $data = $data->first();
                 return $data;
             });
@@ -67,21 +68,21 @@ class AwarenessService extends BaseApiCacheController
         }
     }
 
-    public function createAwareness($request, $time, $appCreator, $appModifier)
+    public function createAwareness($request)
     {
         try {
-            $data = $this->awarenessRepository->create($request, $time, $appCreator, $appModifier);
+            $data = $this->awarenessRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
             // Gọi event để xóa cache
-            event(new DeleteCache($this->awarenessName));
+            event(new DeleteCache($this->params->awarenessName));
             // Gọi event để thêm index vào elastic
-            event(new InsertAwarenessIndex($data, $this->awarenessName));
+            event(new InsertAwarenessIndex($data, $this->params->awarenessName));
             return returnDataCreateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['awareness'], $e);
         }
     }
 
-    public function updateAwareness($awarenessName, $id, $request, $time, $appModifier)
+    public function updateAwareness($id, $request)
     {
         if (!is_numeric($id)) {
             return returnIdError($id);
@@ -91,18 +92,18 @@ class AwarenessService extends BaseApiCacheController
             return returnNotRecord($id);
         }
         try {
-            $data = $this->awarenessRepository->update($request, $data, $time, $appModifier);
+            $data = $this->awarenessRepository->update($request, $data, $this->params->time, $this->params->appModifier);
             // Gọi event để xóa cache
-            event(new DeleteCache($awarenessName));
+            event(new DeleteCache($this->params->awarenessName));
             // Gọi event để thêm index vào elastic
-            event(new InsertAwarenessIndex($data, $awarenessName));
+            event(new InsertAwarenessIndex($data, $this->params->awarenessName));
             return returnDataUpdateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['awareness'], $e);
         }
     }
 
-    public function deleteAwareness($awarenessName, $id)
+    public function deleteAwareness($id)
     {
         if (!is_numeric($id)) {
             return returnIdError($id);
@@ -114,9 +115,9 @@ class AwarenessService extends BaseApiCacheController
         try {
             $data = $this->awarenessRepository->delete($data);
             // Gọi event để xóa cache
-            event(new DeleteCache($awarenessName));
+            event(new DeleteCache($this->params->awarenessName));
             // Gọi event để xóa index trong elastic
-            event(new DeleteIndex($data, $awarenessName));
+            event(new DeleteIndex($data, $this->params->awarenessName));
             return returnDataDeleteSuccess();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['awareness'], $e);

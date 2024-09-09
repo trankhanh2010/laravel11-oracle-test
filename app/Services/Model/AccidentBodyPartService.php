@@ -2,48 +2,49 @@
 
 namespace App\Services\Model;
 
+use App\DTOs\AccidentBodyPartDTO;
 use App\Events\Cache\DeleteCache;
 use App\Events\Elastic\AccidentBodyPart\InsertAccidentBodyPartIndex;
 use App\Events\Elastic\DeleteIndex;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Http\Request;
-use App\Http\Controllers\BaseControllers\BaseApiCacheController;
 use App\Repositories\AccidentBodyPartRepository;
 
-class AccidentBodyPartService extends BaseApiCacheController
+class AccidentBodyPartService 
 {
     protected $accidentBodyPartRepository;
-    protected $request;
-    public function __construct(Request $request, AccidentBodyPartRepository $accidentBodyPartRepository)
+    protected $params;
+    public function __construct(AccidentBodyPartRepository $accidentBodyPartRepository)
     {
-        parent::__construct($request);
         $this->accidentBodyPartRepository = $accidentBodyPartRepository;
-        $this->request = $request;
     }
-
-    public function handleDataBaseSearch($keyword, $isActive, $orderBy, $orderByJoin, $getAll, $start, $limit)
+    public function withParams(AccidentBodyPartDTO $params)
+    {
+        $this->params = $params;
+        return $this;
+    }
+    public function handleDataBaseSearch()
     {
         try {
             $data = $this->accidentBodyPartRepository->applyJoins();
-            $data = $this->accidentBodyPartRepository->applyKeywordFilter($data, $keyword);
-            $data = $this->accidentBodyPartRepository->applyIsActiveFilter($data, $isActive);
+            $data = $this->accidentBodyPartRepository->applyKeywordFilter($data, $this->params->keyword);
+            $data = $this->accidentBodyPartRepository->applyIsActiveFilter($data, $this->params->isActive);
             $count = $data->count();
-            $data = $this->accidentBodyPartRepository->applyOrdering($data, $orderBy, $orderByJoin);
-            $data = $this->accidentBodyPartRepository->fetchData($data, $getAll, $start, $limit);
+            $data = $this->accidentBodyPartRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+            $data = $this->accidentBodyPartRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
             return ['data' => $data, 'count' => $count];
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['accident_body_part'], $e);
         }
     }
-    public function handleDataBaseGetAll($accidentBodyPartName, $isActive, $orderBy, $orderByJoin, $getAll, $start, $limit)
+    public function handleDataBaseGetAll()
     {
         try {
-            $data = Cache::remember($accidentBodyPartName . '_start_' . $this->start . '_limit_' . $this->limit . $this->orderByString . '_is_active_' . $this->isActive . '_get_all_' . $this->getAll, $this->time, function () use ($isActive, $orderBy, $orderByJoin, $getAll, $start, $limit) {
+            $data = Cache::remember($this->params->accidentBodyPartName . '_start_' . $this->params->start . '_limit_' . $this->params->limit . $this->params->orderByString . '_is_active_' . $this->params->isActive . '_get_all_' . $this->params->getAll, $this->params->time, function (){
                 $data = $this->accidentBodyPartRepository->applyJoins();
-                $data = $this->accidentBodyPartRepository->applyIsActiveFilter($data, $isActive);
+                $data = $this->accidentBodyPartRepository->applyIsActiveFilter($data, $this->params->isActive);
                 $count = $data->count();
-                $data = $this->accidentBodyPartRepository->applyOrdering($data, $orderBy, $orderByJoin);
-                $data = $this->accidentBodyPartRepository->fetchData($data, $getAll, $start, $limit);
+                $data = $this->accidentBodyPartRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+                $data = $this->accidentBodyPartRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
                 return ['data' => $data, 'count' => $count];
             });
             return $data;
@@ -51,13 +52,13 @@ class AccidentBodyPartService extends BaseApiCacheController
             return writeAndThrowError(config('params')['db_service']['error']['accident_body_part'], $e);
         }
     }
-    public function handleDataBaseGetWithId($accidentBodyPartName, $id, $isActive)
+    public function handleDataBaseGetWithId($id)
     {
         try {
-            $data = Cache::remember($accidentBodyPartName . '_' . $id . '_is_active_' . $this->isActive, $this->time, function () use ($id, $isActive) {
+            $data = Cache::remember($this->params->accidentBodyPartName . '_' . $id . '_is_active_' . $this->params->isActive, $this->params->time, function () use ($id){
                 $data = $this->accidentBodyPartRepository->applyJoins()
                     ->where('his_accident_body_part.id', $id);
-                $data = $this->accidentBodyPartRepository->applyIsActiveFilter($data, $isActive);
+                $data = $this->accidentBodyPartRepository->applyIsActiveFilter($data, $this->params->isActive);
                 $data = $data->first();
                 return $data;
             });
@@ -67,21 +68,21 @@ class AccidentBodyPartService extends BaseApiCacheController
         }
     }
 
-    public function createAccidentBodyPart($request, $time, $appCreator, $appModifier)
+    public function createAccidentBodyPart($request)
     {
         try {
-            $data = $this->accidentBodyPartRepository->create($request, $time, $appCreator, $appModifier);
+            $data = $this->accidentBodyPartRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
             // Gọi event để xóa cache
-            event(new DeleteCache($this->accidentBodyPartName));
+            event(new DeleteCache($this->params->accidentBodyPartName));
             // Gọi event để thêm index vào elastic
-            event(new InsertAccidentBodyPartIndex($data, $this->accidentBodyPartName));
+            event(new InsertAccidentBodyPartIndex($data, $this->params->accidentBodyPartName));
             return returnDataCreateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['accident_body_part'], $e);
         }
     }
 
-    public function updateAccidentBodyPart($accidentBodyPartName, $id, $request, $time, $appModifier)
+    public function updateAccidentBodyPart($id, $request)
     {
         if (!is_numeric($id)) {
             return returnIdError($id);
@@ -91,18 +92,18 @@ class AccidentBodyPartService extends BaseApiCacheController
             return returnNotRecord($id);
         }
         try {
-            $data = $this->accidentBodyPartRepository->update($request, $data, $time, $appModifier);
+            $data = $this->accidentBodyPartRepository->update($request, $data, $this->params->time, $this->params->appModifier);
             // Gọi event để xóa cache
-            event(new DeleteCache($accidentBodyPartName));
+            event(new DeleteCache($this->params->accidentBodyPartName));
             // Gọi event để thêm index vào elastic
-            event(new InsertAccidentBodyPartIndex($data, $accidentBodyPartName));
+            event(new InsertAccidentBodyPartIndex($data, $this->params->accidentBodyPartName));
             return returnDataUpdateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['accident_body_part'], $e);
         }
     }
 
-    public function deleteAccidentBodyPart($accidentBodyPartName, $id)
+    public function deleteAccidentBodyPart($id)
     {
         if (!is_numeric($id)) {
             return returnIdError($id);
@@ -114,9 +115,9 @@ class AccidentBodyPartService extends BaseApiCacheController
         try {
             $data = $this->accidentBodyPartRepository->delete($data);
             // Gọi event để xóa cache
-            event(new DeleteCache($accidentBodyPartName));
+            event(new DeleteCache($this->params->accidentBodyPartName));
             // Gọi event để xóa index trong elastic
-            event(new DeleteIndex($data, $accidentBodyPartName));
+            event(new DeleteIndex($data, $this->params->accidentBodyPartName));
             return returnDataDeleteSuccess();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['accident_body_part'], $e);

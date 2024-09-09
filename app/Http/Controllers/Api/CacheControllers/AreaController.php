@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\CacheControllers;
 
+use App\DTOs\AreaDTO;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
 use Illuminate\Http\Request;
 use App\Http\Requests\Area\CreateAreaRequest;
@@ -13,6 +14,7 @@ use App\Services\Model\AreaService;
 class AreaController extends BaseApiCacheController
 {
     protected $areaService;
+    protected $areaDTO;
     public function __construct(Request $request, ElasticsearchService $elasticSearchService, AreaService $areaService, Area $area)
     {
         parent::__construct($request); // Gọi constructor của BaseController
@@ -25,8 +27,24 @@ class AreaController extends BaseApiCacheController
             ];
             $columns = $this->getColumnsTable($this->area);
             $this->orderBy = $this->checkOrderBy($this->orderBy, $columns, $this->orderByJoin ?? []);
-            $this->orderByString = arrayToCustomString($this->orderBy);
         }
+        // Thêm tham số vào service
+        $this->areaDTO = new AreaDTO(
+            $this->areaName,
+            $this->keyword,
+            $this->isActive,
+            $this->orderBy,
+            $this->orderByJoin,
+            $this->orderByString,
+            $this->getAll,
+            $this->start,
+            $this->limit,
+            $request,
+            $this->appCreator, 
+            $this->appModifier, 
+            $this->time,
+        );
+        $this->areaService->withParams($this->areaDTO);
     }
     public function index()
     {
@@ -38,13 +56,13 @@ class AreaController extends BaseApiCacheController
             if ($this->elasticSearchType != null) {
                 $data = $this->elasticSearchService->handleElasticSearchSearch($this->areaName);
             } else {
-                $data = $this->areaService->handleDataBaseSearch($keyword, $this->isActive, $this->orderBy, $this->orderByJoin, $this->getAll, $this->start, $this->limit);
+                $data = $this->areaService->handleDataBaseSearch();
             }
         } else {
             if ($this->elastic) {
                 $data = $this->elasticSearchService->handleElasticSearchGetAll($this->areaName);
             } else {
-                $data = $this->areaService->handleDataBaseGetAll($this->areaName, $this->isActive, $this->orderBy, $this->orderByJoin, $this->getAll, $this->start, $this->limit);
+                $data = $this->areaService->handleDataBaseGetAll();
             }
         }
         $paramReturn = [
@@ -73,7 +91,7 @@ class AreaController extends BaseApiCacheController
         if ($this->elastic) {
             $data = $this->elasticSearchService->handleElasticSearchGetWithId($this->areaName, $id);
         } else {
-            $data = $this->areaService->handleDataBaseGetWithId($this->areaName, $id, $this->isActive);
+            $data = $this->areaService->handleDataBaseGetWithId($id);
         }
         $paramReturn = [
             $this->idName => $id,
@@ -83,14 +101,14 @@ class AreaController extends BaseApiCacheController
     }
     public function store(CreateAreaRequest $request)
     {
-        return $this->areaService->createArea($request, $this->time, $this->appCreator, $this->appModifier);
+        return $this->areaService->createArea($request);
     }
     public function update(UpdateAreaRequest $request, $id)
     {
-        return $this->areaService->updateArea($this->areaName, $id, $request, $this->time, $this->appModifier);
+        return $this->areaService->updateArea($id, $request);
     }
     public function destroy($id)
     {
-        return $this->areaService->deleteArea($this->areaName, $id);
+        return $this->areaService->deleteArea($id);
     }
 }
