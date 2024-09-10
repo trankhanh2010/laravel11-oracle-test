@@ -706,6 +706,7 @@ if (!function_exists('getArrElasticIndexKeyword')) {
     {
         $time = 144000;
         $data = Cache::remember('elastic_index_keyword_' . $name, $time, function () use ($name) {
+            $keywordFields = [];
             $client = app('Elasticsearch');
             $params = [
                 'index' => $name,

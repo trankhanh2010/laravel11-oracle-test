@@ -266,6 +266,10 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisBhytBlacklist'], function () {
         Route::apiResource('v1/bhyt-blacklist', BhytBlacklistController::class);
     });
+    /// Tham số BHYT
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisBHYTParam'], function () {
+        Route::apiResource('v1/bhyt-param', BhytParamController::class);
+    });
     /// Khoa phòng
     Route::group(['as' => 'HIS.Desktop.Plugins.HisDepartment'], function () {
         Route::get("v1/department", [DepartmentController::class, "department"])->name('.get');
@@ -926,15 +930,6 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisHeinServiceType'], function () {
         Route::get("v1/hein-service-type", [HeinServiceTypeController::class, "hein_service_type"])->name('.get');
         Route::get("v1/hein-service-type/{id}", [HeinServiceTypeController::class, "hein_service_type"])->name('.get_id');
-    });
-
-    /// Tham số BHYT
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisBHYTParam'], function () {
-        Route::get("v1/bhyt-param", [BhytParamController::class, "bhyt_param"])->name('.get');
-        Route::get("v1/bhyt-param/{id}", [BhytParamController::class, "bhyt_param"])->name('.get_id');
-        Route::post("v1/bhyt-param", [BhytParamController::class, "bhyt_param_create"])->name('.create');
-        Route::put("v1/bhyt-param/{id}", [BhytParamController::class, "bhyt_param_update"])->name('.update');
-        Route::delete("v1/bhyt-param/{id}", [BhytParamController::class, "bhyt_param_delete"])->name('.delete');
     });
 
     /// Chính sách giá thuốc

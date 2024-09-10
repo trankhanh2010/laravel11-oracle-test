@@ -169,6 +169,7 @@ return [
             'bed' => 'Có lỗi khi thực hiện thao tác với bảng Bed!',
             'bed_bsty' => 'Có lỗi khi thực hiện thao tác với bảng BedBsty!',
             'bhyt_blacklist' => 'Có lỗi khi thực hiện thao tác với bảng BhytBlacklist!',
+            'bhyt_param' => 'Có lỗi khi thực hiện thao tác với bảng BhytParam!',
 
         ]
     ]
