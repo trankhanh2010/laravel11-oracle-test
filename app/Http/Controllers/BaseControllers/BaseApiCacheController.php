@@ -32,6 +32,8 @@ class BaseApiCacheController extends Controller
     protected $errors = [];
     protected $data = [];
     protected $time;
+    protected $date;
+    protected $dateName = 'Date';
     protected $columnsTime;
     protected $arrLimit;
     protected $start;
@@ -610,6 +612,12 @@ class BaseApiCacheController extends Controller
         if($this->line !== null){
             if (!is_int($this->line)) {
                 $this->errors[$this->lineName] = $this->messFormat;
+            }
+        }
+        $this->date = $this->paramRequest['ApiData']['Date'] ?? null;
+        if($this->date !== null){
+            if (!is_string($this->date)) {
+                $this->errors[$this->dateName] = $this->messFormat;
             }
         }
         $this->getAll = $this->paramRequest['CommonParam']['GetAll'] ?? false;

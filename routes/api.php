@@ -207,7 +207,7 @@ Route::group([
     /// Telegram
     Route::get('v1/updated-activity', [TelegramController::class, "updated_activity"])->name('.updated_activity');
     /// Log
-    Route::get("v1/log", [LogController::class, "get_log"])->name('.get_log');
+    Route::get("v1/log", [LogController::class, "getLog"])->name('.get_log');
     /// Cache
     Route::get("v1/clear-cache", [CacheController::class, "clearCache"])->name('.clear_cache');
     Route::get("v1/clear-cache-elastic-index-keyword", [CacheController::class, "clearCacheElaticIndexKeyword"])->name('.clear_cache_elatic_index_keyword');
@@ -257,6 +257,14 @@ Route::group([
     /// Buồng bệnh
     Route::group(['as' => 'HIS.Desktop.Plugins.HisBedRoomList'], function () {
         Route::apiResource('v1/bed-room', BedRoomController::class);
+    });
+    /// Loại giường
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisBedTypeList'], function () {
+        Route::apiResource('v1/bed-type', BedTypeController::class)->only(['index', 'show']);
+    });
+    /// Thẻ BHYT không hợp lệ
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisBhytBlacklist'], function () {
+        Route::apiResource('v1/bhyt-blacklist', BhytBlacklistController::class);
     });
     /// Khoa phòng
     Route::group(['as' => 'HIS.Desktop.Plugins.HisDepartment'], function () {
@@ -620,12 +628,6 @@ Route::group([
         Route::apiResource('v1/bed', BedController::class);
     });
 
-    /// Loại giường
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisBedTypeList'], function () {
-        Route::get("v1/bed-type", [BedTypeController::class, "bed_type"])->name('.get');
-        Route::get("v1/bed-type/{id}", [BedTypeController::class, "bed_type"])->name('.get_id');
-    });
-
     /// Nhóm dịch vụ
     Route::group(['as' => 'HIS.Desktop.Plugins.HisServSegr'], function () {
         Route::get("v1/serv-segr", [ServSegrController::class, "serv_segr"])->name('.get');
@@ -933,15 +935,6 @@ Route::group([
         Route::post("v1/bhyt-param", [BhytParamController::class, "bhyt_param_create"])->name('.create');
         Route::put("v1/bhyt-param/{id}", [BhytParamController::class, "bhyt_param_update"])->name('.update');
         Route::delete("v1/bhyt-param/{id}", [BhytParamController::class, "bhyt_param_delete"])->name('.delete');
-    });
-
-    /// Thẻ BHYT không hợp lệ
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisBhytBlacklist'], function () {
-        Route::get("v1/bhyt-blacklist", [BhytBlacklistController::class, "bhyt_blacklist"])->name('.get');
-        Route::get("v1/bhyt-blacklist/{id}", [BhytBlacklistController::class, "bhyt_blacklist"])->name('.get_id');
-        Route::post("v1/bhyt-blacklist", [BhytBlacklistController::class, "bhyt_blacklist_create"])->name('.create');
-        Route::put("v1/bhyt-blacklist/{id}", [BhytBlacklistController::class, "bhyt_blacklist_update"])->name('.update');
-        Route::delete("v1/bhyt-blacklist/{id}", [BhytBlacklistController::class, "bhyt_blacklist_delete"])->name('.delete');
     });
 
     /// Chính sách giá thuốc

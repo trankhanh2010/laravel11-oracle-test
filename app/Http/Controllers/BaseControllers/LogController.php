@@ -8,14 +8,14 @@ use Illuminate\Support\Facades\File;
 
 class LogController extends BaseApiCacheController
 {
-    function get_log(Request $request)
+    function getLog(Request $request)
     {
         // Kiểm tra param và trả về lỗi nếu nó không hợp lệ
         if ($this->checkParam()) {
             return $this->checkParam();
         }
 
-        $filePath = storage_path('logs/laravel.log'); // Đường dẫn đến file log
+        $filePath = storage_path('logs/laravel-'.$this->date.'.log'); // Đường dẫn đến file log
 
         if (!File::exists($filePath)) {
             return response()->json(['error' => 'File log không tồn tại.'], 404);

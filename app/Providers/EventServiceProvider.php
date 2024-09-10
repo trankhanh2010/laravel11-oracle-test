@@ -24,6 +24,9 @@ use App\Events\Elastic\BedBsty\CreateBedBstyIndex;
 use App\Events\Elastic\BedBsty\InsertBedBstyIndex;
 use App\Events\Elastic\BedRoom\CreateBedRoomIndex;
 use App\Events\Elastic\BedRoom\InsertBedRoomIndex;
+use App\Events\Elastic\BedType\CreateBedTypeIndex;
+use App\Events\Elastic\BhytBlacklist\CreateBhytBlacklistIndex;
+use App\Events\Elastic\BhytBlacklist\InsertBhytBlacklistIndex;
 use App\Events\Elastic\DeleteIndex;
 use App\Events\Telegram\SendMessageToChannel;
 use App\Listeners\Cache\DeleteCache as CacheDeleteCache;
@@ -48,6 +51,9 @@ use App\Listeners\Elastic\BedBsty\ElasticCreateBedBstyIndex;
 use App\Listeners\Elastic\BedBsty\ElasticInsertBedBstyIndex;
 use App\Listeners\Elastic\BedRoom\ElasticCreateBedRoomIndex;
 use App\Listeners\Elastic\BedRoom\ElasticInsertBedRoomIndex;
+use App\Listeners\Elastic\BedType\ElasticCreateBedTypeIndex;
+use App\Listeners\Elastic\BhytBlacklist\ElasticCreateBhytBlacklistIndex;
+use App\Listeners\Elastic\BhytBlacklist\ElasticInsertBhytBlacklistIndex;
 use App\Listeners\Elastic\ElasticDeleteIndex;
 use App\Listeners\Telegram\TelegramSendMessageToChannel;
 use Illuminate\Auth\Events\Registered;
@@ -154,6 +160,17 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertBedRoomIndex::class => [
             ElasticInsertBedRoomIndex::class,
+        ],
+
+        CreateBedTypeIndex::class => [
+            ElasticCreateBedTypeIndex::class,
+        ],
+
+        CreateBhytBlacklistIndex::class => [
+            ElasticCreateBhytBlacklistIndex::class,
+        ],
+        InsertBhytBlacklistIndex::class => [
+            ElasticInsertBhytBlacklistIndex::class,
         ],
     ];
 

@@ -171,7 +171,6 @@ class BedRoomRepository
             'modify_time' => now()->format('Ymdhis'),
             'modifier' => get_loginname_with_token($request->bearerToken(), $time),
             'app_modifier' => $appModifier,
-            'bed_room_code' => $request->bed_room_code,
             'bed_room_name' => $request->bed_room_name,
             'is_surgery' => $request->is_surgery,
             'treatment_type_ids' => $request->treatment_type_ids,

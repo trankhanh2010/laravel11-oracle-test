@@ -44,7 +44,7 @@ class ElasticSearchController extends Controller
         $table = $this->all_table;
 
         $tables = explode(",", $request->tables);
-        if($request->tables == null){
+        if ($request->tables == null) {
             $tables = $table;
         }
         foreach ($tables as $key => $item) {
@@ -56,66 +56,52 @@ class ElasticSearchController extends Controller
                 ], 422);
             }
         }
-        try {
-            if ($tables != null) {
-                foreach ($tables as $key => $item) {
-                    $first_table = strtolower(explode('_', $item)[0]);
-                    $name_table = strtolower(substr($item, strlen($first_table . '_')));
-                    $exists = $this->client->indices()->exists(['index' => $name_table])->asBool();
-                    if ($exists) {
-                        $params = ['index' => $name_table];
-                        event(new DeleteCache($name_table));
-                        $this->client->indices()->delete($params);
-                    } 
+        if ($tables != null) {
+            foreach ($tables as $key => $item) {
+                $first_table = strtolower(explode('_', $item)[0]);
+                $name_table = strtolower(substr($item, strlen($first_table . '_')));
+                $exists = $this->client->indices()->exists(['index' => $name_table])->asBool();
+                if ($exists) {
+                    $params = ['index' => $name_table];
+                    event(new DeleteCache($name_table));
+                    $this->client->indices()->delete($params);
                 }
-                return response()->json([
-                    'status'    => 200,
-                    'success' => true,
-                    'message' => 'Xong!'
-                ], 200);
             }
-        } catch (\Throwable $e) {
-            // Xử lý lỗi và trả về phản hồi lỗi
-            return return500Error($e->getMessage());
+            return response()->json([
+                'status'    => 200,
+                'success' => true,
+                'message' => 'Xong!'
+            ], 200);
         }
     }
-    public function get_mapping(Request $request){
-        try {
-            $params = [
-                'index' => $request->index,
-            ];
-            $response = new ElasticMappingResource($this->client->indices()->getMapping($params)[$request->index]);
-        
-            return returnDataSuccess([], $response);
-        } catch (\Throwable $e) {
-            // Xử lý lỗi và trả về phản hồi lỗi
-            return return500Error($e->getMessage());
-        }
+    public function get_mapping(Request $request)
+    {
+        $params = [
+            'index' => $request->index,
+        ];
+        $response = new ElasticMappingResource($this->client->indices()->getMapping($params)[$request->index]);
+
+        return returnDataSuccess([], $response);
     }
     public function get_index_settings(Request $request)
     {
         $index = $request->index;
         $detail = $request->detail;
-        try {
-            $params = [
-                'index' => $index
-            ];
+        $params = [
+            'index' => $index
+        ];
 
-            $response = $this->client->indices()->get($params);
-            switch ($detail) {
-                case 'stop_filter':
-                    $response = $response[$index]['settings']['index']['analysis']['filter']['my_stop_filter'];
-                    break;
-    
-                default:
-                    // Xử lý mặc định hoặc xử lý khi không có bảng khớp
-                    $response = [];
-                    break;
-            }
-            return returnDataSuccess([], $response);
-        } catch (\Throwable $e) {
-            // Xử lý lỗi và trả về phản hồi lỗi
-            return response()->json(['error' => $e->getMessage()], 500);
+        $response = $this->client->indices()->get($params);
+        switch ($detail) {
+            case 'stop_filter':
+                $response = $response[$index]['settings']['index']['analysis']['filter']['my_stop_filter'];
+                break;
+
+            default:
+                // Xử lý mặc định hoặc xử lý khi không có bảng khớp
+                $response = [];
+                break;
         }
+        return returnDataSuccess([], $response);
     }
 }

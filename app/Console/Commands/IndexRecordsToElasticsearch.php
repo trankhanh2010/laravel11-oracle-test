@@ -16,6 +16,8 @@ use Illuminate\Support\Facades\DB;
 use App\Events\Elastic\Bed\CreateBedIndex;
 use App\Events\Elastic\BedBsty\CreateBedBstyIndex;
 use App\Events\Elastic\BedRoom\CreateBedRoomIndex;
+use App\Events\Elastic\BedType\CreateBedTypeIndex;
+use App\Events\Elastic\BhytBlacklist\CreateBhytBlacklistIndex;
 use App\Repositories\AccidentBodyPartRepository;
 use App\Repositories\AccidentCareRepository;
 use App\Repositories\AccidentHurtTypeRepository;
@@ -27,6 +29,8 @@ use App\Repositories\AwarenessRepository;
 use App\Repositories\BedBstyRepository;
 use App\Repositories\BedRepository;
 use App\Repositories\BedRoomRepository;
+use App\Repositories\BedTypeRepository;
+use App\Repositories\BhytBlacklistRepository;
 
 class IndexRecordsToElasticsearch extends Command
 {
@@ -50,7 +54,6 @@ class IndexRecordsToElasticsearch extends Command
     public function handle()
     {
         $table_arr = config('params')['elastic']['all_table'];
-        $this->info(env('ELASTICSEARCH_HOST') . ':' . env('ELASTICSEARCH_PORT'));
 
         $param = $this->option('table');
         $table = [];
@@ -125,7 +128,14 @@ class IndexRecordsToElasticsearch extends Command
                 $results = app(BedRoomRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateBedRoomIndex($name_table));
                 break;
-
+            case 'his_bed_type':
+                $results = app(BedTypeRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateBedTypeIndex($name_table));
+                break;
+            case 'his_bhyt_blacklist':
+                $results = app(BhytBlacklistRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateBhytBlacklistIndex($name_table));
+                break;
             default:
                 // Xử lý mặc định hoặc xử lý khi không có bảng khớp
                 $results = DB::connection('oracle_' . $first_table)->table($table)->get();
