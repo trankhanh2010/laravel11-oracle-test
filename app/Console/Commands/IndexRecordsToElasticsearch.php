@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Events\Cache\DeleteCache;
 use App\Events\Elastic\AccidentBodyPart\CreateAccidentBodyPartIndex;
 use App\Events\Elastic\AccidentCare\CreateAccidentCareIndex;
 use App\Events\Elastic\AccidentHurtType\CreateAccidentHurtTypeIndex;
@@ -13,7 +14,8 @@ use App\Events\Elastic\Awareness\CreateAwarenessIndex;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use App\Events\Elastic\Bed\CreateBedIndex;
-
+use App\Events\Elastic\BedBsty\CreateBedBstyIndex;
+use App\Events\Elastic\BedRoom\CreateBedRoomIndex;
 use App\Repositories\AccidentBodyPartRepository;
 use App\Repositories\AccidentCareRepository;
 use App\Repositories\AccidentHurtTypeRepository;
@@ -22,7 +24,9 @@ use App\Repositories\AgeTypeRepository;
 use App\Repositories\AreaRepository;
 use App\Repositories\AtcGroupRepository;
 use App\Repositories\AwarenessRepository;
+use App\Repositories\BedBstyRepository;
 use App\Repositories\BedRepository;
+use App\Repositories\BedRoomRepository;
 
 class IndexRecordsToElasticsearch extends Command
 {
@@ -63,7 +67,7 @@ class IndexRecordsToElasticsearch extends Command
                     $first_table = strtolower(explode('_', $item)[0]);
                     $name_table = strtolower(substr($item, strlen($first_table . '_')));
                     $this->processAndIndexData($item, $first_table, $name_table);
-
+                    event(new DeleteCache($name_table));
                     $this->info('Đã tạo Index cho bảng ' . $item . '.');
                 } else {
                     $this->error('Không tồn tại bảng ' . $item . '.');
@@ -78,40 +82,48 @@ class IndexRecordsToElasticsearch extends Command
         $client = app('Elasticsearch');
         switch ($table) {
             case 'his_accident_body_part':
-                $results = AccidentBodyPartRepository::getDataFromDbToElastic(null);
+                $results = app(AccidentBodyPartRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateAccidentBodyPartIndex($name_table));
                 break;
             case 'his_accident_care':
-                $results = AccidentCareRepository::getDataFromDbToElastic(null);
+                $results = app(AccidentCareRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateAccidentCareIndex($name_table));
                 break;    
             case 'his_accident_hurt_type':
-                $results = AccidentHurtTypeRepository::getDataFromDbToElastic(null);
+                $results = app(AccidentHurtTypeRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateAccidentHurtTypeIndex($name_table));
                 break;    
             case 'his_accident_location':
-                $results = AccidentLocationRepository::getDataFromDbToElastic(null);
+                $results = app(AccidentLocationRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateAccidentLocationIndex($name_table));
                 break;     
             case 'his_age_type':
-                $results = AgeTypeRepository::getDataFromDbToElastic(null);
+                $results = app(AgeTypeRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateAgeTypeIndex($name_table));
                 break;     
             case 'his_area':
-                $results = AreaRepository::getDataFromDbToElastic(null);
+                $results = app(AreaRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateAreaIndex($name_table));
                 break;        
             case 'his_atc_group':
-                $results = AtcGroupRepository::getDataFromDbToElastic(null);
+                $results = app(AtcGroupRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateAtcGroupIndex($name_table));
                 break;  
             case 'his_awareness':
-                $results = AwarenessRepository::getDataFromDbToElastic(null);
+                $results = app(AwarenessRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateAwarenessIndex($name_table));
-                break;  
+                break; 
+            case 'his_bed_bsty':
+                $results =app(BedBstyRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateBedBstyIndex($name_table));
+                break; 
             case 'his_bed':
-                $results = BedRepository::getDataFromDbToElastic(null);
+                $results = app(BedRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateBedIndex($name_table));
+                break;
+            case 'his_bed_room':
+                $results = app(BedRoomRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateBedRoomIndex($name_table));
                 break;
 
             default:
@@ -126,7 +138,7 @@ class IndexRecordsToElasticsearch extends Command
             }
             $params = [
                 'index' => $name_table,
-                'id'    => $result->id,
+                'id'    => $result['id'],
                 'body'  => $data
             ];
 

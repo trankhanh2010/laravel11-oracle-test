@@ -566,7 +566,9 @@ class BaseApiCacheController extends Controller
 
         // Param json gửi từ client
         if ($request->input('param') !== null) {
-            $this->paramRequest = json_decode(base64_decode($request->input('param')), true) ?? null;
+            // Thay thế dấu + và / nếu bị thay đổi thành khoảng trắng hoặc các ký tự khác
+            $encodedParam  = str_replace([' ', '+', '/'], ['+', '+', '/'], $request->input('param'));
+            $this->paramRequest = json_decode(base64_decode($encodedParam ), true) ?? null;
             if ($this->paramRequest === null) {
                 $this->errors['param'] = $this->messDecodeParam;
             }

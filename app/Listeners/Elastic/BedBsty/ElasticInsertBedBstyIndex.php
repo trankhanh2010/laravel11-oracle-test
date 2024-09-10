@@ -1,19 +1,22 @@
 <?php
 
-namespace App\Listeners\Elastic\AccidentHurtType;
+namespace App\Listeners\Elastic\BedBsty;
 
-use App\Events\Elastic\AccidentHurtType\InsertAccidentHurtTypeIndex;
-use App\Models\HIS\AccidentHurtType;
-use App\Repositories\AccidentHurtTypeRepository;
+use App\Events\Elastic\BedBsty\InsertBedBstyIndex;
+use App\Models\HIS\BedBsty;
+use App\Repositories\BedBstyRepository;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 
-class ElasticInsertAccidentHurtTypeIndex
+class ElasticInsertBedBstyIndex
 {
     /**
      * Create the event listener.
      */
     protected $client;
+    /**
+     * Create the event listener.
+     */
     public function __construct()
     {
         $this->client = app('Elasticsearch');
@@ -22,11 +25,11 @@ class ElasticInsertAccidentHurtTypeIndex
     /**
      * Handle the event.
      */
-    public function handle(InsertAccidentHurtTypeIndex $event): void
+    public function handle(InsertBedBstyIndex $event): void
     {
         try {
             $record = $event->record;
-            $data = app(AccidentHurtTypeRepository::class)->getDataFromDbToElastic($record->id);
+            $data = app(BedBstyRepository::class)->getDataFromDbToElastic($record->id);
             // Tạo chỉ mục hoặc cập nhật dữ liệu
             $params = [
                 'index' => $event->modelName, // Chỉ mục bạn muốn tạo hoặc cập nhật

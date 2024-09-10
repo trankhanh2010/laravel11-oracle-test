@@ -94,15 +94,18 @@ class AccidentBodyPartRepository
         $data->delete();
         return $data;
     }
-    public static function getDataFromDbToElastic($id = null){
-        $data = DB::connection('oracle_his')->table('his_accident_body_part')
-        ->select(
-            'his_accident_body_part.*'
-        );
+    public function getDataFromDbToElastic($id = null){
+        $data = $this->applyJoins();
         if($id != null){
             $data = $data->where('his_accident_body_part.id','=', $id)->first();
-        }else{
+            if ($data) {
+                $data = $data->getAttributes();
+            }
+        } else {
             $data = $data->get();
+            $data = $data->map(function ($item) {
+                return $item->getAttributes(); 
+            })->toArray(); 
         }
         return $data;
     }

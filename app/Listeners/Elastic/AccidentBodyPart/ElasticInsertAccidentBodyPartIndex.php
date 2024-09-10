@@ -29,11 +29,11 @@ class ElasticInsertAccidentBodyPartIndex
     {
         try {
             $record = $event->record;
-            $data = AccidentBodyPartRepository::getDataFromDbToElastic($record->id);
+            $data = app(AccidentBodyPartRepository::class)->getDataFromDbToElastic($record->id);
             // Tạo chỉ mục hoặc cập nhật dữ liệu
             $params = [
                 'index' => $event->modelName, // Chỉ mục bạn muốn tạo hoặc cập nhật
-                'id'    => $record->id, // ID của bản ghi
+                'id'    => $record['id'], // ID của bản ghi
                 'body'  => $data,
             ];
 

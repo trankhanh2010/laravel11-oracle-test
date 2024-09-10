@@ -39,9 +39,10 @@ class BedBstyRepository
     public function applyKeywordFilter($query, $keyword)
     {
         return $query->where(function ($query) use ($keyword) {
-            $query->where(DB::connection('oracle_his')->raw('his_bed_bsty.bed_bsty_code'), 'like', $keyword . '%')
-                ->orWhere(DB::connection('oracle_his')->raw('his_bed_bsty.bed_bsty_name'), 'like', $keyword . '%')
-                ->orWhere(DB::connection('oracle_his')->raw('service.service_code'), 'like', $keyword . '%');
+            $query->where(DB::connection('oracle_his')->raw('service.service_name'), 'like', $keyword . '%')
+                ->orWhere(DB::connection('oracle_his')->raw('service.service_code'), 'like', $keyword . '%')
+                ->orWhere(DB::connection('oracle_his')->raw('bed.bed_name'), 'like', $keyword . '%')
+                ->orWhere(DB::connection('oracle_his')->raw('bed.bed_code'), 'like', $keyword . '%');
         });
     }
     public function applyIsActiveFilter($query, $isActive)
@@ -109,32 +110,18 @@ class BedBstyRepository
     {
         return $this->bedBsty->find($id);
     }
-    public static function getDataFromDbToElastic($id = null){
-        $data = DB::connection('oracle_his')->table('his_bed_bsty')
-        ->leftJoin('his_service as service', 'service.id', '=', 'his_bed_bsty.bed_service_type_id')
-        ->leftJoin('his_service_type as service_type', 'service_type.id', '=', 'service.service_type_id')
-        ->leftJoin('his_bed as bed', 'bed.id', '=', 'his_bed_bsty.bed_id')
-        ->leftJoin('his_bed_room as bed_room', 'bed_room.id', '=', 'bed.bed_room_id')
-        ->leftJoin('his_room as room', 'room.id', '=', 'bed_room.room_id')
-        ->leftJoin('his_department as department', 'department.id', '=', 'room.department_id')
-
-        ->select(
-            'his_bed_bsty.*',
-            'service.service_name',
-            'service.service_code',
-            'service_type.service_type_name',
-            'service_type.service_type_code',
-            'bed.bed_name',
-            'bed.bed_code',
-            'bed_room.bed_room_name',
-            'bed_room.bed_room_code',
-            'department.department_name',
-            'department.department_code'
-        );
-        if($id != null){
-            $data = $data->where('his_bed_bsty.id','=', $id)->first();
-        }else{
+    public function getDataFromDbToElastic($id = null){
+        $data = $this->applyJoins();
+        if ($id != null) {
+            $data = $data->where('his_bed_bsty.id', '=', $id)->first();
+            if ($data) {
+                $data = $data->getAttributes();
+            }
+        } else {
             $data = $data->get();
+            $data = $data->map(function ($item) {
+                return $item->getAttributes(); 
+            })->toArray(); 
         }
         return $data;
     }

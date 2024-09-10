@@ -20,6 +20,10 @@ use App\Events\Elastic\Awareness\CreateAwarenessIndex;
 use App\Events\Elastic\Awareness\InsertAwarenessIndex;
 use App\Events\Elastic\Bed\CreateBedIndex;
 use App\Events\Elastic\Bed\InsertBedIndex;
+use App\Events\Elastic\BedBsty\CreateBedBstyIndex;
+use App\Events\Elastic\BedBsty\InsertBedBstyIndex;
+use App\Events\Elastic\BedRoom\CreateBedRoomIndex;
+use App\Events\Elastic\BedRoom\InsertBedRoomIndex;
 use App\Events\Elastic\DeleteIndex;
 use App\Events\Telegram\SendMessageToChannel;
 use App\Listeners\Cache\DeleteCache as CacheDeleteCache;
@@ -40,6 +44,10 @@ use App\Listeners\Elastic\Awareness\ElasticCreateAwarenessIndex;
 use App\Listeners\Elastic\Awareness\ElasticInsertAwarenessIndex;
 use App\Listeners\Elastic\Bed\ElasticCreateBedIndex;
 use App\Listeners\Elastic\Bed\ElasticInsertBedIndex;
+use App\Listeners\Elastic\BedBsty\ElasticCreateBedBstyIndex;
+use App\Listeners\Elastic\BedBsty\ElasticInsertBedBstyIndex;
+use App\Listeners\Elastic\BedRoom\ElasticCreateBedRoomIndex;
+use App\Listeners\Elastic\BedRoom\ElasticInsertBedRoomIndex;
 use App\Listeners\Elastic\ElasticDeleteIndex;
 use App\Listeners\Telegram\TelegramSendMessageToChannel;
 use Illuminate\Auth\Events\Registered;
@@ -127,11 +135,25 @@ class EventServiceProvider extends ServiceProvider
             ElasticInsertAwarenessIndex::class,
         ],
 
+        CreateBedBstyIndex::class => [
+            ElasticCreateBedBstyIndex::class,
+        ],
+        InsertBedBstyIndex::class => [
+            ElasticInsertBedBstyIndex::class,
+        ],
+
         CreateBedIndex::class => [
             ElasticCreateBedIndex::class,
         ],
         InsertBedIndex::class => [
             ElasticInsertBedIndex::class,
+        ],
+
+        CreateBedRoomIndex::class => [
+            ElasticCreateBedRoomIndex::class,
+        ],
+        InsertBedRoomIndex::class => [
+            ElasticInsertBedRoomIndex::class,
         ],
     ];
 

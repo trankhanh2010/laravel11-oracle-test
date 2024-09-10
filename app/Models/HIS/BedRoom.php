@@ -17,9 +17,9 @@ class BedRoom extends Model
     protected $table = 'HIS_BED_ROOM';
     // Đặt thuộc tính $timestamps thành false để tắt tự động thêm created_at và updated_at
     public $timestamps = false;
-    protected $appends = [
-        'treatment_types',
-    ];
+    // protected $appends = [
+    //     'treatment_types',
+    // ];
     protected $guarded = [
         'id',
     ];
@@ -51,16 +51,16 @@ class BedRoom extends Model
     //     }
     // }
 
-    public function getTreatmentTypesAttribute()
-    {
-        $treatment_type_ids = $this->treatment_type_ids;
-        if( $treatment_type_ids != ""){
-            return Cache::remember('treatment_type_ids_' . $treatment_type_ids, $this->time, function () use ( $treatment_type_ids) {
-                return TreatmentType::select('id', 'treatment_type_code', 'treatment_type_name')->whereIn('id', explode(',', $treatment_type_ids))->get();
-            });
-        }
-        return null;
-    }
+    // public function getTreatmentTypesAttribute()
+    // {
+    //     $treatment_type_ids = $this->treatment_type_ids;
+    //     if( $treatment_type_ids != ""){
+    //         return Cache::remember('treatment_type_ids_' . $treatment_type_ids, $this->time, function () use ( $treatment_type_ids) {
+    //             return TreatmentType::select('id', 'treatment_type_code', 'treatment_type_name')->whereIn('id', explode(',', $treatment_type_ids))->get();
+    //         });
+    //     }
+    //     return null;
+    // }
 
     // protected $fillable = [
     //     'create_time' ,

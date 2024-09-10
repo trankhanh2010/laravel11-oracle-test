@@ -7,6 +7,7 @@ use App\Http\Controllers\BaseControllers\BaseApiCacheController;
 use App\Http\Requests\BedBsty\CreateBedBstyRequest;
 use App\Http\Requests\BedBsty\UpdateBedBstyRequest;
 use App\Models\HIS\BedBsty;
+use App\Repositories\BedBstyRepository;
 use App\Services\Elastic\ElasticsearchService;
 use App\Services\Model\BedBstyService;
 use Illuminate\Http\Request;
@@ -58,6 +59,7 @@ class BedBstyController extends BaseApiCacheController
             $this->bedIds
         );
         $this->bedBstyService->withParams($this->bedBstyDTO);
+
     }
     public function index()
     {

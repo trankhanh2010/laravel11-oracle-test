@@ -4,6 +4,7 @@ namespace App\Http\Controllers\BaseControllers;
 
 use App\Events\Cache\DeleteCache;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class CacheController extends BaseApiCacheController
 {
@@ -12,27 +13,26 @@ class CacheController extends BaseApiCacheController
         parent::__construct($request); // Gọi constructor của BaseController
     
     }
-    public function clear_cache(Request $request){
-        $table_name = $request->table.'_name' ?? 'a';
-
-        if(!isset($this->$table_name)){
-            return return_param_error();
+    public function clearCache(Request $request){
+        $tableName = Str::camel($request->table.'Name' ?? 'a');
+        if(!isset($this->$tableName)){
+            return returnParamError();
         }
         try{
-            event(new DeleteCache($this->$table_name));
-            return return_clear_cache();
+            event(new DeleteCache($this->$tableName));
+            return returnClearCache();
         } catch (\Throwable $e) {
             // Xử lý lỗi và trả về phản hồi lỗi
-            return return_500_error($e->getMessage());
+            return return500Error($e->getMessage());
         }
     }
-    public function clear_cache_elatic_index_keyword(Request $request){
+    public function clearCacheElaticIndexKeyword(Request $request){
         try{
             event(new DeleteCache('elastic_index_keyword_'.$request->index));
-            return return_clear_cache();
+            return returnClearCache();
         } catch (\Throwable $e) {
             // Xử lý lỗi và trả về phản hồi lỗi
-            return return_500_error($e->getMessage());
+            return return500Error($e->getMessage());
         }
     }
 }

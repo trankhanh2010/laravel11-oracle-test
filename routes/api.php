@@ -198,7 +198,6 @@ use App\Http\Controllers\Api\CacheControllers\ProcessingMethodController;
 |
 */
 Route::get("v1/test", function () { return microtime(true) - LARAVEL_START;})->name('.get_test');
-
 Route::fallback(function () {
     return return_404_error_page_not_found();
 });
@@ -209,11 +208,9 @@ Route::group([
     Route::get('v1/updated-activity', [TelegramController::class, "updated_activity"])->name('.updated_activity');
     /// Log
     Route::get("v1/log", [LogController::class, "get_log"])->name('.get_log');
-
     /// Cache
-    Route::get("v1/clear-cache", [CacheController::class, "clear_cache"])->name('.clear_cache');
-    Route::get("v1/clear-cache-elastic-index-keyword", [CacheController::class, "clear_cache_elatic_index_keyword"])->name('.clear_cache_elatic_index_keyword');
-
+    Route::get("v1/clear-cache", [CacheController::class, "clearCache"])->name('.clear_cache');
+    Route::get("v1/clear-cache-elastic-index-keyword", [CacheController::class, "clearCacheElaticIndexKeyword"])->name('.clear_cache_elatic_index_keyword');
     /// Elastic Search
     Route::get("v1/index-records-to-elasticsearch", [ElasticSearchController::class, "index_records_to_elasticsearch"])->name('.index_records_to_elasticsearch');
     Route::get("v1/get-mapping", [ElasticSearchController::class, "get_mapping"])->name('.get_mapping');
@@ -257,6 +254,10 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.BedBsty'], function () {
         Route::apiResource('v1/bed-bsty', BedBstyController::class)->only(['index', 'show']);
     });
+    /// Buồng bệnh
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisBedRoomList'], function () {
+        Route::apiResource('v1/bed-room', BedRoomController::class);
+    });
     /// Khoa phòng
     Route::group(['as' => 'HIS.Desktop.Plugins.HisDepartment'], function () {
         Route::get("v1/department", [DepartmentController::class, "department"])->name('.get');
@@ -287,16 +288,6 @@ Route::group([
     /// Link màn hình chờ
     Route::group(['as' => 'ACS.Desktop.Plugins.AcsModule'], function () {
         Route::get("v1/screen-saver-module-link", [ScreenSaverModuleLinkController::class, "screen_saver_module_link"])->name('.get');
-    });
-
-    /// Buồng bệnh
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisBedRoomList'], function () {
-        Route::get("v1/bed-room", [BedRoomController::class, "bed_room"])->name('.get');
-        Route::get("v1/bed-room/{id}", [BedRoomController::class, "bed_room"])->name('.api.bed_room.index_with_id')->name('.get_id');
-        Route::get("v1/bed-room-check", [CheckBedRoomController::class, "check_code"])->name('.check');
-        Route::post("v1/bed-room", [BedRoomController::class, "bed_room_create"])->name('.create');
-        Route::put("v1/bed-room/{id}", [BedRoomController::class, "bed_room_update"])->name('.update');
-        Route::delete("v1/bed-room/{id}", [BedRoomController::class, "bed_room_delete"])->name('.delete');
     });
 
     /// Loại xét nghiệm

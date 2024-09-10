@@ -167,6 +167,8 @@ return [
             'atc_group' => 'Có lỗi khi thực hiện thao tác với bảng AtcGroup!',
             'awareness' => 'Có lỗi khi thực hiện thao tác với bảng Awareness!',
             'bed' => 'Có lỗi khi thực hiện thao tác với bảng Bed!',
+            'bed_bsty' => 'Có lỗi khi thực hiện thao tác với bảng BedBsty!',
+
         ]
     ]
     

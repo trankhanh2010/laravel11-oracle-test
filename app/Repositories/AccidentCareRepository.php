@@ -94,15 +94,18 @@ class AccidentCareRepository
         $data->delete();
         return $data;
     }
-    public static function getDataFromDbToElastic($id = null){
-        $data = DB::connection('oracle_his')->table('his_accident_care')
-        ->select(
-            'his_accident_care.*'
-        );
+    public function getDataFromDbToElastic($id = null){
+        $data = $this->applyJoins();
         if($id != null){
             $data = $data->where('his_accident_care.id','=', $id)->first();
-        }else{
+            if ($data) {
+                $data = $data->getAttributes();
+            }
+        } else {
             $data = $data->get();
+            $data = $data->map(function ($item) {
+                return $item->getAttributes(); 
+            })->toArray(); 
         }
         return $data;
     }

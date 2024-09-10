@@ -38,7 +38,7 @@ class BedBstyService
     public function handleDataBaseGetAll()
     {
         try {
-            $data = Cache::remember($this->params->bedBstyName . '_start_' . $this->params->start . '_limit_' . $this->params->limit . $this->params->orderByString . '_is_active_' . $this->params->isActive . '_service_ids_' . $this->params->serviceIds . '_bed_ids_' .$this->params->bedIds . '_get_all_' . $this->params->getAll, $this->params->time, function () {
+            $data = Cache::remember($this->params->bedBstyName . '_start_' . $this->params->start . '_limit_' . $this->params->limit . $this->params->orderByString . '_is_active_' . $this->params->isActive . '_service_ids_' . arrayToCustomStringNotKey($this->params->serviceIds ?? []) . '_bed_ids_' .arrayToCustomStringNotKey($this->params->bedIds ?? []) . '_get_all_' . $this->params->getAll, $this->params->time, function () {
                 $data = $this->bedBstyRepository->applyJoins();
                 $data = $this->bedBstyRepository->applyIsActiveFilter($data, $this->params->isActive);
                 $data = $this->bedBstyRepository->applyServiceIdsFilter($data, $this->params->serviceIds);

@@ -121,25 +121,18 @@ class BedRepository
         $data->delete();
         return $data;
     }
-    public static function getDataFromDbToElastic($id = null){
-        $data = DB::connection('oracle_his')->table('his_bed')
-        ->leftJoin('his_bed_type', 'his_bed.bed_type_id', '=', 'his_bed_type.id')
-        ->leftJoin('his_bed_room', 'his_bed.bed_room_id', '=', 'his_bed_room.id')
-        ->leftJoin('his_room', 'his_bed_room.room_id', '=', 'his_room.id')
-        ->leftJoin('his_department', 'his_room.department_id', '=', 'his_department.id')
-        ->select(
-            'his_bed.*',
-            'his_bed_type.bed_type_name',
-            'his_bed_type.bed_type_code',
-            'his_bed_room.bed_room_name',
-            'his_bed_room.bed_room_code',
-            'his_department.department_name',
-            'his_department.department_code'
-        );
+    public function getDataFromDbToElastic($id = null){
+        $data = $this->applyJoins();
         if($id != null){
             $data = $data->where('his_bed.id','=', $id)->first();
-        }else{
+            if ($data) {
+                $data = $data->getAttributes();
+            }
+        } else {
             $data = $data->get();
+            $data = $data->map(function ($item) {
+                return $item->getAttributes(); 
+            })->toArray(); 
         }
         return $data;
     }

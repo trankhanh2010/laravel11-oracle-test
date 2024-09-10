@@ -599,8 +599,8 @@ if (!function_exists('returnDataDeleteSuccess')) {
     }
 }
 
-if (!function_exists('return_clear_cache')) {
-    function return_clear_cache()
+if (!function_exists('returnClearCache')) {
+    function returnClearCache()
     {
         return response()->json([
             'status'    => 200,
@@ -665,8 +665,8 @@ if (!function_exists('return_check_data')) {
     }
 }
 
-if (!function_exists('return_param_error')) {
-    function return_param_error()
+if (!function_exists('returnParamError')) {
+    function returnParamError()
     {
         return response()->json([
             'status'    => 422,

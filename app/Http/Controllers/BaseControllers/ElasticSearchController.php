@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\BaseControllers;
 
+use App\Events\Cache\DeleteCache;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Elastic\ElasticMappingResource;
 use App\Http\Resources\Elastic\ElasticResource;
@@ -63,6 +64,7 @@ class ElasticSearchController extends Controller
                     $exists = $this->client->indices()->exists(['index' => $name_table])->asBool();
                     if ($exists) {
                         $params = ['index' => $name_table];
+                        event(new DeleteCache($name_table));
                         $this->client->indices()->delete($params);
                     } 
                 }
