@@ -23,6 +23,8 @@ use App\Events\Elastic\BhytWhitelist\CreateBhytWhitelistIndex;
 use App\Events\Elastic\BidType\CreateBidTypeIndex;
 use App\Events\Elastic\BloodGroup\CreateBloodGroupIndex;
 use App\Events\Elastic\BloodVolume\CreateBloodVolumeIndex;
+use App\Events\Elastic\BodyPart\CreateBodyPartIndex;
+use App\Events\Elastic\BornPosition\CreateBornPositionIndex;
 use App\Repositories\AccidentBodyPartRepository;
 use App\Repositories\AccidentCareRepository;
 use App\Repositories\AccidentHurtTypeRepository;
@@ -41,6 +43,8 @@ use App\Repositories\BhytWhitelistRepository;
 use App\Repositories\BidTypeRepository;
 use App\Repositories\BloodGroupRepository;
 use App\Repositories\BloodVolumeRepository;
+use App\Repositories\BodyPartRepository;
+use App\Repositories\BornPositionRepository;
 
 class IndexRecordsToElasticsearch extends Command
 {
@@ -165,6 +169,14 @@ class IndexRecordsToElasticsearch extends Command
             case 'his_blood_volume':
                 $results = app(BloodVolumeRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateBloodVolumeIndex($name_table));
+                break;
+            case 'his_body_part':
+                $results = app(BodyPartRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateBodyPartIndex($name_table));
+                break;
+            case 'his_born_position':
+                $results = app(BornPositionRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateBornPositionIndex($name_table));
                 break;
             default:
                 // Xử lý mặc định hoặc xử lý khi không có bảng khớp

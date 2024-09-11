@@ -2,169 +2,114 @@
 
 namespace App\Http\Controllers\Api\CacheControllers;
 
+use App\DTOs\BodyPartDTO;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
 use App\Http\Requests\BodyPart\CreateBodyPartRequest;
 use App\Http\Requests\BodyPart\UpdateBodyPartRequest;
 use App\Models\HIS\BodyPart;
+use App\Services\Elastic\ElasticsearchService;
+use App\Services\Model\BodyPartService;
 use Illuminate\Http\Request;
-use App\Events\Cache\DeleteCache;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
+
 
 class BodyPartController extends BaseApiCacheController
 {
-    public function __construct(Request $request){
-        parent::__construct($request); // Gọi constructor của BaseController
-        $this->body_part = new BodyPart();
-
-        // Kiểm tra tên trường trong bảng
-        if ($this->order_by != null) {
-            $columns = $this->get_columns_table($this->body_part);
-            $this->order_by = $this->check_order_by($this->order_by, $columns, $this->order_by_join ?? []);
-            $this->order_by_tring = arrayToCustomString($this->order_by);
-        }
-    }
-    public function body_part($id = null)
+    protected $bodyPartService;
+    protected $bodyPartDTO;
+    public function __construct(Request $request, ElasticsearchService $elasticSearchService, BodyPartService $bodyPartService, BodyPart $bodyPart)
     {
-        // Kiểm tra param và trả về lỗi nếu nó không hợp lệ
-        if($this->check_param()){
-            return $this->check_param();
+        parent::__construct($request); // Gọi constructor của BaseController
+        $this->elasticSearchService = $elasticSearchService;
+        $this->bodyPartService = $bodyPartService;
+        $this->bodyPart = $bodyPart;
+        // Kiểm tra tên trường trong bảng
+        if ($this->orderBy != null) {
+            $this->orderByJoin = [
+            ];
+            $columns = $this->getColumnsTable($this->bodyPart);
+            $this->orderBy = $this->checkOrderBy($this->orderBy, $columns, $this->orderByJoin ?? []);
         }
-        try {
+        // Thêm tham số vào service
+        $this->bodyPartDTO = new BodyPartDTO(
+            $this->bodyPartName,
+            $this->keyword,
+            $this->isActive,
+            $this->orderBy,
+            $this->orderByJoin,
+            $this->orderByString,
+            $this->getAll,
+            $this->start,
+            $this->limit,
+            $request,
+            $this->appCreator, 
+            $this->appModifier, 
+            $this->time,
+        );
+        $this->bodyPartService->withParams($this->bodyPartDTO);
+    }
+    public function index()
+    {
+        if ($this->checkParam()) {
+            return $this->checkParam();
+        }
         $keyword = $this->keyword;
-        if ($keyword != null) {
-            $data = $this->body_part;
-            $data = $data->where(function ($query) use ($keyword){
-                $query = $query
-                ->where(DB::connection('oracle_his')->raw('body_part_code'), 'like', $keyword . '%')
-                ->orWhere(DB::connection('oracle_his')->raw('body_part_name'), 'like', $keyword . '%');
-            });
-        if ($this->is_active !== null) {
-            $data = $data->where(function ($query) {
-                $query = $query->where(DB::connection('oracle_his')->raw('his_body_part.is_active'), $this->is_active);
-            });
-        } 
-            $count = $data->count();
-            if ($this->order_by != null) {
-                foreach ($this->order_by as $key => $item) {
-                    $data->orderBy($key, $item);
-                }
-            }
-            if($this->get_all){
-                $data = $data
-                ->get();
-            }else{
-                $data = $data
-                ->skip($this->start)
-                ->take($this->limit)
-                ->get();
+        if (($keyword != null || $this->elasticSearchType != null) && !$this->cache) {
+            if ($this->elasticSearchType != null) {
+                $data = $this->elasticSearchService->handleElasticSearchSearch($this->bodyPartName);
+            } else {
+                $data = $this->bodyPartService->handleDataBaseSearch();
             }
         } else {
-            if ($id == null) {
-                $name = $this->body_part_name. '_start_' . $this->start . '_limit_' . $this->limit. $this->order_by_tring. '_is_active_' . $this->is_active. '_get_all_' . $this->get_all;
-                $param = [
-                ];
+            if ($this->elastic) {
+                $data = $this->elasticSearchService->handleElasticSearchGetAll($this->bodyPartName);
             } else {
-                if (!is_numeric($id)) {
-                    return returnIdError($id);
-                }
-                $check_id = $this->check_id($id, $this->body_part, $this->body_part_name);
-                if($check_id){
-                    return $check_id; 
-                }
-                $name = $this->body_part_name . '_' . $id. '_is_active_' . $this->is_active;
-                $param = [
-                ];
+                $data = $this->bodyPartService->handleDataBaseGetAll();
             }
-            $data = get_cache_full($this->body_part, $param, $name, $id, $this->time, $this->start, $this->limit, $this->order_by,$this->is_active, $this->get_all);
         }
-        $param_return = [
-            $this->get_all_name => $this->get_all,
-            $this->start_name => ($this->get_all || !is_null($id)) ? null : $this->start,
-            $this->limit_name => ($this->get_all || !is_null($id)) ? null : $this->limit,
-            $this->count_name => $count ?? ($data['count'] ?? null),
-            $this->is_active_name => $this->is_active,
-            $this->keyword_name => $this->keyword,
-            $this->order_by_name => $this->order_by_request
+        $paramReturn = [
+            $this->getAllName => $this->getAll,
+            $this->startName => $this->getAll ? null : $this->start,
+            $this->limitName => $this->getAll ? null : $this->limit,
+            $this->countName => $data['count'],
+            $this->isActiveName => $this->isActive,
+            $this->keywordName => $this->keyword,
+            $this->orderByName => $this->orderByRequest
         ];
-        return return_data_success($param_return, $data ?? ($data['data'] ?? null) ?? null);
-        } catch (\Throwable $e) {
-            // Xử lý lỗi và trả về phản hồi lỗi
-                    return return_500_error($e->getMessage());
-
-    }
+        return returnDataSuccess($paramReturn, $data['data']);
     }
 
-    public function body_part_create(CreateBodyPartRequest $request)
+    public function show($id)
     {
-        try {
-        $data = $this->body_part::create([
-            'create_time' => now()->format('Ymdhis'),
-            'modify_time' => now()->format('Ymdhis'),
-            'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
-            'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
-            'app_creator' => $this->app_creator,
-            'app_modifier' => $this->app_modifier,
-            'body_part_code' => $request->body_part_code,
-            'body_part_name' => $request->body_part_name,
-        ]);
-        // Gọi event để xóa cache
-        event(new DeleteCache($this->body_part_name));
-        return return_data_create_success($data);
-    } catch (\Exception $e) {
-                    return return_500_error($e->getMessage());
-
-    }
-    }
-
-    public function body_part_update(UpdateBodyPartRequest $request, $id)
-    {
-        if (!is_numeric($id)) {
-            return returnIdError($id);
+        if ($this->checkParam()) {
+            return $this->checkParam();
         }
-        $data = $this->body_part->find($id);
-        if ($data == null) {
-            return return_not_record($id);
+        if ($id !== null) {
+            $validationError = $this->validateAndCheckId($id, $this->bodyPart, $this->bodyPartName);
+            if ($validationError) {
+                return $validationError;
+            }
         }
-        try {
-        $data_update = [
-            'modify_time' => now()->format('Ymdhis'),
-            'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
-            'app_modifier' => $this->app_modifier,
-            'body_part_code' => $request->body_part_code,
-            'body_part_name' => $request->body_part_name,
-            'is_active' => $request->is_active
-
+        if ($this->elastic) {
+            $data = $this->elasticSearchService->handleElasticSearchGetWithId($this->bodyPartName, $id);
+        } else {
+            $data = $this->bodyPartService->handleDataBaseGetWithId($id);
+        }
+        $paramReturn = [
+            $this->idName => $id,
+            $this->isActiveName => $this->isActive,
         ];
-        $data->fill($data_update);
-        $data->save();
-        // Gọi event để xóa cache
-        event(new DeleteCache($this->body_part_name));
-        return return_data_update_success($data);
-    } catch (\Exception $e) {
-                    return return_500_error($e->getMessage());
-
+        return returnDataSuccess($paramReturn, $data);
     }
-    }
-
-    public function body_part_delete(Request $request, $id)
+    public function store(CreateBodyPartRequest $request)
     {
-        if (!is_numeric($id)) {
-            return returnIdError($id);
-        }
-        $data = $this->body_part->find($id);
-        if ($data == null) {
-            return return_not_record($id);
-        }
-        try {
-            $data->delete();
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->body_part_name));
-            return return_data_delete_success();
-        } catch (\Throwable $e) {
-            // Xử lý lỗi và trả về phản hồi lỗi
-            return return_data_delete_fail();
-        }
+        return $this->bodyPartService->createBodyPart($request);
+    }
+    public function update(UpdateBodyPartRequest $request, $id)
+    {
+        return $this->bodyPartService->updateBodyPart($id, $request);
+    }
+    public function destroy($id)
+    {
+        return $this->bodyPartService->deleteBodyPart($id);
     }
 }

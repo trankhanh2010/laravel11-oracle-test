@@ -37,6 +37,10 @@ use App\Events\Elastic\BloodGroup\CreateBloodGroupIndex;
 use App\Events\Elastic\BloodGroup\InsertBloodGroupIndex;
 use App\Events\Elastic\BloodVolume\CreateBloodVolumeIndex;
 use App\Events\Elastic\BloodVolume\InsertBloodVolumeIndex;
+use App\Events\Elastic\BodyPart\CreateBodyPartIndex;
+use App\Events\Elastic\BodyPart\InsertBodyPartIndex;
+use App\Events\Elastic\BornPosition\CreateBornPositionIndex;
+use App\Events\Elastic\BornPosition\InsertBornPositionIndex;
 use App\Events\Elastic\DeleteIndex;
 use App\Events\Telegram\SendMessageToChannel;
 use App\Listeners\Cache\DeleteCache as CacheDeleteCache;
@@ -74,6 +78,10 @@ use App\Listeners\Elastic\BloodGroup\ElasticCreateBloodGroupIndex;
 use App\Listeners\Elastic\BloodGroup\ElasticInsertBloodGroupIndex;
 use App\Listeners\Elastic\BloodVolume\ElasticCreateBloodVolumeIndex;
 use App\Listeners\Elastic\BloodVolume\ElasticInsertBloodVolumeIndex;
+use App\Listeners\Elastic\BodyPart\ElasticCreateBodyPartIndex;
+use App\Listeners\Elastic\BodyPart\ElasticInsertBodyPartIndex;
+use App\Listeners\Elastic\BornPosition\ElasticCreateBornPositionIndex;
+use App\Listeners\Elastic\BornPosition\ElasticInsertBornPositionIndex;
 use App\Listeners\Elastic\ElasticDeleteIndex;
 use App\Listeners\Telegram\TelegramSendMessageToChannel;
 use Illuminate\Auth\Events\Registered;
@@ -226,6 +234,20 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertBloodVolumeIndex::class => [
             ElasticInsertBloodVolumeIndex::class,
+        ],
+
+        CreateBodyPartIndex::class => [
+            ElasticCreateBodyPartIndex::class,
+        ],
+        InsertBodyPartIndex::class => [
+            ElasticInsertBodyPartIndex::class,
+        ],
+
+        CreateBornPositionIndex::class => [
+            ElasticCreateBornPositionIndex::class,
+        ],
+        InsertBornPositionIndex::class => [
+            ElasticInsertBornPositionIndex::class,
         ],
     ];
 

@@ -291,6 +291,12 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisBloodVolume'], function () {
         Route::apiResource('v1/blood-volume', BloodVolumeController::class);
     });
+    /// Bộ phận cơ thể
+    Route::apiResource('v1/body-part', BodyPartController::class);
+    /// Ngôi thai
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisBornPosition'], function () {
+        Route::apiResource('v1/born-position', BornPositionController::class);
+    });
     /// Khoa phòng
     Route::group(['as' => 'HIS.Desktop.Plugins.HisDepartment'], function () {
         Route::get("v1/department", [DepartmentController::class, "department"])->name('.get');
@@ -533,14 +539,6 @@ Route::group([
     /// Giới tính
     Route::get("v1/gender", [GenderController::class, "gender"])->name('.get_gender');
     Route::get("v1/gender/{id}", [GenderController::class, "gender"])->name('.get_gender_id');
-
-    /// Bộ phận cơ thể
-    Route::get("v1/body-part", [BodyPartController::class, "body_part"])->name('.get_body_part');
-    Route::get("v1/body-part/{id}", [BodyPartController::class, "body_part"])->name('.get_body_part_id');
-    Route::get("v1/body-part-check", [CheckBodyPartController::class, "check_code"])->name('.check_bodypart');
-    Route::post("v1/body-part", [BodyPartController::class, "body_part_create"])->name('.create_body_part');
-    Route::put("v1/body-part/{id}", [BodyPartController::class, "body_part_update"])->name('.update_body_part');
-    Route::delete("v1/body-part/{id}", [BodyPartController::class, "body_part_delete"])->name('.delete_body_part');
 
     /// Module xử lý dịch vụ
     Route::group(['as' => 'HIS.Desktop.Plugins.HisExeServiceModule'], function () {
@@ -916,15 +914,6 @@ Route::group([
         Route::post("v1/work-place", [WorkPlaceController::class, "work_place_create"])->name('.create');
         Route::put("v1/work-place/{id}", [WorkPlaceController::class, "work_place_update"])->name('.update');
         Route::delete("v1/work-place/{id}", [WorkPlaceController::class, "work_place_delete"])->name('.delete');
-    });
-
-    /// Ngôi thai
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisBornPosition'], function () {
-        Route::get("v1/born-position", [BornPositionController::class, "born_position"])->name('.get');
-        Route::get("v1/born-position/{id}", [BornPositionController::class, "born_position"])->name('.get_id');
-        Route::post("v1/born-position", [BornPositionController::class, "born_position_create"])->name('.create');
-        Route::put("v1/born-position/{id}", [BornPositionController::class, "born_position_update"])->name('.update');
-        Route::delete("v1/born-position/{id}", [BornPositionController::class, "born_position_delete"])->name('.delete');
     });
 
     /// Trường hợp bệnh
