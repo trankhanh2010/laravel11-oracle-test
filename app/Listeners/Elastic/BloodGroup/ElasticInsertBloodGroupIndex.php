@@ -1,19 +1,22 @@
 <?php
 
-namespace App\Listeners\Elastic\AccidentBodyPart;
+namespace App\Listeners\Elastic\BloodGroup;
 
-use App\Events\Elastic\AccidentBodyPart\InsertAccidentBodyPartIndex;
-use App\Models\HIS\AccidentBodyPart;
-use App\Repositories\AccidentBodyPartRepository;
+use App\Events\Elastic\BloodGroup\InsertBloodGroupIndex;
+use App\Models\HIS\BloodGroup;
+use App\Repositories\BloodGroupRepository;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 
-class ElasticInsertAccidentBodyPartIndex
+class ElasticInsertBloodGroupIndex
 {
     /**
      * Create the event listener.
      */
     protected $client;
+    /**
+     * Create the event listener.
+     */
     public function __construct()
     {
         $this->client = app('Elasticsearch');
@@ -22,11 +25,11 @@ class ElasticInsertAccidentBodyPartIndex
     /**
      * Handle the event.
      */
-    public function handle(InsertAccidentBodyPartIndex $event): void
+    public function handle(InsertBloodGroupIndex $event): void
     {
         try {
             $record = $event->record;
-            $data = app(AccidentBodyPartRepository::class)->getDataFromDbToElastic($record->id);
+            $data = app(BloodGroupRepository::class)->getDataFromDbToElastic($record->id);
             // Tạo chỉ mục hoặc cập nhật dữ liệu
             $params = [
                 'index' => $event->modelName, // Chỉ mục bạn muốn tạo hoặc cập nhật

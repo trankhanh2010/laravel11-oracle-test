@@ -33,6 +33,10 @@ use App\Events\Elastic\BhytWhitelist\CreateBhytWhitelistIndex;
 use App\Events\Elastic\BhytWhitelist\InsertBhytWhitelistIndex;
 use App\Events\Elastic\BidType\CreateBidTypeIndex;
 use App\Events\Elastic\BidType\InsertBidTypeIndex;
+use App\Events\Elastic\BloodGroup\CreateBloodGroupIndex;
+use App\Events\Elastic\BloodGroup\InsertBloodGroupIndex;
+use App\Events\Elastic\BloodVolume\CreateBloodVolumeIndex;
+use App\Events\Elastic\BloodVolume\InsertBloodVolumeIndex;
 use App\Events\Elastic\DeleteIndex;
 use App\Events\Telegram\SendMessageToChannel;
 use App\Listeners\Cache\DeleteCache as CacheDeleteCache;
@@ -66,6 +70,10 @@ use App\Listeners\Elastic\BhytWhitelist\ElasticCreateBhytWhitelistIndex;
 use App\Listeners\Elastic\BhytWhitelist\ElasticInsertBhytWhitelistIndex;
 use App\Listeners\Elastic\BidType\ElasticCreateBidTypeIndex;
 use App\Listeners\Elastic\BidType\ElasticInsertBidTypeIndex;
+use App\Listeners\Elastic\BloodGroup\ElasticCreateBloodGroupIndex;
+use App\Listeners\Elastic\BloodGroup\ElasticInsertBloodGroupIndex;
+use App\Listeners\Elastic\BloodVolume\ElasticCreateBloodVolumeIndex;
+use App\Listeners\Elastic\BloodVolume\ElasticInsertBloodVolumeIndex;
 use App\Listeners\Elastic\ElasticDeleteIndex;
 use App\Listeners\Telegram\TelegramSendMessageToChannel;
 use Illuminate\Auth\Events\Registered;
@@ -204,6 +212,20 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertBidTypeIndex::class => [
             ElasticInsertBidTypeIndex::class,
+        ],
+
+        CreateBloodGroupIndex::class => [
+            ElasticCreateBloodGroupIndex::class,
+        ],
+        InsertBloodGroupIndex::class => [
+            ElasticInsertBloodGroupIndex::class,
+        ],
+
+        CreateBloodVolumeIndex::class => [
+            ElasticCreateBloodVolumeIndex::class,
+        ],
+        InsertBloodVolumeIndex::class => [
+            ElasticInsertBloodVolumeIndex::class,
         ],
     ];
 

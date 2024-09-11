@@ -283,6 +283,14 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisBidType'], function () {
         Route::apiResource('v1/bid-type', BidTypeController::class);
     });
+    /// Nhóm máu
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisBloodGroup'], function () {
+        Route::apiResource('v1/blood-group', BloodGroupController::class);
+    });
+    /// Dung tích túi máu
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisBloodVolume'], function () {
+        Route::apiResource('v1/blood-volume', BloodVolumeController::class);
+    });
     /// Khoa phòng
     Route::group(['as' => 'HIS.Desktop.Plugins.HisDepartment'], function () {
         Route::get("v1/department", [DepartmentController::class, "department"])->name('.get');
@@ -1197,15 +1205,6 @@ Route::group([
         Route::get("v1/medicine-line/{id}", [MedicineLineController::class, "medicine_line"])->name('.get_id');
     });
 
-    /// Dung tích túi máu
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisBloodVolume'], function () {
-        Route::get("v1/blood-volume", [BloodVolumeController::class, "blood_volume"])->name('.get');
-        Route::get("v1/blood-volume/{id}", [BloodVolumeController::class, "blood_volume"])->name('.get_id');
-        Route::post("v1/blood-volume", [BloodVolumeController::class, "blood_volume_create"])->name('.create');
-        Route::put("v1/blood-volume/{id}", [BloodVolumeController::class, "blood_volume_update"])->name('.update');
-        Route::delete("v1/blood-volume/{id}", [BloodVolumeController::class, "blood_volume_delete"])->name('.delete');
-    });
-
     /// Đường dùng thuốc
     Route::group(['as' => 'HIS.Desktop.Plugins.HisMedicineUseForm'], function () {
         Route::get("v1/medicine-use-form", [MedicineUseFormController::class, "medicine_use_form"])->name('.get');
@@ -1226,15 +1225,6 @@ Route::group([
         // // Trả về tất cả hoạt chất cùng loại thuốc
         // Route::get("v1/active-ingredient/all/medicine-type", [HISController::class, "active_ingredient_with_medicine_type"]);
         // Route::get("v1/active-ingredient/{id}/medicine-type", [HISController::class, "active_ingredient_with_medicine_type"]);
-    });
-
-    /// Nhóm máu
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisBloodGroup'], function () {
-        Route::get("v1/blood-group", [BloodGroupController::class, "blood_group"])->name('.get');
-        Route::get("v1/blood-group/{id}", [BloodGroupController::class, "blood_group"])->name('.get_id');
-        Route::post("v1/blood-group", [BloodGroupController::class, "blood_group_create"])->name('.create');
-        Route::put("v1/blood-group/{id}", [BloodGroupController::class, "blood_group_update"])->name('.update');
-        Route::delete("v1/blood-group/{id}", [BloodGroupController::class, "blood_group_delete"])->name('.delete');
     });
 
     /// Nhóm thuốc

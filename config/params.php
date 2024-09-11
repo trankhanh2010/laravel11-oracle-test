@@ -174,6 +174,8 @@ return [
             'bhyt_param' => 'Có lỗi khi thực hiện thao tác với bảng Tham số BHYT!',
             'bhyt_whitelist' => 'Có lỗi khi thực hiện thao tác với bảng Đầu mã thẻ BHYT!',
             'bid_type' => 'Có lỗi khi thực hiện thao tác với bảng Loại thầu!',
+            'blood_group' => 'Có lỗi khi thực hiện thao tác với bảng Nhóm máu!',
+            'blood_volume' => 'Có lỗi khi thực hiện thao tác với bảng Dung tích túi máu!',
 
         ]
     ]
