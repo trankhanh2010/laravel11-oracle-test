@@ -197,6 +197,7 @@ use App\Http\Controllers\Api\CacheControllers\ProcessingMethodController;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+Route::get("v1/info", function () { return phpinfo();})->name('.get_info');
 Route::get("v1/test", function () { return microtime(true) - LARAVEL_START;})->name('.get_test');
 Route::fallback(function () {
     return return_404_error_page_not_found();
@@ -250,6 +251,10 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisAwareness'], function () {
         Route::apiResource('v1/awareness', AwarenessController::class);
     });
+    /// Giường
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisBed'], function () {
+        Route::apiResource('v1/bed', BedController::class);
+    });
     /// Giường - Dịch vụ giường
     Route::group(['as' => 'HIS.Desktop.Plugins.BedBsty'], function () {
         Route::apiResource('v1/bed-bsty', BedBstyController::class)->only(['index', 'show']);
@@ -269,6 +274,14 @@ Route::group([
     /// Tham số BHYT
     Route::group(['as' => 'HIS.Desktop.Plugins.HisBHYTParam'], function () {
         Route::apiResource('v1/bhyt-param', BhytParamController::class);
+    });
+    /// Đầu mã thẻ BHYT
+    Route::group(['as' => 'BHYT HIS.Desktop.Plugins.HisBhytWhitelist'], function () {
+        Route::apiResource('v1/bhyt-whitelist', BhytWhitelistController::class);
+    });
+    /// Loại thầu
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisBidType'], function () {
+        Route::apiResource('v1/bid-type', BidTypeController::class);
     });
     /// Khoa phòng
     Route::group(['as' => 'HIS.Desktop.Plugins.HisDepartment'], function () {
@@ -627,11 +640,6 @@ Route::group([
         // Route::get("v1/follow/{id}/service", [HISController::class, "follow_with_service"]);
     });
 
-    /// Giường
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisBed'], function () {
-        Route::apiResource('v1/bed', BedController::class);
-    });
-
     /// Nhóm dịch vụ
     Route::group(['as' => 'HIS.Desktop.Plugins.HisServSegr'], function () {
         Route::get("v1/serv-segr", [ServSegrController::class, "serv_segr"])->name('.get');
@@ -915,15 +923,6 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisPatientCase'], function () {
         Route::get("v1/patient-case", [PatientCaseController::class, "patient_case"])->name('.get');
         Route::get("v1/patient-case/{id}", [PatientCaseController::class, "patient_case"])->name('.get_id');
-    });
-
-    /// Đầu mã thẻ BHYT
-    Route::group(['as' => 'BHYT HIS.Desktop.Plugins.HisBhytWhitelist'], function () {
-        Route::get("v1/bhyt-whitelist", [BhytWhitelistController::class, "bhyt_whitelist"])->name('.get');
-        Route::get("v1/bhyt-whitelist/{id}", [BhytWhitelistController::class, "bhyt_whitelist"])->name('.get_id');
-        Route::post("v1/bhyt-whitelist", [BhytWhitelistController::class, "bhyt_whitelist_create"])->name('.create');
-        Route::put("v1/bhyt-whitelist/{id}", [BhytWhitelistController::class, "bhyt_whitelist_update"])->name('.update');
-        Route::delete("v1/bhyt-whitelist/{id}", [BhytWhitelistController::class, "bhyt_whitelist_delete"])->name('.delete');
     });
 
     /// Nhóm dịch vụ BHYT
@@ -1214,15 +1213,6 @@ Route::group([
         Route::post("v1/medicine-use-form", [MedicineUseFormController::class, "medicine_use_form_create"])->name('.create');
         Route::put("v1/medicine-use-form/{id}", [MedicineUseFormController::class, "medicine_use_form_update"])->name('.update');
         Route::delete("v1/medicine-use-form/{id}", [MedicineUseFormController::class, "medicine_use_form_delete"])->name('.delete');
-    });
-
-    /// Loại thầu
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisBidType'], function () {
-        Route::get("v1/bid-type", [BidTypeController::class, "bid_type"])->name('.get');
-        Route::get("v1/bid-type/{id}", [BidTypeController::class, "bid_type"])->name('.get_id');
-        Route::post("v1/bid-type", [BidTypeController::class, "bid_type_create"])->name('.create');
-        Route::put("v1/bid-type/{id}", [BidTypeController::class, "bid_type_update"])->name('.update');
-        Route::delete("v1/bid-type/{id}", [BidTypeController::class, "bid_type_delete"])->name('.delete');
     });
 
     /// Loại thuốc - Hoạt chất

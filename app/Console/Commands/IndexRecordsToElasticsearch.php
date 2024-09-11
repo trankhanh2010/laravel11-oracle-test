@@ -19,6 +19,8 @@ use App\Events\Elastic\BedRoom\CreateBedRoomIndex;
 use App\Events\Elastic\BedType\CreateBedTypeIndex;
 use App\Events\Elastic\BhytBlacklist\CreateBhytBlacklistIndex;
 use App\Events\Elastic\BhytParam\CreateBhytParamIndex;
+use App\Events\Elastic\BhytWhitelist\CreateBhytWhitelistIndex;
+use App\Events\Elastic\BidType\CreateBidTypeIndex;
 use App\Repositories\AccidentBodyPartRepository;
 use App\Repositories\AccidentCareRepository;
 use App\Repositories\AccidentHurtTypeRepository;
@@ -33,6 +35,8 @@ use App\Repositories\BedRoomRepository;
 use App\Repositories\BedTypeRepository;
 use App\Repositories\BhytBlacklistRepository;
 use App\Repositories\BhytParamRepository;
+use App\Repositories\BhytWhitelistRepository;
+use App\Repositories\BidTypeRepository;
 
 class IndexRecordsToElasticsearch extends Command
 {
@@ -141,6 +145,14 @@ class IndexRecordsToElasticsearch extends Command
             case 'his_bhyt_param':
                 $results = app(BhytParamRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateBhytParamIndex($name_table));
+                break;
+            case 'his_bhyt_whitelist':
+                $results = app(BhytWhitelistRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateBhytWhitelistIndex($name_table));
+                break;
+            case 'his_bid_type':
+                $results = app(BidTypeRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateBidTypeIndex($name_table));
                 break;
             default:
                 // Xử lý mặc định hoặc xử lý khi không có bảng khớp

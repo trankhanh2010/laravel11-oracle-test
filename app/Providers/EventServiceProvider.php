@@ -29,6 +29,10 @@ use App\Events\Elastic\BhytBlacklist\CreateBhytBlacklistIndex;
 use App\Events\Elastic\BhytBlacklist\InsertBhytBlacklistIndex;
 use App\Events\Elastic\BhytParam\CreateBhytParamIndex;
 use App\Events\Elastic\BhytParam\InsertBhytParamIndex;
+use App\Events\Elastic\BhytWhitelist\CreateBhytWhitelistIndex;
+use App\Events\Elastic\BhytWhitelist\InsertBhytWhitelistIndex;
+use App\Events\Elastic\BidType\CreateBidTypeIndex;
+use App\Events\Elastic\BidType\InsertBidTypeIndex;
 use App\Events\Elastic\DeleteIndex;
 use App\Events\Telegram\SendMessageToChannel;
 use App\Listeners\Cache\DeleteCache as CacheDeleteCache;
@@ -58,6 +62,10 @@ use App\Listeners\Elastic\BhytBlacklist\ElasticCreateBhytBlacklistIndex;
 use App\Listeners\Elastic\BhytBlacklist\ElasticInsertBhytBlacklistIndex;
 use App\Listeners\Elastic\BhytParam\ElasticCreateBhytParamIndex;
 use App\Listeners\Elastic\BhytParam\ElasticInsertBhytParamIndex;
+use App\Listeners\Elastic\BhytWhitelist\ElasticCreateBhytWhitelistIndex;
+use App\Listeners\Elastic\BhytWhitelist\ElasticInsertBhytWhitelistIndex;
+use App\Listeners\Elastic\BidType\ElasticCreateBidTypeIndex;
+use App\Listeners\Elastic\BidType\ElasticInsertBidTypeIndex;
 use App\Listeners\Elastic\ElasticDeleteIndex;
 use App\Listeners\Telegram\TelegramSendMessageToChannel;
 use Illuminate\Auth\Events\Registered;
@@ -182,6 +190,20 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertBhytParamIndex::class => [
             ElasticInsertBhytParamIndex::class,
+        ],
+
+        CreateBhytWhitelistIndex::class => [
+            ElasticCreateBhytWhitelistIndex::class,
+        ],
+        InsertBhytWhitelistIndex::class => [
+            ElasticInsertBhytWhitelistIndex::class,
+        ],
+
+        CreateBidTypeIndex::class => [
+            ElasticCreateBidTypeIndex::class,
+        ],
+        InsertBidTypeIndex::class => [
+            ElasticInsertBidTypeIndex::class,
         ],
     ];
 
