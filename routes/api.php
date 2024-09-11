@@ -305,6 +305,14 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisCancelReason'], function () {
         Route::apiResource('v1/cancel-reason', CancelReasonController::class);
     });
+    /// Nghề nghiệp
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisCareer'], function () {
+        Route::apiResource('v1/career', CareerController::class);
+    });
+    /// Nghề nghiệp nhân viên
+    Route::group(['as' => 'HIS.Desktop.Plugins.CareerTitle'], function () {
+        Route::apiResource('v1/career-title', CareerTitleController::class);
+    });
     /// Khoa phòng
     Route::group(['as' => 'HIS.Desktop.Plugins.HisDepartment'], function () {
         Route::get("v1/department", [DepartmentController::class, "department"])->name('.get');
@@ -729,15 +737,6 @@ Route::group([
         Route::delete("v1/relation-list/{id}", [RelationController::class, "relation_list_delete"])->name('.delete');
     });
 
-    /// Nghề nghiệp
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisCareer'], function () {
-        Route::get("v1/career", [CareerController::class, "career"])->name('.get');
-        Route::get("v1/career/{id}", [CareerController::class, "career"])->name('.get_id');
-        Route::post("v1/career", [CareerController::class, "career_create"])->name('.create');
-        Route::put("v1/career/{id}", [CareerController::class, "career_update"])->name('.update');
-        Route::delete("v1/career/{id}", [CareerController::class, "career_delete"])->name('.delete');
-    });
-
     /// Phân loại bệnh nhân
     Route::group(['as' => 'HIS.Desktop.Plugins.HisPatientClassify'], function () {
         Route::get("v1/patient-classify", [PatientClassifyController::class, "patient_classify"])->name('.get');
@@ -1077,15 +1076,6 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisExpMestReason'], function () {
         Route::get("v1/exp-mest-reason", [ExpMestReasonController::class, "exp_mest_reason"])->name('.get');
         Route::get("v1/exp-mest-reason/{id}", [ExpMestReasonController::class, "exp_mest_reason"])->name('.get_id');
-    });
-
-    /// Nghề nghiệp nhân viên
-    Route::group(['as' => 'HIS.Desktop.Plugins.CareerTitle'], function () {
-        Route::get("v1/career-title", [CareerTitleController::class, "career_title"])->name('.get');
-        Route::get("v1/career-title/{id}", [CareerTitleController::class, "career_title"])->name('.get_id');
-        Route::post("v1/career-title", [CareerTitleController::class, "career_title_create"])->name('.create');
-        Route::put("v1/career-title/{id}", [CareerTitleController::class, "career_title_update"])->name('.update');
-        Route::delete("v1/career-title/{id}", [CareerTitleController::class, "career_title_delete"])->name('.delete');
     });
 
     /// Nhà cung cấp

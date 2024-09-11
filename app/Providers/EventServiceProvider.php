@@ -45,6 +45,10 @@ use App\Events\Elastic\Branch\CreateBranchIndex;
 use App\Events\Elastic\Branch\InsertBranchIndex;
 use App\Events\Elastic\CancelReason\CreateCancelReasonIndex;
 use App\Events\Elastic\CancelReason\InsertCancelReasonIndex;
+use App\Events\Elastic\Career\CreateCareerIndex;
+use App\Events\Elastic\Career\InsertCareerIndex;
+use App\Events\Elastic\CareerTitle\CreateCareerTitleIndex;
+use App\Events\Elastic\CareerTitle\InsertCareerTitleIndex;
 use App\Events\Elastic\DeleteIndex;
 use App\Events\Telegram\SendMessageToChannel;
 use App\Listeners\Cache\DeleteCache as CacheDeleteCache;
@@ -90,6 +94,10 @@ use App\Listeners\Elastic\Branch\ElasticCreateBranchIndex;
 use App\Listeners\Elastic\Branch\ElasticInsertBranchIndex;
 use App\Listeners\Elastic\CancelReason\ElasticCreateCancelReasonIndex;
 use App\Listeners\Elastic\CancelReason\ElasticInsertCancelReasonIndex;
+use App\Listeners\Elastic\Career\ElasticCreateCareerIndex;
+use App\Listeners\Elastic\Career\ElasticInsertCareerIndex;
+use App\Listeners\Elastic\CareerTitle\ElasticCreateCareerTitleIndex;
+use App\Listeners\Elastic\CareerTitle\ElasticInsertCareerTitleIndex;
 use App\Listeners\Elastic\ElasticDeleteIndex;
 use App\Listeners\Telegram\TelegramSendMessageToChannel;
 use Illuminate\Auth\Events\Registered;
@@ -270,6 +278,20 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertCancelReasonIndex::class => [
             ElasticInsertCancelReasonIndex::class,
+        ],
+
+        CreateCareerIndex::class => [
+            ElasticCreateCareerIndex::class,
+        ],
+        InsertCareerIndex::class => [
+            ElasticInsertCareerIndex::class,
+        ],
+
+        CreateCareerTitleIndex::class => [
+            ElasticCreateCareerTitleIndex::class,
+        ],
+        InsertCareerTitleIndex::class => [
+            ElasticInsertCareerTitleIndex::class,
         ],
     ];
 

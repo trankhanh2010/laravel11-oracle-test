@@ -180,6 +180,8 @@ return [
             'born_position' => 'Có lỗi khi thực hiện thao tác với bảng Ngôi thai!',
             'branch' => 'Có lỗi khi thực hiện thao tác với bảng Cơ sở/Xã phường!',
             'cancel_reason' => 'Có lỗi khi thực hiện thao tác với bảng Lý do hủy giao dịch!',
+            'career' => 'Có lỗi khi thực hiện thao tác với bảng Nghề nghiệp!',
+            'career_title' => 'Có lỗi khi thực hiện thao tác với bảng Nghề nghiệp nhân viên!',
 
         ]
     ]

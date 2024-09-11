@@ -27,6 +27,8 @@ use App\Events\Elastic\BodyPart\CreateBodyPartIndex;
 use App\Events\Elastic\BornPosition\CreateBornPositionIndex;
 use App\Events\Elastic\Branch\CreateBranchIndex;
 use App\Events\Elastic\CancelReason\CreateCancelReasonIndex;
+use App\Events\Elastic\Career\CreateCareerIndex;
+use App\Events\Elastic\CareerTitle\CreateCareerTitleIndex;
 use App\Repositories\AccidentBodyPartRepository;
 use App\Repositories\AccidentCareRepository;
 use App\Repositories\AccidentHurtTypeRepository;
@@ -49,6 +51,8 @@ use App\Repositories\BodyPartRepository;
 use App\Repositories\BornPositionRepository;
 use App\Repositories\BranchRepository;
 use App\Repositories\CancelReasonRepository;
+use App\Repositories\CareerRepository;
+use App\Repositories\CareerTitleRepository;
 
 class IndexRecordsToElasticsearch extends Command
 {
@@ -189,6 +193,14 @@ class IndexRecordsToElasticsearch extends Command
             case 'his_cancel_reason':
                 $results = app(CancelReasonRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateCancelReasonIndex($name_table));
+                break;
+            case 'his_career':
+                $results = app(CareerRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateCareerIndex($name_table));
+                break;
+            case 'his_career_title':
+                $results = app(CareerTitleRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateCareerTitleIndex($name_table));
                 break;
             default:
                 // Xử lý mặc định hoặc xử lý khi không có bảng khớp
