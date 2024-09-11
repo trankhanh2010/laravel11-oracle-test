@@ -25,6 +25,8 @@ use App\Events\Elastic\BloodGroup\CreateBloodGroupIndex;
 use App\Events\Elastic\BloodVolume\CreateBloodVolumeIndex;
 use App\Events\Elastic\BodyPart\CreateBodyPartIndex;
 use App\Events\Elastic\BornPosition\CreateBornPositionIndex;
+use App\Events\Elastic\Branch\CreateBranchIndex;
+use App\Events\Elastic\CancelReason\CreateCancelReasonIndex;
 use App\Repositories\AccidentBodyPartRepository;
 use App\Repositories\AccidentCareRepository;
 use App\Repositories\AccidentHurtTypeRepository;
@@ -45,6 +47,8 @@ use App\Repositories\BloodGroupRepository;
 use App\Repositories\BloodVolumeRepository;
 use App\Repositories\BodyPartRepository;
 use App\Repositories\BornPositionRepository;
+use App\Repositories\BranchRepository;
+use App\Repositories\CancelReasonRepository;
 
 class IndexRecordsToElasticsearch extends Command
 {
@@ -177,6 +181,14 @@ class IndexRecordsToElasticsearch extends Command
             case 'his_born_position':
                 $results = app(BornPositionRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateBornPositionIndex($name_table));
+                break;
+            case 'his_branch':
+                $results = app(BranchRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateBranchIndex($name_table));
+                break;
+            case 'his_cancel_reason':
+                $results = app(CancelReasonRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateCancelReasonIndex($name_table));
                 break;
             default:
                 // Xử lý mặc định hoặc xử lý khi không có bảng khớp

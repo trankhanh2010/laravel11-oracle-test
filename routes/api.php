@@ -297,6 +297,14 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisBornPosition'], function () {
         Route::apiResource('v1/born-position', BornPositionController::class);
     });
+    /// Cơ sở/Xã phường
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisBranch'], function () {
+        Route::apiResource('v1/branch', BranchController::class);
+    });
+    /// Lý do hủy giao dịch
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisCancelReason'], function () {
+        Route::apiResource('v1/cancel-reason', CancelReasonController::class);
+    });
     /// Khoa phòng
     Route::group(['as' => 'HIS.Desktop.Plugins.HisDepartment'], function () {
         Route::get("v1/department", [DepartmentController::class, "department"])->name('.get');
@@ -371,16 +379,6 @@ Route::group([
         Route::post("v1/medi-org", [MediOrgController::class, "medi_org_create"])->name('.create');
         Route::put("v1/medi-org/{id}", [MediOrgController::class, "medi_org_update"])->name('.update');
         Route::delete("v1/medi-org/{id}", [MediOrgController::class, "medi_org_delete"])->name('.delete');
-    });
-
-    /// Cơ sở/Xã phường
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisBranch'], function () {
-        Route::get("v1/branch", [BranchController::class, "branch"])->name('.get');
-        Route::get("v1/branch/{id}", [BranchController::class, "branch"])->name('.get_id');
-        Route::get("v1/branch-check", [CheckBranchController::class, "check_code"])->name('.check');
-        Route::post("v1/branch", [BranchController::class, "branch_create"])->name('.create');
-        Route::put("v1/branch/{id}", [BranchController::class, "branch_update"])->name('.update');
-        Route::delete("v1/branch/{id}", [BranchController::class, "branch_delete"])->name('.delete');
     });
 
     /// Huyện
@@ -1046,15 +1044,6 @@ Route::group([
         Route::post("v1/debate-reason", [DebateReasonController::class, "debate_reason_create"])->name('.create');
         Route::put("v1/debate-reason/{id}", [DebateReasonController::class, "debate_reason_update"])->name('.update');
         Route::delete("v1/debate-reason/{id}", [DebateReasonController::class, "debate_reason_delete"])->name('.delete');
-    });
-
-    /// Lý do hủy giao dịch
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisCancelReason'], function () {
-        Route::get("v1/cancel-reason", [CancelReasonController::class, "cancel_reason"])->name('.get');
-        Route::get("v1/cancel-reason/{id}", [CancelReasonController::class, "cancel_reason"])->name('.get_id');
-        Route::post("v1/cancel-reason", [CancelReasonController::class, "cancel_reason_create"])->name('.create');
-        Route::put("v1/cancel-reason/{id}", [CancelReasonController::class, "cancel_reason_update"])->name('.update');
-        Route::delete("v1/cancel-reason/{id}", [CancelReasonController::class, "cancel_reason_delete"])->name('.delete');
     });
 
     /// Lý do kê đơn tương tác

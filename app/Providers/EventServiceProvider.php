@@ -41,6 +41,10 @@ use App\Events\Elastic\BodyPart\CreateBodyPartIndex;
 use App\Events\Elastic\BodyPart\InsertBodyPartIndex;
 use App\Events\Elastic\BornPosition\CreateBornPositionIndex;
 use App\Events\Elastic\BornPosition\InsertBornPositionIndex;
+use App\Events\Elastic\Branch\CreateBranchIndex;
+use App\Events\Elastic\Branch\InsertBranchIndex;
+use App\Events\Elastic\CancelReason\CreateCancelReasonIndex;
+use App\Events\Elastic\CancelReason\InsertCancelReasonIndex;
 use App\Events\Elastic\DeleteIndex;
 use App\Events\Telegram\SendMessageToChannel;
 use App\Listeners\Cache\DeleteCache as CacheDeleteCache;
@@ -82,6 +86,10 @@ use App\Listeners\Elastic\BodyPart\ElasticCreateBodyPartIndex;
 use App\Listeners\Elastic\BodyPart\ElasticInsertBodyPartIndex;
 use App\Listeners\Elastic\BornPosition\ElasticCreateBornPositionIndex;
 use App\Listeners\Elastic\BornPosition\ElasticInsertBornPositionIndex;
+use App\Listeners\Elastic\Branch\ElasticCreateBranchIndex;
+use App\Listeners\Elastic\Branch\ElasticInsertBranchIndex;
+use App\Listeners\Elastic\CancelReason\ElasticCreateCancelReasonIndex;
+use App\Listeners\Elastic\CancelReason\ElasticInsertCancelReasonIndex;
 use App\Listeners\Elastic\ElasticDeleteIndex;
 use App\Listeners\Telegram\TelegramSendMessageToChannel;
 use Illuminate\Auth\Events\Registered;
@@ -248,6 +256,20 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertBornPositionIndex::class => [
             ElasticInsertBornPositionIndex::class,
+        ],
+
+        CreateBranchIndex::class => [
+            ElasticCreateBranchIndex::class,
+        ],
+        InsertBranchIndex::class => [
+            ElasticInsertBranchIndex::class,
+        ],
+
+        CreateCancelReasonIndex::class => [
+            ElasticCreateCancelReasonIndex::class,
+        ],
+        InsertCancelReasonIndex::class => [
+            ElasticInsertCancelReasonIndex::class,
         ],
     ];
 

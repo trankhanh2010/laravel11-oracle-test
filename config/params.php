@@ -178,6 +178,8 @@ return [
             'blood_volume' => 'Có lỗi khi thực hiện thao tác với bảng Dung tích túi máu!',
             'body_part' => 'Có lỗi khi thực hiện thao tác với bảng Bộ phận cơ thể!',
             'born_position' => 'Có lỗi khi thực hiện thao tác với bảng Ngôi thai!',
+            'branch' => 'Có lỗi khi thực hiện thao tác với bảng Cơ sở/Xã phường!',
+            'cancel_reason' => 'Có lỗi khi thực hiện thao tác với bảng Lý do hủy giao dịch!',
 
         ]
     ]
