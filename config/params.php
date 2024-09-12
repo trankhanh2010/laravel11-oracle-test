@@ -182,6 +182,8 @@ return [
             'cancel_reason' => 'Có lỗi khi thực hiện thao tác với bảng Lý do hủy giao dịch!',
             'career' => 'Có lỗi khi thực hiện thao tác với bảng Nghề nghiệp!',
             'career_title' => 'Có lỗi khi thực hiện thao tác với bảng Nghề nghiệp nhân viên!',
+            'cashier_room' => 'Có lỗi khi thực hiện thao tác với bảng Phòng thu ngân!',
+            'commune' => 'Có lỗi khi thực hiện thao tác với bảng Xã!',
 
         ]
     ]

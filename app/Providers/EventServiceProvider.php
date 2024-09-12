@@ -49,6 +49,10 @@ use App\Events\Elastic\Career\CreateCareerIndex;
 use App\Events\Elastic\Career\InsertCareerIndex;
 use App\Events\Elastic\CareerTitle\CreateCareerTitleIndex;
 use App\Events\Elastic\CareerTitle\InsertCareerTitleIndex;
+use App\Events\Elastic\CashierRoom\CreateCashierRoomIndex;
+use App\Events\Elastic\CashierRoom\InsertCashierRoomIndex;
+use App\Events\Elastic\Commune\CreateCommuneIndex;
+use App\Events\Elastic\Commune\InsertCommuneIndex;
 use App\Events\Elastic\DeleteIndex;
 use App\Events\Telegram\SendMessageToChannel;
 use App\Listeners\Cache\DeleteCache as CacheDeleteCache;
@@ -98,6 +102,10 @@ use App\Listeners\Elastic\Career\ElasticCreateCareerIndex;
 use App\Listeners\Elastic\Career\ElasticInsertCareerIndex;
 use App\Listeners\Elastic\CareerTitle\ElasticCreateCareerTitleIndex;
 use App\Listeners\Elastic\CareerTitle\ElasticInsertCareerTitleIndex;
+use App\Listeners\Elastic\CashierRoom\ElasticCreateCashierRoomIndex;
+use App\Listeners\Elastic\CashierRoom\ElasticInsertCashierRoomIndex;
+use App\Listeners\Elastic\Commune\ElasticCreateCommuneIndex;
+use App\Listeners\Elastic\Commune\ElasticInsertCommuneIndex;
 use App\Listeners\Elastic\ElasticDeleteIndex;
 use App\Listeners\Telegram\TelegramSendMessageToChannel;
 use Illuminate\Auth\Events\Registered;
@@ -292,6 +300,20 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertCareerTitleIndex::class => [
             ElasticInsertCareerTitleIndex::class,
+        ],
+
+        CreateCashierRoomIndex::class => [
+            ElasticCreateCashierRoomIndex::class,
+        ],
+        InsertCashierRoomIndex::class => [
+            ElasticInsertCashierRoomIndex::class,
+        ],
+
+        CreateCommuneIndex::class => [
+            ElasticCreateCommuneIndex::class,
+        ],
+        InsertCommuneIndex::class => [
+            ElasticInsertCommuneIndex::class,
         ],
     ];
 

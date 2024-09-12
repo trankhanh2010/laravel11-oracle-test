@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Events\Elastic\BedRoom;
+namespace App\Events\Elastic\CashierRoom;
 
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class CreateBedRoomIndex
+class CreateCashierRoomIndex
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -38,7 +38,7 @@ class CreateBedRoomIndex
                         'filter' => [
                             'my_stop_filter' => [
                                 'type' => 'stop',
-                                'stopwords' => ['khoa', 'khoa_phong'] // Danh sách từ dừng tùy chỉnh
+                                'stopwords' => [] // Danh sách từ dừng tùy chỉnh
                             ]
                         ]
                     ]
@@ -77,7 +77,7 @@ class CreateBedRoomIndex
                         'group_code' => [
                             'type' => 'keyword'  // Chuỗi không phân tích, lưu trữ giá trị chính xác, có thể là null
                         ],
-                        'bed_room_code' => [
+                        'cashier_room_code' => [
                             'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
                             'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
                             'fields' => [
@@ -86,7 +86,7 @@ class CreateBedRoomIndex
                                 ]
                             ]
                         ],
-                        'bed_room_name' => [
+                        'cashier_room_name' => [
                             'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
                             'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
                             'fields' => [
@@ -96,19 +96,52 @@ class CreateBedRoomIndex
                             ]
                         ],
                         'room_id' => [
-                            'type' => 'long'  // Số nguyên 64-bit
+                            'type' => 'long'  // Số nguyên 64-bit, phù hợp với ID số
                         ],
-                        'is_surgery ' => [
-                            'type' => 'byte'
+                        'einvoice_room_code' => [
+                            'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
+                            'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
+                            'fields' => [
+                                'keyword' => [  // Phân tích không để sắp xếp và tìm kiếm chính xác
+                                    'type' => 'keyword'
+                                ]
+                            ]
                         ],
-                        'treatment_type_ids' => [
-                            'type' => 'text'  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
+                        'einvoice_room_name' => [
+                            'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
+                            'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
+                            'fields' => [
+                                'keyword' => [  // Phân tích không để sắp xếp và tìm kiếm chính xác
+                                    'type' => 'keyword'
+                                ]
+                            ]
                         ],
-                        'is_pause'=> [
-                            'type' => 'byte'
+                        'is_pause' => [
+                            'type' => 'byte'  // Số nguyên 64-bit, phù hợp với ID số
                         ],
                         'department_id' => [
-                            'type' => 'long'
+                            'type' => 'long'  // Số nguyên 64-bit, phù hợp với ID số
+                        ],
+                        'area_id' => [
+                            'type' => 'long'  // Số nguyên 64-bit, phù hợp với ID số
+                        ],
+                        'room_type_name' => [
+                            'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
+                            'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
+                            'fields' => [
+                                'keyword' => [  // Phân tích không để sắp xếp và tìm kiếm chính xác
+                                    'type' => 'keyword'
+                                ]
+                            ]
+                        ],
+                        'room_type_code' => [
+                            'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
+                            'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
+                            'fields' => [
+                                'keyword' => [  // Phân tích không để sắp xếp và tìm kiếm chính xác
+                                    'type' => 'keyword'
+                                ]
+                            ]
                         ],
                         'department_name' => [
                             'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
@@ -146,60 +179,6 @@ class CreateBedRoomIndex
                                 ]
                             ]
                         ],
-                        'speciality_name' => [
-                            'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
-                            'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
-                            'fields' => [
-                                'keyword' => [  // Phân tích không để sắp xếp và tìm kiếm chính xác
-                                    'type' => 'keyword'
-                                ]
-                            ]
-                        ],
-                        'speciality_code' => [
-                            'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
-                            'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
-                            'fields' => [
-                                'keyword' => [  // Phân tích không để sắp xếp và tìm kiếm chính xác
-                                    'type' => 'keyword'
-                                ]
-                            ]
-                        ],
-                        'cashier_room_name' => [
-                            'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
-                            'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
-                            'fields' => [
-                                'keyword' => [  // Phân tích không để sắp xếp và tìm kiếm chính xác
-                                    'type' => 'keyword'
-                                ]
-                            ]
-                        ],
-                        'cashier_room_code' => [
-                            'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
-                            'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
-                            'fields' => [
-                                'keyword' => [  // Phân tích không để sắp xếp và tìm kiếm chính xác
-                                    'type' => 'keyword'
-                                ]
-                            ]
-                        ],
-                        'patient_type_name' => [
-                            'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
-                            'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
-                            'fields' => [
-                                'keyword' => [  // Phân tích không để sắp xếp và tìm kiếm chính xác
-                                    'type' => 'keyword'
-                                ]
-                            ]
-                        ],
-                        'patient_type_code' => [
-                            'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
-                            'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
-                            'fields' => [
-                                'keyword' => [  // Phân tích không để sắp xếp và tìm kiếm chính xác
-                                    'type' => 'keyword'
-                                ]
-                            ]
-                        ], 
                     ]
                 ]
             ]
@@ -214,7 +193,7 @@ class CreateBedRoomIndex
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('elastic-bed-room-create-index'),
+            new PrivateChannel('elastic-cashier-room-create-index'),
         ];
     }
 }

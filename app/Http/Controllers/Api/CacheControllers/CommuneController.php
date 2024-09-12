@@ -2,221 +2,116 @@
 
 namespace App\Http\Controllers\Api\CacheControllers;
 
+use App\DTOs\CommuneDTO;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
-use Illuminate\Http\Request;
-use App\Models\SDA\Commune;
-use App\Events\Cache\DeleteCache;
 use App\Http\Requests\Commune\CreateCommuneRequest;
 use App\Http\Requests\Commune\UpdateCommuneRequest;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Schema;
+use App\Models\SDA\Commune;
+use App\Services\Elastic\ElasticsearchService;
+use App\Services\Model\CommuneService;
+use Illuminate\Http\Request;
+
 
 class CommuneController extends BaseApiCacheController
 {
-    public function __construct(Request $request){
+    protected $communeService;
+    protected $communeDTO;
+    public function __construct(Request $request, ElasticsearchService $elasticSearchService, CommuneService $communeService, Commune $commune)
+    {
         parent::__construct($request); // Gọi constructor của BaseController
-        $this->commune = new Commune();
-
+        $this->elasticSearchService = $elasticSearchService;
+        $this->communeService = $communeService;
+        $this->commune = $commune;
         // Kiểm tra tên trường trong bảng
-        if ($this->order_by != null) {
-            $columns = $this->get_columns_table($this->commune);
-            $this->order_by = $this->check_order_by($this->order_by, $columns, $this->order_by_join ?? []);
-            $this->order_by_tring = arrayToCustomString($this->order_by);
+        if ($this->orderBy != null) {
+            $this->orderByJoin = [
+                'district_code',
+                'district_name',
+            ];
+            $columns = $this->getColumnsTable($this->commune);
+            $this->orderBy = $this->checkOrderBy($this->orderBy, $columns, $this->orderByJoin ?? []);
         }
+        // Thêm tham số vào service
+        $this->communeDTO = new CommuneDTO(
+            $this->communeName,
+            $this->keyword,
+            $this->isActive,
+            $this->orderBy,
+            $this->orderByJoin,
+            $this->orderByString,
+            $this->getAll,
+            $this->start,
+            $this->limit,
+            $request,
+            $this->appCreator, 
+            $this->appModifier, 
+            $this->time,
+        );
+        $this->communeService->withParams($this->communeDTO);
     }
-    public function commune($id = null)
+    public function index()
     {
-        // Kiểm tra param và trả về lỗi nếu nó không hợp lệ
-        if($this->check_param()){
-            return $this->check_param();
+        if ($this->checkParam()) {
+            return $this->checkParam();
         }
-        try {
         $keyword = $this->keyword;
-        if($keyword != null){
-            $data = $this->commune
-            ->leftJoin('sda_district as district', 'district.id', '=', 'sda_commune.district_id')
-            ->select(
-                'sda_commune.*',
-                'district.district_name as district_name',
-                'district.district_code as district_code',
-            );
-            $data = $data->where(function ($query) use ($keyword){
-                $query = $query
-                    ->where(DB::connection('oracle_his')->raw('sda_commune.commune_code'), 'like', $keyword . '%')
-                    ->orWhere(DB::connection('oracle_his')->raw('sda_commune.commune_name'), 'like', $keyword . '%')
-                    ->orWhere(DB::connection('oracle_his')->raw('sda_commune.search_code'), 'like', $keyword . '%');
-            });
-        if ($this->is_active !== null) {
-            $data = $data->where(function ($query) {
-                $query = $query->where(DB::connection('oracle_his')->raw('sda_commune.is_active'), $this->is_active);
-            });
-        } 
-                    $count = $data->count();
-                    if ($this->order_by != null) {
-                        foreach ($this->order_by as $key => $item) {
-                            $data->orderBy('sda_commune.'.$key, $item);
-                        }
-                    }
-                    if($this->get_all){
-                        $data = $data
-                        ->get();
-                    }else{
-                        $data = $data
-                        ->skip($this->start)
-                        ->take($this->limit)
-                        ->get();
-                    }
-        }else{
-            if ($id == null) {
-                $data = Cache::remember($this->commune_name. '_start_' . $this->start . '_limit_' . $this->limit. $this->order_by_tring. '_is_active_' . $this->is_active. '_get_all_' . $this->get_all, $this->time, function (){
-                    $data = $this->commune
-                    ->leftJoin('sda_district as district', 'district.id', '=', 'sda_commune.district_id')
-                    ->select(
-                        'sda_commune.*',
-                        'district.district_name as district_name',
-                        'district.district_code as district_code',
-                    );
-                    if ($this->is_active !== null) {
-                        $data = $data->where(function ($query) {
-                            $query = $query->where(DB::connection('oracle_his')->raw('sda_commune.is_active'), $this->is_active);
-                        });
-                    } 
-                    $count = $data->count();
-                    if ($this->order_by != null) {
-                        foreach ($this->order_by as $key => $item) {
-                            $data->orderBy('sda_commune.'.$key, $item);
-                        }
-                    }
-                    if($this->get_all){
-                        $data = $data
-                        ->get();
-                    }else{
-                        $data = $data
-                        ->skip($this->start)
-                        ->take($this->limit)
-                        ->get();
-                    }
-                    return ['data' => $data, 'count' => $count];
-                });
+        if (($keyword != null || $this->elasticSearchType != null) && !$this->cache) {
+            if ($this->elasticSearchType != null) {
+                $data = $this->elasticSearchService->handleElasticSearchSearch($this->communeName);
             } else {
-                if (!is_numeric($id)) {
-                    return returnIdError($id);
-                }
-                $check_id = $this->check_id($id, $this->commune, $this->commune_name);
-                if($check_id){
-                    return $check_id; 
-                }
-                $data = Cache::remember($this->commune_name.'_'.$id. '_is_active_' . $this->is_active, $this->time, function () use ($id){
-                    $data = DB::connection('oracle_sda')->table('sda_commune as commune')
-                    ->leftJoin('sda_district as district', 'district.id', '=', 'commune.district_id')
-                    ->select(
-                        'commune.*',
-                        'district.district_name as district_name',
-                        'district.district_code as district_code',
-                    )
-                    ->where('commune.id', $id);
-                    if ($this->is_active !== null) {
-                        $data = $data->where(function ($query) {
-                            $query = $query->where(DB::connection('oracle_his')->raw("commune.is_active"), $this->is_active);
-                        });
-                    } 
-                    $data = $data->first();
-                    return $data;
-                });
-            }  
+                $data = $this->communeService->handleDataBaseSearch();
+            }
+        } else {
+            if ($this->elastic) {
+                $data = $this->elasticSearchService->handleElasticSearchGetAll($this->communeName);
+            } else {
+                $data = $this->communeService->handleDataBaseGetAll();
+            }
         }
-        $param_return = [
-            $this->get_all_name => $this->get_all,
-            $this->start_name => ($this->get_all || !is_null($id)) ? null : $this->start,
-            $this->limit_name => ($this->get_all || !is_null($id)) ? null : $this->limit,
-            $this->count_name => $count ?? (is_array($data) ? $data['count'] : null  ),
-            $this->is_active_name => $this->is_active,
-            $this->keyword_name => $this->keyword,
-            $this->order_by_name => $this->order_by_request
+        $paramReturn = [
+            $this->getAllName => $this->getAll,
+            $this->startName => $this->getAll ? null : $this->start,
+            $this->limitName => $this->getAll ? null : $this->limit,
+            $this->countName => $data['count'],
+            $this->isActiveName => $this->isActive,
+            $this->keywordName => $this->keyword,
+            $this->orderByName => $this->orderByRequest
         ];
-        return return_data_success($param_return, $data?? ($data['data'] ?? null));
-        } catch (\Throwable $e) {
-            // Xử lý lỗi và trả về phản hồi lỗi
-                    return return_500_error($e->getMessage());
+        return returnDataSuccess($paramReturn, $data['data']);
+    }
 
-    }
-    }
-    public function commune_create(CreateCommuneRequest $request)
+    public function show($id)
     {
-        try {
-        $data = $this->commune::create([
-            'create_time' => now()->format('Ymdhis'),
-            'modify_time' => now()->format('Ymdhis'),
-            'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
-            'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
-            'app_creator' => $this->app_creator,
-            'app_modifier' => $this->app_modifier,
-            'commune_code' => $request->commune_code,
-            'commune_name' => $request->commune_name,
-            'search_code' => $request->search_code,
-            'initial_name' => $request->initial_name,
-            'district_id' => $request->district_id,
-        ]);
-        // Gọi event để xóa cache
-        event(new DeleteCache($this->commune_name));
-        return return_data_create_success($data);
-    } catch (\Exception $e) {
-                    return return_500_error($e->getMessage());
-
-    }
-    }
-
-    public function commune_update(UpdateCommuneRequest $request, $id)
-    {
-        if (!is_numeric($id)) {
-            return returnIdError($id);
+        if ($this->checkParam()) {
+            return $this->checkParam();
         }
-        $data = $this->commune->find($id);
-        if ($data == null) {
-            return return_not_record($id);
+        if ($id !== null) {
+            $validationError = $this->validateAndCheckId($id, $this->commune, $this->communeName);
+            if ($validationError) {
+                return $validationError;
+            }
         }
-        try {
-        $data_update = [
-            'modify_time' => now()->format('Ymdhis'),
-            'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
-            'app_modifier' => $this->app_modifier,
-            'commune_code' => $request->commune_code,
-            'commune_name' => $request->commune_name,
-            'search_code' => $request->search_code,
-            'initial_name' => $request->initial_name,
-            'district_id' => $request->district_id,
-            'is_active' => $request->is_active,
-
+        if ($this->elastic) {
+            $data = $this->elasticSearchService->handleElasticSearchGetWithId($this->communeName, $id);
+        } else {
+            $data = $this->communeService->handleDataBaseGetWithId($id);
+        }
+        $paramReturn = [
+            $this->idName => $id,
+            $this->isActiveName => $this->isActive,
         ];
-        $data->fill($data_update);
-        $data->save();
-        // Gọi event để xóa cache
-        event(new DeleteCache($this->commune_name));
-        return return_data_update_success($data);
-    } catch (\Exception $e) {
-                    return return_500_error($e->getMessage());
-
+        return returnDataSuccess($paramReturn, $data);
     }
-    }
-
-    public function commune_delete(Request $request, $id)
+    public function store(CreateCommuneRequest $request)
     {
-        if (!is_numeric($id)) {
-            return returnIdError($id);
-        }
-        $data = $this->commune->find($id);
-        if ($data == null) {
-            return return_not_record($id);
-        }
-        try {
-            $data->delete();
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->commune_name));
-            return return_data_delete_success();
-        } catch (\Throwable $e) {
-            // Xử lý lỗi và trả về phản hồi lỗi
-            return return_data_delete_fail();
-        }
+        return $this->communeService->createCommune($request);
+    }
+    public function update(UpdateCommuneRequest $request, $id)
+    {
+        return $this->communeService->updateCommune($id, $request);
+    }
+    public function destroy($id)
+    {
+        return $this->communeService->deleteCommune($id);
     }
 }

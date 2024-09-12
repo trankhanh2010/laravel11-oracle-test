@@ -313,6 +313,14 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.CareerTitle'], function () {
         Route::apiResource('v1/career-title', CareerTitleController::class);
     });
+    /// Phòng thu ngân
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisCashierRoom'], function () {
+        Route::apiResource('v1/cashier-room', CashierRoomController::class);
+    });
+    /// Xã
+    Route::group(['as' => 'SDA.Desktop.Plugins.SdaCommune'], function () {
+        Route::apiResource('v1/commune', CommuneController::class);
+    });
     /// Khoa phòng
     Route::group(['as' => 'HIS.Desktop.Plugins.HisDepartment'], function () {
         Route::get("v1/department", [DepartmentController::class, "department"])->name('.get');
@@ -454,16 +462,6 @@ Route::group([
         Route::delete("v1/execute-group/{id}", [ExecuteGroupController::class, "execute_group_delete"])->name('.delete');
     });
 
-    /// Phòng thu ngân
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisCashierRoom'], function () {
-        Route::get("v1/cashier-room", [CashierRoomController::class, "cashier_room"])->name('.get');
-        Route::get("v1/cashier-room/{id}", [CashierRoomController::class, "cashier_room"])->name('.get_id');
-        Route::get("v1/cashier-room-check", [CheckCashierRoomController::class, "check_code"])->name('.check');
-        Route::post("v1/cashier-room", [CashierRoomController::class, "cashier_room_create"])->name('.create');
-        Route::put("v1/cashier-room/{id}", [CashierRoomController::class, "cashier_room_update"])->name('.update');
-        Route::delete("v1/cashier-room/{id}", [CashierRoomController::class, "cashier_room_delete"])->name('.delete');
-    });
-
     /// Quốc gia
     Route::group(['as' => 'SDA.Desktop.Plugins.SdaNational'], function () {
         Route::get("v1/national", [NationalController::class, "national"])->name('.get');
@@ -502,16 +500,6 @@ Route::group([
         Route::post("v1/execute-role", [ExecuteRoleController::class, "execute_role_create"])->name('.create');
         Route::put("v1/execute-role/{id}", [ExecuteRoleController::class, "execute_role_update"])->name('.update');
         Route::delete("v1/execute-role/{id}", [ExecuteRoleController::class, "execute_role_delete"])->name('.delete');
-    });
-
-    /// Xã
-    Route::group(['as' => 'SDA.Desktop.Plugins.SdaCommune'], function () {
-        Route::get("v1/commune", [CommuneController::class, "commune"])->name('.get');
-        Route::get("v1/commune/{id}", [CommuneController::class, "commune"])->name('.get_id');
-        Route::get("v1/commune-check", [CheckCommuneController::class, "check_code"])->name('.check');
-        Route::post("v1/commune", [CommuneController::class, "commune_create"])->name('.create');
-        Route::put("v1/commune/{id}", [CommuneController::class, "commune_update"])->name('.update');
-        Route::delete("v1/commune/{id}", [CommuneController::class, "commune_delete"])->name('.delete');
     });
 
     /// Icd - Cm

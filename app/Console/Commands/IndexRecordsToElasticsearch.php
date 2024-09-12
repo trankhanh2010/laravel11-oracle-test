@@ -29,6 +29,8 @@ use App\Events\Elastic\Branch\CreateBranchIndex;
 use App\Events\Elastic\CancelReason\CreateCancelReasonIndex;
 use App\Events\Elastic\Career\CreateCareerIndex;
 use App\Events\Elastic\CareerTitle\CreateCareerTitleIndex;
+use App\Events\Elastic\CashierRoom\CreateCashierRoomIndex;
+use App\Events\Elastic\Commune\CreateCommuneIndex;
 use App\Repositories\AccidentBodyPartRepository;
 use App\Repositories\AccidentCareRepository;
 use App\Repositories\AccidentHurtTypeRepository;
@@ -53,6 +55,8 @@ use App\Repositories\BranchRepository;
 use App\Repositories\CancelReasonRepository;
 use App\Repositories\CareerRepository;
 use App\Repositories\CareerTitleRepository;
+use App\Repositories\CashierRoomRepository;
+use App\Repositories\CommuneRepository;
 
 class IndexRecordsToElasticsearch extends Command
 {
@@ -202,23 +206,60 @@ class IndexRecordsToElasticsearch extends Command
                 $results = app(CareerTitleRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateCareerTitleIndex($name_table));
                 break;
+            case 'his_cashier_room':
+                $results = app(CashierRoomRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateCashierRoomIndex($name_table));
+                break;
+            case 'sda_commune':
+                $results = app(CommuneRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateCommuneIndex($name_table));
+                break;
             default:
                 // Xử lý mặc định hoặc xử lý khi không có bảng khớp
                 $results = DB::connection('oracle_' . $first_table)->table($table)->get();
                 break;
         }
+        // Chèn từng bản ghi
+        // foreach ($results as $result) {
+        //     $data = [];
+        //     foreach ($result as $key => $value) {
+        //         $data[$key] = $value;
+        //     }
+        //     $params = [
+        //         'index' => $name_table,
+        //         'id'    => $result['id'],
+        //         'body'  => $data
+        //     ];
+
+        //     $client->index($params);
+        // }
+
+        // Dùng Bulk
+        $bulkData = [];
+        $batchSize = 5000; // Số lượng bản ghi mỗi batch, bạn có thể điều chỉnh
         foreach ($results as $result) {
+            // Chuẩn bị dữ liệu cho mỗi bản ghi
             $data = [];
             foreach ($result as $key => $value) {
                 $data[$key] = $value;
             }
-            $params = [
-                'index' => $name_table,
-                'id'    => $result['id'],
-                'body'  => $data
+            // Thêm các thông tin cần thiết cho mỗi tài liệu vào bulkData
+            $bulkData[] = [
+                'index' => [
+                    '_index' => $name_table,
+                    '_id'    => $result['id'], // Sử dụng id của bản ghi làm id cho Elasticsearch
+                ]
             ];
-
-            $client->index($params);
+            $bulkData[] = $data;
+            // Khi số lượng bản ghi đạt batchSize, thực hiện bulk insert
+            if (count($bulkData) >= $batchSize * 2) { // Mỗi tài liệu chiếm 2 entry trong bulkData
+                $client->bulk(['body' => $bulkData]);
+                $bulkData = []; // Xóa dữ liệu sau khi chèn để chuẩn bị batch tiếp theo
+            }
+        }
+        // Chèn các bản ghi còn lại nếu có
+        if (!empty($bulkData)) {
+            $client->bulk(['body' => $bulkData]);
         }
     }
 }
