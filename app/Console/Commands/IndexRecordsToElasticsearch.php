@@ -31,6 +31,8 @@ use App\Events\Elastic\Career\CreateCareerIndex;
 use App\Events\Elastic\CareerTitle\CreateCareerTitleIndex;
 use App\Events\Elastic\CashierRoom\CreateCashierRoomIndex;
 use App\Events\Elastic\Commune\CreateCommuneIndex;
+use App\Events\Elastic\Contraindication\CreateContraindicationIndex;
+use App\Events\Elastic\DataStore\CreateDataStoreIndex;
 use App\Repositories\AccidentBodyPartRepository;
 use App\Repositories\AccidentCareRepository;
 use App\Repositories\AccidentHurtTypeRepository;
@@ -57,6 +59,8 @@ use App\Repositories\CareerRepository;
 use App\Repositories\CareerTitleRepository;
 use App\Repositories\CashierRoomRepository;
 use App\Repositories\CommuneRepository;
+use App\Repositories\ContraindicationRepository;
+use App\Repositories\DataStoreRepository;
 
 class IndexRecordsToElasticsearch extends Command
 {
@@ -213,6 +217,14 @@ class IndexRecordsToElasticsearch extends Command
             case 'sda_commune':
                 $results = app(CommuneRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateCommuneIndex($name_table));
+                break;
+            case 'his_contraindication':
+                $results = app(ContraindicationRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateContraindicationIndex($name_table));
+                break;
+            case 'his_data_store':
+                $results = app(DataStoreRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateDataStoreIndex($name_table));
                 break;
             default:
                 // Xử lý mặc định hoặc xử lý khi không có bảng khớp

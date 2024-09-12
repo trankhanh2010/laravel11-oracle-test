@@ -2,247 +2,120 @@
 
 namespace App\Http\Controllers\Api\CacheControllers;
 
+use App\DTOs\DataStoreDTO;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
-use Illuminate\Http\Request;
-use App\Models\HIS\DataStore;
-use App\Events\Cache\DeleteCache;
 use App\Http\Requests\DataStore\CreateDataStoreRequest;
 use App\Http\Requests\DataStore\UpdateDataStoreRequest;
-use App\Models\HIS\Room;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
+use App\Models\HIS\DataStore;
+use App\Services\Elastic\ElasticsearchService;
+use App\Services\Model\DataStoreService;
+use Illuminate\Http\Request;
+
 
 class DataStoreController extends BaseApiCacheController
 {
-    public function __construct(Request $request){
-        parent::__construct($request); // Gọi constructor của BaseController
-        $this->data_store = new DataStore();
-        $this->room = new Room();
-
-        // Kiểm tra tên trường trong bảng
-        if ($this->order_by != null) {
-            $columns = $this->get_columns_table($this->data_store);
-            $this->order_by = $this->check_order_by($this->order_by, $columns, $this->order_by_join ?? []);
-            $this->order_by_tring = arrayToCustomString($this->order_by);
-        }
-    }
-    
-    public function data_store($id = null)
+    protected $dataStoreService;
+    protected $dataStoreDTO;
+    public function __construct(Request $request, ElasticsearchService $elasticSearchService, DataStoreService $dataStoreService, DataStore $dataStore)
     {
-        // Kiểm tra param và trả về lỗi nếu nó không hợp lệ
-        if($this->check_param()){
-            return $this->check_param();
-        }
-        try {
-        $keyword = $this->keyword;
-        if ($keyword != null) {
-            $param = [
-                'room:id,department_id',
-                'room.department:id,department_name,department_code',
-                'stored_room:id',
-                'stored_department:id,department_name,department_code',
-                'parent:id,data_store_code,data_store_name',
+        parent::__construct($request); // Gọi constructor của BaseController
+        $this->elasticSearchService = $elasticSearchService;
+        $this->dataStoreService = $dataStoreService;
+        $this->dataStore = $dataStore;
+        // Kiểm tra tên trường trong bảng
+        if ($this->orderBy != null) {
+            $this->orderByJoin = [
+                'parent_data_store_code',
+                'parent_data_store_code',
+                'stored_department_code',
+                'stored_department_code',
+                'department_code',
+                'department_code',
             ];
-            $data = $this->data_store;
-            $data = $data->where(function ($query) use ($keyword){
-                $query = $query
-                ->where(DB::connection('oracle_his')->raw('data_store_code'), 'like', $keyword . '%')
-                ->orWhere(DB::connection('oracle_his')->raw('data_store_name'), 'like', $keyword . '%');
-            });
-        if ($this->is_active !== null) {
-            $data = $data->where(function ($query) {
-                $query = $query->where(DB::connection('oracle_his')->raw('his_data_store.is_active'), $this->is_active);
-            });
-        } 
-            $count = $data->count();
-            if ($this->order_by != null) {
-                foreach ($this->order_by as $key => $item) {
-                    $data->orderBy($key, $item);
-                }
-            }
-            if($this->get_all){
-                $data = $data
-                ->with($param)
-                ->get();
-            }else{
-                $data = $data
-                ->skip($this->start)
-                ->take($this->limit)
-                ->with($param)
-                ->get();
+            $columns = $this->getColumnsTable($this->dataStore);
+            $this->orderBy = $this->checkOrderBy($this->orderBy, $columns, $this->orderByJoin ?? []);
+        }
+        // Thêm tham số vào service
+        $this->dataStoreDTO = new DataStoreDTO(
+            $this->dataStoreName,
+            $this->keyword,
+            $this->isActive,
+            $this->orderBy,
+            $this->orderByJoin,
+            $this->orderByString,
+            $this->getAll,
+            $this->start,
+            $this->limit,
+            $request,
+            $this->appCreator, 
+            $this->appModifier, 
+            $this->time,
+        );
+        $this->dataStoreService->withParams($this->dataStoreDTO);
+    }
+    public function index()
+    {
+        if ($this->checkParam()) {
+            return $this->checkParam();
+        }
+        $keyword = $this->keyword;
+        if (($keyword != null || $this->elasticSearchType != null) && !$this->cache) {
+            if ($this->elasticSearchType != null) {
+                $data = $this->elasticSearchService->handleElasticSearchSearch($this->dataStoreName);
+            } else {
+                $data = $this->dataStoreService->handleDataBaseSearch();
             }
         } else {
-            if ($id == null) {
-                $name = $this->data_store_name. '_start_' . $this->start . '_limit_' . $this->limit. $this->order_by_tring. '_is_active_' . $this->is_active. '_get_all_' . $this->get_all;
-                $param = [
-                    'room:id,department_id',
-                    'room.department:id,department_name,department_code',
-                    'stored_room:id',
-                    'stored_department:id,department_name,department_code',
-                    'parent:id,data_store_code,data_store_name',
-                ];
+            if ($this->elastic) {
+                $data = $this->elasticSearchService->handleElasticSearchGetAll($this->dataStoreName);
             } else {
-                if (!is_numeric($id)) {
-                    return returnIdError($id);
-                }
-                $check_id = $this->check_id($id, $this->data_store, $this->data_store_name);
-                if($check_id){
-                    return $check_id; 
-                }
-                $name = $this->data_store_name . '_' . $id. '_is_active_' . $this->is_active;
-                $param = [
-                    'room',
-                    'room.department',
-                    'stored_room',
-                    'stored_department',
-                    'parent',
-                ];
+                $data = $this->dataStoreService->handleDataBaseGetAll();
             }
-            $data = get_cache_full($this->data_store, $param, $name, $id, $this->time, $this->start, $this->limit, $this->order_by, $this->is_active, $this->get_all);
         }
-        $param_return = [
-            $this->get_all_name => $this->get_all,
-            $this->start_name => ($this->get_all || !is_null($id)) ? null : $this->start,
-            $this->limit_name => ($this->get_all || !is_null($id)) ? null : $this->limit,
-            $this->count_name => $count ?? ($data['count'] ?? null),
-            $this->is_active_name => $this->is_active,
-            $this->keyword_name => $this->keyword,
-            $this->order_by_name => $this->order_by_request
+        $paramReturn = [
+            $this->getAllName => $this->getAll,
+            $this->startName => $this->getAll ? null : $this->start,
+            $this->limitName => $this->getAll ? null : $this->limit,
+            $this->countName => $data['count'],
+            $this->isActiveName => $this->isActive,
+            $this->keywordName => $this->keyword,
+            $this->orderByName => $this->orderByRequest
         ];
-        return return_data_success($param_return, $data?? ($data['data'] ?? null));
-        } catch (\Throwable $e) {
-            // Xử lý lỗi và trả về phản hồi lỗi
-                    return return_500_error($e->getMessage());
-
-    }
+        return returnDataSuccess($paramReturn, $data['data']);
     }
 
-    public function data_store_create(CreateDataStoreRequest $request)
+    public function show($id)
     {
-        // Start transaction
-        DB::connection('oracle_his')->beginTransaction();
-        try {
-            $room = $this->room::create([
-                'create_time' => now()->format('Ymdhis'),
-                'modify_time' => now()->format('Ymdhis'),
-                'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
-                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
-                'app_creator' => $this->app_creator,
-                'app_modifier' => $this->app_modifier,
-                'department_id' => $request->department_id,
-                'room_type_id' => $request->room_type_id
-            ]);
-            $data = $this->data_store::create([
-                'create_time' => now()->format('Ymdhis'),
-                'modify_time' => now()->format('Ymdhis'),
-                'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
-                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
-                'app_creator' => $this->app_creator,
-                'app_modifier' => $this->app_modifier,
-                'data_store_code' => $request->data_store_code,
-                'data_store_name' => $request->data_store_name,
-                'parent_id' => $request->parent_id,
-                'stored_department_id' => $request->stored_department_id,
-                'stored_room_id' => $request->stored_room_id,
-                'treatment_end_type_ids' => $request->treatment_end_type_ids,
-                'treatment_type_ids' => $request->treatment_type_ids,
-                'room_id' => $room->id,
-            ]);
-            DB::connection('oracle_his')->commit();
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->data_store_name));
-            return return_data_create_success(['data' => $data, 'room' => $room]);
-        } catch (\Throwable $e) {
-            // Xử lý lỗi và trả về phản hồi lỗi
-            // Rollback transaction nếu có lỗi
-            DB::connection('oracle_his')->rollBack();
-            return return_data_fail_transaction();
+        if ($this->checkParam()) {
+            return $this->checkParam();
         }
+        if ($id !== null) {
+            $validationError = $this->validateAndCheckId($id, $this->dataStore, $this->dataStoreName);
+            if ($validationError) {
+                return $validationError;
+            }
+        }
+        if ($this->elastic) {
+            $data = $this->elasticSearchService->handleElasticSearchGetWithId($this->dataStoreName, $id);
+        } else {
+            $data = $this->dataStoreService->handleDataBaseGetWithId($id);
+        }
+        $paramReturn = [
+            $this->idName => $id,
+            $this->isActiveName => $this->isActive,
+        ];
+        return returnDataSuccess($paramReturn, $data);
     }
-
-    public function data_store_update(UpdateDataStoreRequest $request, $id)
+    public function store(CreateDataStoreRequest $request)
     {
-        if (!is_numeric($id)) {
-            return returnIdError($id);
-        }
-        $data = $this->data_store->find($id);
-        if ($data == null) {
-            return return_not_record($id);
-        }
-        $room = $this->room->find($data->room_id);
-        if ($room == null) {
-            return return_not_record($data->room_id);
-        }
-        // Start transaction
-        DB::connection('oracle_his')->beginTransaction();
-        try {
-            $room_update = [
-                'modify_time' => now()->format('Ymdhis'),
-                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
-                'app_modifier' => $this->app_modifier,
-                'room_type_id' => $request->room_type_id,
-                'is_active' => $request->is_active,
-
-            ];
-            $data_update = [
-                'modify_time' => now()->format('Ymdhis'),
-                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
-                'app_modifier' => $this->app_modifier,
-                'data_store_name' => $request->data_store_name,
-                'parent_id' => $request->parent_id,
-                'stored_department_id' => $request->stored_department_id,
-                'stored_room_id' => $request->stored_room_id,
-                'treatment_end_type_ids' => $request->treatment_end_type_ids,
-                'treatment_type_ids' => $request->treatment_type_ids,
-                'is_active' => $request->is_active,
-
-            ];
-            $room->fill($room_update);
-            $room->save();
-            $data->fill($data_update);
-            $data->save();
-            DB::connection('oracle_his')->commit();
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->data_store_name));
-            return return_data_update_success($data);
-        } catch (\Throwable $e) {
-            // Xử lý lỗi và trả về phản hồi lỗi
-            // Rollback transaction nếu có lỗi
-            DB::connection('oracle_his')->rollBack();
-            return return_data_fail_transaction();
-        }
+        return $this->dataStoreService->createDataStore($request);
     }
-
-    public function data_store_delete(Request $request, $id)
+    public function update(UpdateDataStoreRequest $request, $id)
     {
-        if (!is_numeric($id)) {
-            return returnIdError($id);
-        }
-        $data = $this->data_store->find($id);
-        if ($data == null) {
-            return return_not_record($id);
-        }
-        $room = $this->room->find($data->room_id);
-        if ($room == null) {
-            return return_not_record($data->room_id);
-        }
-        // Start transaction
-        DB::connection('oracle_his')->beginTransaction();
-        try {
-            $data->delete();
-            $room->delete();
-            DB::connection('oracle_his')->commit();
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->data_store_name));
-            return return_data_delete_success();
-        } catch (\Throwable $e) {
-            // Xử lý lỗi và trả về phản hồi lỗi
-            // Rollback transaction nếu có lỗi
-            DB::connection('oracle_his')->rollBack();
-            return return_data_fail_transaction();
-        }
+        return $this->dataStoreService->updateDataStore($id, $request);
     }
-
-
+    public function destroy($id)
+    {
+        return $this->dataStoreService->deleteDataStore($id);
+    }
 }

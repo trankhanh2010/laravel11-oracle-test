@@ -17,34 +17,34 @@ class DataStore extends Model
         'id',
     ];
     public $timestamps = false;
-    protected $appends = [
-        'treatment_types',
-        'treatment_end_types',
-    ];
-    public function getTreatmentTypesAttribute()
-    {
-        $treatment_type_ids = $this->treatment_type_ids;
-        if($treatment_type_ids != null){
-            return Cache::remember('treatment_type_ids_' . $treatment_type_ids, $this->time, function () use ( $treatment_type_ids) {
-                return TreatmentType::select('id', 'treatment_type_code', 'treatment_type_name')->whereIn('id', explode(',', $treatment_type_ids))->get();
-            });
-        }
-        return null;
+    // protected $appends = [
+    //     'treatment_types',
+    //     'treatment_end_types',
+    // ];
+    // public function getTreatmentTypesAttribute()
+    // {
+    //     $treatment_type_ids = $this->treatment_type_ids;
+    //     if($treatment_type_ids != null){
+    //         return Cache::remember('treatment_type_ids_' . $treatment_type_ids, $this->time, function () use ( $treatment_type_ids) {
+    //             return TreatmentType::select('id', 'treatment_type_code', 'treatment_type_name')->whereIn('id', explode(',', $treatment_type_ids))->get();
+    //         });
+    //     }
+    //     return null;
        
-    }
+    // }
 
-    public function getTreatmentEndTypesAttribute()
-    {
-        if($this->treatment_end_type_ids != null){
-            return Cache::remember('treatment_end_type_ids_' . $this->treatment_end_type_ids, $this->time, function ()  {
-            $data = TreatmentEndType::select('id', 'treatment_end_type_code', 'treatment_end_type_name')->whereIn('id', explode(',', $this->treatment_end_type_ids))->get();
-            return $data;
-        });
+    // public function getTreatmentEndTypesAttribute()
+    // {
+    //     if($this->treatment_end_type_ids != null){
+    //         return Cache::remember('treatment_end_type_ids_' . $this->treatment_end_type_ids, $this->time, function ()  {
+    //         $data = TreatmentEndType::select('id', 'treatment_end_type_code', 'treatment_end_type_name')->whereIn('id', explode(',', $this->treatment_end_type_ids))->get();
+    //         return $data;
+    //     });
 
-        }
-        return null;
+    //     }
+    //     return null;
 
-    }
+    // }
     public function room()
     {
         return $this->belongsTo(Room::class, 'room_id');

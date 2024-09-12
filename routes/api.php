@@ -321,6 +321,14 @@ Route::group([
     Route::group(['as' => 'SDA.Desktop.Plugins.SdaCommune'], function () {
         Route::apiResource('v1/commune', CommuneController::class);
     });
+    /// Chống chỉ định
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisContraindication'], function () {
+        Route::apiResource('v1/contraindication', ContraindicationController::class);
+    });
+    /// Tủ bệnh án
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisDataStore'], function () {
+        Route::apiResource('v1/data-store', DataStoreController::class);
+    });
     /// Khoa phòng
     Route::group(['as' => 'HIS.Desktop.Plugins.HisDepartment'], function () {
         Route::get("v1/department", [DepartmentController::class, "department"])->name('.get');
@@ -480,16 +488,6 @@ Route::group([
         Route::post("v1/province", [ProvinceController::class, "province_create"])->name('.create');
         Route::put("v1/province/{id}", [ProvinceController::class, "province_update"])->name('.update');
         Route::delete("v1/province/{id}", [ProvinceController::class, "province_delete"])->name('.delete');
-    });
-
-    /// Tủ bệnh án
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisDataStore'], function () {
-        Route::get("v1/data-store", [DataStoreController::class, "data_store"])->name('.get');
-        Route::get("v1/data-store/{id}", [DataStoreController::class, "data_store"])->name('.get_id');
-        Route::get("v1/data-store-check", [CheckDataStoreController::class, "check_code"])->name('.check');
-        Route::post("v1/data-store", [DataStoreController::class, "data_store_create"])->name('.create');
-        Route::put("v1/data-store/{id}", [DataStoreController::class, "data_store_update"])->name('.update');
-        Route::delete("v1/data-store/{id}", [DataStoreController::class, "data_store_delete"])->name('.delete');
     });
 
     /// Vai trò thực hiện
@@ -941,15 +939,6 @@ Route::group([
         Route::post("v1/preparations-blood", [PreparationsBloodController::class, "preparations_blood_create"])->name('.create');
         Route::put("v1/preparations-blood/{id}", [PreparationsBloodController::class, "preparations_blood_update"])->name('.update');
         Route::delete("v1/preparations-blood/{id}", [PreparationsBloodController::class, "preparations_blood_delete"])->name('.delete');
-    });
-
-    /// Chống chỉ định
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisContraindication'], function () {
-        Route::get("v1/contraindication", [ContraindicationController::class, "contraindication"])->name('.get');
-        Route::get("v1/contraindication/{id}", [ContraindicationController::class, "contraindication"])->name('.get_id');
-        Route::post("v1/contraindication", [ContraindicationController::class, "contraindication_create"])->name('.create');
-        Route::put("v1/contraindication/{id}", [ContraindicationController::class, "contraindication_update"])->name('.update');
-        Route::delete("v1/contraindication/{id}", [ContraindicationController::class, "contraindication_delete"])->name('.delete');
     });
 
     /// Dạng bào chế

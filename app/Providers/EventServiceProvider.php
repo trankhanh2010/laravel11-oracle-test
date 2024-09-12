@@ -53,6 +53,10 @@ use App\Events\Elastic\CashierRoom\CreateCashierRoomIndex;
 use App\Events\Elastic\CashierRoom\InsertCashierRoomIndex;
 use App\Events\Elastic\Commune\CreateCommuneIndex;
 use App\Events\Elastic\Commune\InsertCommuneIndex;
+use App\Events\Elastic\Contraindication\CreateContraindicationIndex;
+use App\Events\Elastic\Contraindication\InsertContraindicationIndex;
+use App\Events\Elastic\DataStore\CreateDataStoreIndex;
+use App\Events\Elastic\DataStore\InsertDataStoreIndex;
 use App\Events\Elastic\DeleteIndex;
 use App\Events\Telegram\SendMessageToChannel;
 use App\Listeners\Cache\DeleteCache as CacheDeleteCache;
@@ -106,6 +110,10 @@ use App\Listeners\Elastic\CashierRoom\ElasticCreateCashierRoomIndex;
 use App\Listeners\Elastic\CashierRoom\ElasticInsertCashierRoomIndex;
 use App\Listeners\Elastic\Commune\ElasticCreateCommuneIndex;
 use App\Listeners\Elastic\Commune\ElasticInsertCommuneIndex;
+use App\Listeners\Elastic\Contraindication\ElasticCreateContraindicationIndex;
+use App\Listeners\Elastic\Contraindication\ElasticInsertContraindicationIndex;
+use App\Listeners\Elastic\DataStore\ElasticCreateDataStoreIndex;
+use App\Listeners\Elastic\DataStore\ElasticInsertDataStoreIndex;
 use App\Listeners\Elastic\ElasticDeleteIndex;
 use App\Listeners\Telegram\TelegramSendMessageToChannel;
 use Illuminate\Auth\Events\Registered;
@@ -314,6 +322,20 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertCommuneIndex::class => [
             ElasticInsertCommuneIndex::class,
+        ],
+
+        CreateContraindicationIndex::class => [
+            ElasticCreateContraindicationIndex::class,
+        ],
+        InsertContraindicationIndex::class => [
+            ElasticInsertContraindicationIndex::class,
+        ],
+
+        CreateDataStoreIndex::class => [
+            ElasticCreateDataStoreIndex::class,
+        ],
+        InsertDataStoreIndex::class => [
+            ElasticInsertDataStoreIndex::class,
         ],
     ];
 
