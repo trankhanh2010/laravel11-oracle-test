@@ -26,11 +26,11 @@ class DataStoreController extends BaseApiCacheController
         if ($this->orderBy != null) {
             $this->orderByJoin = [
                 'parent_data_store_code',
-                'parent_data_store_code',
+                'parent_data_store_name',
                 'stored_department_code',
-                'stored_department_code',
+                'stored_department_name',
                 'department_code',
-                'department_code',
+                'department_name',
             ];
             $columns = $this->getColumnsTable($this->dataStore);
             $this->orderBy = $this->checkOrderBy($this->orderBy, $columns, $this->orderByJoin ?? []);
