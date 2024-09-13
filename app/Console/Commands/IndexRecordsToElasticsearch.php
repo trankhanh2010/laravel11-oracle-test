@@ -37,6 +37,8 @@ use App\Events\Elastic\DeathWithin\CreateDeathWithinIndex;
 use App\Events\Elastic\DebateReason\CreateDebateReasonIndex;
 use App\Events\Elastic\DebateType\CreateDebateTypeIndex;
 use App\Events\Elastic\Department\CreateDepartmentIndex;
+use App\Events\Elastic\DiimType\CreateDiimTypeIndex;
+use App\Events\Elastic\District\CreateDistrictIndex;
 use App\Repositories\AccidentBodyPartRepository;
 use App\Repositories\AccidentCareRepository;
 use App\Repositories\AccidentHurtTypeRepository;
@@ -69,6 +71,8 @@ use App\Repositories\DeathWithinRepository;
 use App\Repositories\DebateReasonRepository;
 use App\Repositories\DebateTypeRepository;
 use App\Repositories\DepartmentRepository;
+use App\Repositories\DiimTypeRepository;
+use App\Repositories\DistrictRepository;
 
 class IndexRecordsToElasticsearch extends Command
 {
@@ -249,6 +253,14 @@ class IndexRecordsToElasticsearch extends Command
             case 'his_department':
                 $results = app(DepartmentRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateDepartmentIndex($name_table));
+                break;
+            case 'his_diim_type':
+                $results = app(DiimTypeRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateDiimTypeIndex($name_table));
+                break;
+            case 'sda_district':
+                $results = app(DistrictRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateDistrictIndex($name_table));
                 break;
             default:
                 // Xử lý mặc định hoặc xử lý khi không có bảng khớp

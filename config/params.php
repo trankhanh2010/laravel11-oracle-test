@@ -190,6 +190,8 @@ return [
             'debate_reason' => 'Có lỗi khi thực hiện thao tác với bảng Lý do hội chẩn!',
             'debate_type' => 'Có lỗi khi thực hiện thao tác với bảng Loại hội chẩn!',
             'department' => 'Có lỗi khi thực hiện thao tác với bảng Khoa phòng!',
+            'diim_type' => 'Có lỗi khi thực hiện thao tác với bảng Loại chẩn đoán hình ảnh!',
+            'district' => 'Có lỗi khi thực hiện thao tác với bảng Huyện!',
 
         ]
     ]

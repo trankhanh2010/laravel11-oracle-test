@@ -343,7 +343,12 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisDepartment'], function () {
         Route::apiResource('v1/department', DepartmentController::class);
     });
-
+    /// Loại chẩn đoán hình ảnh
+    Route::apiResource('v1/diim-type', DiimTypeController::class)->only(['index', 'show']);
+    /// Huyện
+    Route::group(['as' => 'SDA.Desktop.Plugins.SdaDistrict'], function () {
+        Route::apiResource('v1/district', DistrictController::class);
+    });
     /// Đơn vị
     Route::get("v1/group", [GroupController::class, "group"])->name('.get_group');
     Route::get("v1/group/{id}", [GroupController::class, "group"])->name('.get_group_id');
@@ -406,16 +411,6 @@ Route::group([
         Route::post("v1/medi-org", [MediOrgController::class, "medi_org_create"])->name('.create');
         Route::put("v1/medi-org/{id}", [MediOrgController::class, "medi_org_update"])->name('.update');
         Route::delete("v1/medi-org/{id}", [MediOrgController::class, "medi_org_delete"])->name('.delete');
-    });
-
-    /// Huyện
-    Route::group(['as' => 'SDA.Desktop.Plugins.SdaDistrict'], function () {
-        Route::get("v1/district", [DistrictController::class, "district"])->name('.get');
-        Route::get("v1/district/{id}", [DistrictController::class, "district"])->name('.get_id');
-        Route::get("v1/district-check", [CheckDistrictController::class, "check_code"])->name('.check');
-        Route::post("v1/district", [DistrictController::class, "district_create"])->name('.create');
-        Route::put("v1/district/{id}", [DistrictController::class, "district_update"])->name('.update');
-        Route::delete("v1/district/{id}", [DistrictController::class, "district_delete"])->name('.delete');
     });
 
     /// Nguồn chi trả khác
@@ -516,10 +511,6 @@ Route::group([
     /// Nhóm ICD
     Route::get("v1/icd-group", [IcdGroupController::class, "icd_group"])->name('.get_icd_group');
     Route::get("v1/icd-group/{id}", [IcdGroupController::class, "icd_group"])->name('.get_icd_group_id');
-
-    /// Loại chẩn đoán hình ảnh
-    Route::get("v1/diim-type", [DiimTypeController::class, "diim_type"])->name('.get_diim_type');
-    Route::get("v1/diim-type/{id}", [DiimTypeController::class, "diim_type"])->name('.get_diim_type_id');
 
     /// Loại thăm dò chức năng
     Route::get("v1/fuex-type", [FuexTypeController::class, "fuex_type"])->name('.get_fuex_type');
