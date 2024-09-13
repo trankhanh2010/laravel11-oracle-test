@@ -188,6 +188,8 @@ return [
             'data_store' => 'Có lỗi khi thực hiện thao tác với bảng Tủ bệnh án!',
             'death_within' => 'Có lỗi khi thực hiện thao tác với bảng Thời gian tử vong!',
             'debate_reason' => 'Có lỗi khi thực hiện thao tác với bảng Lý do hội chẩn!',
+            'debate_type' => 'Có lỗi khi thực hiện thao tác với bảng Loại hội chẩn!',
+            'department' => 'Có lỗi khi thực hiện thao tác với bảng Khoa phòng!',
 
         ]
     ]

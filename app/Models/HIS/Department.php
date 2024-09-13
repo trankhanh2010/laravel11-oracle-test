@@ -19,32 +19,32 @@ class Department extends Model
     protected $guarded = [
         'id'
     ];
-    public function getAllowTreatmentTypeIdsAttribute($value)
-    {
-        if($value != null){
-            // Tạo Cache để tránh trùng lặp truy vấn
-            return Cache::remember('allow_treatment_type_ids_'.$value, $this->time, function () use ($value) {
-                return TreatmentType::
-                select('id', 'treatment_type_code', 'treatment_type_name')
-                ->whereIn('id', explode(',', $value))->get();
-            });        
-        }else{
-            return $value;
-        }
-    }
+    // public function getAllowTreatmentTypeIdsAttribute($value)
+    // {
+    //     if($value != null){
+    //         // Tạo Cache để tránh trùng lặp truy vấn
+    //         return Cache::remember('allow_treatment_type_ids_'.$value, $this->time, function () use ($value) {
+    //             return TreatmentType::
+    //             select('id', 'treatment_type_code', 'treatment_type_name')
+    //             ->whereIn('id', explode(',', $value))->get();
+    //         });        
+    //     }else{
+    //         return $value;
+    //     }
+    // }
      // Đặt thuộc tính $timestamps thành false để tắt tự động thêm created_at và updated_at
     public $timestamps = false;
     /// Chạy Scope để thêm điều kiện is_delete = 0 hoặc null
-    protected static function booted()
-    {
-        static::addGlobalScope(new IsDeleteScope);
-    }
+    // protected static function booted()
+    // {
+    //     static::addGlobalScope(new IsDeleteScope);
+    // }
 
-    /// Lấy ra bản ghi đã xóa mềm is_delete = 1
-    public static function withDeleted()
-    {
-        return with(new static)->newQueryWithoutScope(new IsDeleteScope)->where('is_delete', 1);
-    }
+    // /// Lấy ra bản ghi đã xóa mềm is_delete = 1
+    // public static function withDeleted()
+    // {
+    //     return with(new static)->newQueryWithoutScope(new IsDeleteScope)->where('is_delete', 1);
+    // }
     public function room()
     {
         return $this->hasOne(Room::class);

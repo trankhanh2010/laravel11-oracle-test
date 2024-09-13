@@ -337,16 +337,11 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisDebateReason'], function () {
         Route::apiResource('v1/debate-reason', DebateReasonController::class);
     });
+    // Loại hội chẩn
+    Route::apiResource('v1/debate-type', DebateTypeController::class)->only(['index', 'show']);
     /// Khoa phòng
     Route::group(['as' => 'HIS.Desktop.Plugins.HisDepartment'], function () {
-        Route::get("v1/department", [DepartmentController::class, "department"])->name('.get');
-        Route::get("v1/department/{id}", [DepartmentController::class, "department"])->name('.get_id');
-        Route::get("v1/department-check", [CheckDepartmentController::class, "check_code"])->name('.check');
-        // Route::get("v1/department/deleted", [DepartmentController::class, "department"]);
-        // Route::get("v1/department/{id}/restore", [DepartmentController::class, "department_restore"]);
-        Route::post("v1/department", [DepartmentController::class, "department_create"])->name('.create');
-        Route::put("v1/department/{id}", [DepartmentController::class, "department_update"])->name('.update');
-        Route::delete("v1/department/{id}", [DepartmentController::class, "department_delete"])->name('.delete');
+        Route::apiResource('v1/department', DepartmentController::class);
     });
 
     /// Đơn vị
@@ -1208,11 +1203,6 @@ Route::group([
     // Debate Ekip User
     Route::get("v1/debate-ekip-user/get", [DebateEkipUserController::class, "debate_ekip_user"])->name('.get_debate_ekip_user');
     Route::get("v2/debate-ekip-user/get", [DebateEkipUserController::class, "debate_ekip_user_v2"])->name('.get_debate_ekip_user_v2');
-
-
-    // Debate Type
-    Route::get("v1/debate-type", [DebateTypeController::class, "debate_type"])->name('.get_debate_type');
-    Route::get("v1/debate-type/{id}", [DebateTypeController::class, "debate_type"])->name('.get_debate_type_id');
 
     // Service Req
     Route::group(['as' => 'HIS.Desktop.Plugins.ServiceReqList'], function () {

@@ -35,6 +35,8 @@ use App\Events\Elastic\Contraindication\CreateContraindicationIndex;
 use App\Events\Elastic\DataStore\CreateDataStoreIndex;
 use App\Events\Elastic\DeathWithin\CreateDeathWithinIndex;
 use App\Events\Elastic\DebateReason\CreateDebateReasonIndex;
+use App\Events\Elastic\DebateType\CreateDebateTypeIndex;
+use App\Events\Elastic\Department\CreateDepartmentIndex;
 use App\Repositories\AccidentBodyPartRepository;
 use App\Repositories\AccidentCareRepository;
 use App\Repositories\AccidentHurtTypeRepository;
@@ -65,6 +67,8 @@ use App\Repositories\ContraindicationRepository;
 use App\Repositories\DataStoreRepository;
 use App\Repositories\DeathWithinRepository;
 use App\Repositories\DebateReasonRepository;
+use App\Repositories\DebateTypeRepository;
+use App\Repositories\DepartmentRepository;
 
 class IndexRecordsToElasticsearch extends Command
 {
@@ -237,6 +241,14 @@ class IndexRecordsToElasticsearch extends Command
             case 'his_debate_reason':
                 $results = app(DebateReasonRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateDebateReasonIndex($name_table));
+                break;
+            case 'his_debate_type':
+                $results = app(DebateTypeRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateDebateTypeIndex($name_table));
+                break;
+            case 'his_department':
+                $results = app(DepartmentRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateDepartmentIndex($name_table));
                 break;
             default:
                 // Xử lý mặc định hoặc xử lý khi không có bảng khớp

@@ -61,7 +61,10 @@ use App\Events\Elastic\DeathWithin\CreateDeathWithinIndex;
 use App\Events\Elastic\DeathWithin\InsertDeathWithinIndex;
 use App\Events\Elastic\DebateReason\CreateDebateReasonIndex;
 use App\Events\Elastic\DebateReason\InsertDebateReasonIndex;
+use App\Events\Elastic\DebateType\CreateDebateTypeIndex;
 use App\Events\Elastic\DeleteIndex;
+use App\Events\Elastic\Department\CreateDepartmentIndex;
+use App\Events\Elastic\Department\InsertDepartmentIndex;
 use App\Events\Telegram\SendMessageToChannel;
 use App\Listeners\Cache\DeleteCache as CacheDeleteCache;
 use App\Listeners\Elastic\AccidentBodyPart\ElasticCreateAccidentBodyPartIndex;
@@ -122,6 +125,9 @@ use App\Listeners\Elastic\DeathWithin\ElasticCreateDeathWithinIndex;
 use App\Listeners\Elastic\DeathWithin\ElasticInsertDeathWithinIndex;
 use App\Listeners\Elastic\DebateReason\ElasticCreateDebateReasonIndex;
 use App\Listeners\Elastic\DebateReason\ElasticInsertDebateReasonIndex;
+use App\Listeners\Elastic\DebateType\ElasticCreateDebateTypeIndex;
+use App\Listeners\Elastic\Department\ElasticCreateDepartmentIndex;
+use App\Listeners\Elastic\Department\ElasticInsertDepartmentIndex;
 use App\Listeners\Elastic\ElasticDeleteIndex;
 use App\Listeners\Telegram\TelegramSendMessageToChannel;
 use Illuminate\Auth\Events\Registered;
@@ -358,6 +364,17 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertDebateReasonIndex::class => [
             ElasticInsertDebateReasonIndex::class,
+        ],
+
+        CreateDebateTypeIndex::class => [
+            ElasticCreateDebateTypeIndex::class,
+        ],
+
+        CreateDepartmentIndex::class => [
+            ElasticCreateDepartmentIndex::class,
+        ],
+        InsertDepartmentIndex::class => [
+            ElasticInsertDepartmentIndex::class,
         ],
     ];
 

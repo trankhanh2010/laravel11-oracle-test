@@ -2,147 +2,102 @@
 
 namespace App\Http\Controllers\Api\CacheControllers;
 
+use App\DTOs\DebateTypeDTO;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
+use App\Http\Requests\DebateType\CreateDebateTypeRequest;
+use App\Http\Requests\DebateType\UpdateDebateTypeRequest;
 use App\Models\HIS\DebateType;
+use App\Services\Elastic\ElasticsearchService;
+use App\Services\Model\DebateTypeService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
+
 
 class DebateTypeController extends BaseApiCacheController
 {
-    public function __construct(Request $request)
+    protected $debateTypeService;
+    protected $debateTypeDTO;
+    public function __construct(Request $request, ElasticsearchService $elasticSearchService, DebateTypeService $debateTypeService, DebateType $debateType)
     {
         parent::__construct($request); // Gọi constructor của BaseController
-        $this->debate_type = new DebateType();
-
+        $this->elasticSearchService = $elasticSearchService;
+        $this->debateTypeService = $debateTypeService;
+        $this->debateType = $debateType;
         // Kiểm tra tên trường trong bảng
-        if ($this->order_by != null) {
-            $columns = $this->get_columns_table($this->debate_type);
-            $this->order_by = $this->check_order_by($this->order_by, $columns, $this->order_by_join ?? []);
-            $this->order_by_tring = arrayToCustomString($this->order_by);
-        }
-    }
-    public function debate_type($id = null)
-    {
-        // Kiểm tra param và trả về lỗi nếu nó không hợp lệ
-        if ($this->check_param()) {
-            return $this->check_param();
-        }
-        try {
-            $keyword = $this->keyword;
-            if ($keyword != null) {
-                $data = $this->debate_type
-                    ->select(
-                        'his_debate_type.*',
-                    );
-                $data = $data->where(function ($query) use ($keyword) {
-                    $query = $query
-                        ->where(DB::connection('oracle_his')->raw('his_debate_type.debate_type_code'), 'like', $keyword . '%');
-                });
-                if ($this->is_active !== null) {
-                    $data = $data->where(function ($query) {
-                        $query = $query->where(DB::connection('oracle_his')->raw('his_debate_type.is_active'), $this->is_active);
-                    });
-                }
-                $count = $data->count();
-                if ($this->order_by != null) {
-                    foreach ($this->order_by as $key => $item) {
-                        $data->orderBy('his_debate_type.' . $key, $item);
-                    }
-                }
-                if($this->get_all){
-                    $data = $data
-                    ->get();
-                }else{
-                    $data = $data
-                    ->skip($this->start)
-                    ->take($this->limit)
-                    ->get();
-                }
-            } else {
-                if ($id == null) {
-                    $data = Cache::remember($this->debate_type_name . '_start_' . $this->start . '_limit_' . $this->limit . $this->order_by_tring . '_is_active_' . $this->is_active. '_get_all_' . $this->get_all, $this->time, function () {
-                        $data = $this->debate_type
-                        ->select(
-                            'his_debate_type.*',
-                        );
-                        if ($this->is_active !== null) {
-                            $data = $data->where(function ($query) {
-                                $query = $query->where(DB::connection('oracle_his')->raw('his_debate_type.is_active'), $this->is_active);
-                            });
-                        }
-
-                        $count = $data->count();
-                        if ($this->order_by != null) {
-                            foreach ($this->order_by as $key => $item) {
-                                $data->orderBy('his_debate_type.' . $key, $item);
-                            }
-                        }
-                        if($this->get_all){
-                            $data = $data
-                            ->get();
-                        }else{
-                            $data = $data
-                            ->skip($this->start)
-                            ->take($this->limit)
-                            ->get();
-                        }
-                        return ['data' => $data, 'count' => $count];
-                    });
-                } else {
-                    if (!is_numeric($id)) {
-                        return returnIdError($id);
-                    }
-                    $check_id = $this->check_id($id, $this->debate_type, $this->debate_type_name);
-                    if($check_id){
-                        return $check_id; 
-                    }
-                    $data = Cache::remember($this->debate_type_name . '_' . $id . '_is_active_' . $this->is_active, $this->time, function () use ($id) {
-                        $data = $this->debate_type
-                        ->select(
-                            'his_debate_type.*',
-                        )
-                            ->where('his_debate_type.id', $id);
-                        if ($this->is_active !== null) {
-                            $data = $data->where(function ($query) {
-                                $query = $query->where(DB::connection('oracle_his')->raw('his_debate_type.is_active'), $this->is_active);
-                            });
-                        }
-                        $data = $data->first();
-                        return $data;
-                    });
-                }
-            }
-            $param_return = [
-                $this->get_all_name => $this->get_all,
-                $this->start_name => ($this->get_all || !is_null($id)) ? null : $this->start,
-                $this->limit_name => ($this->get_all || !is_null($id)) ? null : $this->limit,
-                $this->count_name => $count ?? ($data['count'] ?? null),
-                $this->is_active_name => $this->is_active,
-                $this->keyword_name => $this->keyword,
-                $this->order_by_name => $this->order_by_request
+        if ($this->orderBy != null) {
+            $this->orderByJoin = [
             ];
-            return return_data_success($param_return, $data ?? ($data['data'] ?? null) ?? null);
-        } catch (\Throwable $e) {
-            // Xử lý lỗi và trả về phản hồi lỗi
-            return return_500_error($e->getMessage());
+            $columns = $this->getColumnsTable($this->debateType);
+            $this->orderBy = $this->checkOrderBy($this->orderBy, $columns, $this->orderByJoin ?? []);
         }
+        // Thêm tham số vào service
+        $this->debateTypeDTO = new DebateTypeDTO(
+            $this->debateTypeName,
+            $this->keyword,
+            $this->isActive,
+            $this->orderBy,
+            $this->orderByJoin,
+            $this->orderByString,
+            $this->getAll,
+            $this->start,
+            $this->limit,
+            $request,
+            $this->appCreator, 
+            $this->appModifier, 
+            $this->time,
+        );
+        $this->debateTypeService->withParams($this->debateTypeDTO);
     }
-    // /// Debate Type
-    // public function debate_type($id = null)
-    // {
-    //     if ($id == null) {
-    //         $name = $this->debate_type_name;
-    //         $param = [
-    //             'debates:id,debate_type_id,icd_name,icd_code,icd_sub_code'
-    //         ];
-    //     } else {
-    //         $name = $this->debate_type_name . '_' . $id;
-    //         $param = [
-    //             'debates'
-    //         ];
-    //     }
-    //     $data = get_cache_full($this->debate_type, $param, $name, $id, $this->time);
-    //     return response()->json(['data' => $data], 200);
-    // }
+    public function index()
+    {
+        if ($this->checkParam()) {
+            return $this->checkParam();
+        }
+        $keyword = $this->keyword;
+        if (($keyword != null || $this->elasticSearchType != null) && !$this->cache) {
+            if ($this->elasticSearchType != null) {
+                $data = $this->elasticSearchService->handleElasticSearchSearch($this->debateTypeName);
+            } else {
+                $data = $this->debateTypeService->handleDataBaseSearch();
+            }
+        } else {
+            if ($this->elastic) {
+                $data = $this->elasticSearchService->handleElasticSearchGetAll($this->debateTypeName);
+            } else {
+                $data = $this->debateTypeService->handleDataBaseGetAll();
+            }
+        }
+        $paramReturn = [
+            $this->getAllName => $this->getAll,
+            $this->startName => $this->getAll ? null : $this->start,
+            $this->limitName => $this->getAll ? null : $this->limit,
+            $this->countName => $data['count'],
+            $this->isActiveName => $this->isActive,
+            $this->keywordName => $this->keyword,
+            $this->orderByName => $this->orderByRequest
+        ];
+        return returnDataSuccess($paramReturn, $data['data']);
+    }
+
+    public function show($id)
+    {
+        if ($this->checkParam()) {
+            return $this->checkParam();
+        }
+        if ($id !== null) {
+            $validationError = $this->validateAndCheckId($id, $this->debateType, $this->debateTypeName);
+            if ($validationError) {
+                return $validationError;
+            }
+        }
+        if ($this->elastic) {
+            $data = $this->elasticSearchService->handleElasticSearchGetWithId($this->debateTypeName, $id);
+        } else {
+            $data = $this->debateTypeService->handleDataBaseGetWithId($id);
+        }
+        $paramReturn = [
+            $this->idName => $id,
+            $this->isActiveName => $this->isActive,
+        ];
+        return returnDataSuccess($paramReturn, $data);
+    }
 }
