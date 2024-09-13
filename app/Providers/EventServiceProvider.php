@@ -68,6 +68,10 @@ use App\Events\Elastic\Department\InsertDepartmentIndex;
 use App\Events\Elastic\DiimType\CreateDiimTypeIndex;
 use App\Events\Elastic\District\CreateDistrictIndex;
 use App\Events\Elastic\District\InsertDistrictIndex;
+use App\Events\Elastic\DosageForm\CreateDosageFormIndex;
+use App\Events\Elastic\DosageForm\InsertDosageFormIndex;
+use App\Events\Elastic\EmotionlessMethod\CreateEmotionlessMethodIndex;
+use App\Events\Elastic\EmotionlessMethod\InsertEmotionlessMethodIndex;
 use App\Events\Telegram\SendMessageToChannel;
 use App\Listeners\Cache\DeleteCache as CacheDeleteCache;
 use App\Listeners\Elastic\AccidentBodyPart\ElasticCreateAccidentBodyPartIndex;
@@ -134,7 +138,11 @@ use App\Listeners\Elastic\Department\ElasticInsertDepartmentIndex;
 use App\Listeners\Elastic\DiimType\ElasticCreateDiimTypeIndex;
 use App\Listeners\Elastic\District\ElasticCreateDistrictIndex;
 use App\Listeners\Elastic\District\ElasticInsertDistrictIndex;
+use App\Listeners\Elastic\DosageForm\ElasticCreateDosageFormIndex;
+use App\Listeners\Elastic\DosageForm\ElasticInsertDosageFormIndex;
 use App\Listeners\Elastic\ElasticDeleteIndex;
+use App\Listeners\Elastic\EmotionlessMethod\ElasticCreateEmotionlessMethodIndex;
+use App\Listeners\Elastic\EmotionlessMethod\ElasticInsertEmotionlessMethodIndex;
 use App\Listeners\Telegram\TelegramSendMessageToChannel;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -392,6 +400,20 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertDistrictIndex::class => [
             ElasticInsertDistrictIndex::class,
+        ],
+
+        CreateDosageFormIndex::class => [
+            ElasticCreateDosageFormIndex::class,
+        ],
+        InsertDosageFormIndex::class => [
+            ElasticInsertDosageFormIndex::class,
+        ],
+
+        CreateEmotionlessMethodIndex::class => [
+            ElasticCreateEmotionlessMethodIndex::class,
+        ],
+        InsertEmotionlessMethodIndex::class => [
+            ElasticInsertEmotionlessMethodIndex::class,
         ],
     ];
 

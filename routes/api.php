@@ -349,6 +349,14 @@ Route::group([
     Route::group(['as' => 'SDA.Desktop.Plugins.SdaDistrict'], function () {
         Route::apiResource('v1/district', DistrictController::class);
     });
+    /// Dạng bào chế
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisDosageForm'], function () {
+        Route::apiResource('v1/dosage-form', DosageFormController::class);
+    });
+    /// Phương pháp vô cảm
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisEmotionlessMethod'], function () {
+        Route::apiResource('v1/emotionless-method', EmotionlessMethodController::class);
+    });
     /// Đơn vị
     Route::get("v1/group", [GroupController::class, "group"])->name('.get_group');
     Route::get("v1/group/{id}", [GroupController::class, "group"])->name('.get_group_id');
@@ -935,15 +943,6 @@ Route::group([
         Route::delete("v1/preparations-blood/{id}", [PreparationsBloodController::class, "preparations_blood_delete"])->name('.delete');
     });
 
-    /// Dạng bào chế
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisDosageForm'], function () {
-        Route::get("v1/dosage-form", [DosageFormController::class, "dosage_form"])->name('.get');
-        Route::get("v1/dosage-form/{id}", [DosageFormController::class, "dosage_form"])->name('.get_id');
-        Route::post("v1/dosage-form", [DosageFormController::class, "dosage_form_create"])->name('.create');
-        Route::put("v1/dosage-form/{id}", [DosageFormController::class, "dosage_form_update"])->name('.update');
-        Route::delete("v1/dosage-form/{id}", [DosageFormController::class, "dosage_form_delete"])->name('.delete');
-    });
-
     /// Hạng lái xe
     Route::group(['as' => 'HIS.Desktop.Plugins.LicenseClass'], function () {
         Route::get("v1/license-class", [LicenseClassController::class, "license_class"])->name('.get');
@@ -1091,15 +1090,6 @@ Route::group([
         Route::post("v1/pttt-method", [PtttMethodController::class, "pttt_method_create"])->name('.create');
         Route::put("v1/pttt-method/{id}", [PtttMethodController::class, "pttt_method_update"])->name('.update');
         Route::delete("v1/pttt-method/{id}", [PtttMethodController::class, "pttt_method_delete"])->name('.delete');
-    });
-
-    /// Phương pháp vô cảm
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisEmotionlessMethod'], function () {
-        Route::get("v1/emotionless-method", [EmotionlessMethodController::class, "emotionless_method"])->name('.get');
-        Route::get("v1/emotionless-method/{id}", [EmotionlessMethodController::class, "emotionless_method"])->name('.get_id');
-        Route::post("v1/emotionless-method", [EmotionlessMethodController::class, "emotionless_method_create"])->name('.create');
-        Route::put("v1/emotionless-method/{id}", [EmotionlessMethodController::class, "emotionless_method_update"])->name('.update');
-        Route::delete("v1/emotionless-method/{id}", [EmotionlessMethodController::class, "emotionless_method_delete"])->name('.delete');
     });
 
     /// Tai biến PTTT

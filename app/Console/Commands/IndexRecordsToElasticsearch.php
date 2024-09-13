@@ -39,6 +39,8 @@ use App\Events\Elastic\DebateType\CreateDebateTypeIndex;
 use App\Events\Elastic\Department\CreateDepartmentIndex;
 use App\Events\Elastic\DiimType\CreateDiimTypeIndex;
 use App\Events\Elastic\District\CreateDistrictIndex;
+use App\Events\Elastic\DosageForm\CreateDosageFormIndex;
+use App\Events\Elastic\EmotionlessMethod\CreateEmotionlessMethodIndex;
 use App\Repositories\AccidentBodyPartRepository;
 use App\Repositories\AccidentCareRepository;
 use App\Repositories\AccidentHurtTypeRepository;
@@ -73,6 +75,8 @@ use App\Repositories\DebateTypeRepository;
 use App\Repositories\DepartmentRepository;
 use App\Repositories\DiimTypeRepository;
 use App\Repositories\DistrictRepository;
+use App\Repositories\DosageFormRepository;
+use App\Repositories\EmotionlessMethodRepository;
 
 class IndexRecordsToElasticsearch extends Command
 {
@@ -261,6 +265,14 @@ class IndexRecordsToElasticsearch extends Command
             case 'sda_district':
                 $results = app(DistrictRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateDistrictIndex($name_table));
+                break;
+            case 'his_dosage_form':
+                $results = app(DosageFormRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateDosageFormIndex($name_table));
+                break;
+            case 'his_emotionless_method':
+                $results = app(EmotionlessMethodRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateEmotionlessMethodIndex($name_table));
                 break;
             default:
                 // Xử lý mặc định hoặc xử lý khi không có bảng khớp
