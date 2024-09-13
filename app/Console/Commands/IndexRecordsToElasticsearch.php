@@ -33,6 +33,8 @@ use App\Events\Elastic\CashierRoom\CreateCashierRoomIndex;
 use App\Events\Elastic\Commune\CreateCommuneIndex;
 use App\Events\Elastic\Contraindication\CreateContraindicationIndex;
 use App\Events\Elastic\DataStore\CreateDataStoreIndex;
+use App\Events\Elastic\DeathWithin\CreateDeathWithinIndex;
+use App\Events\Elastic\DebateReason\CreateDebateReasonIndex;
 use App\Repositories\AccidentBodyPartRepository;
 use App\Repositories\AccidentCareRepository;
 use App\Repositories\AccidentHurtTypeRepository;
@@ -61,6 +63,8 @@ use App\Repositories\CashierRoomRepository;
 use App\Repositories\CommuneRepository;
 use App\Repositories\ContraindicationRepository;
 use App\Repositories\DataStoreRepository;
+use App\Repositories\DeathWithinRepository;
+use App\Repositories\DebateReasonRepository;
 
 class IndexRecordsToElasticsearch extends Command
 {
@@ -225,6 +229,14 @@ class IndexRecordsToElasticsearch extends Command
             case 'his_data_store':
                 $results = app(DataStoreRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateDataStoreIndex($name_table));
+                break;
+            case 'his_death_within':
+                $results = app(DeathWithinRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateDeathWithinIndex($name_table));
+                break;
+            case 'his_debate_reason':
+                $results = app(DebateReasonRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateDebateReasonIndex($name_table));
                 break;
             default:
                 // Xử lý mặc định hoặc xử lý khi không có bảng khớp

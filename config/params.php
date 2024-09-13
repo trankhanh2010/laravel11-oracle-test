@@ -186,6 +186,8 @@ return [
             'commune' => 'Có lỗi khi thực hiện thao tác với bảng Xã!',
             'contraindication' => 'Có lỗi khi thực hiện thao tác với bảng Chống chỉ định!',
             'data_store' => 'Có lỗi khi thực hiện thao tác với bảng Tủ bệnh án!',
+            'death_within' => 'Có lỗi khi thực hiện thao tác với bảng Thời gian tử vong!',
+            'debate_reason' => 'Có lỗi khi thực hiện thao tác với bảng Lý do hội chẩn!',
 
         ]
     ]

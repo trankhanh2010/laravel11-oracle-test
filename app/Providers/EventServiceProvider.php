@@ -57,6 +57,10 @@ use App\Events\Elastic\Contraindication\CreateContraindicationIndex;
 use App\Events\Elastic\Contraindication\InsertContraindicationIndex;
 use App\Events\Elastic\DataStore\CreateDataStoreIndex;
 use App\Events\Elastic\DataStore\InsertDataStoreIndex;
+use App\Events\Elastic\DeathWithin\CreateDeathWithinIndex;
+use App\Events\Elastic\DeathWithin\InsertDeathWithinIndex;
+use App\Events\Elastic\DebateReason\CreateDebateReasonIndex;
+use App\Events\Elastic\DebateReason\InsertDebateReasonIndex;
 use App\Events\Elastic\DeleteIndex;
 use App\Events\Telegram\SendMessageToChannel;
 use App\Listeners\Cache\DeleteCache as CacheDeleteCache;
@@ -114,6 +118,10 @@ use App\Listeners\Elastic\Contraindication\ElasticCreateContraindicationIndex;
 use App\Listeners\Elastic\Contraindication\ElasticInsertContraindicationIndex;
 use App\Listeners\Elastic\DataStore\ElasticCreateDataStoreIndex;
 use App\Listeners\Elastic\DataStore\ElasticInsertDataStoreIndex;
+use App\Listeners\Elastic\DeathWithin\ElasticCreateDeathWithinIndex;
+use App\Listeners\Elastic\DeathWithin\ElasticInsertDeathWithinIndex;
+use App\Listeners\Elastic\DebateReason\ElasticCreateDebateReasonIndex;
+use App\Listeners\Elastic\DebateReason\ElasticInsertDebateReasonIndex;
 use App\Listeners\Elastic\ElasticDeleteIndex;
 use App\Listeners\Telegram\TelegramSendMessageToChannel;
 use Illuminate\Auth\Events\Registered;
@@ -336,6 +344,20 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertDataStoreIndex::class => [
             ElasticInsertDataStoreIndex::class,
+        ],
+
+        CreateDeathWithinIndex::class => [
+            ElasticCreateDeathWithinIndex::class,
+        ],
+        InsertDeathWithinIndex::class => [
+            ElasticInsertDeathWithinIndex::class,
+        ],
+
+        CreateDebateReasonIndex::class => [
+            ElasticCreateDebateReasonIndex::class,
+        ],
+        InsertDebateReasonIndex::class => [
+            ElasticInsertDebateReasonIndex::class,
         ],
     ];
 

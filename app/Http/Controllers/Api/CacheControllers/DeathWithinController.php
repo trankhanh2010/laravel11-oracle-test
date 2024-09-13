@@ -2,203 +2,114 @@
 
 namespace App\Http\Controllers\Api\CacheControllers;
 
-use App\Events\Cache\DeleteCache;
+use App\DTOs\DeathWithinDTO;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
 use App\Http\Requests\DeathWithin\CreateDeathWithinRequest;
 use App\Http\Requests\DeathWithin\UpdateDeathWithinRequest;
 use App\Models\HIS\DeathWithin;
+use App\Services\Elastic\ElasticsearchService;
+use App\Services\Model\DeathWithinService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
+
 
 class DeathWithinController extends BaseApiCacheController
 {
-    public function __construct(Request $request)
+    protected $deathWithinService;
+    protected $deathWithinDTO;
+    public function __construct(Request $request, ElasticsearchService $elasticSearchService, DeathWithinService $deathWithinService, DeathWithin $deathWithin)
     {
         parent::__construct($request); // Gọi constructor của BaseController
-        $this->death_within = new DeathWithin();
-
+        $this->elasticSearchService = $elasticSearchService;
+        $this->deathWithinService = $deathWithinService;
+        $this->deathWithin = $deathWithin;
         // Kiểm tra tên trường trong bảng
-        if ($this->order_by != null) {
-            $columns = $this->get_columns_table($this->death_within);
-            $this->order_by = $this->check_order_by($this->order_by, $columns, $this->order_by_join ?? []);
-            $this->order_by_tring = arrayToCustomString($this->order_by);
-        }
-    }
-    public function death_within($id = null)
-    {
-        // Kiểm tra param và trả về lỗi nếu nó không hợp lệ
-        if ($this->check_param()) {
-            return $this->check_param();
-        }
-        try {
-            $keyword = $this->keyword;
-            if ($keyword != null) {
-                $data = $this->death_within
-                    ->select(
-                        'his_death_within.*',
-                    );
-                $data = $data->where(function ($query) use ($keyword) {
-                    $query = $query
-                        ->where(DB::connection('oracle_his')->raw('his_death_within.death_within_code'), 'like', $keyword . '%');
-                });
-                if ($this->is_active !== null) {
-                    $data = $data->where(function ($query) {
-                        $query = $query->where(DB::connection('oracle_his')->raw('his_death_within.is_active'), $this->is_active);
-                    });
-                }
-                $count = $data->count();
-                if ($this->order_by != null) {
-                    foreach ($this->order_by as $key => $item) {
-                        $data->orderBy('his_death_within.' . $key, $item);
-                    }
-                }
-                if($this->get_all){
-                    $data = $data
-                    ->get();
-                }else{
-                    $data = $data
-                    ->skip($this->start)
-                    ->take($this->limit)
-                    ->get();
-                }
-            } else {
-                if ($id == null) {
-                    $data = Cache::remember($this->death_within_name . '_start_' . $this->start . '_limit_' . $this->limit . $this->order_by_tring . '_is_active_' . $this->is_active. '_get_all_' . $this->get_all, $this->time, function () {
-                        $data = $this->death_within
-                        ->select(
-                            'his_death_within.*',
-                        );
-                        if ($this->is_active !== null) {
-                            $data = $data->where(function ($query) {
-                                $query = $query->where(DB::connection('oracle_his')->raw('his_death_within.is_active'), $this->is_active);
-                            });
-                        }
-
-                        $count = $data->count();
-                        if ($this->order_by != null) {
-                            foreach ($this->order_by as $key => $item) {
-                                $data->orderBy('his_death_within.' . $key, $item);
-                            }
-                        }
-                        if($this->get_all){
-                            $data = $data
-                            ->get();
-                        }else{
-                            $data = $data
-                            ->skip($this->start)
-                            ->take($this->limit)
-                            ->get();
-                        }
-                        return ['data' => $data, 'count' => $count];
-                    });
-                } else {
-                    if (!is_numeric($id)) {
-                        return returnIdError($id);
-                    }
-                    $check_id = $this->check_id($id, $this->death_within, $this->death_within_name);
-                    if($check_id){
-                        return $check_id; 
-                    }
-                    $data = Cache::remember($this->death_within_name . '_' . $id . '_is_active_' . $this->is_active, $this->time, function () use ($id) {
-                        $data = $this->death_within
-                        ->select(
-                            'his_death_within.*',
-                        )
-                            ->where('his_death_within.id', $id);
-                        if ($this->is_active !== null) {
-                            $data = $data->where(function ($query) {
-                                $query = $query->where(DB::connection('oracle_his')->raw('his_death_within.is_active'), $this->is_active);
-                            });
-                        }
-                        $data = $data->first();
-                        return $data;
-                    });
-                }
-            }
-            $param_return = [
-                $this->get_all_name => $this->get_all,
-                $this->start_name => ($this->get_all || !is_null($id)) ? null : $this->start,
-                $this->limit_name => ($this->get_all || !is_null($id)) ? null : $this->limit,
-                $this->count_name => $count ?? ($data['count'] ?? null),
-                $this->is_active_name => $this->is_active,
-                $this->keyword_name => $this->keyword,
-                $this->order_by_name => $this->order_by_request
+        if ($this->orderBy != null) {
+            $this->orderByJoin = [
             ];
-            return return_data_success($param_return, $data ?? ($data['data'] ?? null) ?? null);
-        } catch (\Throwable $e) {
-            // Xử lý lỗi và trả về phản hồi lỗi
-            return return_500_error($e->getMessage());
+            $columns = $this->getColumnsTable($this->deathWithin);
+            $this->orderBy = $this->checkOrderBy($this->orderBy, $columns, $this->orderByJoin ?? []);
         }
+        // Thêm tham số vào service
+        $this->deathWithinDTO = new DeathWithinDTO(
+            $this->deathWithinName,
+            $this->keyword,
+            $this->isActive,
+            $this->orderBy,
+            $this->orderByJoin,
+            $this->orderByString,
+            $this->getAll,
+            $this->start,
+            $this->limit,
+            $request,
+            $this->appCreator, 
+            $this->appModifier, 
+            $this->time,
+        );
+        $this->deathWithinService->withParams($this->deathWithinDTO);
     }
-    public function death_within_create(CreateDeathWithinRequest $request)
+    public function index()
     {
-        try {
-            $data = $this->death_within::create([
-                'create_time' => now()->format('Ymdhis'),
-                'modify_time' => now()->format('Ymdhis'),
-                'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
-                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
-                'app_creator' => $this->app_creator,
-                'app_modifier' => $this->app_modifier,
-                'is_active' => 1,
-                'is_delete' => 0,
-                'death_within_code' => $request->death_within_code,
-                'death_within_name' => $request->death_within_name,
-            ]);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->death_within_name));
-            return return_data_create_success($data);
-        } catch (\Throwable $e) {
-            // Xử lý lỗi và trả về phản hồi lỗi
-            return return_500_error($e->getMessage());
+        if ($this->checkParam()) {
+            return $this->checkParam();
         }
-    }
-      
-    public function death_within_update(UpdateDeathWithinRequest $request, $id)
-    {
-        if (!is_numeric($id)) {
-            return returnIdError($id);
+        $keyword = $this->keyword;
+        if (($keyword != null || $this->elasticSearchType != null) && !$this->cache) {
+            if ($this->elasticSearchType != null) {
+                $data = $this->elasticSearchService->handleElasticSearchSearch($this->deathWithinName);
+            } else {
+                $data = $this->deathWithinService->handleDataBaseSearch();
+            }
+        } else {
+            if ($this->elastic) {
+                $data = $this->elasticSearchService->handleElasticSearchGetAll($this->deathWithinName);
+            } else {
+                $data = $this->deathWithinService->handleDataBaseGetAll();
+            }
         }
-        $data = $this->death_within->find($id);
-        if ($data == null) {
-            return return_not_record($id);
-        }
-        try {
-            $data->update([
-                'modify_time' => now()->format('Ymdhis'),
-                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
-                'app_modifier' => $this->app_modifier,
-                'death_within_code' => $request->death_within_code,
-                'death_within_name' => $request->death_within_name,
-                'is_active' => $request->is_active
-            ]);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->death_within_name));
-            return return_data_update_success($data);
-        } catch (\Throwable $e) {
-            // Xử lý lỗi và trả về phản hồi lỗi
-            return return_500_error($e->getMessage());
-        }
+        $paramReturn = [
+            $this->getAllName => $this->getAll,
+            $this->startName => $this->getAll ? null : $this->start,
+            $this->limitName => $this->getAll ? null : $this->limit,
+            $this->countName => $data['count'],
+            $this->isActiveName => $this->isActive,
+            $this->keywordName => $this->keyword,
+            $this->orderByName => $this->orderByRequest
+        ];
+        return returnDataSuccess($paramReturn, $data['data']);
     }
 
-    public function death_within_delete(Request $request, $id)
+    public function show($id)
     {
-        if (!is_numeric($id)) {
-            return returnIdError($id);
+        if ($this->checkParam()) {
+            return $this->checkParam();
         }
-        $data = $this->death_within->find($id);
-        if ($data == null) {
-            return return_not_record($id);
+        if ($id !== null) {
+            $validationError = $this->validateAndCheckId($id, $this->deathWithin, $this->deathWithinName);
+            if ($validationError) {
+                return $validationError;
+            }
         }
-        try {
-            $data->delete();
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->death_within_name));
-            return return_data_delete_success();
-        } catch (\Throwable $e) {
-            // Xử lý lỗi và trả về phản hồi lỗi
-            return return_data_delete_fail();
+        if ($this->elastic) {
+            $data = $this->elasticSearchService->handleElasticSearchGetWithId($this->deathWithinName, $id);
+        } else {
+            $data = $this->deathWithinService->handleDataBaseGetWithId($id);
         }
+        $paramReturn = [
+            $this->idName => $id,
+            $this->isActiveName => $this->isActive,
+        ];
+        return returnDataSuccess($paramReturn, $data);
+    }
+    public function store(CreateDeathWithinRequest $request)
+    {
+        return $this->deathWithinService->createDeathWithin($request);
+    }
+    public function update(UpdateDeathWithinRequest $request, $id)
+    {
+        return $this->deathWithinService->updateDeathWithin($id, $request);
+    }
+    public function destroy($id)
+    {
+        return $this->deathWithinService->deleteDeathWithin($id);
     }
 }

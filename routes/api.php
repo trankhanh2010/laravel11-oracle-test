@@ -329,6 +329,14 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisDataStore'], function () {
         Route::apiResource('v1/data-store', DataStoreController::class);
     });
+    /// Thời gian tử vong
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisDeathWithin'], function () {
+        Route::apiResource('v1/death-within', DeathWithinController::class);
+    });
+    /// Lý do hội chẩn
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisDebateReason'], function () {
+        Route::apiResource('v1/debate-reason', DebateReasonController::class);
+    });
     /// Khoa phòng
     Route::group(['as' => 'HIS.Desktop.Plugins.HisDepartment'], function () {
         Route::get("v1/department", [DepartmentController::class, "department"])->name('.get');
@@ -1013,15 +1021,6 @@ Route::group([
         Route::delete("v1/tran-pati-tech/{id}", [TranPatiTechController::class, "tran_pati_tech_delete"])->name('.delete');
     });
 
-    /// Lý do hội chẩn
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisDebateReason'], function () {
-        Route::get("v1/debate-reason", [DebateReasonController::class, "debate_reason"])->name('.get');
-        Route::get("v1/debate-reason/{id}", [DebateReasonController::class, "debate_reason"])->name('.get_id');
-        Route::post("v1/debate-reason", [DebateReasonController::class, "debate_reason_create"])->name('.create');
-        Route::put("v1/debate-reason/{id}", [DebateReasonController::class, "debate_reason_update"])->name('.update');
-        Route::delete("v1/debate-reason/{id}", [DebateReasonController::class, "debate_reason_delete"])->name('.delete');
-    });
-
     /// Lý do kê đơn tương tác
     Route::group(['as' => 'HIS.Desktop.Plugins.InteractionReason'], function () {
         Route::get("v1/interaction-reason", [InteractionReasonController::class, "interaction_reason"])->name('.get');
@@ -1068,15 +1067,6 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisProcessing'], function () {
         Route::get("v1/processing-method", [ProcessingMethodController::class, "processing_method"])->name('.get');
         Route::get("v1/processing-method/{id}", [ProcessingMethodController::class, "processing_method"])->name('.get_id');
-    });
-
-    /// Thời gian tử vong
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisDeathWithin'], function () {
-        Route::get("v1/death-within", [DeathWithinController::class, "death_within"])->name('.get');
-        Route::get("v1/death-within/{id}", [DeathWithinController::class, "death_within"])->name('.get_id');
-        Route::post("v1/death-within", [DeathWithinController::class, "death_within_create"])->name('.create');
-        Route::put("v1/death-within/{id}", [DeathWithinController::class, "death_within_update"])->name('.update');
-        Route::delete("v1/death-within/{id}", [DeathWithinController::class, "death_within_delete"])->name('.delete');
     });
 
     /// Vị trí hồ sơ bệnh án
