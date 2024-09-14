@@ -57,7 +57,7 @@ use App\Http\Controllers\Api\CacheControllers\RationTimeController;
 use App\Http\Controllers\Api\CacheControllers\MachineController;
 use App\Http\Controllers\Api\CacheControllers\BedController;
 use App\Http\Controllers\Api\CacheControllers\BedTypeController;
-use App\Http\Controllers\Api\CacheControllers\EmpUserController;
+use App\Http\Controllers\Api\CacheControllers\EmployeeController;
 use App\Http\Controllers\Api\CacheControllers\RoleController;
 use App\Http\Controllers\Api\CacheControllers\EthnicController;
 use App\Http\Controllers\Api\CacheControllers\PriorityTypeController;
@@ -355,7 +355,14 @@ Route::group([
     });
     /// Phương pháp vô cảm
     Route::group(['as' => 'HIS.Desktop.Plugins.HisEmotionlessMethod'], function () {
-        Route::apiResource('v1/emotionless-method', EmotionlessMethodController::class);
+    });
+    /// Tài khoản nhân viên
+    Route::group(['as' => 'HIS.Desktop.Plugins.EmpUser'], function () {
+        Route::apiResource('v1/emp-user', EmployeeController::class);
+    });
+    /// Dân tộc
+    Route::group(['as' => 'SDA.Desktop.Plugins.SdaEthnic'], function () {
+        Route::apiResource('v1/ethnic', EthnicController::class);
     });
     /// Đơn vị
     Route::get("v1/group", [GroupController::class, "group"])->name('.get_group');
@@ -648,15 +655,6 @@ Route::group([
     Route::get("v1/service-group", [ServiceGroupController::class, "service_group"])->name('.get_service_group');
     Route::get("v1/service-group/{id}", [ServiceGroupController::class, "service_group"])->name('.get_service_group_id');
 
-    /// Tài khoản nhân viên
-    Route::group(['as' => 'HIS.Desktop.Plugins.EmpUser'], function () {
-        Route::get("v1/emp-user", [EmpUserController::class, "emp_user"])->name('.get');
-        Route::get("v1/emp-user/{id}", [EmpUserController::class, "emp_user"])->name('.get_id');
-        Route::post("v1/emp-user", [EmpUserController::class, "emp_user_create"])->name('.create');
-        Route::put("v1/emp-user/{id}", [EmpUserController::class, "emp_user_update"])->name('.update');
-        Route::delete("v1/emp-user/{id}", [EmpUserController::class, "emp_user_delete"])->name('.delete');
-    });
-
     /// Thông tin tài khoản
     Route::group(['as' => 'HIS.Desktop.Plugins.InfoUser'], function () {
         Route::get("v1/info-user", [InfoUserController::class, "info_user"])->name('.get');
@@ -689,15 +687,6 @@ Route::group([
     Route::group(['as' => 'ACS.Desktop.Plugins.AcsModuleRole'], function () {
         Route::get("v1/module-role", [ModuleRoleController::class, "module_role"])->name('.get');
         Route::get("v1/module-role/{id}", [ModuleRoleController::class, "module_role"])->name('.get_id');
-    });
-
-    /// Dân tộc
-    Route::group(['as' => 'SDA.Desktop.Plugins.SdaEthnic'], function () {
-        Route::get("v1/ethnic", [EthnicController::class, "ethnic"])->name('.get');
-        Route::get("v1/ethnic/{id}", [EthnicController::class, "ethnic"])->name('.get_id');
-        Route::post("v1/ethnic", [EthnicController::class, "ethnic_create"])->name('.create');
-        Route::put("v1/ethnic/{id}", [EthnicController::class, "ethnic_update"])->name('.update');
-        Route::delete("v1/ethnic/{id}", [EthnicController::class, "ethnic_delete"])->name('.delete');
     });
 
     /// Đối tượng bệnh nhân

@@ -185,8 +185,8 @@ class BaseApiCacheController extends Controller
     protected $servSegrName = 'serv_segr';
     protected $serviceGroup;
     protected $serviceGroupName = 'service_group';
-    protected $empUser;
-    protected $empUserName = 'employee';
+    protected $employee;
+    protected $employeeName = 'employee';
     protected $executeRoleUser;
     protected $executeRoleUserName = 'execute_role_user';
     protected $role;
@@ -421,8 +421,6 @@ class BaseApiCacheController extends Controller
     protected $packageName = 'package';
     protected $serviceCondition;
     protected $serviceConditionName = 'service_condition';
-    protected $employee;
-    protected $employeeName = 'employee';
     protected $token;
     protected $tokenName = 'token';
     protected $mediStockMety;

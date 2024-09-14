@@ -41,6 +41,8 @@ use App\Events\Elastic\DiimType\CreateDiimTypeIndex;
 use App\Events\Elastic\District\CreateDistrictIndex;
 use App\Events\Elastic\DosageForm\CreateDosageFormIndex;
 use App\Events\Elastic\EmotionlessMethod\CreateEmotionlessMethodIndex;
+use App\Events\Elastic\Employee\CreateEmployeeIndex;
+use App\Events\Elastic\Ethnic\CreateEthnicIndex;
 use App\Repositories\AccidentBodyPartRepository;
 use App\Repositories\AccidentCareRepository;
 use App\Repositories\AccidentHurtTypeRepository;
@@ -77,6 +79,8 @@ use App\Repositories\DiimTypeRepository;
 use App\Repositories\DistrictRepository;
 use App\Repositories\DosageFormRepository;
 use App\Repositories\EmotionlessMethodRepository;
+use App\Repositories\EmployeeRepository;
+use App\Repositories\EthnicRepository;
 
 class IndexRecordsToElasticsearch extends Command
 {
@@ -274,6 +278,14 @@ class IndexRecordsToElasticsearch extends Command
                 $results = app(EmotionlessMethodRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateEmotionlessMethodIndex($name_table));
                 break;
+            case 'his_employee':
+                $results = app(EmployeeRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateEmployeeIndex($name_table));
+                break;
+                case 'sda_ethnic':
+                    $results = app(EthnicRepository::class)->getDataFromDbToElastic(null);
+                    event(new CreateEthnicIndex($name_table));
+                    break;
             default:
                 // Xử lý mặc định hoặc xử lý khi không có bảng khớp
                 $results = DB::connection('oracle_' . $first_table)->table($table)->get();

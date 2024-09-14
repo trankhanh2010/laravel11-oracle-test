@@ -72,6 +72,10 @@ use App\Events\Elastic\DosageForm\CreateDosageFormIndex;
 use App\Events\Elastic\DosageForm\InsertDosageFormIndex;
 use App\Events\Elastic\EmotionlessMethod\CreateEmotionlessMethodIndex;
 use App\Events\Elastic\EmotionlessMethod\InsertEmotionlessMethodIndex;
+use App\Events\Elastic\Employee\CreateEmployeeIndex;
+use App\Events\Elastic\Employee\InsertEmployeeIndex;
+use App\Events\Elastic\Ethnic\CreateEthnicIndex;
+use App\Events\Elastic\Ethnic\InsertEthnicIndex;
 use App\Events\Telegram\SendMessageToChannel;
 use App\Listeners\Cache\DeleteCache as CacheDeleteCache;
 use App\Listeners\Elastic\AccidentBodyPart\ElasticCreateAccidentBodyPartIndex;
@@ -143,6 +147,10 @@ use App\Listeners\Elastic\DosageForm\ElasticInsertDosageFormIndex;
 use App\Listeners\Elastic\ElasticDeleteIndex;
 use App\Listeners\Elastic\EmotionlessMethod\ElasticCreateEmotionlessMethodIndex;
 use App\Listeners\Elastic\EmotionlessMethod\ElasticInsertEmotionlessMethodIndex;
+use App\Listeners\Elastic\Employee\ElasticCreateEmployeeIndex;
+use App\Listeners\Elastic\Employee\ElasticInsertEmployeeIndex;
+use App\Listeners\Elastic\Ethnic\ElasticCreateEthnicIndex;
+use App\Listeners\Elastic\Ethnic\ElasticInsertEthnicIndex;
 use App\Listeners\Telegram\TelegramSendMessageToChannel;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -414,6 +422,20 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertEmotionlessMethodIndex::class => [
             ElasticInsertEmotionlessMethodIndex::class,
+        ],
+
+        CreateEmployeeIndex::class => [
+            ElasticCreateEmployeeIndex::class,
+        ],
+        InsertEmployeeIndex::class => [
+            ElasticInsertEmployeeIndex::class,
+        ],
+
+        CreateEthnicIndex::class => [
+            ElasticCreateEthnicIndex::class,
+        ],
+        InsertEthnicIndex::class => [
+            ElasticInsertEthnicIndex::class,
         ],
     ];
 

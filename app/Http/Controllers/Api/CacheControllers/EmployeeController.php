@@ -2,36 +2,42 @@
 
 namespace App\Http\Controllers\Api\CacheControllers;
 
-use App\DTOs\EthnicDTO;
+use App\DTOs\EmployeeDTO;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
-use App\Http\Requests\Ethnic\CreateEthnicRequest;
-use App\Http\Requests\Ethnic\UpdateEthnicRequest;
-use App\Models\SDA\Ethnic;
+use App\Http\Requests\Employee\CreateEmployeeRequest;
+use App\Http\Requests\Employee\UpdateEmployeeRequest;
+use App\Models\HIS\Employee;
 use App\Services\Elastic\ElasticsearchService;
-use App\Services\Model\EthnicService;
+use App\Services\Model\EmployeeService;
 use Illuminate\Http\Request;
 
 
-class EthnicController extends BaseApiCacheController
+class EmployeeController extends BaseApiCacheController
 {
-    protected $ethnicService;
-    protected $ethnicDTO;
-    public function __construct(Request $request, ElasticsearchService $elasticSearchService, EthnicService $ethnicService, Ethnic $ethnic)
+    protected $employeeService;
+    protected $employeeDTO;
+    public function __construct(Request $request, ElasticsearchService $elasticSearchService, EmployeeService $employeeService, Employee $employee)
     {
         parent::__construct($request); // Gọi constructor của BaseController
         $this->elasticSearchService = $elasticSearchService;
-        $this->ethnicService = $ethnicService;
-        $this->ethnic = $ethnic;
+        $this->employeeService = $employeeService;
+        $this->employee = $employee;
         // Kiểm tra tên trường trong bảng
         if ($this->orderBy != null) {
             $this->orderByJoin = [
+                'department_name',
+                'department_code',
+                'gender_name',
+                'gender_code',
+                'career_title_name',
+                'career_title_code',
             ];
-            $columns = $this->getColumnsTable($this->ethnic);
+            $columns = $this->getColumnsTable($this->employee);
             $this->orderBy = $this->checkOrderBy($this->orderBy, $columns, $this->orderByJoin ?? []);
         }
         // Thêm tham số vào service
-        $this->ethnicDTO = new EthnicDTO(
-            $this->ethnicName,
+        $this->employeeDTO = new EmployeeDTO(
+            $this->employeeName,
             $this->keyword,
             $this->isActive,
             $this->orderBy,
@@ -45,7 +51,7 @@ class EthnicController extends BaseApiCacheController
             $this->appModifier, 
             $this->time,
         );
-        $this->ethnicService->withParams($this->ethnicDTO);
+        $this->employeeService->withParams($this->employeeDTO);
     }
     public function index()
     {
@@ -55,15 +61,15 @@ class EthnicController extends BaseApiCacheController
         $keyword = $this->keyword;
         if (($keyword != null || $this->elasticSearchType != null) && !$this->cache) {
             if ($this->elasticSearchType != null) {
-                $data = $this->elasticSearchService->handleElasticSearchSearch($this->ethnicName);
+                $data = $this->elasticSearchService->handleElasticSearchSearch($this->employeeName);
             } else {
-                $data = $this->ethnicService->handleDataBaseSearch();
+                $data = $this->employeeService->handleDataBaseSearch();
             }
         } else {
             if ($this->elastic) {
-                $data = $this->elasticSearchService->handleElasticSearchGetAll($this->ethnicName);
+                $data = $this->elasticSearchService->handleElasticSearchGetAll($this->employeeName);
             } else {
-                $data = $this->ethnicService->handleDataBaseGetAll();
+                $data = $this->employeeService->handleDataBaseGetAll();
             }
         }
         $paramReturn = [
@@ -84,15 +90,15 @@ class EthnicController extends BaseApiCacheController
             return $this->checkParam();
         }
         if ($id !== null) {
-            $validationError = $this->validateAndCheckId($id, $this->ethnic, $this->ethnicName);
+            $validationError = $this->validateAndCheckId($id, $this->employee, $this->employeeName);
             if ($validationError) {
                 return $validationError;
             }
         }
         if ($this->elastic) {
-            $data = $this->elasticSearchService->handleElasticSearchGetWithId($this->ethnicName, $id);
+            $data = $this->elasticSearchService->handleElasticSearchGetWithId($this->employeeName, $id);
         } else {
-            $data = $this->ethnicService->handleDataBaseGetWithId($id);
+            $data = $this->employeeService->handleDataBaseGetWithId($id);
         }
         $paramReturn = [
             $this->idName => $id,
@@ -100,16 +106,16 @@ class EthnicController extends BaseApiCacheController
         ];
         return returnDataSuccess($paramReturn, $data);
     }
-    public function store(CreateEthnicRequest $request)
+    public function store(CreateEmployeeRequest $request)
     {
-        return $this->ethnicService->createEthnic($request);
+        return $this->employeeService->createEmployee($request);
     }
-    public function update(UpdateEthnicRequest $request, $id)
+    public function update(UpdateEmployeeRequest $request, $id)
     {
-        return $this->ethnicService->updateEthnic($id, $request);
+        return $this->employeeService->updateEmployee($id, $request);
     }
     public function destroy($id)
     {
-        return $this->ethnicService->deleteEthnic($id);
+        return $this->employeeService->deleteEmployee($id);
     }
 }

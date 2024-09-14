@@ -194,6 +194,8 @@ return [
             'district' => 'Có lỗi khi thực hiện thao tác với bảng Huyện!',
             'dosage_form' => 'Có lỗi khi thực hiện thao tác với bảng Dạng bào chế!',
             'emotionless_method' => 'Có lỗi khi thực hiện thao tác với bảng Phương pháp vô cảm!',
+            'employee' => 'Có lỗi khi thực hiện thao tác với bảng Tài khoản nhân viên!',
+            'ethnic' => 'Có lỗi khi thực hiện thao tác với bảng Dân tộc!',
 
         ]
     ]
