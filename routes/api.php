@@ -364,6 +364,14 @@ Route::group([
     Route::group(['as' => 'SDA.Desktop.Plugins.SdaEthnic'], function () {
         Route::apiResource('v1/ethnic', EthnicController::class);
     });
+    /// Nhóm thực hiện
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisExecuteGroup'], function () {
+        Route::apiResource('v1/execute-group', ExecuteGroupController::class);
+    });
+    /// Vai trò thực hiện
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisExecuteRole'], function () {
+        Route::apiResource('v1/execute-role', ExecuteRoleController::class);
+    });
     /// Đơn vị
     Route::get("v1/group", [GroupController::class, "group"])->name('.get_group');
     Route::get("v1/group/{id}", [GroupController::class, "group"])->name('.get_group_id');
@@ -473,16 +481,6 @@ Route::group([
         Route::delete("v1/refectory/{id}", [RefectoryController::class, "refectory_delete"])->name('.delete');
     });
 
-    /// Nhóm thực hiện
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisExecuteGroup'], function () {
-        Route::get("v1/execute-group", [ExecuteGroupController::class, "execute_group"])->name('.get');
-        Route::get("v1/execute-group/{id}", [ExecuteGroupController::class, "execute_group"])->name('.get_id');
-        Route::get("v1/execute-group-check", [CheckExecuteGroupController::class, "check_code"])->name('.check');
-        Route::post("v1/execute-group", [ExecuteGroupController::class, "execute_group_create"])->name('.create');
-        Route::put("v1/execute-group/{id}", [ExecuteGroupController::class, "execute_group_update"])->name('.update');
-        Route::delete("v1/execute-group/{id}", [ExecuteGroupController::class, "execute_group_delete"])->name('.delete');
-    });
-
     /// Quốc gia
     Route::group(['as' => 'SDA.Desktop.Plugins.SdaNational'], function () {
         Route::get("v1/national", [NationalController::class, "national"])->name('.get');
@@ -501,16 +499,6 @@ Route::group([
         Route::post("v1/province", [ProvinceController::class, "province_create"])->name('.create');
         Route::put("v1/province/{id}", [ProvinceController::class, "province_update"])->name('.update');
         Route::delete("v1/province/{id}", [ProvinceController::class, "province_delete"])->name('.delete');
-    });
-
-    /// Vai trò thực hiện
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisExecuteRole'], function () {
-        Route::get("v1/execute-role", [ExecuteRoleController::class, "execute_role"])->name('.get');
-        Route::get("v1/execute-role/{id}", [ExecuteRoleController::class, "execute_role"])->name('.get_id');
-        Route::get("v1/execute-role-check", [CheckExecuteRoleController::class, "check_code"])->name('.check');
-        Route::post("v1/execute-role", [ExecuteRoleController::class, "execute_role_create"])->name('.create');
-        Route::put("v1/execute-role/{id}", [ExecuteRoleController::class, "execute_role_update"])->name('.update');
-        Route::delete("v1/execute-role/{id}", [ExecuteRoleController::class, "execute_role_delete"])->name('.delete');
     });
 
     /// Icd - Cm

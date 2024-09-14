@@ -43,6 +43,8 @@ use App\Events\Elastic\DosageForm\CreateDosageFormIndex;
 use App\Events\Elastic\EmotionlessMethod\CreateEmotionlessMethodIndex;
 use App\Events\Elastic\Employee\CreateEmployeeIndex;
 use App\Events\Elastic\Ethnic\CreateEthnicIndex;
+use App\Events\Elastic\ExecuteGroup\CreateExecuteGroupIndex;
+use App\Events\Elastic\ExecuteRole\CreateExecuteRoleIndex;
 use App\Repositories\AccidentBodyPartRepository;
 use App\Repositories\AccidentCareRepository;
 use App\Repositories\AccidentHurtTypeRepository;
@@ -81,6 +83,8 @@ use App\Repositories\DosageFormRepository;
 use App\Repositories\EmotionlessMethodRepository;
 use App\Repositories\EmployeeRepository;
 use App\Repositories\EthnicRepository;
+use App\Repositories\ExecuteGroupRepository;
+use App\Repositories\ExecuteRoleRepository;
 
 class IndexRecordsToElasticsearch extends Command
 {
@@ -282,10 +286,18 @@ class IndexRecordsToElasticsearch extends Command
                 $results = app(EmployeeRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateEmployeeIndex($name_table));
                 break;
-                case 'sda_ethnic':
-                    $results = app(EthnicRepository::class)->getDataFromDbToElastic(null);
-                    event(new CreateEthnicIndex($name_table));
-                    break;
+            case 'sda_ethnic':
+                $results = app(EthnicRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateEthnicIndex($name_table));
+                break;
+            case 'his_execute_group':
+                $results = app(ExecuteGroupRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateExecuteGroupIndex($name_table));
+                break;
+            case 'his_execute_role':
+                $results = app(ExecuteRoleRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateExecuteRoleIndex($name_table));
+                break;
             default:
                 // Xử lý mặc định hoặc xử lý khi không có bảng khớp
                 $results = DB::connection('oracle_' . $first_table)->table($table)->get();

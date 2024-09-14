@@ -76,6 +76,10 @@ use App\Events\Elastic\Employee\CreateEmployeeIndex;
 use App\Events\Elastic\Employee\InsertEmployeeIndex;
 use App\Events\Elastic\Ethnic\CreateEthnicIndex;
 use App\Events\Elastic\Ethnic\InsertEthnicIndex;
+use App\Events\Elastic\ExecuteGroup\CreateExecuteGroupIndex;
+use App\Events\Elastic\ExecuteGroup\InsertExecuteGroupIndex;
+use App\Events\Elastic\ExecuteRole\CreateExecuteRoleIndex;
+use App\Events\Elastic\ExecuteRole\InsertExecuteRoleIndex;
 use App\Events\Telegram\SendMessageToChannel;
 use App\Listeners\Cache\DeleteCache as CacheDeleteCache;
 use App\Listeners\Elastic\AccidentBodyPart\ElasticCreateAccidentBodyPartIndex;
@@ -151,6 +155,10 @@ use App\Listeners\Elastic\Employee\ElasticCreateEmployeeIndex;
 use App\Listeners\Elastic\Employee\ElasticInsertEmployeeIndex;
 use App\Listeners\Elastic\Ethnic\ElasticCreateEthnicIndex;
 use App\Listeners\Elastic\Ethnic\ElasticInsertEthnicIndex;
+use App\Listeners\Elastic\ExecuteGroup\ElasticCreateExecuteGroupIndex;
+use App\Listeners\Elastic\ExecuteGroup\ElasticInsertExecuteGroupIndex;
+use App\Listeners\Elastic\ExecuteRole\ElasticCreateExecuteRoleIndex;
+use App\Listeners\Elastic\ExecuteRole\ElasticInsertExecuteRoleIndex;
 use App\Listeners\Telegram\TelegramSendMessageToChannel;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -436,6 +444,20 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertEthnicIndex::class => [
             ElasticInsertEthnicIndex::class,
+        ],
+
+        CreateExecuteGroupIndex::class => [
+            ElasticCreateExecuteGroupIndex::class,
+        ],
+        InsertExecuteGroupIndex::class => [
+            ElasticInsertExecuteGroupIndex::class,
+        ],
+
+        CreateExecuteRoleIndex::class => [
+            ElasticCreateExecuteRoleIndex::class,
+        ],
+        InsertExecuteRoleIndex::class => [
+            ElasticInsertExecuteRoleIndex::class,
         ],
     ];
 
