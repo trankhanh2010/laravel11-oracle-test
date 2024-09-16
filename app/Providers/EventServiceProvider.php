@@ -84,6 +84,9 @@ use App\Events\Elastic\ExecuteRoleUser\CreateExecuteRoleUserIndex;
 use App\Events\Elastic\ExecuteRoleUser\InsertExecuteRoleUserIndex;
 use App\Events\Elastic\ExecuteRoom\CreateExecuteRoomIndex;
 use App\Events\Elastic\ExecuteRoom\InsertExecuteRoomIndex;
+use App\Events\Elastic\ExeServiceModule\CreateExeServiceModuleIndex;
+use App\Events\Elastic\ExpMestReason\CreateExpMestReasonIndex;
+use App\Events\Elastic\ExpMestReason\InsertExpMestReasonIndex;
 use App\Events\Telegram\SendMessageToChannel;
 use App\Listeners\Cache\DeleteCache as CacheDeleteCache;
 use App\Listeners\Elastic\AccidentBodyPart\ElasticCreateAccidentBodyPartIndex;
@@ -167,6 +170,9 @@ use App\Listeners\Elastic\ExecuteRoleUser\ElasticCreateExecuteRoleUserIndex;
 use App\Listeners\Elastic\ExecuteRoleUser\ElasticInsertExecuteRoleUserIndex;
 use App\Listeners\Elastic\ExecuteRoom\ElasticCreateExecuteRoomIndex;
 use App\Listeners\Elastic\ExecuteRoom\ElasticInsertExecuteRoomIndex;
+use App\Listeners\Elastic\ExeServiceModule\ElasticCreateExeServiceModuleIndex;
+use App\Listeners\Elastic\ExpMestReason\ElasticCreateExpMestReasonIndex;
+use App\Listeners\Elastic\ExpMestReason\ElasticInsertExpMestReasonIndex;
 use App\Listeners\Telegram\TelegramSendMessageToChannel;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -480,6 +486,14 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertExecuteRoomIndex::class => [
             ElasticInsertExecuteRoomIndex::class,
+        ],
+
+        CreateExeServiceModuleIndex::class => [
+            ElasticCreateExeServiceModuleIndex::class,
+        ],
+
+        CreateExpMestReasonIndex::class => [
+            ElasticCreateExpMestReasonIndex::class,
         ],
     ];
 

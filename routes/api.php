@@ -380,6 +380,14 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisExecuteRoom'], function () {
         Route::apiResource('v1/execute-room', ExecuteRoomController::class);
     });
+    /// Module xử lý dịch vụ
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisExeServiceModule'], function () {
+        Route::apiResource('v1/exe-service-module', ExeServiceModuleController::class)->only(['index', 'show']);
+    });
+    /// Lý do xuất
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisExpMestReason'], function () {
+        Route::apiResource('v1/exp-mest-reason', ExpMestReasonController::class)->only(['index', 'show']);
+    });
     /// Đơn vị
     Route::get("v1/group", [GroupController::class, "group"])->name('.get_group');
     Route::get("v1/group/{id}", [GroupController::class, "group"])->name('.get_group_id');
@@ -526,12 +534,6 @@ Route::group([
     /// Giới tính
     Route::get("v1/gender", [GenderController::class, "gender"])->name('.get_gender');
     Route::get("v1/gender/{id}", [GenderController::class, "gender"])->name('.get_gender_id');
-
-    /// Module xử lý dịch vụ
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisExeServiceModule'], function () {
-        Route::get("v1/exe-service-module", [ExeServiceModuleController::class, "exe_service_module"])->name('.get');
-        Route::get("v1/exe-service-module/{id}", [ExeServiceModuleController::class, "exe_service_module"])->name('.get_id');
-    });
 
     /// Chỉ số
     Route::group(['as' => 'HIS.Desktop.Plugins.HisSuimIndex'], function () {
@@ -993,12 +995,6 @@ Route::group([
         Route::post("v1/hospitalize-reason", [HospitalizeReasonController::class, "hospitalize_reason_create"])->name('.create');
         Route::put("v1/hospitalize-reason/{id}", [HospitalizeReasonController::class, "hospitalize_reason_update"])->name('.update');
         Route::delete("v1/hospitalize-reason/{id}", [HospitalizeReasonController::class, "hospitalize_reason_delete"])->name('.delete');
-    });
-
-    /// Lý do xuất
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisExpMestReason'], function () {
-        Route::get("v1/exp-mest-reason", [ExpMestReasonController::class, "exp_mest_reason"])->name('.get');
-        Route::get("v1/exp-mest-reason/{id}", [ExpMestReasonController::class, "exp_mest_reason"])->name('.get_id');
     });
 
     /// Nhà cung cấp

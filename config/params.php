@@ -200,6 +200,8 @@ return [
             'execute_role' => 'Có lỗi khi thực hiện thao tác với bảng Vai trò thực hiện!',
             'execute_role_user' => 'Có lỗi khi thực hiện thao tác với bảng Tài khoản - Vai trò thực hiện!',
             'execute_room' => 'Có lỗi khi thực hiện thao tác với bảng Phòng khám/cls/pttt!',
+            'exe_service_module' => 'Có lỗi khi thực hiện thao tác với bảng Module xử lý dịch vụ!',
+            'exp_mest_reason' => 'Có lỗi khi thực hiện thao tác với bảng Lý do xuất!',
 
         ]
     ]

@@ -47,6 +47,8 @@ use App\Events\Elastic\ExecuteGroup\CreateExecuteGroupIndex;
 use App\Events\Elastic\ExecuteRole\CreateExecuteRoleIndex;
 use App\Events\Elastic\ExecuteRoleUser\CreateExecuteRoleUserIndex;
 use App\Events\Elastic\ExecuteRoom\CreateExecuteRoomIndex;
+use App\Events\Elastic\ExeServiceModule\CreateExeServiceModuleIndex;
+use App\Events\Elastic\ExpMestReason\CreateExpMestReasonIndex;
 use App\Repositories\AccidentBodyPartRepository;
 use App\Repositories\AccidentCareRepository;
 use App\Repositories\AccidentHurtTypeRepository;
@@ -89,6 +91,8 @@ use App\Repositories\ExecuteGroupRepository;
 use App\Repositories\ExecuteRoleRepository;
 use App\Repositories\ExecuteRoleUserRepository;
 use App\Repositories\ExecuteRoomRepository;
+use App\Repositories\ExeServiceModuleRepository;
+use App\Repositories\ExpMestReasonRepository;
 
 class IndexRecordsToElasticsearch extends Command
 {
@@ -309,6 +313,14 @@ class IndexRecordsToElasticsearch extends Command
             case 'his_execute_room':
                 $results = app(ExecuteRoomRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateExecuteRoomIndex($name_table));
+                break;
+            case 'his_exe_service_module':
+                $results = app(ExeServiceModuleRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateExeServiceModuleIndex($name_table));
+                break;
+            case 'his_exp_mest_reason':
+                $results = app(ExpMestReasonRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateExpMestReasonIndex($name_table));
                 break;
             default:
                 // Xử lý mặc định hoặc xử lý khi không có bảng khớp

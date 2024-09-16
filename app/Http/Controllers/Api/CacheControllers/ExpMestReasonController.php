@@ -2,143 +2,102 @@
 
 namespace App\Http\Controllers\Api\CacheControllers;
 
+use App\DTOs\ExpMestReasonDTO;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
+use App\Http\Requests\ExpMestReason\CreateExpMestReasonRequest;
+use App\Http\Requests\ExpMestReason\UpdateExpMestReasonRequest;
 use App\Models\HIS\ExpMestReason;
+use App\Services\Elastic\ElasticsearchService;
+use App\Services\Model\ExpMestReasonService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
+
 
 class ExpMestReasonController extends BaseApiCacheController
 {
-    public function __construct(Request $request)
+    protected $expMestReasonService;
+    protected $expMestReasonDTO;
+    public function __construct(Request $request, ElasticsearchService $elasticSearchService, ExpMestReasonService $expMestReasonService, ExpMestReason $expMestReason)
     {
         parent::__construct($request); // Gọi constructor của BaseController
-        $this->exp_mest_reason = new ExpMestReason();
-
+        $this->elasticSearchService = $elasticSearchService;
+        $this->expMestReasonService = $expMestReasonService;
+        $this->expMestReason = $expMestReason;
         // Kiểm tra tên trường trong bảng
-        if ($this->order_by != null) {
-            $columns = $this->get_columns_table($this->exp_mest_reason);
-            $this->order_by = $this->check_order_by($this->order_by, $columns, $this->order_by_join ?? []);
-            $this->order_by_tring = arrayToCustomString($this->order_by);
-        }
-    }
-    public function exp_mest_reason($id = null)
-    {
-        // Kiểm tra param và trả về lỗi nếu nó không hợp lệ
-        if ($this->check_param()) {
-            return $this->check_param();
-        }
-        try {
-            $keyword = $this->keyword;
-            if ($keyword != null) {
-                $data = $this->exp_mest_reason
-                    ->select(
-                        'his_exp_mest_reason.*',
-                    );
-                $data = $data->where(function ($query) use ($keyword) {
-                    $query = $query
-                        ->where(DB::connection('oracle_his')->raw('his_exp_mest_reason.exp_mest_reason_code'), 'like', $keyword . '%');
-                });
-                if ($this->is_active !== null) {
-                    $data = $data->where(function ($query) {
-                        $query = $query->where(DB::connection('oracle_his')->raw('his_exp_mest_reason.is_active'), $this->is_active);
-                    });
-                }
-                $count = $data->count();
-                if ($this->order_by != null) {
-                    foreach ($this->order_by as $key => $item) {
-                        $data->orderBy('his_exp_mest_reason.' . $key, $item);
-                    }
-                }
-                if($this->get_all){
-                    $data = $data
-                    ->get();
-                }else{
-                    $data = $data
-                    ->skip($this->start)
-                    ->take($this->limit)
-                    ->get();
-                }
-            } else {
-                if ($id == null) {
-                    $data = Cache::remember($this->exp_mest_reason_name . '_start_' . $this->start . '_limit_' . $this->limit . $this->order_by_tring . '_is_active_' . $this->is_active. '_get_all_' . $this->get_all, $this->time, function () {
-                        $data = $this->exp_mest_reason
-                        ->select(
-                            'his_exp_mest_reason.*',
-                        );
-                        if ($this->is_active !== null) {
-                            $data = $data->where(function ($query) {
-                                $query = $query->where(DB::connection('oracle_his')->raw('his_exp_mest_reason.is_active'), $this->is_active);
-                            });
-                        }
-
-                        $count = $data->count();
-                        if ($this->order_by != null) {
-                            foreach ($this->order_by as $key => $item) {
-                                $data->orderBy('his_exp_mest_reason.' . $key, $item);
-                            }
-                        }
-                        if($this->get_all){
-                            $data = $data
-                            ->get();
-                        }else{
-                            $data = $data
-                            ->skip($this->start)
-                            ->take($this->limit)
-                            ->get();
-                        }
-                        return ['data' => $data, 'count' => $count];
-                    });
-                } else {
-                    if (!is_numeric($id)) {
-                        return returnIdError($id);
-                    }
-                    $check_id = $this->check_id($id, $this->exp_mest_reason, $this->exp_mest_reason_name);
-                    if($check_id){
-                        return $check_id; 
-                    }
-                    $data = Cache::remember($this->exp_mest_reason_name . '_' . $id . '_is_active_' . $this->is_active, $this->time, function () use ($id) {
-                        $data = $this->exp_mest_reason
-                        ->select(
-                            'his_exp_mest_reason.*',
-                        )
-                            ->where('his_exp_mest_reason.id', $id);
-                        if ($this->is_active !== null) {
-                            $data = $data->where(function ($query) {
-                                $query = $query->where(DB::connection('oracle_his')->raw('his_exp_mest_reason.is_active'), $this->is_active);
-                            });
-                        }
-                        $data = $data->first();
-                        return $data;
-                    });
-                }
-            }
-            $param_return = [
-                $this->get_all_name => $this->get_all,
-                $this->start_name => ($this->get_all || !is_null($id)) ? null : $this->start,
-                $this->limit_name => ($this->get_all || !is_null($id)) ? null : $this->limit,
-                $this->count_name => $count ?? ($data['count'] ?? null),
-                $this->is_active_name => $this->is_active,
-                $this->keyword_name => $this->keyword,
-                $this->order_by_name => $this->order_by_request
+        if ($this->orderBy != null) {
+            $this->orderByJoin = [
             ];
-            return return_data_success($param_return, $data ?? ($data['data'] ?? null) ?? null);
-        } catch (\Throwable $e) {
-            // Xử lý lỗi và trả về phản hồi lỗi
-            return return_500_error($e->getMessage());
+            $columns = $this->getColumnsTable($this->expMestReason);
+            $this->orderBy = $this->checkOrderBy($this->orderBy, $columns, $this->orderByJoin ?? []);
         }
+        // Thêm tham số vào service
+        $this->expMestReasonDTO = new ExpMestReasonDTO(
+            $this->expMestReasonName,
+            $this->keyword,
+            $this->isActive,
+            $this->orderBy,
+            $this->orderByJoin,
+            $this->orderByString,
+            $this->getAll,
+            $this->start,
+            $this->limit,
+            $request,
+            $this->appCreator, 
+            $this->appModifier, 
+            $this->time,
+        );
+        $this->expMestReasonService->withParams($this->expMestReasonDTO);
     }
-    // /// Exp Mest Reason
-    // public function exp_mest_reason($id = null)
-    // {
-    //     if ($id == null) {
-    //         $name = $this->exp_mest_reason_name;
-    //         $param = [];
-    //     } else {
-    //         $name = $this->exp_mest_reason_name . '_' . $id;
-    //         $param = [];
-    //     }
-    //     $data = get_cache_full($this->exp_mest_reason, $param, $name, $id, $this->time);
-    //     return response()->json(['data' => $data], 200);
-    // }
+    public function index()
+    {
+        if ($this->checkParam()) {
+            return $this->checkParam();
+        }
+        $keyword = $this->keyword;
+        if (($keyword != null || $this->elasticSearchType != null) && !$this->cache) {
+            if ($this->elasticSearchType != null) {
+                $data = $this->elasticSearchService->handleElasticSearchSearch($this->expMestReasonName);
+            } else {
+                $data = $this->expMestReasonService->handleDataBaseSearch();
+            }
+        } else {
+            if ($this->elastic) {
+                $data = $this->elasticSearchService->handleElasticSearchGetAll($this->expMestReasonName);
+            } else {
+                $data = $this->expMestReasonService->handleDataBaseGetAll();
+            }
+        }
+        $paramReturn = [
+            $this->getAllName => $this->getAll,
+            $this->startName => $this->getAll ? null : $this->start,
+            $this->limitName => $this->getAll ? null : $this->limit,
+            $this->countName => $data['count'],
+            $this->isActiveName => $this->isActive,
+            $this->keywordName => $this->keyword,
+            $this->orderByName => $this->orderByRequest
+        ];
+        return returnDataSuccess($paramReturn, $data['data']);
+    }
+
+    public function show($id)
+    {
+        if ($this->checkParam()) {
+            return $this->checkParam();
+        }
+        if ($id !== null) {
+            $validationError = $this->validateAndCheckId($id, $this->expMestReason, $this->expMestReasonName);
+            if ($validationError) {
+                return $validationError;
+            }
+        }
+        if ($this->elastic) {
+            $data = $this->elasticSearchService->handleElasticSearchGetWithId($this->expMestReasonName, $id);
+        } else {
+            $data = $this->expMestReasonService->handleDataBaseGetWithId($id);
+        }
+        $paramReturn = [
+            $this->idName => $id,
+            $this->isActiveName => $this->isActive,
+        ];
+        return returnDataSuccess($paramReturn, $data);
+    }
 }
