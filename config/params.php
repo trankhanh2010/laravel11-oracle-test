@@ -198,6 +198,8 @@ return [
             'ethnic' => 'Có lỗi khi thực hiện thao tác với bảng Dân tộc!',
             'execute_group' => 'Có lỗi khi thực hiện thao tác với bảng Nhóm thực hiện!',
             'execute_role' => 'Có lỗi khi thực hiện thao tác với bảng Vai trò thực hiện!',
+            'execute_role_user' => 'Có lỗi khi thực hiện thao tác với bảng Tài khoản - Vai trò thực hiện!',
+            'execute_room' => 'Có lỗi khi thực hiện thao tác với bảng Phòng khám/cls/pttt!',
 
         ]
     ]

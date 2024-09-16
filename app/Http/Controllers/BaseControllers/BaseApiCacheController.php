@@ -961,16 +961,11 @@ class BaseApiCacheController extends Controller
         }
         $this->loginname = $this->paramRequest['ApiData']['Loginname'] ?? null;
         if ($this->loginname !== null) {
-            // Kiểm tra xem ID có tồn tại trong bảng  hay không
+            // Kiểm tra 
             if (!is_string($this->loginname)) {
                 $this->errors[$this->loginnameName] = $this->messFormat;
                 $this->loginname = null;
-            } else {
-                if (!Employee::where('loginname', $this->loginname)->exists()) {
-                    $this->errors[$this->loginnameName] = $this->messRecordId;
-                    $this->loginname = null;
-                }
-            }
+            } 
         }
         $this->executeRoleId = $this->paramRequest['ApiData']['ExecuteRoleId'] ?? null;
         if ($this->executeRoleId !== null) {

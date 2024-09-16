@@ -80,6 +80,10 @@ use App\Events\Elastic\ExecuteGroup\CreateExecuteGroupIndex;
 use App\Events\Elastic\ExecuteGroup\InsertExecuteGroupIndex;
 use App\Events\Elastic\ExecuteRole\CreateExecuteRoleIndex;
 use App\Events\Elastic\ExecuteRole\InsertExecuteRoleIndex;
+use App\Events\Elastic\ExecuteRoleUser\CreateExecuteRoleUserIndex;
+use App\Events\Elastic\ExecuteRoleUser\InsertExecuteRoleUserIndex;
+use App\Events\Elastic\ExecuteRoom\CreateExecuteRoomIndex;
+use App\Events\Elastic\ExecuteRoom\InsertExecuteRoomIndex;
 use App\Events\Telegram\SendMessageToChannel;
 use App\Listeners\Cache\DeleteCache as CacheDeleteCache;
 use App\Listeners\Elastic\AccidentBodyPart\ElasticCreateAccidentBodyPartIndex;
@@ -159,6 +163,10 @@ use App\Listeners\Elastic\ExecuteGroup\ElasticCreateExecuteGroupIndex;
 use App\Listeners\Elastic\ExecuteGroup\ElasticInsertExecuteGroupIndex;
 use App\Listeners\Elastic\ExecuteRole\ElasticCreateExecuteRoleIndex;
 use App\Listeners\Elastic\ExecuteRole\ElasticInsertExecuteRoleIndex;
+use App\Listeners\Elastic\ExecuteRoleUser\ElasticCreateExecuteRoleUserIndex;
+use App\Listeners\Elastic\ExecuteRoleUser\ElasticInsertExecuteRoleUserIndex;
+use App\Listeners\Elastic\ExecuteRoom\ElasticCreateExecuteRoomIndex;
+use App\Listeners\Elastic\ExecuteRoom\ElasticInsertExecuteRoomIndex;
 use App\Listeners\Telegram\TelegramSendMessageToChannel;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -458,6 +466,20 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertExecuteRoleIndex::class => [
             ElasticInsertExecuteRoleIndex::class,
+        ],
+
+        CreateExecuteRoleUserIndex::class => [
+            ElasticCreateExecuteRoleUserIndex::class,
+        ],
+        InsertExecuteRoleUserIndex::class => [
+            ElasticInsertExecuteRoleUserIndex::class,
+        ],
+
+        CreateExecuteRoomIndex::class => [
+            ElasticCreateExecuteRoomIndex::class,
+        ],
+        InsertExecuteRoomIndex::class => [
+            ElasticInsertExecuteRoomIndex::class,
         ],
     ];
 

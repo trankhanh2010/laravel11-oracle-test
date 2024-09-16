@@ -372,6 +372,14 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisExecuteRole'], function () {
         Route::apiResource('v1/execute-role', ExecuteRoleController::class);
     });
+    /// Tài khoản - Vai trò thực hiện
+    Route::group(['as' => 'HIS.Desktop.Plugins.ExecuteRoleUser'], function () {
+        Route::apiResource('v1/execute-role-user', ExecuteRoleUserController::class)->only(['index', 'show']);
+    });
+    /// Phòng khám/cls/pttt
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisExecuteRoom'], function () {
+        Route::apiResource('v1/execute-room', ExecuteRoomController::class);
+    });
     /// Đơn vị
     Route::get("v1/group", [GroupController::class, "group"])->name('.get_group');
     Route::get("v1/group/{id}", [GroupController::class, "group"])->name('.get_group_id');
@@ -395,16 +403,6 @@ Route::group([
     /// Loại xét nghiệm
     Route::get("v1/test-type", [TestTypeController::class, "test_type"])->name('.get_test_type');
     Route::get("v1/test-type/{id}", [TestTypeController::class, "test_type"])->name('.get_test_type_id');
-
-    /// Phòng khám/cls/pttt
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisExecuteRoom'], function () {
-        Route::get("v1/execute-room", [ExecuteRoomController::class, "execute_room"])->name('.get');
-        Route::get("v1/execute-room/{id}", [ExecuteRoomController::class, "execute_room"])->name('.get_id');
-        Route::get("v1/execute-room-check", [CheckExecuteRoomController::class, "check_code"])->name('.check');
-        Route::post("v1/execute-room", [ExecuteRoomController::class, "execute_room_create"])->name('.create');
-        Route::put("v1/execute-room/{id}", [ExecuteRoomController::class, "execute_room_update"])->name('.update');
-        Route::delete("v1/execute-room/{id}", [ExecuteRoomController::class, "execute_room_delete"])->name('.delete');
-    });
 
     /// Chuyên khoa
     Route::group(['as' => 'HIS.Desktop.Plugins.HisSpeciality'], function () {
@@ -647,19 +645,6 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.InfoUser'], function () {
         Route::get("v1/info-user", [InfoUserController::class, "info_user"])->name('.get');
         Route::put("v1/info-user", [InfoUserController::class, "info_user_update"])->name('.update');
-    });
-
-    /// Tài khoản - Vai trò thực hiện
-    Route::group(['as' => 'HIS.Desktop.Plugins.ExecuteRoleUser'], function () {
-        // Trả về tất cả mối quan hệ
-        Route::get("v1/execute-role-user", [ExecuteRoleUserController::class, "execute_role_user"])->name('.get');
-        Route::get("v1/execute-role-user/{id}", [ExecuteRoleUserController::class, "execute_role_user"])->name('.get_id');
-        // // Trả về tất cả tài khoản cùng vai trò thực hiện
-        // Route::get("v1/user/all/execute-role", [HISController::class, "user_with_execute_role"]);
-        // Route::get("v1/user/{id}/execute-role", [HISController::class, "user_with_execute_role"]);
-        // // Trả về tất cả vai trò thực hiện cùng tài khoản
-        // Route::get("v1/execute-role/all/user", [HISController::class, "execute_role_with_user"]);
-        // Route::get("v1/execute-role/{id}/user", [HISController::class, "execute_role_with_user"]);
     });
 
     /// Vai trò
