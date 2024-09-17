@@ -418,6 +418,12 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisIcdCm'], function () {
         Route::apiResource('v1/icd-cm', IcdCmController::class);
     });
+    /// ICD - Accepted Icd - Chẩn đoán
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisIcd'], function () {
+        Route::apiResource('v1/icd', IcdController::class);
+    });
+    /// Nhóm ICD
+    Route::apiResource('v1/icd-group', IcdGroupController::class)->only(['index', 'show']);;
     /// Loại phòng
     Route::group(['as' => 'HIS.Desktop.Plugins.RoomTypeModule'], function () {
         Route::get("v1/room-type", [RoomTypeController::class, "room_type"])->name('.get');
@@ -532,10 +538,6 @@ Route::group([
         Route::put("v1/province/{id}", [ProvinceController::class, "province_update"])->name('.update');
         Route::delete("v1/province/{id}", [ProvinceController::class, "province_delete"])->name('.delete');
     });
-
-    /// Nhóm ICD
-    Route::get("v1/icd-group", [IcdGroupController::class, "icd_group"])->name('.get_icd_group');
-    Route::get("v1/icd-group/{id}", [IcdGroupController::class, "icd_group"])->name('.get_icd_group_id');
 
     /// Chỉ số
     Route::group(['as' => 'HIS.Desktop.Plugins.HisSuimIndex'], function () {
@@ -905,15 +907,6 @@ Route::group([
         Route::post("v1/manufacturer", [ManufacturerController::class, "manufacturer_create"])->name('.create');
         Route::put("v1/manufacturer/{id}", [ManufacturerController::class, "manufacturer_update"])->name('.update');
         Route::delete("v1/manufacturer/{id}", [ManufacturerController::class, "manufacturer_delete"])->name('.delete');
-    });
-
-    /// ICD - Accepted Icd - Chẩn đoán
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisIcd'], function () {
-        Route::get("v1/icd", [IcdController::class, "icd"])->name('.get');
-        Route::get("v1/icd/{id}", [IcdController::class, "icd"])->name('.get_id');
-        Route::post("v1/icd", [IcdController::class, "icd_create"])->name('.create');
-        Route::put("v1/icd/{id}", [IcdController::class, "icd_update"])->name('.update');
-        Route::delete("v1/icd/{id}", [IcdController::class, "icd_delete"])->name('.delete');
     });
 
     /// Loại bệnh án

@@ -57,7 +57,9 @@ use App\Events\Elastic\Gender\CreateGenderIndex;
 use App\Events\Elastic\Group\CreateGroupIndex;
 use App\Events\Elastic\HeinServiceType\CreateHeinServiceTypeIndex;
 use App\Events\Elastic\HospitalizeReason\CreateHospitalizeReasonIndex;
+use App\Events\Elastic\Icd\CreateIcdIndex;
 use App\Events\Elastic\IcdCm\CreateIcdCmIndex;
+use App\Events\Elastic\IcdGroup\CreateIcdGroupIndex;
 use App\Repositories\AccidentBodyPartRepository;
 use App\Repositories\AccidentCareRepository;
 use App\Repositories\AccidentHurtTypeRepository;
@@ -111,6 +113,8 @@ use App\Repositories\GroupRepository;
 use App\Repositories\HeinServiceTypeRepository;
 use App\Repositories\HospitalizeReasonRepository;
 use App\Repositories\IcdCmRepository;
+use App\Repositories\IcdGroupRepository;
+use App\Repositories\IcdRepository;
 
 class IndexRecordsToElasticsearch extends Command
 {
@@ -375,6 +379,14 @@ class IndexRecordsToElasticsearch extends Command
             case 'his_icd_cm':
                 $results = app(IcdCmRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateIcdCmIndex($name_table));
+                break;
+            case 'his_icd':
+                $results = app(IcdRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateIcdIndex($name_table));
+                break;
+            case 'his_icd_group':
+                $results = app(IcdGroupRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateIcdGroupIndex($name_table));
                 break;
             default:
                 // Xử lý mặc định hoặc xử lý khi không có bảng khớp

@@ -98,8 +98,11 @@ use App\Events\Elastic\Group\CreateGroupIndex;
 use App\Events\Elastic\HeinServiceType\CreateHeinServiceTypeIndex;
 use App\Events\Elastic\HospitalizeReason\CreateHospitalizeReasonIndex;
 use App\Events\Elastic\HospitalizeReason\InsertHospitalizeReasonIndex;
+use App\Events\Elastic\Icd\CreateIcdIndex;
+use App\Events\Elastic\Icd\InsertIcdIndex;
 use App\Events\Elastic\IcdCm\CreateIcdCmIndex;
 use App\Events\Elastic\IcdCm\InsertIcdCmIndex;
+use App\Events\Elastic\IcdGroup\CreateIcdGroupIndex;
 use App\Events\Telegram\SendMessageToChannel;
 use App\Listeners\Cache\DeleteCache as CacheDeleteCache;
 use App\Listeners\Elastic\AccidentBodyPart\ElasticCreateAccidentBodyPartIndex;
@@ -197,8 +200,11 @@ use App\Listeners\Elastic\Group\ElasticCreateGroupIndex;
 use App\Listeners\Elastic\HeinServiceType\ElasticCreateHeinServiceTypeIndex;
 use App\Listeners\Elastic\HospitalizeReason\ElasticCreateHospitalizeReasonIndex;
 use App\Listeners\Elastic\HospitalizeReason\ElasticInsertHospitalizeReasonIndex;
+use App\Listeners\Elastic\Icd\ElasticCreateIcdIndex;
+use App\Listeners\Elastic\Icd\ElasticInsertIcdIndex;
 use App\Listeners\Elastic\IcdCm\ElasticCreateIcdCmIndex;
 use App\Listeners\Elastic\IcdCm\ElasticInsertIcdCmIndex;
+use App\Listeners\Elastic\IcdGroup\ElasticCreateIcdGroupIndex;
 use App\Listeners\Telegram\TelegramSendMessageToChannel;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -568,6 +574,17 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertIcdCmIndex::class => [
             ElasticInsertIcdCmIndex::class,
+        ],
+
+        CreateIcdIndex::class => [
+            ElasticCreateIcdIndex::class,
+        ],
+        InsertIcdIndex::class => [
+            ElasticInsertIcdIndex::class,
+        ],
+
+        CreateIcdGroupIndex::class => [
+            ElasticCreateIcdGroupIndex::class,
         ],
     ];
 

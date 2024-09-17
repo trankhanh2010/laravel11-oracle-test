@@ -212,7 +212,8 @@ return [
             'hein_service_type' => 'Có lỗi khi thực hiện thao tác với bảng Nhóm dịch vụ BHYT!',
             'hospitalize_reason' => 'Có lỗi khi thực hiện thao tác với bảng Lý do nhập viện!',
             'icd_cm' => 'Có lỗi khi thực hiện thao tác với bảng ICD - CM!',
-
+            'icd' => 'Có lỗi khi thực hiện thao tác với bảng Chẩn đoán!',
+            'icd_group' => 'Có lỗi khi thực hiện thao tác với bảng Nhóm ICD!',
         ]
     ]
     
