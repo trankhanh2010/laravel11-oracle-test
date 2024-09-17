@@ -111,8 +111,8 @@ class ExecuteRoleUserController extends BaseApiCacheController
         ];
         return returnDataSuccess($paramReturn, $data);
     }
-    public function destroy($id)
+    public function store(CreateExecuteRoleUserRequest $request)
     {
-        return $this->executeRoleUserService->deleteExecuteRoleUser($id);
+        return $this->executeRoleUserService->createExecuteRoleUser($request);
     }
 }

@@ -82,6 +82,10 @@ class EmployeeRepository
     {
         return $this->employee->find($id);
     }
+    public function getByLoginname($id)
+    {
+        return $this->employee->where('loginname', $id)->first();
+    }
     public function create($request, $time, $appCreator, $appModifier){
         $data = $this->employee::create([
             'create_time' => now()->format('Ymdhis'),

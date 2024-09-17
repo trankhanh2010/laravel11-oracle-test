@@ -997,4 +997,11 @@ return [
         'patient_type_id' => 'Id đối tượng',
         'room_ids' => 'Danh sách id phòng',
     ],
+    // Tài khoản - Vai trò thực hiện
+    'execute_role_user' => [
+        'loginname' => 'Loginname',
+        'execute_role_ids' => 'Danh sách Id vai trò thực hiện',
+        'execute_role_id' => 'Id vai trò thực hiện',
+        'loginnames' => 'Danh sách Loginname',
+    ],
 ];

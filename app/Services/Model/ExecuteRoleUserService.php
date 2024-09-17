@@ -6,16 +6,23 @@ use App\DTOs\ExecuteRoleUserDTO;
 use App\Events\Cache\DeleteCache;
 use App\Events\Elastic\ExecuteRoleUser\InsertExecuteRoleUserIndex;
 use App\Events\Elastic\DeleteIndex;
+use App\Repositories\EmployeeRepository;
+use App\Repositories\ExecuteRoleRepository;
 use Illuminate\Support\Facades\Cache;
 use App\Repositories\ExecuteRoleUserRepository;
+use Illuminate\Support\Facades\DB;
 
-class ExecuteRoleUserService 
+class ExecuteRoleUserService
 {
     protected $executeRoleUserRepository;
+    protected $employeeRepository;
+    protected $executeRoleRepository;
     protected $params;
-    public function __construct(ExecuteRoleUserRepository $executeRoleUserRepository)
+    public function __construct(ExecuteRoleUserRepository $executeRoleUserRepository, EmployeeRepository $employeeRepository, ExecuteRoleRepository $executeRoleRepository)
     {
         $this->executeRoleUserRepository = $executeRoleUserRepository;
+        $this->employeeRepository = $employeeRepository;
+        $this->executeRoleRepository = $executeRoleRepository;
     }
     public function withParams(ExecuteRoleUserDTO $params)
     {
@@ -41,7 +48,7 @@ class ExecuteRoleUserService
     public function handleDataBaseGetAll()
     {
         try {
-            $data = Cache::remember($this->params->executeRoleUserName . '_start_' . $this->params->start . '_limit_' . $this->params->limit . $this->params->orderByString . '_is_active_' . $this->params->isActive . '_loginname_' . $this->params->loginname . '_execute_role_id_'. $this->params->executeRoleId . '_get_all_' . $this->params->getAll, $this->params->time, function (){
+            $data = Cache::remember($this->params->executeRoleUserName . '_start_' . $this->params->start . '_limit_' . $this->params->limit . $this->params->orderByString . '_is_active_' . $this->params->isActive . '_loginname_' . $this->params->loginname . '_execute_role_id_' . $this->params->executeRoleId . '_get_all_' . $this->params->getAll, $this->params->time, function () {
                 $data = $this->executeRoleUserRepository->applyJoins();
                 $data = $this->executeRoleUserRepository->applyIsActiveFilter($data, $this->params->isActive);
                 $data = $this->executeRoleUserRepository->applyLoginnameFilter($data, $this->params->loginname);
@@ -59,7 +66,7 @@ class ExecuteRoleUserService
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $data = Cache::remember($this->params->executeRoleUserName . '_' . $id . '_is_active_' . $this->params->isActive, $this->params->time, function () use ($id){
+            $data = Cache::remember($this->params->executeRoleUserName . '_' . $id . '_is_active_' . $this->params->isActive, $this->params->time, function () use ($id) {
                 $data = $this->executeRoleUserRepository->applyJoins()
                     ->where('his_execute_role_user.id', $id);
                 $data = $this->executeRoleUserRepository->applyIsActiveFilter($data, $this->params->isActive);
@@ -71,22 +78,82 @@ class ExecuteRoleUserService
             return writeAndThrowError(config('params')['db_service']['error']['execute_role_user'], $e);
         }
     }
-    public function deleteExecuteRoleUser($id)
+    private function buildSyncData($request)
     {
-        if (!is_numeric($id)) {
-            return returnIdError($id);
-        }
-        $data = $this->executeRoleUserRepository->getById($id);
-        if ($data == null) {
-            return returnNotRecord($id);
-        }
+        return [
+            'create_time' => now()->format('Ymdhis'),
+            'modify_time' => now()->format('Ymdhis'),
+            'creator' => get_loginname_with_token($request->bearerToken(), $this->params->time),
+            'modifier' => get_loginname_with_token($request->bearerToken(), $this->params->time),
+            'app_creator' => $this->params->appCreator,
+            'app_modifier' => $this->params->appModifier,
+        ];
+    }
+    public function createExecuteRoleUser($request)
+    {
         try {
-            $data = $this->executeRoleUserRepository->delete($data);
-            // Gọi event để xóa cache
+            if ($request->execute_role_id != null) {
+                $id = $request->execute_role_id;
+                $data = $this->executeRoleRepository->getById($id);
+                if ($data == null) {
+                    return returnNotRecord($id);
+                }
+                // Start transaction
+                DB::connection('oracle_his')->beginTransaction();
+                try {
+                    if ($request->loginnames !== null) {
+                        $loginnames_arr = explode(',', $request->loginnames);
+                        foreach ($loginnames_arr as $key => $item) {
+                            $loginnames_arr_data[$item] =  $this->buildSyncData($request);
+                        }
+                        $data->employees()->sync($loginnames_arr_data);
+                    } else {
+                        $deleteIds = $this->executeRoleUserRepository->deleteByExecuteRoleId($data->id);
+                        event(new DeleteIndex($deleteIds, $this->params->executeRoleUserName));
+                    }
+                    DB::connection('oracle_his')->commit();
+                    //Cập nhật trong elastic
+                    $records = $this->executeRoleUserRepository->getByExecuteRoleIdAndLoginnames($id, $loginnames_arr ?? []);
+                    foreach ($records as $key => $item) {
+                        event(new InsertExecuteRoleUserIndex($item, $this->params->executeRoleUserName));
+                    }
+                } catch (\Throwable $e) {
+                    DB::connection('oracle_his')->rollBack();
+                    return  writeAndThrowError(config('params')['db_service']['error']['transaction'], $e);
+                }
+            }
+            if ($request->loginname != null) {
+                $id = $request->loginname;
+                $data = $this->employeeRepository->getByLoginname($id);
+                if ($data == null) {
+                    return returnNotRecord($id);
+                }
+                // Start transaction
+                DB::connection('oracle_his')->beginTransaction();
+                try {
+                    if ($request->execute_role_ids !== null) {
+                        $execute_role_ids_arr = explode(',', $request->execute_role_ids);
+                        foreach ($execute_role_ids_arr as $key => $item) {
+                            $execute_role_ids_arr_data[$item] =  $this->buildSyncData($request);
+                        }
+                        $data->execute_roles()->sync($execute_role_ids_arr_data);
+                    } else {
+                        $deleteIds = $this->executeRoleUserRepository->deleteByLoginname($request->loginname);
+                        event(new DeleteIndex($deleteIds, $this->params->executeRoleUserName));
+                    }
+                    DB::connection('oracle_his')->commit();
+                    //Cập nhật trong elastic
+                    $records = $this->executeRoleUserRepository->getByLoginnameAndExecuteRoleIds($id, $execute_role_ids_arr ?? []);
+                    foreach ($records as $key => $item) {
+                        event(new InsertExecuteRoleUserIndex($item, $this->params->executeRoleUserName));
+                    }
+                } catch (\Throwable $e) {
+                    DB::connection('oracle_his')->rollBack();
+                    return  writeAndThrowError(config('params')['db_service']['error']['transaction'], $e);
+                }
+            }
             event(new DeleteCache($this->params->executeRoleUserName));
-            // Gọi event để xóa index trong elastic
-            event(new DeleteIndex($data, $this->params->executeRoleUserName));
-            return returnDataDeleteSuccess();
+            return returnDataCreateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['execute_role_user'], $e);
         }

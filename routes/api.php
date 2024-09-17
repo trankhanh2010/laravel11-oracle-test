@@ -374,7 +374,7 @@ Route::group([
     });
     /// Tài khoản - Vai trò thực hiện
     Route::group(['as' => 'HIS.Desktop.Plugins.ExecuteRoleUser'], function () {
-        Route::apiResource('v1/execute-role-user', ExecuteRoleUserController::class)->only(['index', 'show']);
+        Route::apiResource('v1/execute-role-user', ExecuteRoleUserController::class)->only(['index', 'show', 'store']);
     });
     /// Phòng khám/cls/pttt
     Route::group(['as' => 'HIS.Desktop.Plugins.HisExecuteRoom'], function () {

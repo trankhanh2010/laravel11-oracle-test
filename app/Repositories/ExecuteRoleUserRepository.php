@@ -98,11 +98,28 @@ class ExecuteRoleUserRepository
     {
         return $this->executeRoleUser->find($id);
     }
+    public function getByLoginnameAndExecuteRoleIds($loginname, $executeRoles)
+    {
+        return $this->executeRoleUser->where('loginname', $loginname)->whereIn('execute_role_id',$executeRoles)->get();
+    }
+    public function getByExecuteRoleIdAndLoginnames($executeRole, $loginnames)
+    {
+        return $this->executeRoleUser->whereIn('loginname', $loginnames)->where('execute_role_id',$executeRole)->get();
+    }
     public function delete($data){
         $data->delete();
         return $data;
     }
-
+    public function deleteByLoginname($id){
+        $ids = $this->executeRoleUser->where('loginname', $id)->pluck('id')->toArray();
+        $this->executeRoleUser->where('loginname', $id)->delete();
+        return $ids;
+    }
+    public function deleteByExecuteRoleId($id){
+        $ids = $this->executeRoleUser->where('execute_role_id', $id)->pluck('id')->toArray();
+        $this->executeRoleUser->where('execute_role_id', $id)->delete();
+        return $ids;
+    }
     public function getDataFromDbToElastic($id = null){
         $data = $this->applyJoins();
         if($id != null){
