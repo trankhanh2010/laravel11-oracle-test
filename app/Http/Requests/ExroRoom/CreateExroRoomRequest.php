@@ -47,9 +47,9 @@ class CreateExroRoomRequest extends FormRequest
                 }),
             ],
             'execute_room_ids' => 'nullable|string|max:4000',
-            'is_hold_order' => 'nullable|integer|in:0,1',
-            'is_allow_request' => 'nullable|integer|in:0,1',
-            'is_priority_require' => 'nullable|integer|in:0,1',
+            'is_hold_order' => 'nullable|integer|in:1',
+            'is_allow_request' => 'nullable|integer|in:1',
+            'is_priority_require' => 'nullable|integer|in:1',
         ];
     }
     public function messages()

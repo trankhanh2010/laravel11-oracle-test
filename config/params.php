@@ -158,6 +158,7 @@ return [
     ],
     'db_service' => [
         'error' => [
+            'transaction' => 'Có lỗi trong Transaction!',
             'accident_body_part' => 'Có lỗi khi thực hiện thao tác với bảng Bộ phận thương tích!',
             'accident_care' => 'Có lỗi khi thực hiện thao tác với bảng Xử lý sau tai nạn!',
             'accident_hurt_type' => 'Có lỗi khi thực hiện thao tác với bảng Nguyên nhân tai nạn!',
@@ -202,6 +203,7 @@ return [
             'execute_room' => 'Có lỗi khi thực hiện thao tác với bảng Phòng khám/cls/pttt!',
             'exe_service_module' => 'Có lỗi khi thực hiện thao tác với bảng Module xử lý dịch vụ!',
             'exp_mest_reason' => 'Có lỗi khi thực hiện thao tác với bảng Lý do xuất!',
+            'exro_room' => 'Có lỗi khi thực hiện thao tác với bảng Phòng chỉ định - Phòng thực hiện!',
 
         ]
     ]

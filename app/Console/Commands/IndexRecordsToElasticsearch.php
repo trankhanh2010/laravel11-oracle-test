@@ -49,6 +49,7 @@ use App\Events\Elastic\ExecuteRoleUser\CreateExecuteRoleUserIndex;
 use App\Events\Elastic\ExecuteRoom\CreateExecuteRoomIndex;
 use App\Events\Elastic\ExeServiceModule\CreateExeServiceModuleIndex;
 use App\Events\Elastic\ExpMestReason\CreateExpMestReasonIndex;
+use App\Events\Elastic\ExroRoom\CreateExroRoomIndex;
 use App\Repositories\AccidentBodyPartRepository;
 use App\Repositories\AccidentCareRepository;
 use App\Repositories\AccidentHurtTypeRepository;
@@ -93,6 +94,7 @@ use App\Repositories\ExecuteRoleUserRepository;
 use App\Repositories\ExecuteRoomRepository;
 use App\Repositories\ExeServiceModuleRepository;
 use App\Repositories\ExpMestReasonRepository;
+use App\Repositories\ExroRoomRepository;
 
 class IndexRecordsToElasticsearch extends Command
 {
@@ -322,6 +324,10 @@ class IndexRecordsToElasticsearch extends Command
                 $results = app(ExpMestReasonRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateExpMestReasonIndex($name_table));
                 break;
+            case 'his_exro_room':
+                $results = app(ExroRoomRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateExroRoomIndex($name_table));
+                break;
             default:
                 // Xử lý mặc định hoặc xử lý khi không có bảng khớp
                 $results = DB::connection('oracle_' . $first_table)->table($table)->get();
@@ -344,7 +350,7 @@ class IndexRecordsToElasticsearch extends Command
 
         // Dùng Bulk
         $bulkData = [];
-        $batchSize = 5000; // Số lượng bản ghi mỗi batch, bạn có thể điều chỉnh
+        $batchSize = 10000; // Số lượng bản ghi mỗi batch, bạn có thể điều chỉnh
         foreach ($results as $result) {
             // Chuẩn bị dữ liệu cho mỗi bản ghi
             $data = [];

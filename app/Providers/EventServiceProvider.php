@@ -87,6 +87,8 @@ use App\Events\Elastic\ExecuteRoom\InsertExecuteRoomIndex;
 use App\Events\Elastic\ExeServiceModule\CreateExeServiceModuleIndex;
 use App\Events\Elastic\ExpMestReason\CreateExpMestReasonIndex;
 use App\Events\Elastic\ExpMestReason\InsertExpMestReasonIndex;
+use App\Events\Elastic\ExroRoom\CreateExroRoomIndex;
+use App\Events\Elastic\ExroRoom\InsertExroRoomIndex;
 use App\Events\Telegram\SendMessageToChannel;
 use App\Listeners\Cache\DeleteCache as CacheDeleteCache;
 use App\Listeners\Elastic\AccidentBodyPart\ElasticCreateAccidentBodyPartIndex;
@@ -173,6 +175,8 @@ use App\Listeners\Elastic\ExecuteRoom\ElasticInsertExecuteRoomIndex;
 use App\Listeners\Elastic\ExeServiceModule\ElasticCreateExeServiceModuleIndex;
 use App\Listeners\Elastic\ExpMestReason\ElasticCreateExpMestReasonIndex;
 use App\Listeners\Elastic\ExpMestReason\ElasticInsertExpMestReasonIndex;
+use App\Listeners\Elastic\ExroRoom\ElasticCreateExroRoomIndex;
+use App\Listeners\Elastic\ExroRoom\ElasticInsertExroRoomIndex;
 use App\Listeners\Telegram\TelegramSendMessageToChannel;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -494,6 +498,13 @@ class EventServiceProvider extends ServiceProvider
 
         CreateExpMestReasonIndex::class => [
             ElasticCreateExpMestReasonIndex::class,
+        ],
+
+        CreateExroRoomIndex::class => [
+            ElasticCreateExroRoomIndex::class,
+        ],
+        InsertExroRoomIndex::class => [
+            ElasticInsertExroRoomIndex::class,
         ],
     ];
 

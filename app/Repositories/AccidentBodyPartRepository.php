@@ -31,7 +31,6 @@ class AccidentBodyPartRepository
         if ($isActive !== null) {
             $query->where(DB::connection('oracle_his')->raw('his_accident_body_part.is_active'), $isActive);
         }
-
         return $query;
     }
     public function applyOrdering($query, $orderBy, $orderByJoin)

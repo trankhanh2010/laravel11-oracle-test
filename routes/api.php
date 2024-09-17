@@ -388,6 +388,10 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisExpMestReason'], function () {
         Route::apiResource('v1/exp-mest-reason', ExpMestReasonController::class)->only(['index', 'show']);
     });
+    /// Phòng chỉ định - Phòng thực hiện 
+    Route::group(['as' => 'HIS.Desktop.Plugins.ExroRoom'], function () {
+        Route::apiResource('v1/exro-room', ExroRoomController::class)->only(['index', 'show', 'store']);
+    });
     /// Đơn vị
     Route::get("v1/group", [GroupController::class, "group"])->name('.get_group');
     Route::get("v1/group/{id}", [GroupController::class, "group"])->name('.get_group_id');
@@ -801,20 +805,6 @@ Route::group([
         // // Trả về tất cả phòng cùng kho
         // Route::get("v1/room/all/medi-stock", [HISController::class, "room_with_medi_stock"]);
         // Route::get("v1/room/{id}/medi-stock", [HISController::class, "room_with_medi_stock"]);
-    });
-
-    /// Phòng chỉ định - Phòng thực hiện 
-    Route::group(['as' => 'HIS.Desktop.Plugins.ExroRoom'], function () {
-        // Trả về tất cả mối quan hệ
-        Route::get("v1/exro-room", [ExroRoomController::class, "exro_room"])->name('.get');
-        Route::get("v1/exro-room/{id}", [ExroRoomController::class, "exro_room"])->name('.get_id');
-        Route::post("v1/exro-room", [ExroRoomController::class, "exro_room_create"])->name('.create');
-        // // Trả về tất cả phòng thực hiện cùng phòng chỉ định
-        // Route::get("v1/execute-room/all/room", [HISController::class, "execute_room_with_room"]);
-        // Route::get("v1/execute-room/{id}/room", [HISController::class, "execute_room_with_room"]);
-        // // Trả về tất cả phòng chỉ định cùng phòng thực hiện
-        // Route::get("v1/room/all/execute-room", [HISController::class, "room_with_execute_room"]);
-        // Route::get("v1/room/{id}/execute-room", [HISController::class, "room_with_execute_room"]);
     });
 
     /// Phòng thực hiện - Đối tượng bệnh nhân

@@ -25,12 +25,22 @@ class ElasticDeleteIndex
     {
         try {
             $record = $event->record;
-            // Tạo chỉ mục hoặc cập nhật dữ liệu
+            if(is_array($record)){
+                foreach($record as $key => $item){
+                    $params = [
+                        'index' => $event->modelName, // Chỉ mục bạn muốn tạo hoặc cập nhật
+                        'id'    => $item, // ID của bản ghi
+                    ];
+                    $this->client->delete($params);
+                }
+            }else{
+                // Tạo chỉ mục hoặc cập nhật dữ liệu
             $params = [
                 'index' => $event->modelName, // Chỉ mục bạn muốn tạo hoặc cập nhật
                 'id'    => $record['id'], // ID của bản ghi
             ];
             $this->client->delete($params);
+            }
         } catch (\Throwable $e) {
             writeAndThrowError(config('params')['elastic']['error']['delete_index'], $e);
         }
