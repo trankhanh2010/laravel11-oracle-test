@@ -405,9 +405,11 @@ Route::group([
     /// Giới tính
     Route::apiResource('v1/gender', GenderController::class)->only(['index', 'show']);
     /// Đơn vị
-    Route::get("v1/group", [GroupController::class, "group"])->name('.get_group');
-    Route::get("v1/group/{id}", [GroupController::class, "group"])->name('.get_group_id');
-
+    Route::apiResource('v1/group', GroupController::class)->only(['index', 'show']);
+    /// Nhóm dịch vụ BHYT
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisHeinServiceType'], function () {
+        Route::apiResource('v1/hein-service-type', HeinServiceTypeController::class)->only(['index', 'show']);
+    });
     /// Loại phòng
     Route::group(['as' => 'HIS.Desktop.Plugins.RoomTypeModule'], function () {
         Route::get("v1/room-type", [RoomTypeController::class, "room_type"])->name('.get');
@@ -857,12 +859,6 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisPatientCase'], function () {
         Route::get("v1/patient-case", [PatientCaseController::class, "patient_case"])->name('.get');
         Route::get("v1/patient-case/{id}", [PatientCaseController::class, "patient_case"])->name('.get_id');
-    });
-
-    /// Nhóm dịch vụ BHYT
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisHeinServiceType'], function () {
-        Route::get("v1/hein-service-type", [HeinServiceTypeController::class, "hein_service_type"])->name('.get');
-        Route::get("v1/hein-service-type/{id}", [HeinServiceTypeController::class, "hein_service_type"])->name('.get_id');
     });
 
     /// Chính sách giá thuốc

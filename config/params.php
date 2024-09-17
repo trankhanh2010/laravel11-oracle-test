@@ -208,6 +208,8 @@ return [
             'film_size' => 'Có lỗi khi thực hiện thao tác với bảng Cỡ phim!',
             'fuex_type' => 'Có lỗi khi thực hiện thao tác với bảng Loại thăm dò chức năng!',
             'gender' => 'Có lỗi khi thực hiện thao tác với bảng Giới tính!',
+            'group' => 'Có lỗi khi thực hiện thao tác với bảng Đơn vị!',
+            'hein_service_type' => 'Có lỗi khi thực hiện thao tác với bảng Nhóm dịch vụ BHYT!',
 
         ]
     ]

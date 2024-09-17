@@ -54,6 +54,8 @@ use App\Events\Elastic\FileType\CreateFileTypeIndex;
 use App\Events\Elastic\FilmSize\CreateFilmSizeIndex;
 use App\Events\Elastic\FuexType\CreateFuexTypeIndex;
 use App\Events\Elastic\Gender\CreateGenderIndex;
+use App\Events\Elastic\Group\CreateGroupIndex;
+use App\Events\Elastic\HeinServiceType\CreateHeinServiceTypeIndex;
 use App\Repositories\AccidentBodyPartRepository;
 use App\Repositories\AccidentCareRepository;
 use App\Repositories\AccidentHurtTypeRepository;
@@ -103,6 +105,8 @@ use App\Repositories\FileTypeRepository;
 use App\Repositories\FilmSizeRepository;
 use App\Repositories\FuexTypeRepository;
 use App\Repositories\GenderRepository;
+use App\Repositories\GroupRepository;
+use App\Repositories\HeinServiceTypeRepository;
 
 class IndexRecordsToElasticsearch extends Command
 {
@@ -351,6 +355,14 @@ class IndexRecordsToElasticsearch extends Command
             case 'his_gender':
                 $results = app(GenderRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateGenderIndex($name_table));
+                break;
+            case 'sda_group':
+                $results = app(GroupRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateGroupIndex($name_table));
+                break;
+            case 'his_hein_service_type':
+                $results = app(HeinServiceTypeRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateHeinServiceTypeIndex($name_table));
                 break;
             default:
                 // Xử lý mặc định hoặc xử lý khi không có bảng khớp
