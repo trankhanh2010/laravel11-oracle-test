@@ -52,6 +52,8 @@ use App\Events\Elastic\ExpMestReason\CreateExpMestReasonIndex;
 use App\Events\Elastic\ExroRoom\CreateExroRoomIndex;
 use App\Events\Elastic\FileType\CreateFileTypeIndex;
 use App\Events\Elastic\FilmSize\CreateFilmSizeIndex;
+use App\Events\Elastic\FuexType\CreateFuexTypeIndex;
+use App\Events\Elastic\Gender\CreateGenderIndex;
 use App\Repositories\AccidentBodyPartRepository;
 use App\Repositories\AccidentCareRepository;
 use App\Repositories\AccidentHurtTypeRepository;
@@ -99,6 +101,8 @@ use App\Repositories\ExpMestReasonRepository;
 use App\Repositories\ExroRoomRepository;
 use App\Repositories\FileTypeRepository;
 use App\Repositories\FilmSizeRepository;
+use App\Repositories\FuexTypeRepository;
+use App\Repositories\GenderRepository;
 
 class IndexRecordsToElasticsearch extends Command
 {
@@ -339,6 +343,14 @@ class IndexRecordsToElasticsearch extends Command
             case 'his_film_size':
                 $results = app(FilmSizeRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateFilmSizeIndex($name_table));
+                break;
+            case 'his_fuex_type':
+                $results = app(FuexTypeRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateFuexTypeIndex($name_table));
+                break;
+            case 'his_gender':
+                $results = app(GenderRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateGenderIndex($name_table));
                 break;
             default:
                 // Xử lý mặc định hoặc xử lý khi không có bảng khớp

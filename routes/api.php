@@ -400,6 +400,10 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisFilmSize'], function () {
         Route::apiResource('v1/film-size', FilmSizeController::class)->only(['index', 'show']);
     });
+    /// Loại thăm dò chức năng
+    Route::apiResource('v1/fuex-type', FuexTypeController::class)->only(['index', 'show']);
+    /// Giới tính
+    Route::apiResource('v1/gender', GenderController::class)->only(['index', 'show']);
     /// Đơn vị
     Route::get("v1/group", [GroupController::class, "group"])->name('.get_group');
     Route::get("v1/group/{id}", [GroupController::class, "group"])->name('.get_group_id');
@@ -532,14 +536,6 @@ Route::group([
     /// Nhóm ICD
     Route::get("v1/icd-group", [IcdGroupController::class, "icd_group"])->name('.get_icd_group');
     Route::get("v1/icd-group/{id}", [IcdGroupController::class, "icd_group"])->name('.get_icd_group_id');
-
-    /// Loại thăm dò chức năng
-    Route::get("v1/fuex-type", [FuexTypeController::class, "fuex_type"])->name('.get_fuex_type');
-    Route::get("v1/fuex-type/{id}", [FuexTypeController::class, "fuex_type"])->name('.get_fuex_type_id');
-
-    /// Giới tính
-    Route::get("v1/gender", [GenderController::class, "gender"])->name('.get_gender');
-    Route::get("v1/gender/{id}", [GenderController::class, "gender"])->name('.get_gender_id');
 
     /// Chỉ số
     Route::group(['as' => 'HIS.Desktop.Plugins.HisSuimIndex'], function () {

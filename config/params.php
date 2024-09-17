@@ -206,6 +206,8 @@ return [
             'exro_room' => 'Có lỗi khi thực hiện thao tác với bảng Phòng chỉ định - Phòng thực hiện!',
             'file_type' => 'Có lỗi khi thực hiện thao tác với bảng Loại giấy tờ!',
             'film_size' => 'Có lỗi khi thực hiện thao tác với bảng Cỡ phim!',
+            'fuex_type' => 'Có lỗi khi thực hiện thao tác với bảng Loại thăm dò chức năng!',
+            'gender' => 'Có lỗi khi thực hiện thao tác với bảng Giới tính!',
 
         ]
     ]

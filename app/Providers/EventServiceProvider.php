@@ -92,6 +92,8 @@ use App\Events\Elastic\ExroRoom\InsertExroRoomIndex;
 use App\Events\Elastic\FileType\CreateFileTypeIndex;
 use App\Events\Elastic\FileType\InsertFileTypeIndex;
 use App\Events\Elastic\FilmSize\CreateFilmSizeIndex;
+use App\Events\Elastic\FuexType\CreateFuexTypeIndex;
+use App\Events\Elastic\Gender\CreateGenderIndex;
 use App\Events\Telegram\SendMessageToChannel;
 use App\Listeners\Cache\DeleteCache as CacheDeleteCache;
 use App\Listeners\Elastic\AccidentBodyPart\ElasticCreateAccidentBodyPartIndex;
@@ -183,6 +185,8 @@ use App\Listeners\Elastic\ExroRoom\ElasticInsertExroRoomIndex;
 use App\Listeners\Elastic\FileType\ElasticCreateFileTypeIndex;
 use App\Listeners\Elastic\FileType\ElasticInsertFileTypeIndex;
 use App\Listeners\Elastic\FilmSize\ElasticCreateFilmSizeIndex;
+use App\Listeners\Elastic\FuexType\ElasticCreateFuexTypeIndex;
+use App\Listeners\Elastic\Gender\ElasticCreateGenderIndex;
 use App\Listeners\Telegram\TelegramSendMessageToChannel;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -522,6 +526,14 @@ class EventServiceProvider extends ServiceProvider
 
         CreateFilmSizeIndex::class => [
             ElasticCreateFilmSizeIndex::class,
+        ],
+    
+        CreateFuexTypeIndex::class => [
+            ElasticCreateFuexTypeIndex::class,
+        ],
+
+        CreateGenderIndex::class => [
+            ElasticCreateGenderIndex::class,
         ],
     ];
 
