@@ -410,6 +410,14 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisHeinServiceType'], function () {
         Route::apiResource('v1/hein-service-type', HeinServiceTypeController::class)->only(['index', 'show']);
     });
+    /// Lý do nhập viện
+    Route::group(['as' => 'HIS.Desktop.Plugins.HospitalizeReason'], function () {
+        Route::apiResource('v1/hospitalize-reason', HospitalizeReasonController::class);
+    });
+    /// Icd - Cm
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisIcdCm'], function () {
+        Route::apiResource('v1/icd-cm', IcdCmController::class);
+    });
     /// Loại phòng
     Route::group(['as' => 'HIS.Desktop.Plugins.RoomTypeModule'], function () {
         Route::get("v1/room-type", [RoomTypeController::class, "room_type"])->name('.get');
@@ -523,16 +531,6 @@ Route::group([
         Route::post("v1/province", [ProvinceController::class, "province_create"])->name('.create');
         Route::put("v1/province/{id}", [ProvinceController::class, "province_update"])->name('.update');
         Route::delete("v1/province/{id}", [ProvinceController::class, "province_delete"])->name('.delete');
-    });
-
-    /// Icd - Cm
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisIcdCm'], function () {
-        Route::get("v1/icd-cm", [IcdCmController::class, "icd_cm"])->name('.get');
-        Route::get("v1/icd-cm/{id}", [IcdCmController::class, "icd_cm"])->name('.get_id');
-        Route::get("v1/icd-cm-check", [CheckIcdCmController::class, "check_code"])->name('.check');
-        Route::post("v1/icd-cm", [IcdCmController::class, "icd_cm_create"])->name('.create');
-        Route::put("v1/icd-cm/{id}", [IcdCmController::class, "icd_cm_update"])->name('.update');
-        Route::delete("v1/icd-cm/{id}", [IcdCmController::class, "icd_cm_delete"])->name('.delete');
     });
 
     /// Nhóm ICD
@@ -961,15 +959,6 @@ Route::group([
         Route::post("v1/unlimit-reason", [UnlimitReasonController::class, "unlimit_reason_create"])->name('.create');
         Route::put("v1/unlimit-reason/{id}", [UnlimitReasonController::class, "unlimit_reason_update"])->name('.update');
         Route::delete("v1/unlimit-reason/{id}", [UnlimitReasonController::class, "unlimit_reason_delete"])->name('.delete');
-    });
-
-    /// Lý do nhập viện
-    Route::group(['as' => 'HIS.Desktop.Plugins.HospitalizeReason'], function () {
-        Route::get("v1/hospitalize-reason", [HospitalizeReasonController::class, "hospitalize_reason"])->name('.get');
-        Route::get("v1/hospitalize-reason/{id}", [HospitalizeReasonController::class, "hospitalize_reason"])->name('.get_id');
-        Route::post("v1/hospitalize-reason", [HospitalizeReasonController::class, "hospitalize_reason_create"])->name('.create');
-        Route::put("v1/hospitalize-reason/{id}", [HospitalizeReasonController::class, "hospitalize_reason_update"])->name('.update');
-        Route::delete("v1/hospitalize-reason/{id}", [HospitalizeReasonController::class, "hospitalize_reason_delete"])->name('.delete');
     });
 
     /// Nhà cung cấp

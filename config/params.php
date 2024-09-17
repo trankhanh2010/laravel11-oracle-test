@@ -210,6 +210,8 @@ return [
             'gender' => 'Có lỗi khi thực hiện thao tác với bảng Giới tính!',
             'group' => 'Có lỗi khi thực hiện thao tác với bảng Đơn vị!',
             'hein_service_type' => 'Có lỗi khi thực hiện thao tác với bảng Nhóm dịch vụ BHYT!',
+            'hospitalize_reason' => 'Có lỗi khi thực hiện thao tác với bảng Lý do nhập viện!',
+            'icd_cm' => 'Có lỗi khi thực hiện thao tác với bảng ICD - CM!',
 
         ]
     ]

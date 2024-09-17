@@ -56,6 +56,8 @@ use App\Events\Elastic\FuexType\CreateFuexTypeIndex;
 use App\Events\Elastic\Gender\CreateGenderIndex;
 use App\Events\Elastic\Group\CreateGroupIndex;
 use App\Events\Elastic\HeinServiceType\CreateHeinServiceTypeIndex;
+use App\Events\Elastic\HospitalizeReason\CreateHospitalizeReasonIndex;
+use App\Events\Elastic\IcdCm\CreateIcdCmIndex;
 use App\Repositories\AccidentBodyPartRepository;
 use App\Repositories\AccidentCareRepository;
 use App\Repositories\AccidentHurtTypeRepository;
@@ -107,6 +109,8 @@ use App\Repositories\FuexTypeRepository;
 use App\Repositories\GenderRepository;
 use App\Repositories\GroupRepository;
 use App\Repositories\HeinServiceTypeRepository;
+use App\Repositories\HospitalizeReasonRepository;
+use App\Repositories\IcdCmRepository;
 
 class IndexRecordsToElasticsearch extends Command
 {
@@ -363,6 +367,14 @@ class IndexRecordsToElasticsearch extends Command
             case 'his_hein_service_type':
                 $results = app(HeinServiceTypeRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateHeinServiceTypeIndex($name_table));
+                break;
+            case 'his_hospitalize_reason':
+                $results = app(HospitalizeReasonRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateHospitalizeReasonIndex($name_table));
+                break;
+            case 'his_icd_cm':
+                $results = app(IcdCmRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateIcdCmIndex($name_table));
                 break;
             default:
                 // Xử lý mặc định hoặc xử lý khi không có bảng khớp
