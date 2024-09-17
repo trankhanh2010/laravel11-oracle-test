@@ -392,6 +392,14 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.ExroRoom'], function () {
         Route::apiResource('v1/exro-room', ExroRoomController::class)->only(['index', 'show', 'store']);
     });
+    /// Loại giấy tờ
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisFileType'], function () {
+        Route::apiResource('v1/file-type', FileTypeController::class);
+    });
+    /// Cỡ phim
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisFilmSize'], function () {
+        Route::apiResource('v1/film-size', FilmSizeController::class)->only(['index', 'show']);
+    });
     /// Đơn vị
     Route::get("v1/group", [GroupController::class, "group"])->name('.get_group');
     Route::get("v1/group/{id}", [GroupController::class, "group"])->name('.get_group_id');
@@ -528,12 +536,6 @@ Route::group([
     /// Loại thăm dò chức năng
     Route::get("v1/fuex-type", [FuexTypeController::class, "fuex_type"])->name('.get_fuex_type');
     Route::get("v1/fuex-type/{id}", [FuexTypeController::class, "fuex_type"])->name('.get_fuex_type_id');
-
-    /// Cỡ phim
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisFilmSize'], function () {
-        Route::get("v1/film-size", [FilmSizeController::class, "film_size"])->name('.get');
-        Route::get("v1/film-size/{id}", [FilmSizeController::class, "film_size"])->name('.get_id');
-    });
 
     /// Giới tính
     Route::get("v1/gender", [GenderController::class, "gender"])->name('.get_gender');
@@ -931,15 +933,6 @@ Route::group([
         Route::post("v1/medi-record-type", [MediRecordTypeController::class, "medi_record_type_create"])->name('.create');
         Route::put("v1/medi-record-type/{id}", [MediRecordTypeController::class, "medi_record_type_update"])->name('.update');
         Route::delete("v1/medi-record-type/{id}", [MediRecordTypeController::class, "medi_record_type_delete"])->name('.delete');
-    });
-
-    /// Loại giấy tờ
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisFileType'], function () {
-        Route::get("v1/file-type", [FileTypeController::class, "file_type"])->name('.get');
-        Route::get("v1/file-type/{id}", [FileTypeController::class, "file_type"])->name('.get_id');
-        Route::post("v1/file-type", [FileTypeController::class, "file_type_create"])->name('.create');
-        Route::put("v1/file-type/{id}", [FileTypeController::class, "file_type_update"])->name('.update');
-        Route::delete("v1/file-type/{id}", [FileTypeController::class, "file_type_delete"])->name('.delete');
     });
 
     /// Loại ra viện

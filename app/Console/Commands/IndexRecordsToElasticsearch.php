@@ -50,6 +50,8 @@ use App\Events\Elastic\ExecuteRoom\CreateExecuteRoomIndex;
 use App\Events\Elastic\ExeServiceModule\CreateExeServiceModuleIndex;
 use App\Events\Elastic\ExpMestReason\CreateExpMestReasonIndex;
 use App\Events\Elastic\ExroRoom\CreateExroRoomIndex;
+use App\Events\Elastic\FileType\CreateFileTypeIndex;
+use App\Events\Elastic\FilmSize\CreateFilmSizeIndex;
 use App\Repositories\AccidentBodyPartRepository;
 use App\Repositories\AccidentCareRepository;
 use App\Repositories\AccidentHurtTypeRepository;
@@ -95,6 +97,8 @@ use App\Repositories\ExecuteRoomRepository;
 use App\Repositories\ExeServiceModuleRepository;
 use App\Repositories\ExpMestReasonRepository;
 use App\Repositories\ExroRoomRepository;
+use App\Repositories\FileTypeRepository;
+use App\Repositories\FilmSizeRepository;
 
 class IndexRecordsToElasticsearch extends Command
 {
@@ -327,6 +331,14 @@ class IndexRecordsToElasticsearch extends Command
             case 'his_exro_room':
                 $results = app(ExroRoomRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateExroRoomIndex($name_table));
+                break;
+            case 'his_file_type':
+                $results = app(FileTypeRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateFileTypeIndex($name_table));
+                break;
+            case 'his_film_size':
+                $results = app(FilmSizeRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateFilmSizeIndex($name_table));
                 break;
             default:
                 // Xử lý mặc định hoặc xử lý khi không có bảng khớp

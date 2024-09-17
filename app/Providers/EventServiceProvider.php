@@ -89,6 +89,9 @@ use App\Events\Elastic\ExpMestReason\CreateExpMestReasonIndex;
 use App\Events\Elastic\ExpMestReason\InsertExpMestReasonIndex;
 use App\Events\Elastic\ExroRoom\CreateExroRoomIndex;
 use App\Events\Elastic\ExroRoom\InsertExroRoomIndex;
+use App\Events\Elastic\FileType\CreateFileTypeIndex;
+use App\Events\Elastic\FileType\InsertFileTypeIndex;
+use App\Events\Elastic\FilmSize\CreateFilmSizeIndex;
 use App\Events\Telegram\SendMessageToChannel;
 use App\Listeners\Cache\DeleteCache as CacheDeleteCache;
 use App\Listeners\Elastic\AccidentBodyPart\ElasticCreateAccidentBodyPartIndex;
@@ -177,6 +180,9 @@ use App\Listeners\Elastic\ExpMestReason\ElasticCreateExpMestReasonIndex;
 use App\Listeners\Elastic\ExpMestReason\ElasticInsertExpMestReasonIndex;
 use App\Listeners\Elastic\ExroRoom\ElasticCreateExroRoomIndex;
 use App\Listeners\Elastic\ExroRoom\ElasticInsertExroRoomIndex;
+use App\Listeners\Elastic\FileType\ElasticCreateFileTypeIndex;
+use App\Listeners\Elastic\FileType\ElasticInsertFileTypeIndex;
+use App\Listeners\Elastic\FilmSize\ElasticCreateFilmSizeIndex;
 use App\Listeners\Telegram\TelegramSendMessageToChannel;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -505,6 +511,17 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertExroRoomIndex::class => [
             ElasticInsertExroRoomIndex::class,
+        ],
+
+        CreateFileTypeIndex::class => [
+            ElasticCreateFileTypeIndex::class,
+        ],
+        InsertFileTypeIndex::class => [
+            ElasticInsertFileTypeIndex::class,
+        ],
+
+        CreateFilmSizeIndex::class => [
+            ElasticCreateFilmSizeIndex::class,
         ],
     ];
 
