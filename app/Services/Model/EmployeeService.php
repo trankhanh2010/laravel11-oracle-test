@@ -67,7 +67,18 @@ class EmployeeService
             return writeAndThrowError(config('params')['db_service']['error']['employee'], $e);
         }
     }
-
+    public function handleDataBaseGetInfoUser($id)
+    {
+        try {
+            $data = Cache::remember($this->params->employeeName . '_info_user_' . $id, $this->params->time, function () use ($id){
+                $data = $this->employeeRepository->getInfoUser($id);
+                return $data;
+            });
+            return $data;
+        } catch (\Throwable $e) {
+            return writeAndThrowError(config('params')['db_service']['error']['employee'], $e);
+        }
+    }
     public function createEmployee($request)
     {
         try {
@@ -93,6 +104,27 @@ class EmployeeService
         }
         try {
             $data = $this->employeeRepository->update($request, $data, $this->params->time, $this->params->appModifier);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->employeeName));
+            // Gọi event để thêm index vào elastic
+            event(new InsertEmployeeIndex($data, $this->params->employeeName));
+            return returnDataUpdateSuccess($data);
+        } catch (\Throwable $e) {
+            return writeAndThrowError(config('params')['db_service']['error']['employee'], $e);
+        }
+    }
+
+    public function updateInfoUser($id, $request)
+    {
+        if (!is_numeric($id)) {
+            return returnIdError($id);
+        }
+        $data = $this->employeeRepository->getById($id);
+        if ($data == null) {
+            return returnNotRecord($id);
+        }
+        try {
+            $data = $this->employeeRepository->updateInfoUser($request, $data, $this->params->time, $this->params->appModifier);
             // Gọi event để xóa cache
             event(new DeleteCache($this->params->employeeName));
             // Gọi event để thêm index vào elastic

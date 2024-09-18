@@ -28,6 +28,28 @@ class EmployeeRepository
                 'career_title.career_title_code',
             );
     }
+    public function getInfoUser($id)
+    {
+        return $this->employee
+            ->leftJoin('his_department as department', 'department.id', '=', 'his_employee.department_id')
+            ->leftJoin('his_gender as gender', 'gender.id', '=', 'his_employee.gender_id')
+            ->leftJoin('his_branch as branch', 'branch.id', '=', 'his_employee.branch_id')
+            ->leftJoin('his_career_title as career_title', 'career_title.id', '=', 'his_employee.career_title_id')
+
+            ->select(
+                'his_employee.*',
+                'department.department_name',
+                'department.department_code',
+                'gender.gender_name',
+                'gender.gender_code',
+                'branch.branch_name',
+                'branch.branch_code',
+                'career_title.career_title_name',
+                'career_title.career_title_code',
+            )
+            ->where('his_employee.id', $id)
+            ->first();
+    }
     public function applyKeywordFilter($query, $keyword)
     {
         return $query->where(function ($query) use ($keyword) {
@@ -190,6 +212,31 @@ class EmployeeRepository
 
             'is_need_sign_instead' => $request->is_need_sign_instead,
             'is_active' => $request->is_active
+        ]);
+        return $data;
+    }
+    public function updateInfoUser($request, $data, $time, $appModifier){
+        $data->update([
+            'modify_time' => now()->format('Ymdhis'),
+            'modifier' => get_loginname_with_token($request->bearerToken(), $time),
+            'app_modifier' => $appModifier,
+
+            'tdl_username' => $request->tdl_username,
+            'dob' => $request->dob,
+            'tdl_email' => $request->tdl_email,
+            'tdl_mobile' => $request->tdl_mobile,
+            'diploma' => $request->diploma,
+            'title' => $request->title,
+
+            'account_number' => $request->account_number,
+            'bank' => $request->bank,
+            'department_id' => $request->department_id,
+            'default_medi_stock_ids' => $request->default_medi_stock_ids,
+            'social_insurance_number' => $request->social_insurance_number,
+            'erx_loginname' => $request->erx_loginname,
+            'erx_password' => $request->erx_password,
+
+            'is_active' => $request->is_active,
         ]);
         return $data;
     }

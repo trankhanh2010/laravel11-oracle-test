@@ -103,6 +103,8 @@ use App\Events\Elastic\Icd\InsertIcdIndex;
 use App\Events\Elastic\IcdCm\CreateIcdCmIndex;
 use App\Events\Elastic\IcdCm\InsertIcdCmIndex;
 use App\Events\Elastic\IcdGroup\CreateIcdGroupIndex;
+use App\Events\Elastic\InteractionReason\CreateInteractionReasonIndex;
+use App\Events\Elastic\InteractionReason\InsertInteractionReasonIndex;
 use App\Events\Telegram\SendMessageToChannel;
 use App\Listeners\Cache\DeleteCache as CacheDeleteCache;
 use App\Listeners\Elastic\AccidentBodyPart\ElasticCreateAccidentBodyPartIndex;
@@ -205,6 +207,8 @@ use App\Listeners\Elastic\Icd\ElasticInsertIcdIndex;
 use App\Listeners\Elastic\IcdCm\ElasticCreateIcdCmIndex;
 use App\Listeners\Elastic\IcdCm\ElasticInsertIcdCmIndex;
 use App\Listeners\Elastic\IcdGroup\ElasticCreateIcdGroupIndex;
+use App\Listeners\Elastic\InteractionReason\ElasticCreateInteractionReasonIndex;
+use App\Listeners\Elastic\InteractionReason\ElasticInsertInteractionReasonIndex;
 use App\Listeners\Telegram\TelegramSendMessageToChannel;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -585,6 +589,13 @@ class EventServiceProvider extends ServiceProvider
 
         CreateIcdGroupIndex::class => [
             ElasticCreateIcdGroupIndex::class,
+        ],
+
+        CreateInteractionReasonIndex::class => [
+            ElasticCreateInteractionReasonIndex::class,
+        ],
+        InsertInteractionReasonIndex::class => [
+            ElasticInsertInteractionReasonIndex::class,
         ],
     ];
 

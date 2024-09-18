@@ -60,6 +60,7 @@ use App\Events\Elastic\HospitalizeReason\CreateHospitalizeReasonIndex;
 use App\Events\Elastic\Icd\CreateIcdIndex;
 use App\Events\Elastic\IcdCm\CreateIcdCmIndex;
 use App\Events\Elastic\IcdGroup\CreateIcdGroupIndex;
+use App\Events\Elastic\InteractionReason\CreateInteractionReasonIndex;
 use App\Repositories\AccidentBodyPartRepository;
 use App\Repositories\AccidentCareRepository;
 use App\Repositories\AccidentHurtTypeRepository;
@@ -115,6 +116,7 @@ use App\Repositories\HospitalizeReasonRepository;
 use App\Repositories\IcdCmRepository;
 use App\Repositories\IcdGroupRepository;
 use App\Repositories\IcdRepository;
+use App\Repositories\InteractionReasonRepository;
 
 class IndexRecordsToElasticsearch extends Command
 {
@@ -387,6 +389,10 @@ class IndexRecordsToElasticsearch extends Command
             case 'his_icd_group':
                 $results = app(IcdGroupRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateIcdGroupIndex($name_table));
+                break;
+            case 'his_interaction_reason':
+                $results = app(InteractionReasonRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateInteractionReasonIndex($name_table));
                 break;
             default:
                 // Xử lý mặc định hoặc xử lý khi không có bảng khớp

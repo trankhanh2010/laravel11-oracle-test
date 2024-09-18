@@ -6,22 +6,25 @@ use App\DTOs\EmployeeDTO;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
 use App\Http\Requests\Employee\CreateEmployeeRequest;
 use App\Http\Requests\Employee\UpdateEmployeeRequest;
+use App\Http\Requests\InfoUser\UpdateInfoUserRequest;
+use App\Models\ACS\Token;
 use App\Models\HIS\Employee;
 use App\Services\Elastic\ElasticsearchService;
 use App\Services\Model\EmployeeService;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Request as FacadesRequest;
 
 class EmployeeController extends BaseApiCacheController
 {
     protected $employeeService;
     protected $employeeDTO;
-    public function __construct(Request $request, ElasticsearchService $elasticSearchService, EmployeeService $employeeService, Employee $employee)
+    public function __construct(Request $request, ElasticsearchService $elasticSearchService, EmployeeService $employeeService, Employee $employee, Token $token)
     {
         parent::__construct($request); // Gọi constructor của BaseController
         $this->elasticSearchService = $elasticSearchService;
         $this->employeeService = $employeeService;
         $this->employee = $employee;
+        $this->token = $token;
         // Kiểm tra tên trường trong bảng
         if ($this->orderBy != null) {
             $this->orderByJoin = [
@@ -106,6 +109,26 @@ class EmployeeController extends BaseApiCacheController
         ];
         return returnDataSuccess($paramReturn, $data);
     }
+    public function infoUser(Request $request)
+    {
+        if ($this->checkParam()) {
+            return $this->checkParam();
+        }
+        $login_name = $this->token->where('token_code', $request->bearerToken())->first()->login_name;
+        $id = $this->employee->where('loginname', $login_name)->first()->id;
+        if ($id !== null) {
+            $validationError = $this->validateAndCheckId($id, $this->employee, $this->employeeName);
+            if ($validationError) {
+                return $validationError;
+            }
+        }
+        $data = $this->employeeService->handleDataBaseGetInfoUser($id);
+        $paramReturn = [
+            $this->idName => $id,
+            $this->isActiveName => $this->isActive,
+        ];
+        return returnDataSuccess($paramReturn, $data);
+    }
     public function store(CreateEmployeeRequest $request)
     {
         return $this->employeeService->createEmployee($request);
@@ -113,6 +136,12 @@ class EmployeeController extends BaseApiCacheController
     public function update(UpdateEmployeeRequest $request, $id)
     {
         return $this->employeeService->updateEmployee($id, $request);
+    }
+    public function updateInfoUser(UpdateInfoUserRequest $request)
+    {
+        $login_name = $this->token->where('token_code', $request->bearerToken())->first()->login_name;
+        $id = $this->employee->where('loginname', $login_name)->first()->id;
+        return $this->employeeService->updateInfoUser($id, $request);
     }
     public function destroy($id)
     {

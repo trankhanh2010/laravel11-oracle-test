@@ -214,6 +214,9 @@ return [
             'icd_cm' => 'Có lỗi khi thực hiện thao tác với bảng ICD - CM!',
             'icd' => 'Có lỗi khi thực hiện thao tác với bảng Chẩn đoán!',
             'icd_group' => 'Có lỗi khi thực hiện thao tác với bảng Nhóm ICD!',
+            'info_user' => 'Có lỗi khi thực hiện thao tác với bảng Tài khoản nhân viên!',
+            'interaction_reason' => 'Có lỗi khi thực hiện thao tác với bảng Lý do kê đơn tương tác!',
+
         ]
     ]
     

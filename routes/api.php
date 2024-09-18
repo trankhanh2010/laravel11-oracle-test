@@ -423,7 +423,16 @@ Route::group([
         Route::apiResource('v1/icd', IcdController::class);
     });
     /// Nhóm ICD
-    Route::apiResource('v1/icd-group', IcdGroupController::class)->only(['index', 'show']);;
+    Route::apiResource('v1/icd-group', IcdGroupController::class)->only(['index', 'show']);
+    /// Thông tin tài khoản
+    Route::group(['as' => 'HIS.Desktop.Plugins.InfoUser'], function () {
+        Route::get("v1/info-user", [EmployeeController::class, "infoUser"])->name('.get_info_user');
+        Route::put("v1/info-user", [EmployeeController::class, "updateInfoUser"])->name('.update_info_user');
+    });
+    /// Lý do kê đơn tương tác
+    Route::group(['as' => 'HIS.Desktop.Plugins.InteractionReason'], function () {
+        Route::apiResource('v1/interaction-reason', InteractionReasonController::class);
+    });
     /// Loại phòng
     Route::group(['as' => 'HIS.Desktop.Plugins.RoomTypeModule'], function () {
         Route::get("v1/room-type", [RoomTypeController::class, "room_type"])->name('.get');
@@ -646,12 +655,6 @@ Route::group([
     });
     Route::get("v1/service-group", [ServiceGroupController::class, "service_group"])->name('.get_service_group');
     Route::get("v1/service-group/{id}", [ServiceGroupController::class, "service_group"])->name('.get_service_group_id');
-
-    /// Thông tin tài khoản
-    Route::group(['as' => 'HIS.Desktop.Plugins.InfoUser'], function () {
-        Route::get("v1/info-user", [InfoUserController::class, "info_user"])->name('.get');
-        Route::put("v1/info-user", [InfoUserController::class, "info_user_update"])->name('.update');
-    });
 
     /// Vai trò
     Route::group(['as' => 'ACS.Desktop.Plugins.AcsRole'], function () {
@@ -934,15 +937,6 @@ Route::group([
         Route::post("v1/tran-pati-tech", [TranPatiTechController::class, "tran_pati_tech_create"])->name('.create');
         Route::put("v1/tran-pati-tech/{id}", [TranPatiTechController::class, "tran_pati_tech_update"])->name('.update');
         Route::delete("v1/tran-pati-tech/{id}", [TranPatiTechController::class, "tran_pati_tech_delete"])->name('.delete');
-    });
-
-    /// Lý do kê đơn tương tác
-    Route::group(['as' => 'HIS.Desktop.Plugins.InteractionReason'], function () {
-        Route::get("v1/interaction-reason", [InteractionReasonController::class, "interaction_reason"])->name('.get');
-        Route::get("v1/interaction-reason/{id}", [InteractionReasonController::class, "interaction_reason"])->name('.get_id');
-        Route::post("v1/interaction-reason", [InteractionReasonController::class, "interaction_reason_create"])->name('.create');
-        Route::put("v1/interaction-reason/{id}", [InteractionReasonController::class, "interaction_reason_update"])->name('.update');
-        Route::delete("v1/interaction-reason/{id}", [InteractionReasonController::class, "interaction_reason_delete"])->name('.delete');
     });
 
     /// Lý do mở trần
