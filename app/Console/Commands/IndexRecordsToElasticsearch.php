@@ -156,11 +156,8 @@ class IndexRecordsToElasticsearch extends Command
         if ($table !== null) {
             foreach ($table as $key => $item) {
                 if (in_array($item, $table_arr)) {
-                    // lấy ra tiền tố his, acs, ....
-                    $first_table = strtolower(explode('_', $item)[0]);
-                    $name_table = strtolower(substr($item, strlen($first_table . '_')));
-                    $this->processAndIndexData($item, $first_table, $name_table);
-                    event(new DeleteCache($name_table));
+                    $this->processAndIndexData($item);
+                    event(new DeleteCache($item));
                     $this->info('Đã tạo Index cho bảng ' . $item . '.');
                 } else {
                     $this->error('Không tồn tại bảng ' . $item . '.');
@@ -169,246 +166,246 @@ class IndexRecordsToElasticsearch extends Command
         }
     }
 
-    protected function processAndIndexData($table, $first_table, $name_table)
+    protected function processAndIndexData($name_table)
     {
         // Khởi tạo kết nối đến Elastic
         $client = app('Elasticsearch');
-        switch ($table) {
-            case 'his_accident_body_part':
+        switch ($name_table) {
+            case 'accident_body_part':
                 $results = app(AccidentBodyPartRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateAccidentBodyPartIndex($name_table));
                 break;
-            case 'his_accident_care':
+            case 'accident_care':
                 $results = app(AccidentCareRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateAccidentCareIndex($name_table));
                 break;    
-            case 'his_accident_hurt_type':
+            case 'accident_hurt_type':
                 $results = app(AccidentHurtTypeRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateAccidentHurtTypeIndex($name_table));
                 break;    
-            case 'his_accident_location':
+            case 'accident_location':
                 $results = app(AccidentLocationRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateAccidentLocationIndex($name_table));
                 break;     
-            case 'his_age_type':
+            case 'age_type':
                 $results = app(AgeTypeRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateAgeTypeIndex($name_table));
                 break;     
-            case 'his_area':
+            case 'area':
                 $results = app(AreaRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateAreaIndex($name_table));
                 break;        
-            case 'his_atc_group':
+            case 'atc_group':
                 $results = app(AtcGroupRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateAtcGroupIndex($name_table));
                 break;  
-            case 'his_awareness':
+            case 'awareness':
                 $results = app(AwarenessRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateAwarenessIndex($name_table));
                 break; 
-            case 'his_bed_bsty':
+            case 'bed_bsty':
                 $results =app(BedBstyRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateBedBstyIndex($name_table));
                 break; 
-            case 'his_bed':
+            case 'bed':
                 $results = app(BedRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateBedIndex($name_table));
                 break;
-            case 'his_bed_room':
+            case 'bed_room':
                 $results = app(BedRoomRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateBedRoomIndex($name_table));
                 break;
-            case 'his_bed_type':
+            case 'bed_type':
                 $results = app(BedTypeRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateBedTypeIndex($name_table));
                 break;
-            case 'his_bhyt_blacklist':
+            case 'bhyt_blacklist':
                 $results = app(BhytBlacklistRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateBhytBlacklistIndex($name_table));
                 break;
-            case 'his_bhyt_param':
+            case 'bhyt_param':
                 $results = app(BhytParamRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateBhytParamIndex($name_table));
                 break;
-            case 'his_bhyt_whitelist':
+            case 'bhyt_whitelist':
                 $results = app(BhytWhitelistRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateBhytWhitelistIndex($name_table));
                 break;
-            case 'his_bid_type':
+            case 'bid_type':
                 $results = app(BidTypeRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateBidTypeIndex($name_table));
                 break;
-            case 'his_blood_group':
+            case 'blood_group':
                 $results = app(BloodGroupRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateBloodGroupIndex($name_table));
                 break;
-            case 'his_blood_volume':
+            case 'blood_volume':
                 $results = app(BloodVolumeRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateBloodVolumeIndex($name_table));
                 break;
-            case 'his_body_part':
+            case 'body_part':
                 $results = app(BodyPartRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateBodyPartIndex($name_table));
                 break;
-            case 'his_born_position':
+            case 'born_position':
                 $results = app(BornPositionRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateBornPositionIndex($name_table));
                 break;
-            case 'his_branch':
+            case 'branch':
                 $results = app(BranchRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateBranchIndex($name_table));
                 break;
-            case 'his_cancel_reason':
+            case 'cancel_reason':
                 $results = app(CancelReasonRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateCancelReasonIndex($name_table));
                 break;
-            case 'his_career':
+            case 'career':
                 $results = app(CareerRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateCareerIndex($name_table));
                 break;
-            case 'his_career_title':
+            case 'career_title':
                 $results = app(CareerTitleRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateCareerTitleIndex($name_table));
                 break;
-            case 'his_cashier_room':
+            case 'cashier_room':
                 $results = app(CashierRoomRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateCashierRoomIndex($name_table));
                 break;
-            case 'sda_commune':
+            case 'commune':
                 $results = app(CommuneRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateCommuneIndex($name_table));
                 break;
-            case 'his_contraindication':
+            case 'contraindication':
                 $results = app(ContraindicationRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateContraindicationIndex($name_table));
                 break;
-            case 'his_data_store':
+            case 'data_store':
                 $results = app(DataStoreRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateDataStoreIndex($name_table));
                 break;
-            case 'his_death_within':
+            case 'death_within':
                 $results = app(DeathWithinRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateDeathWithinIndex($name_table));
                 break;
-            case 'his_debate_reason':
+            case 'debate_reason':
                 $results = app(DebateReasonRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateDebateReasonIndex($name_table));
                 break;
-            case 'his_debate_type':
+            case 'debate_type':
                 $results = app(DebateTypeRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateDebateTypeIndex($name_table));
                 break;
-            case 'his_department':
+            case 'department':
                 $results = app(DepartmentRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateDepartmentIndex($name_table));
                 break;
-            case 'his_diim_type':
+            case 'diim_type':
                 $results = app(DiimTypeRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateDiimTypeIndex($name_table));
                 break;
-            case 'sda_district':
+            case 'district':
                 $results = app(DistrictRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateDistrictIndex($name_table));
                 break;
-            case 'his_dosage_form':
+            case 'dosage_form':
                 $results = app(DosageFormRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateDosageFormIndex($name_table));
                 break;
-            case 'his_emotionless_method':
+            case 'emotionless_method':
                 $results = app(EmotionlessMethodRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateEmotionlessMethodIndex($name_table));
                 break;
-            case 'his_employee':
+            case 'employee':
                 $results = app(EmployeeRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateEmployeeIndex($name_table));
                 break;
-            case 'sda_ethnic':
+            case 'ethnic':
                 $results = app(EthnicRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateEthnicIndex($name_table));
                 break;
-            case 'his_execute_group':
+            case 'execute_group':
                 $results = app(ExecuteGroupRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateExecuteGroupIndex($name_table));
                 break;
-            case 'his_execute_role':
+            case 'execute_role':
                 $results = app(ExecuteRoleRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateExecuteRoleIndex($name_table));
                 break;
-            case 'his_execute_role_user':
+            case 'execute_role_user':
                 $results = app(ExecuteRoleUserRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateExecuteRoleUserIndex($name_table));
                 break;
-            case 'his_execute_room':
+            case 'execute_room':
                 $results = app(ExecuteRoomRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateExecuteRoomIndex($name_table));
                 break;
-            case 'his_exe_service_module':
+            case 'exe_service_module':
                 $results = app(ExeServiceModuleRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateExeServiceModuleIndex($name_table));
                 break;
-            case 'his_exp_mest_reason':
+            case 'exp_mest_reason':
                 $results = app(ExpMestReasonRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateExpMestReasonIndex($name_table));
                 break;
-            case 'his_exro_room':
+            case 'exro_room':
                 $results = app(ExroRoomRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateExroRoomIndex($name_table));
                 break;
-            case 'his_file_type':
+            case 'file_type':
                 $results = app(FileTypeRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateFileTypeIndex($name_table));
                 break;
-            case 'his_film_size':
+            case 'film_size':
                 $results = app(FilmSizeRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateFilmSizeIndex($name_table));
                 break;
-            case 'his_fuex_type':
+            case 'fuex_type':
                 $results = app(FuexTypeRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateFuexTypeIndex($name_table));
                 break;
-            case 'his_gender':
+            case 'gender':
                 $results = app(GenderRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateGenderIndex($name_table));
                 break;
-            case 'sda_group':
+            case 'group':
                 $results = app(GroupRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateGroupIndex($name_table));
                 break;
-            case 'his_hein_service_type':
+            case 'hein_service_type':
                 $results = app(HeinServiceTypeRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateHeinServiceTypeIndex($name_table));
                 break;
-            case 'his_hospitalize_reason':
+            case 'hospitalize_reason':
                 $results = app(HospitalizeReasonRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateHospitalizeReasonIndex($name_table));
                 break;
-            case 'his_icd_cm':
+            case 'icd_cm':
                 $results = app(IcdCmRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateIcdCmIndex($name_table));
                 break;
-            case 'his_icd':
+            case 'icd':
                 $results = app(IcdRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateIcdIndex($name_table));
                 break;
-            case 'his_icd_group':
+            case 'icd_group':
                 $results = app(IcdGroupRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateIcdGroupIndex($name_table));
                 break;
-            case 'his_interaction_reason':
+            case 'interaction_reason':
                 $results = app(InteractionReasonRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateInteractionReasonIndex($name_table));
                 break;
-            case 'his_license_class':
+            case 'license_class':
                 $results = app(LicenseClassRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateLicenseClassIndex($name_table));
                 break;
-            case 'his_location_store':
+            case 'location_store':
                 $results = app(LocationStoreRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateLocationStoreIndex($name_table));
                 break;
             default:
                 // Xử lý mặc định hoặc xử lý khi không có bảng khớp
-                $results = DB::connection('oracle_' . $first_table)->table($table)->get();
+                $this->error('Không tồn tại bảng ' . $name_table . '.');
                 break;
         }
         // Chèn từng bản ghi
@@ -426,7 +423,8 @@ class IndexRecordsToElasticsearch extends Command
         //     $client->index($params);
         // }
 
-        // Dùng Bulk
+        if(isset($results)){
+            // Dùng Bulk
         $bulkData = [];
         $batchSize = 10000; // Số lượng bản ghi mỗi batch, bạn có thể điều chỉnh
         foreach ($results as $result) {
@@ -452,6 +450,7 @@ class IndexRecordsToElasticsearch extends Command
         // Chèn các bản ghi còn lại nếu có
         if (!empty($bulkData)) {
             $client->bulk(['body' => $bulkData]);
+        }
         }
     }
 }

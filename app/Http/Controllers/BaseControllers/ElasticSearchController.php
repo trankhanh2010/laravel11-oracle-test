@@ -22,7 +22,7 @@ class ElasticSearchController extends Controller
     public function get_all_name(Request $request)
     {
         // Chỉ trả về key
-        $data = array_keys($this->all_table);
+        $data = $this->all_table;
         return returnDataSuccess([], $data);
     }
     public function index_records_to_elasticsearch(Request $request)
@@ -66,8 +66,7 @@ class ElasticSearchController extends Controller
         }
         if ($tables != null) {
             foreach ($tables as $key => $item) {
-                $first_table = strtolower(explode('_', $item)[0]);
-                $name_table = strtolower(substr($item, strlen($first_table . '_')));
+                $name_table = $item;
                 $exists = $this->client->indices()->exists(['index' => $name_table])->asBool();
                 if ($exists) {
                     $params = ['index' => $name_table];
