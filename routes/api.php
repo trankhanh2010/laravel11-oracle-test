@@ -450,6 +450,8 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisManufacturer'], function () {
         Route::apiResource('v1/manufacturer', ManufacturerController::class);
     });
+    /// Loại vật tư
+    Route::apiResource('v1/material-type', MaterialTypeController::class)->only(['index', 'show']);
     /// Loại phòng
     Route::group(['as' => 'HIS.Desktop.Plugins.RoomTypeModule'], function () {
         Route::get("v1/room-type", [RoomTypeController::class, "room_type"])->name('.get');
@@ -888,10 +890,6 @@ Route::group([
     /// Loại thuốc
     Route::get("v1/medicine-type", [MedicineTypeController::class, "medicine_type"])->name('.get_medicine_type');
     Route::get("v1/medicine-type/{id}", [MedicineTypeController::class, "medicine_type"])->name('.get_medicine_type_id');
-
-    /// Loại vật tư
-    Route::get("v1/material-type", [MaterialTypeController::class, "material_type"])->name('.get_material_type');
-    Route::get("v1/material-type/{id}", [MaterialTypeController::class, "material_type"])->name('.get_material_type_id');
 
     /// Chế phẩm máu
     Route::group(['as' => 'HIS.Desktop.Plugins.HisPreparationsBlood'], function () {

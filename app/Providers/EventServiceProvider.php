@@ -113,6 +113,7 @@ use App\Events\Elastic\Machine\CreateMachineIndex;
 use App\Events\Elastic\Machine\InsertMachineIndex;
 use App\Events\Elastic\Manufacturer\CreateManufacturerIndex;
 use App\Events\Elastic\Manufacturer\InsertManufacturerIndex;
+use App\Events\Elastic\MaterialType\CreateMaterialTypeIndex;
 use App\Events\Telegram\SendMessageToChannel;
 use App\Listeners\Cache\DeleteCache as CacheDeleteCache;
 use App\Listeners\Elastic\AccidentBodyPart\ElasticCreateAccidentBodyPartIndex;
@@ -225,6 +226,7 @@ use App\Listeners\Elastic\Machine\ElasticCreateMachineIndex;
 use App\Listeners\Elastic\Machine\ElasticInsertMachineIndex;
 use App\Listeners\Elastic\Manufacturer\ElasticCreateManufacturerIndex;
 use App\Listeners\Elastic\Manufacturer\ElasticInsertManufacturerIndex;
+use App\Listeners\Elastic\MaterialType\ElasticCreateMaterialTypeIndex;
 use App\Listeners\Telegram\TelegramSendMessageToChannel;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -640,6 +642,10 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertManufacturerIndex::class => [
             ElasticInsertManufacturerIndex::class,
+        ],
+
+        CreateMaterialTypeIndex::class => [
+            ElasticCreateMaterialTypeIndex::class,
         ],
     ];
 

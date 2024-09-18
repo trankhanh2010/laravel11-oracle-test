@@ -220,6 +220,7 @@ return [
             'location_store' => 'Có lỗi khi thực hiện thao tác với bảng Vị trí hồ sơ bệnh án!',
             'machine' => 'Có lỗi khi thực hiện thao tác với bảng Máy / Máy cận lâm sàng!',
             'manufacturer' => 'Có lỗi khi thực hiện thao tác với bảng Hãng sản xuất!',
+            'material_type' => 'Có lỗi khi thực hiện thao tác với bảng Loại vật tư!',
 
         ]
     ]

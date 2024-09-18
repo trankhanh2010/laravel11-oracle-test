@@ -65,6 +65,7 @@ use App\Events\Elastic\LicenseClass\CreateLicenseClassIndex;
 use App\Events\Elastic\LocationStore\CreateLocationStoreIndex;
 use App\Events\Elastic\Machine\CreateMachineIndex;
 use App\Events\Elastic\Manufacturer\CreateManufacturerIndex;
+use App\Events\Elastic\MaterialType\CreateMaterialTypeIndex;
 use App\Repositories\AccidentBodyPartRepository;
 use App\Repositories\AccidentCareRepository;
 use App\Repositories\AccidentHurtTypeRepository;
@@ -125,6 +126,7 @@ use App\Repositories\LicenseClassRepository;
 use App\Repositories\LocationStoreRepository;
 use App\Repositories\MachineRepository;
 use App\Repositories\ManufacturerRepository;
+use App\Repositories\MaterialTypeRepository;
 
 class IndexRecordsToElasticsearch extends Command
 {
@@ -414,6 +416,10 @@ class IndexRecordsToElasticsearch extends Command
             case 'manufacturer':
                 $results = app(ManufacturerRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateManufacturerIndex($name_table));
+                break;
+            case 'material_type':
+                $results = app(MaterialTypeRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateMaterialTypeIndex($name_table));
                 break;
             default:
                 // Xử lý mặc định hoặc xử lý khi không có bảng khớp
