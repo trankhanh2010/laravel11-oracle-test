@@ -105,6 +105,10 @@ use App\Events\Elastic\IcdCm\InsertIcdCmIndex;
 use App\Events\Elastic\IcdGroup\CreateIcdGroupIndex;
 use App\Events\Elastic\InteractionReason\CreateInteractionReasonIndex;
 use App\Events\Elastic\InteractionReason\InsertInteractionReasonIndex;
+use App\Events\Elastic\LicenseClass\CreateLicenseClassIndex;
+use App\Events\Elastic\LicenseClass\InsertLicenseClassIndex;
+use App\Events\Elastic\LocationStore\CreateLocationStoreIndex;
+use App\Events\Elastic\LocationStore\InsertLocationStoreIndex;
 use App\Events\Telegram\SendMessageToChannel;
 use App\Listeners\Cache\DeleteCache as CacheDeleteCache;
 use App\Listeners\Elastic\AccidentBodyPart\ElasticCreateAccidentBodyPartIndex;
@@ -209,6 +213,10 @@ use App\Listeners\Elastic\IcdCm\ElasticInsertIcdCmIndex;
 use App\Listeners\Elastic\IcdGroup\ElasticCreateIcdGroupIndex;
 use App\Listeners\Elastic\InteractionReason\ElasticCreateInteractionReasonIndex;
 use App\Listeners\Elastic\InteractionReason\ElasticInsertInteractionReasonIndex;
+use App\Listeners\Elastic\LicenseClass\ElasticCreateLicenseClassIndex;
+use App\Listeners\Elastic\LicenseClass\ElasticInsertLicenseClassIndex;
+use App\Listeners\Elastic\LocationStore\ElasticCreateLocationStoreIndex;
+use App\Listeners\Elastic\LocationStore\ElasticInsertLocationStoreIndex;
 use App\Listeners\Telegram\TelegramSendMessageToChannel;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -596,6 +604,20 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertInteractionReasonIndex::class => [
             ElasticInsertInteractionReasonIndex::class,
+        ],
+
+        CreateLicenseClassIndex::class => [
+            ElasticCreateLicenseClassIndex::class,
+        ],
+        InsertLicenseClassIndex::class => [
+            ElasticInsertLicenseClassIndex::class,
+        ],
+
+        CreateLocationStoreIndex::class => [
+            ElasticCreateLocationStoreIndex::class,
+        ],
+        InsertLocationStoreIndex::class => [
+            ElasticInsertLocationStoreIndex::class,
         ],
     ];
 

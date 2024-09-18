@@ -19,6 +19,12 @@ class ElasticSearchController extends Controller
         $this->client = app('Elasticsearch');
         $this->all_table = config('params')['elastic']['all_table'];
     }
+    public function get_all_name(Request $request)
+    {
+        // Chỉ trả về key
+        $data = array_keys($this->all_table);
+        return returnDataSuccess([], $data);
+    }
     public function index_records_to_elasticsearch(Request $request)
     {
         // Tăng thời gian chờ lên 600 giây (10 phút)

@@ -213,6 +213,7 @@ Route::group([
     Route::get("v1/clear-cache", [CacheController::class, "clearCache"])->name('.clear_cache');
     Route::get("v1/clear-cache-elastic-index-keyword", [CacheController::class, "clearCacheElaticIndexKeyword"])->name('.clear_cache_elatic_index_keyword');
     /// Elastic Search
+    Route::get("v1/get-all-name", [ElasticSearchController::class, "get_all_name"])->name('.get_all_name');
     Route::get("v1/index-records-to-elasticsearch", [ElasticSearchController::class, "index_records_to_elasticsearch"])->name('.index_records_to_elasticsearch');
     Route::get("v1/get-mapping", [ElasticSearchController::class, "get_mapping"])->name('.get_mapping');
     Route::get("v1/get-setting", [ElasticSearchController::class, "get_index_settings"])->name('.get_index_settings');
@@ -432,6 +433,14 @@ Route::group([
     /// Lý do kê đơn tương tác
     Route::group(['as' => 'HIS.Desktop.Plugins.InteractionReason'], function () {
         Route::apiResource('v1/interaction-reason', InteractionReasonController::class);
+    });
+    /// Hạng lái xe
+    Route::group(['as' => 'HIS.Desktop.Plugins.LicenseClass'], function () {
+        Route::apiResource('v1/license-class', LicenseClassController::class);
+    });
+    /// Vị trí hồ sơ bệnh án
+    Route::group(['as' => 'HIS.Desktop.Plugins.LocationTreatment'], function () {
+        Route::apiResource('v1/location-treatment', LocationStoreController::class);
     });
     /// Loại phòng
     Route::group(['as' => 'HIS.Desktop.Plugins.RoomTypeModule'], function () {
@@ -894,15 +903,6 @@ Route::group([
         Route::delete("v1/preparations-blood/{id}", [PreparationsBloodController::class, "preparations_blood_delete"])->name('.delete');
     });
 
-    /// Hạng lái xe
-    Route::group(['as' => 'HIS.Desktop.Plugins.LicenseClass'], function () {
-        Route::get("v1/license-class", [LicenseClassController::class, "license_class"])->name('.get');
-        Route::get("v1/license-class/{id}", [LicenseClassController::class, "license_class"])->name('.get_id');
-        Route::post("v1/license-class", [LicenseClassController::class, "license_class_create"])->name('.create');
-        Route::put("v1/license-class/{id}", [LicenseClassController::class, "license_class_update"])->name('.update');
-        Route::delete("v1/license-class/{id}", [LicenseClassController::class, "license_class_delete"])->name('.delete');
-    });
-
     /// Hãng sản xuất
     Route::group(['as' => 'HIS.Desktop.Plugins.HisManufacturer'], function () {
         Route::get("v1/manufacturer", [ManufacturerController::class, "manufacturer"])->name('.get');
@@ -961,15 +961,6 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisProcessing'], function () {
         Route::get("v1/processing-method", [ProcessingMethodController::class, "processing_method"])->name('.get');
         Route::get("v1/processing-method/{id}", [ProcessingMethodController::class, "processing_method"])->name('.get_id');
-    });
-
-    /// Vị trí hồ sơ bệnh án
-    Route::group(['as' => 'HIS.Desktop.Plugins.LocationTreatment'], function () {
-        Route::get("v1/location-treatment", [LocationStoreController::class, "location_treatment"])->name('.get');
-        Route::get("v1/location-treatment/{id}", [LocationStoreController::class, "location_treatment"])->name('.get_id');
-        Route::post("v1/location-treatment", [LocationStoreController::class, "location_treatment_create"])->name('.create');
-        Route::put("v1/location-treatment/{id}", [LocationStoreController::class, "location_treatment_update"])->name('.update');
-        Route::delete("v1/location-treatment/{id}", [LocationStoreController::class, "location_treatment_delete"])->name('.delete');
     });
 
     /// Bàn mổ

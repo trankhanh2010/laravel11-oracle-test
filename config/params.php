@@ -3,8 +3,8 @@
 return [
     'elastic' => [
         'all_table' => [
-            'his_area',
-            'his_accident_body_part',
+            'area' => 'his_area',
+            'accident_body_part' => 'his_accident_body_part',
             'his_accident_location',
             'his_accident_hurt_type',
             'his_accident_care',
@@ -216,7 +216,8 @@ return [
             'icd_group' => 'Có lỗi khi thực hiện thao tác với bảng Nhóm ICD!',
             'info_user' => 'Có lỗi khi thực hiện thao tác với bảng Tài khoản nhân viên!',
             'interaction_reason' => 'Có lỗi khi thực hiện thao tác với bảng Lý do kê đơn tương tác!',
-
+            'license_class' => 'Có lỗi khi thực hiện thao tác với bảng Hạng lái xe!',
+            'location_store' => 'Có lỗi khi thực hiện thao tác với bảng Vị trí hồ sơ bệnh án!',
         ]
     ]
     
