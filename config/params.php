@@ -218,6 +218,9 @@ return [
             'interaction_reason' => 'Có lỗi khi thực hiện thao tác với bảng Lý do kê đơn tương tác!',
             'license_class' => 'Có lỗi khi thực hiện thao tác với bảng Hạng lái xe!',
             'location_store' => 'Có lỗi khi thực hiện thao tác với bảng Vị trí hồ sơ bệnh án!',
+            'machine' => 'Có lỗi khi thực hiện thao tác với bảng Máy / Máy cận lâm sàng!',
+            'manufacturer' => 'Có lỗi khi thực hiện thao tác với bảng Hãng sản xuất!',
+
         ]
     ]
     

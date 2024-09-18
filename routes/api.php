@@ -442,6 +442,14 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.LocationTreatment'], function () {
         Route::apiResource('v1/location-treatment', LocationStoreController::class);
     });
+    /// Máy / Máy cận lâm sàn
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisMachine'], function () {
+        Route::apiResource('v1/machine', MachineController::class);
+    });
+    /// Hãng sản xuất
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisManufacturer'], function () {
+        Route::apiResource('v1/manufacturer', ManufacturerController::class);
+    });
     /// Loại phòng
     Route::group(['as' => 'HIS.Desktop.Plugins.RoomTypeModule'], function () {
         Route::get("v1/room-type", [RoomTypeController::class, "room_type"])->name('.get');
@@ -616,15 +624,6 @@ Route::group([
         // Trả về tất cả máy cùng dịch vụ
         Route::get("v1/machine/all/service", [ServiceMachineController::class, "machine_with_service"])->name('.get_machine_serice');
         Route::get("v1/machine/{id}/service", [ServiceMachineController::class, "machine_with_service"])->name('.get_machine_service_id');
-    });
-
-    /// Máy / Máy cận lâm sàn
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisMachine'], function () {
-        Route::get("v1/machine", [MachineController::class, "machine"])->name('.get');
-        Route::get("v1/machine/{id}", [MachineController::class, "machine"])->name('.get_id');
-        Route::post("v1/machine", [MachineController::class, "machine_create"])->name('.create');
-        Route::put("v1/machine/{id}", [MachineController::class, "machine_update"])->name('.update');
-        Route::delete("v1/machine/{id}", [MachineController::class, "machine_delete"])->name('.delete');
     });
 
     /// Dịch vụ phòng
@@ -901,15 +900,6 @@ Route::group([
         Route::post("v1/preparations-blood", [PreparationsBloodController::class, "preparations_blood_create"])->name('.create');
         Route::put("v1/preparations-blood/{id}", [PreparationsBloodController::class, "preparations_blood_update"])->name('.update');
         Route::delete("v1/preparations-blood/{id}", [PreparationsBloodController::class, "preparations_blood_delete"])->name('.delete');
-    });
-
-    /// Hãng sản xuất
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisManufacturer'], function () {
-        Route::get("v1/manufacturer", [ManufacturerController::class, "manufacturer"])->name('.get');
-        Route::get("v1/manufacturer/{id}", [ManufacturerController::class, "manufacturer"])->name('.get_id');
-        Route::post("v1/manufacturer", [ManufacturerController::class, "manufacturer_create"])->name('.create');
-        Route::put("v1/manufacturer/{id}", [ManufacturerController::class, "manufacturer_update"])->name('.update');
-        Route::delete("v1/manufacturer/{id}", [ManufacturerController::class, "manufacturer_delete"])->name('.delete');
     });
 
     /// Loại bệnh án

@@ -63,6 +63,8 @@ use App\Events\Elastic\IcdGroup\CreateIcdGroupIndex;
 use App\Events\Elastic\InteractionReason\CreateInteractionReasonIndex;
 use App\Events\Elastic\LicenseClass\CreateLicenseClassIndex;
 use App\Events\Elastic\LocationStore\CreateLocationStoreIndex;
+use App\Events\Elastic\Machine\CreateMachineIndex;
+use App\Events\Elastic\Manufacturer\CreateManufacturerIndex;
 use App\Repositories\AccidentBodyPartRepository;
 use App\Repositories\AccidentCareRepository;
 use App\Repositories\AccidentHurtTypeRepository;
@@ -121,6 +123,8 @@ use App\Repositories\IcdRepository;
 use App\Repositories\InteractionReasonRepository;
 use App\Repositories\LicenseClassRepository;
 use App\Repositories\LocationStoreRepository;
+use App\Repositories\MachineRepository;
+use App\Repositories\ManufacturerRepository;
 
 class IndexRecordsToElasticsearch extends Command
 {
@@ -403,9 +407,17 @@ class IndexRecordsToElasticsearch extends Command
                 $results = app(LocationStoreRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateLocationStoreIndex($name_table));
                 break;
+            case 'machine':
+                $results = app(MachineRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateMachineIndex($name_table));
+                break;
+            case 'manufacturer':
+                $results = app(ManufacturerRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateManufacturerIndex($name_table));
+                break;
             default:
                 // Xử lý mặc định hoặc xử lý khi không có bảng khớp
-                $this->error('Không tồn tại bảng ' . $name_table . '.');
+                $this->error('Không có dữ liệu của bảng ' . $name_table . '.');
                 break;
         }
         // Chèn từng bản ghi

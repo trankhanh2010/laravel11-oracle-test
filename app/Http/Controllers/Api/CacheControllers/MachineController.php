@@ -2,198 +2,116 @@
 
 namespace App\Http\Controllers\Api\CacheControllers;
 
+use App\DTOs\MachineDTO;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
-use App\Models\HIS\Machine;
-use Illuminate\Http\Request;
-use App\Events\Cache\DeleteCache;
 use App\Http\Requests\Machine\CreateMachineRequest;
 use App\Http\Requests\Machine\UpdateMachineRequest;
-use Illuminate\Support\Facades\DB;
+use App\Models\HIS\Machine;
+use App\Services\Elastic\ElasticsearchService;
+use App\Services\Model\MachineService;
+use Illuminate\Http\Request;
+
 
 class MachineController extends BaseApiCacheController
 {
-    public function __construct(Request $request)
+    protected $machineService;
+    protected $machineDTO;
+    public function __construct(Request $request, ElasticsearchService $elasticSearchService, MachineService $machineService, Machine $machine)
     {
         parent::__construct($request); // Gọi constructor của BaseController
-        $this->machine = new Machine();
-
+        $this->elasticSearchService = $elasticSearchService;
+        $this->machineService = $machineService;
+        $this->machine = $machine;
         // Kiểm tra tên trường trong bảng
-        if ($this->order_by != null) {
-            $columns = $this->get_columns_table($this->machine);
-            $this->order_by = $this->check_order_by($this->order_by, $columns, $this->order_by_join ?? []);
-            $this->order_by_tring = arrayToCustomString($this->order_by);
-        }
-    }
-    public function machine($id = null)
-    {
-        // Kiểm tra param và trả về lỗi nếu nó không hợp lệ
-        if ($this->check_param()) {
-            return $this->check_param();
-        }
-        $param = [
-            'department:id,department_name',
-        ];
-        try {
-            $keyword = $this->keyword;
-            if ($keyword != null) {
-                $data = $this->machine;
-                $data = $data->where(function ($query) use ($keyword) {
-                    $query = $query
-                        ->where(DB::connection('oracle_his')->raw('machine_code'), 'like', $keyword . '%')
-                        ->orWhere(DB::connection('oracle_his')->raw('machine_name'), 'like', $keyword . '%');
-                });
-                if ($this->is_active !== null) {
-                    $data = $data->where(function ($query) {
-                        $query = $query->where(DB::connection('oracle_his')->raw('his_machine.is_active'), $this->is_active);
-                    });
-                }
-                $count = $data->count();
-                if ($this->order_by != null) {
-                    foreach ($this->order_by as $key => $item) {
-                        $data->orderBy($key, $item);
-                    }
-                }
-                if ($this->get_all) {
-                    $data = $data
-                        ->get();
-                } else {
-                    $data = $data
-                        ->skip($this->start)
-                        ->take($this->limit)
-                        ->get();
-                }
-            } else {
-                if ($id == null) {
-                    $data = get_cache_full($this->machine, $param, $this->machine_name . '_start_' . $this->start . '_limit_' . $this->limit . $this->order_by_tring . '_is_active_' . $this->is_active . '_get_all_' . $this->get_all, null, $this->time, $this->start, $this->limit, $this->order_by, $this->is_active, $this->get_all);
-                } else {
-                    if (!is_numeric($id)) {
-                        return returnIdError($id);
-                    }
-                    $check_id = $this->check_id($id, $this->machine, $this->machine_name);
-                    if ($check_id) {
-                        return $check_id;
-                    }
-                    $data = get_cache_full($this->machine, $param, $this->machine_name . '_' . $id . '_is_active_' . $this->is_active, $id, $this->time, $this->start, $this->limit, $this->order_by, $this->is_active, $this->get_all);
-                }
-            }
-            $param_return = [
-                $this->get_all_name => $this->get_all,
-                $this->start_name => ($this->get_all || !is_null($id)) ? null : $this->start,
-                $this->limit_name => ($this->get_all || !is_null($id)) ? null : $this->limit,
-                $this->count_name => $count ?? ($data['count'] ?? null),
-                $this->is_active_name => $this->is_active,
-                $this->keyword_name => $this->keyword,
-                $this->order_by_name => $this->order_by_request
+        if ($this->orderBy != null) {
+            $this->orderByJoin = [
+                'department_code',
+                'department_name'
             ];
-            return return_data_success($param_return, $data ?? ($data['data'] ?? null));
-        } catch (\Throwable $e) {
-            // Xử lý lỗi và trả về phản hồi lỗi
-            return return_500_error($e->getMessage());
+            $columns = $this->getColumnsTable($this->machine);
+            $this->orderBy = $this->checkOrderBy($this->orderBy, $columns, $this->orderByJoin ?? []);
         }
+        // Thêm tham số vào service
+        $this->machineDTO = new MachineDTO(
+            $this->machineName,
+            $this->keyword,
+            $this->isActive,
+            $this->orderBy,
+            $this->orderByJoin,
+            $this->orderByString,
+            $this->getAll,
+            $this->start,
+            $this->limit,
+            $request,
+            $this->appCreator, 
+            $this->appModifier, 
+            $this->time,
+        );
+        $this->machineService->withParams($this->machineDTO);
     }
-    public function machine_create(CreateMachineRequest $request)
+    public function index()
     {
-        try {
-            $data = $this->machine::create([
-                'create_time' => now()->format('Ymdhis'),
-                'modify_time' => now()->format('Ymdhis'),
-                'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
-                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
-                'app_creator' => $this->app_creator,
-                'app_modifier' => $this->app_modifier,
-                'is_active' => 1,
-                'is_delete' => 0,
-
-                'machine_code' => $request->machine_code,
-                'machine_name' => $request->machine_name,
-                'serial_number' => $request->serial_number,
-                'source_code' => $request->source_code,
-                'machine_group_code' => $request->machine_group_code,
-                'symbol' => $request->symbol,
-
-                'manufacturer_name' => $request->manufacturer_name,
-                'national_name' => $request->national_name,
-                'manufactured_year' => $request->manufactured_year,
-                'used_year' => $request->used_year,
-                'circulation_number' => $request->circulation_number,
-                'integrate_address' => $request->integrate_address,
-
-                'max_service_per_day' => $request->max_service_per_day,
-                'department_id' => $request->department_id,
-                'room_ids' => $request->room_ids,
-                'is_kidney' => $request->is_kidney,
-            ]);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->machine_name));
-            return return_data_create_success($data);
-        } catch (\Throwable $e) {
-            // Xử lý lỗi và trả về phản hồi lỗi
-            return return_500_error($e->getMessage());
+        if ($this->checkParam()) {
+            return $this->checkParam();
         }
-    }
-
-    public function machine_update(UpdateMachineRequest $request, $id)
-    {
-        if (!is_numeric($id)) {
-            return returnIdError($id);
+        $keyword = $this->keyword;
+        if (($keyword != null || $this->elasticSearchType != null) && !$this->cache) {
+            if ($this->elasticSearchType != null) {
+                $data = $this->elasticSearchService->handleElasticSearchSearch($this->machineName);
+            } else {
+                $data = $this->machineService->handleDataBaseSearch();
+            }
+        } else {
+            if ($this->elastic) {
+                $data = $this->elasticSearchService->handleElasticSearchGetAll($this->machineName);
+            } else {
+                $data = $this->machineService->handleDataBaseGetAll();
+            }
         }
-        $data = $this->machine->find($id);
-        if ($data == null) {
-            return return_not_record($id);
-        }
-        try {
-            $data->update([
-                'modify_time' => now()->format('Ymdhis'),
-                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
-                'app_modifier' => $this->app_modifier,
-
-                'machine_code' => $request->machine_code,
-                'machine_name' => $request->machine_name,
-                'serial_number' => $request->serial_number,
-                'source_code' => $request->source_code,
-                'machine_group_code' => $request->machine_group_code,
-                'symbol' => $request->symbol,
-
-                'manufacturer_name' => $request->manufacturer_name,
-                'national_name' => $request->national_name,
-                'manufactured_year' => $request->manufactured_year,
-                'used_year' => $request->used_year,
-                'circulation_number' => $request->circulation_number,
-                'integrate_address' => $request->integrate_address,
-
-                'max_service_per_day' => $request->max_service_per_day,
-                'department_id' => $request->department_id,
-                'room_ids' => $request->room_ids,
-                'is_kidney' => $request->is_kidney,
-
-                'is_active' => $request->is_active
-            ]);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->machine_name));
-            return return_data_update_success($data);
-        } catch (\Throwable $e) {
-            // Xử lý lỗi và trả về phản hồi lỗi
-            return return_500_error($e->getMessage());
-        }
+        $paramReturn = [
+            $this->getAllName => $this->getAll,
+            $this->startName => $this->getAll ? null : $this->start,
+            $this->limitName => $this->getAll ? null : $this->limit,
+            $this->countName => $data['count'],
+            $this->isActiveName => $this->isActive,
+            $this->keywordName => $this->keyword,
+            $this->orderByName => $this->orderByRequest
+        ];
+        return returnDataSuccess($paramReturn, $data['data']);
     }
 
-    public function machine_delete(Request $request, $id)
+    public function show($id)
     {
-        if (!is_numeric($id)) {
-            return returnIdError($id);
+        if ($this->checkParam()) {
+            return $this->checkParam();
         }
-        $data = $this->machine->find($id);
-        if ($data == null) {
-            return return_not_record($id);
+        if ($id !== null) {
+            $validationError = $this->validateAndCheckId($id, $this->machine, $this->machineName);
+            if ($validationError) {
+                return $validationError;
+            }
         }
-        try {
-            $data->delete();
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->machine_name));
-            return return_data_delete_success();
-        } catch (\Throwable $e) {
-            // Xử lý lỗi và trả về phản hồi lỗi
-            return return_data_delete_fail();
+        if ($this->elastic) {
+            $data = $this->elasticSearchService->handleElasticSearchGetWithId($this->machineName, $id);
+        } else {
+            $data = $this->machineService->handleDataBaseGetWithId($id);
         }
+        $paramReturn = [
+            $this->idName => $id,
+            $this->isActiveName => $this->isActive,
+        ];
+        return returnDataSuccess($paramReturn, $data);
+    }
+    public function store(CreateMachineRequest $request)
+    {
+        return $this->machineService->createMachine($request);
+    }
+    public function update(UpdateMachineRequest $request, $id)
+    {
+        return $this->machineService->updateMachine($id, $request);
+    }
+    public function destroy($id)
+    {
+        return $this->machineService->deleteMachine($id);
     }
 }

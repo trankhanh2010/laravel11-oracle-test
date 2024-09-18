@@ -109,6 +109,10 @@ use App\Events\Elastic\LicenseClass\CreateLicenseClassIndex;
 use App\Events\Elastic\LicenseClass\InsertLicenseClassIndex;
 use App\Events\Elastic\LocationStore\CreateLocationStoreIndex;
 use App\Events\Elastic\LocationStore\InsertLocationStoreIndex;
+use App\Events\Elastic\Machine\CreateMachineIndex;
+use App\Events\Elastic\Machine\InsertMachineIndex;
+use App\Events\Elastic\Manufacturer\CreateManufacturerIndex;
+use App\Events\Elastic\Manufacturer\InsertManufacturerIndex;
 use App\Events\Telegram\SendMessageToChannel;
 use App\Listeners\Cache\DeleteCache as CacheDeleteCache;
 use App\Listeners\Elastic\AccidentBodyPart\ElasticCreateAccidentBodyPartIndex;
@@ -217,6 +221,10 @@ use App\Listeners\Elastic\LicenseClass\ElasticCreateLicenseClassIndex;
 use App\Listeners\Elastic\LicenseClass\ElasticInsertLicenseClassIndex;
 use App\Listeners\Elastic\LocationStore\ElasticCreateLocationStoreIndex;
 use App\Listeners\Elastic\LocationStore\ElasticInsertLocationStoreIndex;
+use App\Listeners\Elastic\Machine\ElasticCreateMachineIndex;
+use App\Listeners\Elastic\Machine\ElasticInsertMachineIndex;
+use App\Listeners\Elastic\Manufacturer\ElasticCreateManufacturerIndex;
+use App\Listeners\Elastic\Manufacturer\ElasticInsertManufacturerIndex;
 use App\Listeners\Telegram\TelegramSendMessageToChannel;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -618,6 +626,20 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertLocationStoreIndex::class => [
             ElasticInsertLocationStoreIndex::class,
+        ],
+
+        CreateMachineIndex::class => [
+            ElasticCreateMachineIndex::class,
+        ],
+        InsertMachineIndex::class => [
+            ElasticInsertMachineIndex::class,
+        ],
+
+        CreateManufacturerIndex::class => [
+            ElasticCreateManufacturerIndex::class,
+        ],
+        InsertManufacturerIndex::class => [
+            ElasticInsertManufacturerIndex::class,
         ],
     ];
 
