@@ -114,6 +114,8 @@ use App\Events\Elastic\Machine\InsertMachineIndex;
 use App\Events\Elastic\Manufacturer\CreateManufacturerIndex;
 use App\Events\Elastic\Manufacturer\InsertManufacturerIndex;
 use App\Events\Elastic\MaterialType\CreateMaterialTypeIndex;
+use App\Events\Elastic\Medicine\CreateMedicineIndex;
+use App\Events\Elastic\MedicineGroup\CreateMedicineGroupIndex;
 use App\Events\Telegram\SendMessageToChannel;
 use App\Listeners\Cache\DeleteCache as CacheDeleteCache;
 use App\Listeners\Elastic\AccidentBodyPart\ElasticCreateAccidentBodyPartIndex;
@@ -227,6 +229,8 @@ use App\Listeners\Elastic\Machine\ElasticInsertMachineIndex;
 use App\Listeners\Elastic\Manufacturer\ElasticCreateManufacturerIndex;
 use App\Listeners\Elastic\Manufacturer\ElasticInsertManufacturerIndex;
 use App\Listeners\Elastic\MaterialType\ElasticCreateMaterialTypeIndex;
+use App\Listeners\Elastic\Medicine\ElasticCreateMedicineIndex;
+use App\Listeners\Elastic\MedicineGroup\ElasticCreateMedicineGroupIndex;
 use App\Listeners\Telegram\TelegramSendMessageToChannel;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -646,6 +650,14 @@ class EventServiceProvider extends ServiceProvider
 
         CreateMaterialTypeIndex::class => [
             ElasticCreateMaterialTypeIndex::class,
+        ],
+
+        CreateMedicineIndex::class => [
+            ElasticCreateMedicineIndex::class,
+        ],
+
+        CreateMedicineGroupIndex::class => [
+            ElasticCreateMedicineGroupIndex::class,
         ],
     ];
 

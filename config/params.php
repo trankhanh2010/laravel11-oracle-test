@@ -221,6 +221,8 @@ return [
             'machine' => 'Có lỗi khi thực hiện thao tác với bảng Máy / Máy cận lâm sàng!',
             'manufacturer' => 'Có lỗi khi thực hiện thao tác với bảng Hãng sản xuất!',
             'material_type' => 'Có lỗi khi thực hiện thao tác với bảng Loại vật tư!',
+            'medicine' => 'Có lỗi khi thực hiện thao tác với bảng Thuốc!',
+            'medicine_group' => 'Có lỗi khi thực hiện thao tác với bảng Nhóm thuốc!',
 
         ]
     ]

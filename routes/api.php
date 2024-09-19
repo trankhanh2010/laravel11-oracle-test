@@ -452,6 +452,12 @@ Route::group([
     });
     /// Loại vật tư
     Route::apiResource('v1/material-type', MaterialTypeController::class)->only(['index', 'show']);
+    /// Thuốc
+    Route::apiResource('v1/medicine', MedicineController::class)->only(['index', 'show']);
+    /// Nhóm thuốc
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisMedicineGroup'], function () {
+        Route::apiResource('v1/medicine-group', MedicineGroupController::class)->only(['index', 'show']);
+    });
     /// Loại phòng
     Route::group(['as' => 'HIS.Desktop.Plugins.RoomTypeModule'], function () {
         Route::get("v1/room-type", [RoomTypeController::class, "room_type"])->name('.get');
@@ -883,10 +889,6 @@ Route::group([
         Route::delete("v1/medicine-paty/{id}", [MedicinePatyController::class, "medicine_paty_delete"])->name('.delete');
     });
 
-    /// Thuốc
-    Route::get("v1/medicine", [MedicineController::class, "medicine"])->name('.get_medicine');
-    Route::get("v1/medicine/{id}", [MedicineController::class, "medicine"])->name('.get_medicine_id');
-
     /// Loại thuốc
     Route::get("v1/medicine-type", [MedicineTypeController::class, "medicine_type"])->name('.get_medicine_type');
     Route::get("v1/medicine-type/{id}", [MedicineTypeController::class, "medicine_type"])->name('.get_medicine_type_id');
@@ -1024,12 +1026,6 @@ Route::group([
         // // Trả về tất cả hoạt chất cùng loại thuốc
         // Route::get("v1/active-ingredient/all/medicine-type", [HISController::class, "active_ingredient_with_medicine_type"]);
         // Route::get("v1/active-ingredient/{id}/medicine-type", [HISController::class, "active_ingredient_with_medicine_type"]);
-    });
-
-    /// Nhóm thuốc
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisMedicineGroup'], function () {
-        Route::get("v1/medicine-group", [MedicineGroupController::class, "medicine_group"])->name('.get');
-        Route::get("v1/medicine-group/{id}", [MedicineGroupController::class, "medicine_group"])->name('.get_id');
     });
 
     /// Chỉ số xét nghiệm

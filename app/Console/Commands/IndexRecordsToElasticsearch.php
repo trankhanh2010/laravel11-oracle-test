@@ -66,6 +66,8 @@ use App\Events\Elastic\LocationStore\CreateLocationStoreIndex;
 use App\Events\Elastic\Machine\CreateMachineIndex;
 use App\Events\Elastic\Manufacturer\CreateManufacturerIndex;
 use App\Events\Elastic\MaterialType\CreateMaterialTypeIndex;
+use App\Events\Elastic\Medicine\CreateMedicineIndex;
+use App\Events\Elastic\MedicineGroup\CreateMedicineGroupIndex;
 use App\Repositories\AccidentBodyPartRepository;
 use App\Repositories\AccidentCareRepository;
 use App\Repositories\AccidentHurtTypeRepository;
@@ -127,6 +129,8 @@ use App\Repositories\LocationStoreRepository;
 use App\Repositories\MachineRepository;
 use App\Repositories\ManufacturerRepository;
 use App\Repositories\MaterialTypeRepository;
+use App\Repositories\MedicineGroupRepository;
+use App\Repositories\MedicineRepository;
 
 class IndexRecordsToElasticsearch extends Command
 {
@@ -420,6 +424,14 @@ class IndexRecordsToElasticsearch extends Command
             case 'material_type':
                 $results = app(MaterialTypeRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateMaterialTypeIndex($name_table));
+                break;
+            case 'medicine':
+                $results = app(MedicineRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateMedicineIndex($name_table));
+                break;
+            case 'medicine_group':
+                $results = app(MedicineGroupRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateMedicineGroupIndex($name_table));
                 break;
             default:
                 // Xử lý mặc định hoặc xử lý khi không có bảng khớp
