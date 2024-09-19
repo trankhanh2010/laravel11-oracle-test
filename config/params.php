@@ -228,6 +228,8 @@ return [
             'medicine_type_acin' => 'Có lỗi khi thực hiện thao tác với bảng Loại thuốc - Hoạt chất!',
             'medicine_type' => 'Có lỗi khi thực hiện thao tác với bảng Loại thuốc!',
             'medicine_use_form' => 'Có lỗi khi thực hiện thao tác với bảng Đường dùng thuốc!',
+            'medi_org' => 'Có lỗi khi thực hiện thao tác với bảng Cơ sở khám chữa bệnh ban đầu!',
+            'medi_record_type' => 'Có lỗi khi thực hiện thao tác với bảng Loại bệnh án!',
         ]
     ]
     

@@ -476,6 +476,14 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisMedicineUseForm'], function () {
         Route::apiResource('v1/medicine-use-form', MedicineUseFormController::class);
     });
+    /// Cơ sở khám chữa bệnh ban đầu
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisMediOrg'], function () {
+        Route::apiResource('v1/medi-org', MediOrgController::class);
+    });
+    /// Loại bệnh án
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisMediRecordType'], function () {
+        Route::apiResource('v1/medi-record-type', MediRecordTypeController::class);
+    });
     /// Loại phòng
     Route::group(['as' => 'HIS.Desktop.Plugins.RoomTypeModule'], function () {
         Route::get("v1/room-type", [RoomTypeController::class, "room_type"])->name('.get');
@@ -514,16 +522,6 @@ Route::group([
         Route::post("v1/treatment-type", [TreatmentTypeController::class, "treatment_type_create"])->name('.create');
         Route::put("v1/treatment-type/{id}", [TreatmentTypeController::class, "treatment_type_update"])->name('.update');
         Route::delete("v1/treatment-type/{id}", [TreatmentTypeController::class, "treatment_type_delete"])->name('.delete');
-    });
-
-    /// Cơ sở khám chữa bệnh ban đầu
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisMediOrg'], function () {
-        Route::get("v1/medi-org", [MediOrgController::class, "medi_org"])->name('.get');
-        Route::get("v1/medi-org/{id}", [MediOrgController::class, "medi_org"])->name('.get_id');
-        Route::get("v1/medi-org-check", [CheckMediOrgController::class, "check_code"])->name('.check');
-        Route::post("v1/medi-org", [MediOrgController::class, "medi_org_create"])->name('.create');
-        Route::put("v1/medi-org/{id}", [MediOrgController::class, "medi_org_update"])->name('.update');
-        Route::delete("v1/medi-org/{id}", [MediOrgController::class, "medi_org_delete"])->name('.delete');
     });
 
     /// Nguồn chi trả khác
@@ -905,15 +903,6 @@ Route::group([
         Route::post("v1/preparations-blood", [PreparationsBloodController::class, "preparations_blood_create"])->name('.create');
         Route::put("v1/preparations-blood/{id}", [PreparationsBloodController::class, "preparations_blood_update"])->name('.update');
         Route::delete("v1/preparations-blood/{id}", [PreparationsBloodController::class, "preparations_blood_delete"])->name('.delete');
-    });
-
-    /// Loại bệnh án
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisMediRecordType'], function () {
-        Route::get("v1/medi-record-type", [MediRecordTypeController::class, "medi_record_type"])->name('.get');
-        Route::get("v1/medi-record-type/{id}", [MediRecordTypeController::class, "medi_record_type"])->name('.get_id');
-        Route::post("v1/medi-record-type", [MediRecordTypeController::class, "medi_record_type_create"])->name('.create');
-        Route::put("v1/medi-record-type/{id}", [MediRecordTypeController::class, "medi_record_type_update"])->name('.update');
-        Route::delete("v1/medi-record-type/{id}", [MediRecordTypeController::class, "medi_record_type_delete"])->name('.delete');
     });
 
     /// Loại ra viện

@@ -124,6 +124,10 @@ use App\Events\Elastic\MedicineTypeAcin\CreateMedicineTypeAcinIndex;
 use App\Events\Elastic\MedicineTypeAcin\InsertMedicineTypeAcinIndex;
 use App\Events\Elastic\MedicineUseForm\CreateMedicineUseFormIndex;
 use App\Events\Elastic\MedicineUseForm\InsertMedicineUseFormIndex;
+use App\Events\Elastic\MediOrg\CreateMediOrgIndex;
+use App\Events\Elastic\MediOrg\InsertMediOrgIndex;
+use App\Events\Elastic\MediRecordType\CreateMediRecordTypeIndex;
+use App\Events\Elastic\MediRecordType\InsertMediRecordTypeIndex;
 use App\Events\Telegram\SendMessageToChannel;
 use App\Listeners\Cache\DeleteCache as CacheDeleteCache;
 use App\Listeners\Elastic\AccidentBodyPart\ElasticCreateAccidentBodyPartIndex;
@@ -247,6 +251,10 @@ use App\Listeners\Elastic\MedicineTypeAcin\ElasticCreateMedicineTypeAcinIndex;
 use App\Listeners\Elastic\MedicineTypeAcin\ElasticInsertMedicineTypeAcinIndex;
 use App\Listeners\Elastic\MedicineUseForm\ElasticCreateMedicineUseFormIndex;
 use App\Listeners\Elastic\MedicineUseForm\ElasticInsertMedicineUseFormIndex;
+use App\Listeners\Elastic\MediOrg\ElasticCreateMediOrgIndex;
+use App\Listeners\Elastic\MediOrg\ElasticInsertMediOrgIndex;
+use App\Listeners\Elastic\MediRecordType\ElasticCreateMediRecordTypeIndex;
+use App\Listeners\Elastic\MediRecordType\ElasticInsertMediRecordTypeIndex;
 use App\Listeners\Telegram\TelegramSendMessageToChannel;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -703,6 +711,20 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertMedicineUseFormIndex::class => [
             ElasticInsertMedicineUseFormIndex::class,
+        ],
+
+        CreateMediOrgIndex::class => [
+            ElasticCreateMediOrgIndex::class,
+        ],
+        InsertMediOrgIndex::class => [
+            ElasticInsertMediOrgIndex::class,
+        ],
+
+        CreateMediRecordTypeIndex::class => [
+            ElasticCreateMediRecordTypeIndex::class,
+        ],
+        InsertMediRecordTypeIndex::class => [
+            ElasticInsertMediRecordTypeIndex::class,
         ],
     ];
 
