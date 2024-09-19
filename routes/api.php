@@ -470,6 +470,12 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.MedicineTypeActiveIngredient'], function () {
         Route::apiResource('v1/medicine-type-acin', MedicineTypeAcinController::class)->only(['index', 'show', 'store']);
     });
+    /// Loại thuốc
+    Route::apiResource('v1/medicine-type', MedicineTypeController::class)->only(['index', 'show']);
+    /// Đường dùng thuốc
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisMedicineUseForm'], function () {
+        Route::apiResource('v1/medicine-use-form', MedicineUseFormController::class);
+    });
     /// Loại phòng
     Route::group(['as' => 'HIS.Desktop.Plugins.RoomTypeModule'], function () {
         Route::get("v1/room-type", [RoomTypeController::class, "room_type"])->name('.get');
@@ -892,10 +898,6 @@ Route::group([
         Route::get("v1/patient-case/{id}", [PatientCaseController::class, "patient_case"])->name('.get_id');
     });
 
-    /// Loại thuốc
-    Route::get("v1/medicine-type", [MedicineTypeController::class, "medicine_type"])->name('.get_medicine_type');
-    Route::get("v1/medicine-type/{id}", [MedicineTypeController::class, "medicine_type"])->name('.get_medicine_type_id');
-
     /// Chế phẩm máu
     Route::group(['as' => 'HIS.Desktop.Plugins.HisPreparationsBlood'], function () {
         Route::get("v1/preparations-blood", [PreparationsBloodController::class, "preparations_blood"])->name('.get');
@@ -1001,15 +1003,6 @@ Route::group([
         Route::post("v1/pttt-condition", [PtttConditionController::class, "pttt_condition_create"])->name('.create');
         Route::put("v1/pttt-condition/{id}", [PtttConditionController::class, "pttt_condition_update"])->name('.update');
         Route::delete("v1/pttt-condition/{id}", [PtttConditionController::class, "pttt_condition_delete"])->name('.delete');
-    });
-
-    /// Đường dùng thuốc
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisMedicineUseForm'], function () {
-        Route::get("v1/medicine-use-form", [MedicineUseFormController::class, "medicine_use_form"])->name('.get');
-        Route::get("v1/medicine-use-form/{id}", [MedicineUseFormController::class, "medicine_use_form"])->name('.get_id');
-        Route::post("v1/medicine-use-form", [MedicineUseFormController::class, "medicine_use_form_create"])->name('.create');
-        Route::put("v1/medicine-use-form/{id}", [MedicineUseFormController::class, "medicine_use_form_update"])->name('.update');
-        Route::delete("v1/medicine-use-form/{id}", [MedicineUseFormController::class, "medicine_use_form_delete"])->name('.delete');
     });
 
     /// Chỉ số xét nghiệm

@@ -70,7 +70,10 @@ use App\Events\Elastic\Medicine\CreateMedicineIndex;
 use App\Events\Elastic\MedicineGroup\CreateMedicineGroupIndex;
 use App\Events\Elastic\MedicineLine\CreateMedicineLineIndex;
 use App\Events\Elastic\MedicinePaty\CreateMedicinePatyIndex;
+use App\Events\Elastic\MedicineType\CreateMedicineTypeIndex;
 use App\Events\Elastic\MedicineTypeAcin\CreateMedicineTypeAcinIndex;
+use App\Events\Elastic\MedicineUseForm\CreateMedicineUseFormIndex;
+use App\Models\HIS\MedicineUseForm;
 use App\Repositories\AccidentBodyPartRepository;
 use App\Repositories\AccidentCareRepository;
 use App\Repositories\AccidentHurtTypeRepository;
@@ -137,6 +140,8 @@ use App\Repositories\MedicineLineRepository;
 use App\Repositories\MedicinePatyRepository;
 use App\Repositories\MedicineRepository;
 use App\Repositories\MedicineTypeAcinRepository;
+use App\Repositories\MedicineTypeRepository;
+use App\Repositories\MedicineUseFormRepository;
 
 class IndexRecordsToElasticsearch extends Command
 {
@@ -450,6 +455,14 @@ class IndexRecordsToElasticsearch extends Command
             case 'medicine_type_acin':
                 $results = app(MedicineTypeAcinRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateMedicineTypeAcinIndex($name_table));
+                break;
+            case 'medicine_type':
+                $results = app(MedicineTypeRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateMedicineTypeIndex($name_table));
+                break;
+            case 'medicine_use_form':
+                $results = app(MedicineUseFormRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateMedicineUseFormIndex($name_table));
                 break;
             default:
                 // Xử lý mặc định hoặc xử lý khi không có bảng khớp

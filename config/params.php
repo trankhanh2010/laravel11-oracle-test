@@ -226,6 +226,8 @@ return [
             'medicine_line' => 'Có lỗi khi thực hiện thao tác với bảng Dòng thuốc!',
             'medicine_paty' => 'Có lỗi khi thực hiện thao tác với bảng Chính sách giá thuốc!',
             'medicine_type_acin' => 'Có lỗi khi thực hiện thao tác với bảng Loại thuốc - Hoạt chất!',
+            'medicine_type' => 'Có lỗi khi thực hiện thao tác với bảng Loại thuốc!',
+            'medicine_use_form' => 'Có lỗi khi thực hiện thao tác với bảng Đường dùng thuốc!',
         ]
     ]
     
