@@ -119,6 +119,8 @@ use App\Events\Elastic\MedicineGroup\CreateMedicineGroupIndex;
 use App\Events\Elastic\MedicineLine\CreateMedicineLineIndex;
 use App\Events\Elastic\MedicinePaty\CreateMedicinePatyIndex;
 use App\Events\Elastic\MedicinePaty\InsertMedicinePatyIndex;
+use App\Events\Elastic\MedicineTypeAcin\CreateMedicineTypeAcinIndex;
+use App\Events\Elastic\MedicineTypeAcin\InsertMedicineTypeAcinIndex;
 use App\Events\Telegram\SendMessageToChannel;
 use App\Listeners\Cache\DeleteCache as CacheDeleteCache;
 use App\Listeners\Elastic\AccidentBodyPart\ElasticCreateAccidentBodyPartIndex;
@@ -237,6 +239,8 @@ use App\Listeners\Elastic\MedicineGroup\ElasticCreateMedicineGroupIndex;
 use App\Listeners\Elastic\MedicineLine\ElasticCreateMedicineLineIndex;
 use App\Listeners\Elastic\MedicinePaty\ElasticCreateMedicinePatyIndex;
 use App\Listeners\Elastic\MedicinePaty\ElasticInsertMedicinePatyIndex;
+use App\Listeners\Elastic\MedicineTypeAcin\ElasticCreateMedicineTypeAcinIndex;
+use App\Listeners\Elastic\MedicineTypeAcin\ElasticInsertMedicineTypeAcinIndex;
 use App\Listeners\Telegram\TelegramSendMessageToChannel;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -675,6 +679,13 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertMedicinePatyIndex::class => [
             ElasticInsertMedicinePatyIndex::class,
+        ],
+
+        CreateMedicineTypeAcinIndex::class => [
+            ElasticCreateMedicineTypeAcinIndex::class,
+        ],
+        InsertMedicineTypeAcinIndex::class => [
+            ElasticInsertMedicineTypeAcinIndex::class,
         ],
     ];
 

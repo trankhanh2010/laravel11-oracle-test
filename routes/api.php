@@ -466,6 +466,10 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisMedicinePaty'], function () {
         Route::apiResource('v1/medicine-paty', MedicinePatyController::class);
     });
+    /// Loại thuốc - Hoạt chất
+    Route::group(['as' => 'HIS.Desktop.Plugins.MedicineTypeActiveIngredient'], function () {
+        Route::apiResource('v1/medicine-type-acin', MedicineTypeAcinController::class)->only(['index', 'show', 'store']);
+    });
     /// Loại phòng
     Route::group(['as' => 'HIS.Desktop.Plugins.RoomTypeModule'], function () {
         Route::get("v1/room-type", [RoomTypeController::class, "room_type"])->name('.get');
@@ -1006,19 +1010,6 @@ Route::group([
         Route::post("v1/medicine-use-form", [MedicineUseFormController::class, "medicine_use_form_create"])->name('.create');
         Route::put("v1/medicine-use-form/{id}", [MedicineUseFormController::class, "medicine_use_form_update"])->name('.update');
         Route::delete("v1/medicine-use-form/{id}", [MedicineUseFormController::class, "medicine_use_form_delete"])->name('.delete');
-    });
-
-    /// Loại thuốc - Hoạt chất
-    Route::group(['as' => 'HIS.Desktop.Plugins.MedicineTypeActiveIngredient'], function () {
-        // Trả về tất cả mối quan hệ
-        Route::get("v1/medicine-type-acin", [MedicineTypeAcinController::class, "medicine_type_acin"])->name('.get');
-        Route::get("v1/medicine-type-acin/{id}", [MedicineTypeAcinController::class, "medicine_type_acin"])->name('.get_id');
-        // // Trả về tất cả loại thuốc cùng hoạt chất
-        // Route::get("v1/medicine-type/all/active-ingredient", [HISController::class, "medicine_type_with_active_ingredient"]);
-        // Route::get("v1/medicine-type/{id}/active-ingredient", [HISController::class, "medicine_type_with_active_ingredient"]);
-        // // Trả về tất cả hoạt chất cùng loại thuốc
-        // Route::get("v1/active-ingredient/all/medicine-type", [HISController::class, "active_ingredient_with_medicine_type"]);
-        // Route::get("v1/active-ingredient/{id}/medicine-type", [HISController::class, "active_ingredient_with_medicine_type"]);
     });
 
     /// Chỉ số xét nghiệm

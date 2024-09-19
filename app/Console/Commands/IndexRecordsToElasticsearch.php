@@ -70,6 +70,7 @@ use App\Events\Elastic\Medicine\CreateMedicineIndex;
 use App\Events\Elastic\MedicineGroup\CreateMedicineGroupIndex;
 use App\Events\Elastic\MedicineLine\CreateMedicineLineIndex;
 use App\Events\Elastic\MedicinePaty\CreateMedicinePatyIndex;
+use App\Events\Elastic\MedicineTypeAcin\CreateMedicineTypeAcinIndex;
 use App\Repositories\AccidentBodyPartRepository;
 use App\Repositories\AccidentCareRepository;
 use App\Repositories\AccidentHurtTypeRepository;
@@ -135,6 +136,7 @@ use App\Repositories\MedicineGroupRepository;
 use App\Repositories\MedicineLineRepository;
 use App\Repositories\MedicinePatyRepository;
 use App\Repositories\MedicineRepository;
+use App\Repositories\MedicineTypeAcinRepository;
 
 class IndexRecordsToElasticsearch extends Command
 {
@@ -444,6 +446,10 @@ class IndexRecordsToElasticsearch extends Command
             case 'medicine_paty':
                 $results = app(MedicinePatyRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateMedicinePatyIndex($name_table));
+                break;
+            case 'medicine_type_acin':
+                $results = app(MedicineTypeAcinRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateMedicineTypeAcinIndex($name_table));
                 break;
             default:
                 // Xử lý mặc định hoặc xử lý khi không có bảng khớp

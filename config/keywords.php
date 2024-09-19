@@ -1004,4 +1004,11 @@ return [
         'execute_role_id' => 'Id vai trò thực hiện',
         'loginnames' => 'Danh sách Loginname',
     ],
+    // Thuốc - Hoạt chất
+    'medicine_type_acin' => [
+        'medicine_type_id' => 'Id loại thuốc',
+        'active_ingredient_ids' => 'Danh sách Id hoạt chất',
+        'active_ingredient_id' => 'Id hoạt chất',
+        'medicine_type_ids' => 'Danh sách Id loại thuốc',
+    ],
 ];
