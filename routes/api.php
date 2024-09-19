@@ -458,6 +458,14 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisMedicineGroup'], function () {
         Route::apiResource('v1/medicine-group', MedicineGroupController::class)->only(['index', 'show']);
     });
+    /// Dòng thuốc
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisMedicineLine'], function () {
+        Route::apiResource('v1/medicine-line', MedicineLineController::class)->only(['index', 'show']);
+    });
+    /// Chính sách giá thuốc
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisMedicinePaty'], function () {
+        Route::apiResource('v1/medicine-paty', MedicinePatyController::class);
+    });
     /// Loại phòng
     Route::group(['as' => 'HIS.Desktop.Plugins.RoomTypeModule'], function () {
         Route::get("v1/room-type", [RoomTypeController::class, "room_type"])->name('.get');
@@ -880,15 +888,6 @@ Route::group([
         Route::get("v1/patient-case/{id}", [PatientCaseController::class, "patient_case"])->name('.get_id');
     });
 
-    /// Chính sách giá thuốc
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisMedicinePaty'], function () {
-        Route::get("v1/medicine-paty", [MedicinePatyController::class, "medicine_paty"])->name('.get');
-        Route::get("v1/medicine-paty/{id}", [MedicinePatyController::class, "medicine_paty"])->name('.get_id');
-        Route::post("v1/medicine-paty", [MedicinePatyController::class, "medicine_paty_create"])->name('.create');
-        Route::put("v1/medicine-paty/{id}", [MedicinePatyController::class, "medicine_paty_update"])->name('.update');
-        Route::delete("v1/medicine-paty/{id}", [MedicinePatyController::class, "medicine_paty_delete"])->name('.delete');
-    });
-
     /// Loại thuốc
     Route::get("v1/medicine-type", [MedicineTypeController::class, "medicine_type"])->name('.get_medicine_type');
     Route::get("v1/medicine-type/{id}", [MedicineTypeController::class, "medicine_type"])->name('.get_medicine_type_id');
@@ -998,12 +997,6 @@ Route::group([
         Route::post("v1/pttt-condition", [PtttConditionController::class, "pttt_condition_create"])->name('.create');
         Route::put("v1/pttt-condition/{id}", [PtttConditionController::class, "pttt_condition_update"])->name('.update');
         Route::delete("v1/pttt-condition/{id}", [PtttConditionController::class, "pttt_condition_delete"])->name('.delete');
-    });
-
-    /// Dòng thuốc
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisMedicineLine'], function () {
-        Route::get("v1/medicine-line", [MedicineLineController::class, "medicine_line"])->name('.get');
-        Route::get("v1/medicine-line/{id}", [MedicineLineController::class, "medicine_line"])->name('.get_id');
     });
 
     /// Đường dùng thuốc

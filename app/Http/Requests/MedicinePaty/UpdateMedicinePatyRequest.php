@@ -41,7 +41,8 @@ class UpdateMedicinePatyRequest extends FormRequest
                                     }),
                                     Rule::unique('App\Models\HIS\MedicinePaty')->where(function ($query)  {
                                         return $query->where('MEDICINE_ID', intval($this->medicine_id))
-                                                     ->where('PATIENT_TYPE_ID', intval($this->patient_type_id));
+                                                     ->where('PATIENT_TYPE_ID', intval($this->patient_type_id))
+                                                     ->whereNotIn('ID',[$this->medicine_paty]);
                                     }),
                                 ], 
             'patient_type_id' =>  [
@@ -54,7 +55,8 @@ class UpdateMedicinePatyRequest extends FormRequest
                                     }),
                                     Rule::unique('App\Models\HIS\MedicinePaty')->where(function ($query)  {
                                         return $query->where('MEDICINE_ID', intval($this->medicine_id))
-                                                     ->where('PATIENT_TYPE_ID', intval($this->patient_type_id));
+                                                     ->where('PATIENT_TYPE_ID', intval($this->patient_type_id))
+                                                     ->whereNotIn('ID',[$this->medicine_paty]);
                                     }),
                                 ], 
             'exp_price' =>      'required|numeric|regex:/^\d{1,15}(\.\d{1,4})?$/|min:0',

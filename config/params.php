@@ -223,6 +223,8 @@ return [
             'material_type' => 'Có lỗi khi thực hiện thao tác với bảng Loại vật tư!',
             'medicine' => 'Có lỗi khi thực hiện thao tác với bảng Thuốc!',
             'medicine_group' => 'Có lỗi khi thực hiện thao tác với bảng Nhóm thuốc!',
+            'medicine_line' => 'Có lỗi khi thực hiện thao tác với bảng Dòng thuốc!',
+            'medicine_paty' => 'Có lỗi khi thực hiện thao tác với bảng Chính sách giá thuốc!',
 
         ]
     ]

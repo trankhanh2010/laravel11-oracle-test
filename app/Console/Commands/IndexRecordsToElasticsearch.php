@@ -68,6 +68,8 @@ use App\Events\Elastic\Manufacturer\CreateManufacturerIndex;
 use App\Events\Elastic\MaterialType\CreateMaterialTypeIndex;
 use App\Events\Elastic\Medicine\CreateMedicineIndex;
 use App\Events\Elastic\MedicineGroup\CreateMedicineGroupIndex;
+use App\Events\Elastic\MedicineLine\CreateMedicineLineIndex;
+use App\Events\Elastic\MedicinePaty\CreateMedicinePatyIndex;
 use App\Repositories\AccidentBodyPartRepository;
 use App\Repositories\AccidentCareRepository;
 use App\Repositories\AccidentHurtTypeRepository;
@@ -130,6 +132,8 @@ use App\Repositories\MachineRepository;
 use App\Repositories\ManufacturerRepository;
 use App\Repositories\MaterialTypeRepository;
 use App\Repositories\MedicineGroupRepository;
+use App\Repositories\MedicineLineRepository;
+use App\Repositories\MedicinePatyRepository;
 use App\Repositories\MedicineRepository;
 
 class IndexRecordsToElasticsearch extends Command
@@ -432,6 +436,14 @@ class IndexRecordsToElasticsearch extends Command
             case 'medicine_group':
                 $results = app(MedicineGroupRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateMedicineGroupIndex($name_table));
+                break;
+            case 'medicine_line':
+                $results = app(MedicineLineRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateMedicineLineIndex($name_table));
+                break;
+            case 'medicine_paty':
+                $results = app(MedicinePatyRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateMedicinePatyIndex($name_table));
                 break;
             default:
                 // Xử lý mặc định hoặc xử lý khi không có bảng khớp
