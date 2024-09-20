@@ -500,6 +500,10 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.MestPatientType'], function () {
         Route::apiResource('v1/mest-patient-type', MestPatientTypeController::class)->only(['index', 'show', 'store']);
     });
+    /// Kho - Phòng
+    Route::group(['as' => 'HIS.Desktop.Plugins.MestExportRoom'], function () {
+        Route::apiResource('v1/mest-export-room', MestRoomController::class)->only(['index', 'show', 'store']);
+    });
     /// Loại phòng
     Route::group(['as' => 'HIS.Desktop.Plugins.RoomTypeModule'], function () {
         Route::get("v1/room-type", [RoomTypeController::class, "room_type"])->name('.get');
@@ -789,20 +793,6 @@ Route::group([
         Route::post("v1/ration-time", [RationTimeController::class, "ration_time_create"])->name('.create');
         Route::put("v1/ration-time/{id}", [RationTimeController::class, "ration_time_update"])->name('.update');
         Route::delete("v1/ration-time/{id}", [RationTimeController::class, "ration_time_delete"])->name('.delete');
-    });
-
-    /// Kho - Phòng
-    Route::group(['as' => 'HIS.Desktop.Plugins.MestExportRoom'], function () {
-        // Trả về tất cả mối quan hệ
-        Route::get("v1/mest-export-room", [MestRoomController::class, "mest_export_room"])->name('.get');
-        Route::get("v1/mest-export-room/{id}", [MestRoomController::class, "mest_export_room"])->name('.get_id');
-        Route::post("v1/mest-export-room", [MestRoomController::class, "mest_export_room_create"])->name('.create');
-        // // Trả về tất cả kho cùng phòng
-        // Route::get("v1/medi-stock/all/room", [HISController::class, "medi_stock_with_room"]);
-        // Route::get("v1/medi-stock/{id}/room", [HISController::class, "medi_stock_with_room"]);
-        // // Trả về tất cả phòng cùng kho
-        // Route::get("v1/room/all/medi-stock", [HISController::class, "room_with_medi_stock"]);
-        // Route::get("v1/room/{id}/medi-stock", [HISController::class, "room_with_medi_stock"]);
     });
 
     /// Phòng thực hiện - Đối tượng bệnh nhân

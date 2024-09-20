@@ -25,6 +25,10 @@ class MestPatientTypeController extends BaseApiCacheController
         // Kiểm tra tên trường trong bảng
         if ($this->orderBy != null) {
             $this->orderByJoin = [
+                'medi_stock_code',
+                'medi_stock_name',
+                'patient_type_code',
+                'patient_type_name',
             ];
             $columns = $this->getColumnsTable($this->mestPatientType);
             $this->orderBy = $this->checkOrderBy($this->orderBy, $columns, $this->orderByJoin ?? []);

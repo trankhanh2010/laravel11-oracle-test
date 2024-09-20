@@ -235,6 +235,7 @@ return [
             'medi_stock_maty' => 'Có lỗi khi thực hiện thao tác với bảng Kho - Loại vật tư!',
             'medi_stock_mety' => 'Có lỗi khi thực hiện thao tác với bảng Kho - Loại thuốc!',
             'mest_patient_type' => 'Có lỗi khi thực hiện thao tác với bảng Kho - Đối tượng!',
+            'mest_room' => 'Có lỗi khi thực hiện thao tác với bảng Kho - Phòng!',
         ]
     ]
     

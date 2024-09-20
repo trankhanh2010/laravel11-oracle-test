@@ -136,6 +136,8 @@ use App\Events\Elastic\MediStockMety\CreateMediStockMetyIndex;
 use App\Events\Elastic\MediStockMety\InsertMediStockMetyIndex;
 use App\Events\Elastic\MestPatientType\CreateMestPatientTypeIndex;
 use App\Events\Elastic\MestPatientType\InsertMestPatientTypeIndex;
+use App\Events\Elastic\MestRoom\CreateMestRoomIndex;
+use App\Events\Elastic\MestRoom\InsertMestRoomIndex;
 use App\Events\Telegram\SendMessageToChannel;
 use App\Listeners\Cache\DeleteCache as CacheDeleteCache;
 use App\Listeners\Elastic\AccidentBodyPart\ElasticCreateAccidentBodyPartIndex;
@@ -271,6 +273,8 @@ use App\Listeners\Elastic\MediStockMety\ElasticCreateMediStockMetyIndex;
 use App\Listeners\Elastic\MediStockMety\ElasticInsertMediStockMetyIndex;
 use App\Listeners\Elastic\MestPatientType\ElasticCreateMestPatientTypeIndex;
 use App\Listeners\Elastic\MestPatientType\ElasticInsertMestPatientTypeIndex;
+use App\Listeners\Elastic\MestRoom\ElasticCreateMestRoomIndex;
+use App\Listeners\Elastic\MestRoom\ElasticInsertMestRoomIndex;
 use App\Listeners\Telegram\TelegramSendMessageToChannel;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -769,6 +773,13 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertMestPatientTypeIndex::class => [
             ElasticInsertMestPatientTypeIndex::class,
+        ],
+
+        CreateMestRoomIndex::class => [
+            ElasticCreateMestRoomIndex::class,
+        ],
+        InsertMestRoomIndex::class => [
+            ElasticInsertMestRoomIndex::class,
         ],
     ];
 
