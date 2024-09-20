@@ -78,6 +78,7 @@ use App\Events\Elastic\MediRecordType\CreateMediRecordTypeIndex;
 use App\Events\Elastic\MediStock\CreateMediStockIndex;
 use App\Events\Elastic\MediStockMaty\CreateMediStockMatyIndex;
 use App\Events\Elastic\MediStockMety\CreateMediStockMetyIndex;
+use App\Events\Elastic\MestPatientType\CreateMestPatientTypeIndex;
 use App\Models\HIS\MedicineUseForm;
 use App\Repositories\AccidentBodyPartRepository;
 use App\Repositories\AccidentCareRepository;
@@ -152,6 +153,7 @@ use App\Repositories\MediRecordTypeRepository;
 use App\Repositories\MediStockMatyRepository;
 use App\Repositories\MediStockMetyRepository;
 use App\Repositories\MediStockRepository;
+use App\Repositories\MestPatientTypeRepository;
 
 class IndexRecordsToElasticsearch extends Command
 {
@@ -493,6 +495,10 @@ class IndexRecordsToElasticsearch extends Command
             case 'medi_stock_mety':
                 $results = app(MediStockMetyRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateMediStockMetyIndex($name_table));
+                break;
+            case 'mest_patient_type':
+                $results = app(MestPatientTypeRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateMestPatientTypeIndex($name_table));
                 break;
             default:
                 // Xử lý mặc định hoặc xử lý khi không có bảng khớp

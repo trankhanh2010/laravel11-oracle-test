@@ -496,6 +496,10 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.MediStockMetyList'], function () {
         Route::apiResource('v1/medi-stock-mety-list', MediStockMetyController::class)->only(['index', 'show', 'store']);
     });
+    /// Kho - Đối tượng
+    Route::group(['as' => 'HIS.Desktop.Plugins.MestPatientType'], function () {
+        Route::apiResource('v1/mest-patient-type', MestPatientTypeController::class)->only(['index', 'show', 'store']);
+    });
     /// Loại phòng
     Route::group(['as' => 'HIS.Desktop.Plugins.RoomTypeModule'], function () {
         Route::get("v1/room-type", [RoomTypeController::class, "room_type"])->name('.get');
@@ -785,20 +789,6 @@ Route::group([
         Route::post("v1/ration-time", [RationTimeController::class, "ration_time_create"])->name('.create');
         Route::put("v1/ration-time/{id}", [RationTimeController::class, "ration_time_update"])->name('.update');
         Route::delete("v1/ration-time/{id}", [RationTimeController::class, "ration_time_delete"])->name('.delete');
-    });
-
-    /// Kho - Đối tượng
-    Route::group(['as' => 'HIS.Desktop.Plugins.MestPatientType'], function () {
-        // Trả về tất cả mối quan hệ
-        Route::get("v1/mest-patient-type", [MestPatientTypeController::class, "mest_patient_type"])->name('.get');
-        Route::get("v1/mest-patient-type/{id}", [MestPatientTypeController::class, "mest_patient_type"])->name('.get_id');
-        Route::post("v1/mest-patient-type", [MestPatientTypeController::class, "mest_patient_type_create"])->name('.create');
-        // // Trả về tất cả kho cùng đối tượng
-        // Route::get("v1/medi-stock/all/patient-type", [HISController::class, "medi_stock_with_patient_type"]);
-        // Route::get("v1/medi-stock/{id}/patient-type", [HISController::class, "medi_stock_with_patient_type"]);
-        // // Trả về tất cả đối tượng cùng kho
-        // Route::get("v1/patient-type/all/medi-stock", [HISController::class, "patient_type_with_medi_stock"]);
-        // Route::get("v1/patient-type/{id}/medi-stock", [HISController::class, "patient_type_with_medi_stock"]);
     });
 
     /// Kho - Phòng
