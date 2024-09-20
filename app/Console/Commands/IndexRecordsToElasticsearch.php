@@ -76,6 +76,7 @@ use App\Events\Elastic\MedicineUseForm\CreateMedicineUseFormIndex;
 use App\Events\Elastic\MediOrg\CreateMediOrgIndex;
 use App\Events\Elastic\MediRecordType\CreateMediRecordTypeIndex;
 use App\Events\Elastic\MediStock\CreateMediStockIndex;
+use App\Events\Elastic\MediStockMaty\CreateMediStockMatyIndex;
 use App\Models\HIS\MedicineUseForm;
 use App\Repositories\AccidentBodyPartRepository;
 use App\Repositories\AccidentCareRepository;
@@ -147,6 +148,7 @@ use App\Repositories\MedicineTypeRepository;
 use App\Repositories\MedicineUseFormRepository;
 use App\Repositories\MediOrgRepository;
 use App\Repositories\MediRecordTypeRepository;
+use App\Repositories\MediStockMatyRepository;
 use App\Repositories\MediStockRepository;
 
 class IndexRecordsToElasticsearch extends Command
@@ -482,11 +484,17 @@ class IndexRecordsToElasticsearch extends Command
                 $results = app(MediStockRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateMediStockIndex($name_table));
                 break;
+            case 'medi_stock_maty':
+                $results = app(MediStockMatyRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateMediStockMatyIndex($name_table));
+                break;
             default:
                 // Xử lý mặc định hoặc xử lý khi không có bảng khớp
                 $this->error('Không có dữ liệu của bảng ' . $name_table . '.');
                 break;
         }
+
+
         // Danh sách các bảng dùng with cần phải decode trước khi thêm vào elastic
         $arr_json_decode = [
             'medi_stock',

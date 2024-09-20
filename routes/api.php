@@ -488,6 +488,10 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisMediStock'], function () {
         Route::apiResource('v1/medi-stock', MediStockController::class);
     });
+    /// Kho - Loại vật tư
+    Route::group(['as' => 'HIS.Desktop.Plugins.MediStockMatyList'], function () {
+        Route::apiResource('v1/medi-stock-maty-list', MediStockMatyController::class)->only(['index', 'show', 'store']);
+    });
     /// Loại phòng
     Route::group(['as' => 'HIS.Desktop.Plugins.RoomTypeModule'], function () {
         Route::get("v1/room-type", [RoomTypeController::class, "room_type"])->name('.get');
@@ -805,20 +809,6 @@ Route::group([
         // // Trả về tất cả loại thuốc cùng kho
         // Route::get("v1/medicine-type/all/medi-stock", [HISController::class, "medicine_type_with_medi_stock"]);
         // Route::get("v1/medicine-type/{id}/medi-stock", [HISController::class, "medicine_type_with_medi_stock"]);
-    });
-
-    /// Kho - Loại vật tư
-    Route::group(['as' => 'HIS.Desktop.Plugins.MediStockMatyList'], function () {
-        // Trả về tất cả mối quan hệ
-        Route::get("v1/medi-stock-maty-list", [MediStockMatyController::class, "medi_stock_maty_list"])->name('.get');
-        Route::get("v1/medi-stock-maty-list/{id}", [MediStockMatyController::class, "medi_stock_maty_list"])->name('.get_id');
-        Route::post("v1/medi-stock-maty-list", [MediStockMatyController::class, "medi_stock_maty_list_create"])->name('.create');
-        // // Trả về tất cả kho cùng loại vật tư 
-        // Route::get("v1/medi-stock/all/material-type", [HISController::class, "medi_stock_with_material_type"]);
-        // Route::get("v1/medi-stock/{id}/material-type", [HISController::class, "medi_stock_with_material_type"]);
-        // // Trả về tất cả loại vật tư cùng kho
-        // Route::get("v1/material-type/all/medi-stock", [HISController::class, "material_type_with_medi_stock"]);
-        // Route::get("v1/material-type/{id}/medi-stock", [HISController::class, "material_type_with_medi_stock"]);
     });
 
     /// Kho - Phòng
