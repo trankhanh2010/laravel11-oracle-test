@@ -2,93 +2,102 @@
 
 namespace App\Http\Controllers\Api\CacheControllers;
 
+use App\DTOs\MilitaryRankDTO;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
-use Illuminate\Http\Request;
+use App\Http\Requests\MilitaryRank\CreateMilitaryRankRequest;
+use App\Http\Requests\MilitaryRank\UpdateMilitaryRankRequest;
 use App\Models\HIS\MilitaryRank;
-use Illuminate\Support\Facades\DB;
+use App\Services\Elastic\ElasticsearchService;
+use App\Services\Model\MilitaryRankService;
+use Illuminate\Http\Request;
+
 
 class MilitaryRankController extends BaseApiCacheController
 {
-    public function __construct(Request $request)
+    protected $militaryRankService;
+    protected $militaryRankDTO;
+    public function __construct(Request $request, ElasticsearchService $elasticSearchService, MilitaryRankService $militaryRankService, MilitaryRank $militaryRank)
     {
         parent::__construct($request); // Gọi constructor của BaseController
-        $this->military_rank = new MilitaryRank();
-
+        $this->elasticSearchService = $elasticSearchService;
+        $this->militaryRankService = $militaryRankService;
+        $this->militaryRank = $militaryRank;
         // Kiểm tra tên trường trong bảng
-        if ($this->order_by != null) {
-            $columns = $this->get_columns_table($this->military_rank);
-            $this->order_by = $this->check_order_by($this->order_by, $columns, $this->order_by_join ?? []);
-            $this->order_by_tring = arrayToCustomString($this->order_by);
-        }
-    }
-    public function military_rank($id = null)
-    {
-        // Kiểm tra param và trả về lỗi nếu nó không hợp lệ
-        if ($this->check_param()) {
-            return $this->check_param();
-        }
-        try {
-            $keyword = $this->keyword;
-            if ($keyword != null) {
-                $param = [];
-                $data = $this->military_rank;
-                $data = $data->where(function ($query) use ($keyword) {
-                    $query = $query
-                        ->where(DB::connection('oracle_his')->raw('military_rank_code'), 'like', $keyword . '%')
-                        ->orWhere(DB::connection('oracle_his')->raw('military_rank_name'), 'like', $keyword . '%');
-                });
-                if ($this->is_active !== null) {
-                    $data = $data->where(function ($query) {
-                        $query = $query->where(DB::connection('oracle_his')->raw('is_active'), $this->is_active);
-                    });
-                }
-                $count = $data->count();
-                if ($this->order_by != null) {
-                    foreach ($this->order_by as $key => $item) {
-                        $data->orderBy($key, $item);
-                    }
-                }
-                if ($this->get_all) {
-                    $data = $data
-                        ->with($param)
-                        ->get();
-                } else {
-                    $data = $data
-                        ->skip($this->start)
-                        ->take($this->limit)
-                        ->with($param)
-                        ->get();
-                }
-            } else {
-                if ($id == null) {
-                    $name = $this->military_rank_name . '_start_' . $this->start . '_limit_' . $this->limit . $this->order_by_tring . '_is_active_' . $this->is_active . '_get_all_' . $this->get_all;
-                    $param = [];
-                } else {
-                    if (!is_numeric($id)) {
-                        return returnIdError($id);
-                    }
-                    $check_id = $this->check_id($id, $this->military_rank, $this->military_rank_name);
-                    if ($check_id) {
-                        return $check_id;
-                    }
-                    $name = $this->military_rank_name . '_' . $id . '_is_active_' . $this->is_active;
-                    $param = [];
-                }
-                $data = get_cache_full($this->military_rank, $param, $name, $id, $this->time, $this->start, $this->limit, $this->order_by, $this->is_active, $this->get_all);
-            }
-            $param_return = [
-                $this->get_all_name => $this->get_all,
-                $this->start_name => ($this->get_all || !is_null($id)) ? null : $this->start,
-                $this->limit_name => ($this->get_all || !is_null($id)) ? null : $this->limit,
-                $this->count_name => $count ?? ($data['count'] ?? null),
-                $this->is_active_name => $this->is_active,
-                $this->keyword_name => $this->keyword,
-                $this->order_by_name => $this->order_by_request
+        if ($this->orderBy != null) {
+            $this->orderByJoin = [
             ];
-            return return_data_success($param_return, $data ?? ($data['data'] ?? null));
-        } catch (\Throwable $e) {
-            // Xử lý lỗi và trả về phản hồi lỗi
-            return return_500_error($e->getMessage());
+            $columns = $this->getColumnsTable($this->militaryRank);
+            $this->orderBy = $this->checkOrderBy($this->orderBy, $columns, $this->orderByJoin ?? []);
         }
+        // Thêm tham số vào service
+        $this->militaryRankDTO = new MilitaryRankDTO(
+            $this->militaryRankName,
+            $this->keyword,
+            $this->isActive,
+            $this->orderBy,
+            $this->orderByJoin,
+            $this->orderByString,
+            $this->getAll,
+            $this->start,
+            $this->limit,
+            $request,
+            $this->appCreator, 
+            $this->appModifier, 
+            $this->time,
+        );
+        $this->militaryRankService->withParams($this->militaryRankDTO);
+    }
+    public function index()
+    {
+        if ($this->checkParam()) {
+            return $this->checkParam();
+        }
+        $keyword = $this->keyword;
+        if (($keyword != null || $this->elasticSearchType != null) && !$this->cache) {
+            if ($this->elasticSearchType != null) {
+                $data = $this->elasticSearchService->handleElasticSearchSearch($this->militaryRankName);
+            } else {
+                $data = $this->militaryRankService->handleDataBaseSearch();
+            }
+        } else {
+            if ($this->elastic) {
+                $data = $this->elasticSearchService->handleElasticSearchGetAll($this->militaryRankName);
+            } else {
+                $data = $this->militaryRankService->handleDataBaseGetAll();
+            }
+        }
+        $paramReturn = [
+            $this->getAllName => $this->getAll,
+            $this->startName => $this->getAll ? null : $this->start,
+            $this->limitName => $this->getAll ? null : $this->limit,
+            $this->countName => $data['count'],
+            $this->isActiveName => $this->isActive,
+            $this->keywordName => $this->keyword,
+            $this->orderByName => $this->orderByRequest
+        ];
+        return returnDataSuccess($paramReturn, $data['data']);
+    }
+
+    public function show($id)
+    {
+        if ($this->checkParam()) {
+            return $this->checkParam();
+        }
+        if ($id !== null) {
+            $validationError = $this->validateAndCheckId($id, $this->militaryRank, $this->militaryRankName);
+            if ($validationError) {
+                return $validationError;
+            }
+        }
+        if ($this->elastic) {
+            $data = $this->elasticSearchService->handleElasticSearchGetWithId($this->militaryRankName, $id);
+        } else {
+            $data = $this->militaryRankService->handleDataBaseGetWithId($id);
+        }
+        $paramReturn = [
+            $this->idName => $id,
+            $this->isActiveName => $this->isActive,
+        ];
+        return returnDataSuccess($paramReturn, $data);
     }
 }

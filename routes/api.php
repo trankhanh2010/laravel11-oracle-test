@@ -504,6 +504,12 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.MestExportRoom'], function () {
         Route::apiResource('v1/mest-export-room', MestRoomController::class)->only(['index', 'show', 'store']);
     });
+    /// Quân hàm
+    Route::apiResource('v1/military-rank', MilitaryRankController::class)->only(['index', 'show']);
+    /// Vai trò - Chức năng 
+    Route::group(['as' => 'ACS.Desktop.Plugins.AcsModuleRole'], function () {
+        Route::apiResource('v1/module-role', ModuleRoleController::class)->only(['index', 'show', 'store']);
+    });
     /// Loại phòng
     Route::group(['as' => 'HIS.Desktop.Plugins.RoomTypeModule'], function () {
         Route::get("v1/room-type", [RoomTypeController::class, "room_type"])->name('.get');
@@ -514,11 +520,6 @@ Route::group([
     Route::get("v1/room-group", [RoomGroupController::class, "room_group"])->name('.get_room_group');
     Route::get("v1/room-group/{id}", [RoomGroupController::class, "room_group"])->name('.get_room_group_id');
     Route::post("v1/room-group", [RoomGroupController::class, "room_group_create"])->name('.create_room_group');
-
-    /// Link màn hình chờ
-    Route::group(['as' => 'ACS.Desktop.Plugins.AcsModule'], function () {
-        Route::get("v1/screen-saver-module-link", [ScreenSaverModuleLinkController::class, "screen_saver_module_link"])->name('.get');
-    });
 
     /// Loại xét nghiệm
     Route::get("v1/test-type", [TestTypeController::class, "test_type"])->name('.get_test_type');
@@ -553,10 +554,6 @@ Route::group([
         Route::put("v1/other-pay-source/{id}", [OtherPaySourceController::class, "other_pay_source_update"])->name('.update');
         Route::delete("v1/other-pay-source/{id}", [OtherPaySourceController::class, "other_pay_source_delete"])->name('.delete');
     });
-
-    /// Quân hàm
-    Route::get("v1/military-rank", [MilitaryRankController::class, "military_rank"])->name('.get_military_rank');
-    Route::get("v1/military-rank/{id}", [MilitaryRankController::class, "military_rank"])->name('.get_military_rank_id');
 
     /// Khu đón tiếp
     Route::group(['as' => 'HIS.Desktop.Plugins.HisReceptionRoom'], function () {
@@ -704,12 +701,6 @@ Route::group([
         Route::post("v1/role", [RoleController::class, "role_create"])->name('.create');
         Route::put("v1/role/{id}", [RoleController::class, "role_update"])->name('.update');
         Route::delete("v1/role/{id}", [RoleController::class, "role_delete"])->name('.delete');
-    });
-
-    /// Vai trò - Chức năng 
-    Route::group(['as' => 'ACS.Desktop.Plugins.AcsModuleRole'], function () {
-        Route::get("v1/module-role", [ModuleRoleController::class, "module_role"])->name('.get');
-        Route::get("v1/module-role/{id}", [ModuleRoleController::class, "module_role"])->name('.get_id');
     });
 
     /// Đối tượng bệnh nhân

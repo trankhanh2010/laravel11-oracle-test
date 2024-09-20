@@ -138,6 +138,9 @@ use App\Events\Elastic\MestPatientType\CreateMestPatientTypeIndex;
 use App\Events\Elastic\MestPatientType\InsertMestPatientTypeIndex;
 use App\Events\Elastic\MestRoom\CreateMestRoomIndex;
 use App\Events\Elastic\MestRoom\InsertMestRoomIndex;
+use App\Events\Elastic\MilitaryRank\CreateMilitaryRankIndex;
+use App\Events\Elastic\ModuleRole\CreateModuleRoleIndex;
+use App\Events\Elastic\ModuleRole\InsertModuleRoleIndex;
 use App\Events\Telegram\SendMessageToChannel;
 use App\Listeners\Cache\DeleteCache as CacheDeleteCache;
 use App\Listeners\Elastic\AccidentBodyPart\ElasticCreateAccidentBodyPartIndex;
@@ -275,6 +278,9 @@ use App\Listeners\Elastic\MestPatientType\ElasticCreateMestPatientTypeIndex;
 use App\Listeners\Elastic\MestPatientType\ElasticInsertMestPatientTypeIndex;
 use App\Listeners\Elastic\MestRoom\ElasticCreateMestRoomIndex;
 use App\Listeners\Elastic\MestRoom\ElasticInsertMestRoomIndex;
+use App\Listeners\Elastic\MilitaryRank\ElasticCreateMilitaryRankIndex;
+use App\Listeners\Elastic\ModuleRole\ElasticCreateModuleRoleIndex;
+use App\Listeners\Elastic\ModuleRole\ElasticInsertModuleRoleIndex;
 use App\Listeners\Telegram\TelegramSendMessageToChannel;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -780,6 +786,17 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertMestRoomIndex::class => [
             ElasticInsertMestRoomIndex::class,
+        ],
+
+        CreateMilitaryRankIndex::class => [
+            ElasticCreateMilitaryRankIndex::class,
+        ],
+
+        CreateModuleRoleIndex::class => [
+            ElasticCreateModuleRoleIndex::class,
+        ],
+        InsertModuleRoleIndex::class => [
+            ElasticInsertModuleRoleIndex::class,
         ],
     ];
 

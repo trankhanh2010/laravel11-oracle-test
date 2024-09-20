@@ -236,6 +236,9 @@ return [
             'medi_stock_mety' => 'Có lỗi khi thực hiện thao tác với bảng Kho - Loại thuốc!',
             'mest_patient_type' => 'Có lỗi khi thực hiện thao tác với bảng Kho - Đối tượng!',
             'mest_room' => 'Có lỗi khi thực hiện thao tác với bảng Kho - Phòng!',
+            'military_rank' => 'Có lỗi khi thực hiện thao tác với bảng Quân hàm!',
+            'module_role' => 'Có lỗi khi thực hiện thao tác với bảng Vai trò - Chức năng!',
+
         ]
     ]
     

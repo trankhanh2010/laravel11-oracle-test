@@ -80,6 +80,8 @@ use App\Events\Elastic\MediStockMaty\CreateMediStockMatyIndex;
 use App\Events\Elastic\MediStockMety\CreateMediStockMetyIndex;
 use App\Events\Elastic\MestPatientType\CreateMestPatientTypeIndex;
 use App\Events\Elastic\MestRoom\CreateMestRoomIndex;
+use App\Events\Elastic\MilitaryRank\CreateMilitaryRankIndex;
+use App\Events\Elastic\ModuleRole\CreateModuleRoleIndex;
 use App\Models\HIS\MedicineUseForm;
 use App\Repositories\AccidentBodyPartRepository;
 use App\Repositories\AccidentCareRepository;
@@ -156,6 +158,8 @@ use App\Repositories\MediStockMetyRepository;
 use App\Repositories\MediStockRepository;
 use App\Repositories\MestPatientTypeRepository;
 use App\Repositories\MestRoomRepository;
+use App\Repositories\MilitaryRankRepository;
+use App\Repositories\ModuleRoleRepository;
 
 class IndexRecordsToElasticsearch extends Command
 {
@@ -505,6 +509,14 @@ class IndexRecordsToElasticsearch extends Command
             case 'mest_room':
                 $results = app(MestRoomRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateMestRoomIndex($name_table));
+                break;
+            case 'military_rank':
+                $results = app(MilitaryRankRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateMilitaryRankIndex($name_table));
+                break;
+            case 'module_role':
+                $results = app(ModuleRoleRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateModuleRoleIndex($name_table));
                 break;
             default:
                 // Xử lý mặc định hoặc xử lý khi không có bảng khớp

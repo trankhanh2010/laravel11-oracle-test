@@ -1011,4 +1011,11 @@ return [
         'active_ingredient_id' => 'Id hoạt chất',
         'medicine_type_ids' => 'Danh sách Id loại thuốc',
     ],
+    // Vai trò - Chức năng
+    'module_role' => [
+        'module_id' => 'Id vai trò',
+        'role_ids' => 'Danh sách Id Chức năng',
+        'role_id' => 'Id chức năng',
+        'module_ids' => 'Danh sách Id vai trò',
+    ],
 ];
