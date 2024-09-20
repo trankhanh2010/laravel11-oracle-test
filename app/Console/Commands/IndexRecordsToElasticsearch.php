@@ -75,6 +75,7 @@ use App\Events\Elastic\MedicineTypeAcin\CreateMedicineTypeAcinIndex;
 use App\Events\Elastic\MedicineUseForm\CreateMedicineUseFormIndex;
 use App\Events\Elastic\MediOrg\CreateMediOrgIndex;
 use App\Events\Elastic\MediRecordType\CreateMediRecordTypeIndex;
+use App\Events\Elastic\MediStock\CreateMediStockIndex;
 use App\Models\HIS\MedicineUseForm;
 use App\Repositories\AccidentBodyPartRepository;
 use App\Repositories\AccidentCareRepository;
@@ -146,6 +147,7 @@ use App\Repositories\MedicineTypeRepository;
 use App\Repositories\MedicineUseFormRepository;
 use App\Repositories\MediOrgRepository;
 use App\Repositories\MediRecordTypeRepository;
+use App\Repositories\MediStockRepository;
 
 class IndexRecordsToElasticsearch extends Command
 {
@@ -476,11 +478,20 @@ class IndexRecordsToElasticsearch extends Command
                 $results = app(MediRecordTypeRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateMediRecordTypeIndex($name_table));
                 break;
+            case 'medi_stock':
+                $results = app(MediStockRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateMediStockIndex($name_table));
+                break;
             default:
                 // Xử lý mặc định hoặc xử lý khi không có bảng khớp
                 $this->error('Không có dữ liệu của bảng ' . $name_table . '.');
                 break;
         }
+        // Danh sách các bảng dùng with cần phải decode trước khi thêm vào elastic
+        $arr_json_decode = [
+            'medi_stock',
+        ];
+
         // Chèn từng bản ghi
         // foreach ($results as $result) {
         //     $data = [];
@@ -495,7 +506,6 @@ class IndexRecordsToElasticsearch extends Command
 
         //     $client->index($params);
         // }
-
         if(isset($results)){
             // Dùng Bulk
         $bulkData = [];
@@ -503,6 +513,10 @@ class IndexRecordsToElasticsearch extends Command
         foreach ($results as $result) {
             // Chuẩn bị dữ liệu cho mỗi bản ghi
             $data = [];
+            // Decode và đổi tên trường về mặc định các bảng có dùng with
+            if(in_array($name_table, $arr_json_decode)){
+                $result = convertKeysToSnakeCase(json_decode($result, true));
+            }
             foreach ($result as $key => $value) {
                 $data[$key] = $value;
             }

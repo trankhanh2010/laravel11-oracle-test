@@ -36,7 +36,7 @@ class MediStock extends Model
     {
         if($this->patient_classify_ids != null){
             return Cache::remember('patient_classify_ids_' . $this->patient_classify_ids, $this->time, function ()  {
-                $data = PatientClassify::whereIn('id', explode(',', $this->patient_classify_ids))->get();
+                $data = PatientClassify::select(['patient_Classify_Code', 'patient_Classify_Name'])->whereIn('id', explode(',', $this->patient_classify_ids))->get();
                 return $data;
         });
         }

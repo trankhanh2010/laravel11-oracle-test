@@ -9,7 +9,7 @@ use App\Models\ACS\User;
 use App\Models\HIS\UserRoom;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Str;
 function create_slug($string)
 {
     $search = array(
@@ -58,6 +58,21 @@ function camelToSnake($input)
     return $snake;
 }
 
+function convertKeysToSnakeCase(array $data)
+{
+    $result = [];
+    foreach ($data as $key => $value) {
+        $newKey = Str::snake($key);  // Chuyển đổi key sang snake_case
+        
+        // Nếu giá trị là một mảng, thực hiện đệ quy
+        if (is_array($value)) {
+            $result[$newKey] = convertKeysToSnakeCase($value);
+        } else {
+            $result[$newKey] = $value;
+        }
+    }
+    return $result;
+}
 function snakeToCamel($string)
 {
     // Chuyển chuỗi về dạng mảng với dấu gạch dưới làm phân tách
@@ -704,7 +719,7 @@ if (!function_exists('return_404_error_page_not_found')) {
 if (!function_exists('getArrElasticIndexKeyword')) {
     function getArrElasticIndexKeyword($name)
     {
-        $time = 144000;
+        $time = 144000; // Thời gian lưu cache
         $data = Cache::remember('elastic_index_keyword_' . $name, $time, function () use ($name) {
             $keywordFields = [];
             $client = app('Elasticsearch');
@@ -712,11 +727,23 @@ if (!function_exists('getArrElasticIndexKeyword')) {
                 'index' => $name,
             ];
             $data = $client->indices()->getMapping($params)[$name];
-            foreach ($data['mappings']['properties'] as $field => $properties) {
-                if (isset($properties['fields']) && isset($properties['fields']['keyword'])) {
-                    $keywordFields[] = $field;
+
+            // Hàm đệ quy để tìm các trường keyword
+            $findKeywordFields = function ($properties, $prefix = '') use (&$findKeywordFields, &$keywordFields) {
+                foreach ($properties as $field => $properties) {
+                    $currentField = $prefix ? $prefix . '.' . $field : $field;
+                    if (isset($properties['fields']['keyword'])) {
+                        $keywordFields[] = $currentField; // Thêm trường keyword vào mảng
+                    }
+                    // Kiểm tra các trường con
+                    if (isset($properties['properties'])) {
+                        $findKeywordFields($properties['properties'], $currentField);
+                    }
                 }
-            }
+            };
+
+            $findKeywordFields($data['mappings']['properties']);
+
             return $keywordFields;
         });
         return $data;

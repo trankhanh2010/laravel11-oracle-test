@@ -15,14 +15,27 @@ class ElasticMappingResource extends JsonResource
     public function toArray($request)
     {
         $mapping = $this->resource['mappings']['properties'] ?? [];
+        $transformed = $this->transformToCamelCase($mapping);
+
+        return ['properties' => $transformed];
+    }
+
+    private function transformToCamelCase(array $mapping)
+    {
         $transformed = [];
 
         foreach ($mapping as $key => $value) {
             $camelCaseKey = $this->snakeToCamel($key);
-            $transformed[$camelCaseKey] = $value;
+            
+            // If the value is an array, recursively convert keys inside it
+            if (is_array($value)) {
+                $transformed[$camelCaseKey] = $this->transformToCamelCase($value);
+            } else {
+                $transformed[$camelCaseKey] = $value;
+            }
         }
 
-        return ['properties' => $transformed];
+        return $transformed;
     }
 
     /**

@@ -484,6 +484,10 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisMediRecordType'], function () {
         Route::apiResource('v1/medi-record-type', MediRecordTypeController::class);
     });
+    /// Kho
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisMediStock'], function () {
+        Route::apiResource('v1/medi-stock', MediStockController::class);
+    });
     /// Loại phòng
     Route::group(['as' => 'HIS.Desktop.Plugins.RoomTypeModule'], function () {
         Route::get("v1/room-type", [RoomTypeController::class, "room_type"])->name('.get');
@@ -537,17 +541,6 @@ Route::group([
     /// Quân hàm
     Route::get("v1/military-rank", [MilitaryRankController::class, "military_rank"])->name('.get_military_rank');
     Route::get("v1/military-rank/{id}", [MilitaryRankController::class, "military_rank"])->name('.get_military_rank_id');
-
-
-    /// Kho
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisMediStock'], function () {
-        Route::get("v1/medi-stock", [MediStockController::class, "medi_stock"])->name('.get');
-        Route::get("v1/medi-stock/{id}", [MediStockController::class, "medi_stock"])->name('.get_id');
-        Route::get("v1/medi-stock-check", [CheckMediStockController::class, "check_code"])->name('.check');
-        Route::post("v1/medi-stock", [MediStockController::class, "medi_stock_create"])->name('.create');
-        Route::put("v1/medi-stock/{id}", [MediStockController::class, "medi_stock_update"])->name('.update');
-        Route::delete("v1/medi-stock/{id}", [MediStockController::class, "medi_stock_delete"])->name('.delete');
-    });
 
     /// Khu đón tiếp
     Route::group(['as' => 'HIS.Desktop.Plugins.HisReceptionRoom'], function () {

@@ -158,6 +158,7 @@ return [
     ],
     'db_service' => [
         'error' => [
+            'apply_resource' => 'Có lỗi khi điều chỉnh tên trường trả về với DB!',
             'transaction' => 'Có lỗi trong Transaction!',
             'accident_body_part' => 'Có lỗi khi thực hiện thao tác với bảng Bộ phận thương tích!',
             'accident_care' => 'Có lỗi khi thực hiện thao tác với bảng Xử lý sau tai nạn!',
@@ -230,6 +231,7 @@ return [
             'medicine_use_form' => 'Có lỗi khi thực hiện thao tác với bảng Đường dùng thuốc!',
             'medi_org' => 'Có lỗi khi thực hiện thao tác với bảng Cơ sở khám chữa bệnh ban đầu!',
             'medi_record_type' => 'Có lỗi khi thực hiện thao tác với bảng Loại bệnh án!',
+            'medi_stock' => 'Có lỗi khi thực hiện thao tác với bảng Kho!',
         ]
     ]
     
