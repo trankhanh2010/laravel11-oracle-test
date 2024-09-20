@@ -492,6 +492,10 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.MediStockMatyList'], function () {
         Route::apiResource('v1/medi-stock-maty-list', MediStockMatyController::class)->only(['index', 'show', 'store']);
     });
+    /// Kho - Loại thuốc
+    Route::group(['as' => 'HIS.Desktop.Plugins.MediStockMetyList'], function () {
+        Route::apiResource('v1/medi-stock-mety-list', MediStockMetyController::class)->only(['index', 'show', 'store']);
+    });
     /// Loại phòng
     Route::group(['as' => 'HIS.Desktop.Plugins.RoomTypeModule'], function () {
         Route::get("v1/room-type", [RoomTypeController::class, "room_type"])->name('.get');
@@ -795,20 +799,6 @@ Route::group([
         // // Trả về tất cả đối tượng cùng kho
         // Route::get("v1/patient-type/all/medi-stock", [HISController::class, "patient_type_with_medi_stock"]);
         // Route::get("v1/patient-type/{id}/medi-stock", [HISController::class, "patient_type_with_medi_stock"]);
-    });
-
-    /// Kho - Loại thuốc
-    Route::group(['as' => 'HIS.Desktop.Plugins.MediStockMetyList'], function () {
-        // Trả về tất cả mối quan hệ
-        Route::get("v1/medi-stock-mety-list", [MediStockMetyController::class, "medi_stock_mety_list"])->name('.get');
-        Route::get("v1/medi-stock-mety-list/{id}", [MediStockMetyController::class, "medi_stock_mety_list"])->name('.get_id');
-        Route::post("v1/medi-stock-mety-list", [MediStockMetyController::class, "medi_stock_mety_list_create"])->name('.create');
-        // // Trả về tất cả kho cùng loại thuốc 
-        // Route::get("v1/medi-stock/all/medicine-type", [HISController::class, "medi_stock_with_medicine_type"]);
-        // Route::get("v1/medi-stock/{id}/medicine-type", [HISController::class, "medi_stock_with_medicine_type"]);
-        // // Trả về tất cả loại thuốc cùng kho
-        // Route::get("v1/medicine-type/all/medi-stock", [HISController::class, "medicine_type_with_medi_stock"]);
-        // Route::get("v1/medicine-type/{id}/medi-stock", [HISController::class, "medicine_type_with_medi_stock"]);
     });
 
     /// Kho - Phòng

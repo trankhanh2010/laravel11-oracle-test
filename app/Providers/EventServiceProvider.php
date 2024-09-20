@@ -132,6 +132,8 @@ use App\Events\Elastic\MediStock\CreateMediStockIndex;
 use App\Events\Elastic\MediStock\InsertMediStockIndex;
 use App\Events\Elastic\MediStockMaty\CreateMediStockMatyIndex;
 use App\Events\Elastic\MediStockMaty\InsertMediStockMatyIndex;
+use App\Events\Elastic\MediStockMety\CreateMediStockMetyIndex;
+use App\Events\Elastic\MediStockMety\InsertMediStockMetyIndex;
 use App\Events\Telegram\SendMessageToChannel;
 use App\Listeners\Cache\DeleteCache as CacheDeleteCache;
 use App\Listeners\Elastic\AccidentBodyPart\ElasticCreateAccidentBodyPartIndex;
@@ -263,6 +265,8 @@ use App\Listeners\Elastic\MediStock\ElasticCreateMediStockIndex;
 use App\Listeners\Elastic\MediStock\ElasticInsertMediStockIndex;
 use App\Listeners\Elastic\MediStockMaty\ElasticCreateMediStockMatyIndex;
 use App\Listeners\Elastic\MediStockMaty\ElasticInsertMediStockMatyIndex;
+use App\Listeners\Elastic\MediStockMety\ElasticCreateMediStockMetyIndex;
+use App\Listeners\Elastic\MediStockMety\ElasticInsertMediStockMetyIndex;
 use App\Listeners\Telegram\TelegramSendMessageToChannel;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -747,6 +751,13 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertMediStockMatyIndex::class => [
             ElasticInsertMediStockMatyIndex::class,
+        ],
+
+        CreateMediStockMetyIndex::class => [
+            ElasticCreateMediStockMetyIndex::class,
+        ],
+        InsertMediStockMetyIndex::class => [
+            ElasticInsertMediStockMetyIndex::class,
         ],
     ];
 

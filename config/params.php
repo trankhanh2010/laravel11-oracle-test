@@ -233,6 +233,8 @@ return [
             'medi_record_type' => 'Có lỗi khi thực hiện thao tác với bảng Loại bệnh án!',
             'medi_stock' => 'Có lỗi khi thực hiện thao tác với bảng Kho!',
             'medi_stock_maty' => 'Có lỗi khi thực hiện thao tác với bảng Kho - Loại vật tư!',
+            'medi_stock_mety' => 'Có lỗi khi thực hiện thao tác với bảng Kho - Loại thuốc!',
+
         ]
     ]
     
