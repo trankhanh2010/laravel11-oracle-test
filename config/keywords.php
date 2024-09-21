@@ -39,6 +39,7 @@ return [
         'not_in_department_id' => ' không thuộc khoa đã chọn!',
         'not_in_room_type_XL' => ' không thuộc kiểu phòng khám/cls/pttt!',
         'not_in_service_type_GI' => ' không thuộc loại dịch vụ giường!',
+        'not_in_application_id' => ' không thuộc ứng dụng đã chọn!',
 
         /// Error validate param
         'format' => 'Kiểu dữ liệu không hợp lệ!',
@@ -1013,9 +1014,24 @@ return [
     ],
     // Vai trò - Chức năng
     'module_role' => [
-        'module_id' => 'Id vai trò',
-        'role_ids' => 'Danh sách Id Chức năng',
-        'role_id' => 'Id chức năng',
-        'module_ids' => 'Danh sách Id vai trò',
+        'module_id' => 'Id chức năng',
+        'role_ids' => 'Danh sách Id vai trò',
+        'role_id' => 'Id vai trò',
+        'module_ids' => 'Danh sách Id chức năng',
+    ],
+    // Chức năng
+    'module' => [
+        'module_link' => 'Link chức năng',
+        'module_name' => 'Tên chức năng',
+        'is_anonymous' => 'Trường tất cả đều thấy',
+        'application_id' => 'Id ứng dụng',
+        'module_url' => 'Trường url',
+        'video_urls' => 'Trường video url',
+        'num_order' => 'Số thứ tự',
+        'parent_id' => 'Id cha',
+        'is_visible'  => 'Trường là menu',
+        'module_group_id' => 'Id nhóm chức năng',
+        'icon_link' => 'Icon',
+        'is_not_show_dialog' => 'Trường không hiện hộp thoại'
     ],
 ];

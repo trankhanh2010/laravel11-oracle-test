@@ -139,6 +139,8 @@ use App\Events\Elastic\MestPatientType\InsertMestPatientTypeIndex;
 use App\Events\Elastic\MestRoom\CreateMestRoomIndex;
 use App\Events\Elastic\MestRoom\InsertMestRoomIndex;
 use App\Events\Elastic\MilitaryRank\CreateMilitaryRankIndex;
+use App\Events\Elastic\Module\CreateModuleIndex;
+use App\Events\Elastic\Module\InsertModuleIndex;
 use App\Events\Elastic\ModuleRole\CreateModuleRoleIndex;
 use App\Events\Elastic\ModuleRole\InsertModuleRoleIndex;
 use App\Events\Telegram\SendMessageToChannel;
@@ -279,6 +281,8 @@ use App\Listeners\Elastic\MestPatientType\ElasticInsertMestPatientTypeIndex;
 use App\Listeners\Elastic\MestRoom\ElasticCreateMestRoomIndex;
 use App\Listeners\Elastic\MestRoom\ElasticInsertMestRoomIndex;
 use App\Listeners\Elastic\MilitaryRank\ElasticCreateMilitaryRankIndex;
+use App\Listeners\Elastic\Module\ElasticCreateModuleIndex;
+use App\Listeners\Elastic\Module\ElasticInsertModuleIndex;
 use App\Listeners\Elastic\ModuleRole\ElasticCreateModuleRoleIndex;
 use App\Listeners\Elastic\ModuleRole\ElasticInsertModuleRoleIndex;
 use App\Listeners\Telegram\TelegramSendMessageToChannel;
@@ -797,6 +801,13 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertModuleRoleIndex::class => [
             ElasticInsertModuleRoleIndex::class,
+        ],
+
+        CreateModuleIndex::class => [
+            ElasticCreateModuleIndex::class,
+        ],
+        InsertModuleIndex::class => [
+            ElasticInsertModuleIndex::class,
         ],
     ];
 

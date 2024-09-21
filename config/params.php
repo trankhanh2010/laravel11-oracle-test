@@ -80,6 +80,7 @@ return [
             'mest_patient_type',
             'mest_room',
             'military_rank',
+            'module',
             'module_role',
             'national',
             'other_pay_source',
@@ -238,6 +239,7 @@ return [
             'mest_room' => 'Có lỗi khi thực hiện thao tác với bảng Kho - Phòng!',
             'military_rank' => 'Có lỗi khi thực hiện thao tác với bảng Quân hàm!',
             'module_role' => 'Có lỗi khi thực hiện thao tác với bảng Vai trò - Chức năng!',
+            'module' => 'Có lỗi khi thực hiện thao tác với bảng Chức năng!',
 
         ]
     ]

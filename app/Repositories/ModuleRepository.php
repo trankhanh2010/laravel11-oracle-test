@@ -15,8 +15,11 @@ class ModuleRepository
     public function applyJoins()
     {
         return $this->module
+        ->leftJoin('acs_module_group as module_group', 'module_group.id', '=', 'acs_module.module_group_id')
             ->select(
-                'acs_module.*'
+                'acs_module.*',
+                'module_group.module_group_code',
+                'module_group.module_group_name'
             );
     }
     public function applyKeywordFilter($query, $keyword)
@@ -75,6 +78,16 @@ class ModuleRepository
             'is_delete' => 0,
             'module_link' => $request->module_link,
             'module_name' => $request->module_name,
+            'is_anonymous' => $request->is_anonymous,
+            'application_id' => $request->application_id,
+            'icon_link' => $request->icon_link,
+            'module_url' => $request->module_url,
+            'video_urls' => $request->video_urls,
+            'num_order'  => $request->num_order,
+            'parent_id'  => $request->parent_id,
+            'module_group_id' => $request->module_group_id,
+            'is_visible' => $request->is_visible,
+            'is_not_show_dialog' => $request->is_not_show_dialog  
         ]);
         return $data;
     }
@@ -85,6 +98,15 @@ class ModuleRepository
             'app_modifier' => $appModifier,
             'module_link' => $request->module_link,
             'module_name' => $request->module_name,
+            'is_anonymous' => $request->is_anonymous,
+            'application_id' => $request->application_id,
+            'icon_link' => $request->icon_link,
+            'module_url' => $request->module_url,
+            'video_urls' => $request->video_urls,
+            'num_order'  => $request->num_order,
+            'parent_id'  => $request->parent_id,
+            'is_visible' => $request->is_visible,
+            'is_not_show_dialog' => $request->is_not_show_dialog,
             'is_active' => $request->is_active
         ]);
         return $data;

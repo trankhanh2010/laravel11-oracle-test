@@ -6,22 +6,13 @@ use App\Traits\dinh_dang_ten_truong;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Module extends Model
+class Application extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_acs'; 
-    protected $table = 'ACS_MODULE';
+    protected $table = 'ACS_application';
     public $timestamps = false;
     protected $guarded = [
         'id',
     ];
-    public function roles()
-    {
-        return $this->belongsToMany(Role::class, 'acs_module_role', 'module_id', 'role_id');
-    }
-
-    public function module_group()
-    {
-        return $this->belongsTo(ModuleGroup::class);
-    }
 }

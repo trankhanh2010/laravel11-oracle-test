@@ -81,6 +81,7 @@ use App\Events\Elastic\MediStockMety\CreateMediStockMetyIndex;
 use App\Events\Elastic\MestPatientType\CreateMestPatientTypeIndex;
 use App\Events\Elastic\MestRoom\CreateMestRoomIndex;
 use App\Events\Elastic\MilitaryRank\CreateMilitaryRankIndex;
+use App\Events\Elastic\Module\CreateModuleIndex;
 use App\Events\Elastic\ModuleRole\CreateModuleRoleIndex;
 use App\Models\HIS\MedicineUseForm;
 use App\Repositories\AccidentBodyPartRepository;
@@ -159,6 +160,7 @@ use App\Repositories\MediStockRepository;
 use App\Repositories\MestPatientTypeRepository;
 use App\Repositories\MestRoomRepository;
 use App\Repositories\MilitaryRankRepository;
+use App\Repositories\ModuleRepository;
 use App\Repositories\ModuleRoleRepository;
 
 class IndexRecordsToElasticsearch extends Command
@@ -513,6 +515,10 @@ class IndexRecordsToElasticsearch extends Command
             case 'military_rank':
                 $results = app(MilitaryRankRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateMilitaryRankIndex($name_table));
+                break;
+            case 'module':
+                $results = app(ModuleRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateModuleIndex($name_table));
                 break;
             case 'module_role':
                 $results = app(ModuleRoleRepository::class)->getDataFromDbToElastic(null);

@@ -2,40 +2,38 @@
 
 namespace App\Http\Controllers\Api\CacheControllers;
 
-use App\DTOs\ModuleRoleDTO;
+use App\DTOs\ModuleDTO;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
-use App\Http\Requests\ModuleRole\CreateModuleRoleRequest;
-use App\Http\Requests\ModuleRole\UpdateModuleRoleRequest;
-use App\Models\ACS\ModuleRole;
+use App\Http\Requests\Module\CreateModuleRequest;
+use App\Http\Requests\Module\UpdateModuleRequest;
+use App\Models\ACS\Module;
 use App\Services\Elastic\ElasticsearchService;
-use App\Services\Model\ModuleRoleService;
+use App\Services\Model\ModuleService;
 use Illuminate\Http\Request;
 
 
-class ModuleRoleController extends BaseApiCacheController
+class ModuleController extends BaseApiCacheController
 {
-    protected $moduleRoleService;
-    protected $moduleRoleDTO;
-    public function __construct(Request $request, ElasticsearchService $elasticSearchService, ModuleRoleService $moduleRoleService, ModuleRole $moduleRole)
+    protected $moduleService;
+    protected $moduleDTO;
+    public function __construct(Request $request, ElasticsearchService $elasticSearchService, ModuleService $moduleService, Module $module)
     {
         parent::__construct($request); // Gọi constructor của BaseController
         $this->elasticSearchService = $elasticSearchService;
-        $this->moduleRoleService = $moduleRoleService;
-        $this->moduleRole = $moduleRole;
+        $this->moduleService = $moduleService;
+        $this->module = $module;
         // Kiểm tra tên trường trong bảng
         if ($this->orderBy != null) {
             $this->orderByJoin = [
-                'role_code',
-                'role_name',
-                'module_name',
-                'module_link'
+                'module_group_code',
+                'module_group_name'
             ];
-            $columns = $this->getColumnsTable($this->moduleRole);
+            $columns = $this->getColumnsTable($this->module);
             $this->orderBy = $this->checkOrderBy($this->orderBy, $columns, $this->orderByJoin ?? []);
         }
         // Thêm tham số vào service
-        $this->moduleRoleDTO = new ModuleRoleDTO(
-            $this->moduleRoleName,
+        $this->moduleDTO = new ModuleDTO(
+            $this->moduleName,
             $this->keyword,
             $this->isActive,
             $this->orderBy,
@@ -48,10 +46,8 @@ class ModuleRoleController extends BaseApiCacheController
             $this->appCreator, 
             $this->appModifier, 
             $this->time,
-            $this->moduleId,
-            $this->roleId
         );
-        $this->moduleRoleService->withParams($this->moduleRoleDTO);
+        $this->moduleService->withParams($this->moduleDTO);
     }
     public function index()
     {
@@ -61,15 +57,15 @@ class ModuleRoleController extends BaseApiCacheController
         $keyword = $this->keyword;
         if (($keyword != null || $this->elasticSearchType != null) && !$this->cache) {
             if ($this->elasticSearchType != null) {
-                $data = $this->elasticSearchService->handleElasticSearchSearch($this->moduleRoleName);
+                $data = $this->elasticSearchService->handleElasticSearchSearch($this->moduleName);
             } else {
-                $data = $this->moduleRoleService->handleDataBaseSearch();
+                $data = $this->moduleService->handleDataBaseSearch();
             }
         } else {
             if ($this->elastic) {
-                $data = $this->elasticSearchService->handleElasticSearchGetAll($this->moduleRoleName);
+                $data = $this->elasticSearchService->handleElasticSearchGetAll($this->moduleName);
             } else {
-                $data = $this->moduleRoleService->handleDataBaseGetAll();
+                $data = $this->moduleService->handleDataBaseGetAll();
             }
         }
         $paramReturn = [
@@ -90,15 +86,15 @@ class ModuleRoleController extends BaseApiCacheController
             return $this->checkParam();
         }
         if ($id !== null) {
-            $validationError = $this->validateAndCheckId($id, $this->moduleRole, $this->moduleRoleName);
+            $validationError = $this->validateAndCheckId($id, $this->module, $this->moduleName);
             if ($validationError) {
                 return $validationError;
             }
         }
         if ($this->elastic) {
-            $data = $this->elasticSearchService->handleElasticSearchGetWithId($this->moduleRoleName, $id);
+            $data = $this->elasticSearchService->handleElasticSearchGetWithId($this->moduleName, $id);
         } else {
-            $data = $this->moduleRoleService->handleDataBaseGetWithId($id);
+            $data = $this->moduleService->handleDataBaseGetWithId($id);
         }
         $paramReturn = [
             $this->idName => $id,
@@ -106,8 +102,16 @@ class ModuleRoleController extends BaseApiCacheController
         ];
         return returnDataSuccess($paramReturn, $data);
     }
-    public function store(CreateModuleRoleRequest $request)
+    public function store(CreateModuleRequest $request)
     {
-        return $this->moduleRoleService->createModuleRole($request);
+        return $this->moduleService->createModule($request);
+    }
+    public function update(UpdateModuleRequest $request, $id)
+    {
+        return $this->moduleService->updateModule($id, $request);
+    }
+    public function destroy($id)
+    {
+        return $this->moduleService->deleteModule($id);
     }
 }

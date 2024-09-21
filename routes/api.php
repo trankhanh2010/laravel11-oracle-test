@@ -135,7 +135,7 @@ use App\Http\Controllers\Api\CacheControllers\AgeTypeController;
 use App\Http\Controllers\Api\CacheControllers\MedicineController;
 use App\Http\Controllers\Api\CacheControllers\MedicineTypeController;
 use App\Http\Controllers\Api\CacheControllers\MaterialTypeController;
-
+use App\Http\Controllers\Api\CacheControllers\ModuleController;
 // Base Api
 use App\Http\Controllers\BaseControllers\CacheController;
 use App\Http\Controllers\BaseControllers\ElasticSearchController;
@@ -506,6 +506,10 @@ Route::group([
     });
     /// Quân hàm
     Route::apiResource('v1/military-rank', MilitaryRankController::class)->only(['index', 'show']);
+    /// Vai trò
+    Route::group(['as' => 'ACS.Desktop.Plugins.AcsModule'], function () {
+        Route::apiResource('v1/module', ModuleController::class);
+    });
     /// Vai trò - Chức năng 
     Route::group(['as' => 'ACS.Desktop.Plugins.AcsModuleRole'], function () {
         Route::apiResource('v1/module-role', ModuleRoleController::class)->only(['index', 'show', 'store']);
