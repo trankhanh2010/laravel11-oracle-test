@@ -209,6 +209,8 @@ Route::group([
     Route::get('v1/updated-activity', [TelegramController::class, "updated_activity"])->name('.updated_activity');
     /// Log
     Route::get("v1/log", [LogController::class, "getLog"])->name('.get_log');
+    /// Request
+    Route::get("v1/get-all-request-name", [CacheController::class, "getAllRequestname"])->name('.get_all_request_name');
     /// Cache
     Route::get("v1/clear-cache", [CacheController::class, "clearCache"])->name('.clear_cache');
     Route::get("v1/clear-cache-elastic-index-keyword", [CacheController::class, "clearCacheElaticIndexKeyword"])->name('.clear_cache_elatic_index_keyword');
