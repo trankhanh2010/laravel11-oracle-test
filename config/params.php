@@ -240,6 +240,8 @@ return [
             'military_rank' => 'Có lỗi khi thực hiện thao tác với bảng Quân hàm!',
             'module_role' => 'Có lỗi khi thực hiện thao tác với bảng Vai trò - Chức năng!',
             'module' => 'Có lỗi khi thực hiện thao tác với bảng Chức năng!',
+            'national' => 'Có lỗi khi thực hiện thao tác với bảng Quốc gia!',
+            'other_pay_source' => 'Có lỗi khi thực hiện thao tác với bảng Nguồn chi trả khác!',
 
         ]
     ]

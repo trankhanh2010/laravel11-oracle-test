@@ -83,6 +83,8 @@ use App\Events\Elastic\MestRoom\CreateMestRoomIndex;
 use App\Events\Elastic\MilitaryRank\CreateMilitaryRankIndex;
 use App\Events\Elastic\Module\CreateModuleIndex;
 use App\Events\Elastic\ModuleRole\CreateModuleRoleIndex;
+use App\Events\Elastic\National\CreateNationalIndex;
+use App\Events\Elastic\OtherPaySource\CreateOtherPaySourceIndex;
 use App\Models\HIS\MedicineUseForm;
 use App\Repositories\AccidentBodyPartRepository;
 use App\Repositories\AccidentCareRepository;
@@ -162,6 +164,8 @@ use App\Repositories\MestRoomRepository;
 use App\Repositories\MilitaryRankRepository;
 use App\Repositories\ModuleRepository;
 use App\Repositories\ModuleRoleRepository;
+use App\Repositories\NationalRepository;
+use App\Repositories\OtherPaySourceRepository;
 
 class IndexRecordsToElasticsearch extends Command
 {
@@ -523,6 +527,14 @@ class IndexRecordsToElasticsearch extends Command
             case 'module_role':
                 $results = app(ModuleRoleRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateModuleRoleIndex($name_table));
+                break;
+            case 'national':
+                $results = app(NationalRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateNationalIndex($name_table));
+                break;
+            case 'other_pay_source':
+                $results = app(OtherPaySourceRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateOtherPaySourceIndex($name_table));
                 break;
             default:
                 // Xử lý mặc định hoặc xử lý khi không có bảng khớp

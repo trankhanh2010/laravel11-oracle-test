@@ -506,13 +506,21 @@ Route::group([
     });
     /// Quân hàm
     Route::apiResource('v1/military-rank', MilitaryRankController::class)->only(['index', 'show']);
-    /// Vai trò
+    /// Chức năng
     Route::group(['as' => 'ACS.Desktop.Plugins.AcsModule'], function () {
         Route::apiResource('v1/module', ModuleController::class);
     });
     /// Vai trò - Chức năng 
     Route::group(['as' => 'ACS.Desktop.Plugins.AcsModuleRole'], function () {
         Route::apiResource('v1/module-role', ModuleRoleController::class)->only(['index', 'show', 'store']);
+    });
+    /// Quốc gia
+    Route::group(['as' => 'SDA.Desktop.Plugins.SdaNational'], function () {
+        Route::apiResource('v1/national', NationalController::class);
+    });
+    /// Nguồn chi trả khác
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisOtherPaySource'], function () {
+        Route::apiResource('v1/other-pay-source', OtherPaySourceController::class);
     });
     /// Loại phòng
     Route::group(['as' => 'HIS.Desktop.Plugins.RoomTypeModule'], function () {
@@ -549,16 +557,6 @@ Route::group([
         Route::delete("v1/treatment-type/{id}", [TreatmentTypeController::class, "treatment_type_delete"])->name('.delete');
     });
 
-    /// Nguồn chi trả khác
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisOtherPaySource'], function () {
-        Route::get("v1/other-pay-source", [OtherPaySourceController::class, "other_pay_source"])->name('.get');
-        Route::get("v1/other-pay-source/{id}", [OtherPaySourceController::class, "other_pay_source"])->name('.get_id');
-        Route::get("v1/other-pay-source-check", [CheckOtherPaySourceController::class, "check_code"])->name('.check');
-        Route::post("v1/other-pay-source", [OtherPaySourceController::class, "other_pay_source_create"])->name('.create');
-        Route::put("v1/other-pay-source/{id}", [OtherPaySourceController::class, "other_pay_source_update"])->name('.update');
-        Route::delete("v1/other-pay-source/{id}", [OtherPaySourceController::class, "other_pay_source_delete"])->name('.delete');
-    });
-
     /// Khu đón tiếp
     Route::group(['as' => 'HIS.Desktop.Plugins.HisReceptionRoom'], function () {
         Route::get("v1/reception-room", [ReceptionRoomController::class, "reception_room"])->name('.get');
@@ -577,16 +575,6 @@ Route::group([
         Route::post("v1/refectory", [RefectoryController::class, "refectory_create"])->name('.create');
         Route::put("v1/refectory/{id}", [RefectoryController::class, "refectory_update"])->name('.update');
         Route::delete("v1/refectory/{id}", [RefectoryController::class, "refectory_delete"])->name('.delete');
-    });
-
-    /// Quốc gia
-    Route::group(['as' => 'SDA.Desktop.Plugins.SdaNational'], function () {
-        Route::get("v1/national", [NationalController::class, "national"])->name('.get');
-        Route::get("v1/national/{id}", [NationalController::class, "national"])->name('.get_id');
-        Route::get("v1/national-check", [CheckNationalController::class, "check_code"])->name('.check');
-        Route::post("v1/national", [NationalController::class, "national_create"])->name('.create');
-        Route::put("v1/national/{id}", [NationalController::class, "national_update"])->name('.update');
-        Route::delete("v1/national/{id}", [NationalController::class, "national_delete"])->name('.delete');
     });
 
     /// Tỉnh

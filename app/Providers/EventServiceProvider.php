@@ -143,6 +143,10 @@ use App\Events\Elastic\Module\CreateModuleIndex;
 use App\Events\Elastic\Module\InsertModuleIndex;
 use App\Events\Elastic\ModuleRole\CreateModuleRoleIndex;
 use App\Events\Elastic\ModuleRole\InsertModuleRoleIndex;
+use App\Events\Elastic\National\CreateNationalIndex;
+use App\Events\Elastic\National\InsertNationalIndex;
+use App\Events\Elastic\OtherPaySource\CreateOtherPaySourceIndex;
+use App\Events\Elastic\OtherPaySource\InsertOtherPaySourceIndex;
 use App\Events\Telegram\SendMessageToChannel;
 use App\Listeners\Cache\DeleteCache as CacheDeleteCache;
 use App\Listeners\Elastic\AccidentBodyPart\ElasticCreateAccidentBodyPartIndex;
@@ -285,6 +289,10 @@ use App\Listeners\Elastic\Module\ElasticCreateModuleIndex;
 use App\Listeners\Elastic\Module\ElasticInsertModuleIndex;
 use App\Listeners\Elastic\ModuleRole\ElasticCreateModuleRoleIndex;
 use App\Listeners\Elastic\ModuleRole\ElasticInsertModuleRoleIndex;
+use App\Listeners\Elastic\National\ElasticCreateNationalIndex;
+use App\Listeners\Elastic\National\ElasticInsertNationalIndex;
+use App\Listeners\Elastic\OtherPaySource\ElasticCreateOtherPaySourceIndex;
+use App\Listeners\Elastic\OtherPaySource\ElasticInsertOtherPaySourceIndex;
 use App\Listeners\Telegram\TelegramSendMessageToChannel;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -808,6 +816,20 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertModuleIndex::class => [
             ElasticInsertModuleIndex::class,
+        ],
+
+        CreateNationalIndex::class => [
+            ElasticCreateNationalIndex::class,
+        ],
+        InsertNationalIndex::class => [
+            ElasticInsertNationalIndex::class,
+        ],
+
+        CreateOtherPaySourceIndex::class => [
+            ElasticCreateOtherPaySourceIndex::class,
+        ],
+        InsertOtherPaySourceIndex::class => [
+            ElasticInsertOtherPaySourceIndex::class,
         ],
     ];
 
