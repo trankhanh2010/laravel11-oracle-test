@@ -71,10 +71,34 @@ class PatientTypeRepository
             'modifier' => get_loginname_with_token($request->bearerToken(), $time),
             'app_creator' => $appCreator,
             'app_modifier' => $appModifier,
-            'is_active' => 1,
-            'is_delete' => 0,
-            'patient_type_code' => $request->patient_type_code,
-            'patient_type_name' => $request->patient_type_name,
+
+            'patient_type_code'  => $request->patient_type_code,    
+            'patient_type_name'  => $request->patient_type_name,
+            'description' => $request->description,  
+            'priority'   =>  $request->priority, 
+
+            'base_patient_type_id' => $request->base_patient_type_id, 
+            'other_pay_source_ids'  => $request->other_pay_source_ids,
+            'treatment_type_ids'  => $request->treatment_type_ids,      
+            'is_copayment' =>  $request->is_copayment,
+
+            'is_not_use_for_patient' => $request->is_not_use_for_patient,
+            'is_not_for_kiosk' => $request->is_not_for_kiosk,     
+            'is_addition_required' => $request->is_addition_required,   
+            'is_addition' => $request->is_addition,               
+
+            'is_not_service_bill' => $request->is_not_service_bill,        
+            'is_check_fee_when_assign' => $request->is_check_fee_when_assign,    
+            'is_check_finish_cls_when_pres'=> $request->is_check_finish_cls_when_pres, 
+            'is_check_fee_when_pres' => $request->is_check_fee_when_pres,        
+
+            'is_not_edit_assign_service' =>  $request->is_not_edit_assign_service,  
+            'is_showing_out_stock_by_def' => $request->is_showing_out_stock_by_def,  
+            'is_not_check_fee_when_exp_pres' => $request->is_not_check_fee_when_exp_pres,
+            'is_for_sale_exp' =>  $request->is_for_sale_exp,             
+
+            'must_be_guaranteed' =>  $request->must_be_guaranteed,        
+            'is_ration' =>  $request->is_ration                    
         ]);
         return $data;
     }
@@ -83,8 +107,33 @@ class PatientTypeRepository
             'modify_time' => now()->format('Ymdhis'),
             'modifier' => get_loginname_with_token($request->bearerToken(), $time),
             'app_modifier' => $appModifier,
-            'patient_type_code' => $request->patient_type_code,
-            'patient_type_name' => $request->patient_type_name,
+            'patient_type_code'  => $request->patient_type_code,    
+            'patient_type_name'  => $request->patient_type_name,
+            'description' => $request->description,  
+            'priority'   =>  $request->priority, 
+
+            'base_patient_type_id' => $request->base_patient_type_id, 
+            'other_pay_source_ids'  => $request->other_pay_source_ids,
+            'treatment_type_ids'  => $request->treatment_type_ids,      
+            'is_copayment' =>  $request->is_copayment,
+
+            'is_not_use_for_patient' => $request->is_not_use_for_patient,
+            'is_not_for_kiosk' => $request->is_not_for_kiosk,     
+            'is_addition_required' => $request->is_addition_required,   
+            'is_addition' => $request->is_addition,               
+
+            'is_not_service_bill' => $request->is_not_service_bill,        
+            'is_check_fee_when_assign' => $request->is_check_fee_when_assign,    
+            'is_check_finish_cls_when_pres'=> $request->is_check_finish_cls_when_pres, 
+            'is_check_fee_when_pres' => $request->is_check_fee_when_pres,        
+
+            'is_not_edit_assign_service' =>  $request->is_not_edit_assign_service,  
+            'is_showing_out_stock_by_def' => $request->is_showing_out_stock_by_def,  
+            'is_not_check_fee_when_exp_pres' => $request->is_not_check_fee_when_exp_pres,
+            'is_for_sale_exp' =>  $request->is_for_sale_exp,             
+
+            'must_be_guaranteed' =>  $request->must_be_guaranteed,        
+            'is_ration' =>  $request->is_ration,              
             'is_active' => $request->is_active
         ]);
         return $data;
@@ -95,16 +144,14 @@ class PatientTypeRepository
     }
     public function getDataFromDbToElastic($id = null){
         $data = $this->applyJoins();
-        if($id != null){
-            $data = $data->where('his_patient_type.id','=', $id)->first();
+        if ($id != null) {
+            $data = $data->where('his_patient_type.id', '=', $id)->first();
             if ($data) {
-                $data = $data->getAttributes();
+                $data->toArray();
             }
         } else {
             $data = $data->get();
-            $data = $data->map(function ($item) {
-                return $item->getAttributes(); 
-            })->toArray(); 
+            $data->toArray();
         }
         return $data;
     }

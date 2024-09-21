@@ -1039,4 +1039,34 @@ return [
         'patient_type_id' => 'Id đối tượng được chuyển đổi',
         'patient_type_allow_id' => 'Id đối tượng chuyển đổi',
     ],
+    // Đối tượng bệnh nhân
+    'patient_type' => [
+        'patient_type_code'  => 'Mã đối tượng bệnh nhân',
+        'patient_type_name'  => 'Tên đối tượng bệnh nhân',
+        'description' => 'Trường mô tả',
+        'priority'   => 'Trường ưu tiên',
+
+        'base_patient_type_id' => 'Id đối tượng cha mà đối tượng này kế thừa chính sách giá',
+        'other_pay_source_ids'  => 'Danh sách id nguồn chi trả khác',
+        'treatment_type_ids'  => 'Danh sách id diện điều trị',
+        'is_copayment' => 'Trường đồng chi trả',
+
+        'is_not_use_for_patient' => 'Trường không cho phép sử dụng cho đối tượng bệnh nhân',
+        'is_not_for_kiosk' => 'Trường không hiển thị trên Kiosk',
+        'is_addition_required' => 'Trường bắt buộc chọn đối tượng phụ thu',
+        'is_addition' => 'Trường đối tượng phụ thu',
+
+        'is_not_service_bill' => 'Trường không vào hóa đơn dịch vụ',
+        'is_check_fee_when_assign' => 'Trường không cho phép chỉ định dịch vụ nếu thiếu tiền',
+        'is_check_finish_cls_when_pres' => 'Trường không cho phép kê đơn với bệnh nhân khám nếu chưa thực hiện xong dịch vụ cận lâm sàng',
+        'is_check_fee_when_pres' => 'Trường không cho phép kê đơn nếu thiếu tiền',
+
+        'is_not_edit_assign_service' => 'Trường không cho phép sửa xóa dịch vụ đã chỉ định',
+        'is_showing_out_stock_by_def' => 'Trường mặc định hiển thị thuốc/vật tư ngoài khi kê đơn phòng khám',
+        'is_not_check_fee_when_exp_pres' => 'Trường không kiểm tra viện phí khi xuất thuốc cho bệnh nhân phòng khám',
+        'is_for_sale_exp' => 'Trường mặc định hiển thị chính sách giá khi tạo thuốc/vật tư kinh doanh',
+
+        'must_be_guaranteed' => 'Trường bắt buộc có người bảo lãnh',
+        'is_ration' => 'Trường là mức ăn',
+    ],
 ];

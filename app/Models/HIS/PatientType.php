@@ -15,26 +15,26 @@ class PatientType extends Model
         'id',
     ];
     public $timestamps = false;
-    // protected $appends = [
-    //     'treatment_types',
-    //     'other_pay_sources',
-    //     'inherit_patient_types'
-    // ];
-    // public function getTreatmentTypesAttribute()
-    // {
-    //     $data = TreatmentType::whereIn('id', explode(',', $this->treatment_type_ids))->get();
-    //     return $data;
-    // }
-    // public function getOtherPaySourcesAttribute()
-    // {
-    //     $data = OtherPaySource::whereIn('id', explode(',', $this->other_pay_source_ids))->get();
-    //     return $data;
-    // }
-    // public function getInheritPatientTypesAttribute()
-    // {
-    //     $data = PatientType::whereIn('id', explode(',', $this->inheritPatientTypeIds))->get();
-    //     return $data;
-    // }
+    protected $appends = [
+        'treatment_types',
+        'other_pay_sources',
+        'inherit_patient_types'
+    ];
+    public function getTreatmentTypesAttribute()
+    {
+        $data = TreatmentType::select(['treatment_type_code', 'treatment_type_name'])->whereIn('id', explode(',', $this->treatment_type_ids))->get();
+        return $data;
+    }
+    public function getOtherPaySourcesAttribute()
+    {
+        $data = OtherPaySource::select(['other_pay_source_code', 'other_pay_source_name'])->whereIn('id', explode(',', $this->other_pay_source_ids))->get();
+        return $data;
+    }
+    public function getInheritPatientTypesAttribute()
+    {
+        $data = PatientType::select(['patient_type_code', 'patient_type_name'])->whereIn('id', explode(',', $this->inheritPatientTypeIds))->get();
+        return $data;
+    }
 
     public function services()
     {

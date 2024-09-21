@@ -536,6 +536,10 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.PatientTypeAllow'], function () {
         Route::apiResource('v1/patient-type-allow', PatientTypeAllowController::class);
     });
+    /// Đối tượng bệnh nhân
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisPatientType'], function () {
+        Route::apiResource('v1/patient-type', PatientTypeController::class);
+    });
     /// Loại phòng
     Route::group(['as' => 'HIS.Desktop.Plugins.RoomTypeModule'], function () {
         Route::get("v1/room-type", [RoomTypeController::class, "room_type"])->name('.get');
@@ -703,13 +707,6 @@ Route::group([
         Route::post("v1/role", [RoleController::class, "role_create"])->name('.create');
         Route::put("v1/role/{id}", [RoleController::class, "role_update"])->name('.update');
         Route::delete("v1/role/{id}", [RoleController::class, "role_delete"])->name('.delete');
-    });
-
-    /// Đối tượng bệnh nhân
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisPatientType'], function () {
-        Route::get("v1/patient-type", [PatientTypeController::class, "patient_type"])->name('.get');
-        // Route::get("v1/patient-type/is-addition", [PatientTypeController::class, "patient_type_is_addition"]);
-        Route::get("v1/patient-type/{id}", [PatientTypeController::class, "patient_type"])->name('.get_id');
     });
 
     /// Đối tượng ưu tiên

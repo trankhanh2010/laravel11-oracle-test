@@ -246,6 +246,7 @@ return [
             'patient_case' => 'Có lỗi khi thực hiện thao tác với bảng Trường hợp bệnh!',
             'patient_classify' => 'Có lỗi khi thực hiện thao tác với bảng Phân loại bệnh nhân!',
             'patient_type_allow' => 'Có lỗi khi thực hiện thao tác với bảng Chuyển đổi đối tượng!',
+            'patient_type' => 'Có lỗi khi thực hiện thao tác với bảng Đối tượng bệnh nhân!',
 
         ]
     ]

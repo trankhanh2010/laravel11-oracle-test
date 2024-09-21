@@ -151,6 +151,8 @@ use App\Events\Elastic\Package\CreatePackageIndex;
 use App\Events\Elastic\PatientCase\CreatePatientCaseIndex;
 use App\Events\Elastic\PatientClassify\CreatePatientClassifyIndex;
 use App\Events\Elastic\PatientClassify\InsertPatientClassifyIndex;
+use App\Events\Elastic\PatientType\CreatePatientTypeIndex;
+use App\Events\Elastic\PatientType\InsertPatientTypeIndex;
 use App\Events\Elastic\PatientTypeAllow\CreatePatientTypeAllowIndex;
 use App\Events\Elastic\PatientTypeAllow\InsertPatientTypeAllowIndex;
 use App\Events\Telegram\SendMessageToChannel;
@@ -303,6 +305,8 @@ use App\Listeners\Elastic\Package\ElasticCreatePackageIndex;
 use App\Listeners\Elastic\PatientCase\ElasticCreatePatientCaseIndex;
 use App\Listeners\Elastic\PatientClassify\ElasticCreatePatientClassifyIndex;
 use App\Listeners\Elastic\PatientClassify\ElasticInsertPatientClassifyIndex;
+use App\Listeners\Elastic\PatientType\ElasticCreatePatientTypeIndex;
+use App\Listeners\Elastic\PatientType\ElasticInsertPatientTypeIndex;
 use App\Listeners\Elastic\PatientTypeAllow\ElasticCreatePatientTypeAllowIndex;
 use App\Listeners\Elastic\PatientTypeAllow\ElasticInsertPatientTypeAllowIndex;
 use App\Listeners\Telegram\TelegramSendMessageToChannel;
@@ -864,6 +868,13 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertPatientTypeAllowIndex::class => [
             ElasticInsertPatientTypeAllowIndex::class,
+        ],
+
+        CreatePatientTypeIndex::class => [
+            ElasticCreatePatientTypeIndex::class,
+        ],
+        InsertPatientTypeIndex::class => [
+            ElasticInsertPatientTypeIndex::class,
         ],
     ];
 

@@ -88,6 +88,7 @@ use App\Events\Elastic\OtherPaySource\CreateOtherPaySourceIndex;
 use App\Events\Elastic\Package\CreatePackageIndex;
 use App\Events\Elastic\PatientCase\CreatePatientCaseIndex;
 use App\Events\Elastic\PatientClassify\CreatePatientClassifyIndex;
+use App\Events\Elastic\PatientType\CreatePatientTypeIndex;
 use App\Events\Elastic\PatientTypeAllow\CreatePatientTypeAllowIndex;
 use App\Models\HIS\MedicineUseForm;
 use App\Repositories\AccidentBodyPartRepository;
@@ -174,6 +175,7 @@ use App\Repositories\PackageRepository;
 use App\Repositories\PatientCaseRepository;
 use App\Repositories\PatientClassifyRepository;
 use App\Repositories\PatientTypeAllowRepository;
+use App\Repositories\PatientTypeRepository;
 
 class IndexRecordsToElasticsearch extends Command
 {
@@ -560,6 +562,10 @@ class IndexRecordsToElasticsearch extends Command
                 $results = app(PatientTypeAllowRepository::class)->getDataFromDbToElastic(null);
                 event(new CreatePatientTypeAllowIndex($name_table));
                 break;
+            case 'patient_type':
+                $results = app(PatientTypeRepository::class)->getDataFromDbToElastic(null);
+                event(new CreatePatientTypeIndex($name_table));
+                break;
             default:
                 // Xử lý mặc định hoặc xử lý khi không có bảng khớp
                 $this->error('Không có dữ liệu của bảng ' . $name_table . '.');
@@ -570,6 +576,7 @@ class IndexRecordsToElasticsearch extends Command
         // Danh sách các bảng dùng with cần phải decode trước khi thêm vào elastic
         $arr_json_decode = [
             'medi_stock',
+            'patient_type',
         ];
 
         // Chèn từng bản ghi
