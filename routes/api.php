@@ -522,6 +522,12 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisOtherPaySource'], function () {
         Route::apiResource('v1/other-pay-source', OtherPaySourceController::class);
     });
+    /// Gói
+    Route::apiResource('v1/package', PackageController::class)->only(['index', 'show']);
+    /// Trường hợp bệnh
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisPatientCase'], function () {
+        Route::apiResource('v1/patient-case', PatientCaseController::class)->only(['index', 'show']);
+    });
     /// Loại phòng
     Route::group(['as' => 'HIS.Desktop.Plugins.RoomTypeModule'], function () {
         Route::get("v1/room-type", [RoomTypeController::class, "room_type"])->name('.get');
@@ -592,10 +598,6 @@ Route::group([
         Route::get("v1/suim-index", [SuimIndexController::class, "suim_index"])->name('.get');
         Route::get("v1/suim-index/{id}", [SuimIndexController::class, "suim_index"])->name('.get_id');
     });
-
-    /// Gói
-    Route::get("v1/package", [PackageController::class, "package"])->name('.get_v');
-    Route::get("v1/package/{id}", [PackageController::class, "package"])->name('.get_package_id');
 
     /// Dịch vụ kỹ thuật
     Route::group(['as' => 'HIS.Desktop.Plugins.HisService'], function () {
@@ -824,12 +826,6 @@ Route::group([
         Route::post("v1/work-place", [WorkPlaceController::class, "work_place_create"])->name('.create');
         Route::put("v1/work-place/{id}", [WorkPlaceController::class, "work_place_update"])->name('.update');
         Route::delete("v1/work-place/{id}", [WorkPlaceController::class, "work_place_delete"])->name('.delete');
-    });
-
-    /// Trường hợp bệnh
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisPatientCase'], function () {
-        Route::get("v1/patient-case", [PatientCaseController::class, "patient_case"])->name('.get');
-        Route::get("v1/patient-case/{id}", [PatientCaseController::class, "patient_case"])->name('.get_id');
     });
 
     /// Chế phẩm máu

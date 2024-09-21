@@ -85,6 +85,8 @@ use App\Events\Elastic\Module\CreateModuleIndex;
 use App\Events\Elastic\ModuleRole\CreateModuleRoleIndex;
 use App\Events\Elastic\National\CreateNationalIndex;
 use App\Events\Elastic\OtherPaySource\CreateOtherPaySourceIndex;
+use App\Events\Elastic\Package\CreatePackageIndex;
+use App\Events\Elastic\PatientCase\CreatePatientCaseIndex;
 use App\Models\HIS\MedicineUseForm;
 use App\Repositories\AccidentBodyPartRepository;
 use App\Repositories\AccidentCareRepository;
@@ -166,6 +168,8 @@ use App\Repositories\ModuleRepository;
 use App\Repositories\ModuleRoleRepository;
 use App\Repositories\NationalRepository;
 use App\Repositories\OtherPaySourceRepository;
+use App\Repositories\PackageRepository;
+use App\Repositories\PatientCaseRepository;
 
 class IndexRecordsToElasticsearch extends Command
 {
@@ -535,6 +539,14 @@ class IndexRecordsToElasticsearch extends Command
             case 'other_pay_source':
                 $results = app(OtherPaySourceRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateOtherPaySourceIndex($name_table));
+                break;
+            case 'package':
+                $results = app(PackageRepository::class)->getDataFromDbToElastic(null);
+                event(new CreatePackageIndex($name_table));
+                break;
+            case 'patient_case':
+                $results = app(PatientCaseRepository::class)->getDataFromDbToElastic(null);
+                event(new CreatePatientCaseIndex($name_table));
                 break;
             default:
                 // Xử lý mặc định hoặc xử lý khi không có bảng khớp

@@ -147,6 +147,8 @@ use App\Events\Elastic\National\CreateNationalIndex;
 use App\Events\Elastic\National\InsertNationalIndex;
 use App\Events\Elastic\OtherPaySource\CreateOtherPaySourceIndex;
 use App\Events\Elastic\OtherPaySource\InsertOtherPaySourceIndex;
+use App\Events\Elastic\Package\CreatePackageIndex;
+use App\Events\Elastic\PatientCase\CreatePatientCaseIndex;
 use App\Events\Telegram\SendMessageToChannel;
 use App\Listeners\Cache\DeleteCache as CacheDeleteCache;
 use App\Listeners\Elastic\AccidentBodyPart\ElasticCreateAccidentBodyPartIndex;
@@ -293,6 +295,8 @@ use App\Listeners\Elastic\National\ElasticCreateNationalIndex;
 use App\Listeners\Elastic\National\ElasticInsertNationalIndex;
 use App\Listeners\Elastic\OtherPaySource\ElasticCreateOtherPaySourceIndex;
 use App\Listeners\Elastic\OtherPaySource\ElasticInsertOtherPaySourceIndex;
+use App\Listeners\Elastic\Package\ElasticCreatePackageIndex;
+use App\Listeners\Elastic\PatientCase\ElasticCreatePatientCaseIndex;
 use App\Listeners\Telegram\TelegramSendMessageToChannel;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -830,6 +834,14 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertOtherPaySourceIndex::class => [
             ElasticInsertOtherPaySourceIndex::class,
+        ],
+
+        CreatePackageIndex::class => [
+            ElasticCreatePackageIndex::class,
+        ],
+
+        CreatePatientCaseIndex::class => [
+            ElasticCreatePatientCaseIndex::class,
         ],
     ];
 

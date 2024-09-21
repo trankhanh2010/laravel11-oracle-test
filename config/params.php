@@ -242,6 +242,8 @@ return [
             'module' => 'Có lỗi khi thực hiện thao tác với bảng Chức năng!',
             'national' => 'Có lỗi khi thực hiện thao tác với bảng Quốc gia!',
             'other_pay_source' => 'Có lỗi khi thực hiện thao tác với bảng Nguồn chi trả khác!',
+            'package' => 'Có lỗi khi thực hiện thao tác với bảng Gói!',
+            'patient_case' => 'Có lỗi khi thực hiện thao tác với bảng Trường hợp bệnh!',
 
         ]
     ]
