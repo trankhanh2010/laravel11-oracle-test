@@ -87,6 +87,8 @@ use App\Events\Elastic\National\CreateNationalIndex;
 use App\Events\Elastic\OtherPaySource\CreateOtherPaySourceIndex;
 use App\Events\Elastic\Package\CreatePackageIndex;
 use App\Events\Elastic\PatientCase\CreatePatientCaseIndex;
+use App\Events\Elastic\PatientClassify\CreatePatientClassifyIndex;
+use App\Events\Elastic\PatientTypeAllow\CreatePatientTypeAllowIndex;
 use App\Models\HIS\MedicineUseForm;
 use App\Repositories\AccidentBodyPartRepository;
 use App\Repositories\AccidentCareRepository;
@@ -170,6 +172,8 @@ use App\Repositories\NationalRepository;
 use App\Repositories\OtherPaySourceRepository;
 use App\Repositories\PackageRepository;
 use App\Repositories\PatientCaseRepository;
+use App\Repositories\PatientClassifyRepository;
+use App\Repositories\PatientTypeAllowRepository;
 
 class IndexRecordsToElasticsearch extends Command
 {
@@ -547,6 +551,14 @@ class IndexRecordsToElasticsearch extends Command
             case 'patient_case':
                 $results = app(PatientCaseRepository::class)->getDataFromDbToElastic(null);
                 event(new CreatePatientCaseIndex($name_table));
+                break;
+            case 'patient_classify':
+                $results = app(PatientClassifyRepository::class)->getDataFromDbToElastic(null);
+                event(new CreatePatientClassifyIndex($name_table));
+                break;
+            case 'patient_type_allow':
+                $results = app(PatientTypeAllowRepository::class)->getDataFromDbToElastic(null);
+                event(new CreatePatientTypeAllowIndex($name_table));
                 break;
             default:
                 // Xử lý mặc định hoặc xử lý khi không có bảng khớp

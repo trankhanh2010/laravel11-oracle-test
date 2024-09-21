@@ -528,6 +528,14 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisPatientCase'], function () {
         Route::apiResource('v1/patient-case', PatientCaseController::class)->only(['index', 'show']);
     });
+    /// Phân loại bệnh nhân
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisPatientClassify'], function () {
+        Route::apiResource('v1/patient-classify', PatientClassifyController::class);
+    });
+    /// Chuyển đổi đối tượng
+    Route::group(['as' => 'HIS.Desktop.Plugins.PatientTypeAllow'], function () {
+        Route::apiResource('v1/patient-type-allow', PatientTypeAllowController::class);
+    });
     /// Loại phòng
     Route::group(['as' => 'HIS.Desktop.Plugins.RoomTypeModule'], function () {
         Route::get("v1/room-type", [RoomTypeController::class, "room_type"])->name('.get');
@@ -722,16 +730,6 @@ Route::group([
         Route::delete("v1/relation-list/{id}", [RelationController::class, "relation_list_delete"])->name('.delete');
     });
 
-    /// Phân loại bệnh nhân
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisPatientClassify'], function () {
-        Route::get("v1/patient-classify", [PatientClassifyController::class, "patient_classify"])->name('.get');
-        Route::get("v1/patient-classify/{id}", [PatientClassifyController::class, "patient_classify"])->name('.get_id');
-        Route::get("v1/patient-classify-check", [CheckPatientClassifyController::class, "check_code"])->name('.check');
-        Route::post("v1/patient-classify", [PatientClassifyController::class, "patient_classify_create"])->name('.create');
-        Route::put("v1/patient-classify/{id}", [PatientClassifyController::class, "patient_classify_update"])->name('.update');
-        Route::delete("v1/patient-classify/{id}", [PatientClassifyController::class, "patient_classify_delete"])->name('.delete');
-    });
-
     /// Tôn giáo
     Route::group(['as' => 'SDA.Desktop.Plugins.SdaReligion'], function () {
         Route::get("v1/religion", [ReligionController::class, "religion"])->name('.get');
@@ -802,12 +800,6 @@ Route::group([
         Route::post("v1/sale-profit-cfg", [SaleProfitCfgController::class, "sale_profit_cfg_create"])->name('.create');
         Route::put("v1/sale-profit-cfg/{id}", [SaleProfitCfgController::class, "sale_profit_cfg_update"])->name('.update');
         Route::delete("v1/sale-profit-cfg/{id}", [SaleProfitCfgController::class, "sale_profit_cfg_delete"])->name('.delete');
-    });
-
-    /// Chuyển đổi đối tượng
-    Route::group(['as' => 'HIS.Desktop.Plugins.PatientTypeAllow'], function () {
-        Route::get("v1/patient-type-allow", [PatientTypeAllowController::class, "patient_type_allow"])->name('.get');
-        Route::get("v1/patient-type-allow/{id}", [PatientTypeAllowController::class, "patient_type_allow"])->name('.get_id');
     });
 
     /// Chức vụ

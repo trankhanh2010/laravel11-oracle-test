@@ -2,192 +2,118 @@
 
 namespace App\Http\Controllers\Api\CacheControllers;
 
+use App\DTOs\PatientTypeAllowDTO;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
+use App\Http\Requests\PatientTypeAllow\CreatePatientTypeAllowRequest;
+use App\Http\Requests\PatientTypeAllow\UpdatePatientTypeAllowRequest;
 use App\Models\HIS\PatientTypeAllow;
+use App\Services\Elastic\ElasticsearchService;
+use App\Services\Model\PatientTypeAllowService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
+
 
 class PatientTypeAllowController extends BaseApiCacheController
 {
-    public function __construct(Request $request)
+    protected $patientTypeAllowService;
+    protected $patientTypeAllowDTO;
+    public function __construct(Request $request, ElasticsearchService $elasticSearchService, PatientTypeAllowService $patientTypeAllowService, PatientTypeAllow $patientTypeAllow)
     {
         parent::__construct($request); // Gọi constructor của BaseController
-        $this->patient_type_allow = new PatientTypeAllow();
-
+        $this->elasticSearchService = $elasticSearchService;
+        $this->patientTypeAllowService = $patientTypeAllowService;
+        $this->patientTypeAllow = $patientTypeAllow;
         // Kiểm tra tên trường trong bảng
-        if ($this->order_by != null) {
-            $columns = $this->get_columns_table($this->patient_type_allow);
-            $this->order_by = $this->check_order_by($this->order_by, $columns, $this->order_by_join ?? []);
-            $this->order_by_tring = arrayToCustomString($this->order_by);
-        }
-    }
-    public function patient_type_allow($id = null)
-    {
-        // Kiểm tra param và trả về lỗi nếu nó không hợp lệ
-        if ($this->check_param()) {
-            return $this->check_param();
-        }
-        try {
-            $keyword = $this->keyword;
-            if ($keyword != null) {
-                $data = $this->patient_type_allow
-                ->leftJoin('his_patient_type as patient_type', 'patient_type.id', '=', 'his_patient_type_allow.patient_type_id')
-                ->leftJoin('his_patient_type as patient_type_allow', 'patient_type_allow.id', '=', 'his_patient_type_allow.patient_type_allow_id')
-
-                    ->select(
-                        'his_patient_type_allow.*',
-                        'patient_type_allow.patient_type_code as patient_type_allow_code',
-                        'patient_type_allow.patient_type_name as patient_type_allow_name',
-                        'patient_type.patient_type_code',
-                        'patient_type.patient_type_name',
-                    );
-                $data = $data->where(function ($query) use ($keyword) {
-                    $query = $query
-                        ->where(DB::connection('oracle_his')->raw('patient_type_allow.patient_type_code'), 'like', $keyword . '%')
-                        ->orWhere(DB::connection('oracle_his')->raw('patient_type.patient_type_code'), 'like', $keyword . '%');
-                });
-                if ($this->is_active !== null) {
-                    $data = $data->where(function ($query) {
-                        $query = $query->where(DB::connection('oracle_his')->raw('his_patient_type_allow.is_active'), $this->is_active);
-                    });
-                }
-                if ($this->patient_type_id !== null) {
-                    $data = $data->where(function ($query) {
-                        $query = $query->where(DB::connection('oracle_his')->raw('his_patient_type_allow.patient_type_id'), $this->patient_type_id);
-                    });
-                }
-                if ($this->patient_type_allow_id !== null) {
-                    $data = $data->where(function ($query) {
-                        $query = $query->where(DB::connection('oracle_his')->raw('his_patient_type_allow.patient_type_allow_id'), $this->patient_type_allow_id);
-                    });
-                }
-                $count = $data->count();
-                if ($this->order_by != null) {
-                    foreach ($this->order_by as $key => $item) {
-                        $data->orderBy('his_patient_type_allow.' . $key, $item);
-                    }
-                }
-                if($this->get_all){
-                    $data = $data
-                    ->get();
-                }else{
-                    $data = $data
-                    ->skip($this->start)
-                    ->take($this->limit)
-                    ->get();
-                }
-            } else {
-                if ($id == null) {
-                    $data = Cache::remember($this->patient_type_allow_name .'_patient_type_id_'.$this->patient_type_id. '_patient_type_allow_id_'.$this->patient_type_allow_id. '_start_' . $this->start . '_limit_' . $this->limit . $this->order_by_tring . '_is_active_' . $this->is_active. '_get_all_' . $this->get_all, $this->time, function () {
-                        $data = $this->patient_type_allow
-                        ->leftJoin('his_patient_type as patient_type', 'patient_type.id', '=', 'his_patient_type_allow.patient_type_id')
-                        ->leftJoin('his_patient_type as patient_type_allow', 'patient_type_allow.id', '=', 'his_patient_type_allow.patient_type_allow_id')
-        
-                            ->select(
-                                'his_patient_type_allow.*',
-                                'patient_type_allow.patient_type_code as patient_type_allow_code',
-                                'patient_type_allow.patient_type_name as patient_type_allow_name',
-                                'patient_type.patient_type_code',
-                                'patient_type.patient_type_name',
-                            );
-                        if ($this->is_active !== null) {
-                            $data = $data->where(function ($query) {
-                                $query = $query->where(DB::connection('oracle_his')->raw('his_patient_type_allow.is_active'), $this->is_active);
-                            });
-                        }
-                        if ($this->patient_type_id !== null) {
-                            $data = $data->where(function ($query) {
-                                $query = $query->where(DB::connection('oracle_his')->raw('his_patient_type_allow.patient_type_id'), $this->patient_type_id);
-                            });
-                        }
-                        if ($this->patient_type_allow_id !== null) {
-                            $data = $data->where(function ($query) {
-                                $query = $query->where(DB::connection('oracle_his')->raw('his_patient_type_allow.patient_type_allow_id'), $this->patient_type_allow_id);
-                            });
-                        }
-                        $count = $data->count();
-                        if ($this->order_by != null) {
-                            foreach ($this->order_by as $key => $item) {
-                                $data->orderBy('his_patient_type_allow.' . $key, $item);
-                            }
-                        }
-                        if($this->get_all){
-                            $data = $data
-                            ->get();
-                        }else{
-                            $data = $data
-                            ->skip($this->start)
-                            ->take($this->limit)
-                            ->get();
-                        }
-                        return ['data' => $data, 'count' => $count];
-                    });
-                } else {
-                    if (!is_numeric($id)) {
-                        return returnIdError($id);
-                    }
-                    $check_id = $this->check_id($id, $this->patient_type_allow, $this->patient_type_allow_name);
-                    if($check_id){
-                        return $check_id; 
-                    }
-                    $data = Cache::remember($this->patient_type_allow_name . '_' . $id . '_is_active_' . $this->is_active, $this->time, function () use ($id) {
-                        $data = $this->patient_type_allow
-                        ->leftJoin('his_patient_type as patient_type', 'patient_type.id', '=', 'his_patient_type_allow.patient_type_id')
-                        ->leftJoin('his_patient_type as patient_type_allow', 'patient_type_allow.id', '=', 'his_patient_type_allow.patient_type_allow_id')
-        
-                            ->select(
-                                'his_patient_type_allow.*',
-                                'patient_type_allow.patient_type_code as patient_type_allow_code',
-                                'patient_type_allow.patient_type_name as patient_type_allow_name',
-                                'patient_type.patient_type_code',
-                                'patient_type.patient_type_name',
-                            )
-                            ->where('his_patient_type_allow.id', $id);
-                        if ($this->is_active !== null) {
-                            $data = $data->where(function ($query) {
-                                $query = $query->where(DB::connection('oracle_his')->raw('his_patient_type_allow.is_active'), $this->is_active);
-                            });
-                        }
-                        $data = $data->first();
-                        return $data;
-                    });
-                }
-            }
-            $param_return = [
-                $this->get_all_name => $this->get_all,
-                $this->start_name => ($this->get_all || !is_null($id)) ? null : $this->start,
-                $this->limit_name => ($this->get_all || !is_null($id)) ? null : $this->limit,
-                $this->count_name => $count ?? ($data['count'] ?? null),
-                $this->is_active_name => $this->is_active,
-                $this->patient_type_id_name => $this->patient_type_id,
-                $this->patient_type_allow_id_name => $this->patient_type_allow_id,
-                $this->keyword_name => $this->keyword,
-                $this->order_by_name => $this->order_by_request
+        if ($this->orderBy != null) {
+            $this->orderByJoin = [
+                'patient_type_code',
+                'patient_type_name',
+                'patient_type_allow_code',
+                'patient_type_allow_name'
             ];
-            return return_data_success($param_return, $data ?? ($data['data'] ?? null) ?? null);
-        } catch (\Throwable $e) {
-            // Xử lý lỗi và trả về phản hồi lỗi
-            return return_500_error($e->getMessage());
+            $columns = $this->getColumnsTable($this->patientTypeAllow);
+            $this->orderBy = $this->checkOrderBy($this->orderBy, $columns, $this->orderByJoin ?? []);
         }
+        // Thêm tham số vào service
+        $this->patientTypeAllowDTO = new PatientTypeAllowDTO(
+            $this->patientTypeAllowName,
+            $this->keyword,
+            $this->isActive,
+            $this->orderBy,
+            $this->orderByJoin,
+            $this->orderByString,
+            $this->getAll,
+            $this->start,
+            $this->limit,
+            $request,
+            $this->appCreator, 
+            $this->appModifier, 
+            $this->time,
+        );
+        $this->patientTypeAllowService->withParams($this->patientTypeAllowDTO);
     }
-    // /// Patient Type Allow
-    // public function patient_type_allow($id = null)
-    // {
-    //     if ($id == null) {
-    //         $name = $this->patient_type_allow_name;
-    //         $param = [
-    //             'patient_type',
-    //             'patient_type_allow'
-    //         ];
-    //     } else {
-    //         $name = $this->patient_type_allow_name . '_' . $id;
-    //         $param = [
-    //             'patient_type',
-    //             'patient_type_allow'
-    //         ];
-    //     }
-    //     $data = get_cache_full($this->patient_type_allow, $param, $name, $id, $this->time);
-    //     return response()->json(['data' => $data], 200);
-    // }
+    public function index()
+    {
+        if ($this->checkParam()) {
+            return $this->checkParam();
+        }
+        $keyword = $this->keyword;
+        if (($keyword != null || $this->elasticSearchType != null) && !$this->cache) {
+            if ($this->elasticSearchType != null) {
+                $data = $this->elasticSearchService->handleElasticSearchSearch($this->patientTypeAllowName);
+            } else {
+                $data = $this->patientTypeAllowService->handleDataBaseSearch();
+            }
+        } else {
+            if ($this->elastic) {
+                $data = $this->elasticSearchService->handleElasticSearchGetAll($this->patientTypeAllowName);
+            } else {
+                $data = $this->patientTypeAllowService->handleDataBaseGetAll();
+            }
+        }
+        $paramReturn = [
+            $this->getAllName => $this->getAll,
+            $this->startName => $this->getAll ? null : $this->start,
+            $this->limitName => $this->getAll ? null : $this->limit,
+            $this->countName => $data['count'],
+            $this->isActiveName => $this->isActive,
+            $this->keywordName => $this->keyword,
+            $this->orderByName => $this->orderByRequest
+        ];
+        return returnDataSuccess($paramReturn, $data['data']);
+    }
+
+    public function show($id)
+    {
+        if ($this->checkParam()) {
+            return $this->checkParam();
+        }
+        if ($id !== null) {
+            $validationError = $this->validateAndCheckId($id, $this->patientTypeAllow, $this->patientTypeAllowName);
+            if ($validationError) {
+                return $validationError;
+            }
+        }
+        if ($this->elastic) {
+            $data = $this->elasticSearchService->handleElasticSearchGetWithId($this->patientTypeAllowName, $id);
+        } else {
+            $data = $this->patientTypeAllowService->handleDataBaseGetWithId($id);
+        }
+        $paramReturn = [
+            $this->idName => $id,
+            $this->isActiveName => $this->isActive,
+        ];
+        return returnDataSuccess($paramReturn, $data);
+    }
+    public function store(CreatePatientTypeAllowRequest $request)
+    {
+        return $this->patientTypeAllowService->createPatientTypeAllow($request);
+    }
+    public function update(UpdatePatientTypeAllowRequest $request, $id)
+    {
+        return $this->patientTypeAllowService->updatePatientTypeAllow($id, $request);
+    }
+    public function destroy($id)
+    {
+        return $this->patientTypeAllowService->deletePatientTypeAllow($id);
+    }
 }

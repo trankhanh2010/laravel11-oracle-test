@@ -22,7 +22,7 @@ return [
         'regex_year' => ' phải có đủ 4 chữ số!',
         'numeric' => ' phải là số!',
         'prohibited_unless_service_type' => ' chỉ được nhập khi mã loại dịch vụ thuộc ',
-        'declined_if'=> ' chỉ được nhập khi ',
+        'declined_if' => ' chỉ được nhập khi ',
         'lte' => ' phải bé hơn hoặc bằng :value!',
         'gte' => ' phải lớn hơn hoặc bằng :value!',
         'lt' => ' phải bé hơn :value!',
@@ -300,7 +300,7 @@ return [
         'medi_stock_imty' => 'Trường chuỗi json danh sách id cấu hình nhập',
         'is_auto_approve' => 'Trường tự động duyệt',
         'is_auto_execute' => 'Trường tự động xuất',
-        
+
     ],
     // Khu tiếp đón
     'reception_room' => [
@@ -430,7 +430,7 @@ return [
         'icd_cm_id' => 'ICD-CM',
         'hein_limit_price_in_time' => 'Thời gian áp dụng giá trần mới theo ngày vào viện',
         'hein_limit_price' => 'Giá trần BHYT mới',
-        'cogs' => 'Giá vốn', 
+        'cogs' => 'Giá vốn',
         'ration_symbol' => 'Ký hiệu suất ăn',
         'ration_group_id' => 'Id nhóm suất ăn',
         'num_order' => 'Trường thứ tự',
@@ -963,7 +963,7 @@ return [
         'medi_stock_ids' => 'Danh sách Id kho',
         'is_prevent_max' => 'Trường chặn nhập quá trần',
         'is_prevent_exp' => 'Trường không cho xuất',
-        'is_goods_restrict' => 'Trường là thuốc giới hạn',  
+        'is_goods_restrict' => 'Trường là thuốc giới hạn',
     ],
     // Kho - Loại vật tư
     'medi_stock_maty' => [
@@ -972,7 +972,7 @@ return [
         'material_type_id' => 'Id loại vật tư',
         'medi_stock_ids' => 'Danh sách Id kho',
         'is_prevent_max' => 'Trường chặn nhập quá trần',
-        'is_goods_restrict' => 'Trường là vật tư giới hạn',  
+        'is_goods_restrict' => 'Trường là vật tư giới hạn',
     ],
     // Kho - Phòng
     'mest_room' => [
@@ -1033,5 +1033,10 @@ return [
         'module_group_id' => 'Id nhóm chức năng',
         'icon_link' => 'Icon',
         'is_not_show_dialog' => 'Trường không hiện hộp thoại'
+    ],
+    // Chuyển đổi đối tượng
+    'patient_type_allow' => [
+        'patient_type_id' => 'Id đối tượng được chuyển đổi',
+        'patient_type_allow_id' => 'Id đối tượng chuyển đổi',
     ],
 ];

@@ -149,6 +149,10 @@ use App\Events\Elastic\OtherPaySource\CreateOtherPaySourceIndex;
 use App\Events\Elastic\OtherPaySource\InsertOtherPaySourceIndex;
 use App\Events\Elastic\Package\CreatePackageIndex;
 use App\Events\Elastic\PatientCase\CreatePatientCaseIndex;
+use App\Events\Elastic\PatientClassify\CreatePatientClassifyIndex;
+use App\Events\Elastic\PatientClassify\InsertPatientClassifyIndex;
+use App\Events\Elastic\PatientTypeAllow\CreatePatientTypeAllowIndex;
+use App\Events\Elastic\PatientTypeAllow\InsertPatientTypeAllowIndex;
 use App\Events\Telegram\SendMessageToChannel;
 use App\Listeners\Cache\DeleteCache as CacheDeleteCache;
 use App\Listeners\Elastic\AccidentBodyPart\ElasticCreateAccidentBodyPartIndex;
@@ -297,6 +301,10 @@ use App\Listeners\Elastic\OtherPaySource\ElasticCreateOtherPaySourceIndex;
 use App\Listeners\Elastic\OtherPaySource\ElasticInsertOtherPaySourceIndex;
 use App\Listeners\Elastic\Package\ElasticCreatePackageIndex;
 use App\Listeners\Elastic\PatientCase\ElasticCreatePatientCaseIndex;
+use App\Listeners\Elastic\PatientClassify\ElasticCreatePatientClassifyIndex;
+use App\Listeners\Elastic\PatientClassify\ElasticInsertPatientClassifyIndex;
+use App\Listeners\Elastic\PatientTypeAllow\ElasticCreatePatientTypeAllowIndex;
+use App\Listeners\Elastic\PatientTypeAllow\ElasticInsertPatientTypeAllowIndex;
 use App\Listeners\Telegram\TelegramSendMessageToChannel;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -842,6 +850,20 @@ class EventServiceProvider extends ServiceProvider
 
         CreatePatientCaseIndex::class => [
             ElasticCreatePatientCaseIndex::class,
+        ],
+
+        CreatePatientClassifyIndex::class => [
+            ElasticCreatePatientClassifyIndex::class,
+        ],
+        InsertPatientClassifyIndex::class => [
+            ElasticInsertPatientClassifyIndex::class,
+        ],
+
+        CreatePatientTypeAllowIndex::class => [
+            ElasticCreatePatientTypeAllowIndex::class,
+        ],
+        InsertPatientTypeAllowIndex::class => [
+            ElasticInsertPatientTypeAllowIndex::class,
         ],
     ];
 

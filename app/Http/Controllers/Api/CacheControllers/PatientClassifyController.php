@@ -2,189 +2,118 @@
 
 namespace App\Http\Controllers\Api\CacheControllers;
 
+use App\DTOs\PatientClassifyDTO;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
-use Illuminate\Http\Request;
 use App\Http\Requests\PatientClassify\CreatePatientClassifyRequest;
 use App\Http\Requests\PatientClassify\UpdatePatientClassifyRequest;
-use App\Events\Cache\DeleteCache;
 use App\Models\HIS\PatientClassify;
-use Illuminate\Support\Facades\DB;
+use App\Services\Elastic\ElasticsearchService;
+use App\Services\Model\PatientClassifyService;
+use Illuminate\Http\Request;
+
 
 class PatientClassifyController extends BaseApiCacheController
 {
-    public function __construct(Request $request)
+    protected $patientClassifyService;
+    protected $patientClassifyDTO;
+    public function __construct(Request $request, ElasticsearchService $elasticSearchService, PatientClassifyService $patientClassifyService, PatientClassify $patientClassify)
     {
         parent::__construct($request); // Gọi constructor của BaseController
-        $this->patient_classify = new PatientClassify();
-
+        $this->elasticSearchService = $elasticSearchService;
+        $this->patientClassifyService = $patientClassifyService;
+        $this->patientClassify = $patientClassify;
         // Kiểm tra tên trường trong bảng
-        if ($this->order_by != null) {
-            $columns = $this->get_columns_table($this->patient_classify);
-            $this->order_by = $this->check_order_by($this->order_by, $columns, $this->order_by_join ?? []);
-            $this->order_by_tring = arrayToCustomString($this->order_by);
+        if ($this->orderBy != null) {
+            $this->orderByJoin = [
+                'other_pay_source_name',
+                'other_pay_source_code',
+                'patient_type_name',
+                'patient_type_code'
+            ];
+            $columns = $this->getColumnsTable($this->patientClassify);
+            $this->orderBy = $this->checkOrderBy($this->orderBy, $columns, $this->orderByJoin ?? []);
         }
+        // Thêm tham số vào service
+        $this->patientClassifyDTO = new PatientClassifyDTO(
+            $this->patientClassifyName,
+            $this->keyword,
+            $this->isActive,
+            $this->orderBy,
+            $this->orderByJoin,
+            $this->orderByString,
+            $this->getAll,
+            $this->start,
+            $this->limit,
+            $request,
+            $this->appCreator, 
+            $this->appModifier, 
+            $this->time,
+        );
+        $this->patientClassifyService->withParams($this->patientClassifyDTO);
     }
-    public function patient_classify($id = null)
+    public function index()
     {
-        // Kiểm tra param và trả về lỗi nếu nó không hợp lệ
-        if ($this->check_param()) {
-            return $this->check_param();
+        if ($this->checkParam()) {
+            return $this->checkParam();
         }
-        try {
-            $keyword = $this->keyword;
-            if ($keyword != null) {
-                $param = [
-                    'patient_type',
-                    'other_pay_source',
-                ];
-                $data = $this->patient_classify;
-                $data = $data->where(function ($query) use ($keyword) {
-                    $query = $query
-                        ->where(DB::connection('oracle_his')->raw('patient_classify_code'), 'like', $keyword . '%')
-                        ->orWhere(DB::connection('oracle_his')->raw('patient_classify_name'), 'like', $keyword . '%');
-                });
-                if ($this->is_active !== null) {
-                    $data = $data->where(function ($query) {
-                        $query = $query->where(DB::connection('oracle_his')->raw('is_active'), $this->is_active);
-                    });
-                }
-                $count = $data->count();
-                if ($this->order_by != null) {
-                    foreach ($this->order_by as $key => $item) {
-                        $data->orderBy($key, $item);
-                    }
-                }
-                if ($this->get_all) {
-                    $data = $data
-                        ->with($param)
-                        ->get();
-                } else {
-                    $data = $data
-                        ->skip($this->start)
-                        ->take($this->limit)
-                        ->with($param)
-                        ->get();
-                }
+        $keyword = $this->keyword;
+        if (($keyword != null || $this->elasticSearchType != null) && !$this->cache) {
+            if ($this->elasticSearchType != null) {
+                $data = $this->elasticSearchService->handleElasticSearchSearch($this->patientClassifyName);
             } else {
-                if ($id == null) {
-                    $name = $this->patient_classify_name . '_start_' . $this->start . '_limit_' . $this->limit . $this->order_by_tring . '_is_active_' . $this->is_active . '_get_all_' . $this->get_all;
-                    $param = [
-                        'patient_type',
-                        'other_pay_source',
-                    ];
-                } else {
-                    if (!is_numeric($id)) {
-                        return returnIdError($id);
-                    }
-                    $check_id = $this->check_id($id, $this->patient_classify, $this->patient_classify_name);
-                    if ($check_id) {
-                        return $check_id;
-                    }
-                    $name = $this->patient_classify_name . '_' . $id . '_is_active_' . $this->is_active;
-                    $param = [
-                        'patient_type',
-                        'other_pay_source',
-                    ];
-                }
-                $data = get_cache_full($this->patient_classify, $param, $name, $id, $this->time, $this->start, $this->limit, $this->order_by, $this->is_active, $this->get_all);
+                $data = $this->patientClassifyService->handleDataBaseSearch();
             }
-            $param_return = [
-                $this->get_all_name => $this->get_all,
-                $this->start_name => ($this->get_all || !is_null($id)) ? null : $this->start,
-                $this->limit_name => ($this->get_all || !is_null($id)) ? null : $this->limit,
-                $this->count_name => $count ?? ($data['count'] ?? null),
-                $this->is_active_name => $this->is_active,
-                $this->keyword_name => $this->keyword,
-                $this->order_by_name => $this->order_by_request
-            ];
-            return return_data_success($param_return, $data ?? ($data['data'] ?? null));
-        } catch (\Throwable $e) {
-            // Xử lý lỗi và trả về phản hồi lỗi
-            return return_500_error($e->getMessage());
+        } else {
+            if ($this->elastic) {
+                $data = $this->elasticSearchService->handleElasticSearchGetAll($this->patientClassifyName);
+            } else {
+                $data = $this->patientClassifyService->handleDataBaseGetAll();
+            }
         }
-    }
-    public function patient_classify_create(CreatePatientClassifyRequest $request)
-    {
-        try {
-            $data = $this->patient_classify::create([
-                'create_time' => now()->format('Ymdhis'),
-                'modify_time' => now()->format('Ymdhis'),
-                'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
-                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
-                'app_creator' => $this->app_creator,
-                'app_modifier' => $this->app_modifier,
-                'is_active' => 1,
-                'is_delete' => 0,
-                'patient_classify_code' => $request->patient_classify_code,
-                'patient_classify_name' => $request->patient_classify_name,
-                'display_color' => $request->display_color,
-                'patient_type_id' => $request->patient_type_id,
-                'other_pay_source_id' => $request->other_pay_source_id,
-                'bhyt_whitelist_ids' => $request->bhyt_whitelist_ids,
-                'military_rank_ids' => $request->military_rank_ids,
-                'is_police' => $request->is_police
-
-            ]);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->patient_classify_name));
-            return return_data_create_success($data);
-        } catch (\Exception $e) {
-            return return_500_error($e->getMessage());
-        }
+        $paramReturn = [
+            $this->getAllName => $this->getAll,
+            $this->startName => $this->getAll ? null : $this->start,
+            $this->limitName => $this->getAll ? null : $this->limit,
+            $this->countName => $data['count'],
+            $this->isActiveName => $this->isActive,
+            $this->keywordName => $this->keyword,
+            $this->orderByName => $this->orderByRequest
+        ];
+        return returnDataSuccess($paramReturn, $data['data']);
     }
 
-    public function patient_classify_update(UpdatePatientClassifyRequest $request, $id)
+    public function show($id)
     {
-        if (!is_numeric($id)) {
-            return returnIdError($id);
+        if ($this->checkParam()) {
+            return $this->checkParam();
         }
-        $data = $this->patient_classify->find($id);
-        if ($data == null) {
-            return return_not_record($id);
+        if ($id !== null) {
+            $validationError = $this->validateAndCheckId($id, $this->patientClassify, $this->patientClassifyName);
+            if ($validationError) {
+                return $validationError;
+            }
         }
-        try {
-            $data_update = [
-                'modify_time' => now()->format('Ymdhis'),
-                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
-                'app_modifier' => $this->app_modifier,
-                'patient_classify_code' => $request->patient_classify_code,
-                'patient_classify_name' => $request->patient_classify_name,
-                'display_color' => $request->display_color,
-                'patient_type_id' => $request->patient_type_id,
-                'other_pay_source_id' => $request->other_pay_source_id,
-                'bhyt_whitelist_ids' => $request->bhyt_whitelist_ids,
-                'military_rank_ids' => $request->military_rank_ids,
-                'is_police' => $request->is_police,
-                'is_active' => $request->is_active,
-
-            ];
-            $data->fill($data_update);
-            $data->save();
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->patient_classify_name));
-            return return_data_update_success($data);
-        } catch (\Exception $e) {
-            return return_500_error($e->getMessage());
+        if ($this->elastic) {
+            $data = $this->elasticSearchService->handleElasticSearchGetWithId($this->patientClassifyName, $id);
+        } else {
+            $data = $this->patientClassifyService->handleDataBaseGetWithId($id);
         }
+        $paramReturn = [
+            $this->idName => $id,
+            $this->isActiveName => $this->isActive,
+        ];
+        return returnDataSuccess($paramReturn, $data);
     }
-
-    public function patient_classify_delete(Request $request, $id)
+    public function store(CreatePatientClassifyRequest $request)
     {
-        if (!is_numeric($id)) {
-            return returnIdError($id);
-        }
-        $data = $this->patient_classify->find($id);
-        if ($data == null) {
-            return return_not_record($id);
-        }
-        try {
-            $data->delete();
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->patient_classify_name));
-            return return_data_delete_success();
-        } catch (\Throwable $e) {
-            // Xử lý lỗi và trả về phản hồi lỗi
-            return return_data_delete_fail();
-        }
+        return $this->patientClassifyService->createPatientClassify($request);
+    }
+    public function update(UpdatePatientClassifyRequest $request, $id)
+    {
+        return $this->patientClassifyService->updatePatientClassify($id, $request);
+    }
+    public function destroy($id)
+    {
+        return $this->patientClassifyService->deletePatientClassify($id);
     }
 }

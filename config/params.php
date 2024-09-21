@@ -244,6 +244,8 @@ return [
             'other_pay_source' => 'Có lỗi khi thực hiện thao tác với bảng Nguồn chi trả khác!',
             'package' => 'Có lỗi khi thực hiện thao tác với bảng Gói!',
             'patient_case' => 'Có lỗi khi thực hiện thao tác với bảng Trường hợp bệnh!',
+            'patient_classify' => 'Có lỗi khi thực hiện thao tác với bảng Phân loại bệnh nhân!',
+            'patient_type_allow' => 'Có lỗi khi thực hiện thao tác với bảng Chuyển đổi đối tượng!',
 
         ]
     ]
