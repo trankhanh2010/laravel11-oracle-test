@@ -155,6 +155,8 @@ use App\Events\Elastic\PatientType\CreatePatientTypeIndex;
 use App\Events\Elastic\PatientType\InsertPatientTypeIndex;
 use App\Events\Elastic\PatientTypeAllow\CreatePatientTypeAllowIndex;
 use App\Events\Elastic\PatientTypeAllow\InsertPatientTypeAllowIndex;
+use App\Events\Elastic\PatientTypeRoom\CreatePatientTypeRoomIndex;
+use App\Events\Elastic\PatientTypeRoom\InsertPatientTypeRoomIndex;
 use App\Events\Telegram\SendMessageToChannel;
 use App\Listeners\Cache\DeleteCache as CacheDeleteCache;
 use App\Listeners\Elastic\AccidentBodyPart\ElasticCreateAccidentBodyPartIndex;
@@ -309,6 +311,8 @@ use App\Listeners\Elastic\PatientType\ElasticCreatePatientTypeIndex;
 use App\Listeners\Elastic\PatientType\ElasticInsertPatientTypeIndex;
 use App\Listeners\Elastic\PatientTypeAllow\ElasticCreatePatientTypeAllowIndex;
 use App\Listeners\Elastic\PatientTypeAllow\ElasticInsertPatientTypeAllowIndex;
+use App\Listeners\Elastic\PatientTypeRoom\ElasticCreatePatientTypeRoomIndex;
+use App\Listeners\Elastic\PatientTypeRoom\ElasticInsertPatientTypeRoomIndex;
 use App\Listeners\Telegram\TelegramSendMessageToChannel;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -875,6 +879,13 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertPatientTypeIndex::class => [
             ElasticInsertPatientTypeIndex::class,
+        ],
+
+        CreatePatientTypeRoomIndex::class => [
+            ElasticCreatePatientTypeRoomIndex::class,
+        ],
+        InsertPatientTypeRoomIndex::class => [
+            ElasticInsertPatientTypeRoomIndex::class,
         ],
     ];
 
