@@ -2,181 +2,114 @@
 
 namespace App\Http\Controllers\Api\CacheControllers;
 
-use App\Events\Cache\DeleteCache;
+use App\DTOs\PriorityTypeDTO;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
 use App\Http\Requests\PriorityType\CreatePriorityTypeRequest;
 use App\Http\Requests\PriorityType\UpdatePriorityTypeRequest;
 use App\Models\HIS\PriorityType;
+use App\Services\Elastic\ElasticsearchService;
+use App\Services\Model\PriorityTypeService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+
 
 class PriorityTypeController extends BaseApiCacheController
 {
-    public function __construct(Request $request)
+    protected $priorityTypeService;
+    protected $priorityTypeDTO;
+    public function __construct(Request $request, ElasticsearchService $elasticSearchService, PriorityTypeService $priorityTypeService, PriorityType $priorityType)
     {
         parent::__construct($request); // Gọi constructor của BaseController
-        $this->priority_type = new PriorityType();
-
+        $this->elasticSearchService = $elasticSearchService;
+        $this->priorityTypeService = $priorityTypeService;
+        $this->priorityType = $priorityType;
         // Kiểm tra tên trường trong bảng
-        if ($this->order_by != null) {
-            $columns = $this->get_columns_table($this->priority_type);
-            $this->order_by = $this->check_order_by($this->order_by, $columns, $this->order_by_join ?? []);
-            $this->order_by_tring = arrayToCustomString($this->order_by);
-        }
-    }
-    public function priority_type($id = null)
-    {
-        // Kiểm tra param và trả về lỗi nếu nó không hợp lệ
-        if ($this->check_param()) {
-            return $this->check_param();
-        }
-        try {
-            $keyword = $this->keyword;
-            if ($keyword != null) {
-                $param = [];
-                $data = $this->priority_type;
-                $data = $data->where(function ($query) use ($keyword) {
-                    $query = $query
-                        ->where(DB::connection('oracle_his')->raw('priority_type_code'), 'like', $keyword . '%')
-                        ->orWhere(DB::connection('oracle_his')->raw('priority_type_name'), 'like', $keyword . '%');
-                });
-                if ($this->is_active !== null) {
-                    $data = $data->where(function ($query) {
-                        $query = $query->where(DB::connection('oracle_his')->raw('his_priority_type.is_active'), $this->is_active);
-                    });
-                }
-                $count = $data->count();
-                if ($this->order_by != null) {
-                    foreach ($this->order_by as $key => $item) {
-                        $data->orderBy($key, $item);
-                    }
-                }
-                if ($this->get_all) {
-                    $data = $data
-                        ->with($param)
-                        ->get();
-                } else {
-                    $data = $data
-                        ->skip($this->start)
-                        ->take($this->limit)
-                        ->with($param)
-                        ->get();
-                }
-            } else {
-                if ($id == null) {
-                    $name = $this->priority_type_name . '_start_' . $this->start . '_limit_' . $this->limit . $this->order_by_tring . '_is_active_' . $this->is_active . '_get_all_' . $this->get_all;
-                    $param = [];
-                } else {
-                    if (!is_numeric($id)) {
-                        return returnIdError($id);
-                    }
-                    $check_id = $this->check_id($id, $this->priority_type, $this->priority_type_name);
-                    if ($check_id) {
-                        return $check_id;
-                    }
-                    $name =  $this->priority_type_name . '_' . $id . '_is_active_' . $this->is_active;
-                    $param = [];
-                }
-                $model = $this->priority_type;
-                $data = get_cache_full($model, $param, $name, $id, $this->time, $this->start, $this->limit, $this->order_by, $this->is_active, $this->get_all);
-            }
-            $param_return = [
-                $this->get_all_name => $this->get_all,
-                $this->start_name => ($this->get_all || !is_null($id)) ? null : $this->start,
-                $this->limit_name => ($this->get_all || !is_null($id)) ? null : $this->limit,
-                $this->count_name => $count ?? ($data['count'] ?? null),
-                $this->is_active_name => $this->is_active,
-                $this->keyword_name => $this->keyword,
-                $this->order_by_name => $this->order_by_request
+        if ($this->orderBy != null) {
+            $this->orderByJoin = [
             ];
-            return return_data_success($param_return, $data ?? ($data['data'] ?? null));
-        } catch (\Throwable $e) {
-            // Xử lý lỗi và trả về phản hồi lỗi
-            return return_500_error($e->getMessage());
+            $columns = $this->getColumnsTable($this->priorityType);
+            $this->orderBy = $this->checkOrderBy($this->orderBy, $columns, $this->orderByJoin ?? []);
         }
+        // Thêm tham số vào service
+        $this->priorityTypeDTO = new PriorityTypeDTO(
+            $this->priorityTypeName,
+            $this->keyword,
+            $this->isActive,
+            $this->orderBy,
+            $this->orderByJoin,
+            $this->orderByString,
+            $this->getAll,
+            $this->start,
+            $this->limit,
+            $request,
+            $this->appCreator, 
+            $this->appModifier, 
+            $this->time,
+        );
+        $this->priorityTypeService->withParams($this->priorityTypeDTO);
     }
-    public function priority_type_create(CreatePriorityTypeRequest $request)
+    public function index()
     {
-        try {
-            $data = $this->priority_type::create([
-                'create_time' => now()->format('Ymdhis'),
-                'modify_time' => now()->format('Ymdhis'),
-                'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
-                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
-                'app_creator' => $this->app_creator,
-                'app_modifier' => $this->app_modifier,
-                'is_active' => 1,
-                'is_delete' => 0,
-
-                'priority_type_code' => $request->priority_type_code,
-                'priority_type_name' => $request->priority_type_name,
-                'age_from' => $request->age_from,
-                'age_to' => $request->age_to,
-                'bhyt_prefixs' => $request->bhyt_prefixs,
-                'is_for_exam_subclinical' => $request->is_for_exam_subclinical,
-                'is_for_prescription' => $request->is_for_prescription,
-
-            ]);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->priority_type_name));
-            return return_data_create_success($data);
-        } catch (\Throwable $e) {
-            // Xử lý lỗi và trả về phản hồi lỗi
-            return return_500_error($e->getMessage());
+        if ($this->checkParam()) {
+            return $this->checkParam();
         }
-    }
-
-    public function priority_type_update(UpdatePriorityTypeRequest $request, $id)
-    {
-        if (!is_numeric($id)) {
-            return returnIdError($id);
+        $keyword = $this->keyword;
+        if (($keyword != null || $this->elasticSearchType != null) && !$this->cache) {
+            if ($this->elasticSearchType != null) {
+                $data = $this->elasticSearchService->handleElasticSearchSearch($this->priorityTypeName);
+            } else {
+                $data = $this->priorityTypeService->handleDataBaseSearch();
+            }
+        } else {
+            if ($this->elastic) {
+                $data = $this->elasticSearchService->handleElasticSearchGetAll($this->priorityTypeName);
+            } else {
+                $data = $this->priorityTypeService->handleDataBaseGetAll();
+            }
         }
-        $data = $this->priority_type->find($id);
-        if ($data == null) {
-            return return_not_record($id);
-        }
-        try {
-            $data->update([
-                'modify_time' => now()->format('Ymdhis'),
-                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
-                'app_modifier' => $this->app_modifier,
-
-                'priority_type_code' => $request->priority_type_code,
-                'priority_type_name' => $request->priority_type_name,
-                'age_from' => $request->age_from,
-                'age_to' => $request->age_to,
-                'bhyt_prefixs' => $request->bhyt_prefixs,
-                'is_for_exam_subclinical' => $request->is_for_exam_subclinical,
-                'is_for_prescription' => $request->is_for_prescription,
-
-                'is_active' => $request->is_active
-            ]);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->priority_type_name));
-            return return_data_update_success($data);
-        } catch (\Throwable $e) {
-            // Xử lý lỗi và trả về phản hồi lỗi
-            return return_500_error($e->getMessage());
-        }
+        $paramReturn = [
+            $this->getAllName => $this->getAll,
+            $this->startName => $this->getAll ? null : $this->start,
+            $this->limitName => $this->getAll ? null : $this->limit,
+            $this->countName => $data['count'],
+            $this->isActiveName => $this->isActive,
+            $this->keywordName => $this->keyword,
+            $this->orderByName => $this->orderByRequest
+        ];
+        return returnDataSuccess($paramReturn, $data['data']);
     }
 
-    public function priority_type_delete(Request $request, $id)
+    public function show($id)
     {
-        if (!is_numeric($id)) {
-            return returnIdError($id);
+        if ($this->checkParam()) {
+            return $this->checkParam();
         }
-        $data = $this->priority_type->find($id);
-        if ($data == null) {
-            return return_not_record($id);
+        if ($id !== null) {
+            $validationError = $this->validateAndCheckId($id, $this->priorityType, $this->priorityTypeName);
+            if ($validationError) {
+                return $validationError;
+            }
         }
-        try {
-            $data->delete();
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->priority_type_name));
-            return return_data_delete_success();
-        } catch (\Throwable $e) {
-            // Xử lý lỗi và trả về phản hồi lỗi
-            return return_data_delete_fail();
+        if ($this->elastic) {
+            $data = $this->elasticSearchService->handleElasticSearchGetWithId($this->priorityTypeName, $id);
+        } else {
+            $data = $this->priorityTypeService->handleDataBaseGetWithId($id);
         }
+        $paramReturn = [
+            $this->idName => $id,
+            $this->isActiveName => $this->isActive,
+        ];
+        return returnDataSuccess($paramReturn, $data);
+    }
+    public function store(CreatePriorityTypeRequest $request)
+    {
+        return $this->priorityTypeService->createPriorityType($request);
+    }
+    public function update(UpdatePriorityTypeRequest $request, $id)
+    {
+        return $this->priorityTypeService->updatePriorityType($id, $request);
+    }
+    public function destroy($id)
+    {
+        return $this->priorityTypeService->deletePriorityType($id);
     }
 }

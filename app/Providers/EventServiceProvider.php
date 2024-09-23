@@ -161,6 +161,9 @@ use App\Events\Elastic\Position\CreatePositionIndex;
 use App\Events\Elastic\Position\InsertPositionIndex;
 use App\Events\Elastic\PreparationsBlood\CreatePreparationsBloodIndex;
 use App\Events\Elastic\PreparationsBlood\InsertPreparationsBloodIndex;
+use App\Events\Elastic\PriorityType\CreatePriorityTypeIndex;
+use App\Events\Elastic\PriorityType\InsertPriorityTypeIndex;
+use App\Events\Elastic\ProcessingMethod\CreateProcessingMethodIndex;
 use App\Events\Elastic\RoomType\CreateRoomTypeIndex;
 use App\Events\Telegram\SendMessageToChannel;
 use App\Listeners\Cache\DeleteCache as CacheDeleteCache;
@@ -322,6 +325,9 @@ use App\Listeners\Elastic\Position\ElasticCreatePositionIndex;
 use App\Listeners\Elastic\Position\ElasticInsertPositionIndex;
 use App\Listeners\Elastic\PreparationsBlood\ElasticCreatePreparationsBloodIndex;
 use App\Listeners\Elastic\PreparationsBlood\ElasticInsertPreparationsBloodIndex;
+use App\Listeners\Elastic\PriorityType\ElasticCreatePriorityTypeIndex;
+use App\Listeners\Elastic\PriorityType\ElasticInsertPriorityTypeIndex;
+use App\Listeners\Elastic\ProcessingMethod\ElasticCreateProcessingMethodIndex;
 use App\Listeners\Elastic\RoomType\ElasticCreateRoomTypeIndex;
 use App\Listeners\Telegram\TelegramSendMessageToChannel;
 use Illuminate\Auth\Events\Registered;
@@ -910,6 +916,17 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertPreparationsBloodIndex::class => [
             ElasticInsertPreparationsBloodIndex::class,
+        ],
+
+        CreatePriorityTypeIndex::class => [
+            ElasticCreatePriorityTypeIndex::class,
+        ],
+        InsertPriorityTypeIndex::class => [
+            ElasticInsertPriorityTypeIndex::class,
+        ],
+
+        CreateProcessingMethodIndex::class => [
+            ElasticCreateProcessingMethodIndex::class,
         ],
 
         CreateRoomTypeIndex::class => [

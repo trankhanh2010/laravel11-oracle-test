@@ -554,6 +554,14 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisPreparationsBlood'], function () {
         Route::apiResource('v1/preparations-blood', PreparationsBloodController::class);
     });
+    /// Đối tượng ưu tiên
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisPriorityType'], function () {
+        Route::apiResource('v1/priority-type', PriorityTypeController::class);
+    });
+    /// Phương pháp chế biến
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisProcessing'], function () {
+        Route::apiResource('v1/processing-method', ProcessingMethodController::class)->only(['index', 'show']);
+    });
     /// Loại phòng
     Route::group(['as' => 'HIS.Desktop.Plugins.RoomTypeModule'], function () {
         Route::apiResource('v1/room-type', RoomTypeController::class)->only(['index', 'show']);
@@ -722,15 +730,6 @@ Route::group([
         Route::delete("v1/role/{id}", [RoleController::class, "role_delete"])->name('.delete');
     });
 
-    /// Đối tượng ưu tiên
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisPriorityType'], function () {
-        Route::get("v1/priority-type", [PriorityTypeController::class, "priority_type"])->name('.get');
-        Route::get("v1/priority-type/{id}", [PriorityTypeController::class, "priority_type"])->name('.get_id');
-        Route::post("v1/priority-type", [PriorityTypeController::class, "priority_type_create"])->name('.create');
-        Route::put("v1/priority-type/{id}", [PriorityTypeController::class, "priority_type_update"])->name('.update');
-        Route::delete("v1/priority-type/{id}", [PriorityTypeController::class, "priority_type_delete"])->name('.delete');
-    });
-
     /// Mối quan hệ
     Route::group(['as' => 'HIS.Desktop.Plugins.EmrRelationList'], function () {
         Route::get("v1/relation-list", [RelationController::class, "relation_list"])->name('.get');
@@ -840,12 +839,6 @@ Route::group([
         Route::post("v1/supplier", [SupplierController::class, "supplier_create"])->name('.create');
         Route::put("v1/supplier/{id}", [SupplierController::class, "supplier_update"])->name('.update');
         Route::delete("v1/supplier/{id}", [SupplierController::class, "supplier_delete"])->name('.delete');
-    });
-
-    /// Phương pháp chế biến
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisProcessing'], function () {
-        Route::get("v1/processing-method", [ProcessingMethodController::class, "processing_method"])->name('.get');
-        Route::get("v1/processing-method/{id}", [ProcessingMethodController::class, "processing_method"])->name('.get_id');
     });
 
     /// Bàn mổ

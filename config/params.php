@@ -250,6 +250,8 @@ return [
             'patient_type_room' => 'Có lỗi khi thực hiện thao tác với bảng Phòng thực hiện - Đối tượng bệnh nhân!',
             'position' => 'Có lỗi khi thực hiện thao tác với bảng Chức vụ!',
             'preparations_blood' => 'Có lỗi khi thực hiện thao tác với bảng Chế phẩm máu!',
+            'priority_type' => 'Có lỗi khi thực hiện thao tác với bảng Đối tượng ưu tiên!',
+            'processing_method' => 'Có lỗi khi thực hiện thao tác với bảng Phương pháp chế biến!',
 
 
             'room_type' => 'Có lỗi khi thực hiện thao tác với bảng Loại phòng!',

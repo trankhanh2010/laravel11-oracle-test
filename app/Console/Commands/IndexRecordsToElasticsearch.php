@@ -93,6 +93,8 @@ use App\Events\Elastic\PatientTypeAllow\CreatePatientTypeAllowIndex;
 use App\Events\Elastic\PatientTypeRoom\CreatePatientTypeRoomIndex;
 use App\Events\Elastic\Position\CreatePositionIndex;
 use App\Events\Elastic\PreparationsBlood\CreatePreparationsBloodIndex;
+use App\Events\Elastic\PriorityType\CreatePriorityTypeIndex;
+use App\Events\Elastic\ProcessingMethod\CreateProcessingMethodIndex;
 use App\Events\Elastic\RoomType\CreateRoomTypeIndex;
 use App\Models\HIS\MedicineUseForm;
 use App\Repositories\AccidentBodyPartRepository;
@@ -183,6 +185,8 @@ use App\Repositories\PatientTypeRepository;
 use App\Repositories\PatientTypeRoomRepository;
 use App\Repositories\PositionRepository;
 use App\Repositories\PreparationsBloodRepository;
+use App\Repositories\PriorityTypeRepository;
+use App\Repositories\ProcessingMethodRepository;
 use App\Repositories\RoomTypeRepository;
 
 class IndexRecordsToElasticsearch extends Command
@@ -586,7 +590,15 @@ class IndexRecordsToElasticsearch extends Command
                 $results = app(PreparationsBloodRepository::class)->getDataFromDbToElastic(null);
                 event(new CreatePreparationsBloodIndex($name_table));
                 break;
-    
+            case 'priority_type':
+                $results = app(PriorityTypeRepository::class)->getDataFromDbToElastic(null);
+                event(new CreatePriorityTypeIndex($name_table));
+                break;
+            case 'processing_method':
+                $results = app(ProcessingMethodRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateProcessingMethodIndex($name_table));
+                break;
+        
             case 'room_type':
                 $results = app(RoomTypeRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateRoomTypeIndex($name_table));
