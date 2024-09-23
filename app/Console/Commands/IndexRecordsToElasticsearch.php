@@ -91,6 +91,7 @@ use App\Events\Elastic\PatientClassify\CreatePatientClassifyIndex;
 use App\Events\Elastic\PatientType\CreatePatientTypeIndex;
 use App\Events\Elastic\PatientTypeAllow\CreatePatientTypeAllowIndex;
 use App\Events\Elastic\PatientTypeRoom\CreatePatientTypeRoomIndex;
+use App\Events\Elastic\RoomType\CreateRoomTypeIndex;
 use App\Models\HIS\MedicineUseForm;
 use App\Repositories\AccidentBodyPartRepository;
 use App\Repositories\AccidentCareRepository;
@@ -178,6 +179,7 @@ use App\Repositories\PatientClassifyRepository;
 use App\Repositories\PatientTypeAllowRepository;
 use App\Repositories\PatientTypeRepository;
 use App\Repositories\PatientTypeRoomRepository;
+use App\Repositories\RoomTypeRepository;
 
 class IndexRecordsToElasticsearch extends Command
 {
@@ -571,6 +573,10 @@ class IndexRecordsToElasticsearch extends Command
             case 'patient_type_room':
                 $results = app(PatientTypeRoomRepository::class)->getDataFromDbToElastic(null);
                 event(new CreatePatientTypeRoomIndex($name_table));
+                break;
+            case 'room_type':
+                $results = app(RoomTypeRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateRoomTypeIndex($name_table));
                 break;
             default:
                 // Xử lý mặc định hoặc xử lý khi không có bảng khớp

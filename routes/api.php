@@ -548,8 +548,7 @@ Route::group([
     });
     /// Loại phòng
     Route::group(['as' => 'HIS.Desktop.Plugins.RoomTypeModule'], function () {
-        Route::get("v1/room-type", [RoomTypeController::class, "room_type"])->name('.get');
-        Route::get("v1/room-type/{id}", [RoomTypeController::class, "room_type"])->name('.get_id');
+        Route::apiResource('v1/room-type', RoomTypeController::class)->only(['index', 'show']);
     });
 
     /// Nhóm phòng

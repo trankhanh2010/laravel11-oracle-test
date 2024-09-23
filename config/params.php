@@ -248,6 +248,7 @@ return [
             'patient_type_allow' => 'Có lỗi khi thực hiện thao tác với bảng Chuyển đổi đối tượng!',
             'patient_type' => 'Có lỗi khi thực hiện thao tác với bảng Đối tượng bệnh nhân!',
             'patient_type_room' => 'Có lỗi khi thực hiện thao tác với bảng Phòng thực hiện - Đối tượng bệnh nhân!',
+            'room_type' => 'Có lỗi khi thực hiện thao tác với bảng Loại phòng!',
 
         ]
     ]
