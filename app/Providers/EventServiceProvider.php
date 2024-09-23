@@ -157,6 +157,10 @@ use App\Events\Elastic\PatientTypeAllow\CreatePatientTypeAllowIndex;
 use App\Events\Elastic\PatientTypeAllow\InsertPatientTypeAllowIndex;
 use App\Events\Elastic\PatientTypeRoom\CreatePatientTypeRoomIndex;
 use App\Events\Elastic\PatientTypeRoom\InsertPatientTypeRoomIndex;
+use App\Events\Elastic\Position\CreatePositionIndex;
+use App\Events\Elastic\Position\InsertPositionIndex;
+use App\Events\Elastic\PreparationsBlood\CreatePreparationsBloodIndex;
+use App\Events\Elastic\PreparationsBlood\InsertPreparationsBloodIndex;
 use App\Events\Elastic\RoomType\CreateRoomTypeIndex;
 use App\Events\Telegram\SendMessageToChannel;
 use App\Listeners\Cache\DeleteCache as CacheDeleteCache;
@@ -314,6 +318,10 @@ use App\Listeners\Elastic\PatientTypeAllow\ElasticCreatePatientTypeAllowIndex;
 use App\Listeners\Elastic\PatientTypeAllow\ElasticInsertPatientTypeAllowIndex;
 use App\Listeners\Elastic\PatientTypeRoom\ElasticCreatePatientTypeRoomIndex;
 use App\Listeners\Elastic\PatientTypeRoom\ElasticInsertPatientTypeRoomIndex;
+use App\Listeners\Elastic\Position\ElasticCreatePositionIndex;
+use App\Listeners\Elastic\Position\ElasticInsertPositionIndex;
+use App\Listeners\Elastic\PreparationsBlood\ElasticCreatePreparationsBloodIndex;
+use App\Listeners\Elastic\PreparationsBlood\ElasticInsertPreparationsBloodIndex;
 use App\Listeners\Elastic\RoomType\ElasticCreateRoomTypeIndex;
 use App\Listeners\Telegram\TelegramSendMessageToChannel;
 use Illuminate\Auth\Events\Registered;
@@ -888,6 +896,20 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertPatientTypeRoomIndex::class => [
             ElasticInsertPatientTypeRoomIndex::class,
+        ],
+
+        CreatePositionIndex::class => [
+            ElasticCreatePositionIndex::class,
+        ],
+        InsertPositionIndex::class => [
+            ElasticInsertPositionIndex::class,
+        ],
+
+        CreatePreparationsBloodIndex::class => [
+            ElasticCreatePreparationsBloodIndex::class,
+        ],
+        InsertPreparationsBloodIndex::class => [
+            ElasticInsertPreparationsBloodIndex::class,
         ],
 
         CreateRoomTypeIndex::class => [

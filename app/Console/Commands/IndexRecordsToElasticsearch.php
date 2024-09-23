@@ -91,6 +91,8 @@ use App\Events\Elastic\PatientClassify\CreatePatientClassifyIndex;
 use App\Events\Elastic\PatientType\CreatePatientTypeIndex;
 use App\Events\Elastic\PatientTypeAllow\CreatePatientTypeAllowIndex;
 use App\Events\Elastic\PatientTypeRoom\CreatePatientTypeRoomIndex;
+use App\Events\Elastic\Position\CreatePositionIndex;
+use App\Events\Elastic\PreparationsBlood\CreatePreparationsBloodIndex;
 use App\Events\Elastic\RoomType\CreateRoomTypeIndex;
 use App\Models\HIS\MedicineUseForm;
 use App\Repositories\AccidentBodyPartRepository;
@@ -179,6 +181,8 @@ use App\Repositories\PatientClassifyRepository;
 use App\Repositories\PatientTypeAllowRepository;
 use App\Repositories\PatientTypeRepository;
 use App\Repositories\PatientTypeRoomRepository;
+use App\Repositories\PositionRepository;
+use App\Repositories\PreparationsBloodRepository;
 use App\Repositories\RoomTypeRepository;
 
 class IndexRecordsToElasticsearch extends Command
@@ -574,6 +578,15 @@ class IndexRecordsToElasticsearch extends Command
                 $results = app(PatientTypeRoomRepository::class)->getDataFromDbToElastic(null);
                 event(new CreatePatientTypeRoomIndex($name_table));
                 break;
+            case 'position':
+                $results = app(PositionRepository::class)->getDataFromDbToElastic(null);
+                event(new CreatePositionIndex($name_table));
+                break;
+            case 'preparations_blood':
+                $results = app(PreparationsBloodRepository::class)->getDataFromDbToElastic(null);
+                event(new CreatePreparationsBloodIndex($name_table));
+                break;
+    
             case 'room_type':
                 $results = app(RoomTypeRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateRoomTypeIndex($name_table));

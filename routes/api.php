@@ -546,6 +546,14 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.PatientTypeRoom'], function () {
         Route::apiResource('v1/patient-type-room', PatientTypeRoomController::class)->only(['index', 'show', 'store']);
     });
+    /// Chức vụ
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisPosition'], function () {
+        Route::apiResource('v1/position', PositionController::class);
+    });
+    /// Chế phẩm máu
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisPreparationsBlood'], function () {
+        Route::apiResource('v1/preparations-blood', PreparationsBloodController::class);
+    });
     /// Loại phòng
     Route::group(['as' => 'HIS.Desktop.Plugins.RoomTypeModule'], function () {
         Route::apiResource('v1/room-type', RoomTypeController::class)->only(['index', 'show']);
@@ -789,15 +797,6 @@ Route::group([
         Route::delete("v1/sale-profit-cfg/{id}", [SaleProfitCfgController::class, "sale_profit_cfg_delete"])->name('.delete');
     });
 
-    /// Chức vụ
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisPosition'], function () {
-        Route::get("v1/position", [PositionController::class, "position"])->name('.get');
-        Route::get("v1/position/{id}", [PositionController::class, "position"])->name('.get_id');
-        Route::post("v1/position", [PositionController::class, "position_create"])->name('.create');
-        Route::put("v1/position/{id}", [PositionController::class, "position_update"])->name('.update');
-        Route::delete("v1/position/{id}", [PositionController::class, "position_delete"])->name('.delete');
-    });
-
     /// Nơi làm việc
     Route::group(['as' => 'HIS.Desktop.Plugins.HisWorkPlace'], function () {
         Route::get("v1/work-place", [WorkPlaceController::class, "work_place"])->name('.get');
@@ -805,15 +804,6 @@ Route::group([
         Route::post("v1/work-place", [WorkPlaceController::class, "work_place_create"])->name('.create');
         Route::put("v1/work-place/{id}", [WorkPlaceController::class, "work_place_update"])->name('.update');
         Route::delete("v1/work-place/{id}", [WorkPlaceController::class, "work_place_delete"])->name('.delete');
-    });
-
-    /// Chế phẩm máu
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisPreparationsBlood'], function () {
-        Route::get("v1/preparations-blood", [PreparationsBloodController::class, "preparations_blood"])->name('.get');
-        Route::get("v1/preparations-blood/{id}", [PreparationsBloodController::class, "preparations_blood"])->name('.get_id');
-        Route::post("v1/preparations-blood", [PreparationsBloodController::class, "preparations_blood_create"])->name('.create');
-        Route::put("v1/preparations-blood/{id}", [PreparationsBloodController::class, "preparations_blood_update"])->name('.update');
-        Route::delete("v1/preparations-blood/{id}", [PreparationsBloodController::class, "preparations_blood_delete"])->name('.delete');
     });
 
     /// Loại ra viện
