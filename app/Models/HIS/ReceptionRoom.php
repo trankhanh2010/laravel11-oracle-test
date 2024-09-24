@@ -25,7 +25,7 @@ class ReceptionRoom extends Model
         $patient_type_ids = $this->patient_type_ids;
         if( $patient_type_ids != ""){
             return Cache::remember('patient_type_ids_' . $patient_type_ids, $this->time, function () use ( $patient_type_ids) {
-                $data = PatientType::whereIn('id', explode(',', $this->patient_type_ids))->get();
+                $data = PatientType::select(['patient_type_name', 'patient_type_code'])->whereIn('id', explode(',', $this->patient_type_ids))->get();
                 return $data;
                         });
         }

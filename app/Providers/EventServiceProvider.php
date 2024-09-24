@@ -180,6 +180,10 @@ use App\Events\Elastic\RationGroup\CreateRationGroupIndex;
 use App\Events\Elastic\RationGroup\InsertRationGroupIndex;
 use App\Events\Elastic\RationTime\CreateRationTimeIndex;
 use App\Events\Elastic\RationTime\InsertRationTimeIndex;
+use App\Events\Elastic\ReceptionRoom\CreateReceptionRoomIndex;
+use App\Events\Elastic\ReceptionRoom\InsertReceptionRoomIndex;
+use App\Events\Elastic\Refectory\CreateRefectoryIndex;
+use App\Events\Elastic\Refectory\InsertRefectoryIndex;
 use App\Events\Elastic\RoomType\CreateRoomTypeIndex;
 use App\Events\Telegram\SendMessageToChannel;
 use App\Listeners\Cache\DeleteCache as CacheDeleteCache;
@@ -360,6 +364,10 @@ use App\Listeners\Elastic\RationGroup\ElasticCreateRationGroupIndex;
 use App\Listeners\Elastic\RationGroup\ElasticInsertRationGroupIndex;
 use App\Listeners\Elastic\RationTime\ElasticCreateRationTimeIndex;
 use App\Listeners\Elastic\RationTime\ElasticInsertRationTimeIndex;
+use App\Listeners\Elastic\ReceptionRoom\ElasticCreateReceptionRoomIndex;
+use App\Listeners\Elastic\ReceptionRoom\ElasticInsertReceptionRoomIndex;
+use App\Listeners\Elastic\Refectory\ElasticCreateRefectoryIndex;
+use App\Listeners\Elastic\Refectory\ElasticInsertRefectoryIndex;
 use App\Listeners\Elastic\RoomType\ElasticCreateRoomTypeIndex;
 use App\Listeners\Telegram\TelegramSendMessageToChannel;
 use Illuminate\Auth\Events\Registered;
@@ -1015,6 +1023,20 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertRationTimeIndex::class => [
             ElasticInsertRationTimeIndex::class,
+        ],
+
+        CreateReceptionRoomIndex::class => [
+            ElasticCreateReceptionRoomIndex::class,
+        ],
+        InsertReceptionRoomIndex::class => [
+            ElasticInsertReceptionRoomIndex::class,
+        ],
+
+        CreateRefectoryIndex::class => [
+            ElasticCreateRefectoryIndex::class,
+        ],
+        InsertRefectoryIndex::class => [
+            ElasticInsertRefectoryIndex::class,
         ],
 
         CreateRoomTypeIndex::class => [

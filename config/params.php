@@ -260,6 +260,8 @@ return [
             'pttt_table' => 'Có lỗi khi thực hiện thao tác với bảng Bàn mổ!',
             'ration_group' => 'Có lỗi khi thực hiện thao tác với bảng Nhóm xuất ăn!',
             'ration_time' => 'Có lỗi khi thực hiện thao tác với bảng Bữa ăn!',
+            'reception_room' => 'Có lỗi khi thực hiện thao tác với bảng Khu đón tiếp!',
+            'refectory' => 'Có lỗi khi thực hiện thao tác với bảng Nhà ăn!',
 
 
             'room_type' => 'Có lỗi khi thực hiện thao tác với bảng Loại phòng!',

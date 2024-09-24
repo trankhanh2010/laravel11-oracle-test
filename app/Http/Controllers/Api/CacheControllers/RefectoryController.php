@@ -2,224 +2,117 @@
 
 namespace App\Http\Controllers\Api\CacheControllers;
 
+use App\DTOs\RefectoryDTO;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\HIS\Room;
-use App\Models\HIS\Refectory;
-use App\Events\Cache\DeleteCache;
 use App\Http\Requests\Refectory\CreateRefectoryRequest;
 use App\Http\Requests\Refectory\UpdateRefectoryRequest;
-use Illuminate\Support\Facades\DB;
+use App\Models\HIS\Refectory;
+use App\Services\Elastic\ElasticsearchService;
+use App\Services\Model\RefectoryService;
+use Illuminate\Http\Request;
+
 
 class RefectoryController extends BaseApiCacheController
 {
-    public function __construct(Request $request)
+    protected $refectoryService;
+    protected $refectoryDTO;
+    public function __construct(Request $request, ElasticsearchService $elasticSearchService, RefectoryService $refectoryService, Refectory $refectory)
     {
         parent::__construct($request); // Gọi constructor của BaseController
-        $this->refectory = new Refectory();
-        $this->room = new Room();
-
+        $this->elasticSearchService = $elasticSearchService;
+        $this->refectoryService = $refectoryService;
+        $this->refectory = $refectory;
         // Kiểm tra tên trường trong bảng
-        if ($this->order_by != null) {
-            $columns = $this->get_columns_table($this->refectory);
-            $this->order_by = $this->check_order_by($this->order_by, $columns, $this->order_by_join ?? []);
-            $this->order_by_tring = arrayToCustomString($this->order_by);
+        if ($this->orderBy != null) {
+            $this->orderByJoin = [
+                'department_id',
+                'department_name',
+                'department_code',
+            ];
+            $columns = $this->getColumnsTable($this->refectory);
+            $this->orderBy = $this->checkOrderBy($this->orderBy, $columns, $this->orderByJoin ?? []);
         }
+        // Thêm tham số vào service
+        $this->refectoryDTO = new RefectoryDTO(
+            $this->refectoryName,
+            $this->keyword,
+            $this->isActive,
+            $this->orderBy,
+            $this->orderByJoin,
+            $this->orderByString,
+            $this->getAll,
+            $this->start,
+            $this->limit,
+            $request,
+            $this->appCreator, 
+            $this->appModifier, 
+            $this->time,
+        );
+        $this->refectoryService->withParams($this->refectoryDTO);
     }
-
-
-    public function refectory($id = null)
+    public function index()
     {
-        // Kiểm tra param và trả về lỗi nếu nó không hợp lệ
-        if ($this->check_param()) {
-            return $this->check_param();
+        if ($this->checkParam()) {
+            return $this->checkParam();
         }
-        try {
-            $keyword = $this->keyword;
-            if ($keyword != null) {
-                $param = [
-                    'room.department',
-                ];
-                $data = $this->refectory;
-                $data = $data->where(function ($query) use ($keyword) {
-                    $query = $query
-                        ->where(DB::connection('oracle_his')->raw('refectory_code'), 'like', $keyword . '%')
-                        ->orWhere(DB::connection('oracle_his')->raw('refectory_name'), 'like', $keyword . '%');
-                });
-                if ($this->is_active !== null) {
-                    $data = $data->where(function ($query) {
-                        $query = $query->where(DB::connection('oracle_his')->raw('is_active'), $this->is_active);
-                    });
-                }
-                $count = $data->count();
-                if ($this->order_by != null) {
-                    foreach ($this->order_by as $key => $item) {
-                        $data->orderBy($key, $item);
-                    }
-                }
-                if ($this->get_all) {
-                    $data = $data
-                        ->with($param)
-                        ->get();
-                } else {
-                    $data = $data
-                        ->skip($this->start)
-                        ->take($this->limit)
-                        ->with($param)
-                        ->get();
-                }
+        $keyword = $this->keyword;
+        if (($keyword != null || $this->elasticSearchType != null) && !$this->cache) {
+            if ($this->elasticSearchType != null) {
+                $data = $this->elasticSearchService->handleElasticSearchSearch($this->refectoryName);
             } else {
-                if ($id == null) {
-                    $name = $this->refectory_name . '_start_' . $this->start . '_limit_' . $this->limit . $this->order_by_tring . '_is_active_' . $this->is_active . '_get_all_' . $this->get_all;
-                    $param = [
-                        'room.department',
-                    ];
-                } else {
-                    if (!is_numeric($id)) {
-                        return returnIdError($id);
-                    }
-                    $check_id = $this->check_id($id, $this->refectory, $this->refectory_name);
-                    if ($check_id) {
-                        return $check_id;
-                    }
-                    $name = $this->refectory_name . '_' . $id . '_is_active_' . $this->is_active;
-                    $param = [
-                        'room.department',
-                    ];
-                }
-                $data = get_cache_full($this->refectory, $param, $name, $id, $this->time, $this->start, $this->limit, $this->order_by, $this->is_active, $this->get_all);
+                $data = $this->refectoryService->handleDataBaseSearch();
             }
-            $param_return = [
-                $this->get_all_name => $this->get_all,
-                $this->start_name => ($this->get_all || !is_null($id)) ? null : $this->start,
-                $this->limit_name => ($this->get_all || !is_null($id)) ? null : $this->limit,
-                $this->count_name => $count ?? ($data['count'] ?? null),
-                $this->is_active_name => $this->is_active,
-                $this->keyword_name => $this->keyword,
-                $this->order_by_name => $this->order_by_request
-            ];
-            return return_data_success($param_return, $data ?? ($data['data'] ?? null));
-        } catch (\Throwable $e) {
-            // Xử lý lỗi và trả về phản hồi lỗi
-            return return_500_error($e->getMessage());
+        } else {
+            if ($this->elastic) {
+                $data = $this->elasticSearchService->handleElasticSearchGetAll($this->refectoryName);
+            } else {
+                $data = $this->refectoryService->handleDataBaseGetAll();
+            }
         }
+        $paramReturn = [
+            $this->getAllName => $this->getAll,
+            $this->startName => $this->getAll ? null : $this->start,
+            $this->limitName => $this->getAll ? null : $this->limit,
+            $this->countName => $data['count'],
+            $this->isActiveName => $this->isActive,
+            $this->keywordName => $this->keyword,
+            $this->orderByName => $this->orderByRequest
+        ];
+        return returnDataSuccess($paramReturn, $data['data']);
     }
 
-    public function refectory_create(CreateRefectoryRequest $request)
+    public function show($id)
     {
-        // Start transaction
-        DB::connection('oracle_his')->beginTransaction();
-        try {
-            $room = $this->room::create([
-                'create_time' => now()->format('Ymdhis'),
-                'modify_time' => now()->format('Ymdhis'),
-                'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
-                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
-                'app_creator' => $this->app_creator,
-                'app_modifier' => $this->app_modifier,
-                'department_id' => $request->department_id,
-                'room_type_id' => $request->room_type_id,
-            ]);
-            $data = $this->refectory::create([
-                'create_time' => now()->format('Ymdhis'),
-                'modify_time' => now()->format('Ymdhis'),
-                'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
-                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
-                'app_creator' => $this->app_creator,
-                'app_modifier' => $this->app_modifier,
-                'refectory_code' => $request->refectory_code,
-                'refectory_name' => $request->refectory_name,
-                'room_id' => $room->id,
-            ]);
-            DB::connection('oracle_his')->commit();
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->refectory_name));
-            return return_data_create_success([$data, $room]);
-        } catch (\Throwable $e) {
-            // Xử lý lỗi và trả về phản hồi lỗi
-            // Rollback transaction nếu có lỗi
-            DB::connection('oracle_his')->rollBack();
-            return return_data_fail_transaction();
+        if ($this->checkParam()) {
+            return $this->checkParam();
         }
+        if ($id !== null) {
+            $validationError = $this->validateAndCheckId($id, $this->refectory, $this->refectoryName);
+            if ($validationError) {
+                return $validationError;
+            }
+        }
+        if ($this->elastic) {
+            $data = $this->elasticSearchService->handleElasticSearchGetWithId($this->refectoryName, $id);
+        } else {
+            $data = $this->refectoryService->handleDataBaseGetWithId($id);
+        }
+        $paramReturn = [
+            $this->idName => $id,
+            $this->isActiveName => $this->isActive,
+        ];
+        return returnDataSuccess($paramReturn, $data);
     }
-
-    public function refectory_update(UpdateRefectoryRequest $request, $id)
+    public function store(CreateRefectoryRequest $request)
     {
-        if (!is_numeric($id)) {
-            return returnIdError($id);
-        }
-        $data = $this->refectory->find($id);
-        if ($data == null) {
-            return return_not_record($id);
-        }
-        $room = $this->room->find($data->room_id);
-        if ($room == null) {
-            return return_not_record($data->room_id);
-        }
-        // Start transaction
-        DB::connection('oracle_his')->beginTransaction();
-        try {
-            $room_update = [
-                'modify_time' => now()->format('Ymdhis'),
-                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
-                'app_modifier' => $this->app_modifier,
-                'department_id' => $request->department_id,
-                'room_type_id' => $request->room_type_id,
-                'is_active' => $request->is_active,
-
-            ];
-            $data_update = [
-                'modify_time' => now()->format('Ymdhis'),
-                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
-                'app_modifier' => $this->app_modifier,
-                'refectory_name' => $request->refectory_name,
-                'is_active' => $request->is_active,
-
-            ];
-            $room->fill($room_update);
-            $room->save();
-            $data->fill($data_update);
-            $data->save();
-            DB::connection('oracle_his')->commit();
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->refectory_name));
-            return return_data_update_success([$data, $room]);
-        } catch (\Throwable $e) {
-            // Xử lý lỗi và trả về phản hồi lỗi
-            // Rollback transaction nếu có lỗi
-            DB::connection('oracle_his')->rollBack();
-            return return_data_fail_transaction();
-        }
+        return $this->refectoryService->createRefectory($request);
     }
-
-    public function refectory_delete(Request $request, $id)
+    public function update(UpdateRefectoryRequest $request, $id)
     {
-        if (!is_numeric($id)) {
-            return returnIdError($id);
-        }
-        $data = $this->refectory->find($id);
-        if ($data == null) {
-            return return_not_record($id);
-        }
-        $room = $this->room->find($data->room_id);
-        if ($room == null) {
-            return return_not_record($data->room_id);
-        }
-        // Start transaction
-        DB::connection('oracle_his')->beginTransaction();
-        try {
-            $data->delete();
-            $room->delete();
-            DB::connection('oracle_his')->commit();
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->refectory_name));
-            return return_data_delete_success();
-        } catch (\Throwable $e) {
-            // Xử lý lỗi và trả về phản hồi lỗi
-            // Rollback transaction nếu có lỗi
-            DB::connection('oracle_his')->rollBack();
-            return return_data_fail_transaction();
-        }
+        return $this->refectoryService->updateRefectory($id, $request);
+    }
+    public function destroy($id)
+    {
+        return $this->refectoryService->deleteRefectory($id);
     }
 }

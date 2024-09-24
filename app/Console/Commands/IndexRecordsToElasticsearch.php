@@ -103,6 +103,8 @@ use App\Events\Elastic\PtttMethod\CreatePtttMethodIndex;
 use App\Events\Elastic\PtttTable\CreatePtttTableIndex;
 use App\Events\Elastic\RationGroup\CreateRationGroupIndex;
 use App\Events\Elastic\RationTime\CreateRationTimeIndex;
+use App\Events\Elastic\ReceptionRoom\CreateReceptionRoomIndex;
+use App\Events\Elastic\Refectory\CreateRefectoryIndex;
 use App\Events\Elastic\RoomType\CreateRoomTypeIndex;
 use App\Models\HIS\MedicineUseForm;
 use App\Repositories\AccidentBodyPartRepository;
@@ -203,6 +205,8 @@ use App\Repositories\PtttMethodRepository;
 use App\Repositories\PtttTableRepository;
 use App\Repositories\RationGroupRepository;
 use App\Repositories\RationTimeRepository;
+use App\Repositories\ReceptionRoomRepository;
+use App\Repositories\RefectoryRepository;
 use App\Repositories\RoomTypeRepository;
 
 class IndexRecordsToElasticsearch extends Command
@@ -646,6 +650,14 @@ class IndexRecordsToElasticsearch extends Command
                 $results = app(RationTimeRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateRationTimeIndex($name_table));
                 break;
+            case 'reception_room':
+                $results = app(ReceptionRoomRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateReceptionRoomIndex($name_table));
+                break;
+            case 'refectory':
+                $results = app(RefectoryRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateRefectoryIndex($name_table));
+                break;
             case 'room_type':
                 $results = app(RoomTypeRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateRoomTypeIndex($name_table));
@@ -662,6 +674,7 @@ class IndexRecordsToElasticsearch extends Command
             'medi_stock',
             'patient_type',
             'pttt_group',
+            'reception_room'
         ];
 
         // Chèn từng bản ghi

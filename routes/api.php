@@ -594,6 +594,14 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisRationTime'], function () {
         Route::apiResource('v1/ration-time', RationTimeController::class);
     });
+    /// Khu đón tiếp
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisReceptionRoom'], function () {
+        Route::apiResource('v1/reception-room', ReceptionRoomController::class);
+    });
+    /// Nhà ăn
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisRefectory'], function () {
+        Route::apiResource('v1/refectory', RefectoryController::class);
+    });
     /// Loại phòng
     Route::group(['as' => 'HIS.Desktop.Plugins.RoomTypeModule'], function () {
         Route::apiResource('v1/room-type', RoomTypeController::class)->only(['index', 'show']);
@@ -626,26 +634,6 @@ Route::group([
         Route::post("v1/treatment-type", [TreatmentTypeController::class, "treatment_type_create"])->name('.create');
         Route::put("v1/treatment-type/{id}", [TreatmentTypeController::class, "treatment_type_update"])->name('.update');
         Route::delete("v1/treatment-type/{id}", [TreatmentTypeController::class, "treatment_type_delete"])->name('.delete');
-    });
-
-    /// Khu đón tiếp
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisReceptionRoom'], function () {
-        Route::get("v1/reception-room", [ReceptionRoomController::class, "reception_room"])->name('.get');
-        Route::get("v1/reception-room/{id}", [ReceptionRoomController::class, "reception_room"])->name('.get_id');
-        Route::get("v1/reception-room-check", [CheckReceptionRoomController::class, "check_code"])->name('.check');
-        Route::post("v1/reception-room", [ReceptionRoomController::class, "reception_room_create"])->name('.create');
-        Route::put("v1/reception-room/{id}", [ReceptionRoomController::class, "reception_room_update"])->name('.update');
-        Route::delete("v1/reception-room/{id}", [ReceptionRoomController::class, "reception_room_delete"])->name('.delete');
-    });
-
-    /// Nhà ăn
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisRefectory'], function () {
-        Route::get("v1/refectory", [RefectoryController::class, "refectory"])->name('.get');
-        Route::get("v1/refectory/{id}", [RefectoryController::class, "refectory"])->name('.get_id');
-        Route::get("v1/refectory-check", [CheckRefectoryController::class, "check_code"])->name('.check');
-        Route::post("v1/refectory", [RefectoryController::class, "refectory_create"])->name('.create');
-        Route::put("v1/refectory/{id}", [RefectoryController::class, "refectory_update"])->name('.update');
-        Route::delete("v1/refectory/{id}", [RefectoryController::class, "refectory_delete"])->name('.delete');
     });
 
     /// Chỉ số
