@@ -256,6 +256,8 @@ return [
             'pttt_catastrophe' => 'Có lỗi khi thực hiện thao tác với bảng Tai biến PTTT!',
             'pttt_condition' => 'Có lỗi khi thực hiện thao tác với bảng Tình trạng PTTT!',
             'pttt_group' => 'Có lỗi khi thực hiện thao tác với bảng Nhóm PTTT!',
+            'pttt_method' => 'Có lỗi khi thực hiện thao tác với bảng Phương pháp PTTT!',
+            'pttt_table' => 'Có lỗi khi thực hiện thao tác với bảng Bàn mổ!',
 
 
             'room_type' => 'Có lỗi khi thực hiện thao tác với bảng Loại phòng!',

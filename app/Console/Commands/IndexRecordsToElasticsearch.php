@@ -99,6 +99,8 @@ use App\Events\Elastic\Province\CreateProvinceIndex;
 use App\Events\Elastic\PtttCatastrophe\CreatePtttCatastropheIndex;
 use App\Events\Elastic\PtttCondition\CreatePtttConditionIndex;
 use App\Events\Elastic\PtttGroup\CreatePtttGroupIndex;
+use App\Events\Elastic\PtttMethod\CreatePtttMethodIndex;
+use App\Events\Elastic\PtttTable\CreatePtttTableIndex;
 use App\Events\Elastic\RoomType\CreateRoomTypeIndex;
 use App\Models\HIS\MedicineUseForm;
 use App\Repositories\AccidentBodyPartRepository;
@@ -195,6 +197,8 @@ use App\Repositories\ProvinceRepository;
 use App\Repositories\PtttCatastropheRepository;
 use App\Repositories\PtttConditionRepository;
 use App\Repositories\PtttGroupRepository;
+use App\Repositories\PtttMethodRepository;
+use App\Repositories\PtttTableRepository;
 use App\Repositories\RoomTypeRepository;
 
 class IndexRecordsToElasticsearch extends Command
@@ -621,6 +625,14 @@ class IndexRecordsToElasticsearch extends Command
             case 'pttt_group':
                 $results = app(PtttGroupRepository::class)->getDataFromDbToElastic(null);
                 event(new CreatePtttGroupIndex($name_table));
+                break;
+            case 'pttt_method':
+                $results = app(PtttMethodRepository::class)->getDataFromDbToElastic(null);
+                event(new CreatePtttMethodIndex($name_table));
+                break;
+            case 'pttt_table':
+                $results = app(PtttTableRepository::class)->getDataFromDbToElastic(null);
+                event(new CreatePtttTableIndex($name_table));
                 break;
             case 'room_type':
                 $results = app(RoomTypeRepository::class)->getDataFromDbToElastic(null);

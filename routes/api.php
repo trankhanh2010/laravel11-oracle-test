@@ -578,6 +578,14 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisPtttGroup'], function () {
         Route::apiResource('v1/pttt-group', PtttGroupController::class);
     });
+    /// Phương pháp PTTT
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisPtttMethod'], function () {
+        Route::apiResource('v1/pttt-method', PtttMethodController::class);
+    });
+    /// Bàn mổ
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisPtttTable'], function () {
+        Route::apiResource('v1/pttt-table', PtttTableController::class);
+    });
     /// Loại phòng
     Route::group(['as' => 'HIS.Desktop.Plugins.RoomTypeModule'], function () {
         Route::apiResource('v1/room-type', RoomTypeController::class)->only(['index', 'show']);
@@ -845,25 +853,6 @@ Route::group([
         Route::post("v1/supplier", [SupplierController::class, "supplier_create"])->name('.create');
         Route::put("v1/supplier/{id}", [SupplierController::class, "supplier_update"])->name('.update');
         Route::delete("v1/supplier/{id}", [SupplierController::class, "supplier_delete"])->name('.delete');
-    });
-
-    /// Bàn mổ
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisPtttTable'], function () {
-        Route::get("v1/pttt-table", [PtttTableController::class, "pttt_table"])->name('.get');
-        Route::get("v1/pttt-table/{id}", [PtttTableController::class, "pttt_table"])->name('.get_id');
-        Route::post("v1/pttt-table", [PtttTableController::class, "pttt_table_create"])->name('.create');
-        Route::put("v1/pttt-table/{id}", [PtttTableController::class, "pttt_table_update"])->name('.update');
-        Route::delete("v1/pttt-table/{id}", [PtttTableController::class, "pttt_table_delete"])->name('.delete');
-    });
-
-    /// Phương pháp PTTT
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisPtttMethod'], function () {
-        //Trả về tất cả nhóm pttt cùng nhóm dịch vụ 
-        Route::get("v1/pttt-method", [PtttMethodController::class, "pttt_method"])->name('.get');
-        Route::get("v1/pttt-method/{id}", [PtttMethodController::class, "pttt_method"])->name('.get_id');
-        Route::post("v1/pttt-method", [PtttMethodController::class, "pttt_method_create"])->name('.create');
-        Route::put("v1/pttt-method/{id}", [PtttMethodController::class, "pttt_method_update"])->name('.update');
-        Route::delete("v1/pttt-method/{id}", [PtttMethodController::class, "pttt_method_delete"])->name('.delete');
     });
 
     /// Chỉ số xét nghiệm
