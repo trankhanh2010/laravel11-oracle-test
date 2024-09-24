@@ -570,6 +570,14 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisPtttCatastrophe'], function () {
         Route::apiResource('v1/pttt-catastrophe', PtttCatastropheController::class);
     });
+    /// Tình trạng PTTT
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisPtttCondition'], function () {
+        Route::apiResource('v1/pttt-condition', PtttConditionController::class);
+    });
+    /// Nhóm PTTT
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisPtttGroup'], function () {
+        Route::apiResource('v1/pttt-group', PtttGroupController::class);
+    });
     /// Loại phòng
     Route::group(['as' => 'HIS.Desktop.Plugins.RoomTypeModule'], function () {
         Route::apiResource('v1/room-type', RoomTypeController::class)->only(['index', 'show']);
@@ -848,16 +856,6 @@ Route::group([
         Route::delete("v1/pttt-table/{id}", [PtttTableController::class, "pttt_table_delete"])->name('.delete');
     });
 
-    /// Nhóm PTTT
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisPtttGroup'], function () {
-        //Trả về tất cả nhóm pttt cùng nhóm dịch vụ 
-        Route::get("v1/pttt-group", [PtttGroupController::class, "pttt_group"])->name('.get');
-        Route::get("v1/pttt-group/{id}", [PtttGroupController::class, "pttt_group"])->name('.get_id');
-        Route::post("v1/pttt-group", [PtttGroupController::class, "pttt_group_create"])->name('.create');
-        Route::put("v1/pttt-group/{id}", [PtttGroupController::class, "pttt_group_update"])->name('.update');
-        Route::delete("v1/pttt-group/{id}", [PtttGroupController::class, "pttt_group_delete"])->name('.delete');
-    });
-
     /// Phương pháp PTTT
     Route::group(['as' => 'HIS.Desktop.Plugins.HisPtttMethod'], function () {
         //Trả về tất cả nhóm pttt cùng nhóm dịch vụ 
@@ -866,15 +864,6 @@ Route::group([
         Route::post("v1/pttt-method", [PtttMethodController::class, "pttt_method_create"])->name('.create');
         Route::put("v1/pttt-method/{id}", [PtttMethodController::class, "pttt_method_update"])->name('.update');
         Route::delete("v1/pttt-method/{id}", [PtttMethodController::class, "pttt_method_delete"])->name('.delete');
-    });
-
-    /// Tình trạng PTTT
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisPtttCondition'], function () {
-        Route::get("v1/pttt-condition", [PtttConditionController::class, "pttt_condition"])->name('.get');
-        Route::get("v1/pttt-condition/{id}", [PtttConditionController::class, "pttt_condition"])->name('.get_id');
-        Route::post("v1/pttt-condition", [PtttConditionController::class, "pttt_condition_create"])->name('.create');
-        Route::put("v1/pttt-condition/{id}", [PtttConditionController::class, "pttt_condition_update"])->name('.update');
-        Route::delete("v1/pttt-condition/{id}", [PtttConditionController::class, "pttt_condition_delete"])->name('.delete');
     });
 
     /// Chỉ số xét nghiệm
