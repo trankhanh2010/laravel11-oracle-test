@@ -562,6 +562,14 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisProcessing'], function () {
         Route::apiResource('v1/processing-method', ProcessingMethodController::class)->only(['index', 'show']);
     });
+    /// Tỉnh
+    Route::group(['as' => 'SDA.Desktop.Plugins.SdaProvince'], function () {
+        Route::apiResource('v1/province', ProvinceController::class);
+    });
+    /// Tai biến PTTT
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisPtttCatastrophe'], function () {
+        Route::apiResource('v1/pttt-catastrophe', PtttCatastropheController::class);
+    });
     /// Loại phòng
     Route::group(['as' => 'HIS.Desktop.Plugins.RoomTypeModule'], function () {
         Route::apiResource('v1/room-type', RoomTypeController::class)->only(['index', 'show']);
@@ -614,16 +622,6 @@ Route::group([
         Route::post("v1/refectory", [RefectoryController::class, "refectory_create"])->name('.create');
         Route::put("v1/refectory/{id}", [RefectoryController::class, "refectory_update"])->name('.update');
         Route::delete("v1/refectory/{id}", [RefectoryController::class, "refectory_delete"])->name('.delete');
-    });
-
-    /// Tỉnh
-    Route::group(['as' => 'SDA.Desktop.Plugins.SdaProvince'], function () {
-        Route::get("v1/province", [ProvinceController::class, "province"])->name('.get');
-        Route::get("v1/province/{id}", [ProvinceController::class, "province"])->name('.get_id');
-        Route::get("v1/province-check", [CheckProvinceController::class, "check_code"])->name('.check');
-        Route::post("v1/province", [ProvinceController::class, "province_create"])->name('.create');
-        Route::put("v1/province/{id}", [ProvinceController::class, "province_update"])->name('.update');
-        Route::delete("v1/province/{id}", [ProvinceController::class, "province_delete"])->name('.delete');
     });
 
     /// Chỉ số
@@ -868,15 +866,6 @@ Route::group([
         Route::post("v1/pttt-method", [PtttMethodController::class, "pttt_method_create"])->name('.create');
         Route::put("v1/pttt-method/{id}", [PtttMethodController::class, "pttt_method_update"])->name('.update');
         Route::delete("v1/pttt-method/{id}", [PtttMethodController::class, "pttt_method_delete"])->name('.delete');
-    });
-
-    /// Tai biến PTTT
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisPtttCatastrophe'], function () {
-        Route::get("v1/pttt-catastrophe", [PtttCatastropheController::class, "pttt_catastrophe"])->name('.get');
-        Route::get("v1/pttt-catastrophe/{id}", [PtttCatastropheController::class, "pttt_catastrophe"])->name('.get_id');
-        Route::post("v1/pttt-catastrophe", [PtttCatastropheController::class, "pttt_catastrophe_create"])->name('.create');
-        Route::put("v1/pttt-catastrophe/{id}", [PtttCatastropheController::class, "pttt_catastrophe_update"])->name('.update');
-        Route::delete("v1/pttt-catastrophe/{id}", [PtttCatastropheController::class, "pttt_catastrophe_delete"])->name('.delete');
     });
 
     /// Tình trạng PTTT

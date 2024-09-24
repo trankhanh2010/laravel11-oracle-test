@@ -252,6 +252,8 @@ return [
             'preparations_blood' => 'Có lỗi khi thực hiện thao tác với bảng Chế phẩm máu!',
             'priority_type' => 'Có lỗi khi thực hiện thao tác với bảng Đối tượng ưu tiên!',
             'processing_method' => 'Có lỗi khi thực hiện thao tác với bảng Phương pháp chế biến!',
+            'province' => 'Có lỗi khi thực hiện thao tác với bảng Tỉnh!',
+            'pttt_catastrophe' => 'Có lỗi khi thực hiện thao tác với bảng Tai biến PTTT!',
 
 
             'room_type' => 'Có lỗi khi thực hiện thao tác với bảng Loại phòng!',
