@@ -107,6 +107,8 @@ use App\Events\Elastic\ReceptionRoom\CreateReceptionRoomIndex;
 use App\Events\Elastic\Refectory\CreateRefectoryIndex;
 use App\Events\Elastic\Relation\CreateRelationIndex;
 use App\Events\Elastic\Religion\CreateReligionIndex;
+use App\Events\Elastic\Role\CreateRoleIndex;
+use App\Events\Elastic\Room\CreateRoomIndex;
 use App\Events\Elastic\RoomType\CreateRoomTypeIndex;
 use App\Models\HIS\MedicineUseForm;
 use App\Repositories\AccidentBodyPartRepository;
@@ -211,6 +213,8 @@ use App\Repositories\ReceptionRoomRepository;
 use App\Repositories\RefectoryRepository;
 use App\Repositories\RelationRepository;
 use App\Repositories\ReligionRepository;
+use App\Repositories\RoleRepository;
+use App\Repositories\RoomRepository;
 use App\Repositories\RoomTypeRepository;
 
 class IndexRecordsToElasticsearch extends Command
@@ -670,6 +674,14 @@ class IndexRecordsToElasticsearch extends Command
                 $results = app(ReligionRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateReligionIndex($name_table));
                 break;
+            case 'role':
+                $results = app(RoleRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateRoleIndex($name_table));
+                break;
+            case 'room':
+                $results = app(RoomRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateRoomIndex($name_table));
+                break;
             case 'room_type':
                 $results = app(RoomTypeRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateRoomTypeIndex($name_table));
@@ -686,7 +698,8 @@ class IndexRecordsToElasticsearch extends Command
             'medi_stock',
             'patient_type',
             'pttt_group',
-            'reception_room'
+            'reception_room',
+            'role',
         ];
 
         // Chèn từng bản ghi

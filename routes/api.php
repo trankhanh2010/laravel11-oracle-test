@@ -610,6 +610,12 @@ Route::group([
     Route::group(['as' => 'SDA.Desktop.Plugins.SdaReligion'], function () {
         Route::apiResource('v1/religion', ReligionController::class);
     });
+    /// Vai trò
+    Route::group(['as' => 'ACS.Desktop.Plugins.AcsRole'], function () {
+        Route::apiResource('v1/role', RoleController::class);
+    });
+    /// Phòng
+    Route::apiResource('v1/room', RoomController::class)->only(['index', 'show']);
     /// Loại phòng
     Route::group(['as' => 'HIS.Desktop.Plugins.RoomTypeModule'], function () {
         Route::apiResource('v1/room-type', RoomTypeController::class)->only(['index', 'show']);
@@ -714,10 +720,6 @@ Route::group([
         // Route::get("v1/room/{id}/service", [HISController::class, "room_with_service"]);
     });
 
-    /// Phòng
-    Route::get("v1/room", [RoomController::class, "room"])->name('.get_room');
-    // Route::get("v1/room/department/{id}", [RoomController::class, "room_with_department"]);
-
     /// Dịch vụ đi kèm
     Route::group(['as' => 'HIS.Desktop.Plugins.HisServiceFollow'], function () {
         // Trả về tất cả mối quan hệ
@@ -738,15 +740,6 @@ Route::group([
     });
     Route::get("v1/service-group", [ServiceGroupController::class, "service_group"])->name('.get_service_group');
     Route::get("v1/service-group/{id}", [ServiceGroupController::class, "service_group"])->name('.get_service_group_id');
-
-    /// Vai trò
-    Route::group(['as' => 'ACS.Desktop.Plugins.AcsRole'], function () {
-        Route::get("v1/role", [RoleController::class, "role"])->name('.get');
-        Route::get("v1/role/{id}", [RoleController::class, "role"])->name('.get_id');
-        Route::post("v1/role", [RoleController::class, "role_create"])->name('.create');
-        Route::put("v1/role/{id}", [RoleController::class, "role_update"])->name('.update');
-        Route::delete("v1/role/{id}", [RoleController::class, "role_delete"])->name('.delete');
-    });
 
     /// Đơn vị tính
     Route::group(['as' => 'HIS.Desktop.Plugins.HisServiceUnitEdit'], function () {

@@ -264,6 +264,8 @@ return [
             'refectory' => 'Có lỗi khi thực hiện thao tác với bảng Nhà ăn!',
             'relation' => 'Có lỗi khi thực hiện thao tác với bảng Mối quan hệ!',
             'religion' => 'Có lỗi khi thực hiện thao tác với bảng Tôn giáo!',
+            'role' => 'Có lỗi khi thực hiện thao tác với bảng Vai trò!',
+            'room' => 'Có lỗi khi thực hiện thao tác với bảng Phòng!',
 
 
             'room_type' => 'Có lỗi khi thực hiện thao tác với bảng Loại phòng!',

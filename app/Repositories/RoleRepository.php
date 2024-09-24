@@ -1,4 +1,5 @@
-<?php 
+<?php
+
 namespace App\Repositories;
 
 use App\Models\ACS\Role;
@@ -15,6 +16,9 @@ class RoleRepository
     public function applyJoins()
     {
         return $this->role
+            ->with([
+                'modules:id,module_name'
+            ])
             ->select(
                 'acs_role.*'
             );
@@ -63,7 +67,8 @@ class RoleRepository
     {
         return $this->role->find($id);
     }
-    public function create($request, $time, $appCreator, $appModifier){
+    public function create($request, $time, $appCreator, $appModifier)
+    {
         $data = $this->role::create([
             'create_time' => now()->format('Ymdhis'),
             'modify_time' => now()->format('Ymdhis'),
@@ -75,36 +80,39 @@ class RoleRepository
             'is_delete' => 0,
             'role_code' => $request->role_code,
             'role_name' => $request->role_name,
+            'is_full' => $request->is_full,
         ]);
         return $data;
     }
-    public function update($request, $data, $time, $appModifier){
+    public function update($request, $data, $time, $appModifier)
+    {
         $data->update([
             'modify_time' => now()->format('Ymdhis'),
             'modifier' => get_loginname_with_token($request->bearerToken(), $time),
             'app_modifier' => $appModifier,
             'role_code' => $request->role_code,
             'role_name' => $request->role_name,
-            'is_active' => $request->is_active
+            'is_full' => $request->is_full,
+            'is_active' => $request->is_active,
         ]);
         return $data;
     }
-    public function delete($data){
+    public function delete($data)
+    {
         $data->delete();
         return $data;
     }
-    public function getDataFromDbToElastic($id = null){
+    public function getDataFromDbToElastic($id = null)
+    {
         $data = $this->applyJoins();
-        if($id != null){
-            $data = $data->where('acs_role.id','=', $id)->first();
+        if ($id != null) {
+            $data = $data->where('acs_role.id', '=', $id)->first();
             if ($data) {
-                $data = $data->getAttributes();
+                $data->toArray();
             }
         } else {
             $data = $data->get();
-            $data = $data->map(function ($item) {
-                return $item->getAttributes(); 
-            })->toArray(); 
+            $data->toArray();
         }
         return $data;
     }
