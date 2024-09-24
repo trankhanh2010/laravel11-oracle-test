@@ -176,6 +176,10 @@ use App\Events\Elastic\PtttMethod\CreatePtttMethodIndex;
 use App\Events\Elastic\PtttMethod\InsertPtttMethodIndex;
 use App\Events\Elastic\PtttTable\CreatePtttTableIndex;
 use App\Events\Elastic\PtttTable\InsertPtttTableIndex;
+use App\Events\Elastic\RationGroup\CreateRationGroupIndex;
+use App\Events\Elastic\RationGroup\InsertRationGroupIndex;
+use App\Events\Elastic\RationTime\CreateRationTimeIndex;
+use App\Events\Elastic\RationTime\InsertRationTimeIndex;
 use App\Events\Elastic\RoomType\CreateRoomTypeIndex;
 use App\Events\Telegram\SendMessageToChannel;
 use App\Listeners\Cache\DeleteCache as CacheDeleteCache;
@@ -352,6 +356,10 @@ use App\Listeners\Elastic\PtttMethod\ElasticCreatePtttMethodIndex;
 use App\Listeners\Elastic\PtttMethod\ElasticInsertPtttMethodIndex;
 use App\Listeners\Elastic\PtttTable\ElasticCreatePtttTableIndex;
 use App\Listeners\Elastic\PtttTable\ElasticInsertPtttTableIndex;
+use App\Listeners\Elastic\RationGroup\ElasticCreateRationGroupIndex;
+use App\Listeners\Elastic\RationGroup\ElasticInsertRationGroupIndex;
+use App\Listeners\Elastic\RationTime\ElasticCreateRationTimeIndex;
+use App\Listeners\Elastic\RationTime\ElasticInsertRationTimeIndex;
 use App\Listeners\Elastic\RoomType\ElasticCreateRoomTypeIndex;
 use App\Listeners\Telegram\TelegramSendMessageToChannel;
 use Illuminate\Auth\Events\Registered;
@@ -993,6 +1001,20 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertPtttTableIndex::class => [
             ElasticInsertPtttTableIndex::class,
+        ],
+
+        CreateRationGroupIndex::class => [
+            ElasticCreateRationGroupIndex::class,
+        ],
+        InsertRationGroupIndex::class => [
+            ElasticInsertRationGroupIndex::class,
+        ],
+
+        CreateRationTimeIndex::class => [
+            ElasticCreateRationTimeIndex::class,
+        ],
+        InsertRationTimeIndex::class => [
+            ElasticInsertRationTimeIndex::class,
         ],
 
         CreateRoomTypeIndex::class => [

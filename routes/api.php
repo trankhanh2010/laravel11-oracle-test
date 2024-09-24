@@ -586,6 +586,14 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisPtttTable'], function () {
         Route::apiResource('v1/pttt-table', PtttTableController::class);
     });
+    /// Nhóm xuất ăn
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisRationGroup'], function () {
+        Route::apiResource('v1/ration-group', RationGroupController::class);
+    });
+    /// Bữa ăn
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisRationTime'], function () {
+        Route::apiResource('v1/ration-time', RationTimeController::class);
+    });
     /// Loại phòng
     Route::group(['as' => 'HIS.Desktop.Plugins.RoomTypeModule'], function () {
         Route::apiResource('v1/room-type', RoomTypeController::class)->only(['index', 'show']);
@@ -777,28 +785,10 @@ Route::group([
         Route::get("v1/service-type/{id}", [ServiceTypeController::class, "service_type"])->name('.get_id');
     });
 
-    /// Nhóm xuất ăn
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisRationGroup'], function () {
-        Route::get("v1/ration-group", [RationGroupController::class, "ration_group"])->name('.get');
-        Route::get("v1/ration-group/{id}", [RationGroupController::class, "ration_group"])->name('.get_id');
-        Route::post("v1/ration-group", [RationGroupController::class, "ration_group_create"])->name('.create');
-        Route::put("v1/ration-group/{id}", [RationGroupController::class, "ration_group_update"])->name('.update');
-        Route::delete("v1/ration-group/{id}", [RationGroupController::class, "ration_group_delete"])->name('.delete');
-    });
-
     /// Loại y lệnh 
     Route::group(['as' => 'HIS.Desktop.Plugins.ServiceReqType'], function () {
         Route::get("v1/service-req-type", [ServiceReqTypeController::class, "service_req_type"])->name('.get');
         Route::get("v1/service-req-type/{id}", [ServiceReqTypeController::class, "service_req_type"])->name('.get_id');
-    });
-
-    /// Bữa ăn
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisRationTime'], function () {
-        Route::get("v1/ration-time", [RationTimeController::class, "ration_time"])->name('.get');
-        Route::get("v1/ration-time/{id}", [RationTimeController::class, "ration_time"])->name('.get_id');
-        Route::post("v1/ration-time", [RationTimeController::class, "ration_time_create"])->name('.create');
-        Route::put("v1/ration-time/{id}", [RationTimeController::class, "ration_time_update"])->name('.update');
-        Route::delete("v1/ration-time/{id}", [RationTimeController::class, "ration_time_delete"])->name('.delete');
     });
 
     /// Thiết lập lợi nhuận xuất bán

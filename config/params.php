@@ -258,6 +258,8 @@ return [
             'pttt_group' => 'Có lỗi khi thực hiện thao tác với bảng Nhóm PTTT!',
             'pttt_method' => 'Có lỗi khi thực hiện thao tác với bảng Phương pháp PTTT!',
             'pttt_table' => 'Có lỗi khi thực hiện thao tác với bảng Bàn mổ!',
+            'ration_group' => 'Có lỗi khi thực hiện thao tác với bảng Nhóm xuất ăn!',
+            'ration_time' => 'Có lỗi khi thực hiện thao tác với bảng Bữa ăn!',
 
 
             'room_type' => 'Có lỗi khi thực hiện thao tác với bảng Loại phòng!',

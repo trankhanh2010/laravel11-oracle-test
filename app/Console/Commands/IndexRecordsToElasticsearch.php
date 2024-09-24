@@ -101,6 +101,8 @@ use App\Events\Elastic\PtttCondition\CreatePtttConditionIndex;
 use App\Events\Elastic\PtttGroup\CreatePtttGroupIndex;
 use App\Events\Elastic\PtttMethod\CreatePtttMethodIndex;
 use App\Events\Elastic\PtttTable\CreatePtttTableIndex;
+use App\Events\Elastic\RationGroup\CreateRationGroupIndex;
+use App\Events\Elastic\RationTime\CreateRationTimeIndex;
 use App\Events\Elastic\RoomType\CreateRoomTypeIndex;
 use App\Models\HIS\MedicineUseForm;
 use App\Repositories\AccidentBodyPartRepository;
@@ -199,6 +201,8 @@ use App\Repositories\PtttConditionRepository;
 use App\Repositories\PtttGroupRepository;
 use App\Repositories\PtttMethodRepository;
 use App\Repositories\PtttTableRepository;
+use App\Repositories\RationGroupRepository;
+use App\Repositories\RationTimeRepository;
 use App\Repositories\RoomTypeRepository;
 
 class IndexRecordsToElasticsearch extends Command
@@ -633,6 +637,14 @@ class IndexRecordsToElasticsearch extends Command
             case 'pttt_table':
                 $results = app(PtttTableRepository::class)->getDataFromDbToElastic(null);
                 event(new CreatePtttTableIndex($name_table));
+                break;
+            case 'ration_group':
+                $results = app(RationGroupRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateRationGroupIndex($name_table));
+                break;
+            case 'ration_time':
+                $results = app(RationTimeRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateRationTimeIndex($name_table));
                 break;
             case 'room_type':
                 $results = app(RoomTypeRepository::class)->getDataFromDbToElastic(null);
