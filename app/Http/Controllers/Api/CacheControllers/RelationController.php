@@ -2,168 +2,114 @@
 
 namespace App\Http\Controllers\Api\CacheControllers;
 
-use App\Events\Cache\DeleteCache;
+use App\DTOs\RelationDTO;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
-use App\Http\Controllers\Controller;
 use App\Http\Requests\RelationList\CreateRelationListRequest;
 use App\Http\Requests\RelationList\UpdateRelationListRequest;
 use App\Models\EMR\Relation;
+use App\Services\Elastic\ElasticsearchService;
+use App\Services\Model\RelationService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+
 
 class RelationController extends BaseApiCacheController
 {
-    public function __construct(Request $request)
+    protected $relationService;
+    protected $relationDTO;
+    public function __construct(Request $request, ElasticsearchService $elasticSearchService, RelationService $relationService, Relation $relation)
     {
         parent::__construct($request); // Gọi constructor của BaseController
-        $this->relation_list = new Relation();
-
+        $this->elasticSearchService = $elasticSearchService;
+        $this->relationService = $relationService;
+        $this->relation = $relation;
         // Kiểm tra tên trường trong bảng
-        if ($this->order_by != null) {
-            $columns = $this->get_columns_table($this->relation_list);
-            $this->order_by = $this->check_order_by($this->order_by, $columns, $this->order_by_join ?? []);
-            $this->order_by_tring = arrayToCustomString($this->order_by);
-        }
-    }
-    public function relation_list($id = null)
-    {
-        // Kiểm tra param và trả về lỗi nếu nó không hợp lệ
-        if ($this->check_param()) {
-            return $this->check_param();
-        }
-        try {
-            $keyword = $this->keyword;
-            if ($keyword != null) {
-                $param = [];
-                $data = $this->relation_list;
-                $data = $data->where(function ($query) use ($keyword) {
-                    $query = $query
-                        ->where(DB::connection('oracle_his')->raw('relation_code'), 'like', $keyword . '%')
-                        ->orWhere(DB::connection('oracle_his')->raw('relation_name'), 'like', $keyword . '%');
-                });
-                if ($this->is_active !== null) {
-                    $data = $data->where(function ($query) {
-                        $query = $query->where(DB::connection('oracle_his')->raw('emr_relation.is_active'), $this->is_active);
-                    });
-                }
-                $count = $data->count();
-                if ($this->order_by != null) {
-                    foreach ($this->order_by as $key => $item) {
-                        $data->orderBy($key, $item);
-                    }
-                }
-                if ($this->get_all) {
-                    $data = $data
-                        ->with($param)
-                        ->get();
-                } else {
-                    $data = $data
-                        ->skip($this->start)
-                        ->take($this->limit)
-                        ->with($param)
-                        ->get();
-                }
-            } else {
-                if ($id == null) {
-                    $name = $this->relation_list_name . '_start_' . $this->start . '_limit_' . $this->limit . $this->order_by_tring . '_is_active_' . $this->is_active . '_get_all_' . $this->get_all;
-                    $param = [];
-                } else {
-                    if (!is_numeric($id)) {
-                        return returnIdError($id);
-                    }
-                    $check_id = $this->check_id($id, $this->relation_list, $this->relation_list_name);
-                    if ($check_id) {
-                        return $check_id;
-                    }
-                    $name =  $this->relation_list_name . '_' . $id . '_is_active_' . $this->is_active;
-                    $param = [];
-                }
-                $model = $this->relation_list;
-                $data = get_cache_full($model, $param, $name, $id, $this->time, $this->start, $this->limit, $this->order_by, $this->is_active, $this->get_all);
-            }
-            $param_return = [
-                $this->get_all_name => $this->get_all,
-                $this->start_name => ($this->get_all || !is_null($id)) ? null : $this->start,
-                $this->limit_name => ($this->get_all || !is_null($id)) ? null : $this->limit,
-                $this->count_name => $count ?? ($data['count'] ?? null),
-                $this->is_active_name => $this->is_active,
-                $this->keyword_name => $this->keyword,
-                $this->order_by_name => $this->order_by_request
+        if ($this->orderBy != null) {
+            $this->orderByJoin = [
             ];
-            return return_data_success($param_return, $data ?? ($data['data'] ?? null));
-        } catch (\Throwable $e) {
-            // Xử lý lỗi và trả về phản hồi lỗi
-            return return_500_error($e->getMessage());
+            $columns = $this->getColumnsTable($this->relation);
+            $this->orderBy = $this->checkOrderBy($this->orderBy, $columns, $this->orderByJoin ?? []);
         }
+        // Thêm tham số vào service
+        $this->relationDTO = new RelationDTO(
+            $this->relationName,
+            $this->keyword,
+            $this->isActive,
+            $this->orderBy,
+            $this->orderByJoin,
+            $this->orderByString,
+            $this->getAll,
+            $this->start,
+            $this->limit,
+            $request,
+            $this->appCreator, 
+            $this->appModifier, 
+            $this->time,
+        );
+        $this->relationService->withParams($this->relationDTO);
     }
-    public function relation_list_create(CreateRelationListRequest $request)
+    public function index()
     {
-        try {
-            $data = $this->relation_list::create([
-                'create_time' => now()->format('Ymdhis'),
-                'modify_time' => now()->format('Ymdhis'),
-                'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
-                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
-                'app_creator' => $this->app_creator,
-                'app_modifier' => $this->app_modifier,
-                'is_active' => 1,
-                'is_delete' => 0,
-                'relation_code' => $request->relation_code,
-                'relation_name' => $request->relation_name,
-            ]);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->relation_list_name));
-            return return_data_create_success($data);
-        } catch (\Throwable $e) {
-            // Xử lý lỗi và trả về phản hồi lỗi
-            return return_500_error($e->getMessage());
+        if ($this->checkParam()) {
+            return $this->checkParam();
         }
-    }
-
-    public function relation_list_update(UpdateRelationListRequest $request, $id)
-    {
-        if (!is_numeric($id)) {
-            return returnIdError($id);
+        $keyword = $this->keyword;
+        if (($keyword != null || $this->elasticSearchType != null) && !$this->cache) {
+            if ($this->elasticSearchType != null) {
+                $data = $this->elasticSearchService->handleElasticSearchSearch($this->relationName);
+            } else {
+                $data = $this->relationService->handleDataBaseSearch();
+            }
+        } else {
+            if ($this->elastic) {
+                $data = $this->elasticSearchService->handleElasticSearchGetAll($this->relationName);
+            } else {
+                $data = $this->relationService->handleDataBaseGetAll();
+            }
         }
-        $data = $this->relation_list->find($id);
-        if ($data == null) {
-            return return_not_record($id);
-        }
-        try {
-            $data->update([
-                'modify_time' => now()->format('Ymdhis'),
-                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
-                'app_modifier' => $this->app_modifier,
-                'relation_code' => $request->relation_code,
-                'relation_name' => $request->relation_name,
-                'is_active' => $request->is_active
-            ]);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->relation_list_name));
-            return return_data_update_success($data);
-        } catch (\Throwable $e) {
-            // Xử lý lỗi và trả về phản hồi lỗi
-            return return_500_error($e->getMessage());
-        }
+        $paramReturn = [
+            $this->getAllName => $this->getAll,
+            $this->startName => $this->getAll ? null : $this->start,
+            $this->limitName => $this->getAll ? null : $this->limit,
+            $this->countName => $data['count'],
+            $this->isActiveName => $this->isActive,
+            $this->keywordName => $this->keyword,
+            $this->orderByName => $this->orderByRequest
+        ];
+        return returnDataSuccess($paramReturn, $data['data']);
     }
 
-    public function relation_list_delete(Request $request, $id)
+    public function show($id)
     {
-        if (!is_numeric($id)) {
-            return returnIdError($id);
+        if ($this->checkParam()) {
+            return $this->checkParam();
         }
-        $data = $this->relation_list->find($id);
-        if ($data == null) {
-            return return_not_record($id);
+        if ($id !== null) {
+            $validationError = $this->validateAndCheckId($id, $this->relation, $this->relationName);
+            if ($validationError) {
+                return $validationError;
+            }
         }
-        try {
-            $data->delete();
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->relation_list_name));
-            return return_data_delete_success();
-        } catch (\Throwable $e) {
-            // Xử lý lỗi và trả về phản hồi lỗi
-            return return_data_delete_fail();
+        if ($this->elastic) {
+            $data = $this->elasticSearchService->handleElasticSearchGetWithId($this->relationName, $id);
+        } else {
+            $data = $this->relationService->handleDataBaseGetWithId($id);
         }
+        $paramReturn = [
+            $this->idName => $id,
+            $this->isActiveName => $this->isActive,
+        ];
+        return returnDataSuccess($paramReturn, $data);
+    }
+    public function store(CreateRelationListRequest $request)
+    {
+        return $this->relationService->createRelation($request);
+    }
+    public function update(UpdateRelationListRequest $request, $id)
+    {
+        return $this->relationService->updateRelation($id, $request);
+    }
+    public function destroy($id)
+    {
+        return $this->relationService->deleteRelation($id);
     }
 }

@@ -105,6 +105,8 @@ use App\Events\Elastic\RationGroup\CreateRationGroupIndex;
 use App\Events\Elastic\RationTime\CreateRationTimeIndex;
 use App\Events\Elastic\ReceptionRoom\CreateReceptionRoomIndex;
 use App\Events\Elastic\Refectory\CreateRefectoryIndex;
+use App\Events\Elastic\Relation\CreateRelationIndex;
+use App\Events\Elastic\Religion\CreateReligionIndex;
 use App\Events\Elastic\RoomType\CreateRoomTypeIndex;
 use App\Models\HIS\MedicineUseForm;
 use App\Repositories\AccidentBodyPartRepository;
@@ -207,6 +209,8 @@ use App\Repositories\RationGroupRepository;
 use App\Repositories\RationTimeRepository;
 use App\Repositories\ReceptionRoomRepository;
 use App\Repositories\RefectoryRepository;
+use App\Repositories\RelationRepository;
+use App\Repositories\ReligionRepository;
 use App\Repositories\RoomTypeRepository;
 
 class IndexRecordsToElasticsearch extends Command
@@ -657,6 +661,14 @@ class IndexRecordsToElasticsearch extends Command
             case 'refectory':
                 $results = app(RefectoryRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateRefectoryIndex($name_table));
+                break;
+            case 'relation':
+                $results = app(RelationRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateRelationIndex($name_table));
+                break;
+            case 'religion':
+                $results = app(ReligionRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateReligionIndex($name_table));
                 break;
             case 'room_type':
                 $results = app(RoomTypeRepository::class)->getDataFromDbToElastic(null);

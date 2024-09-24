@@ -262,6 +262,8 @@ return [
             'ration_time' => 'Có lỗi khi thực hiện thao tác với bảng Bữa ăn!',
             'reception_room' => 'Có lỗi khi thực hiện thao tác với bảng Khu đón tiếp!',
             'refectory' => 'Có lỗi khi thực hiện thao tác với bảng Nhà ăn!',
+            'relation' => 'Có lỗi khi thực hiện thao tác với bảng Mối quan hệ!',
+            'religion' => 'Có lỗi khi thực hiện thao tác với bảng Tôn giáo!',
 
 
             'room_type' => 'Có lỗi khi thực hiện thao tác với bảng Loại phòng!',

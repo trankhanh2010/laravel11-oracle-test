@@ -602,6 +602,14 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisRefectory'], function () {
         Route::apiResource('v1/refectory', RefectoryController::class);
     });
+    /// Mối quan hệ
+    Route::group(['as' => 'HIS.Desktop.Plugins.EmrRelationList'], function () {
+        Route::apiResource('v1/relation-list', RelationController::class);
+    });
+    /// Tôn giáo
+    Route::group(['as' => 'SDA.Desktop.Plugins.SdaReligion'], function () {
+        Route::apiResource('v1/religion', ReligionController::class);
+    });
     /// Loại phòng
     Route::group(['as' => 'HIS.Desktop.Plugins.RoomTypeModule'], function () {
         Route::apiResource('v1/room-type', RoomTypeController::class)->only(['index', 'show']);
@@ -738,24 +746,6 @@ Route::group([
         Route::post("v1/role", [RoleController::class, "role_create"])->name('.create');
         Route::put("v1/role/{id}", [RoleController::class, "role_update"])->name('.update');
         Route::delete("v1/role/{id}", [RoleController::class, "role_delete"])->name('.delete');
-    });
-
-    /// Mối quan hệ
-    Route::group(['as' => 'HIS.Desktop.Plugins.EmrRelationList'], function () {
-        Route::get("v1/relation-list", [RelationController::class, "relation_list"])->name('.get');
-        Route::get("v1/relation-list/{id}", [RelationController::class, "relation_list"])->name('.get_id');
-        Route::post("v1/relation-list", [RelationController::class, "relation_list_create"])->name('.create');
-        Route::put("v1/relation-list/{id}", [RelationController::class, "relation_list_update"])->name('.update');
-        Route::delete("v1/relation-list/{id}", [RelationController::class, "relation_list_delete"])->name('.delete');
-    });
-
-    /// Tôn giáo
-    Route::group(['as' => 'SDA.Desktop.Plugins.SdaReligion'], function () {
-        Route::get("v1/religion", [ReligionController::class, "religion"])->name('.get');
-        Route::get("v1/religion/{id}", [ReligionController::class, "religion"])->name('.get_id');
-        Route::post("v1/religion", [ReligionController::class, "religion_create"])->name('.create');
-        Route::put("v1/religion/{id}", [ReligionController::class, "religion_update"])->name('.update');
-        Route::delete("v1/religion/{id}", [ReligionController::class, "religion_delete"])->name('.delete');
     });
 
     /// Đơn vị tính

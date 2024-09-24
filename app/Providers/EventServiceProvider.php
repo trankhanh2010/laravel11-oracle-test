@@ -184,6 +184,10 @@ use App\Events\Elastic\ReceptionRoom\CreateReceptionRoomIndex;
 use App\Events\Elastic\ReceptionRoom\InsertReceptionRoomIndex;
 use App\Events\Elastic\Refectory\CreateRefectoryIndex;
 use App\Events\Elastic\Refectory\InsertRefectoryIndex;
+use App\Events\Elastic\Relation\CreateRelationIndex;
+use App\Events\Elastic\Relation\InsertRelationIndex;
+use App\Events\Elastic\Religion\CreateReligionIndex;
+use App\Events\Elastic\Religion\InsertReligionIndex;
 use App\Events\Elastic\RoomType\CreateRoomTypeIndex;
 use App\Events\Telegram\SendMessageToChannel;
 use App\Listeners\Cache\DeleteCache as CacheDeleteCache;
@@ -368,6 +372,10 @@ use App\Listeners\Elastic\ReceptionRoom\ElasticCreateReceptionRoomIndex;
 use App\Listeners\Elastic\ReceptionRoom\ElasticInsertReceptionRoomIndex;
 use App\Listeners\Elastic\Refectory\ElasticCreateRefectoryIndex;
 use App\Listeners\Elastic\Refectory\ElasticInsertRefectoryIndex;
+use App\Listeners\Elastic\Relation\ElasticCreateRelationIndex;
+use App\Listeners\Elastic\Relation\ElasticInsertRelationIndex;
+use App\Listeners\Elastic\Religion\ElasticCreateReligionIndex;
+use App\Listeners\Elastic\Religion\ElasticInsertReligionIndex;
 use App\Listeners\Elastic\RoomType\ElasticCreateRoomTypeIndex;
 use App\Listeners\Telegram\TelegramSendMessageToChannel;
 use Illuminate\Auth\Events\Registered;
@@ -1037,6 +1045,20 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertRefectoryIndex::class => [
             ElasticInsertRefectoryIndex::class,
+        ],
+
+        CreateRelationIndex::class => [
+            ElasticCreateRelationIndex::class,
+        ],
+        InsertRelationIndex::class => [
+            ElasticInsertRelationIndex::class,
+        ],
+
+        CreateReligionIndex::class => [
+            ElasticCreateReligionIndex::class,
+        ],
+        InsertReligionIndex::class => [
+            ElasticInsertReligionIndex::class,
         ],
 
         CreateRoomTypeIndex::class => [
