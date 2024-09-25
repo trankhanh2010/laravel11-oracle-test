@@ -70,7 +70,7 @@ class UpdateSaleProfitCfgRequest extends FormRequest
                 },
             ],
             'is_drug_store' => 'nullable|integer|in:0,1',
-
+            'is_active' =>               'required|integer|in:0,1'
         ];
     }
     public function messages()
@@ -104,6 +104,10 @@ class UpdateSaleProfitCfgRequest extends FormRequest
 
             'is_drug_store.integer'    => config('keywords')['sale_profit_cfg']['is_drug_store'] . config('keywords')['error']['integer'],
             'is_drug_store.in'         => config('keywords')['sale_profit_cfg']['is_drug_store'] . config('keywords')['error']['in'],
+
+            'is_active.required'    => config('keywords')['all']['is_active'].config('keywords')['error']['required'],            
+            'is_active.integer'     => config('keywords')['all']['is_active'].config('keywords')['error']['integer'], 
+            'is_active.in'          => config('keywords')['all']['is_active'].config('keywords')['error']['in'], 
         ];
     }
 

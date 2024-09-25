@@ -266,6 +266,8 @@ return [
             'religion' => 'Có lỗi khi thực hiện thao tác với bảng Tôn giáo!',
             'role' => 'Có lỗi khi thực hiện thao tác với bảng Vai trò!',
             'room' => 'Có lỗi khi thực hiện thao tác với bảng Phòng!',
+            'room_group' => 'Có lỗi khi thực hiện thao tác với bảng Nhóm phòng!',
+            'sale_profit_cfg' => 'Có lỗi khi thực hiện thao tác với bảng Thiết lập lợi nhuận xuất bán!',
 
 
             'room_type' => 'Có lỗi khi thực hiện thao tác với bảng Loại phòng!',

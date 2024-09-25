@@ -192,7 +192,11 @@ use App\Events\Elastic\Role\CreateRoleIndex;
 use App\Events\Elastic\Role\InsertRoleIndex;
 use App\Events\Elastic\Room\CreateRoomIndex;
 use App\Events\Elastic\Room\InsertRoomIndex;
+use App\Events\Elastic\RoomGroup\CreateRoomGroupIndex;
+use App\Events\Elastic\RoomGroup\InsertRoomGroupIndex;
 use App\Events\Elastic\RoomType\CreateRoomTypeIndex;
+use App\Events\Elastic\SaleProfitCfg\CreateSaleProfitCfgIndex;
+use App\Events\Elastic\SaleProfitCfg\InsertSaleProfitCfgIndex;
 use App\Events\Telegram\SendMessageToChannel;
 use App\Listeners\Cache\DeleteCache as CacheDeleteCache;
 use App\Listeners\Elastic\AccidentBodyPart\ElasticCreateAccidentBodyPartIndex;
@@ -384,7 +388,11 @@ use App\Listeners\Elastic\Role\ElasticCreateRoleIndex;
 use App\Listeners\Elastic\Role\ElasticInsertRoleIndex;
 use App\Listeners\Elastic\Room\ElasticCreateRoomIndex;
 use App\Listeners\Elastic\Room\ElasticInsertRoomIndex;
+use App\Listeners\Elastic\RoomGroup\ElasticCreateRoomGroupIndex;
+use App\Listeners\Elastic\RoomGroup\ElasticInsertRoomGroupIndex;
 use App\Listeners\Elastic\RoomType\ElasticCreateRoomTypeIndex;
+use App\Listeners\Elastic\SaleProfitCfg\ElasticCreateSaleProfitCfgIndex;
+use App\Listeners\Elastic\SaleProfitCfg\ElasticInsertSaleProfitCfgIndex;
 use App\Listeners\Telegram\TelegramSendMessageToChannel;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -1083,8 +1091,22 @@ class EventServiceProvider extends ServiceProvider
             ElasticInsertRoomIndex::class,
         ],
 
+        CreateRoomGroupIndex::class => [
+            ElasticCreateRoomGroupIndex::class,
+        ],
+        InsertRoomGroupIndex::class => [
+            ElasticInsertRoomGroupIndex::class,
+        ],
+
         CreateRoomTypeIndex::class => [
             ElasticCreateRoomTypeIndex::class,
+        ],
+
+        CreateSaleProfitCfgIndex::class => [
+            ElasticCreateSaleProfitCfgIndex::class,
+        ],
+        InsertSaleProfitCfgIndex::class => [
+            ElasticInsertSaleProfitCfgIndex::class,
         ],
     ];
 

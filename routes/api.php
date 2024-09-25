@@ -616,16 +616,16 @@ Route::group([
     });
     /// Phòng
     Route::apiResource('v1/room', RoomController::class)->only(['index', 'show']);
+    /// Nhóm phòng
+    Route::apiResource('v1/room-group', RoomGroupController::class)->only(['index', 'show', 'store']);
     /// Loại phòng
     Route::group(['as' => 'HIS.Desktop.Plugins.RoomTypeModule'], function () {
         Route::apiResource('v1/room-type', RoomTypeController::class)->only(['index', 'show']);
     });
-
-    /// Nhóm phòng
-    Route::get("v1/room-group", [RoomGroupController::class, "room_group"])->name('.get_room_group');
-    Route::get("v1/room-group/{id}", [RoomGroupController::class, "room_group"])->name('.get_room_group_id');
-    Route::post("v1/room-group", [RoomGroupController::class, "room_group_create"])->name('.create_room_group');
-
+    /// Thiết lập lợi nhuận xuất bán
+    Route::group(['as' => 'HIS.Desktop.Plugins.EstablishSaleProfitCFG'], function () {
+        Route::apiResource('v1/sale-profit-cfg', SaleProfitCfgController::class);
+    });
     /// Loại xét nghiệm
     Route::get("v1/test-type", [TestTypeController::class, "test_type"])->name('.get_test_type');
     Route::get("v1/test-type/{id}", [TestTypeController::class, "test_type"])->name('.get_test_type_id');
@@ -760,15 +760,6 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.ServiceReqType'], function () {
         Route::get("v1/service-req-type", [ServiceReqTypeController::class, "service_req_type"])->name('.get');
         Route::get("v1/service-req-type/{id}", [ServiceReqTypeController::class, "service_req_type"])->name('.get_id');
-    });
-
-    /// Thiết lập lợi nhuận xuất bán
-    Route::group(['as' => 'HIS.Desktop.Plugins.EstablishSaleProfitCFG'], function () {
-        Route::get("v1/sale-profit-cfg", [SaleProfitCfgController::class, "sale_profit_cfg"])->name('.get');
-        Route::get("v1/sale-profit-cfg/{id}", [SaleProfitCfgController::class, "sale_profit_cfg"])->name('.get_id');
-        Route::post("v1/sale-profit-cfg", [SaleProfitCfgController::class, "sale_profit_cfg_create"])->name('.create');
-        Route::put("v1/sale-profit-cfg/{id}", [SaleProfitCfgController::class, "sale_profit_cfg_update"])->name('.update');
-        Route::delete("v1/sale-profit-cfg/{id}", [SaleProfitCfgController::class, "sale_profit_cfg_delete"])->name('.delete');
     });
 
     /// Nơi làm việc

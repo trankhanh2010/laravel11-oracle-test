@@ -109,7 +109,9 @@ use App\Events\Elastic\Relation\CreateRelationIndex;
 use App\Events\Elastic\Religion\CreateReligionIndex;
 use App\Events\Elastic\Role\CreateRoleIndex;
 use App\Events\Elastic\Room\CreateRoomIndex;
+use App\Events\Elastic\RoomGroup\CreateRoomGroupIndex;
 use App\Events\Elastic\RoomType\CreateRoomTypeIndex;
+use App\Events\Elastic\SaleProfitCfg\CreateSaleProfitCfgIndex;
 use App\Models\HIS\MedicineUseForm;
 use App\Repositories\AccidentBodyPartRepository;
 use App\Repositories\AccidentCareRepository;
@@ -214,8 +216,10 @@ use App\Repositories\RefectoryRepository;
 use App\Repositories\RelationRepository;
 use App\Repositories\ReligionRepository;
 use App\Repositories\RoleRepository;
+use App\Repositories\RoomGroupRepository;
 use App\Repositories\RoomRepository;
 use App\Repositories\RoomTypeRepository;
+use App\Repositories\SaleProfitCfgRepository;
 
 class IndexRecordsToElasticsearch extends Command
 {
@@ -682,9 +686,17 @@ class IndexRecordsToElasticsearch extends Command
                 $results = app(RoomRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateRoomIndex($name_table));
                 break;
+            case 'room_group':
+                $results = app(RoomGroupRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateRoomGroupIndex($name_table));
+                break;
             case 'room_type':
                 $results = app(RoomTypeRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateRoomTypeIndex($name_table));
+                break;
+            case 'sale_profit_cfg':
+                $results = app(SaleProfitCfgRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateSaleProfitCfgIndex($name_table));
                 break;
             default:
                 // Xử lý mặc định hoặc xử lý khi không có bảng khớp
