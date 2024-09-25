@@ -267,12 +267,12 @@ return [
             'role' => 'Có lỗi khi thực hiện thao tác với bảng Vai trò!',
             'room' => 'Có lỗi khi thực hiện thao tác với bảng Phòng!',
             'room_group' => 'Có lỗi khi thực hiện thao tác với bảng Nhóm phòng!',
+            'room_type' => 'Có lỗi khi thực hiện thao tác với bảng Loại phòng!',
             'sale_profit_cfg' => 'Có lỗi khi thực hiện thao tác với bảng Thiết lập lợi nhuận xuất bán!',
             'service_condition' => 'Có lỗi khi thực hiện thao tác với bảng Điều kiện dịch vụ!',
             'service' => 'Có lỗi khi thực hiện thao tác với bảng Dịch vụ kỹ thuật!',
-
-
-            'room_type' => 'Có lỗi khi thực hiện thao tác với bảng Loại phòng!',
+            'service_follow' => 'Có lỗi khi thực hiện thao tác với bảng Dịch vụ đi kèm!',
+            'service_group' => 'Có lỗi khi thực hiện thao tác với bảng Nhóm dịch vụ!',
 
         ]
     ]

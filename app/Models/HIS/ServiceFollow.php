@@ -11,10 +11,9 @@ class ServiceFollow extends Model
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
     protected $table = 'HIS_Service_Follow';
-    protected $fillable = [
-        'service_id',
-        'follow_id',
-        'treatment_type_ids',
+    public $timestamps = false;
+    protected $guarded = [
+        'id',
     ];
     public function service()
     {

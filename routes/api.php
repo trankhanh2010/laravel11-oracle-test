@@ -634,6 +634,12 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisService'], function () {
         Route::apiResource('v1/service', ServiceController::class);
     });
+    /// Dịch vụ đi kèm
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisServiceFollow'], function () {
+        Route::apiResource('v1/service-follow', ServiceFollowController::class);
+    });
+    /// Nhóm dịch vụ
+    Route::apiResource('v1/service-group', ServiceGroupController::class)->only(['index', 'show']);
     /// Loại xét nghiệm
     Route::get("v1/test-type", [TestTypeController::class, "test_type"])->name('.get_test_type');
     Route::get("v1/test-type/{id}", [TestTypeController::class, "test_type"])->name('.get_test_type_id');
@@ -707,26 +713,11 @@ Route::group([
         // Route::get("v1/room/{id}/service", [HISController::class, "room_with_service"]);
     });
 
-    /// Dịch vụ đi kèm
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisServiceFollow'], function () {
-        // Trả về tất cả mối quan hệ
-        Route::get("v1/service-follow", [ServiceFollowController::class, "service_follow"])->name('.get');
-        Route::get("v1/service-follow/{id}", [ServiceFollowController::class, "service_follow"])->name('.get_id');
-        // // Trả về tất cả dịch vụ cùng dịch vụ đi kèm
-        // Route::get("v1/service/all/follow", [HISController::class, "service_with_follow"]);
-        // Route::get("v1/service/{id}/follow", [HISController::class, "service_with_follow"]);
-        // // Trả về tất cả dịch vụ đi kèm cùng dịch vụ
-        // Route::get("v1/follow/all/service", [HISController::class, "follow_with_service"]);
-        // Route::get("v1/follow/{id}/service", [HISController::class, "follow_with_service"]);
-    });
-
     /// Nhóm dịch vụ
     Route::group(['as' => 'HIS.Desktop.Plugins.HisServSegr'], function () {
         Route::get("v1/serv-segr", [ServSegrController::class, "serv_segr"])->name('.get');
         Route::get("v1/serv-segr/{id}", [ServSegrController::class, "serv_segr"])->name('.get_id');
     });
-    Route::get("v1/service-group", [ServiceGroupController::class, "service_group"])->name('.get_service_group');
-    Route::get("v1/service-group/{id}", [ServiceGroupController::class, "service_group"])->name('.get_service_group_id');
 
     /// Đơn vị tính
     Route::group(['as' => 'HIS.Desktop.Plugins.HisServiceUnitEdit'], function () {

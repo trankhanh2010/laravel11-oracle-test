@@ -1069,4 +1069,14 @@ return [
         'must_be_guaranteed' => 'Trường bắt buộc có người bảo lãnh',
         'is_ration' => 'Trường là mức ăn',
     ],
+    // Dịch vụ đi kèm
+    'service_follow' => [
+        'service_id' => 'Id dịch vụ',
+        'follow_id' => 'Id dịch vụ đi kèm',
+        'amount' => 'Số lượng dịch vụ',
+        'conditioned_amount' => 'Số lượng dịch vụ đi kèm',
+        'is_expend' => 'Trường hao phí',
+        'add_if_not_assigned' => 'Trường chỉ tự động đính kèm nếu chưa có',
+        'treatment_type_ids' => 'Danh sách id diện điều trị',
+    ],
 ];
