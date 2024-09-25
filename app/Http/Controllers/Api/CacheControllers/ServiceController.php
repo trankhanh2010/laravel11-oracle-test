@@ -2,579 +2,152 @@
 
 namespace App\Http\Controllers\Api\CacheControllers;
 
-use Illuminate\Http\Request;
-use App\Models\HIS\Service;
-use App\Events\Cache\DeleteCache;
+use App\DTOs\ServiceDTO;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
 use App\Http\Requests\Service\CreateServiceRequest;
 use App\Http\Requests\Service\UpdateServiceRequest;
-use App\Models\HIS\ServiceType;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Cache;
+use App\Models\HIS\Service;
+use App\Services\Elastic\ElasticsearchService;
+use App\Services\Model\ServiceService;
+use Illuminate\Http\Request;
+
 
 class ServiceController extends BaseApiCacheController
 {
-    public function __construct(Request $request)
+    protected $serviceService;
+    protected $serviceDTO;
+    public function __construct(Request $request, ElasticsearchService $elasticSearchService, ServiceService $serviceService, Service $service)
     {
         parent::__construct($request); // Gọi constructor của BaseController
-        $this->service = new Service();
-        $this->service_type = new ServiceType();
-
+        $this->elasticSearchService = $elasticSearchService;
+        $this->serviceService = $serviceService;
+        $this->service = $service;
         // Kiểm tra tên trường trong bảng
-        if ($this->order_by != null) {
-            $columns = $this->get_columns_table($this->service_type);
-            $this->order_by = $this->check_order_by($this->order_by, $columns, $this->order_by_join ?? []);
-            $this->order_by_tring = arrayToCustomString($this->order_by);
+        if ($this->orderBy != null) {
+            $this->orderByJoin = [
+                'service_type_code',
+                'service_type_name',
+                'parent_service_code',
+                'parent_service_name',
+                'service_unit_code',
+                'service_unit_name',
+                'hein_service_type_code',
+                'hein_service_type_name',
+                'bill_patient_type_code',
+                'bill_patient_type_name',
+                'pttt_group_code',
+                'pttt_group_name',
+                'pttt_method_code',
+                'pttt_method_name',
+                'icd_cm_code',
+                'icd_cm_name',
+                'revenue_department_code',
+                'revenue_department_name',
+                'package_code',
+                'package_name',
+                'exe_service_module_name',
+                'gender_code',
+                'gender_name',
+                'ration_group_code',
+                'ration_group_name',
+                'diim_type_code',
+                'diim_type_name',
+                'fuex_type_code',
+                'fuex_type_name',
+                'test_type_code',
+                'test_type_name',
+                'other_pay_source_code',
+                'other_pay_source_name',
+                'film_size_code',
+                'film_size_name',
+                'default_patient_type_code',
+                'default_patient_type_name',
+            ];
+            $columns = $this->getColumnsTable($this->service);
+            $this->orderBy = $this->checkOrderBy($this->orderBy, $columns, $this->orderByJoin ?? []);
         }
+        // Thêm tham số vào service
+        $this->serviceDTO = new ServiceDTO(
+            $this->serviceName,
+            $this->keyword,
+            $this->isActive,
+            $this->orderBy,
+            $this->orderByJoin,
+            $this->orderByString,
+            $this->getAll,
+            $this->start,
+            $this->limit,
+            $request,
+            $this->appCreator, 
+            $this->appModifier, 
+            $this->time,
+            $this->serviceTypeId,
+        );
+        $this->serviceService->withParams($this->serviceDTO);
     }
-
-    public function service($id = null)
+    public function index()
     {
-        // Kiểm tra param và trả về lỗi nếu nó không hợp lệ
-        if ($this->check_param()) {
-            return $this->check_param();
+        if ($this->checkParam()) {
+            return $this->checkParam();
         }
-        try {
-            $param = [];
-            $keyword = $this->keyword;
-            if ($keyword != null) {
-                $data = $this->service;
-                $data = $data->where(function ($query) use ($keyword) {
-                    $query = $query
-                        ->where(DB::connection('oracle_his')->raw('service_code'), 'like', $keyword . '%')
-                        ->orWhere(DB::connection('oracle_his')->raw('service_name'), 'like', $keyword . '%');
-                });
-                if ($this->is_active !== null) {
-                    $data = $data->where(function ($query) {
-                        $query = $query->where(DB::connection('oracle_his')->raw('his_service.is_active'), $this->is_active);
-                    });
-                }
-                if ($this->service_type_id != null) {
-                    $data = $data->where(function ($query) {
-                        $query = $query->where(DB::connection('oracle_his')->raw('his_service.service_type_id'), $this->service_type_id);
-                    });
-                }
-                $count = $data->count();
-                if ($this->order_by != null) {
-                    foreach ($this->order_by as $key => $item) {
-                        $data->orderBy($key, $item);
-                    }
-                }
-                if ($this->get_all) {
-                    $data = $data
-                        ->with($param)
-                        ->get();
-                } else {
-                    $data = $data
-                        ->skip($this->start)
-                        ->take($this->limit)
-                        ->with($param)
-                        ->get();
-                }
+        $keyword = $this->keyword;
+        if (($keyword != null || $this->elasticSearchType != null) && !$this->cache) {
+            if ($this->elasticSearchType != null) {
+                $data = $this->elasticSearchService->handleElasticSearchSearch($this->serviceName);
             } else {
-                if ($id == null) {
-                    $data = Cache::remember($this->service_name . '_service_type_' . $this->service_type_id . '_start_' . $this->start . '_limit_' . $this->limit . $this->order_by_tring . '_is_active_' . $this->is_active . '_get_all_' . $this->get_all, $this->time, function () {
-                        $data = $this->service;
-                        if ($this->is_active !== null) {
-                            $data = $data->where(function ($query) {
-                                $query = $query->where(DB::connection('oracle_his')->raw("his_service.is_active"), $this->is_active);
-                            });
-                        }
-                        if ($this->service_type_id != null) {
-                            $data = $data->where(function ($query) {
-                                $query = $query->where(DB::connection('oracle_his')->raw('his_service.service_type_id'), $this->service_type_id);
-                            });
-                        }
-                        $count = $data->count();
-                        if ($this->order_by != null) {
-                            foreach ($this->order_by as $key => $item) {
-                                $data = $data->orderBy(DB::connection('oracle_his')->raw('his_service.' . $key . ''), $item);
-                            }
-                        }
-                        if ($this->get_all) {
-                            $data = $data
-                                ->get();
-                        } else {
-                            $data = $data
-                                ->skip($this->start)
-                                ->take($this->limit)
-                                ->get();
-                        }
-                        return ['data' => $data, 'count' => $count];
-                    });
-                } else {
-                    if (!is_numeric($id)) {
-                        return returnIdError($id);
-                    }
-                    $check_id = $this->check_id($id, $this->service, $this->service_name);
-                    if ($check_id) {
-                        return $check_id;
-                    }
-                    $data = get_cache_full($this->service, [], $this->service_name . '_id_' . $id . '_start_' . $this->start . '_limit_' . $this->limit . $this->order_by_tring . '_is_active_' . $this->is_active, $id, $this->time, $this->start, $this->limit, $this->order_by, $this->is_active, $this->get_all);
-                    if ($data != null) {
-                        $data1 = get_cache_1_1($this->service, "service_type", $this->service_name, $id, $this->time);
-                        $data2 = get_cache_1_1($this->service, "parent", $this->service_name, $id, $this->time);
-                        $data3 = get_cache_1_1($this->service, "service_unit", $this->service_name, $id, $this->time);
-                        $data4 = get_cache_1_1($this->service, "hein_service_type", $this->service_name, $id, $this->time);
-                        $data5 = get_cache_1_1($this->service, "bill_patient_type", $this->service_name, $id, $this->time);
-                        $data6 = get_cache_1_1($this->service, "pttt_group", $this->service_name, $id, $this->time);
-                        $data7 = get_cache_1_1($this->service, "pttt_method", $this->service_name, $id, $this->time);
-                        $data8 = get_cache_1_1($this->service, "icd_cm", $this->service_name, $id, $this->time);
-                        $data9 = get_cache_1_1($this->service, "revenue_department", $this->service_name, $id, $this->time);
-                        $data10 = get_cache_1_1($this->service, "package", $this->service_name, $id, $this->time);
-                        $data11 = get_cache_1_1($this->service, "exe_service_module", $this->service_name, $id, $this->time);
-                        $data12 = get_cache_1_1($this->service, "gender", $this->service_name, $id, $this->time);
-                        $data13 = get_cache_1_1($this->service, "ration_group", $this->service_name, $id, $this->time);
-                        $data14 = get_cache_1_1($this->service, "diim_type", $this->service_name, $id, $this->time);
-                        $data15 = get_cache_1_1($this->service, "fuex_type", $this->service_name, $id, $this->time);
-                        $data16 = get_cache_1_1($this->service, "test_type", $this->service_name, $id, $this->time);
-                        $data17 = get_cache_1_1($this->service, "other_pay_source", $this->service_name, $id, $this->time);
-                        $data18 = get_cache_1_n_with_ids($this->service, "body_part", $this->service_name, $id, $this->time);
-                        $data19 = get_cache_1_1($this->service, "film_size", $this->service_name, $id, $this->time);
-                        $data20 = get_cache_1_n_with_ids($this->service, "applied_patient_type", $this->service_name, $id, $this->time);
-                        $data21 = get_cache_1_1($this->service, "default_patient_type", $this->service_name, $id, $this->time);
-                        $data22 = get_cache_1_n_with_ids($this->service, "applied_patient_classify", $this->service_name, $id, $this->time);
-                        $data23 = get_cache_1_n_with_ids($this->service, "min_proc_time_except_paty", $this->service_name, $id, $this->time);
-                        $data24 = get_cache_1_n_with_ids($this->service, "max_proc_time_except_paty", $this->service_name, $id, $this->time);
-                        $data25 = get_cache_1_n_with_ids($this->service, "total_time_except_paty", $this->service_name, $id, $this->time);
-                    }
-                    // $count = $data->count();
-                    $param_return = [
-                        $this->get_all_name => $this->get_all,
-                        $this->start_name => ($this->get_all || !is_null($id)) ? null : $this->start,
-                        $this->limit_name => ($this->get_all || !is_null($id)) ? null : $this->limit,
-                        $this->count_name => null,
-                        $this->is_active_name => $this->is_active,
-                        $this->keyword_name => $this->keyword,
-                        $this->order_by_name => $this->order_by_request
-                    ];
-                    $param_data = [
-                        'service' => $data,
-                        'service_type' => $data1 ?? null,
-                        'parent' => $data2 ?? null,
-                        'service_unit' => $data3 ?? null,
-                        'hein_service_type' => $data4 ?? null,
-                        'bill_patient_type' => $data5 ?? null,
-                        'pttt_group' => $data6 ?? null,
-                        'pttt_method' => $data7 ?? null,
-                        'icd_cm' => $data8 ?? null,
-                        'revenue_department' => $data9 ?? null,
-                        'package' => $data10 ?? null,
-                        'exe_service_module' => $data11 ?? null,
-                        'gender' => $data12 ?? null,
-                        'ration_group' => $data13 ?? null,
-                        'diim_type' => $data14 ?? null,
-                        'fuex_type' => $data15 ?? null,
-                        'test_type' => $data16 ?? null,
-                        'other_pay_source' => $data17 ?? null,
-                        'body_parts' => $data18 ?? null,
-                        'film_size' => $data19 ?? null,
-                        'applied_patient_types' => $data20 ?? null,
-                        'default_patient_type' => $data21 ?? null,
-                        'applied_patient_classifys' => $data22 ?? null,
-                        'min_proc_time_except_patys' => $data23 ?? null,
-                        'max_proc_time_except_patys' => $data24 ?? null,
-                        'total_time_except_patys' => $data25 ?? null
-                    ];
-                    return return_data_success($param_return, $param_data);
-                }
+                $data = $this->serviceService->handleDataBaseSearch();
             }
-            $param_return = [
-                $this->get_all_name => $this->get_all,
-                $this->start_name => ($this->get_all || !is_null($id)) ? null : $this->start,
-                $this->limit_name => ($this->get_all || !is_null($id)) ? null : $this->limit,
-                $this->count_name => $count ?? ($data['count'] ?? null),
-                $this->is_active_name => $this->is_active,
-                $this->service_type_id_name => $this->service_type_id,
-                $this->keyword_name => $this->keyword,
-                $this->order_by_name => $this->order_by_request
-            ];
-            return return_data_success($param_return, $data ?? ($data['data'] ?? null));
-        } catch (\Throwable $e) {
-            // Xử lý lỗi và trả về phản hồi lỗi
-            return return_500_error($e->getMessage());
+        } else {
+            if ($this->elastic) {
+                $data = $this->elasticSearchService->handleElasticSearchGetAll($this->serviceName);
+            } else {
+                $data = $this->serviceService->handleDataBaseGetAll();
+            }
         }
-    }
-    // public function service($id)
-    // {
-    //     if (!is_numeric($id)) {
-    //         return returnIdError($id);
-    //     }
-    //     $data = $this->service->find($id);
-    //     if ($data == null) {
-    //         return return_not_record($id);
-    //     }
-
-    //     $data = get_cache($this->service, $this->service_name, $id, $this->time,$this->start, $this->limit, $this->order_by);
-    //     $data1 = get_cache_1_1($this->service, "service_type", $this->service_name, $id, $this->time);
-    //     $data2 = get_cache_1_1($this->service, "parent", $this->service_name, $id, $this->time);
-    //     $data3 = get_cache_1_1($this->service, "service_unit", $this->service_name, $id, $this->time);
-    //     $data4 = get_cache_1_1($this->service, "hein_service_type", $this->service_name, $id, $this->time);
-    //     $data5 = get_cache_1_1($this->service, "bill_patient_type", $this->service_name, $id, $this->time);
-    //     $data6 = get_cache_1_1($this->service, "pttt_group", $this->service_name, $id, $this->time);
-    //     $data7 = get_cache_1_1($this->service, "pttt_method", $this->service_name, $id, $this->time);
-    //     $data8 = get_cache_1_1($this->service, "icd_cm", $this->service_name, $id, $this->time);
-    //     $data9 = get_cache_1_1($this->service, "revenue_department", $this->service_name, $id, $this->time);
-    //     $data10 = get_cache_1_1($this->service, "package", $this->service_name, $id, $this->time);
-    //     $data11 = get_cache_1_1($this->service, "exe_service_module", $this->service_name, $id, $this->time);
-    //     $data12 = get_cache_1_1($this->service, "gender", $this->service_name, $id, $this->time);
-    //     $data13 = get_cache_1_1($this->service, "ration_group", $this->service_name, $id, $this->time);
-    //     $data14 = get_cache_1_1($this->service, "diim_type", $this->service_name, $id, $this->time);
-    //     $data15 = get_cache_1_1($this->service, "fuex_type", $this->service_name, $id, $this->time);
-    //     $data16 = get_cache_1_1($this->service, "test_type", $this->service_name, $id, $this->time);
-    //     $data17 = get_cache_1_1($this->service, "other_pay_source", $this->service_name, $id, $this->time);
-    //     $data18 = get_cache_1_n_with_ids($this->service, "body_part", $this->service_name, $id, $this->time);
-    //     $data19 = get_cache_1_1($this->service, "film_size", $this->service_name, $id, $this->time);
-    //     $data20 = get_cache_1_n_with_ids($this->service, "applied_patient_type", $this->service_name, $id, $this->time);
-    //     $data21 = get_cache_1_1($this->service, "default_patient_type", $this->service_name, $id, $this->time);
-    //     $data22 = get_cache_1_n_with_ids($this->service, "applied_patient_classify", $this->service_name, $id, $this->time);
-    //     $data23 = get_cache_1_n_with_ids($this->service, "min_proc_time_except_paty", $this->service_name, $id, $this->time);
-    //     $data24 = get_cache_1_n_with_ids($this->service, "max_proc_time_except_paty", $this->service_name, $id, $this->time);
-    //     $data25 = get_cache_1_n_with_ids($this->service, "total_time_except_paty", $this->service_name, $id, $this->time);
-    //     // $count = $data->count();
-    //     $param_return = [
-    //         'start' => null,
-    //         'limit' => null,
-    //         'count' => null
-    //     ];
-    //     $param_data = [
-    //         'service' => $data,
-    //         'service_type' => $data1,
-    //         'parent' => $data2,
-    //         'service_unit' => $data3,
-    //         'hein_service_type' => $data4,
-    //         'bill_patient_type' => $data5,
-    //         'pttt_group' => $data6,
-    //         'pttt_method' => $data7,
-    //         'icd_cm' => $data8,
-    //         'revenue_department' => $data9,
-    //         'package' => $data10,
-    //         'exe_service_module' => $data11,
-    //         'gender' => $data12,
-    //         'ration_group' => $data13,
-    //         'diim_type' => $data14,
-    //         'fuex_type' => $data15,
-    //         'test_type' => $data16,
-    //         'other_pay_source' => $data17,
-    //         'body_parts' => $data18,
-    //         'film_size' => $data19,
-    //         'applied_patient_types' => $data20,
-    //         'default_patient_type' => $data21,
-    //         'applied_patient_classifys' => $data22,
-    //         'min_proc_time_except_patys' => $data23,
-    //         'max_proc_time_except_patys' => $data24,
-    //         'total_time_except_patys' => $data25
-    //     ];
-    //     return return_data_success($param_return, $param_data);
-    // }
-
-
-    // public function service_by_code($type_id)
-    // {
-    //     $param = [];
-    //     $data = get_cache_by_code($this->service, $this->service_name, $param, 'service_code', $type_id, $this->time);
-    //     return response()->json(['data' => $data], 200);
-    // }
-    // public function service_by_service_type($id)
-    // {
-    //     if (!is_numeric($id)) {
-    //         return returnIdError($id);
-    //     }
-    //     $data = $this->service_type->find($id);
-    //     if ($data == null) {
-    //         return return_not_record($id);
-    //     }
-
-
-    //     $keyword = mb_strtolower($this->keyword, 'UTF-8');
-    //     if ($keyword != null) {
-    //         $param = [
-    //         ];
-    //         $data = $this->service
-    //             ->where('service_type_id', '=', $id);
-    //             $data = $data->where(function ($query) use ($keyword){
-    //                 $query = $query
-    //                 ->where(DB::connection('oracle_his')->raw('service_code'), 'like', $keyword . '%')
-    //                 ->orWhere(DB::connection('oracle_his')->raw('service_name'), 'like', $keyword . '%');
-    //             });
-    //     if ($this->is_active !== null) {
-    //         $data = $data->where(function ($query) {
-    //             $query = $query->where(DB::connection('oracle_his')->raw('is_active'), $this->is_active);
-    //         });
-    //     } 
-    //         $count = $data->count();
-    //         if ($this->order_by != null) {
-    //             foreach ($this->order_by as $key => $item) {
-    //                 $data->orderBy('his_service.'.$key, $item);
-    //             }
-    //         }
-    //         $data = $data
-    //             ->skip($this->start)
-    //             ->take($this->limit)
-    //             ->with($param)
-    //             ->get();
-    //     } else {
-    //         $param =[];
-    //         $data = get_cache_by_code($this->service, $this->service_name. $this->order_by_tring, $param, 'service_type_id', $id, $this->time, $this->start, $this->limit);
-    //     }
-
-    //     $param_return = [
-    //         $this->start_name => $this->start,
-    //         $this->limit_name => $this->limit,
-    //         'count' => $count ?? ($data['count'] ?? null) ?? null,
-    //         $this->keyword_name => $this->keyword,
-    //         $this->order_by_name => $this->order_by_request
-    //     ];
-    //     return return_data_success($param_return, $data?? ($data['data'] ?? null));
-    // }
-
-
-    public function service_create(CreateServiceRequest $request)
-    {
-        try {
-            $data = $this->service::create([
-                'create_time' => now()->format('Ymdhis'),
-                'modify_time' => now()->format('Ymdhis'),
-                'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
-                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
-                'app_creator' => $this->app_creator,
-                'app_modifier' => $this->app_modifier,
-                'service_type_id' => $request->service_type_id,
-                'service_code' => $request->service_code,
-                'service_name' => $request->service_name,
-                'service_unit_id' => $request->service_unit_id,
-                'speciality_code' => $request->speciality_code,
-                'hein_service_type_id' => $request->hein_service_type_id,
-
-                'hein_service_bhyt_code' => $request->hein_service_bhyt_code,
-                'hein_service_bhyt_name' => $request->hein_service_bhyt_name,
-                'hein_order' => $request->hein_order,
-                'parent_id' => $request->parent_id,
-                'package_id' => $request->package_id,
-                'package_price' => $request->package_price,
-
-                'bill_option' => $request->bill_option,
-                'bill_patient_type_id' => $request->bill_patient_type_id,
-                'pttt_method_id' => $request->pttt_method_id,
-                'is_not_change_bill_paty' => $request->is_not_change_bill_paty,
-                'applied_patient_classify_ids' => $request->applied_patient_classify_ids,
-                'applied_patient_type_ids' => $request->applied_patient_type_ids,
-
-                'testing_technique' => $request->testing_technique,
-                'default_patient_type_id' => $request->default_patient_type_id,
-                'pttt_group_id' => $request->pttt_group_id,
-                'hein_limit_price_old' => $request->hein_limit_price_old,
-                'icd_cm_id' => $request->icd_cm_id,
-                'hein_limit_price_in_time' => $request->hein_limit_price_in_time,
-
-                'hein_limit_price' => $request->hein_limit_price,
-                'cogs' => $request->cogs,
-                'ration_symbol' => $request->ration_symbol,
-                'ration_group_id' => $request->ration_group_id,
-                'num_order' => $request->num_order,
-                'pacs_type_code' => $request->pacs_type_code,
-
-                'diim_type_id' => $request->diim_type_id,
-                'fuex_type_id' => $request->fuex_type_id,
-                'test_type_id' => $request->test_type_id,
-                'sample_type_code' => $request->sample_type_code,
-                'max_expend' => $request->max_expend,
-                'number_of_film' => $request->number_of_film,
-
-                'film_size_id' => $request->film_size_id,
-                'min_process_time' => $request->min_process_time,
-                'min_proc_time_except_paty_ids' => $request->min_proc_time_except_paty_ids,
-                'estimate_duration' => $request->estimate_duration,
-                'max_process_time' => $request->max_process_time,
-                'max_proc_time_except_paty_ids' => $request->max_proc_time_except_paty_ids,
-
-                'age_from' => $request->age_from,
-                'age_to' => $request->age_to,
-                'max_total_process_time' => $request->max_total_process_time,
-                'total_time_except_paty_ids' => $request->total_time_except_paty_ids,
-                'gender_id' => $request->gender_id,
-                'min_duration' => $request->min_duration,
-
-                'max_amount' => $request->max_amount,
-                'body_part_ids' => $request->body_part_ids,
-                'capacity' => $request->capacity,
-                'warning_sampling_time' => $request->warning_sampling_time,
-                'exe_service_module_id' => $request->exe_service_module_id,
-                'suim_index_id' => $request->suim_index_id,
-
-                'is_kidney' => $request->is_kidney,
-                'is_antibiotic_resistance' => $request->is_antibiotic_resistance,
-                'is_disallowance_no_execute' => $request->is_disallowance_no_execute,
-                'is_multi_request' => $request->is_multi_request,
-                'is_split_service_req' => $request->is_split_service_req,
-                'is_out_parent_fee' => $request->is_out_parent_fee,
-
-                'is_allow_expend' => $request->is_allow_expend,
-                'is_auto_expend' => $request->is_auto_expend,
-                'is_out_of_drg' => $request->is_out_of_drg,
-                'is_out_of_management' => $request->is_out_of_management,
-                'is_other_source_paid' => $request->is_other_source_paid,
-                'is_enable_assign_price' => $request->is_enable_assign_price,
-
-                'is_not_show_tracking' => $request->is_not_show_tracking,
-                'must_be_consulted' => $request->must_be_consulted,
-                'is_block_department_tran' => $request->is_block_department_tran,
-                'allow_simultaneity' => $request->allow_simultaneity,
-                'is_not_required_complete' => $request->is_not_required_complete,
-                'do_not_use_bhyt' => $request->do_not_use_bhyt,
-
-                'allow_send_pacs' => $request->allow_send_pacs,
-                'other_pay_source_id' => $request->other_pay_source_id,
-                'attach_assign_print_type_code' => $request->attach_assign_print_type_code,
-                'description' => $request->description,
-                'notice' => $request->notice,
-                'tax_rate_type' => $request->tax_rate_type,
-
-                'process_code' => $request->process_code,
-            ]);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->service_name));
-            return return_data_create_success($data);
-        } catch (\Exception $e) {
-            return return_500_error($e->getMessage());
-        }
+        $paramReturn = [
+            $this->getAllName => $this->getAll,
+            $this->startName => $this->getAll ? null : $this->start,
+            $this->limitName => $this->getAll ? null : $this->limit,
+            $this->countName => $data['count'],
+            $this->isActiveName => $this->isActive,
+            $this->keywordName => $this->keyword,
+            $this->orderByName => $this->orderByRequest
+        ];
+        return returnDataSuccess($paramReturn, $data['data']);
     }
 
-    public function service_update(UpdateServiceRequest $request, $id)
+    public function show($id)
     {
-        if (!is_numeric($id)) {
-            return returnIdError($id);
+        if ($this->checkParam()) {
+            return $this->checkParam();
         }
-        $data = $this->service->find($id);
-        if ($data == null) {
-            return return_not_record($id);
+        if ($id !== null) {
+            $validationError = $this->validateAndCheckId($id, $this->service, $this->serviceName);
+            if ($validationError) {
+                return $validationError;
+            }
         }
-        try {
-            $data_update = [
-                'modify_time' => now()->format('Ymdhis'),
-                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
-                'app_modifier' => $this->app_modifier,
-                'service_code' => $request->service_code,
-                'service_name' => $request->service_name,
-                'service_unit_id' => $request->service_unit_id,
-                'speciality_code' => $request->speciality_code,
-                'hein_service_type_id' => $request->hein_service_type_id,
-
-                'hein_service_bhyt_code' => $request->hein_service_bhyt_code,
-                'hein_service_bhyt_name' => $request->hein_service_bhyt_name,
-                'hein_order' => $request->hein_order,
-                'parent_id' => $request->parent_id,
-                'package_id' => $request->package_id,
-                'package_price' => $request->package_price,
-
-                'bill_option' => $request->bill_option,
-                'bill_patient_type_id' => $request->bill_patient_type_id,
-                'pttt_method_id' => $request->pttt_method_id,
-                'is_not_change_bill_paty' => $request->is_not_change_bill_paty,
-                'applied_patient_classify_ids' => $request->applied_patient_classify_ids,
-                'applied_patient_type_ids' => $request->applied_patient_type_ids,
-
-                'testing_technique' => $request->testing_technique,
-                'default_patient_type_id' => $request->default_patient_type_id,
-                'pttt_group_id' => $request->pttt_group_id,
-                'hein_limit_price_old' => $request->hein_limit_price_old,
-                'icd_cm_id' => $request->icd_cm_id,
-                'hein_limit_price_in_time' => $request->hein_limit_price_in_time,
-
-                'hein_limit_price' => $request->hein_limit_price,
-                'cogs' => $request->cogs,
-                'ration_symbol' => $request->ration_symbol,
-                'ration_group_id' => $request->ration_group_id,
-                'num_order' => $request->num_order,
-                'pacs_type_code' => $request->pacs_type_code,
-
-                'diim_type_id' => $request->diim_type_id,
-                'fuex_type_id' => $request->fuex_type_id,
-                'test_type_id' => $request->test_type_id,
-                'sample_type_code' => $request->sample_type_code,
-                'max_expend' => $request->max_expend,
-                'number_of_film' => $request->number_of_film,
-
-                'film_size_id' => $request->film_size_id,
-                'min_process_time' => $request->min_process_time,
-                'min_proc_time_except_paty_ids' => $request->min_proc_time_except_paty_ids,
-                'estimate_duration' => $request->estimate_duration,
-                'max_process_time' => $request->max_process_time,
-                'max_proc_time_except_paty_ids' => $request->max_proc_time_except_paty_ids,
-
-                'age_from' => $request->age_from,
-                'age_to' => $request->age_to,
-                'max_total_process_time' => $request->max_total_process_time,
-                'total_time_except_paty_ids' => $request->total_time_except_paty_ids,
-                'gender_id' => $request->gender_id,
-                'min_duration' => $request->min_duration,
-
-                'max_amount' => $request->max_amount,
-                'body_part_ids' => $request->body_part_ids,
-                'capacity' => $request->capacity,
-                'warning_sampling_time' => $request->warning_sampling_time,
-                'exe_service_module_id' => $request->exe_service_module_id,
-                'suim_index_id' => $request->suim_index_id,
-
-                'is_kidney' => $request->is_kidney,
-                'is_antibiotic_resistance' => $request->is_antibiotic_resistance,
-                'is_disallowance_no_execute' => $request->is_disallowance_no_execute,
-                'is_multi_request' => $request->is_multi_request,
-                'is_split_service_req' => $request->is_split_service_req,
-                'is_out_parent_fee' => $request->is_out_parent_fee,
-
-                'is_allow_expend' => $request->is_allow_expend,
-                'is_auto_expend' => $request->is_auto_expend,
-                'is_out_of_drg' => $request->is_out_of_drg,
-                'is_out_of_management' => $request->is_out_of_management,
-                'is_other_source_paid' => $request->is_other_source_paid,
-                'is_enable_assign_price' => $request->is_enable_assign_price,
-
-                'is_not_show_tracking' => $request->is_not_show_tracking,
-                'must_be_consulted' => $request->must_be_consulted,
-                'is_block_department_tran' => $request->is_block_department_tran,
-                'allow_simultaneity' => $request->allow_simultaneity,
-                'is_not_required_complete' => $request->is_not_required_complete,
-                'do_not_use_bhyt' => $request->do_not_use_bhyt,
-
-                'allow_send_pacs' => $request->allow_send_pacs,
-                'other_pay_source_id' => $request->other_pay_source_id,
-                'attach_assign_print_type_code' => $request->attach_assign_print_type_code,
-                'description' => $request->description,
-                'notice' => $request->notice,
-                'tax_rate_type' => $request->tax_rate_type,
-
-                'process_code' => $request->process_code,
-                'is_active' => $request->is_active,
-
-            ];
-            $data->fill($data_update);
-            $data->save();
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->service_name));
-            return return_data_update_success($data);
-        } catch (\Exception $e) {
-            return return_500_error($e->getMessage());
+        if ($this->elastic) {
+            $data = $this->elasticSearchService->handleElasticSearchGetWithId($this->serviceName, $id);
+        } else {
+            $data = $this->serviceService->handleDataBaseGetWithId($id);
         }
+        $paramReturn = [
+            $this->idName => $id,
+            $this->isActiveName => $this->isActive,
+        ];
+        return returnDataSuccess($paramReturn, $data);
     }
-
-    public function service_delete(Request $request, $id)
+    public function store(CreateServiceRequest $request)
     {
-        if (!is_numeric($id)) {
-            return returnIdError($id);
-        }
-        $data = $this->service->find($id);
-        if ($data == null) {
-            return return_not_record($id);
-        }
-        try {
-            $data->delete();
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->service_name));
-            return return_data_delete_success();
-        } catch (\Throwable $e) {
-            // Xử lý lỗi và trả về phản hồi lỗi
-            return return_data_delete_fail();
-        }
+        return $this->serviceService->createService($request);
+    }
+    public function update(UpdateServiceRequest $request, $id)
+    {
+        return $this->serviceService->updateService($id, $request);
+    }
+    public function destroy($id)
+    {
+        return $this->serviceService->deleteService($id);
     }
 }

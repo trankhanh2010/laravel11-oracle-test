@@ -197,6 +197,10 @@ use App\Events\Elastic\RoomGroup\InsertRoomGroupIndex;
 use App\Events\Elastic\RoomType\CreateRoomTypeIndex;
 use App\Events\Elastic\SaleProfitCfg\CreateSaleProfitCfgIndex;
 use App\Events\Elastic\SaleProfitCfg\InsertSaleProfitCfgIndex;
+use App\Events\Elastic\Service\CreateServiceIndex;
+use App\Events\Elastic\Service\InsertServiceIndex;
+use App\Events\Elastic\ServiceCondition\CreateServiceConditionIndex;
+use App\Events\Elastic\ServiceCondition\InsertServiceConditionIndex;
 use App\Events\Telegram\SendMessageToChannel;
 use App\Listeners\Cache\DeleteCache as CacheDeleteCache;
 use App\Listeners\Elastic\AccidentBodyPart\ElasticCreateAccidentBodyPartIndex;
@@ -393,6 +397,10 @@ use App\Listeners\Elastic\RoomGroup\ElasticInsertRoomGroupIndex;
 use App\Listeners\Elastic\RoomType\ElasticCreateRoomTypeIndex;
 use App\Listeners\Elastic\SaleProfitCfg\ElasticCreateSaleProfitCfgIndex;
 use App\Listeners\Elastic\SaleProfitCfg\ElasticInsertSaleProfitCfgIndex;
+use App\Listeners\Elastic\Service\ElasticCreateServiceIndex;
+use App\Listeners\Elastic\Service\ElasticInsertServiceIndex;
+use App\Listeners\Elastic\ServiceCondition\ElasticCreateServiceConditionIndex;
+use App\Listeners\Elastic\ServiceCondition\ElasticInsertServiceConditionIndex;
 use App\Listeners\Telegram\TelegramSendMessageToChannel;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -1107,6 +1115,20 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertSaleProfitCfgIndex::class => [
             ElasticInsertSaleProfitCfgIndex::class,
+        ],
+
+        CreateServiceConditionIndex::class => [
+            ElasticCreateServiceConditionIndex::class,
+        ],
+        InsertServiceConditionIndex::class => [
+            ElasticInsertServiceConditionIndex::class,
+        ],
+
+        CreateServiceIndex::class => [
+            ElasticCreateServiceIndex::class,
+        ],
+        InsertServiceIndex::class => [
+            ElasticInsertServiceIndex::class,
         ],
     ];
 

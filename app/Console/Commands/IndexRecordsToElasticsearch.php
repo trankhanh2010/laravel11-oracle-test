@@ -112,6 +112,8 @@ use App\Events\Elastic\Room\CreateRoomIndex;
 use App\Events\Elastic\RoomGroup\CreateRoomGroupIndex;
 use App\Events\Elastic\RoomType\CreateRoomTypeIndex;
 use App\Events\Elastic\SaleProfitCfg\CreateSaleProfitCfgIndex;
+use App\Events\Elastic\Service\CreateServiceIndex;
+use App\Events\Elastic\ServiceCondition\CreateServiceConditionIndex;
 use App\Models\HIS\MedicineUseForm;
 use App\Repositories\AccidentBodyPartRepository;
 use App\Repositories\AccidentCareRepository;
@@ -220,6 +222,8 @@ use App\Repositories\RoomGroupRepository;
 use App\Repositories\RoomRepository;
 use App\Repositories\RoomTypeRepository;
 use App\Repositories\SaleProfitCfgRepository;
+use App\Repositories\ServiceConditionRepository;
+use App\Repositories\ServiceRepository;
 
 class IndexRecordsToElasticsearch extends Command
 {
@@ -698,6 +702,14 @@ class IndexRecordsToElasticsearch extends Command
                 $results = app(SaleProfitCfgRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateSaleProfitCfgIndex($name_table));
                 break;
+            case 'service_condition':
+                $results = app(ServiceConditionRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateServiceConditionIndex($name_table));
+                break;
+            case 'service':
+                $results = app(ServiceRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateServiceIndex($name_table));
+                break;
             default:
                 // Xử lý mặc định hoặc xử lý khi không có bảng khớp
                 $this->error('Không có dữ liệu của bảng ' . $name_table . '.');
@@ -712,6 +724,7 @@ class IndexRecordsToElasticsearch extends Command
             'pttt_group',
             'reception_room',
             'role',
+            'service'
         ];
 
         // Chèn từng bản ghi

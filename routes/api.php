@@ -626,6 +626,14 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.EstablishSaleProfitCFG'], function () {
         Route::apiResource('v1/sale-profit-cfg', SaleProfitCfgController::class);
     });
+    /// Điều kiện dịch vụ
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisServiceCondition'], function () {
+        Route::apiResource('v1/service-condition', ServiceConditionController::class);
+    });
+    /// Dịch vụ kỹ thuật
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisService'], function () {
+        Route::apiResource('v1/service', ServiceController::class);
+    });
     /// Loại xét nghiệm
     Route::get("v1/test-type", [TestTypeController::class, "test_type"])->name('.get_test_type');
     Route::get("v1/test-type/{id}", [TestTypeController::class, "test_type"])->name('.get_test_type_id');
@@ -656,18 +664,6 @@ Route::group([
         Route::get("v1/suim-index/{id}", [SuimIndexController::class, "suim_index"])->name('.get_id');
     });
 
-    /// Dịch vụ kỹ thuật
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisService'], function () {
-        Route::get("v1/service", [ServiceController::class, "service"])->name('.get');
-        Route::get("v1/service/{id}", [ServiceController::class, "service"])->name('.get_id');
-        // Route::get("v1/service/by-code/{type_id}", [ServiceController::class, "service_by_code"]);
-        Route::get("v1/service/service-type/{id}", [ServiceController::class, "service_by_service_type"])->name('.get_service_type_id');
-        Route::get("v1/service-check", [CheckServiceController::class, "check_code"])->name('.check');
-        Route::post("v1/service", [ServiceController::class, "service_create"])->name('.create');
-        Route::put("v1/service/{id}", [ServiceController::class, "service_update"])->name('.update');
-        Route::delete("v1/service/{id}", [ServiceController::class, "service_delete"])->name('.delete');
-    });
-
     /// Chính sách giá dịch vụ
     Route::group(['as' => 'HIS.Desktop.Plugins.HisServicePatyList'], function () {
         // Trả về tất cả mối quan hệ
@@ -683,15 +679,6 @@ Route::group([
         // Route::get("v1/patient-type/all/service", [ServicePatyController::class, "patient_type_with_service"]);
         // Route::get("v1/patient-type/{id}/service", [ServicePatyController::class, "patient_type_with_service"]);
 
-    });
-
-    /// Điều kiện dịch vụ
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisServiceCondition'], function () {
-        Route::get("v1/service-condition", [ServiceConditionController::class, "service_condition"])->name('.get');
-        Route::get("v1/service-condition/{id}", [ServiceConditionController::class, "service_condition"])->name('.get_id');
-        Route::post("v1/service-condition", [ServiceConditionController::class, "service_condition_create"])->name('.create');
-        Route::put("v1/service-condition/{id}", [ServiceConditionController::class, "service_condition_update"])->name('.update');
-        Route::delete("v1/service-condition/{id}", [ServiceConditionController::class, "service_condition_delete"])->name('.delete');
     });
 
     /// Dịch vụ máy

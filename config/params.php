@@ -268,6 +268,8 @@ return [
             'room' => 'Có lỗi khi thực hiện thao tác với bảng Phòng!',
             'room_group' => 'Có lỗi khi thực hiện thao tác với bảng Nhóm phòng!',
             'sale_profit_cfg' => 'Có lỗi khi thực hiện thao tác với bảng Thiết lập lợi nhuận xuất bán!',
+            'service_condition' => 'Có lỗi khi thực hiện thao tác với bảng Điều kiện dịch vụ!',
+            'service' => 'Có lỗi khi thực hiện thao tác với bảng Dịch vụ kỹ thuật!',
 
 
             'room_type' => 'Có lỗi khi thực hiện thao tác với bảng Loại phòng!',
