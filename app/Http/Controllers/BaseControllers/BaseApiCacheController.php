@@ -68,6 +68,8 @@ class BaseApiCacheController extends Controller
     protected $bedIdsName = 'BedIds';
     protected $serviceId;
     protected $serviceIdName = 'ServiceId';
+    protected $machineId;
+    protected $machineIdName = 'MachineId';
     protected $packageId;
     protected $packageIdName = 'PackageId';
     protected $departmentId;
@@ -806,6 +808,19 @@ class BaseApiCacheController extends Controller
                 if (!Service::where('id', $this->serviceId)->exists()) {
                     $this->errors[$this->serviceIdName] = $this->messRecordId;
                     $this->serviceId = null;
+                }
+            }
+        }
+        $this->machineId = $this->paramRequest['ApiData']['MachineId'] ?? null;
+        if ($this->machineId !== null) {
+            // Kiểm tra xem ID có tồn tại trong bảng  hay không
+            if (!is_numeric($this->machineId)) {
+                $this->errors[$this->machineIdName] = $this->messFormat;
+                $this->machineId = null;
+            } else {
+                if (!Machine::where('id', $this->machineId)->exists()) {
+                    $this->errors[$this->machineIdName] = $this->messRecordId;
+                    $this->machineId = null;
                 }
             }
         }

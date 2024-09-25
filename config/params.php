@@ -273,7 +273,7 @@ return [
             'service' => 'Có lỗi khi thực hiện thao tác với bảng Dịch vụ kỹ thuật!',
             'service_follow' => 'Có lỗi khi thực hiện thao tác với bảng Dịch vụ đi kèm!',
             'service_group' => 'Có lỗi khi thực hiện thao tác với bảng Nhóm dịch vụ!',
-
+            'service_machine' => 'Có lỗi khi thực hiện thao tác với bảng Dịch vụ máy!',
         ]
     ]
     

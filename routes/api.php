@@ -640,6 +640,10 @@ Route::group([
     });
     /// Nhóm dịch vụ
     Route::apiResource('v1/service-group', ServiceGroupController::class)->only(['index', 'show']);
+    /// Dịch vụ máy
+    Route::group(['as' => 'HIS.Desktop.Plugins.ServiceMachine'], function () {
+        Route::apiResource('v1/service-machine', ServiceMachineController::class)->only(['index', 'show', 'store']);
+    });
     /// Loại xét nghiệm
     Route::get("v1/test-type", [TestTypeController::class, "test_type"])->name('.get_test_type');
     Route::get("v1/test-type/{id}", [TestTypeController::class, "test_type"])->name('.get_test_type_id');
@@ -685,19 +689,6 @@ Route::group([
         // Route::get("v1/patient-type/all/service", [ServicePatyController::class, "patient_type_with_service"]);
         // Route::get("v1/patient-type/{id}/service", [ServicePatyController::class, "patient_type_with_service"]);
 
-    });
-
-    /// Dịch vụ máy
-    Route::group(['as' => 'HIS.Desktop.Plugins.ServiceMachine'], function () {
-        // Trả về tất cả mối quan hệ
-        Route::get("v1/service-machine", [ServiceMachineController::class, "service_machine"])->name('.get');
-        Route::get("v1/service-machine/{id}", [ServiceMachineController::class, "service_machine"])->name('.get_id');
-        // Trả về tất cả dịch vụ cùng máy
-        Route::get("v1/service/all/machine", [ServiceMachineController::class, "service_with_machine"])->name('.get_service_machine');
-        Route::get("v1/service/{id}/machine", [ServiceMachineController::class, "service_with_machine"])->name('.get_service_machine_id');
-        // Trả về tất cả máy cùng dịch vụ
-        Route::get("v1/machine/all/service", [ServiceMachineController::class, "machine_with_service"])->name('.get_machine_serice');
-        Route::get("v1/machine/{id}/service", [ServiceMachineController::class, "machine_with_service"])->name('.get_machine_service_id');
     });
 
     /// Dịch vụ phòng

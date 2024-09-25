@@ -204,6 +204,8 @@ use App\Events\Elastic\ServiceCondition\InsertServiceConditionIndex;
 use App\Events\Elastic\ServiceFollow\CreateServiceFollowIndex;
 use App\Events\Elastic\ServiceFollow\InsertServiceFollowIndex;
 use App\Events\Elastic\ServiceGroup\CreateServiceGroupIndex;
+use App\Events\Elastic\ServiceMachine\CreateServiceMachineIndex;
+use App\Events\Elastic\ServiceMachine\InsertServiceMachineIndex;
 use App\Events\Telegram\SendMessageToChannel;
 use App\Listeners\Cache\DeleteCache as CacheDeleteCache;
 use App\Listeners\Elastic\AccidentBodyPart\ElasticCreateAccidentBodyPartIndex;
@@ -407,6 +409,8 @@ use App\Listeners\Elastic\ServiceCondition\ElasticInsertServiceConditionIndex;
 use App\Listeners\Elastic\ServiceFollow\ElasticCreateServiceFollowIndex;
 use App\Listeners\Elastic\ServiceFollow\ElasticInsertServiceFollowIndex;
 use App\Listeners\Elastic\ServiceGroup\ElasticCreateServiceGroupIndex;
+use App\Listeners\Elastic\ServiceMachine\ElasticCreateServiceMachineIndex;
+use App\Listeners\Elastic\ServiceMachine\ElasticInsertServiceMachineIndex;
 use App\Listeners\Telegram\TelegramSendMessageToChannel;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -1146,6 +1150,13 @@ class EventServiceProvider extends ServiceProvider
 
         CreateServiceGroupIndex::class => [
             ElasticCreateServiceGroupIndex::class,
+        ],
+
+        CreateServiceMachineIndex::class => [
+            ElasticCreateServiceMachineIndex::class,
+        ],
+        InsertServiceMachineIndex::class => [
+            ElasticInsertServiceMachineIndex::class,
         ],
     ];
 

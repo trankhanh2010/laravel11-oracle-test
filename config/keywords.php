@@ -1079,4 +1079,11 @@ return [
         'add_if_not_assigned' => 'Trường chỉ tự động đính kèm nếu chưa có',
         'treatment_type_ids' => 'Danh sách id diện điều trị',
     ],
+    // Dịch vụ máy
+    'service_machine' => [
+        'service_id' => 'Id dịch vụ',
+        'machine_ids' => 'Danh sách Id máy',
+        'machine_id' => 'Id máy',
+        'service_ids' => 'Danh sách Id dịch vụ',
+    ],
 ];
