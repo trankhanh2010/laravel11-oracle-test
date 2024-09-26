@@ -281,6 +281,8 @@ return [
             'service_unit' => 'Có lỗi khi thực hiện thao tác với bảng Đơn vị tính!',
             'serv_segr' => 'Có lỗi khi thực hiện thao tác với bảng Nhóm dịch vụ!',
             'speciality' => 'Có lỗi khi thực hiện thao tác với bảng Chuyên khoa!',
+            'suim_index' => 'Có lỗi khi thực hiện thao tác với bảng Chỉ số!',
+            'supplier' => 'Có lỗi khi thực hiện thao tác với bảng Nhà cung cấp!',
 
         ]
     ]

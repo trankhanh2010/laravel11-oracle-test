@@ -673,6 +673,14 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisSpeciality'], function () {
         Route::apiResource('v1/speciality', SpecialityController::class);
     });
+    /// Chỉ số
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisSuimIndex'], function () {
+        Route::apiResource('v1/suim-index', SuimIndexController::class)->only(['index', 'show']);
+    });
+    /// Nhà cung cấp
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisSupplier'], function () {
+        Route::apiResource('v1/supplier', SupplierController::class);
+    });
     /// Loại xét nghiệm
     Route::get("v1/test-type", [TestTypeController::class, "test_type"])->name('.get_test_type');
     Route::get("v1/test-type/{id}", [TestTypeController::class, "test_type"])->name('.get_test_type_id');
@@ -685,12 +693,6 @@ Route::group([
         Route::post("v1/treatment-type", [TreatmentTypeController::class, "treatment_type_create"])->name('.create');
         Route::put("v1/treatment-type/{id}", [TreatmentTypeController::class, "treatment_type_update"])->name('.update');
         Route::delete("v1/treatment-type/{id}", [TreatmentTypeController::class, "treatment_type_delete"])->name('.delete');
-    });
-
-    /// Chỉ số
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisSuimIndex'], function () {
-        Route::get("v1/suim-index", [SuimIndexController::class, "suim_index"])->name('.get');
-        Route::get("v1/suim-index/{id}", [SuimIndexController::class, "suim_index"])->name('.get_id');
     });
 
     /// Nơi làm việc
@@ -727,15 +729,6 @@ Route::group([
         Route::post("v1/unlimit-reason", [UnlimitReasonController::class, "unlimit_reason_create"])->name('.create');
         Route::put("v1/unlimit-reason/{id}", [UnlimitReasonController::class, "unlimit_reason_update"])->name('.update');
         Route::delete("v1/unlimit-reason/{id}", [UnlimitReasonController::class, "unlimit_reason_delete"])->name('.delete');
-    });
-
-    /// Nhà cung cấp
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisSupplier'], function () {
-        Route::get("v1/supplier", [SupplierController::class, "supplier"])->name('.get');
-        Route::get("v1/supplier/{id}", [SupplierController::class, "supplier"])->name('.get_id');
-        Route::post("v1/supplier", [SupplierController::class, "supplier_create"])->name('.create');
-        Route::put("v1/supplier/{id}", [SupplierController::class, "supplier_update"])->name('.update');
-        Route::delete("v1/supplier/{id}", [SupplierController::class, "supplier_delete"])->name('.delete');
     });
 
     /// Chỉ số xét nghiệm

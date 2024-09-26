@@ -124,6 +124,8 @@ use App\Events\Elastic\ServiceType\CreateServiceTypeIndex;
 use App\Events\Elastic\ServiceUnit\CreateServiceUnitIndex;
 use App\Events\Elastic\ServSegr\CreateServSegrIndex;
 use App\Events\Elastic\Speciality\CreateSpecialityIndex;
+use App\Events\Elastic\SuimIndex\CreateSuimIndexIndex;
+use App\Events\Elastic\Supplier\CreateSupplierIndex;
 use App\Models\HIS\MedicineUseForm;
 use App\Repositories\AccidentBodyPartRepository;
 use App\Repositories\AccidentCareRepository;
@@ -244,6 +246,8 @@ use App\Repositories\ServiceTypeRepository;
 use App\Repositories\ServiceUnitRepository;
 use App\Repositories\ServSegrRepository;
 use App\Repositories\SpecialityRepository;
+use App\Repositories\SuimIndexRepository;
+use App\Repositories\SupplierRepository;
 
 class IndexRecordsToElasticsearch extends Command
 {
@@ -769,6 +773,14 @@ class IndexRecordsToElasticsearch extends Command
             case 'speciality':
                 $results = app(SpecialityRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateSpecialityIndex($name_table));
+                break;
+            case 'suim_index':
+                $results = app(SuimIndexRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateSuimIndexIndex($name_table));
+                break;
+            case 'supplier':
+                $results = app(SupplierRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateSupplierIndex($name_table));
                 break;
             default:
                 // Xử lý mặc định hoặc xử lý khi không có bảng khớp
