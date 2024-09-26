@@ -649,6 +649,14 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisServicePatyList'], function () {
         Route::apiResource('v1/service-paty', ServicePatyController::class);
     });
+    /// Loại y lệnh 
+    Route::group(['as' => 'HIS.Desktop.Plugins.ServiceReqType'], function () {
+        Route::apiResource('v1/service-req-type', ServiceReqTypeController::class)->only(['index', 'show']);
+    });
+    /// Dịch vụ phòng
+    Route::group(['as' => 'HIS.Desktop.Plugins.RoomService'], function () {
+        Route::apiResource('v1/service-room', ServiceRoomController::class)->only(['index', 'show', 'store']);
+    });
     /// Loại xét nghiệm
     Route::get("v1/test-type", [TestTypeController::class, "test_type"])->name('.get_test_type');
     Route::get("v1/test-type/{id}", [TestTypeController::class, "test_type"])->name('.get_test_type_id');
@@ -679,19 +687,6 @@ Route::group([
         Route::get("v1/suim-index/{id}", [SuimIndexController::class, "suim_index"])->name('.get_id');
     });
 
-    /// Dịch vụ phòng
-    Route::group(['as' => 'HIS.Desktop.Plugins.RoomService'], function () {
-        // Trả về tất cả mối quan hệ
-        Route::get("v1/service-room", [ServiceRoomController::class, "service_room"])->name('.get');
-        Route::get("v1/service-room/{id}", [ServiceRoomController::class, "service_room"])->name('.get_id');
-        // // Trả về tất cả dịch vụ cùng phòng
-        // Route::get("v1/service/all/room", [HISController::class, "service_with_room"]);
-        // Route::get("v1/service/{id}/room", [HISController::class, "service_with_room"]);
-        // // Trả về tất cả phòng cùng dịch vụ
-        // Route::get("v1/room/all/service", [HISController::class, "room_with_service"]);
-        // Route::get("v1/room/{id}/service", [HISController::class, "room_with_service"]);
-    });
-
     /// Nhóm dịch vụ
     Route::group(['as' => 'HIS.Desktop.Plugins.HisServSegr'], function () {
         Route::get("v1/serv-segr", [ServSegrController::class, "serv_segr"])->name('.get');
@@ -711,12 +706,6 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisServiceType'], function () {
         Route::get("v1/service-type", [ServiceTypeController::class, "service_type"])->name('.get');
         Route::get("v1/service-type/{id}", [ServiceTypeController::class, "service_type"])->name('.get_id');
-    });
-
-    /// Loại y lệnh 
-    Route::group(['as' => 'HIS.Desktop.Plugins.ServiceReqType'], function () {
-        Route::get("v1/service-req-type", [ServiceReqTypeController::class, "service_req_type"])->name('.get');
-        Route::get("v1/service-req-type/{id}", [ServiceReqTypeController::class, "service_req_type"])->name('.get_id');
     });
 
     /// Nơi làm việc

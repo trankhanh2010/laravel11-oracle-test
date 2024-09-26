@@ -118,6 +118,8 @@ use App\Events\Elastic\ServiceFollow\CreateServiceFollowIndex;
 use App\Events\Elastic\ServiceGroup\CreateServiceGroupIndex;
 use App\Events\Elastic\ServiceMachine\CreateServiceMachineIndex;
 use App\Events\Elastic\ServicePaty\CreateServicePatyIndex;
+use App\Events\Elastic\ServiceReqType\CreateServiceReqTypeIndex;
+use App\Events\Elastic\ServiceRoom\CreateServiceRoomIndex;
 use App\Models\HIS\MedicineUseForm;
 use App\Repositories\AccidentBodyPartRepository;
 use App\Repositories\AccidentCareRepository;
@@ -232,6 +234,8 @@ use App\Repositories\ServiceGroupRepository;
 use App\Repositories\ServiceMachineRepository;
 use App\Repositories\ServicePatyRepository;
 use App\Repositories\ServiceRepository;
+use App\Repositories\ServiceReqTypeRepository;
+use App\Repositories\ServiceRoomRepository;
 
 class IndexRecordsToElasticsearch extends Command
 {
@@ -733,6 +737,14 @@ class IndexRecordsToElasticsearch extends Command
             case 'service_paty':
                 $results = app(ServicePatyRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateServicePatyIndex($name_table));
+                break;
+            case 'service_req_type':
+                $results = app(ServiceReqTypeRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateServiceReqTypeIndex($name_table));
+                break;
+            case 'service_room':
+                $results = app(ServiceRoomRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateServiceRoomIndex($name_table));
                 break;
             default:
                 // Xử lý mặc định hoặc xử lý khi không có bảng khớp

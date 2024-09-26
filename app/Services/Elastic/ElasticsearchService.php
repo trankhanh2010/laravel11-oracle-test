@@ -448,6 +448,8 @@ class ElasticsearchService extends BaseApiCacheController
     {
         try {
             $data = [];
+            // Đếm chính xác số lượng bản ghi
+            $data['track_total_hits'] = true;
             if ($index != null) {
                 $data['index'] = $index;
             }
@@ -471,7 +473,6 @@ class ElasticsearchService extends BaseApiCacheController
                     ];
                 }
             }
-
             return $this->client->search($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['elastic']['error']['build_search'], $e);

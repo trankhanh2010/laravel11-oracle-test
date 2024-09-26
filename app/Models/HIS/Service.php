@@ -246,7 +246,10 @@ class Service extends Model
     {
         return $this->belongsTo(PatientType::class, 'default_patient_type_id');
     }
-
+    public function rooms()
+    {
+        return $this->belongsToMany(Room::class, ServiceRoom::class, 'service_id', 'room_id');
+    }
     public function applied_patient_classifys()
     {
         return PatientClassify::whereIn('id', explode(',', $this->applied_patient_classify_ids))->get();

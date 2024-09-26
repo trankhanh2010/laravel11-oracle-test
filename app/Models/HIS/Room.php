@@ -119,4 +119,8 @@ class Room extends Model
     {
         return $this->belongsTo(Area::class);
     }
+    public function services()
+    {
+        return $this->belongsToMany(Service::class, ServiceRoom::class, 'room_id', 'service_id');
+    }
 }

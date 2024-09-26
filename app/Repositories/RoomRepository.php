@@ -26,7 +26,7 @@ class RoomRepository
             ->leftJoin('his_data_store as data_store', 'his_room.id', '=', 'data_store.room_id')
             ->leftJoin('his_station as station', 'his_room.id', '=', 'station.room_id')
             ->select(
-                'his_room.id',
+                'his_room.*',
                 'his_room.department_id',
                 'his_room.room_type_id',
                 DB::connection('oracle_his')->raw('NVL(bed.bed_room_name, 

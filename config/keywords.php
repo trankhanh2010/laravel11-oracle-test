@@ -1088,4 +1088,12 @@ return [
         'machine_id' => 'Id máy',
         'service_ids' => 'Danh sách Id dịch vụ',
     ],
+    // Dịch vụ phòng
+    'service_room' => [
+        'service_id' => 'Id dịch vụ',
+        'room_ids' => 'Danh sách Id phòng',
+        'room_id' => 'Id phòng',
+        'service_ids' => 'Danh sách Id dịch vụ',
+        'is_priority' => 'Trường ưu tiên',
+    ],
 ];
