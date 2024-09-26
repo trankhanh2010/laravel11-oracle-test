@@ -657,6 +657,14 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.RoomService'], function () {
         Route::apiResource('v1/service-room', ServiceRoomController::class)->only(['index', 'show', 'store']);
     });
+    /// Loại dịch vụ
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisServiceType'], function () {
+        Route::apiResource('v1/service-type', ServiceTypeController::class)->only(['index', 'show']);
+    });
+    /// Đơn vị tính
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisServiceUnitEdit'], function () {
+        Route::apiResource('v1/service-unit', ServiceUnitController::class);
+    });
     /// Loại xét nghiệm
     Route::get("v1/test-type", [TestTypeController::class, "test_type"])->name('.get_test_type');
     Route::get("v1/test-type/{id}", [TestTypeController::class, "test_type"])->name('.get_test_type_id');
@@ -691,21 +699,6 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisServSegr'], function () {
         Route::get("v1/serv-segr", [ServSegrController::class, "serv_segr"])->name('.get');
         Route::get("v1/serv-segr/{id}", [ServSegrController::class, "serv_segr"])->name('.get_id');
-    });
-
-    /// Đơn vị tính
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisServiceUnitEdit'], function () {
-        Route::get("v1/service-unit", [ServiceUnitController::class, "service_unit"])->name('.get');
-        Route::get("v1/service-unit/{id}", [ServiceUnitController::class, "service_unit"])->name('.get_id');
-        Route::post("v1/service-unit", [ServiceUnitController::class, "service_unit_create"])->name('.create');
-        Route::put("v1/service-unit/{id}", [ServiceUnitController::class, "service_unit_update"])->name('.update');
-        Route::delete("v1/service-unit/{id}", [ServiceUnitController::class, "service_unit_delete"])->name('.delete');
-    });
-
-    /// Loại dịch vụ
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisServiceType'], function () {
-        Route::get("v1/service-type", [ServiceTypeController::class, "service_type"])->name('.get');
-        Route::get("v1/service-type/{id}", [ServiceTypeController::class, "service_type"])->name('.get_id');
     });
 
     /// Nơi làm việc
