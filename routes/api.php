@@ -665,19 +665,17 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisServiceUnitEdit'], function () {
         Route::apiResource('v1/service-unit', ServiceUnitController::class);
     });
+    /// Nhóm dịch vụ
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisServSegr'], function () {
+        Route::apiResource('v1/serv-segr', ServSegrController::class)->only(['index', 'show']);
+    });
+    /// Chuyên khoa
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisSpeciality'], function () {
+        Route::apiResource('v1/speciality', SpecialityController::class);
+    });
     /// Loại xét nghiệm
     Route::get("v1/test-type", [TestTypeController::class, "test_type"])->name('.get_test_type');
     Route::get("v1/test-type/{id}", [TestTypeController::class, "test_type"])->name('.get_test_type_id');
-
-    /// Chuyên khoa
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisSpeciality'], function () {
-        Route::get("v1/speciality", [SpecialityController::class, "speciality"])->name('.get');
-        Route::get("v1/speciality/{id}", [SpecialityController::class, "speciality"])->name('.get_id');
-        Route::get("v1/speciality-check", [CheckSpecialityController::class, "check_code"])->name('.check');
-        Route::post("v1/speciality", [SpecialityController::class, "speciality_create"])->name('.create');
-        Route::put("v1/speciality/{id}", [SpecialityController::class, "speciality_update"])->name('.update');
-        Route::delete("v1/speciality/{id}", [SpecialityController::class, "speciality_delete"])->name('.delete');
-    });
 
     /// Diện điều trị
     Route::group(['as' => 'HIS.Desktop.Plugins.TreatmentType'], function () {
@@ -693,12 +691,6 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisSuimIndex'], function () {
         Route::get("v1/suim-index", [SuimIndexController::class, "suim_index"])->name('.get');
         Route::get("v1/suim-index/{id}", [SuimIndexController::class, "suim_index"])->name('.get_id');
-    });
-
-    /// Nhóm dịch vụ
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisServSegr'], function () {
-        Route::get("v1/serv-segr", [ServSegrController::class, "serv_segr"])->name('.get');
-        Route::get("v1/serv-segr/{id}", [ServSegrController::class, "serv_segr"])->name('.get_id');
     });
 
     /// Nơi làm việc

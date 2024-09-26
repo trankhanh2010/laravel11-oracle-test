@@ -279,6 +279,8 @@ return [
             'service_room' => 'Có lỗi khi thực hiện thao tác với bảng Dịch vụ phòng!',
             'service_type' => 'Có lỗi khi thực hiện thao tác với bảng Loại dịch vụ!',
             'service_unit' => 'Có lỗi khi thực hiện thao tác với bảng Đơn vị tính!',
+            'serv_segr' => 'Có lỗi khi thực hiện thao tác với bảng Nhóm dịch vụ!',
+            'speciality' => 'Có lỗi khi thực hiện thao tác với bảng Chuyên khoa!',
 
         ]
     ]
