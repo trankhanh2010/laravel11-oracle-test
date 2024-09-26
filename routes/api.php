@@ -141,7 +141,7 @@ use App\Http\Controllers\BaseControllers\CacheController;
 use App\Http\Controllers\BaseControllers\ElasticSearchController;
 use App\Http\Controllers\BaseControllers\LogController;
 use App\Http\Controllers\BaseControllers\TelegramController;
-
+use App\Http\Controllers\BaseControllers\BaseApiRequestController;
 // Data Controllers
 use App\Http\Controllers\Api\DataControllers\DebateController;
 use App\Http\Controllers\Api\DataControllers\DebateUserController;
@@ -210,7 +210,7 @@ Route::group([
     /// Log
     Route::get("v1/log", [LogController::class, "getLog"])->name('.get_log');
     /// Request
-    Route::get("v1/get-all-request-name", [CacheController::class, "getAllRequestname"])->name('.get_all_request_name');
+    Route::get("v1/get-all-request-name", [BaseApiRequestController::class, "getAllRequestname"])->name('.get_all_request_name');
     /// Cache
     Route::get("v1/clear-cache", [CacheController::class, "clearCache"])->name('.clear_cache');
     Route::get("v1/clear-cache-elastic-index-keyword", [CacheController::class, "clearCacheElaticIndexKeyword"])->name('.clear_cache_elatic_index_keyword');
@@ -219,6 +219,7 @@ Route::group([
     Route::get("v1/index-records-to-elasticsearch", [ElasticSearchController::class, "index_records_to_elasticsearch"])->name('.index_records_to_elasticsearch');
     Route::get("v1/get-mapping", [ElasticSearchController::class, "get_mapping"])->name('.get_mapping');
     Route::get("v1/get-setting", [ElasticSearchController::class, "get_index_settings"])->name('.get_index_settings');
+    Route::get("v1/set-max-result-window", [ElasticSearchController::class, "setMaxResultWindow"])->name('.set_max_result_window');
     Route::delete("v1/delete-index", [ElasticSearchController::class, "delete_index"])->name('.delete_index');
 });
 Route::group([
@@ -644,6 +645,10 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.ServiceMachine'], function () {
         Route::apiResource('v1/service-machine', ServiceMachineController::class)->only(['index', 'show', 'store']);
     });
+    /// Chính sách giá dịch vụ
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisServicePatyList'], function () {
+        Route::apiResource('v1/service-paty', ServicePatyController::class);
+    });
     /// Loại xét nghiệm
     Route::get("v1/test-type", [TestTypeController::class, "test_type"])->name('.get_test_type');
     Route::get("v1/test-type/{id}", [TestTypeController::class, "test_type"])->name('.get_test_type_id');
@@ -672,23 +677,6 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisSuimIndex'], function () {
         Route::get("v1/suim-index", [SuimIndexController::class, "suim_index"])->name('.get');
         Route::get("v1/suim-index/{id}", [SuimIndexController::class, "suim_index"])->name('.get_id');
-    });
-
-    /// Chính sách giá dịch vụ
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisServicePatyList'], function () {
-        // Trả về tất cả mối quan hệ
-        Route::get("v1/service-paty", [ServicePatyController::class, "service_paty"])->name('.get');
-        Route::get("v1/service-paty/{id}", [ServicePatyController::class, "service_paty"])->name('.get_id');
-        Route::post("v1/service-paty", [ServicePatyController::class, "service_paty_create"])->name('.create');
-        Route::put("v1/service-paty/{id}", [ServicePatyController::class, "service_paty_update"])->name('.update');
-        Route::delete("v1/service-paty/{id}", [ServicePatyController::class, "service_paty_delete"])->name('.delete');
-        // // Trả về tất cả dịch vụ cùng loại bệnh nhân
-        // Route::get("v1/service/all/patient-type", [ServicePatyController::class, "service_with_patient_type"]);
-        // Route::get("v1/service/{id}/patient-type", [ServicePatyController::class, "service_with_patient_type"]);
-        // // Trả về tất cả loại bệnh nhân cùng dịch vụ
-        // Route::get("v1/patient-type/all/service", [ServicePatyController::class, "patient_type_with_service"]);
-        // Route::get("v1/patient-type/{id}/service", [ServicePatyController::class, "patient_type_with_service"]);
-
     });
 
     /// Dịch vụ phòng

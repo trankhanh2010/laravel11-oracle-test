@@ -143,7 +143,7 @@ class CreateServicePatyRequest extends FormRequest
                                                     'regex:/^(0[0-9]|1[0-9]|2[0-3])(00|15|30|45)$/'
                                                 ],
 
-            'execute_room_ids' =>               'nullable|string|max:4',  
+            'execute_room_ids' =>               'nullable|string|max:4000',  
             'request_deparment_ids' =>          'nullable|string|max:4000',                    
             'request_room_ids' =>               'nullable|string|max:4000',                    
                   

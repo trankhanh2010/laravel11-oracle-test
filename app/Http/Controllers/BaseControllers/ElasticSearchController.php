@@ -111,4 +111,37 @@ class ElasticSearchController extends Controller
         }
         return returnDataSuccess([], $response);
     }
+    public function setMaxResultWindow(Request $request)
+    {
+        $table = $this->all_table;
+
+        $tables = explode(",", $request->tables);
+        if ($request->tables == null) {
+            $tables = $table;
+        }
+        foreach ($tables as $key => $item) {
+            if (!in_array($item, $table)) {
+                return response()->json([
+                    'status'    => 422,
+                    'success' => true,
+                    'message' => 'Giá trị ' . $item . ' không hợp lệ!'
+                ], 422);
+            }
+        }
+        $params = [
+            'index' => $tables,
+            'body' => [
+                'index' => [
+                    'max_result_window' => $request->max
+                ]
+            ]
+        ];
+    
+        // Sử dụng putSettings để thay đổi cài đặt
+        $this->client->indices()->putSettings($params);
+    
+    
+        $response = []; 
+        return returnDataSuccess([], $response);
+    }
 }

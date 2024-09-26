@@ -10,18 +10,10 @@ class ServicePaty extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his';
-    protected $table = 'HIS_Service_Paty';
-    protected $fillable = [
-        'service_id',
-        'patient_type_id',
-        'branch_id',
-        'request_room_ids',
-        'execute_room_ids',
-        'request_deparment_ids',
-        'package_id',
-        'service_condition_id',
-        'patient_classify_id',
-        'ration_time_id'
+    protected $table = 'HIS_Service_Paty';    
+    public $timestamps = false;
+    protected $guarded = [
+        'id',
     ];
 
     public function service()

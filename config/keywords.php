@@ -491,6 +491,8 @@ return [
         'service_id' => 'Id dịch vụ',
         'branch_ids' => 'Danh sách id chi nhánh',
         'patient_type_id' => 'Id đối tượng thanh toán',
+        'branch_id' => 'Id chi nhánh',
+        'patient_type_ids' => 'Danh sách id đối tượng thanh toán',
         'patient_classify_id' => 'Id đối tượng chi tiết',
         'price' => 'Giá',
         'vat_ratio' => 'Trường VAT%',

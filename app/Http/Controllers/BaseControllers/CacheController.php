@@ -27,7 +27,4 @@ class CacheController extends BaseApiCacheController
         event(new DeleteCache('elastic_index_keyword_' . $request->index));
         return returnClearCache();
     }
-    public function getAllRequestName(Request $request){
-        return config('keywords');
-    }
 }
