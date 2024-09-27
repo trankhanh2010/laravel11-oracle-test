@@ -228,6 +228,10 @@ use App\Events\Elastic\TranPatiTech\CreateTranPatiTechIndex;
 use App\Events\Elastic\TranPatiTech\InsertTranPatiTechIndex;
 use App\Events\Elastic\TreatmentEndType\CreateTreatmentEndTypeIndex;
 use App\Events\Elastic\TreatmentEndType\InsertTreatmentEndTypeIndex;
+use App\Events\Elastic\TreatmentType\CreateTreatmentTypeIndex;
+use App\Events\Elastic\TreatmentType\InsertTreatmentTypeIndex;
+use App\Events\Elastic\UnlimitReason\CreateUnlimitReasonIndex;
+use App\Events\Elastic\UnlimitReason\InsertUnlimitReasonIndex;
 use App\Events\Telegram\SendMessageToChannel;
 use App\Listeners\Cache\DeleteCache as CacheDeleteCache;
 use App\Listeners\Elastic\AccidentBodyPart\ElasticCreateAccidentBodyPartIndex;
@@ -455,6 +459,10 @@ use App\Listeners\Elastic\TranPatiTech\ElasticCreateTranPatiTechIndex;
 use App\Listeners\Elastic\TranPatiTech\ElasticInsertTranPatiTechIndex;
 use App\Listeners\Elastic\TreatmentEndType\ElasticCreateTreatmentEndTypeIndex;
 use App\Listeners\Elastic\TreatmentEndType\ElasticInsertTreatmentEndTypeIndex;
+use App\Listeners\Elastic\TreatmentType\ElasticCreateTreatmentTypeIndex;
+use App\Listeners\Elastic\TreatmentType\ElasticInsertTreatmentTypeIndex;
+use App\Listeners\Elastic\UnlimitReason\ElasticCreateUnlimitReasonIndex;
+use App\Listeners\Elastic\UnlimitReason\ElasticInsertUnlimitReasonIndex;
 use App\Listeners\Telegram\TelegramSendMessageToChannel;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -1282,6 +1290,20 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertTreatmentEndTypeIndex::class => [
             ElasticInsertTreatmentEndTypeIndex::class,
+        ],
+
+        CreateTreatmentTypeIndex::class => [
+            ElasticCreateTreatmentTypeIndex::class,
+        ],
+        InsertTreatmentTypeIndex::class => [
+            ElasticInsertTreatmentTypeIndex::class,
+        ],
+
+        CreateUnlimitReasonIndex::class => [
+            ElasticCreateUnlimitReasonIndex::class,
+        ],
+        InsertUnlimitReasonIndex::class => [
+            ElasticInsertUnlimitReasonIndex::class,
         ],
     ];
 

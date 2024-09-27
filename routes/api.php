@@ -706,14 +706,12 @@ Route::group([
     });
     /// Diện điều trị
     Route::group(['as' => 'HIS.Desktop.Plugins.TreatmentType'], function () {
-        Route::get("v1/treatment-type", [TreatmentTypeController::class, "treatment_type"])->name('.get');
-        Route::get("v1/treatment-type/{id}", [TreatmentTypeController::class, "treatment_type"])->name('.get_id');
-        Route::get("v1/treatment-type-check", [CheckTreatmentTypeController::class, "check_code"])->name('.check');
-        Route::post("v1/treatment-type", [TreatmentTypeController::class, "treatment_type_create"])->name('.create');
-        Route::put("v1/treatment-type/{id}", [TreatmentTypeController::class, "treatment_type_update"])->name('.update');
-        Route::delete("v1/treatment-type/{id}", [TreatmentTypeController::class, "treatment_type_delete"])->name('.delete');
+        Route::apiResource('v1/treatment-type', TreatmentTypeController::class);
     });
-
+    /// Lý do mở trần
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisUnlimitReason'], function () {
+        Route::apiResource('v1/unlimit-reason', UnlimitReasonController::class);
+    });
     /// Nơi làm việc
     Route::group(['as' => 'HIS.Desktop.Plugins.HisWorkPlace'], function () {
         Route::get("v1/work-place", [WorkPlaceController::class, "work_place"])->name('.get');
@@ -721,16 +719,6 @@ Route::group([
         Route::post("v1/work-place", [WorkPlaceController::class, "work_place_create"])->name('.create');
         Route::put("v1/work-place/{id}", [WorkPlaceController::class, "work_place_update"])->name('.update');
         Route::delete("v1/work-place/{id}", [WorkPlaceController::class, "work_place_delete"])->name('.delete');
-    });
-
-
-    /// Lý do mở trần
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisUnlimitReason'], function () {
-        Route::get("v1/unlimit-reason", [UnlimitReasonController::class, "unlimit_reason"])->name('.get');
-        Route::get("v1/unlimit-reason/{id}", [UnlimitReasonController::class, "unlimit_reason"])->name('.get_id');
-        Route::post("v1/unlimit-reason", [UnlimitReasonController::class, "unlimit_reason_create"])->name('.create');
-        Route::put("v1/unlimit-reason/{id}", [UnlimitReasonController::class, "unlimit_reason_update"])->name('.update');
-        Route::delete("v1/unlimit-reason/{id}", [UnlimitReasonController::class, "unlimit_reason_delete"])->name('.delete');
     });
 
     /// Nhân viên - Phòng
