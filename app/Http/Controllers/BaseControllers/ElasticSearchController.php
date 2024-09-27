@@ -8,6 +8,7 @@ use App\Http\Resources\Elastic\ElasticMappingResource;
 use App\Http\Resources\Elastic\ElasticResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Http;
 
 class ElasticSearchController extends Controller
 {
@@ -143,5 +144,21 @@ class ElasticSearchController extends Controller
     
         $response = []; 
         return returnDataSuccess([], $response);
+    }
+    public function checkNodes()
+    {
+        try {
+            $response = $this->client->nodes()->info(); // Lấy thông tin về các node
+            
+            return response()->json([
+                'status' => 'success',
+                'data' => $response->asArray(), // Chuyển đổi phản hồi sang dạng mảng
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+            ], 500);
+        }
     }
 }

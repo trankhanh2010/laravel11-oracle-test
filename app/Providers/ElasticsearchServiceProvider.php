@@ -14,8 +14,11 @@ class ElasticsearchServiceProvider extends ServiceProvider
     {
         try {
             $this->app->singleton('Elasticsearch', function ($app) {
+                // Lấy danh sách hosts từ biến môi trường
+                $hosts = explode(',', config('database')['connections']['elasticsearch']['hosts']['host']);
+                
                 return ClientBuilder::create()
-                    ->setHosts([config('database')['connections']['elasticsearch']['hosts']['host'] . ':' . config('database')['connections']['elasticsearch']['hosts']['port']])
+                    ->setHosts($hosts) // Sử dụng danh sách hosts
                     ->setBasicAuthentication(config('database')['connections']['elasticsearch']['hosts']['user'], config('database')['connections']['elasticsearch']['hosts']['pass'])
                     ->setCABundle(config('database')['connections']['elasticsearch']['hosts']['ca'])
                     ->build();

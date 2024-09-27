@@ -283,7 +283,8 @@ return [
             'speciality' => 'Có lỗi khi thực hiện thao tác với bảng Chuyên khoa!',
             'suim_index' => 'Có lỗi khi thực hiện thao tác với bảng Chỉ số!',
             'supplier' => 'Có lỗi khi thực hiện thao tác với bảng Nhà cung cấp!',
-
+            'test_index' => 'Có lỗi khi thực hiện thao tác với bảng Chỉ số xét nghiệm!',
+            'test_index_unit' => 'Có lỗi khi thực hiện thao tác với bảng Đơn vị tính chỉ số xét nghiệm!',
         ]
     ]
     

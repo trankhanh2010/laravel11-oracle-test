@@ -220,6 +220,7 @@ Route::group([
     Route::get("v1/get-mapping", [ElasticSearchController::class, "get_mapping"])->name('.get_mapping');
     Route::get("v1/get-setting", [ElasticSearchController::class, "get_index_settings"])->name('.get_index_settings');
     Route::get("v1/set-max-result-window", [ElasticSearchController::class, "setMaxResultWindow"])->name('.set_max_result_window');
+    Route::get("v1/check-node", [ElasticSearchController::class, "checkNodes"])->name('.check_nodes');
     Route::delete("v1/delete-index", [ElasticSearchController::class, "delete_index"])->name('.delete_index');
 });
 Route::group([
@@ -681,6 +682,14 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisSupplier'], function () {
         Route::apiResource('v1/supplier', SupplierController::class);
     });
+    /// Chỉ số xét nghiệm
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisTestIndex'], function () {
+        Route::apiResource('v1/test-index', TestIndexController::class)->only(['index', 'show']);
+    });
+    /// Đơn vị tính chỉ số xét nghiệm
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisTestIndexUnit'], function () {
+        Route::apiResource('v1/test-index-unit', TestIndexUnitController::class)->only(['index', 'show']);
+    });
     /// Loại xét nghiệm
     Route::get("v1/test-type", [TestTypeController::class, "test_type"])->name('.get_test_type');
     Route::get("v1/test-type/{id}", [TestTypeController::class, "test_type"])->name('.get_test_type_id');
@@ -729,18 +738,6 @@ Route::group([
         Route::post("v1/unlimit-reason", [UnlimitReasonController::class, "unlimit_reason_create"])->name('.create');
         Route::put("v1/unlimit-reason/{id}", [UnlimitReasonController::class, "unlimit_reason_update"])->name('.update');
         Route::delete("v1/unlimit-reason/{id}", [UnlimitReasonController::class, "unlimit_reason_delete"])->name('.delete');
-    });
-
-    /// Chỉ số xét nghiệm
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisTestIndex'], function () {
-        Route::get("v1/test-index", [TestIndexController::class, "test_index"])->name('.get');
-        Route::get("v1/test-index/{id}", [TestIndexController::class, "test_index"])->name('.get_id');
-    });
-
-    /// Đơn vị tính chỉ số xét nghiệm
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisTestIndexUnit'], function () {
-        Route::get("v1/test-index-unit", [TestIndexUnitController::class, "test_index_unit"])->name('.get');
-        Route::get("v1/test-index-unit/{id}", [TestIndexUnitController::class, "test_index_unit"])->name('.get_id');
     });
 
     /// Loại mẫu bệnh phẩm
