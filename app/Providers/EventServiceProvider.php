@@ -224,6 +224,10 @@ use App\Events\Elastic\TestIndex\CreateTestIndexIndex;
 use App\Events\Elastic\TestIndexUnit\CreateTestIndexUnitIndex;
 use App\Events\Elastic\TestSampleType\CreateTestSampleTypeIndex;
 use App\Events\Elastic\TestType\CreateTestTypeIndex;
+use App\Events\Elastic\TranPatiTech\CreateTranPatiTechIndex;
+use App\Events\Elastic\TranPatiTech\InsertTranPatiTechIndex;
+use App\Events\Elastic\TreatmentEndType\CreateTreatmentEndTypeIndex;
+use App\Events\Elastic\TreatmentEndType\InsertTreatmentEndTypeIndex;
 use App\Events\Telegram\SendMessageToChannel;
 use App\Listeners\Cache\DeleteCache as CacheDeleteCache;
 use App\Listeners\Elastic\AccidentBodyPart\ElasticCreateAccidentBodyPartIndex;
@@ -447,6 +451,10 @@ use App\Listeners\Elastic\TestIndex\ElasticCreateTestIndexIndex;
 use App\Listeners\Elastic\TestIndexUnit\ElasticCreateTestIndexUnitIndex;
 use App\Listeners\Elastic\TestSampleType\ElasticCreateTestSampleTypeIndex;
 use App\Listeners\Elastic\TestType\ElasticCreateTestTypeIndex;
+use App\Listeners\Elastic\TranPatiTech\ElasticCreateTranPatiTechIndex;
+use App\Listeners\Elastic\TranPatiTech\ElasticInsertTranPatiTechIndex;
+use App\Listeners\Elastic\TreatmentEndType\ElasticCreateTreatmentEndTypeIndex;
+use App\Listeners\Elastic\TreatmentEndType\ElasticInsertTreatmentEndTypeIndex;
 use App\Listeners\Telegram\TelegramSendMessageToChannel;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -1260,6 +1268,20 @@ class EventServiceProvider extends ServiceProvider
 
         CreateTestTypeIndex::class => [
             ElasticCreateTestTypeIndex::class,
+        ],
+
+        CreateTranPatiTechIndex::class => [
+            ElasticCreateTranPatiTechIndex::class,
+        ],
+        InsertTranPatiTechIndex::class => [
+            ElasticInsertTranPatiTechIndex::class,
+        ],
+
+        CreateTreatmentEndTypeIndex::class => [
+            ElasticCreateTreatmentEndTypeIndex::class,
+        ],
+        InsertTreatmentEndTypeIndex::class => [
+            ElasticInsertTreatmentEndTypeIndex::class,
         ],
     ];
 

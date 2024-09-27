@@ -696,7 +696,14 @@ Route::group([
     });
     /// Loại xét nghiệm
     Route::apiResource('v1/test-type', TestTypeController::class)->only(['index', 'show']);
-
+    /// Lý do chuyển tuyến chuyên môn
+    Route::group(['as' => 'HIS.Desktop.Plugins.TranPatiTech'], function () {
+        Route::apiResource('v1/tran-pati-tech', TranPatiTechController::class);
+    });
+    /// Loại ra viện
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisTreatmentEndType'], function () {
+        Route::apiResource('v1/treatment-end-type', TreatmentEndTypeController::class);
+    });
     /// Diện điều trị
     Route::group(['as' => 'HIS.Desktop.Plugins.TreatmentType'], function () {
         Route::get("v1/treatment-type", [TreatmentTypeController::class, "treatment_type"])->name('.get');
@@ -716,23 +723,6 @@ Route::group([
         Route::delete("v1/work-place/{id}", [WorkPlaceController::class, "work_place_delete"])->name('.delete');
     });
 
-    /// Loại ra viện
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisTreatmentEndType'], function () {
-        Route::get("v1/treatment-end-type", [TreatmentEndTypeController::class, "treatment_end_type"])->name('.get');
-        Route::get("v1/treatment-end-type/{id}", [TreatmentEndTypeController::class, "treatment_end_type"])->name('.get_id');
-        Route::post("v1/treatment-end-type", [TreatmentEndTypeController::class, "treatment_end_type_create"])->name('.create');
-        Route::put("v1/treatment-end-type/{id}", [TreatmentEndTypeController::class, "treatment_end_type_update"])->name('.update');
-        Route::delete("v1/treatment-end-type/{id}", [TreatmentEndTypeController::class, "treatment_end_type_delete"])->name('.delete');
-    });
-
-    /// Lý do chuyển tuyến chuyên môn
-    Route::group(['as' => 'HIS.Desktop.Plugins.TranPatiTech'], function () {
-        Route::get("v1/tran-pati-tech", [TranPatiTechController::class, "tran_pati_tech"])->name('.get');
-        Route::get("v1/tran-pati-tech/{id}", [TranPatiTechController::class, "tran_pati_tech"])->name('.get_id');
-        Route::post("v1/tran-pati-tech", [TranPatiTechController::class, "tran_pati_tech_create"])->name('.create');
-        Route::put("v1/tran-pati-tech/{id}", [TranPatiTechController::class, "tran_pati_tech_update"])->name('.update');
-        Route::delete("v1/tran-pati-tech/{id}", [TranPatiTechController::class, "tran_pati_tech_delete"])->name('.delete');
-    });
 
     /// Lý do mở trần
     Route::group(['as' => 'HIS.Desktop.Plugins.HisUnlimitReason'], function () {

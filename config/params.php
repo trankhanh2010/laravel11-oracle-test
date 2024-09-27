@@ -287,6 +287,8 @@ return [
             'test_index_unit' => 'Có lỗi khi thực hiện thao tác với bảng Đơn vị tính chỉ số xét nghiệm!',
             'test_sample_type' => 'Có lỗi khi thực hiện thao tác với bảng Loại mẫu bệnh phẩm!',
             'test_type' => 'Có lỗi khi thực hiện thao tác với bảng Loại xét nghiệm!',
+            'tran_pati_tech' => 'Có lỗi khi thực hiện thao tác với bảng Lý do chuyển tuyến chuyên môn!',
+            'treatment_end_type' => 'Có lỗi khi thực hiện thao tác với bảng Loại ra viện!',
         ]
     ]
     

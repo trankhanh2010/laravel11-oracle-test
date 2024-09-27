@@ -130,6 +130,8 @@ use App\Events\Elastic\TestIndex\CreateTestIndexIndex;
 use App\Events\Elastic\TestIndexUnit\CreateTestIndexUnitIndex;
 use App\Events\Elastic\TestSampleType\CreateTestSampleTypeIndex;
 use App\Events\Elastic\TestType\CreateTestTypeIndex;
+use App\Events\Elastic\TranPatiTech\CreateTranPatiTechIndex;
+use App\Events\Elastic\TreatmentEndType\CreateTreatmentEndTypeIndex;
 use App\Models\HIS\MedicineUseForm;
 use App\Repositories\AccidentBodyPartRepository;
 use App\Repositories\AccidentCareRepository;
@@ -256,6 +258,8 @@ use App\Repositories\TestIndexRepository;
 use App\Repositories\TestIndexUnitRepository;
 use App\Repositories\TestSampleTypeRepository;
 use App\Repositories\TestTypeRepository;
+use App\Repositories\TranPatiTechRepository;
+use App\Repositories\TreatmentEndTypeRepository;
 
 class IndexRecordsToElasticsearch extends Command
 {
@@ -805,6 +809,14 @@ class IndexRecordsToElasticsearch extends Command
             case 'test_type':
                 $results = app(TestTypeRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateTestTypeIndex($name_table));
+                break;
+            case 'tran_pati_tech':
+                $results = app(TranPatiTechRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateTranPatiTechIndex($name_table));
+                break;
+            case 'treatment_end_type':
+                $results = app(TreatmentEndTypeRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateTreatmentEndTypeIndex($name_table));
                 break;
             default:
                 // Xử lý mặc định hoặc xử lý khi không có bảng khớp
