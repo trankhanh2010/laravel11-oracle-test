@@ -132,7 +132,7 @@ class DhstController extends BaseApiDataController
             $this->keyword_name => $this->keyword,
             $this->order_by_name => $this->order_by_request
         ];
-        return return_data_success($param_return, $data);
+        return returnDataSuccess($param_return, $data);
     }
 
     public function dhst_get_v2(Request $request)
@@ -235,7 +235,7 @@ class DhstController extends BaseApiDataController
             $this->keyword_name => $this->keyword,
             $this->order_by_name => $this->order_by_request
         ];
-        return return_data_success($param_return, $data);
+        return returnDataSuccess($param_return, $data);
     }
 
     public function dhst_get_v3(Request $request)
@@ -367,10 +367,10 @@ class DhstController extends BaseApiDataController
                 $this->keyword_name => $this->keyword,
                 $this->order_by_name => $this->order_by_request
             ];
-            return return_data_success($param_return, $data);
+            return returnDataSuccess($param_return, $data);
         } catch (\Throwable $e) {
             // Xử lý lỗi và trả về phản hồi lỗi
-            return return_500_error($e->getMessage());
+            return return500Error($e->getMessage());
         }
     }
 }

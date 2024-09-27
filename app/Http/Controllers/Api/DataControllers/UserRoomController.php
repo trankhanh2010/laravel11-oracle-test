@@ -94,10 +94,10 @@ class UserRoomController extends BaseApiDataController
                 $this->limit_name => $this->limit,
                 $this->order_by_name => $this->order_by_request
             ];
-            return return_data_success($param_return, $data ?? ($data['data'] ?? null));
+            return returnDataSuccess($param_return, $data ?? ($data['data'] ?? null));
         } catch (\Throwable $e) {
             // Xử lý lỗi và trả về phản hồi lỗi
-            return return_500_error($e->getMessage());
+            return return500Error($e->getMessage());
         }
     }
 }
