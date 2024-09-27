@@ -232,6 +232,8 @@ use App\Events\Elastic\TreatmentType\CreateTreatmentTypeIndex;
 use App\Events\Elastic\TreatmentType\InsertTreatmentTypeIndex;
 use App\Events\Elastic\UnlimitReason\CreateUnlimitReasonIndex;
 use App\Events\Elastic\UnlimitReason\InsertUnlimitReasonIndex;
+use App\Events\Elastic\WorkPlace\CreateWorkPlaceIndex;
+use App\Events\Elastic\WorkPlace\InsertWorkPlaceIndex;
 use App\Events\Telegram\SendMessageToChannel;
 use App\Listeners\Cache\DeleteCache as CacheDeleteCache;
 use App\Listeners\Elastic\AccidentBodyPart\ElasticCreateAccidentBodyPartIndex;
@@ -463,6 +465,8 @@ use App\Listeners\Elastic\TreatmentType\ElasticCreateTreatmentTypeIndex;
 use App\Listeners\Elastic\TreatmentType\ElasticInsertTreatmentTypeIndex;
 use App\Listeners\Elastic\UnlimitReason\ElasticCreateUnlimitReasonIndex;
 use App\Listeners\Elastic\UnlimitReason\ElasticInsertUnlimitReasonIndex;
+use App\Listeners\Elastic\WorkPlace\ElasticCreateWorkPlaceIndex;
+use App\Listeners\Elastic\WorkPlace\ElasticInsertWorkPlaceIndex;
 use App\Listeners\Telegram\TelegramSendMessageToChannel;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -1304,6 +1308,13 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertUnlimitReasonIndex::class => [
             ElasticInsertUnlimitReasonIndex::class,
+        ],
+
+        CreateWorkPlaceIndex::class => [
+            ElasticCreateWorkPlaceIndex::class,
+        ],
+        InsertWorkPlaceIndex::class => [
+            ElasticInsertWorkPlaceIndex::class,
         ],
     ];
 

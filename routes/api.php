@@ -714,11 +714,7 @@ Route::group([
     });
     /// Nơi làm việc
     Route::group(['as' => 'HIS.Desktop.Plugins.HisWorkPlace'], function () {
-        Route::get("v1/work-place", [WorkPlaceController::class, "work_place"])->name('.get');
-        Route::get("v1/work-place/{id}", [WorkPlaceController::class, "work_place"])->name('.get_id');
-        Route::post("v1/work-place", [WorkPlaceController::class, "work_place_create"])->name('.create');
-        Route::put("v1/work-place/{id}", [WorkPlaceController::class, "work_place_update"])->name('.update');
-        Route::delete("v1/work-place/{id}", [WorkPlaceController::class, "work_place_delete"])->name('.delete');
+        Route::apiResource('v1/work-place', WorkPlaceController::class);
     });
 
     /// Nhân viên - Phòng

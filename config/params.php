@@ -291,6 +291,8 @@ return [
             'treatment_end_type' => 'Có lỗi khi thực hiện thao tác với bảng Loại ra viện!',
             'treatment_type' => 'Có lỗi khi thực hiện thao tác với bảng Diện điều trị!',
             'unlimit_reason' => 'Có lỗi khi thực hiện thao tác với bảng Lý do mở trần!',
+            'work_place' => 'Có lỗi khi thực hiện thao tác với bảng Nơi làm việc!',
+
         ]
     ]
     

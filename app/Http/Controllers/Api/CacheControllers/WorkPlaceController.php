@@ -2,221 +2,114 @@
 
 namespace App\Http\Controllers\Api\CacheControllers;
 
-use App\Events\Cache\DeleteCache;
+use App\DTOs\WorkPlaceDTO;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
 use App\Http\Requests\WorkPlace\CreateWorkPlaceRequest;
 use App\Http\Requests\WorkPlace\UpdateWorkPlaceRequest;
 use App\Models\HIS\WorkPlace;
+use App\Services\Elastic\ElasticsearchService;
+use App\Services\Model\WorkPlaceService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
+
 
 class WorkPlaceController extends BaseApiCacheController
 {
-    public function __construct(Request $request)
+    protected $workPlaceService;
+    protected $workPlaceDTO;
+    public function __construct(Request $request, ElasticsearchService $elasticSearchService, WorkPlaceService $workPlaceService, WorkPlace $workPlace)
     {
         parent::__construct($request); // Gọi constructor của BaseController
-        $this->work_place = new WorkPlace();
-
+        $this->elasticSearchService = $elasticSearchService;
+        $this->workPlaceService = $workPlaceService;
+        $this->workPlace = $workPlace;
         // Kiểm tra tên trường trong bảng
-        if ($this->order_by != null) {
-            $columns = $this->get_columns_table($this->work_place);
-            $this->order_by = $this->check_order_by($this->order_by, $columns, $this->order_by_join ?? []);
-            $this->order_by_tring = arrayToCustomString($this->order_by);
-        }
-    }
-    public function work_place($id = null)
-    {
-        // Kiểm tra param và trả về lỗi nếu nó không hợp lệ
-        if ($this->check_param()) {
-            return $this->check_param();
-        }
-        try {
-            $keyword = $this->keyword;
-            if ($keyword != null) {
-                $data = $this->work_place
-                    ->select(
-                        'his_work_place.*',
-                    );
-                $data = $data->where(function ($query) use ($keyword) {
-                    $query = $query
-                        ->where(DB::connection('oracle_his')->raw('his_work_place.work_place_code'), 'like', $keyword . '%');
-                });
-                if ($this->is_active !== null) {
-                    $data = $data->where(function ($query) {
-                        $query = $query->where(DB::connection('oracle_his')->raw('his_work_place.is_active'), $this->is_active);
-                    });
-                }
-                $count = $data->count();
-                if ($this->order_by != null) {
-                    foreach ($this->order_by as $key => $item) {
-                        $data->orderBy('his_work_place.' . $key, $item);
-                    }
-                }
-                if($this->get_all){
-                    $data = $data
-                    ->get();
-                }else{
-                    $data = $data
-                    ->skip($this->start)
-                    ->take($this->limit)
-                    ->get();
-                }
-            } else {
-                if ($id == null) {
-                    $data = Cache::remember($this->work_place_name . '_start_' . $this->start . '_limit_' . $this->limit . $this->order_by_tring . '_is_active_' . $this->is_active. '_get_all_' . $this->get_all, $this->time, function () {
-                        $data = $this->work_place
-                        ->select(
-                            'his_work_place.*',
-                        );
-                        if ($this->is_active !== null) {
-                            $data = $data->where(function ($query) {
-                                $query = $query->where(DB::connection('oracle_his')->raw('his_work_place.is_active'), $this->is_active);
-                            });
-                        }
-
-                        $count = $data->count();
-                        if ($this->order_by != null) {
-                            foreach ($this->order_by as $key => $item) {
-                                $data->orderBy('his_work_place.' . $key, $item);
-                            }
-                        }
-                        if($this->get_all){
-                            $data = $data
-                            ->get();
-                        }else{
-                            $data = $data
-                            ->skip($this->start)
-                            ->take($this->limit)
-                            ->get();
-                        }
-                        return ['data' => $data, 'count' => $count];
-                    });
-                } else {
-                    if (!is_numeric($id)) {
-                        return returnIdError($id);
-                    }
-                    $check_id = $this->check_id($id, $this->work_place, $this->work_place_name);
-                    if($check_id){
-                        return $check_id; 
-                    }
-                    $data = Cache::remember($this->work_place_name . '_' . $id . '_is_active_' . $this->is_active, $this->time, function () use ($id) {
-                        $data = $this->work_place
-                        ->select(
-                            'his_work_place.*',
-                        )
-                            ->where('his_work_place.id', $id);
-                        if ($this->is_active !== null) {
-                            $data = $data->where(function ($query) {
-                                $query = $query->where(DB::connection('oracle_his')->raw('his_work_place.is_active'), $this->is_active);
-                            });
-                        }
-                        $data = $data->first();
-                        return $data;
-                    });
-                }
-            }
-            $param_return = [
-                $this->get_all_name => $this->get_all,
-                $this->start_name => ($this->get_all || !is_null($id)) ? null : $this->start,
-                $this->limit_name => ($this->get_all || !is_null($id)) ? null : $this->limit,
-                $this->count_name => $count ?? ($data['count'] ?? null),
-                $this->is_active_name => $this->is_active,
-                $this->keyword_name => $this->keyword,
-                $this->order_by_name => $this->order_by_request
+        if ($this->orderBy != null) {
+            $this->orderByJoin = [
             ];
-            return return_data_success($param_return, $data ?? ($data['data'] ?? null) ?? null);
-        } catch (\Throwable $e) {
-            // Xử lý lỗi và trả về phản hồi lỗi
-            return return_500_error($e->getMessage());
+            $columns = $this->getColumnsTable($this->workPlace);
+            $this->orderBy = $this->checkOrderBy($this->orderBy, $columns, $this->orderByJoin ?? []);
         }
+        // Thêm tham số vào service
+        $this->workPlaceDTO = new WorkPlaceDTO(
+            $this->workPlaceName,
+            $this->keyword,
+            $this->isActive,
+            $this->orderBy,
+            $this->orderByJoin,
+            $this->orderByString,
+            $this->getAll,
+            $this->start,
+            $this->limit,
+            $request,
+            $this->appCreator, 
+            $this->appModifier, 
+            $this->time,
+        );
+        $this->workPlaceService->withParams($this->workPlaceDTO);
     }
-    public function work_place_create(CreateWorkPlaceRequest $request)
+    public function index()
     {
-        try {
-            $data = $this->work_place::create([
-                'create_time' => now()->format('Ymdhis'),
-                'modify_time' => now()->format('Ymdhis'),
-                'creator' => get_loginname_with_token($request->bearerToken(), $this->time),
-                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
-                'app_creator' => $this->app_creator,
-                'app_modifier' => $this->app_modifier,
-                'is_active' => 1,
-                'is_delete' => 0,
-
-                'work_place_code' => $request->work_place_code,
-                'work_place_name' => $request->work_place_name,
-                'address' => $request->address,
-                'director_name' => $request->director_name,
-                'tax_code' => $request->tax_code,
-                'phone' => $request->phone,
-
-                'contact_name' => $request->contact_name,
-                'contact_mobile' => $request->contact_mobile,
-
-            ]);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->work_place_name));
-            return return_data_create_success($data);
-        } catch (\Throwable $e) {
-            // Xử lý lỗi và trả về phản hồi lỗi
-            return return_500_error($e->getMessage());
+        if ($this->checkParam()) {
+            return $this->checkParam();
         }
-    }
-            
-    public function work_place_update(UpdateWorkPlaceRequest $request, $id)
-    {
-        if (!is_numeric($id)) {
-            return returnIdError($id);
+        $keyword = $this->keyword;
+        if (($keyword != null || $this->elasticSearchType != null) && !$this->cache) {
+            if ($this->elasticSearchType != null) {
+                $data = $this->elasticSearchService->handleElasticSearchSearch($this->workPlaceName);
+            } else {
+                $data = $this->workPlaceService->handleDataBaseSearch();
+            }
+        } else {
+            if ($this->elastic) {
+                $data = $this->elasticSearchService->handleElasticSearchGetAll($this->workPlaceName);
+            } else {
+                $data = $this->workPlaceService->handleDataBaseGetAll();
+            }
         }
-        $data = $this->work_place->find($id);
-        if ($data == null) {
-            return return_not_record($id);
-        }
-        try {
-            $data->update([
-                'modify_time' => now()->format('Ymdhis'),
-                'modifier' => get_loginname_with_token($request->bearerToken(), $this->time),
-                'app_modifier' => $this->app_modifier,
-
-                'work_place_code' => $request->work_place_code,
-                'work_place_name' => $request->work_place_name,
-                'address' => $request->address,
-                'director_name' => $request->director_name,
-                'tax_code' => $request->tax_code,
-                'phone' => $request->phone,
-
-                'contact_name' => $request->contact_name,
-                'contact_mobile' => $request->contact_mobile,
-
-                'is_active' => $request->is_active
-            ]);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->work_place_name));
-            return return_data_update_success($data);
-        } catch (\Throwable $e) {
-            // Xử lý lỗi và trả về phản hồi lỗi
-            return return_500_error($e->getMessage());
-        }
+        $paramReturn = [
+            $this->getAllName => $this->getAll,
+            $this->startName => $this->getAll ? null : $this->start,
+            $this->limitName => $this->getAll ? null : $this->limit,
+            $this->countName => $data['count'],
+            $this->isActiveName => $this->isActive,
+            $this->keywordName => $this->keyword,
+            $this->orderByName => $this->orderByRequest
+        ];
+        return returnDataSuccess($paramReturn, $data['data']);
     }
 
-    public function work_place_delete(Request $request, $id)
+    public function show($id)
     {
-        if (!is_numeric($id)) {
-            return returnIdError($id);
+        if ($this->checkParam()) {
+            return $this->checkParam();
         }
-        $data = $this->work_place->find($id);
-        if ($data == null) {
-            return return_not_record($id);
+        if ($id !== null) {
+            $validationError = $this->validateAndCheckId($id, $this->workPlace, $this->workPlaceName);
+            if ($validationError) {
+                return $validationError;
+            }
         }
-        try {
-            $data->delete();
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->work_place_name));
-            return return_data_delete_success();
-        } catch (\Throwable $e) {
-            // Xử lý lỗi và trả về phản hồi lỗi
-            return return_data_delete_fail();
+        if ($this->elastic) {
+            $data = $this->elasticSearchService->handleElasticSearchGetWithId($this->workPlaceName, $id);
+        } else {
+            $data = $this->workPlaceService->handleDataBaseGetWithId($id);
         }
+        $paramReturn = [
+            $this->idName => $id,
+            $this->isActiveName => $this->isActive,
+        ];
+        return returnDataSuccess($paramReturn, $data);
+    }
+    public function store(CreateWorkPlaceRequest $request)
+    {
+        return $this->workPlaceService->createWorkPlace($request);
+    }
+    public function update(UpdateWorkPlaceRequest $request, $id)
+    {
+        return $this->workPlaceService->updateWorkPlace($id, $request);
+    }
+    public function destroy($id)
+    {
+        return $this->workPlaceService->deleteWorkPlace($id);
     }
 }
