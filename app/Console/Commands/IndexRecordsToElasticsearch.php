@@ -128,6 +128,8 @@ use App\Events\Elastic\SuimIndex\CreateSuimIndexIndex;
 use App\Events\Elastic\Supplier\CreateSupplierIndex;
 use App\Events\Elastic\TestIndex\CreateTestIndexIndex;
 use App\Events\Elastic\TestIndexUnit\CreateTestIndexUnitIndex;
+use App\Events\Elastic\TestSampleType\CreateTestSampleTypeIndex;
+use App\Events\Elastic\TestType\CreateTestTypeIndex;
 use App\Models\HIS\MedicineUseForm;
 use App\Repositories\AccidentBodyPartRepository;
 use App\Repositories\AccidentCareRepository;
@@ -252,6 +254,8 @@ use App\Repositories\SuimIndexRepository;
 use App\Repositories\SupplierRepository;
 use App\Repositories\TestIndexRepository;
 use App\Repositories\TestIndexUnitRepository;
+use App\Repositories\TestSampleTypeRepository;
+use App\Repositories\TestTypeRepository;
 
 class IndexRecordsToElasticsearch extends Command
 {
@@ -793,6 +797,14 @@ class IndexRecordsToElasticsearch extends Command
             case 'test_index_unit':
                 $results = app(TestIndexUnitRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateTestIndexUnitIndex($name_table));
+                break;
+            case 'test_sample_type':
+                $results = app(TestSampleTypeRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateTestSampleTypeIndex($name_table));
+                break;
+            case 'test_type':
+                $results = app(TestTypeRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateTestTypeIndex($name_table));
                 break;
             default:
                 // Xử lý mặc định hoặc xử lý khi không có bảng khớp

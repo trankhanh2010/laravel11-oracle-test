@@ -690,9 +690,12 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisTestIndexUnit'], function () {
         Route::apiResource('v1/test-index-unit', TestIndexUnitController::class)->only(['index', 'show']);
     });
+    /// Loại mẫu bệnh phẩm
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisTestSampleType'], function () {
+        Route::apiResource('v1/test-sample-type', TestSampleTypeController::class)->only(['index', 'show']);
+    });
     /// Loại xét nghiệm
-    Route::get("v1/test-type", [TestTypeController::class, "test_type"])->name('.get_test_type');
-    Route::get("v1/test-type/{id}", [TestTypeController::class, "test_type"])->name('.get_test_type_id');
+    Route::apiResource('v1/test-type', TestTypeController::class)->only(['index', 'show']);
 
     /// Diện điều trị
     Route::group(['as' => 'HIS.Desktop.Plugins.TreatmentType'], function () {
@@ -738,12 +741,6 @@ Route::group([
         Route::post("v1/unlimit-reason", [UnlimitReasonController::class, "unlimit_reason_create"])->name('.create');
         Route::put("v1/unlimit-reason/{id}", [UnlimitReasonController::class, "unlimit_reason_update"])->name('.update');
         Route::delete("v1/unlimit-reason/{id}", [UnlimitReasonController::class, "unlimit_reason_delete"])->name('.delete');
-    });
-
-    /// Loại mẫu bệnh phẩm
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisTestSampleType'], function () {
-        Route::get("v1/test-sample-type", [TestSampleTypeController::class, "test_sample_type"])->name('.get');
-        Route::get("v1/test-sample-type/{id}", [TestSampleTypeController::class, "test_sample_type"])->name('.get_id');
     });
 
     /// Nhân viên - Phòng

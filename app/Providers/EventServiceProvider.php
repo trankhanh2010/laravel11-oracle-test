@@ -222,6 +222,8 @@ use App\Events\Elastic\Supplier\CreateSupplierIndex;
 use App\Events\Elastic\Supplier\InsertSupplierIndex;
 use App\Events\Elastic\TestIndex\CreateTestIndexIndex;
 use App\Events\Elastic\TestIndexUnit\CreateTestIndexUnitIndex;
+use App\Events\Elastic\TestSampleType\CreateTestSampleTypeIndex;
+use App\Events\Elastic\TestType\CreateTestTypeIndex;
 use App\Events\Telegram\SendMessageToChannel;
 use App\Listeners\Cache\DeleteCache as CacheDeleteCache;
 use App\Listeners\Elastic\AccidentBodyPart\ElasticCreateAccidentBodyPartIndex;
@@ -443,6 +445,8 @@ use App\Listeners\Elastic\Supplier\ElasticCreateSupplierIndex;
 use App\Listeners\Elastic\Supplier\ElasticInsertSupplierIndex;
 use App\Listeners\Elastic\TestIndex\ElasticCreateTestIndexIndex;
 use App\Listeners\Elastic\TestIndexUnit\ElasticCreateTestIndexUnitIndex;
+use App\Listeners\Elastic\TestSampleType\ElasticCreateTestSampleTypeIndex;
+use App\Listeners\Elastic\TestType\ElasticCreateTestTypeIndex;
 use App\Listeners\Telegram\TelegramSendMessageToChannel;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -1248,6 +1252,14 @@ class EventServiceProvider extends ServiceProvider
 
         CreateTestIndexUnitIndex::class => [
             ElasticCreateTestIndexUnitIndex::class,
+        ],
+
+        CreateTestSampleTypeIndex::class => [
+            ElasticCreateTestSampleTypeIndex::class,
+        ],
+
+        CreateTestTypeIndex::class => [
+            ElasticCreateTestTypeIndex::class,
         ],
     ];
 
