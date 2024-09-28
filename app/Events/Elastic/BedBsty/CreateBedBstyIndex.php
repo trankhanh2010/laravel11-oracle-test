@@ -77,6 +77,12 @@ class CreateBedBstyIndex
                         'group_code' => [
                             'type' => 'keyword'  // Chuỗi không phân tích, lưu trữ giá trị chính xác, có thể là null
                         ],
+                        'bed_id' => [
+                            'type' => 'long'  // Số nguyên 64-bit, phù hợp với ID số
+                        ],    
+                        'bed_service_type_id' => [
+                            'type' => 'long'  // Số nguyên 64-bit, phù hợp với ID số
+                        ],
                         'service_name' => [
                             'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
                             'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh

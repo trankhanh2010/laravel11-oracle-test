@@ -3,7 +3,7 @@
 namespace App\Listeners\Elastic\Service;
 
 use App\Events\Elastic\Service\InsertServiceIndex;
-use App\Models\HIS\Service;
+use App\Jobs\ElasticSearch\UpdateBedBstyIndexJob;
 use App\Repositories\ServiceRepository;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
@@ -35,8 +35,9 @@ class ElasticInsertServiceIndex
                 'id'    => $record['id'], // ID của bản ghi
                 'body'  => $data,
             ];
-
             $this->client->index($params);
+            // Cập nhật các index liên quan
+            UpdateBedBstyIndexJob::dispatch($record, 'service');
         } catch (\Throwable $e) {
             writeAndThrowError(config('params')['elastic']['error']['insert_index'], $e);
         }

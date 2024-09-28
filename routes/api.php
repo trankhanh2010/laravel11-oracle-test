@@ -262,7 +262,7 @@ Route::group([
     });
     /// Giường - Dịch vụ giường
     Route::group(['as' => 'HIS.Desktop.Plugins.BedBsty'], function () {
-        Route::apiResource('v1/bed-bsty', BedBstyController::class)->only(['index', 'show']);
+        Route::apiResource('v1/bed-bsty', BedBstyController::class)->only(['index', 'show', 'store']);
     });
     /// Buồng bệnh
     Route::group(['as' => 'HIS.Desktop.Plugins.HisBedRoomList'], function () {

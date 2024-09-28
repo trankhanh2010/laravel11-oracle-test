@@ -110,6 +110,31 @@ class BedBstyRepository
     {
         return $this->bedBsty->find($id);
     }
+    public function getByServiceIdAndBedIds($serviceId, $bedIds)
+    {
+        return $this->bedBsty->where('bed_service_type_id', $serviceId)->whereIn('bed_id', $bedIds)->get();
+    }
+    public function getByBedIdAndServiceIds($bedId, $serviceIds)
+    {
+        return $this->bedBsty->whereIn('bed_service_type_id', $serviceIds)->where('bed_id', $bedId)->get();
+    }
+    public function delete($data)
+    {
+        $data->delete();
+        return $data;
+    }
+    public function deleteByServiceId($id)
+    {
+        $ids = $this->bedBsty->where('bed_service_type_id', $id)->pluck('id')->toArray();
+        $this->bedBsty->where('bed_service_type_id', $id)->delete();
+        return $ids;
+    }
+    public function deleteByBedId($id)
+    {
+        $ids = $this->bedBsty->where('bed_id', $id)->pluck('id')->toArray();
+        $this->bedBsty->where('bed_id', $id)->delete();
+        return $ids;
+    }
     public function getDataFromDbToElastic($id = null){
         $data = $this->applyJoins();
         if ($id != null) {

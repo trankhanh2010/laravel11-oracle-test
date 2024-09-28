@@ -3,6 +3,7 @@
 namespace App\Listeners\Elastic\Bed;
 
 use App\Events\Elastic\Bed\InsertBedIndex;
+use App\Jobs\ElasticSearch\UpdateBedBstyIndexJob;
 use App\Models\HIS\Bed;
 use App\Repositories\BedRepository;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -35,6 +36,8 @@ class ElasticInsertBedIndex
                 'body'  => $data,
             ];
             $this->client->index($params);
+            // Cập nhật các index liên quan
+            UpdateBedBstyIndexJob::dispatch($record, 'bed');
         } catch (\Throwable $e) {
             writeAndThrowError(config('params')['elastic']['error']['insert_index'], $e);
         }

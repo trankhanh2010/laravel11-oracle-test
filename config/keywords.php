@@ -1096,4 +1096,11 @@ return [
         'service_ids' => 'Danh sách Id dịch vụ',
         'is_priority' => 'Trường ưu tiên',
     ],
+    // Giường - Dịch vụ giường
+    'bed_bsty' => [
+        'service_id' => 'Id dịch vụ giường',
+        'bed_ids' => 'Danh sách Id giường',
+        'bed_id' => 'Id giường',
+        'service_ids' => 'Danh sách Id dịch vụ giường',
+    ],
 ];

@@ -58,7 +58,6 @@ return [
             'icd_cm',
             'icd',
             'icd_group',
-            'user',
             'interaction_reason',
             'license_class',
             'location_store',

@@ -3,16 +3,26 @@
 namespace App\Services\Model;
 
 use App\DTOs\BedBstyDTO;
+use App\Events\Cache\DeleteCache;
+use App\Events\Elastic\DeleteIndex;
+use App\Events\Elastic\BedBsty\InsertBedBstyIndex;
 use Illuminate\Support\Facades\Cache;
 use App\Repositories\BedBstyRepository;
+use App\Repositories\BedRepository;
+use App\Repositories\ServiceRepository;
+use Illuminate\Support\Facades\DB;
 
 class BedBstyService 
 {
     protected $bedBstyRepository;
+    protected $bedRepository;
+    protected $serviceRepository;
     protected $params;
-    public function __construct(BedBstyRepository $bedBstyRepository)
+    public function __construct(BedBstyRepository $bedBstyRepository, BedRepository $bedRepository, ServiceRepository $serviceRepository)
     {
         $this->bedBstyRepository = $bedBstyRepository;
+        $this->bedRepository = $bedRepository;
+        $this->serviceRepository = $serviceRepository;
     }
     public function withParams(BedBstyDTO $params)
     {
@@ -64,6 +74,86 @@ class BedBstyService
                 return $data;
             });
             return $data;
+        } catch (\Throwable $e) {
+            return writeAndThrowError(config('params')['db_service']['error']['bed_bsty'], $e);
+        }
+    }
+    private function buildSyncData($request)
+    {
+        return [
+            'create_time' => now()->format('Ymdhis'),
+            'modify_time' => now()->format('Ymdhis'),
+            'creator' => get_loginname_with_token($request->bearerToken(), $this->params->time),
+            'modifier' => get_loginname_with_token($request->bearerToken(), $this->params->time),
+            'app_creator' => $this->params->appCreator,
+            'app_modifier' => $this->params->appModifier,
+        ];
+    }
+    public function createBedBsty($request)
+    {
+        try {
+            if ($request->bed_id != null) {
+                $id = $request->bed_id;
+                $data = $this->bedRepository->getById($id);
+                if ($data == null) {
+                    return returnNotRecord($id);
+                }
+                // Start transaction
+                DB::connection('oracle_his')->beginTransaction();
+                try {
+                    if ($request->service_ids !== null) {
+                        $service_ids_arr = explode(',', $request->service_ids);
+                        foreach ($service_ids_arr as $key => $item) {
+                            $service_ids_arr_data[$item] =  $this->buildSyncData($request);
+                        }
+                        $data->services()->sync($service_ids_arr_data);
+                    } else {
+                        $deleteIds = $this->bedBstyRepository->deleteByBedId($data->id);
+                        event(new DeleteIndex($deleteIds, $this->params->bedBstyName));
+                    }
+                    DB::connection('oracle_his')->commit();
+                    //Cập nhật trong elastic
+                    $records = $this->bedBstyRepository->getByBedIdAndServiceIds($id, $service_ids_arr ?? []);
+                    foreach ($records as $key => $item) {
+                        event(new InsertBedBstyIndex($item, $this->params->bedBstyName));
+                    }
+                } catch (\Throwable $e) {
+                    DB::connection('oracle_his')->rollBack();
+                    return  writeAndThrowError(config('params')['db_service']['error']['transaction'], $e);
+                }
+            }
+            if ($request->service_id != null) {
+                $id = $request->service_id;
+                $data = $this->serviceRepository->getById($id);
+                if ($data == null) {
+                    return returnNotRecord($id);
+                }
+                // Start transaction
+                DB::connection('oracle_his')->beginTransaction();
+                try {
+                    if ($request->bed_ids !== null) {
+                        $bed_ids_arr = explode(',', $request->bed_ids);
+                        foreach ($bed_ids_arr as $key => $item) {
+                            $bed_ids_arr_data[$item] =  $this->buildSyncData($request);
+                        }
+                        $data->beds()->sync($bed_ids_arr_data);
+                    } else {
+                        $deleteIds = $this->bedBstyRepository->deleteByServiceId($data->id);
+                        event(new DeleteIndex($deleteIds, $this->params->bedBstyName));
+                    }
+                    DB::connection('oracle_his')->commit();
+                    //Cập nhật trong elastic
+                    $records = $this->bedBstyRepository->getByServiceIdAndBedIds($id, $bed_ids_arr ?? []);
+                    foreach ($records as $key => $item) {
+                        event(new InsertBedBstyIndex($item, $this->params->bedBstyName));
+                    }
+                } catch (\Throwable $e) {
+                    DB::connection('oracle_his')->rollBack();
+                    return  writeAndThrowError(config('params')['db_service']['error']['transaction'], $e);
+                }
+            }
+            event(new DeleteCache($this->params->bedBstyName));
+            return returnDataCreateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['bed_bsty'], $e);
         }

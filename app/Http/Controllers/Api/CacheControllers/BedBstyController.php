@@ -114,4 +114,8 @@ class BedBstyController extends BaseApiCacheController
         ];
         return returnDataSuccess($paramReturn, $data);
     }
+    public function store(CreateBedBstyRequest $request)
+    {
+        return $this->bedBstyService->createBedBsty($request);
+    }
 }
