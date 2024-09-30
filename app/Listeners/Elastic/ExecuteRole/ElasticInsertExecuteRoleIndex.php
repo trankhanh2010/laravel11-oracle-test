@@ -3,6 +3,7 @@
 namespace App\Listeners\Elastic\ExecuteRole;
 
 use App\Events\Elastic\ExecuteRole\InsertExecuteRoleIndex;
+use App\Jobs\ElasticSearch\UpdateExecuteRoleUserIndexJob;
 use App\Models\HIS\ExecuteRole;
 use App\Repositories\ExecuteRoleRepository;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -33,8 +34,9 @@ class ElasticInsertExecuteRoleIndex
                 'id'    => $record['id'], // ID của bản ghi
                 'body'  => $data,
             ];
-
             $this->client->index($params);
+            // Cập nhật các index liên quan
+            UpdateExecuteRoleUserIndexJob::dispatch($record, 'execute_role');
         } catch (\Throwable $e) {
             writeAndThrowError(config('params')['elastic']['error']['insert_index'], $e);
         }

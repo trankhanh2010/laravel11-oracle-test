@@ -2,6 +2,7 @@
 
 namespace App\Jobs\ElasticSearch;
 
+use App\Events\Cache\DeleteCache;
 use App\Events\Elastic\BedBsty\InsertBedBstyIndex;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -73,5 +74,6 @@ class UpdateBedBstyIndexJob implements ShouldQueue
             default:
                 break;
         }
+        event(new DeleteCache('bed_bsty'));
     }
 }

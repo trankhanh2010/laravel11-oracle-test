@@ -12,6 +12,7 @@ use App\Events\Elastic\AccidentHurtType\InsertAccidentHurtTypeIndex;
 use App\Events\Elastic\AccidentLocation\CreateAccidentLocationIndex;
 use App\Events\Elastic\AccidentLocation\InsertAccidentLocationIndex;
 use App\Events\Elastic\AgeType\CreateAgeTypeIndex;
+use App\Events\Elastic\AgeType\InsertAgeTypeIndex;
 use App\Events\Elastic\Area\CreateAreaIndex;
 use App\Events\Elastic\Area\InsertAreaIndex;
 use App\Events\Elastic\AtcGroup\CreateAtcGroupIndex;
@@ -25,6 +26,7 @@ use App\Events\Elastic\BedBsty\InsertBedBstyIndex;
 use App\Events\Elastic\BedRoom\CreateBedRoomIndex;
 use App\Events\Elastic\BedRoom\InsertBedRoomIndex;
 use App\Events\Elastic\BedType\CreateBedTypeIndex;
+use App\Events\Elastic\BedType\InsertBedTypeIndex;
 use App\Events\Elastic\BhytBlacklist\CreateBhytBlacklistIndex;
 use App\Events\Elastic\BhytBlacklist\InsertBhytBlacklistIndex;
 use App\Events\Elastic\BhytParam\CreateBhytParamIndex;
@@ -62,10 +64,12 @@ use App\Events\Elastic\DeathWithin\InsertDeathWithinIndex;
 use App\Events\Elastic\DebateReason\CreateDebateReasonIndex;
 use App\Events\Elastic\DebateReason\InsertDebateReasonIndex;
 use App\Events\Elastic\DebateType\CreateDebateTypeIndex;
+use App\Events\Elastic\DebateType\InsertDebateTypeIndex;
 use App\Events\Elastic\DeleteIndex;
 use App\Events\Elastic\Department\CreateDepartmentIndex;
 use App\Events\Elastic\Department\InsertDepartmentIndex;
 use App\Events\Elastic\DiimType\CreateDiimTypeIndex;
+use App\Events\Elastic\DiimType\InsertDiimTypeIndex;
 use App\Events\Elastic\District\CreateDistrictIndex;
 use App\Events\Elastic\District\InsertDistrictIndex;
 use App\Events\Elastic\DosageForm\CreateDosageFormIndex;
@@ -85,6 +89,7 @@ use App\Events\Elastic\ExecuteRoleUser\InsertExecuteRoleUserIndex;
 use App\Events\Elastic\ExecuteRoom\CreateExecuteRoomIndex;
 use App\Events\Elastic\ExecuteRoom\InsertExecuteRoomIndex;
 use App\Events\Elastic\ExeServiceModule\CreateExeServiceModuleIndex;
+use App\Events\Elastic\ExeServiceModule\InsertExeServiceModuleIndex;
 use App\Events\Elastic\ExpMestReason\CreateExpMestReasonIndex;
 use App\Events\Elastic\ExpMestReason\InsertExpMestReasonIndex;
 use App\Events\Elastic\ExroRoom\CreateExroRoomIndex;
@@ -92,10 +97,15 @@ use App\Events\Elastic\ExroRoom\InsertExroRoomIndex;
 use App\Events\Elastic\FileType\CreateFileTypeIndex;
 use App\Events\Elastic\FileType\InsertFileTypeIndex;
 use App\Events\Elastic\FilmSize\CreateFilmSizeIndex;
+use App\Events\Elastic\FilmSize\InsertFilmSizeIndex;
 use App\Events\Elastic\FuexType\CreateFuexTypeIndex;
+use App\Events\Elastic\FuexType\InsertFuexTypeIndex;
 use App\Events\Elastic\Gender\CreateGenderIndex;
+use App\Events\Elastic\Gender\InsertGenderIndex;
 use App\Events\Elastic\Group\CreateGroupIndex;
+use App\Events\Elastic\Group\InsertGroupIndex;
 use App\Events\Elastic\HeinServiceType\CreateHeinServiceTypeIndex;
+use App\Events\Elastic\HeinServiceType\InsertHeinServiceTypeIndex;
 use App\Events\Elastic\HospitalizeReason\CreateHospitalizeReasonIndex;
 use App\Events\Elastic\HospitalizeReason\InsertHospitalizeReasonIndex;
 use App\Events\Elastic\Icd\CreateIcdIndex;
@@ -103,6 +113,7 @@ use App\Events\Elastic\Icd\InsertIcdIndex;
 use App\Events\Elastic\IcdCm\CreateIcdCmIndex;
 use App\Events\Elastic\IcdCm\InsertIcdCmIndex;
 use App\Events\Elastic\IcdGroup\CreateIcdGroupIndex;
+use App\Events\Elastic\IcdGroup\InsertIcdGroupIndex;
 use App\Events\Elastic\InteractionReason\CreateInteractionReasonIndex;
 use App\Events\Elastic\InteractionReason\InsertInteractionReasonIndex;
 use App\Events\Elastic\LicenseClass\CreateLicenseClassIndex;
@@ -114,12 +125,17 @@ use App\Events\Elastic\Machine\InsertMachineIndex;
 use App\Events\Elastic\Manufacturer\CreateManufacturerIndex;
 use App\Events\Elastic\Manufacturer\InsertManufacturerIndex;
 use App\Events\Elastic\MaterialType\CreateMaterialTypeIndex;
+use App\Events\Elastic\MaterialType\InsertMaterialTypeIndex;
 use App\Events\Elastic\Medicine\CreateMedicineIndex;
+use App\Events\Elastic\Medicine\InsertMedicineIndex;
 use App\Events\Elastic\MedicineGroup\CreateMedicineGroupIndex;
+use App\Events\Elastic\MedicineGroup\InsertMedicineGroupIndex;
 use App\Events\Elastic\MedicineLine\CreateMedicineLineIndex;
+use App\Events\Elastic\MedicineLine\InsertMedicineLineIndex;
 use App\Events\Elastic\MedicinePaty\CreateMedicinePatyIndex;
 use App\Events\Elastic\MedicinePaty\InsertMedicinePatyIndex;
 use App\Events\Elastic\MedicineType\CreateMedicineTypeIndex;
+use App\Events\Elastic\MedicineType\InsertMedicineTypeIndex;
 use App\Events\Elastic\MedicineTypeAcin\CreateMedicineTypeAcinIndex;
 use App\Events\Elastic\MedicineTypeAcin\InsertMedicineTypeAcinIndex;
 use App\Events\Elastic\MedicineUseForm\CreateMedicineUseFormIndex;
@@ -139,6 +155,7 @@ use App\Events\Elastic\MestPatientType\InsertMestPatientTypeIndex;
 use App\Events\Elastic\MestRoom\CreateMestRoomIndex;
 use App\Events\Elastic\MestRoom\InsertMestRoomIndex;
 use App\Events\Elastic\MilitaryRank\CreateMilitaryRankIndex;
+use App\Events\Elastic\MilitaryRank\InsertMilitaryRankIndex;
 use App\Events\Elastic\Module\CreateModuleIndex;
 use App\Events\Elastic\Module\InsertModuleIndex;
 use App\Events\Elastic\ModuleRole\CreateModuleRoleIndex;
@@ -148,7 +165,9 @@ use App\Events\Elastic\National\InsertNationalIndex;
 use App\Events\Elastic\OtherPaySource\CreateOtherPaySourceIndex;
 use App\Events\Elastic\OtherPaySource\InsertOtherPaySourceIndex;
 use App\Events\Elastic\Package\CreatePackageIndex;
+use App\Events\Elastic\Package\InsertPackageIndex;
 use App\Events\Elastic\PatientCase\CreatePatientCaseIndex;
+use App\Events\Elastic\PatientCase\InsertPatientCaseIndex;
 use App\Events\Elastic\PatientClassify\CreatePatientClassifyIndex;
 use App\Events\Elastic\PatientClassify\InsertPatientClassifyIndex;
 use App\Events\Elastic\PatientType\CreatePatientTypeIndex;
@@ -164,6 +183,7 @@ use App\Events\Elastic\PreparationsBlood\InsertPreparationsBloodIndex;
 use App\Events\Elastic\PriorityType\CreatePriorityTypeIndex;
 use App\Events\Elastic\PriorityType\InsertPriorityTypeIndex;
 use App\Events\Elastic\ProcessingMethod\CreateProcessingMethodIndex;
+use App\Events\Elastic\ProcessingMethod\InsertProcessingMethodIndex;
 use App\Events\Elastic\Province\CreateProvinceIndex;
 use App\Events\Elastic\Province\InsertProvinceIndex;
 use App\Events\Elastic\PtttCatastrophe\CreatePtttCatastropheIndex;
@@ -195,6 +215,7 @@ use App\Events\Elastic\Room\InsertRoomIndex;
 use App\Events\Elastic\RoomGroup\CreateRoomGroupIndex;
 use App\Events\Elastic\RoomGroup\InsertRoomGroupIndex;
 use App\Events\Elastic\RoomType\CreateRoomTypeIndex;
+use App\Events\Elastic\RoomType\InsertRoomTypeIndex;
 use App\Events\Elastic\SaleProfitCfg\CreateSaleProfitCfgIndex;
 use App\Events\Elastic\SaleProfitCfg\InsertSaleProfitCfgIndex;
 use App\Events\Elastic\Service\CreateServiceIndex;
@@ -204,26 +225,35 @@ use App\Events\Elastic\ServiceCondition\InsertServiceConditionIndex;
 use App\Events\Elastic\ServiceFollow\CreateServiceFollowIndex;
 use App\Events\Elastic\ServiceFollow\InsertServiceFollowIndex;
 use App\Events\Elastic\ServiceGroup\CreateServiceGroupIndex;
+use App\Events\Elastic\ServiceGroup\InsertServiceGroupIndex;
 use App\Events\Elastic\ServiceMachine\CreateServiceMachineIndex;
 use App\Events\Elastic\ServiceMachine\InsertServiceMachineIndex;
 use App\Events\Elastic\ServicePaty\CreateServicePatyIndex;
 use App\Events\Elastic\ServicePaty\InsertServicePatyIndex;
 use App\Events\Elastic\ServiceReqType\CreateServiceReqTypeIndex;
+use App\Events\Elastic\ServiceReqType\InsertServiceReqTypeIndex;
 use App\Events\Elastic\ServiceRoom\CreateServiceRoomIndex;
 use App\Events\Elastic\ServiceRoom\InsertServiceRoomIndex;
 use App\Events\Elastic\ServiceType\CreateServiceTypeIndex;
+use App\Events\Elastic\ServiceType\InsertServiceTypeIndex;
 use App\Events\Elastic\ServiceUnit\CreateServiceUnitIndex;
 use App\Events\Elastic\ServiceUnit\InsertServiceUnitIndex;
 use App\Events\Elastic\ServSegr\CreateServSegrIndex;
+use App\Events\Elastic\ServSegr\InsertServSegrIndex;
 use App\Events\Elastic\Speciality\CreateSpecialityIndex;
 use App\Events\Elastic\Speciality\InsertSpecialityIndex;
 use App\Events\Elastic\SuimIndex\CreateSuimIndexIndex;
+use App\Events\Elastic\SuimIndex\InsertSuimIndexIndex;
 use App\Events\Elastic\Supplier\CreateSupplierIndex;
 use App\Events\Elastic\Supplier\InsertSupplierIndex;
 use App\Events\Elastic\TestIndex\CreateTestIndexIndex;
+use App\Events\Elastic\TestIndex\InsertTestIndexIndex;
 use App\Events\Elastic\TestIndexUnit\CreateTestIndexUnitIndex;
+use App\Events\Elastic\TestIndexUnit\InsertTestIndexUnitIndex;
 use App\Events\Elastic\TestSampleType\CreateTestSampleTypeIndex;
+use App\Events\Elastic\TestSampleType\InsertTestSampleTypeIndex;
 use App\Events\Elastic\TestType\CreateTestTypeIndex;
+use App\Events\Elastic\TestType\InsertTestTypeIndex;
 use App\Events\Elastic\TranPatiTech\CreateTranPatiTechIndex;
 use App\Events\Elastic\TranPatiTech\InsertTranPatiTechIndex;
 use App\Events\Elastic\TreatmentEndType\CreateTreatmentEndTypeIndex;
@@ -245,6 +275,7 @@ use App\Listeners\Elastic\AccidentHurtType\ElasticInsertAccidentHurtTypeIndex;
 use App\Listeners\Elastic\AccidentLocation\ElasticCreateAccidentLocationIndex;
 use App\Listeners\Elastic\AccidentLocation\ElasticInsertAccidentLocationIndex;
 use App\Listeners\Elastic\AgeType\ElasticCreateAgeTypeIndex;
+use App\Listeners\Elastic\AgeType\ElasticInsertAgeTypeIndex;
 use App\Listeners\Elastic\Area\ElasticCreateAreaIndex;
 use App\Listeners\Elastic\Area\ElasticInsertAreaIndex;
 use App\Listeners\Elastic\AtcGroup\ElasticCreateAtcGroupIndex;
@@ -258,6 +289,7 @@ use App\Listeners\Elastic\BedBsty\ElasticInsertBedBstyIndex;
 use App\Listeners\Elastic\BedRoom\ElasticCreateBedRoomIndex;
 use App\Listeners\Elastic\BedRoom\ElasticInsertBedRoomIndex;
 use App\Listeners\Elastic\BedType\ElasticCreateBedTypeIndex;
+use App\Listeners\Elastic\BedType\ElasticInsertBedTypeIndex;
 use App\Listeners\Elastic\BhytBlacklist\ElasticCreateBhytBlacklistIndex;
 use App\Listeners\Elastic\BhytBlacklist\ElasticInsertBhytBlacklistIndex;
 use App\Listeners\Elastic\BhytParam\ElasticCreateBhytParamIndex;
@@ -295,9 +327,11 @@ use App\Listeners\Elastic\DeathWithin\ElasticInsertDeathWithinIndex;
 use App\Listeners\Elastic\DebateReason\ElasticCreateDebateReasonIndex;
 use App\Listeners\Elastic\DebateReason\ElasticInsertDebateReasonIndex;
 use App\Listeners\Elastic\DebateType\ElasticCreateDebateTypeIndex;
+use App\Listeners\Elastic\DebateType\ElasticInsertDebateTypeIndex;
 use App\Listeners\Elastic\Department\ElasticCreateDepartmentIndex;
 use App\Listeners\Elastic\Department\ElasticInsertDepartmentIndex;
 use App\Listeners\Elastic\DiimType\ElasticCreateDiimTypeIndex;
+use App\Listeners\Elastic\DiimType\ElasticInsertDiimTypeIndex;
 use App\Listeners\Elastic\District\ElasticCreateDistrictIndex;
 use App\Listeners\Elastic\District\ElasticInsertDistrictIndex;
 use App\Listeners\Elastic\DosageForm\ElasticCreateDosageFormIndex;
@@ -318,6 +352,7 @@ use App\Listeners\Elastic\ExecuteRoleUser\ElasticInsertExecuteRoleUserIndex;
 use App\Listeners\Elastic\ExecuteRoom\ElasticCreateExecuteRoomIndex;
 use App\Listeners\Elastic\ExecuteRoom\ElasticInsertExecuteRoomIndex;
 use App\Listeners\Elastic\ExeServiceModule\ElasticCreateExeServiceModuleIndex;
+use App\Listeners\Elastic\ExeServiceModule\ElasticInsertExeServiceModuleIndex;
 use App\Listeners\Elastic\ExpMestReason\ElasticCreateExpMestReasonIndex;
 use App\Listeners\Elastic\ExpMestReason\ElasticInsertExpMestReasonIndex;
 use App\Listeners\Elastic\ExroRoom\ElasticCreateExroRoomIndex;
@@ -325,10 +360,15 @@ use App\Listeners\Elastic\ExroRoom\ElasticInsertExroRoomIndex;
 use App\Listeners\Elastic\FileType\ElasticCreateFileTypeIndex;
 use App\Listeners\Elastic\FileType\ElasticInsertFileTypeIndex;
 use App\Listeners\Elastic\FilmSize\ElasticCreateFilmSizeIndex;
+use App\Listeners\Elastic\FilmSize\ElasticInsertFilmSizeIndex;
 use App\Listeners\Elastic\FuexType\ElasticCreateFuexTypeIndex;
+use App\Listeners\Elastic\FuexType\ElasticInsertFuexTypeIndex;
 use App\Listeners\Elastic\Gender\ElasticCreateGenderIndex;
+use App\Listeners\Elastic\Gender\ElasticInsertGenderIndex;
 use App\Listeners\Elastic\Group\ElasticCreateGroupIndex;
+use App\Listeners\Elastic\Group\ElasticInsertGroupIndex;
 use App\Listeners\Elastic\HeinServiceType\ElasticCreateHeinServiceTypeIndex;
+use App\Listeners\Elastic\HeinServiceType\ElasticInsertHeinServiceTypeIndex;
 use App\Listeners\Elastic\HospitalizeReason\ElasticCreateHospitalizeReasonIndex;
 use App\Listeners\Elastic\HospitalizeReason\ElasticInsertHospitalizeReasonIndex;
 use App\Listeners\Elastic\Icd\ElasticCreateIcdIndex;
@@ -336,6 +376,7 @@ use App\Listeners\Elastic\Icd\ElasticInsertIcdIndex;
 use App\Listeners\Elastic\IcdCm\ElasticCreateIcdCmIndex;
 use App\Listeners\Elastic\IcdCm\ElasticInsertIcdCmIndex;
 use App\Listeners\Elastic\IcdGroup\ElasticCreateIcdGroupIndex;
+use App\Listeners\Elastic\IcdGroup\ElasticInsertIcdGroupIndex;
 use App\Listeners\Elastic\InteractionReason\ElasticCreateInteractionReasonIndex;
 use App\Listeners\Elastic\InteractionReason\ElasticInsertInteractionReasonIndex;
 use App\Listeners\Elastic\LicenseClass\ElasticCreateLicenseClassIndex;
@@ -347,12 +388,17 @@ use App\Listeners\Elastic\Machine\ElasticInsertMachineIndex;
 use App\Listeners\Elastic\Manufacturer\ElasticCreateManufacturerIndex;
 use App\Listeners\Elastic\Manufacturer\ElasticInsertManufacturerIndex;
 use App\Listeners\Elastic\MaterialType\ElasticCreateMaterialTypeIndex;
+use App\Listeners\Elastic\MaterialType\ElasticInsertMaterialTypeIndex;
 use App\Listeners\Elastic\Medicine\ElasticCreateMedicineIndex;
+use App\Listeners\Elastic\Medicine\ElasticInsertMedicineIndex;
 use App\Listeners\Elastic\MedicineGroup\ElasticCreateMedicineGroupIndex;
+use App\Listeners\Elastic\MedicineGroup\ElasticInsertMedicineGroupIndex;
 use App\Listeners\Elastic\MedicineLine\ElasticCreateMedicineLineIndex;
+use App\Listeners\Elastic\MedicineLine\ElasticInsertMedicineLineIndex;
 use App\Listeners\Elastic\MedicinePaty\ElasticCreateMedicinePatyIndex;
 use App\Listeners\Elastic\MedicinePaty\ElasticInsertMedicinePatyIndex;
 use App\Listeners\Elastic\MedicineType\ElasticCreateMedicineTypeIndex;
+use App\Listeners\Elastic\MedicineType\ElasticInsertMedicineTypeIndex;
 use App\Listeners\Elastic\MedicineTypeAcin\ElasticCreateMedicineTypeAcinIndex;
 use App\Listeners\Elastic\MedicineTypeAcin\ElasticInsertMedicineTypeAcinIndex;
 use App\Listeners\Elastic\MedicineUseForm\ElasticCreateMedicineUseFormIndex;
@@ -372,6 +418,7 @@ use App\Listeners\Elastic\MestPatientType\ElasticInsertMestPatientTypeIndex;
 use App\Listeners\Elastic\MestRoom\ElasticCreateMestRoomIndex;
 use App\Listeners\Elastic\MestRoom\ElasticInsertMestRoomIndex;
 use App\Listeners\Elastic\MilitaryRank\ElasticCreateMilitaryRankIndex;
+use App\Listeners\Elastic\MilitaryRank\ElasticInsertMilitaryRankIndex;
 use App\Listeners\Elastic\Module\ElasticCreateModuleIndex;
 use App\Listeners\Elastic\Module\ElasticInsertModuleIndex;
 use App\Listeners\Elastic\ModuleRole\ElasticCreateModuleRoleIndex;
@@ -381,7 +428,9 @@ use App\Listeners\Elastic\National\ElasticInsertNationalIndex;
 use App\Listeners\Elastic\OtherPaySource\ElasticCreateOtherPaySourceIndex;
 use App\Listeners\Elastic\OtherPaySource\ElasticInsertOtherPaySourceIndex;
 use App\Listeners\Elastic\Package\ElasticCreatePackageIndex;
+use App\Listeners\Elastic\Package\ElasticInsertPackageIndex;
 use App\Listeners\Elastic\PatientCase\ElasticCreatePatientCaseIndex;
+use App\Listeners\Elastic\PatientCase\ElasticInsertPatientCaseIndex;
 use App\Listeners\Elastic\PatientClassify\ElasticCreatePatientClassifyIndex;
 use App\Listeners\Elastic\PatientClassify\ElasticInsertPatientClassifyIndex;
 use App\Listeners\Elastic\PatientType\ElasticCreatePatientTypeIndex;
@@ -397,6 +446,7 @@ use App\Listeners\Elastic\PreparationsBlood\ElasticInsertPreparationsBloodIndex;
 use App\Listeners\Elastic\PriorityType\ElasticCreatePriorityTypeIndex;
 use App\Listeners\Elastic\PriorityType\ElasticInsertPriorityTypeIndex;
 use App\Listeners\Elastic\ProcessingMethod\ElasticCreateProcessingMethodIndex;
+use App\Listeners\Elastic\ProcessingMethod\ElasticInsertProcessingMethodIndex;
 use App\Listeners\Elastic\Province\ElasticCreateProvinceIndex;
 use App\Listeners\Elastic\Province\ElasticInsertProvinceIndex;
 use App\Listeners\Elastic\PtttCatastrophe\ElasticCreatePtttCatastropheIndex;
@@ -428,6 +478,7 @@ use App\Listeners\Elastic\Room\ElasticInsertRoomIndex;
 use App\Listeners\Elastic\RoomGroup\ElasticCreateRoomGroupIndex;
 use App\Listeners\Elastic\RoomGroup\ElasticInsertRoomGroupIndex;
 use App\Listeners\Elastic\RoomType\ElasticCreateRoomTypeIndex;
+use App\Listeners\Elastic\RoomType\ElasticInsertRoomTypeIndex;
 use App\Listeners\Elastic\SaleProfitCfg\ElasticCreateSaleProfitCfgIndex;
 use App\Listeners\Elastic\SaleProfitCfg\ElasticInsertSaleProfitCfgIndex;
 use App\Listeners\Elastic\Service\ElasticCreateServiceIndex;
@@ -437,26 +488,35 @@ use App\Listeners\Elastic\ServiceCondition\ElasticInsertServiceConditionIndex;
 use App\Listeners\Elastic\ServiceFollow\ElasticCreateServiceFollowIndex;
 use App\Listeners\Elastic\ServiceFollow\ElasticInsertServiceFollowIndex;
 use App\Listeners\Elastic\ServiceGroup\ElasticCreateServiceGroupIndex;
+use App\Listeners\Elastic\ServiceGroup\ElasticInsertServiceGroupIndex;
 use App\Listeners\Elastic\ServiceMachine\ElasticCreateServiceMachineIndex;
 use App\Listeners\Elastic\ServiceMachine\ElasticInsertServiceMachineIndex;
 use App\Listeners\Elastic\ServicePaty\ElasticCreateServicePatyIndex;
 use App\Listeners\Elastic\ServicePaty\ElasticInsertServicePatyIndex;
 use App\Listeners\Elastic\ServiceReqType\ElasticCreateServiceReqTypeIndex;
+use App\Listeners\Elastic\ServiceReqType\ElasticInsertServiceReqTypeIndex;
 use App\Listeners\Elastic\ServiceRoom\ElasticCreateServiceRoomIndex;
 use App\Listeners\Elastic\ServiceRoom\ElasticInsertServiceRoomIndex;
 use App\Listeners\Elastic\ServiceType\ElasticCreateServiceTypeIndex;
+use App\Listeners\Elastic\ServiceType\ElasticInsertServiceTypeIndex;
 use App\Listeners\Elastic\ServiceUnit\ElasticCreateServiceUnitIndex;
 use App\Listeners\Elastic\ServiceUnit\ElasticInsertServiceUnitIndex;
 use App\Listeners\Elastic\ServSegr\ElasticCreateServSegrIndex;
+use App\Listeners\Elastic\ServSegr\ElasticInsertServSegrIndex;
 use App\Listeners\Elastic\Speciality\ElasticCreateSpecialityIndex;
 use App\Listeners\Elastic\Speciality\ElasticInsertSpecialityIndex;
 use App\Listeners\Elastic\SuimIndex\ElasticCreateSuimIndexIndex;
+use App\Listeners\Elastic\SuimIndex\ElasticInsertSuimIndexIndex;
 use App\Listeners\Elastic\Supplier\ElasticCreateSupplierIndex;
 use App\Listeners\Elastic\Supplier\ElasticInsertSupplierIndex;
 use App\Listeners\Elastic\TestIndex\ElasticCreateTestIndexIndex;
+use App\Listeners\Elastic\TestIndex\ElasticInsertTestIndexIndex;
 use App\Listeners\Elastic\TestIndexUnit\ElasticCreateTestIndexUnitIndex;
+use App\Listeners\Elastic\TestIndexUnit\ElasticInsertTestIndexUnitIndex;
 use App\Listeners\Elastic\TestSampleType\ElasticCreateTestSampleTypeIndex;
+use App\Listeners\Elastic\TestSampleType\ElasticInsertTestSampleTypeIndex;
 use App\Listeners\Elastic\TestType\ElasticCreateTestTypeIndex;
+use App\Listeners\Elastic\TestType\ElasticInsertTestTypeIndex;
 use App\Listeners\Elastic\TranPatiTech\ElasticCreateTranPatiTechIndex;
 use App\Listeners\Elastic\TranPatiTech\ElasticInsertTranPatiTechIndex;
 use App\Listeners\Elastic\TreatmentEndType\ElasticCreateTreatmentEndTypeIndex;
@@ -531,6 +591,9 @@ class EventServiceProvider extends ServiceProvider
         CreateAgeTypeIndex::class => [
             ElasticCreateAgeTypeIndex::class,
         ],
+        InsertAgeTypeIndex::class => [
+            ElasticInsertAgeTypeIndex::class,
+        ],
         
         CreateAreaIndex::class => [
             ElasticCreateAreaIndex::class,
@@ -576,6 +639,9 @@ class EventServiceProvider extends ServiceProvider
 
         CreateBedTypeIndex::class => [
             ElasticCreateBedTypeIndex::class,
+        ],
+        InsertBedTypeIndex::class => [
+            ElasticInsertBedTypeIndex::class,
         ],
 
         CreateBhytBlacklistIndex::class => [
@@ -707,6 +773,9 @@ class EventServiceProvider extends ServiceProvider
         CreateDebateTypeIndex::class => [
             ElasticCreateDebateTypeIndex::class,
         ],
+        InsertDebateTypeIndex::class => [
+            ElasticInsertDebateTypeIndex::class,
+        ],
 
         CreateDepartmentIndex::class => [
             ElasticCreateDepartmentIndex::class,
@@ -717,6 +786,9 @@ class EventServiceProvider extends ServiceProvider
 
         CreateDiimTypeIndex::class => [
             ElasticCreateDiimTypeIndex::class,
+        ],
+        InsertDiimTypeIndex::class => [
+            ElasticInsertDiimTypeIndex::class,
         ],
 
         CreateDistrictIndex::class => [
@@ -785,9 +857,15 @@ class EventServiceProvider extends ServiceProvider
         CreateExeServiceModuleIndex::class => [
             ElasticCreateExeServiceModuleIndex::class,
         ],
+        InsertExeServiceModuleIndex::class => [
+            ElasticInsertExeServiceModuleIndex::class,
+        ],
 
         CreateExpMestReasonIndex::class => [
             ElasticCreateExpMestReasonIndex::class,
+        ],
+        InsertExpMestReasonIndex::class => [
+            ElasticInsertExpMestReasonIndex::class,
         ],
 
         CreateExroRoomIndex::class => [
@@ -807,21 +885,36 @@ class EventServiceProvider extends ServiceProvider
         CreateFilmSizeIndex::class => [
             ElasticCreateFilmSizeIndex::class,
         ],
+        InsertFilmSizeIndex::class => [
+            ElasticInsertFilmSizeIndex::class,
+        ],
     
         CreateFuexTypeIndex::class => [
             ElasticCreateFuexTypeIndex::class,
+        ],
+        InsertFuexTypeIndex::class => [
+            ElasticInsertFuexTypeIndex::class,
         ],
 
         CreateGenderIndex::class => [
             ElasticCreateGenderIndex::class,
         ],
+        InsertGenderIndex::class => [
+            ElasticInsertGenderIndex::class,
+        ],
 
         CreateGroupIndex::class => [
             ElasticCreateGroupIndex::class,
         ],
+        InsertGroupIndex::class => [
+            ElasticInsertGroupIndex::class,
+        ],
 
         CreateHeinServiceTypeIndex::class => [
             ElasticCreateHeinServiceTypeIndex::class,
+        ],
+        InsertHeinServiceTypeIndex::class => [
+            ElasticInsertHeinServiceTypeIndex::class,
         ],
 
         CreateHospitalizeReasonIndex::class => [
@@ -847,6 +940,9 @@ class EventServiceProvider extends ServiceProvider
 
         CreateIcdGroupIndex::class => [
             ElasticCreateIcdGroupIndex::class,
+        ],
+        InsertIcdGroupIndex::class => [
+            ElasticInsertIcdGroupIndex::class,
         ],
 
         CreateInteractionReasonIndex::class => [
@@ -887,17 +983,29 @@ class EventServiceProvider extends ServiceProvider
         CreateMaterialTypeIndex::class => [
             ElasticCreateMaterialTypeIndex::class,
         ],
+        InsertMaterialTypeIndex::class => [
+            ElasticInsertMaterialTypeIndex::class,
+        ],
 
         CreateMedicineIndex::class => [
             ElasticCreateMedicineIndex::class,
+        ],
+        InsertMedicineIndex::class => [
+            ElasticInsertMedicineIndex::class,
         ],
 
         CreateMedicineGroupIndex::class => [
             ElasticCreateMedicineGroupIndex::class,
         ],
+        InsertMedicineGroupIndex::class => [
+            ElasticInsertMedicineGroupIndex::class,
+        ],
 
         CreateMedicineLineIndex::class => [
             ElasticCreateMedicineLineIndex::class,
+        ],
+        InsertMedicineLineIndex::class => [
+            ElasticInsertMedicineLineIndex::class,
         ],
 
         CreateMedicinePatyIndex::class => [
@@ -916,6 +1024,9 @@ class EventServiceProvider extends ServiceProvider
 
         CreateMedicineTypeIndex::class => [
             ElasticCreateMedicineTypeIndex::class,
+        ],
+        InsertMedicineTypeIndex::class => [
+            ElasticInsertMedicineTypeIndex::class,
         ],
 
         CreateMedicineUseFormIndex::class => [
@@ -977,6 +1088,9 @@ class EventServiceProvider extends ServiceProvider
         CreateMilitaryRankIndex::class => [
             ElasticCreateMilitaryRankIndex::class,
         ],
+        InsertMilitaryRankIndex::class => [
+            ElasticInsertMilitaryRankIndex::class,
+        ],
 
         CreateModuleRoleIndex::class => [
             ElasticCreateModuleRoleIndex::class,
@@ -1009,9 +1123,15 @@ class EventServiceProvider extends ServiceProvider
         CreatePackageIndex::class => [
             ElasticCreatePackageIndex::class,
         ],
+        InsertPackageIndex::class => [
+            ElasticInsertPackageIndex::class,
+        ],
 
         CreatePatientCaseIndex::class => [
             ElasticCreatePatientCaseIndex::class,
+        ],
+        InsertPatientCaseIndex::class => [
+            ElasticInsertPatientCaseIndex::class,
         ],
 
         CreatePatientClassifyIndex::class => [
@@ -1065,6 +1185,9 @@ class EventServiceProvider extends ServiceProvider
 
         CreateProcessingMethodIndex::class => [
             ElasticCreateProcessingMethodIndex::class,
+        ],
+        InsertProcessingMethodIndex::class => [
+            ElasticInsertProcessingMethodIndex::class,
         ],
 
         CreateProvinceIndex::class => [
@@ -1175,6 +1298,9 @@ class EventServiceProvider extends ServiceProvider
         CreateRoomTypeIndex::class => [
             ElasticCreateRoomTypeIndex::class,
         ],
+        InsertRoomTypeIndex::class => [
+            ElasticInsertRoomTypeIndex::class,
+        ],
 
         CreateSaleProfitCfgIndex::class => [
             ElasticCreateSaleProfitCfgIndex::class,
@@ -1207,6 +1333,9 @@ class EventServiceProvider extends ServiceProvider
         CreateServiceGroupIndex::class => [
             ElasticCreateServiceGroupIndex::class,
         ],
+        InsertServiceGroupIndex::class => [
+            ElasticInsertServiceGroupIndex::class,
+        ],
 
         CreateServiceMachineIndex::class => [
             ElasticCreateServiceMachineIndex::class,
@@ -1225,6 +1354,9 @@ class EventServiceProvider extends ServiceProvider
         CreateServiceReqTypeIndex::class => [
             ElasticCreateServiceReqTypeIndex::class,
         ],
+        InsertServiceReqTypeIndex::class => [
+            ElasticInsertServiceReqTypeIndex::class,
+        ],
 
         CreateServiceRoomIndex::class => [
             ElasticCreateServiceRoomIndex::class,
@@ -1235,6 +1367,9 @@ class EventServiceProvider extends ServiceProvider
 
         CreateServiceTypeIndex::class => [
             ElasticCreateServiceTypeIndex::class,
+        ],
+        InsertServiceTypeIndex::class => [
+            ElasticInsertServiceTypeIndex::class,
         ],
 
         CreateServiceUnitIndex::class => [
@@ -1247,6 +1382,9 @@ class EventServiceProvider extends ServiceProvider
         CreateServSegrIndex::class => [
             ElasticCreateServSegrIndex::class,
         ],
+        InsertServSegrIndex::class => [
+            ElasticInsertServSegrIndex::class,
+        ],
 
         CreateSpecialityIndex::class => [
             ElasticCreateSpecialityIndex::class,
@@ -1257,6 +1395,9 @@ class EventServiceProvider extends ServiceProvider
 
         CreateSuimIndexIndex::class => [
             ElasticCreateSuimIndexIndex::class,
+        ],
+        InsertSuimIndexIndex::class => [
+            ElasticInsertSuimIndexIndex::class,
         ],
 
         CreateSupplierIndex::class => [
@@ -1269,17 +1410,29 @@ class EventServiceProvider extends ServiceProvider
         CreateTestIndexIndex::class => [
             ElasticCreateTestIndexIndex::class,
         ],
+        InsertTestIndexIndex::class => [
+            ElasticInsertTestIndexIndex::class,
+        ],
 
         CreateTestIndexUnitIndex::class => [
             ElasticCreateTestIndexUnitIndex::class,
+        ],
+        InsertTestIndexUnitIndex::class => [
+            ElasticInsertTestIndexUnitIndex::class,
         ],
 
         CreateTestSampleTypeIndex::class => [
             ElasticCreateTestSampleTypeIndex::class,
         ],
+        InsertTestSampleTypeIndex::class => [
+            ElasticInsertTestSampleTypeIndex::class,
+        ],
 
         CreateTestTypeIndex::class => [
             ElasticCreateTestTypeIndex::class,
+        ],
+        InsertTestTypeIndex::class => [
+            ElasticInsertTestTypeIndex::class,
         ],
 
         CreateTranPatiTechIndex::class => [

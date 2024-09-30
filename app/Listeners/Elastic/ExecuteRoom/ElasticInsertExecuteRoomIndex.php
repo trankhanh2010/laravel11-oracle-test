@@ -3,6 +3,7 @@
 namespace App\Listeners\Elastic\ExecuteRoom;
 
 use App\Events\Elastic\ExecuteRoom\InsertExecuteRoomIndex;
+use App\Jobs\ElasticSearch\UpdateExroRoomIndexJob;
 use App\Models\HIS\ExecuteRoom;
 use App\Repositories\ExecuteRoomRepository;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -33,8 +34,9 @@ class ElasticInsertExecuteRoomIndex
                 'id'    => $record['id'], // ID của bản ghi
                 'body'  => $data,
             ];
-
             $this->client->index($params);
+            // Cập nhật các index liên quan
+            UpdateExroRoomIndexJob::dispatch($record, 'execute_room');
         } catch (\Throwable $e) {
             writeAndThrowError(config('params')['elastic']['error']['insert_index'], $e);
         }

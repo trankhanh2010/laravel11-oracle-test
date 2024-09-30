@@ -3,6 +3,7 @@
 namespace App\Listeners\Elastic\TreatmentType;
 
 use App\Events\Elastic\TreatmentType\InsertTreatmentTypeIndex;
+use App\Jobs\ElasticSearch\UpdateDepartmentIndexJob;
 use App\Models\HIS\TreatmentType;
 use App\Repositories\TreatmentTypeRepository;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -33,8 +34,9 @@ class ElasticInsertTreatmentTypeIndex
                 'id'    => $record['id'], // ID của bản ghi
                 'body'  => $data,
             ];
-
             $this->client->index($params);
+            // Cập nhật các index liên quan
+            UpdateDepartmentIndexJob::dispatch($record, 'req_surg_treatment_type');
         } catch (\Throwable $e) {
             writeAndThrowError(config('params')['elastic']['error']['insert_index'], $e);
         }

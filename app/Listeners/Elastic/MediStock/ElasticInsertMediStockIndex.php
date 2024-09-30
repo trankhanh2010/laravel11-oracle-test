@@ -3,6 +3,10 @@
 namespace App\Listeners\Elastic\MediStock;
 
 use App\Events\Elastic\MediStock\InsertMediStockIndex;
+use App\Jobs\ElasticSearch\UpdateMediStockIndexJob;
+use App\Jobs\ElasticSearch\UpdateMediStockMatyIndexJob;
+use App\Jobs\ElasticSearch\UpdateMediStockMetyIndexJob;
+use App\Jobs\ElasticSearch\UpdateMestPatientTypeIndexJob;
 use App\Models\HIS\MediStock;
 use App\Repositories\MediStockRepository;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -35,8 +39,12 @@ class ElasticInsertMediStockIndex
                 'id'    => $record['id'], // ID của bản ghi
                 'body'  => $data,
             ];
-
             $this->client->index($params);
+            // Cập nhật các index liên quan
+            UpdateMediStockMatyIndexJob::dispatch($record, 'medi_stock');
+            UpdateMediStockMetyIndexJob::dispatch($record, 'medi_stock');
+            UpdateMediStockIndexJob::dispatch($record, 'parent');
+            UpdateMestPatientTypeIndexJob::dispatch($record, 'medi_stock');
         } catch (\Throwable $e) {
             writeAndThrowError(config('params')['elastic']['error']['insert_index'], $e);
         }

@@ -3,6 +3,7 @@
 namespace App\Listeners\Elastic\Branch;
 
 use App\Events\Elastic\Branch\InsertBranchIndex;
+use App\Jobs\ElasticSearch\UpdateDepartmentIndexJob;
 use App\Models\HIS\Branch;
 use App\Repositories\BranchRepository;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -33,8 +34,9 @@ class ElasticInsertBranchIndex
                 'id'    => $record['id'], // ID của bản ghi
                 'body'  => $data,
             ];
-
             $this->client->index($params);
+            // Cập nhật các index liên quan
+            UpdateDepartmentIndexJob::dispatch($record, 'branch');
         } catch (\Throwable $e) {
             writeAndThrowError(config('params')['elastic']['error']['insert_index'], $e);
         }

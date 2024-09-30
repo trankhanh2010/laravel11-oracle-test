@@ -3,6 +3,7 @@
 namespace App\Listeners\Elastic\Province;
 
 use App\Events\Elastic\Province\InsertProvinceIndex;
+use App\Jobs\ElasticSearch\UpdateDistrictIndexJob;
 use App\Models\HIS\Province;
 use App\Repositories\ProvinceRepository;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -33,8 +34,9 @@ class ElasticInsertProvinceIndex
                 'id'    => $record['id'], // ID của bản ghi
                 'body'  => $data,
             ];
-
             $this->client->index($params);
+            // Cập nhật các index liên quan
+            UpdateDistrictIndexJob::dispatch($record, 'province');
         } catch (\Throwable $e) {
             writeAndThrowError(config('params')['elastic']['error']['insert_index'], $e);
         }

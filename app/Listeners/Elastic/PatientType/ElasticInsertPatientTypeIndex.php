@@ -3,6 +3,9 @@
 namespace App\Listeners\Elastic\PatientType;
 
 use App\Events\Elastic\PatientType\InsertPatientTypeIndex;
+use App\Jobs\ElasticSearch\UpdateDepartmentIndexJob;
+use App\Jobs\ElasticSearch\UpdateMedicinePatyIndexJob;
+use App\Jobs\ElasticSearch\UpdateMestPatientTypeIndexJob;
 use App\Models\HIS\PatientType;
 use App\Repositories\PatientTypeRepository;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -35,8 +38,11 @@ class ElasticInsertPatientTypeIndex
                 'id'    => $record['id'], // ID của bản ghi
                 'body'  => $data,
             ];
-
             $this->client->index($params);
+            // Cập nhật các index liên quan
+            UpdateDepartmentIndexJob::dispatch($record, 'default_instr_patient_type');
+            UpdateMedicinePatyIndexJob::dispatch($record, 'patient_type');
+            UpdateMestPatientTypeIndexJob::dispatch($record, 'patient_type');
         } catch (\Throwable $e) {
             writeAndThrowError(config('params')['elastic']['error']['insert_index'], $e);
         }

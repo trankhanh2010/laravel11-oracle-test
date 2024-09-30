@@ -3,6 +3,7 @@
 namespace App\Listeners\Elastic\District;
 
 use App\Events\Elastic\District\InsertDistrictIndex;
+use App\Jobs\ElasticSearch\UpdateCommuneIndexJob;
 use App\Models\HIS\District;
 use App\Repositories\DistrictRepository;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -33,8 +34,9 @@ class ElasticInsertDistrictIndex
                 'id'    => $record['id'], // ID của bản ghi
                 'body'  => $data,
             ];
-
             $this->client->index($params);
+            // Cập nhật các index liên quan
+            UpdateCommuneIndexJob::dispatch($record, 'district');
         } catch (\Throwable $e) {
             writeAndThrowError(config('params')['elastic']['error']['insert_index'], $e);
         }

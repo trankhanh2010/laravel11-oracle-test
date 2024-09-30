@@ -3,6 +3,7 @@
 namespace App\Listeners\Elastic\Employee;
 
 use App\Events\Elastic\Employee\InsertEmployeeIndex;
+use App\Jobs\ElasticSearch\UpdateExecuteRoleUserIndexJob;
 use App\Models\HIS\Employee;
 use App\Repositories\EmployeeRepository;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -33,8 +34,9 @@ class ElasticInsertEmployeeIndex
                 'id'    => $record['id'], // ID của bản ghi
                 'body'  => $data,
             ];
-
             $this->client->index($params);
+            // Cập nhật các index liên quan
+            UpdateExecuteRoleUserIndexJob::dispatch($record, 'employee');
         } catch (\Throwable $e) {
             writeAndThrowError(config('params')['elastic']['error']['insert_index'], $e);
         }

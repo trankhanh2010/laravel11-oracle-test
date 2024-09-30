@@ -3,6 +3,7 @@
 namespace App\Listeners\Elastic\CareerTitle;
 
 use App\Events\Elastic\CareerTitle\InsertCareerTitleIndex;
+use App\Jobs\ElasticSearch\UpdateEmployeeIndexJob;
 use App\Models\HIS\CareerTitle;
 use App\Repositories\CareerTitleRepository;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -33,8 +34,9 @@ class ElasticInsertCareerTitleIndex
                 'id'    => $record['id'], // ID của bản ghi
                 'body'  => $data,
             ];
-
             $this->client->index($params);
+            // Cập nhật các index liên quan
+            UpdateEmployeeIndexJob::dispatch($record, 'career_title');
         } catch (\Throwable $e) {
             writeAndThrowError(config('params')['elastic']['error']['insert_index'], $e);
         }

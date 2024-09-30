@@ -3,6 +3,8 @@
 namespace App\Listeners\Elastic\Department;
 
 use App\Events\Elastic\Department\InsertDepartmentIndex;
+use App\Jobs\ElasticSearch\UpdateEmployeeIndexJob;
+use App\Jobs\ElasticSearch\UpdateMachineIndexJob;
 use App\Models\HIS\Department;
 use App\Repositories\DepartmentRepository;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -33,8 +35,10 @@ class ElasticInsertDepartmentIndex
                 'id'    => $record['id'], // ID của bản ghi
                 'body'  => $data,
             ];
-
             $this->client->index($params);
+            // Cập nhật các index liên quan
+            UpdateEmployeeIndexJob::dispatch($record, 'department');
+            UpdateMachineIndexJob::dispatch($record, 'department');
         } catch (\Throwable $e) {
             writeAndThrowError(config('params')['elastic']['error']['insert_index'], $e);
         }
