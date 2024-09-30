@@ -3,6 +3,8 @@
 namespace App\Listeners\Elastic\Module;
 
 use App\Events\Elastic\Module\InsertModuleIndex;
+use App\Jobs\ElasticSearch\UpdateModuleRoleIndexJob;
+use App\Jobs\ElasticSearch\UpdateRoleIndexJob;
 use App\Models\HIS\Module;
 use App\Repositories\ModuleRepository;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -33,8 +35,10 @@ class ElasticInsertModuleIndex
                 'id'    => $record['id'], // ID của bản ghi
                 'body'  => $data,
             ];
-
             $this->client->index($params);
+            // Cập nhật các index liên quan
+            UpdateModuleRoleIndexJob::dispatch($record, 'module');
+            UpdateRoleIndexJob::dispatch($record, 'modules');
         } catch (\Throwable $e) {
             writeAndThrowError(config('params')['elastic']['error']['insert_index'], $e);
         }

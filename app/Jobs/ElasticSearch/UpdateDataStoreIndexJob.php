@@ -51,6 +51,46 @@ class UpdateDataStoreIndexJob implements ShouldQueue
                     event(new InsertDataStoreIndex($item, 'data_store'));
                 }
                 break;
+            case 'stored_room':
+                $params = [
+                    'index' => 'data_store',
+                    'body'  => [
+                        '_source' => false,
+                        'query'   => [
+                            'term' => [
+                                'stored_room_id' => $record->id
+                            ]
+                        ]
+                    ]
+                ];
+                $response = $this->client->search($params);
+                $ids = array_map(function ($hit) {
+                    return new \ArrayObject(['id' => $hit['_id']], \ArrayObject::ARRAY_AS_PROPS);
+                }, $response['hits']['hits']);
+                foreach ($ids as $item) {
+                    event(new InsertDataStoreIndex($item, 'data_store'));
+                }
+                break;
+            case 'room':
+                $params = [
+                    'index' => 'data_store',
+                    'body'  => [
+                        '_source' => false,
+                        'query'   => [
+                            'term' => [
+                                'room_id' => $record->id
+                            ]
+                        ]
+                    ]
+                ];
+                $response = $this->client->search($params);
+                $ids = array_map(function ($hit) {
+                    return new \ArrayObject(['id' => $hit['_id']], \ArrayObject::ARRAY_AS_PROPS);
+                }, $response['hits']['hits']);
+                foreach ($ids as $item) {
+                    event(new InsertDataStoreIndex($item, 'data_store'));
+                }
+                break;
             default:
                 break;
         }

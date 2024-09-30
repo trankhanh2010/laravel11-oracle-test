@@ -3,6 +3,7 @@
 namespace App\Listeners\Elastic\PatientTypeAllow;
 
 use App\Events\Elastic\PatientTypeAllow\InsertPatientTypeAllowIndex;
+use App\Jobs\ElasticSearch\UpdatePatientTypeAllowIndexJob;
 use App\Models\HIS\PatientTypeAllow;
 use App\Repositories\PatientTypeAllowRepository;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -33,8 +34,9 @@ class ElasticInsertPatientTypeAllowIndex
                 'id'    => $record['id'], // ID của bản ghi
                 'body'  => $data,
             ];
-
             $this->client->index($params);
+            // Cập nhật các index liên quan
+            UpdatePatientTypeAllowIndexJob::dispatch($record, 'patient_type_allow');
         } catch (\Throwable $e) {
             writeAndThrowError(config('params')['elastic']['error']['insert_index'], $e);
         }

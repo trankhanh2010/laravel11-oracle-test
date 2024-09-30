@@ -3,6 +3,7 @@
 namespace App\Listeners\Elastic\TestIndexUnit;
 
 use App\Events\Elastic\TestIndexUnit\InsertTestIndexUnitIndex;
+use App\Jobs\ElasticSearch\UpdateTestIndexIndexJob;
 use App\Models\HIS\TestIndexUnit;
 use App\Repositories\TestIndexUnitRepository;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -33,8 +34,9 @@ class ElasticInsertTestIndexUnitIndex
                 'id'    => $record['id'], // ID của bản ghi
                 'body'  => $data,
             ];
-
             $this->client->index($params);
+            // Cập nhật các index liên quan
+            UpdateTestIndexIndexJob::dispatch($record, 'test_index_unit');
         } catch (\Throwable $e) {
             writeAndThrowError(config('params')['elastic']['error']['insert_index'], $e);
         }

@@ -71,26 +71,26 @@ class UpdateMediStockMatyIndexJob implements ShouldQueue
                     event(new InsertMediStockMatyIndex($item, 'medi_stock_maty'));
                 }
                 break;
-                case 'medi_stock':
-                    $params = [
-                        'index' => 'medi_stock_maty',
-                        'body'  => [
-                            '_source' => false,
-                            'query'   => [
-                                'term' => [
-                                    'medi_stock_id' => $record->id
-                                ]
+            case 'medi_stock':
+                $params = [
+                    'index' => 'medi_stock_maty',
+                    'body'  => [
+                        '_source' => false,
+                        'query'   => [
+                            'term' => [
+                                'medi_stock_id' => $record->id
                             ]
                         ]
-                    ];
-                    $response = $this->client->search($params);
-                    $ids = array_map(function ($hit) {
-                        return new \ArrayObject(['id' => $hit['_id']], \ArrayObject::ARRAY_AS_PROPS);
-                    }, $response['hits']['hits']);
-                    foreach ($ids as $item) {
-                        event(new InsertMediStockMatyIndex($item, 'medi_stock_maty'));
-                    }
-                    break;
+                    ]
+                ];
+                $response = $this->client->search($params);
+                $ids = array_map(function ($hit) {
+                    return new \ArrayObject(['id' => $hit['_id']], \ArrayObject::ARRAY_AS_PROPS);
+                }, $response['hits']['hits']);
+                foreach ($ids as $item) {
+                    event(new InsertMediStockMatyIndex($item, 'medi_stock_maty'));
+                }
+                break;
             default:
                 break;
         }

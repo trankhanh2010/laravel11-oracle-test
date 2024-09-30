@@ -3,6 +3,8 @@
 namespace App\Listeners\Elastic\ServiceUnit;
 
 use App\Events\Elastic\ServiceUnit\InsertServiceUnitIndex;
+use App\Jobs\ElasticSearch\UpdateServiceIndexJob;
+use App\Jobs\ElasticSearch\UpdateServiceUnitIndexJob;
 use App\Models\HIS\ServiceUnit;
 use App\Repositories\ServiceUnitRepository;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -33,8 +35,10 @@ class ElasticInsertServiceUnitIndex
                 'id'    => $record['id'], // ID của bản ghi
                 'body'  => $data,
             ];
-
             $this->client->index($params);
+            // Cập nhật các index liên quan
+            UpdateServiceIndexJob::dispatch($record, 'service_unit');
+            UpdateServiceUnitIndexJob::dispatch($record, 'convert');
         } catch (\Throwable $e) {
             writeAndThrowError(config('params')['elastic']['error']['insert_index'], $e);
         }

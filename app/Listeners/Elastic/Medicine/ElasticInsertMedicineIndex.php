@@ -3,6 +3,7 @@
 namespace App\Listeners\Elastic\Medicine;
 
 use App\Events\Elastic\Medicine\InsertMedicineIndex;
+use App\Jobs\ElasticSearch\UpdateMedicinePatyIndexJob;
 use App\Models\HIS\Medicine;
 use App\Repositories\MedicineRepository;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -33,8 +34,9 @@ class ElasticInsertMedicineIndex
                 'id'    => $record['id'], // ID của bản ghi
                 'body'  => $data,
             ];
-
             $this->client->index($params);
+            // Cập nhật các index liên quan
+            UpdateMedicinePatyIndexJob::dispatch($record, 'medicine');
         } catch (\Throwable $e) {
             writeAndThrowError(config('params')['elastic']['error']['insert_index'], $e);
         }

@@ -3,6 +3,8 @@
 namespace App\Listeners\Elastic\MaterialType;
 
 use App\Events\Elastic\MaterialType\InsertMaterialTypeIndex;
+use App\Jobs\ElasticSearch\UpdateMediStockMatyIndexJob;
+use App\Jobs\ElasticSearch\UpdateTestIndexIndexJob;
 use App\Models\HIS\MaterialType;
 use App\Repositories\MaterialTypeRepository;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -33,8 +35,10 @@ class ElasticInsertMaterialTypeIndex
                 'id'    => $record['id'], // ID của bản ghi
                 'body'  => $data,
             ];
-
             $this->client->index($params);
+            // Cập nhật các index liên quan
+            UpdateMediStockMatyIndexJob::dispatch($record, 'material_type');
+            UpdateTestIndexIndexJob::dispatch($record, 'material_type');
         } catch (\Throwable $e) {
             writeAndThrowError(config('params')['elastic']['error']['insert_index'], $e);
         }

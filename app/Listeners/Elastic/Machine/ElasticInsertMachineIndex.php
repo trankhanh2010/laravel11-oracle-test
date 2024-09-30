@@ -3,6 +3,7 @@
 namespace App\Listeners\Elastic\Machine;
 
 use App\Events\Elastic\Machine\InsertMachineIndex;
+use App\Jobs\ElasticSearch\UpdateServiceMachineIndexJob;
 use App\Models\HIS\Machine;
 use App\Repositories\MachineRepository;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -33,8 +34,9 @@ class ElasticInsertMachineIndex
                 'id'    => $record['id'], // ID của bản ghi
                 'body'  => $data,
             ];
-
             $this->client->index($params);
+            // Cập nhật các index liên quan
+            UpdateServiceMachineIndexJob::dispatch($record, 'machine');
         } catch (\Throwable $e) {
             writeAndThrowError(config('params')['elastic']['error']['insert_index'], $e);
         }

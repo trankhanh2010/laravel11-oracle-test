@@ -3,6 +3,7 @@
 namespace App\Listeners\Elastic\DiimType;
 
 use App\Events\Elastic\DiimType\InsertDiimTypeIndex;
+use App\Jobs\ElasticSearch\UpdateServiceIndexJob;
 use App\Models\HIS\DiimType;
 use App\Repositories\DiimTypeRepository;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -33,8 +34,9 @@ class ElasticInsertDiimTypeIndex
                 'id'    => $record['id'], // ID của bản ghi
                 'body'  => $data,
             ];
-
             $this->client->index($params);
+            // Cập nhật các index liên quan
+            UpdateServiceIndexJob::dispatch($record, 'diim_type');
         } catch (\Throwable $e) {
             writeAndThrowError(config('params')['elastic']['error']['insert_index'], $e);
         }

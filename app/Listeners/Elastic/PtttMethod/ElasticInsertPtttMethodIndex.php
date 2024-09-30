@@ -3,6 +3,7 @@
 namespace App\Listeners\Elastic\PtttMethod;
 
 use App\Events\Elastic\PtttMethod\InsertPtttMethodIndex;
+use App\Jobs\ElasticSearch\UpdateServiceIndexJob;
 use App\Models\HIS\PtttMethod;
 use App\Repositories\PtttMethodRepository;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -33,8 +34,9 @@ class ElasticInsertPtttMethodIndex
                 'id'    => $record['id'], // ID của bản ghi
                 'body'  => $data,
             ];
-
             $this->client->index($params);
+            // Cập nhật các index liên quan
+            UpdateServiceIndexJob::dispatch($record, 'pttt_method');
         } catch (\Throwable $e) {
             writeAndThrowError(config('params')['elastic']['error']['insert_index'], $e);
         }

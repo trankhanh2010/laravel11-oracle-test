@@ -19,7 +19,6 @@ class TestIndexRepository
         ->leftJoin('his_test_index_unit as test_index_unit', 'test_index_unit.id', '=', 'his_test_index.test_index_unit_id')
         ->leftJoin('his_test_index_group as test_index_group', 'test_index_group.id', '=', 'his_test_index.test_index_group_id')
         ->leftJoin('his_material_type as material_type', 'material_type.id', '=', 'his_test_index.material_type_id')
-        ->leftJoin('his_material_type as material_type', 'material_type.id', '=', 'his_test_index.material_type_id')
         ->leftJoin('his_service_type as test_service_type', 'test_service_type.id', '=', 'his_test_index.test_service_type_id')
 
             ->select(

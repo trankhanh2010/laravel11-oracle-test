@@ -3,6 +3,8 @@
 namespace App\Listeners\Elastic\ServiceType;
 
 use App\Events\Elastic\ServiceType\InsertServiceTypeIndex;
+use App\Jobs\ElasticSearch\UpdateServiceIndexJob;
+use App\Jobs\ElasticSearch\UpdateTestIndexIndexJob;
 use App\Models\HIS\ServiceType;
 use App\Repositories\ServiceTypeRepository;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -33,8 +35,10 @@ class ElasticInsertServiceTypeIndex
                 'id'    => $record['id'], // ID của bản ghi
                 'body'  => $data,
             ];
-
             $this->client->index($params);
+            // Cập nhật các index liên quan
+            UpdateServiceIndexJob::dispatch($record, 'service_type');
+            UpdateTestIndexIndexJob::dispatch($record, 'test_service_type');
         } catch (\Throwable $e) {
             writeAndThrowError(config('params')['elastic']['error']['insert_index'], $e);
         }

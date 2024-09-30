@@ -3,6 +3,7 @@
 namespace App\Listeners\Elastic\ReceptionRoom;
 
 use App\Events\Elastic\ReceptionRoom\InsertReceptionRoomIndex;
+use App\Jobs\ElasticSearch\UpdateRoomIndexJob;
 use App\Models\HIS\ReceptionRoom;
 use App\Repositories\ReceptionRoomRepository;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -35,8 +36,9 @@ class ElasticInsertReceptionRoomIndex
                 'id'    => $record['id'], // ID của bản ghi
                 'body'  => $data,
             ];
-
             $this->client->index($params);
+            // Cập nhật các index liên quan
+            UpdateRoomIndexJob::dispatch($record, 'reception_room');
         } catch (\Throwable $e) {
             writeAndThrowError(config('params')['elastic']['error']['insert_index'], $e);
         }

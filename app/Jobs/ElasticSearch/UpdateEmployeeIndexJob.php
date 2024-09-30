@@ -71,6 +71,26 @@ class UpdateEmployeeIndexJob implements ShouldQueue
                     event(new InsertEmployeeIndex($item, 'employee'));
                 }
                 break;
+            case 'gender':
+                $params = [
+                    'index' => 'employee',
+                    'body'  => [
+                        '_source' => false,
+                        'query'   => [
+                            'term' => [
+                                'gender_id' => $record->id
+                            ]
+                        ]
+                    ]
+                ];
+                $response = $this->client->search($params);
+                $ids = array_map(function ($hit) {
+                    return new \ArrayObject(['id' => $hit['_id']], \ArrayObject::ARRAY_AS_PROPS);
+                }, $response['hits']['hits']);
+                foreach ($ids as $item) {
+                    event(new InsertEmployeeIndex($item, 'employee'));
+                }
+                break;
             default:
                 break;
         }

@@ -3,6 +3,8 @@
 namespace App\Listeners\Elastic\Gender;
 
 use App\Events\Elastic\Gender\InsertGenderIndex;
+use App\Jobs\ElasticSearch\UpdateEmployeeIndexJob;
+use App\Jobs\ElasticSearch\UpdateServiceIndexJob;
 use App\Models\HIS\Gender;
 use App\Repositories\GenderRepository;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -33,8 +35,10 @@ class ElasticInsertGenderIndex
                 'id'    => $record['id'], // ID của bản ghi
                 'body'  => $data,
             ];
-
             $this->client->index($params);
+            // Cập nhật các index liên quan
+            UpdateEmployeeIndexJob::dispatch($record, 'gender');
+            UpdateServiceIndexJob::dispatch($record, 'gender');
         } catch (\Throwable $e) {
             writeAndThrowError(config('params')['elastic']['error']['insert_index'], $e);
         }

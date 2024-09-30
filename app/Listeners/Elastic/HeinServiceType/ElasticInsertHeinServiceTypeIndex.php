@@ -3,6 +3,7 @@
 namespace App\Listeners\Elastic\HeinServiceType;
 
 use App\Events\Elastic\HeinServiceType\InsertHeinServiceTypeIndex;
+use App\Jobs\ElasticSearch\UpdateServiceIndexJob;
 use App\Models\HIS\HeinServiceType;
 use App\Repositories\HeinServiceTypeRepository;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -33,8 +34,9 @@ class ElasticInsertHeinServiceTypeIndex
                 'id'    => $record['id'], // ID của bản ghi
                 'body'  => $data,
             ];
-
             $this->client->index($params);
+            // Cập nhật các index liên quan
+            UpdateServiceIndexJob::dispatch($record, 'hein_service_type');
         } catch (\Throwable $e) {
             writeAndThrowError(config('params')['elastic']['error']['insert_index'], $e);
         }

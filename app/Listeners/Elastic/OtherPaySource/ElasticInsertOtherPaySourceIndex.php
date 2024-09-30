@@ -3,6 +3,8 @@
 namespace App\Listeners\Elastic\OtherPaySource;
 
 use App\Events\Elastic\OtherPaySource\InsertOtherPaySourceIndex;
+use App\Jobs\ElasticSearch\UpdatePatientClassifyIndexJob;
+use App\Jobs\ElasticSearch\UpdateServiceIndexJob;
 use App\Models\HIS\OtherPaySource;
 use App\Repositories\OtherPaySourceRepository;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -33,8 +35,10 @@ class ElasticInsertOtherPaySourceIndex
                 'id'    => $record['id'], // ID của bản ghi
                 'body'  => $data,
             ];
-
             $this->client->index($params);
+            // Cập nhật các index liên quan
+            UpdatePatientClassifyIndexJob::dispatch($record, 'other_pay_source');
+            UpdateServiceIndexJob::dispatch($record, 'other_pay_source');
         } catch (\Throwable $e) {
             writeAndThrowError(config('params')['elastic']['error']['insert_index'], $e);
         }

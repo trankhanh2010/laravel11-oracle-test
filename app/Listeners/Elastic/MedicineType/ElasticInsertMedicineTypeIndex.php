@@ -3,6 +3,8 @@
 namespace App\Listeners\Elastic\MedicineType;
 
 use App\Events\Elastic\MedicineType\InsertMedicineTypeIndex;
+use App\Jobs\ElasticSearch\UpdateMedicineTypeAcinIndexJob;
+use App\Jobs\ElasticSearch\UpdateMediStockMetyIndexJob;
 use App\Models\HIS\MedicineType;
 use App\Repositories\MedicineTypeRepository;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -33,8 +35,10 @@ class ElasticInsertMedicineTypeIndex
                 'id'    => $record['id'], // ID của bản ghi
                 'body'  => $data,
             ];
-
             $this->client->index($params);
+            // Cập nhật các index liên quan
+            UpdateMedicineTypeAcinIndexJob::dispatch($record, 'medicine_type');
+            UpdateMediStockMetyIndexJob::dispatch($record, 'medicine_type');
         } catch (\Throwable $e) {
             writeAndThrowError(config('params')['elastic']['error']['insert_index'], $e);
         }

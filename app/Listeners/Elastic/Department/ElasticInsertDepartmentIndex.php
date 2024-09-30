@@ -5,6 +5,7 @@ namespace App\Listeners\Elastic\Department;
 use App\Events\Elastic\Department\InsertDepartmentIndex;
 use App\Jobs\ElasticSearch\UpdateEmployeeIndexJob;
 use App\Jobs\ElasticSearch\UpdateMachineIndexJob;
+use App\Jobs\ElasticSearch\UpdateServiceIndexJob;
 use App\Models\HIS\Department;
 use App\Repositories\DepartmentRepository;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -39,6 +40,7 @@ class ElasticInsertDepartmentIndex
             // Cập nhật các index liên quan
             UpdateEmployeeIndexJob::dispatch($record, 'department');
             UpdateMachineIndexJob::dispatch($record, 'department');
+            UpdateServiceIndexJob::dispatch($record, 'revenue_department');
         } catch (\Throwable $e) {
             writeAndThrowError(config('params')['elastic']['error']['insert_index'], $e);
         }

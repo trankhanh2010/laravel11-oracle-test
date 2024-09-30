@@ -5,6 +5,7 @@ namespace App\Listeners\Elastic\DataStore;
 use App\Events\Elastic\DataStore\InsertDataStoreIndex;
 use App\Jobs\ElasticSearch\UpdateDataStoreIndexJob;
 use App\Jobs\ElasticSearch\UpdateLocationStoreIndexJob;
+use App\Jobs\ElasticSearch\UpdateRoomIndexJob;
 use App\Models\HIS\DataStore;
 use App\Repositories\DataStoreRepository;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -39,6 +40,7 @@ class ElasticInsertDataStoreIndex
             // Cập nhật các index liên quan
             UpdateDataStoreIndexJob::dispatch($record, 'parent');
             UpdateLocationStoreIndexJob::dispatch($record, 'data_store');
+            UpdateRoomIndexJob::dispatch($record, 'data_store');
         } catch (\Throwable $e) {
             writeAndThrowError(config('params')['elastic']['error']['insert_index'], $e);
         }

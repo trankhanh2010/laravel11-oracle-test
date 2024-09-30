@@ -3,6 +3,7 @@
 namespace App\Listeners\Elastic\PtttGroup;
 
 use App\Events\Elastic\PtttGroup\InsertPtttGroupIndex;
+use App\Jobs\ElasticSearch\UpdateServiceIndexJob;
 use App\Models\HIS\PtttGroup;
 use App\Repositories\PtttGroupRepository;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -35,8 +36,9 @@ class ElasticInsertPtttGroupIndex
                 'id'    => $record['id'], // ID của bản ghi
                 'body'  => $data,
             ];
-
             $this->client->index($params);
+            // Cập nhật các index liên quan
+            UpdateServiceIndexJob::dispatch($record, 'pttt_group');
         } catch (\Throwable $e) {
             writeAndThrowError(config('params')['elastic']['error']['insert_index'], $e);
         }

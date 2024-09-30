@@ -3,6 +3,7 @@
 namespace App\Listeners\Elastic\National;
 
 use App\Events\Elastic\National\InsertNationalIndex;
+use App\Jobs\ElasticSearch\UpdateProvinceIndexJob;
 use App\Models\HIS\National;
 use App\Repositories\NationalRepository;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -33,8 +34,9 @@ class ElasticInsertNationalIndex
                 'id'    => $record['id'], // ID của bản ghi
                 'body'  => $data,
             ];
-
             $this->client->index($params);
+            // Cập nhật các index liên quan
+            UpdateProvinceIndexJob::dispatch($record, 'national');
         } catch (\Throwable $e) {
             writeAndThrowError(config('params')['elastic']['error']['insert_index'], $e);
         }

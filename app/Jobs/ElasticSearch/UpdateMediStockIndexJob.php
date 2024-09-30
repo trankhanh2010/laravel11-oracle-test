@@ -71,46 +71,46 @@ class UpdateMediStockIndexJob implements ShouldQueue
                     event(new InsertMediStockIndex($item, 'medi_stock'));
                 }
                 break;
-                case 'imp_mest_types':
-                    $params = [
-                        'index' => 'medi_stock',
-                        'body'  => [
-                            '_source' => false,
-                            'query'   => [
-                                'term' => [
-                                    'imp_mest_types.pivot.imp_mest_type_id' => $record->id
-                                ]
+            case 'imp_mest_types':
+                $params = [
+                    'index' => 'medi_stock',
+                    'body'  => [
+                        '_source' => false,
+                        'query'   => [
+                            'term' => [
+                                'imp_mest_types.pivot.imp_mest_type_id' => $record->id
                             ]
                         ]
-                    ];
-                    $response = $this->client->search($params);
-                    $ids = array_map(function ($hit) {
-                        return new \ArrayObject(['id' => $hit['_id']], \ArrayObject::ARRAY_AS_PROPS);
-                    }, $response['hits']['hits']);
-                    foreach ($ids as $item) {
-                        event(new InsertMediStockIndex($item, 'medi_stock'));
-                    }
-                    break;
-                    case 'exp_mest_types':
-                        $params = [
-                            'index' => 'medi_stock',
-                            'body'  => [
-                                '_source' => false,
-                                'query'   => [
-                                    'term' => [
-                                        'exp_mest_types.pivot.exp_mest_type_id' => $record->id
-                                    ]
-                                ]
+                    ]
+                ];
+                $response = $this->client->search($params);
+                $ids = array_map(function ($hit) {
+                    return new \ArrayObject(['id' => $hit['_id']], \ArrayObject::ARRAY_AS_PROPS);
+                }, $response['hits']['hits']);
+                foreach ($ids as $item) {
+                    event(new InsertMediStockIndex($item, 'medi_stock'));
+                }
+                break;
+            case 'exp_mest_types':
+                $params = [
+                    'index' => 'medi_stock',
+                    'body'  => [
+                        '_source' => false,
+                        'query'   => [
+                            'term' => [
+                                'exp_mest_types.pivot.exp_mest_type_id' => $record->id
                             ]
-                        ];
-                        $response = $this->client->search($params);
-                        $ids = array_map(function ($hit) {
-                            return new \ArrayObject(['id' => $hit['_id']], \ArrayObject::ARRAY_AS_PROPS);
-                        }, $response['hits']['hits']);
-                        foreach ($ids as $item) {
-                            event(new InsertMediStockIndex($item, 'medi_stock'));
-                        }
-                        break;
+                        ]
+                    ]
+                ];
+                $response = $this->client->search($params);
+                $ids = array_map(function ($hit) {
+                    return new \ArrayObject(['id' => $hit['_id']], \ArrayObject::ARRAY_AS_PROPS);
+                }, $response['hits']['hits']);
+                foreach ($ids as $item) {
+                    event(new InsertMediStockIndex($item, 'medi_stock'));
+                }
+                break;
             default:
                 break;
         }

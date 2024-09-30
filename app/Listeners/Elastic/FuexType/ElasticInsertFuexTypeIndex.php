@@ -3,6 +3,7 @@
 namespace App\Listeners\Elastic\FuexType;
 
 use App\Events\Elastic\FuexType\InsertFuexTypeIndex;
+use App\Jobs\ElasticSearch\UpdateServiceIndexJob;
 use App\Models\HIS\FuexType;
 use App\Repositories\FuexTypeRepository;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -33,8 +34,9 @@ class ElasticInsertFuexTypeIndex
                 'id'    => $record['id'], // ID của bản ghi
                 'body'  => $data,
             ];
-
             $this->client->index($params);
+            // Cập nhật các index liên quan
+            UpdateServiceIndexJob::dispatch($record, 'fuex_type');
         } catch (\Throwable $e) {
             writeAndThrowError(config('params')['elastic']['error']['insert_index'], $e);
         }

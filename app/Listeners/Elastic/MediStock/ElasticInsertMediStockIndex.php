@@ -7,6 +7,8 @@ use App\Jobs\ElasticSearch\UpdateMediStockIndexJob;
 use App\Jobs\ElasticSearch\UpdateMediStockMatyIndexJob;
 use App\Jobs\ElasticSearch\UpdateMediStockMetyIndexJob;
 use App\Jobs\ElasticSearch\UpdateMestPatientTypeIndexJob;
+use App\Jobs\ElasticSearch\UpdateMestRoomIndexJob;
+use App\Jobs\ElasticSearch\UpdateRoomIndexJob;
 use App\Models\HIS\MediStock;
 use App\Repositories\MediStockRepository;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -45,6 +47,8 @@ class ElasticInsertMediStockIndex
             UpdateMediStockMetyIndexJob::dispatch($record, 'medi_stock');
             UpdateMediStockIndexJob::dispatch($record, 'parent');
             UpdateMestPatientTypeIndexJob::dispatch($record, 'medi_stock');
+            UpdateMestRoomIndexJob::dispatch($record, 'medi_stock');
+            UpdateRoomIndexJob::dispatch($record, 'medi_stock');
         } catch (\Throwable $e) {
             writeAndThrowError(config('params')['elastic']['error']['insert_index'], $e);
         }

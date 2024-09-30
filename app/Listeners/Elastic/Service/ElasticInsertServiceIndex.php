@@ -4,6 +4,14 @@ namespace App\Listeners\Elastic\Service;
 
 use App\Events\Elastic\Service\InsertServiceIndex;
 use App\Jobs\ElasticSearch\UpdateBedBstyIndexJob;
+use App\Jobs\ElasticSearch\UpdatePtttGroupIndexJob;
+use App\Jobs\ElasticSearch\UpdateServiceFollowIndexJob;
+use App\Jobs\ElasticSearch\UpdateServiceIndexJob;
+use App\Jobs\ElasticSearch\UpdateServiceMachineIndexJob;
+use App\Jobs\ElasticSearch\UpdateServicePatyIndexJob;
+use App\Jobs\ElasticSearch\UpdateServiceRoomIndexJob;
+use App\Jobs\ElasticSearch\UpdateServSegrIndexJob;
+use App\Jobs\ElasticSearch\UpdateTestIndexIndexJob;
 use App\Repositories\ServiceRepository;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
@@ -38,6 +46,15 @@ class ElasticInsertServiceIndex
             $this->client->index($params);
             // Cập nhật các index liên quan
             UpdateBedBstyIndexJob::dispatch($record, 'service');
+            UpdatePtttGroupIndexJob::dispatch($record, 'bed_services');
+            UpdateServiceFollowIndexJob::dispatch($record, 'service');
+            UpdateServiceFollowIndexJob::dispatch($record, 'service_follow');
+            UpdateServiceMachineIndexJob::dispatch($record, 'service');
+            UpdateServicePatyIndexJob::dispatch($record, 'service');
+            UpdateServiceIndexJob::dispatch($record, 'parent');
+            UpdateServiceRoomIndexJob::dispatch($record, 'service');
+            UpdateServSegrIndexJob::dispatch($record, 'service');
+            UpdateTestIndexIndexJob::dispatch($record, 'service');
         } catch (\Throwable $e) {
             writeAndThrowError(config('params')['elastic']['error']['insert_index'], $e);
         }

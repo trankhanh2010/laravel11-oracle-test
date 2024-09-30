@@ -3,6 +3,7 @@
 namespace App\Listeners\Elastic\ServiceGroup;
 
 use App\Events\Elastic\ServiceGroup\InsertServiceGroupIndex;
+use App\Jobs\ElasticSearch\UpdateServSegrIndexJob;
 use App\Models\HIS\ServiceGroup;
 use App\Repositories\ServiceGroupRepository;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -33,8 +34,9 @@ class ElasticInsertServiceGroupIndex
                 'id'    => $record['id'], // ID của bản ghi
                 'body'  => $data,
             ];
-
             $this->client->index($params);
+            // Cập nhật các index liên quan
+            UpdateServSegrIndexJob::dispatch($record, 'service_group');
         } catch (\Throwable $e) {
             writeAndThrowError(config('params')['elastic']['error']['insert_index'], $e);
         }
