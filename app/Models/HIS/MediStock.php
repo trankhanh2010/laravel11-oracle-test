@@ -99,11 +99,11 @@ class MediStock extends Model
     public function exp_mest_types()
     {
         return $this->belongsToMany(ExpMestType::class, MediStockExty::class)
-        ->withPivot('is_auto_approve', 'is_auto_execute');
+        ->withPivot('is_auto_approve', 'is_auto_execute', 'id');
     }
     public function imp_mest_types()
     {
         return $this->belongsToMany(ImpMestType::class, MediStockImty::class)
-        ->withPivot('is_auto_approve', 'is_auto_execute');
+        ->withPivot('is_auto_approve', 'is_auto_execute', 'id');
     }
 }

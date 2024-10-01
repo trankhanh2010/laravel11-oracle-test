@@ -51,6 +51,46 @@ class UpdateRoleIndexJob implements ShouldQueue
                     event(new InsertRoleIndex($item, 'role'));
                 }
                 break;
+            case 'module_role':
+                $params = [
+                    'index' => 'role',
+                    'body'  => [
+                        '_source' => false,
+                        'query'   => [
+                            'term' => [
+                                'id' => $record->role_id
+                            ]
+                        ]
+                    ]
+                ];
+                $response = $this->client->search($params);
+                $ids = array_map(function ($hit) {
+                    return new \ArrayObject(['id' => $hit['_id']], \ArrayObject::ARRAY_AS_PROPS);
+                }, $response['hits']['hits']);
+                foreach ($ids as $item) {
+                    event(new InsertRoleIndex($item, 'role'));
+                }
+                break;
+            case 'delete_module_role':
+                $params = [
+                    'index' => 'role',
+                    'body'  => [
+                        '_source' => false,
+                        'query'   => [
+                            'term' => [
+                                'modules.pivot.id' => $record
+                            ]
+                        ]
+                    ]
+                ];
+                $response = $this->client->search($params);
+                $ids = array_map(function ($hit) {
+                    return new \ArrayObject(['id' => $hit['_id']], \ArrayObject::ARRAY_AS_PROPS);
+                }, $response['hits']['hits']);
+                foreach ($ids as $item) {
+                    event(new InsertRoleIndex($item, 'role'));
+                }
+                break;
             default:
                 break;
         }

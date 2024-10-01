@@ -103,7 +103,7 @@ class CreateRoleIndex
                                 'id' => [
                                     'type' => 'long'  // Số nguyên 64-bit, phù hợp với ID số
                                 ],
-                                'module_code' => [
+                                'module_name' => [
                                     'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
                                     'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
                                     'fields' => [
@@ -118,6 +118,9 @@ class CreateRoleIndex
                                             'type' => 'long'  // Số nguyên 64-bit, phù hợp với ID số
                                         ],
                                         'module_id' => [
+                                            'type' => 'long'  // Số nguyên 64-bit, phù hợp với ID số
+                                        ],
+                                        'id' => [
                                             'type' => 'long'  // Số nguyên 64-bit, phù hợp với ID số
                                         ],
                                     ]

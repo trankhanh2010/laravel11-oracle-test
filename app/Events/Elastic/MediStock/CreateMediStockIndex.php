@@ -282,6 +282,9 @@ class CreateMediStockIndex
                                         'is_auto_execute' => [
                                             'type' => 'byte'
                                         ],
+                                        'id' => [
+                                            'type' => 'long'  // Số nguyên 64-bit, phù hợp với ID số
+                                        ],
                                     ]
                                 ]
                             ],
@@ -319,6 +322,9 @@ class CreateMediStockIndex
                                         ],
                                         'is_auto_execute' => [
                                             'type' => 'byte'
+                                        ],
+                                        'id' => [
+                                            'type' => 'long'  // Số nguyên 64-bit, phù hợp với ID số
                                         ],
                                     ]
                                 ]

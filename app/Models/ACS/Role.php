@@ -22,6 +22,6 @@ class Role extends Model
 
     public function modules()
     {
-        return $this->belongsToMany(Module::class, 'acs_module_role', 'role_id', 'module_id');
+        return $this->belongsToMany(Module::class, 'acs_module_role', 'role_id', 'module_id')->withPivot('id');
     }
 }
