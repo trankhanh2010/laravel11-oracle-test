@@ -67,4 +67,59 @@ class BedTypeService
             return writeAndThrowError(config('params')['db_service']['error']['bed_type'], $e);
         }
     }
+    public function createBedType($request)
+    {
+        try {
+            $data = $this->bedTypeRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->bedTypeName));
+            // Gọi event để thêm index vào elastic
+            event(new InsertBedTypeIndex($data, $this->params->bedTypeName));
+            return returnDataCreateSuccess($data);
+        } catch (\Throwable $e) {
+            return writeAndThrowError(config('params')['db_service']['error']['bed_type'], $e);
+        }
+    }
+
+    public function updateBedType($id, $request)
+    {
+        if (!is_numeric($id)) {
+            return returnIdError($id);
+        }
+        $data = $this->bedTypeRepository->getById($id);
+        if ($data == null) {
+            return returnNotRecord($id);
+        }
+        try {
+            $data = $this->bedTypeRepository->update($request, $data, $this->params->time, $this->params->appModifier);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->bedTypeName));
+            // Gọi event để thêm index vào elastic
+            event(new InsertBedTypeIndex($data, $this->params->bedTypeName));
+            return returnDataUpdateSuccess($data);
+        } catch (\Throwable $e) {
+            return writeAndThrowError(config('params')['db_service']['error']['bed_type'], $e);
+        }
+    }
+
+    public function deleteBedType($id)
+    {
+        if (!is_numeric($id)) {
+            return returnIdError($id);
+        }
+        $data = $this->bedTypeRepository->getById($id);
+        if ($data == null) {
+            return returnNotRecord($id);
+        }
+        try {
+            $data = $this->bedTypeRepository->delete($data);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->bedTypeName));
+            // Gọi event để xóa index trong elastic
+            event(new DeleteIndex($data, $this->params->bedTypeName));
+            return returnDataDeleteSuccess();
+        } catch (\Throwable $e) {
+            return writeAndThrowError(config('params')['db_service']['error']['bed_type'], $e);
+        }
+    }
 }

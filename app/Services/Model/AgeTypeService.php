@@ -3,6 +3,9 @@
 namespace App\Services\Model;
 
 use App\DTOs\AgeTypeDTO;
+use App\Events\Cache\DeleteCache;
+use App\Events\Elastic\AgeType\InsertAgeTypeIndex;
+use App\Events\Elastic\DeleteIndex;
 use Illuminate\Support\Facades\Cache;
 use App\Repositories\AgeTypeRepository;
 
@@ -60,6 +63,62 @@ class AgeTypeService
                 return $data;
             });
             return $data;
+        } catch (\Throwable $e) {
+            return writeAndThrowError(config('params')['db_service']['error']['age_type'], $e);
+        }
+    }
+
+    public function createAgeType($request)
+    {
+        try {
+            $data = $this->ageTypeRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->ageTypeName));
+            // Gọi event để thêm index vào elastic
+            event(new InsertAgeTypeIndex($data, $this->params->ageTypeName));
+            return returnDataCreateSuccess($data);
+        } catch (\Throwable $e) {
+            return writeAndThrowError(config('params')['db_service']['error']['age_type'], $e);
+        }
+    }
+
+    public function updateAgeType($id, $request)
+    {
+        if (!is_numeric($id)) {
+            return returnIdError($id);
+        }
+        $data = $this->ageTypeRepository->getById($id);
+        if ($data == null) {
+            return returnNotRecord($id);
+        }
+        try {
+            $data = $this->ageTypeRepository->update($request, $data, $this->params->time, $this->params->appModifier);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->ageTypeName));
+            // Gọi event để thêm index vào elastic
+            event(new InsertAgeTypeIndex($data, $this->params->ageTypeName));
+            return returnDataUpdateSuccess($data);
+        } catch (\Throwable $e) {
+            return writeAndThrowError(config('params')['db_service']['error']['age_type'], $e);
+        }
+    }
+
+    public function deleteAgeType($id)
+    {
+        if (!is_numeric($id)) {
+            return returnIdError($id);
+        }
+        $data = $this->ageTypeRepository->getById($id);
+        if ($data == null) {
+            return returnNotRecord($id);
+        }
+        try {
+            $data = $this->ageTypeRepository->delete($data);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->ageTypeName));
+            // Gọi event để xóa index trong elastic
+            event(new DeleteIndex($data, $this->params->ageTypeName));
+            return returnDataDeleteSuccess();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['age_type'], $e);
         }

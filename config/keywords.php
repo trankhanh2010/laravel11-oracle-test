@@ -1103,4 +1103,14 @@ return [
         'bed_id' => 'Id giường',
         'service_ids' => 'Danh sách Id dịch vụ giường',
     ],
+    // Loại tuổi
+    'age_type' => [
+        'age_type_code' => 'Mã loại tuổi',
+        'age_type_name' => 'Tên loại tuổi',
+    ],
+    // Loại giường
+    'bed_type' => [
+        'bed_type_code' => 'Mã loại giường',
+        'bed_type_name' => 'Tên loại giường',
+    ],
 ];

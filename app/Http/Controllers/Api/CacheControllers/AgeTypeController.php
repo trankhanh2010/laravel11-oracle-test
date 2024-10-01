@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api\CacheControllers;
 
 use App\DTOs\AgeTypeDTO;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
+use App\Http\Requests\AgeType\CreateAgeTypeRequest;
+use App\Http\Requests\AgeType\UpdateAgeTypeRequest;
 use App\Models\HIS\AgeType;
 use Illuminate\Http\Request;
 use App\Services\Elastic\ElasticsearchService;
@@ -94,5 +96,17 @@ class AgeTypeController extends BaseApiCacheController
             $this->isActiveName => $this->isActive,
         ];
         return returnDataSuccess($paramReturn, $data);
+    }
+    public function store(CreateAgeTypeRequest $request)
+    {
+        return $this->ageTypeService->createAgeType($request);
+    }
+    public function update(UpdateAgeTypeRequest $request, $id)
+    {
+        return $this->ageTypeService->updateAgeType($id, $request);
+    }
+    public function destroy($id)
+    {
+        return $this->ageTypeService->deleteAgeType($id);
     }
 }

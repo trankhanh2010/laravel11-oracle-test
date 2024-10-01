@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api\CacheControllers;
 
 use App\DTOs\BedTypeDTO;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
+use App\Http\Requests\BedType\CreateBedTypeRequest;
+use App\Http\Requests\BedType\UpdateBedTypeRequest;
 use App\Models\HIS\BedType;
 use Illuminate\Http\Request;
 use App\Services\Elastic\ElasticsearchService;
@@ -96,5 +98,17 @@ class BedTypeController extends BaseApiCacheController
             $this->isActiveName => $this->isActive,
         ];
         return returnDataSuccess($paramReturn, $data);
+    }
+    public function store(CreateBedTypeRequest $request)
+    {
+        return $this->bedTypeService->createBedType($request);
+    }
+    public function update(UpdateBedTypeRequest $request, $id)
+    {
+        return $this->bedTypeService->updateBedType($id, $request);
+    }
+    public function destroy($id)
+    {
+        return $this->bedTypeService->deleteBedType($id);
     }
 }

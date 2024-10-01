@@ -243,7 +243,7 @@ Route::group([
         Route::apiResource('v1/accident-location', AccidentLocationController::class);
     });
     /// Loại tuổi
-    Route::apiResource('v1/age-type', AgeTypeController::class)->only(['index', 'show']);
+    Route::apiResource('v1/age-type', AgeTypeController::class);
     /// Khu vực
     Route::group(['as' => 'HIS.Desktop.Plugins.HisArea'], function () {
         Route::apiResource('v1/area', AreaController::class);
@@ -272,7 +272,7 @@ Route::group([
     });
     /// Loại giường
     Route::group(['as' => 'HIS.Desktop.Plugins.HisBedTypeList'], function () {
-        Route::apiResource('v1/bed-type', BedTypeController::class)->only(['index', 'show']);
+        Route::apiResource('v1/bed-type', BedTypeController::class);
     });
     /// Thẻ BHYT không hợp lệ
     Route::group(['as' => 'HIS.Desktop.Plugins.HisBhytBlacklist'], function () {
