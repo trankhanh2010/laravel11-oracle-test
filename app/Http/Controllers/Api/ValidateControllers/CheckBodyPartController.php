@@ -2,23 +2,23 @@
 
 namespace App\Http\Controllers\Api\ValidateControllers;
 
-use App\Http\Controllers\BaseControllers\BaseValidateController;
+use App\Http\Controllers\BaseControllers\BaseApiCacheController;
 use App\Http\Controllers\Controller;
 use App\Models\HIS\BodyPart;
 use Illuminate\Http\Request;
 
-class CheckBodyPartController extends BaseValidateController
+class CheckBodyPartController extends BaseApiCacheController
 {
     public function __construct(Request $request){
         parent::__construct($request); // Gọi constructor của BaseController
-        $this->body_part = new BodyPart();
+        $this->bodyPart = new BodyPart();
     }
-    public function check_code(Request $request){
+    public function checkCode(Request $request){
         $code = $request->code;
         $id = $request->id;
 
         if($code != null){
-            $exists = $this->body_part::where('body_part_code', $code);
+            $exists = $this->bodyPart::where('body_part_code', $code);
             if ($id) {
                 if (!is_numeric($id)) {
                     return returnIdError($id);
@@ -26,10 +26,10 @@ class CheckBodyPartController extends BaseValidateController
                 $exists->where('id', '!=', $id);
             }
             $exists = $exists->exists();
-            $param_return = [
+            $paramReturn = [
                 'code' => $code
             ];
-            return return_check_data($param_return, !$exists);        
+            return returnCheckData($paramReturn, !$exists);        
         }
     }
 }

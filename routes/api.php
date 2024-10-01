@@ -247,6 +247,7 @@ Route::group([
     /// Khu vực
     Route::group(['as' => 'HIS.Desktop.Plugins.HisArea'], function () {
         Route::apiResource('v1/area', AreaController::class);
+        Route::get('v1/area-check', [CheckAreaController::class, "checkCode"])->name('.area_check_code');
     });
     /// Nhóm ATC
     Route::group(['as' => 'HIS.Desktop.Plugins.HisAtcGroup'], function () {
@@ -267,6 +268,7 @@ Route::group([
     /// Buồng bệnh
     Route::group(['as' => 'HIS.Desktop.Plugins.HisBedRoomList'], function () {
         Route::apiResource('v1/bed-room', BedRoomController::class);
+        Route::get('v1/bed-room-check', [CheckBedRoomController::class, "checkCode"])->name('.bed_room_check_code');
     });
     /// Loại giường
     Route::group(['as' => 'HIS.Desktop.Plugins.HisBedTypeList'], function () {
@@ -298,6 +300,7 @@ Route::group([
     });
     /// Bộ phận cơ thể
     Route::apiResource('v1/body-part', BodyPartController::class);
+    Route::get('v1/body-part-check', [CheckBodyPartController::class, "checkCode"])->name('.body_part_check_code');
     /// Ngôi thai
     Route::group(['as' => 'HIS.Desktop.Plugins.HisBornPosition'], function () {
         Route::apiResource('v1/born-position', BornPositionController::class);
@@ -305,6 +308,7 @@ Route::group([
     /// Cơ sở/Xã phường
     Route::group(['as' => 'HIS.Desktop.Plugins.HisBranch'], function () {
         Route::apiResource('v1/branch', BranchController::class);
+        Route::get('v1/branch-check', [CheckBranchController::class, "checkCode"])->name('.branch_check_code');
     });
     /// Lý do hủy giao dịch
     Route::group(['as' => 'HIS.Desktop.Plugins.HisCancelReason'], function () {
@@ -321,10 +325,12 @@ Route::group([
     /// Phòng thu ngân
     Route::group(['as' => 'HIS.Desktop.Plugins.HisCashierRoom'], function () {
         Route::apiResource('v1/cashier-room', CashierRoomController::class);
+        Route::get('v1/cashier-room-check', [CheckCashierRoomController::class, "checkCode"])->name('.cashier_room_check_code');
     });
     /// Xã
     Route::group(['as' => 'SDA.Desktop.Plugins.SdaCommune'], function () {
         Route::apiResource('v1/commune', CommuneController::class);
+        Route::get('v1/commune-check', [CheckCommuneController::class, "checkCode"])->name('.commune_check_code');
     });
     /// Chống chỉ định
     Route::group(['as' => 'HIS.Desktop.Plugins.HisContraindication'], function () {
@@ -333,6 +339,7 @@ Route::group([
     /// Tủ bệnh án
     Route::group(['as' => 'HIS.Desktop.Plugins.HisDataStore'], function () {
         Route::apiResource('v1/data-store', DataStoreController::class);
+        Route::get('v1/data-store-check', [CheckDataStoreController::class, "checkCode"])->name('.data_store_check_code');
     });
     /// Thời gian tử vong
     Route::group(['as' => 'HIS.Desktop.Plugins.HisDeathWithin'], function () {
@@ -347,12 +354,14 @@ Route::group([
     /// Khoa phòng
     Route::group(['as' => 'HIS.Desktop.Plugins.HisDepartment'], function () {
         Route::apiResource('v1/department', DepartmentController::class);
+        Route::get('v1/department-check', [CheckDepartmentController::class, "checkCode"])->name('.department_check_code');
     });
     /// Loại chẩn đoán hình ảnh
     Route::apiResource('v1/diim-type', DiimTypeController::class)->only(['index', 'show']);
     /// Huyện
     Route::group(['as' => 'SDA.Desktop.Plugins.SdaDistrict'], function () {
         Route::apiResource('v1/district', DistrictController::class);
+        Route::get('v1/district-check', [CheckDistrictController::class, "checkCode"])->name('.district_check_code');
     });
     /// Dạng bào chế
     Route::group(['as' => 'HIS.Desktop.Plugins.HisDosageForm'], function () {
@@ -372,10 +381,12 @@ Route::group([
     /// Nhóm thực hiện
     Route::group(['as' => 'HIS.Desktop.Plugins.HisExecuteGroup'], function () {
         Route::apiResource('v1/execute-group', ExecuteGroupController::class);
+        Route::get('v1/execute-group-check', [CheckExecuteGroupController::class, "checkCode"])->name('.execute_group_check_code');
     });
     /// Vai trò thực hiện
     Route::group(['as' => 'HIS.Desktop.Plugins.HisExecuteRole'], function () {
         Route::apiResource('v1/execute-role', ExecuteRoleController::class);
+        Route::get('v1/execute-role-check', [CheckExecuteRoleController::class, "checkCode"])->name('.execute_role_check_code');
     });
     /// Tài khoản - Vai trò thực hiện
     Route::group(['as' => 'HIS.Desktop.Plugins.ExecuteRoleUser'], function () {
@@ -384,6 +395,7 @@ Route::group([
     /// Phòng khám/cls/pttt
     Route::group(['as' => 'HIS.Desktop.Plugins.HisExecuteRoom'], function () {
         Route::apiResource('v1/execute-room', ExecuteRoomController::class);
+        Route::get('v1/execute-room-check', [CheckExecuteRoomController::class, "checkCode"])->name('.execute_room_check_code');
     });
     /// Module xử lý dịch vụ
     Route::group(['as' => 'HIS.Desktop.Plugins.HisExeServiceModule'], function () {
@@ -422,6 +434,7 @@ Route::group([
     /// Icd - Cm
     Route::group(['as' => 'HIS.Desktop.Plugins.HisIcdCm'], function () {
         Route::apiResource('v1/icd-cm', IcdCmController::class);
+        Route::get('v1/icd-cm-check', [CheckIcdCmController::class, "checkCode"])->name('.icd_cm_check_code');
     });
     /// ICD - Accepted Icd - Chẩn đoán
     Route::group(['as' => 'HIS.Desktop.Plugins.HisIcd'], function () {
@@ -483,6 +496,7 @@ Route::group([
     /// Cơ sở khám chữa bệnh ban đầu
     Route::group(['as' => 'HIS.Desktop.Plugins.HisMediOrg'], function () {
         Route::apiResource('v1/medi-org', MediOrgController::class);
+        Route::get('v1/medi-org-check', [CheckMediOrgController::class, "checkCode"])->name('.medi_org_check_code');
     });
     /// Loại bệnh án
     Route::group(['as' => 'HIS.Desktop.Plugins.HisMediRecordType'], function () {
@@ -491,6 +505,7 @@ Route::group([
     /// Kho
     Route::group(['as' => 'HIS.Desktop.Plugins.HisMediStock'], function () {
         Route::apiResource('v1/medi-stock', MediStockController::class);
+        Route::get('v1/medi-stock-check', [CheckMediStockController::class, "checkCode"])->name('.medi_stock_check_code');
     });
     /// Kho - Loại vật tư
     Route::group(['as' => 'HIS.Desktop.Plugins.MediStockMatyList'], function () {
@@ -521,10 +536,12 @@ Route::group([
     /// Quốc gia
     Route::group(['as' => 'SDA.Desktop.Plugins.SdaNational'], function () {
         Route::apiResource('v1/national', NationalController::class);
+        Route::get('v1/national-check', [CheckNationalController::class, "checkCode"])->name('.national_check_code');
     });
     /// Nguồn chi trả khác
     Route::group(['as' => 'HIS.Desktop.Plugins.HisOtherPaySource'], function () {
         Route::apiResource('v1/other-pay-source', OtherPaySourceController::class);
+        Route::get('v1/other-pay-source-check', [CheckOtherPaySourceController::class, "checkCode"])->name('.other_pay_source_check_code');
     });
     /// Gói
     Route::apiResource('v1/package', PackageController::class)->only(['index', 'show']);
@@ -535,6 +552,7 @@ Route::group([
     /// Phân loại bệnh nhân
     Route::group(['as' => 'HIS.Desktop.Plugins.HisPatientClassify'], function () {
         Route::apiResource('v1/patient-classify', PatientClassifyController::class);
+        Route::get('v1/patient-classify-check', [CheckPatientClassifyController::class, "checkCode"])->name('.patient_classify_check_code');
     });
     /// Chuyển đổi đối tượng
     Route::group(['as' => 'HIS.Desktop.Plugins.PatientTypeAllow'], function () {
@@ -567,6 +585,7 @@ Route::group([
     /// Tỉnh
     Route::group(['as' => 'SDA.Desktop.Plugins.SdaProvince'], function () {
         Route::apiResource('v1/province', ProvinceController::class);
+        Route::get('v1/province-check', [CheckProvinceController::class, "checkCode"])->name('.province_check_code');
     });
     /// Tai biến PTTT
     Route::group(['as' => 'HIS.Desktop.Plugins.HisPtttCatastrophe'], function () {
@@ -599,10 +618,12 @@ Route::group([
     /// Khu đón tiếp
     Route::group(['as' => 'HIS.Desktop.Plugins.HisReceptionRoom'], function () {
         Route::apiResource('v1/reception-room', ReceptionRoomController::class);
+        Route::get('v1/reception-room-check', [CheckReceptionRoomController::class, "checkCode"])->name('.reception_room_check_code');
     });
     /// Nhà ăn
     Route::group(['as' => 'HIS.Desktop.Plugins.HisRefectory'], function () {
         Route::apiResource('v1/refectory', RefectoryController::class);
+        Route::get('v1/refectory-check', [CheckRefectoryController::class, "checkCode"])->name('.refectory_check_code');
     });
     /// Mối quan hệ
     Route::group(['as' => 'HIS.Desktop.Plugins.EmrRelationList'], function () {
@@ -635,6 +656,7 @@ Route::group([
     /// Dịch vụ kỹ thuật
     Route::group(['as' => 'HIS.Desktop.Plugins.HisService'], function () {
         Route::apiResource('v1/service', ServiceController::class);
+        Route::get('v1/service-check', [CheckServiceController::class, "checkCode"])->name('.service_check_code');
     });
     /// Dịch vụ đi kèm
     Route::group(['as' => 'HIS.Desktop.Plugins.HisServiceFollow'], function () {
@@ -673,6 +695,7 @@ Route::group([
     /// Chuyên khoa
     Route::group(['as' => 'HIS.Desktop.Plugins.HisSpeciality'], function () {
         Route::apiResource('v1/speciality', SpecialityController::class);
+        Route::get('v1/speciality-check', [CheckSpecialityController::class, "checkCode"])->name('.speciality_check_code');
     });
     /// Chỉ số
     Route::group(['as' => 'HIS.Desktop.Plugins.HisSuimIndex'], function () {
@@ -707,6 +730,7 @@ Route::group([
     /// Diện điều trị
     Route::group(['as' => 'HIS.Desktop.Plugins.TreatmentType'], function () {
         Route::apiResource('v1/treatment-type', TreatmentTypeController::class);
+        Route::get('v1/treatment-type-check', [CheckTreatmentTypeController::class, "checkCode"])->name('.treatment_type_check_code');
     });
     /// Lý do mở trần
     Route::group(['as' => 'HIS.Desktop.Plugins.HisUnlimitReason'], function () {

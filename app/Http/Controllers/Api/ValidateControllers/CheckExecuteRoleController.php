@@ -2,22 +2,22 @@
 
 namespace App\Http\Controllers\Api\ValidateControllers;
 
-use App\Http\Controllers\BaseControllers\BaseValidateController;
+use App\Http\Controllers\BaseControllers\BaseApiCacheController;
 use App\Models\HIS\ExecuteRole;
 use Illuminate\Http\Request;
 
-class CheckExecuteRoleController extends BaseValidateController
+class CheckExecuteRoleController extends BaseApiCacheController
 {
     public function __construct(Request $request){
         parent::__construct($request); // Gọi constructor của BaseController
-        $this->execute_role = new ExecuteRole();
+        $this->executeRole = new ExecuteRole();
     }
-    public function check_code(Request $request){
+    public function checkCode(Request $request){
         $code = $request->code;
         $id = $request->id;
 
         if($code != null){
-            $exists = $this->execute_role::where('execute_role_code', $code);
+            $exists = $this->executeRole::where('execute_role_code', $code);
             if ($id) {
                 if (!is_numeric($id)) {
                     return returnIdError($id);
@@ -25,10 +25,10 @@ class CheckExecuteRoleController extends BaseValidateController
                 $exists->where('id', '!=', $id);
             }
             $exists = $exists->exists();
-            $param_return = [
+            $paramReturn = [
                 'code' => $code
             ];
-            return return_check_data($param_return, !$exists);        
+            return returnCheckData($paramReturn, !$exists);        
         }
     }
 }

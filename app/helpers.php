@@ -668,8 +668,8 @@ if (!function_exists('return400')) {
     }
 }
 
-if (!function_exists('return_check_data')) {
-    function return_check_data($param, $available)
+if (!function_exists('returnCheckData')) {
+    function returnCheckData($param, $available)
     {
         return response()->json([
             'status'    => 200,

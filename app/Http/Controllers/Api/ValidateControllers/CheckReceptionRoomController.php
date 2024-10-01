@@ -2,22 +2,22 @@
 
 namespace App\Http\Controllers\Api\ValidateControllers;
 
-use App\Http\Controllers\BaseControllers\BaseValidateController;
+use App\Http\Controllers\BaseControllers\BaseApiCacheController;
 use App\Models\HIS\ReceptionRoom;
 use Illuminate\Http\Request;
 
-class CheckReceptionRoomController extends BaseValidateController
+class CheckReceptionRoomController extends BaseApiCacheController
 {
     public function __construct(Request $request){
         parent::__construct($request); // Gọi constructor của BaseController
-        $this->reception_room = new ReceptionRoom();
+        $this->receptionRoom = new ReceptionRoom();
     }
-    public function check_code(Request $request){
+    public function checkCode(Request $request){
         $code = $request->code;
         $id = $request->id;
 
         if($code != null){
-            $exists = $this->reception_room::where('reception_room_code', $code);
+            $exists = $this->receptionRoom::where('reception_room_code', $code);
             if ($id) {
                 if (!is_numeric($id)) {
                     return returnIdError($id);
@@ -25,10 +25,10 @@ class CheckReceptionRoomController extends BaseValidateController
                 $exists->where('id', '!=', $id);
             }
             $exists = $exists->exists();
-            $param_return = [
+            $paramReturn = [
                 'code' => $code
             ];
-            return return_check_data($param_return, !$exists);        
+            return returnCheckData($paramReturn, !$exists);        
         }
     }
 }

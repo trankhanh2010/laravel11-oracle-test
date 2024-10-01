@@ -2,22 +2,22 @@
 
 namespace App\Http\Controllers\Api\ValidateControllers;
 
-use App\Http\Controllers\BaseControllers\BaseValidateController;
+use App\Http\Controllers\BaseControllers\BaseApiCacheController;
 use App\Models\HIS\ExecuteRoom;
 use Illuminate\Http\Request;
 
-class CheckExecuteRoomController extends BaseValidateController
+class CheckExecuteRoomController extends BaseApiCacheController
 {
     public function __construct(Request $request){
         parent::__construct($request); // Gọi constructor của BaseController
-        $this->execute_room = new ExecuteRoom();
+        $this->executeRoom = new ExecuteRoom();
     }
-    public function check_code(Request $request){
+    public function checkCode(Request $request){
         $code = $request->code;
         $id = $request->id;
 
         if($code != null){
-            $exists = $this->execute_room::where('execute_room_code', $code);
+            $exists = $this->executeRoom::where('execute_room_code', $code);
             if ($id) {
                 if (!is_numeric($id)) {
                     return returnIdError($id);
@@ -25,10 +25,10 @@ class CheckExecuteRoomController extends BaseValidateController
                 $exists->where('id', '!=', $id);
             }
             $exists = $exists->exists();
-            $param_return = [
+            $paramReturn = [
                 'code' => $code
             ];
-            return return_check_data($param_return, !$exists);        
+            return returnCheckData($paramReturn, !$exists);        
         }
     }
 }

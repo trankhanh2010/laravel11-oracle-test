@@ -2,18 +2,18 @@
 
 namespace App\Http\Controllers\Api\ValidateControllers;
 
-use App\Http\Controllers\BaseControllers\BaseValidateController;
+use App\Http\Controllers\BaseControllers\BaseApiCacheController;
 use App\Http\Controllers\Controller;
 use App\Models\HIS\Department;
 use Illuminate\Http\Request;
 
-class CheckDepartmentController extends BaseValidateController
+class CheckDepartmentController extends BaseApiCacheController
 {
     public function __construct(Request $request){
         parent::__construct($request); // Gọi constructor của BaseController
         $this->department = new Department();
     }
-    public function check_code(Request $request){
+    public function checkCode(Request $request){
         $code = $request->code;
         $id = $request->id;
 
@@ -26,10 +26,10 @@ class CheckDepartmentController extends BaseValidateController
                 $exists->where('id', '!=', $id);
             }
             $exists = $exists->exists();
-            $param_return = [
+            $paramReturn = [
                 'code' => $code
             ];
-            return return_check_data($param_return, !$exists);        
+            return returnCheckData($paramReturn, !$exists);        
         }
     }
 }
