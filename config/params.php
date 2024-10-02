@@ -85,6 +85,7 @@ return [
             'national',
             'other_pay_source',
             'package',
+            'packing_type',
             'patient_case',
             'patient_classify',
             'patient_type_allow',
@@ -293,6 +294,7 @@ return [
             'unlimit_reason' => 'Có lỗi khi thực hiện thao tác với bảng Lý do mở trần!',
             'work_place' => 'Có lỗi khi thực hiện thao tác với bảng Nơi làm việc!',
             'group_type' => 'Có lỗi khi thực hiện thao tác với bảng Loại đơn vị!',
+            'packing_type' => 'Có lỗi khi thực hiện thao tác với bảng Quy cách đóng gói!',
 
         ]
     ]

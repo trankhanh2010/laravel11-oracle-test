@@ -1174,7 +1174,7 @@ return [
         'is_leaf' => 'Là lá',       
         'num_order' => 'Số ưu tiên',     
         'concentra'  => 'Hàm lượng nồng độ',
-        'packing_type_id_delete'  => 'Id gói cần được xóa',
+        'packing_type_id_delete'  => 'Id quy cách đóng gói',
         'manufacturer_id' => 'Id hãng sản xuất',     
         'tdl_service_unit_id'  => 'Id đơn vị tính',           
         'tdl_gender_id' => 'Id giới tính',
@@ -1231,5 +1231,10 @@ return [
     'group_type' => [
         'group_type_code' => 'Mã loại đơn vị',
         'group_type_name' => 'Tên loại đơn vị',   
+    ],
+    // Quy cách đóng gói
+    'packing_type' => [
+        'packing_type_code' => 'Mã quy cách đóng gói',
+        'packing_type_name' => 'Tên quy cách đóng gói',   
     ],
 ];

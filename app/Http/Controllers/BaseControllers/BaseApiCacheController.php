@@ -319,6 +319,8 @@ class BaseApiCacheController extends Controller
     protected $ptttTableName = 'pttt_table';
     protected $ptttGroup;
     protected $ptttGroupName = 'pttt_group';
+    protected $packingType;
+    protected $packingTypeName = 'packing_type';
     protected $ptttMethod;
     protected $ptttMethodName = 'pttt_method';
     protected $emotionlessMethod;

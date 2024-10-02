@@ -137,6 +137,7 @@ use App\Http\Controllers\Api\CacheControllers\MedicineController;
 use App\Http\Controllers\Api\CacheControllers\MedicineTypeController;
 use App\Http\Controllers\Api\CacheControllers\MaterialTypeController;
 use App\Http\Controllers\Api\CacheControllers\ModuleController;
+use App\Http\Controllers\Api\CacheControllers\PackingTypeController;
 // Base Api
 use App\Http\Controllers\BaseControllers\CacheController;
 use App\Http\Controllers\BaseControllers\ElasticSearchController;
@@ -548,6 +549,10 @@ Route::group([
     });
     /// Gói
     Route::apiResource('v1/package', PackageController::class)->only(['index', 'show']);
+    /// Quy cách đóng gói 
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisPackingType'], function () {
+        Route::apiResource('v1/packing-type', PackingTypeController::class);
+    });
     /// Trường hợp bệnh
     Route::group(['as' => 'HIS.Desktop.Plugins.HisPatientCase'], function () {
         Route::apiResource('v1/patient-case', PatientCaseController::class)->only(['index', 'show']);

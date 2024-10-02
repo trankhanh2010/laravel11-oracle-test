@@ -168,6 +168,8 @@ use App\Events\Elastic\OtherPaySource\CreateOtherPaySourceIndex;
 use App\Events\Elastic\OtherPaySource\InsertOtherPaySourceIndex;
 use App\Events\Elastic\Package\CreatePackageIndex;
 use App\Events\Elastic\Package\InsertPackageIndex;
+use App\Events\Elastic\PackingType\CreatePackingTypeIndex;
+use App\Events\Elastic\PackingType\InsertPackingTypeIndex;
 use App\Events\Elastic\PatientCase\CreatePatientCaseIndex;
 use App\Events\Elastic\PatientCase\InsertPatientCaseIndex;
 use App\Events\Elastic\PatientClassify\CreatePatientClassifyIndex;
@@ -433,6 +435,8 @@ use App\Listeners\Elastic\OtherPaySource\ElasticCreateOtherPaySourceIndex;
 use App\Listeners\Elastic\OtherPaySource\ElasticInsertOtherPaySourceIndex;
 use App\Listeners\Elastic\Package\ElasticCreatePackageIndex;
 use App\Listeners\Elastic\Package\ElasticInsertPackageIndex;
+use App\Listeners\Elastic\PackingType\ElasticCreatePackingTypeIndex;
+use App\Listeners\Elastic\PackingType\ElasticInsertPackingTypeIndex;
 use App\Listeners\Elastic\PatientCase\ElasticCreatePatientCaseIndex;
 use App\Listeners\Elastic\PatientCase\ElasticInsertPatientCaseIndex;
 use App\Listeners\Elastic\PatientClassify\ElasticCreatePatientClassifyIndex;
@@ -1479,6 +1483,13 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertGroupTypeIndex::class => [
             ElasticInsertGroupTypeIndex::class,
+        ],
+
+        CreatePackingTypeIndex::class => [
+            ElasticCreatePackingTypeIndex::class,
+        ],
+        InsertPackingTypeIndex::class => [
+            ElasticInsertPackingTypeIndex::class,
         ],
     ];
 

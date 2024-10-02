@@ -87,6 +87,7 @@ use App\Events\Elastic\ModuleRole\CreateModuleRoleIndex;
 use App\Events\Elastic\National\CreateNationalIndex;
 use App\Events\Elastic\OtherPaySource\CreateOtherPaySourceIndex;
 use App\Events\Elastic\Package\CreatePackageIndex;
+use App\Events\Elastic\PackingType\CreatePackingTypeIndex;
 use App\Events\Elastic\PatientCase\CreatePatientCaseIndex;
 use App\Events\Elastic\PatientClassify\CreatePatientClassifyIndex;
 use App\Events\Elastic\PatientType\CreatePatientTypeIndex;
@@ -219,6 +220,7 @@ use App\Repositories\ModuleRoleRepository;
 use App\Repositories\NationalRepository;
 use App\Repositories\OtherPaySourceRepository;
 use App\Repositories\PackageRepository;
+use App\Repositories\PackingTypeRepository;
 use App\Repositories\PatientCaseRepository;
 use App\Repositories\PatientClassifyRepository;
 use App\Repositories\PatientTypeAllowRepository;
@@ -645,6 +647,10 @@ class IndexRecordsToElasticsearch extends Command
             case 'package':
                 $results = app(PackageRepository::class)->getDataFromDbToElastic(null);
                 event(new CreatePackageIndex($name_table));
+                break;
+            case 'packing_type':
+                $results = app(PackingTypeRepository::class)->getDataFromDbToElastic(null);
+                event(new CreatePackingTypeIndex($name_table));
                 break;
             case 'patient_case':
                 $results = app(PatientCaseRepository::class)->getDataFromDbToElastic(null);
