@@ -132,6 +132,7 @@ use App\Http\Controllers\Api\CacheControllers\TestIndexUnitController;
 use App\Http\Controllers\Api\CacheControllers\DebateTypeController;
 use App\Http\Controllers\Api\CacheControllers\IcdGroupController;
 use App\Http\Controllers\Api\CacheControllers\AgeTypeController;
+use App\Http\Controllers\Api\CacheControllers\GroupTypeController;
 use App\Http\Controllers\Api\CacheControllers\MedicineController;
 use App\Http\Controllers\Api\CacheControllers\MedicineTypeController;
 use App\Http\Controllers\Api\CacheControllers\MaterialTypeController;
@@ -423,6 +424,8 @@ Route::group([
     Route::apiResource('v1/gender', GenderController::class);
     /// Đơn vị
     Route::apiResource('v1/group', GroupController::class);
+    /// Loại đơn vị
+    Route::apiResource('v1/group-type', GroupTypeController::class);
     /// Nhóm dịch vụ BHYT
     Route::group(['as' => 'HIS.Desktop.Plugins.HisHeinServiceType'], function () {
         Route::apiResource('v1/hein-service-type', HeinServiceTypeController::class)->only(['index', 'show']);

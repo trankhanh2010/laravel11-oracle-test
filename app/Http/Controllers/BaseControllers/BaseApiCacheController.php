@@ -259,6 +259,8 @@ class BaseApiCacheController extends Controller
     protected $heinServiceTypeName = 'hein_service_type';
     protected $bhytParam;
     protected $bhytParamName = 'bhyt_param';
+    protected $groupType;
+    protected $groupTypeName = 'group_type_name';
     protected $bhytBlacklist;
     protected $bhytBlacklistName = 'bhyt_blacklist';
     protected $medicinePaty;

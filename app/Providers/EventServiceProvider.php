@@ -104,6 +104,8 @@ use App\Events\Elastic\Gender\CreateGenderIndex;
 use App\Events\Elastic\Gender\InsertGenderIndex;
 use App\Events\Elastic\Group\CreateGroupIndex;
 use App\Events\Elastic\Group\InsertGroupIndex;
+use App\Events\Elastic\GroupType\CreateGroupTypeIndex;
+use App\Events\Elastic\GroupType\InsertGroupTypeIndex;
 use App\Events\Elastic\HeinServiceType\CreateHeinServiceTypeIndex;
 use App\Events\Elastic\HeinServiceType\InsertHeinServiceTypeIndex;
 use App\Events\Elastic\HospitalizeReason\CreateHospitalizeReasonIndex;
@@ -367,6 +369,8 @@ use App\Listeners\Elastic\Gender\ElasticCreateGenderIndex;
 use App\Listeners\Elastic\Gender\ElasticInsertGenderIndex;
 use App\Listeners\Elastic\Group\ElasticCreateGroupIndex;
 use App\Listeners\Elastic\Group\ElasticInsertGroupIndex;
+use App\Listeners\Elastic\GroupType\ElasticCreateGroupTypeIndex;
+use App\Listeners\Elastic\GroupType\ElasticInsertGroupTypeIndex;
 use App\Listeners\Elastic\HeinServiceType\ElasticCreateHeinServiceTypeIndex;
 use App\Listeners\Elastic\HeinServiceType\ElasticInsertHeinServiceTypeIndex;
 use App\Listeners\Elastic\HospitalizeReason\ElasticCreateHospitalizeReasonIndex;
@@ -1468,6 +1472,13 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertWorkPlaceIndex::class => [
             ElasticInsertWorkPlaceIndex::class,
+        ],
+
+        CreateGroupTypeIndex::class => [
+            ElasticCreateGroupTypeIndex::class,
+        ],
+        InsertGroupTypeIndex::class => [
+            ElasticInsertGroupTypeIndex::class,
         ],
     ];
 

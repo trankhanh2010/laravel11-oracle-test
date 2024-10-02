@@ -53,6 +53,7 @@ return [
             'fuex_type',
             'gender',
             'group',
+            'group_type',
             'hein_service_type',
             'hospitalize_reason',
             'icd_cm',
@@ -291,6 +292,7 @@ return [
             'treatment_type' => 'Có lỗi khi thực hiện thao tác với bảng Diện điều trị!',
             'unlimit_reason' => 'Có lỗi khi thực hiện thao tác với bảng Lý do mở trần!',
             'work_place' => 'Có lỗi khi thực hiện thao tác với bảng Nơi làm việc!',
+            'group_type' => 'Có lỗi khi thực hiện thao tác với bảng Loại đơn vị!',
 
         ]
     ]

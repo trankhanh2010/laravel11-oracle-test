@@ -55,6 +55,7 @@ use App\Events\Elastic\FilmSize\CreateFilmSizeIndex;
 use App\Events\Elastic\FuexType\CreateFuexTypeIndex;
 use App\Events\Elastic\Gender\CreateGenderIndex;
 use App\Events\Elastic\Group\CreateGroupIndex;
+use App\Events\Elastic\GroupType\CreateGroupTypeIndex;
 use App\Events\Elastic\HeinServiceType\CreateHeinServiceTypeIndex;
 use App\Events\Elastic\HospitalizeReason\CreateHospitalizeReasonIndex;
 use App\Events\Elastic\Icd\CreateIcdIndex;
@@ -186,6 +187,7 @@ use App\Repositories\FilmSizeRepository;
 use App\Repositories\FuexTypeRepository;
 use App\Repositories\GenderRepository;
 use App\Repositories\GroupRepository;
+use App\Repositories\GroupTypeRepository;
 use App\Repositories\HeinServiceTypeRepository;
 use App\Repositories\HospitalizeReasonRepository;
 use App\Repositories\IcdCmRepository;
@@ -515,6 +517,10 @@ class IndexRecordsToElasticsearch extends Command
             case 'group':
                 $results = app(GroupRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateGroupIndex($name_table));
+                break;
+            case 'group_type':
+                $results = app(GroupTypeRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateGroupTypeIndex($name_table));
                 break;
             case 'hein_service_type':
                 $results = app(HeinServiceTypeRepository::class)->getDataFromDbToElastic(null);

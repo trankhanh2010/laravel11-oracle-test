@@ -1227,4 +1227,9 @@ return [
         'pricing_max_reuse_count' => 'Số lượng tái sử dụng, áp dụng trong công thức tính giá bán',
         'reuse_fee' => 'Chi phí khi tái sử dụng',
     ],
+    // Loại đơn vị
+    'group_type' => [
+        'group_type_code' => 'Mã loại đơn vị',
+        'group_type_name' => 'Tên loại đơn vị',   
+    ],
 ];
