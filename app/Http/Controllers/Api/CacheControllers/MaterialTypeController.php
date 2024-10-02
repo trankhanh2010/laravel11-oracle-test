@@ -100,4 +100,16 @@ class MaterialTypeController extends BaseApiCacheController
         ];
         return returnDataSuccess($paramReturn, $data);
     }
+    public function store(CreateMaterialTypeRequest $request)
+    {
+        return $this->materialTypeService->createMaterialType($request);
+    }
+    public function update(UpdateMaterialTypeRequest $request, $id)
+    {
+        return $this->materialTypeService->updateMaterialType($id, $request);
+    }
+    public function destroy($id)
+    {
+        return $this->materialTypeService->deleteMaterialType($id);
+    }
 }

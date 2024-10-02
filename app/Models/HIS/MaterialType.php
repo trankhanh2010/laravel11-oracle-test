@@ -11,7 +11,10 @@ class MaterialType extends Model
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his';
     protected $table = 'HIS_Material_Type';
-
+    protected $guarded = [
+        'id',
+    ];
+    public $timestamps = false;
     public function medi_stocks()
     {
         return $this->belongsToMany(MediStock::class, MediStockMaty::class, 'material_type_id', 'medi_stock_id');

@@ -6,13 +6,13 @@ use App\Traits\dinh_dang_ten_truong;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class IcdGroup extends Model
+class PackingType extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
-    protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_ICD_Group';
-    public $timestamps = false;
+    protected $connection = 'oracle_his';
+    protected $table = 'HIS_Packing_type';
     protected $guarded = [
         'id',
     ];
+    public $timestamps = false;
 }

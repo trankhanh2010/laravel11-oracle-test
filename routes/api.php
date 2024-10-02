@@ -441,7 +441,7 @@ Route::group([
         Route::apiResource('v1/icd', IcdController::class);
     });
     /// Nhóm ICD
-    Route::apiResource('v1/icd-group', IcdGroupController::class)->only(['index', 'show']);
+    Route::apiResource('v1/icd-group', IcdGroupController::class);
     /// Thông tin tài khoản
     Route::group(['as' => 'HIS.Desktop.Plugins.InfoUser'], function () {
         Route::get("v1/info-user", [EmployeeController::class, "infoUser"])->name('.get_info_user');
@@ -468,7 +468,7 @@ Route::group([
         Route::apiResource('v1/manufacturer', ManufacturerController::class);
     });
     /// Loại vật tư
-    Route::apiResource('v1/material-type', MaterialTypeController::class)->only(['index', 'show']);
+    Route::apiResource('v1/material-type', MaterialTypeController::class);
     /// Thuốc
     Route::apiResource('v1/medicine', MedicineController::class)->only(['index', 'show']);
     /// Nhóm thuốc

@@ -100,4 +100,16 @@ class IcdGroupController extends BaseApiCacheController
         ];
         return returnDataSuccess($paramReturn, $data);
     }
+    public function store(CreateIcdGroupRequest $request)
+    {
+        return $this->icdGroupService->createIcdGroup($request);
+    }
+    public function update(UpdateIcdGroupRequest $request, $id)
+    {
+        return $this->icdGroupService->updateIcdGroup($id, $request);
+    }
+    public function destroy($id)
+    {
+        return $this->icdGroupService->deleteIcdGroup($id);
+    }
 }
