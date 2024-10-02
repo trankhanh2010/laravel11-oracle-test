@@ -100,4 +100,16 @@ class FilmSizeController extends BaseApiCacheController
         ];
         return returnDataSuccess($paramReturn, $data);
     }
+    public function store(CreateFilmSizeRequest $request)
+    {
+        return $this->filmSizeService->createFilmSize($request);
+    }
+    public function update(UpdateFilmSizeRequest $request, $id)
+    {
+        return $this->filmSizeService->updateFilmSize($id, $request);
+    }
+    public function destroy($id)
+    {
+        return $this->filmSizeService->deleteFilmSize($id);
+    }
 }

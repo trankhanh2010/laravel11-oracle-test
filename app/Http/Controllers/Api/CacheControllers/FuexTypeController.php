@@ -100,4 +100,16 @@ class FuexTypeController extends BaseApiCacheController
         ];
         return returnDataSuccess($paramReturn, $data);
     }
+    public function store(CreateFuexTypeRequest $request)
+    {
+        return $this->fuexTypeService->createFuexType($request);
+    }
+    public function update(UpdateFuexTypeRequest $request, $id)
+    {
+        return $this->fuexTypeService->updateFuexType($id, $request);
+    }
+    public function destroy($id)
+    {
+        return $this->fuexTypeService->deleteFuexType($id);
+    }
 }

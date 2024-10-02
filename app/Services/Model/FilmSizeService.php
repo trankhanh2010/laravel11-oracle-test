@@ -67,4 +67,59 @@ class FilmSizeService
             return writeAndThrowError(config('params')['db_service']['error']['film_size'], $e);
         }
     }
+    public function createFilmSize($request)
+    {
+        try {
+            $data = $this->filmSizeRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->filmSizeName));
+            // Gọi event để thêm index vào elastic
+            event(new InsertFilmSizeIndex($data, $this->params->filmSizeName));
+            return returnDataCreateSuccess($data);
+        } catch (\Throwable $e) {
+            return writeAndThrowError(config('params')['db_service']['error']['film_size'], $e);
+        }
+    }
+
+    public function updateFilmSize($id, $request)
+    {
+        if (!is_numeric($id)) {
+            return returnIdError($id);
+        }
+        $data = $this->filmSizeRepository->getById($id);
+        if ($data == null) {
+            return returnNotRecord($id);
+        }
+        try {
+            $data = $this->filmSizeRepository->update($request, $data, $this->params->time, $this->params->appModifier);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->filmSizeName));
+            // Gọi event để thêm index vào elastic
+            event(new InsertFilmSizeIndex($data, $this->params->filmSizeName));
+            return returnDataUpdateSuccess($data);
+        } catch (\Throwable $e) {
+            return writeAndThrowError(config('params')['db_service']['error']['film_size'], $e);
+        }
+    }
+
+    public function deleteFilmSize($id)
+    {
+        if (!is_numeric($id)) {
+            return returnIdError($id);
+        }
+        $data = $this->filmSizeRepository->getById($id);
+        if ($data == null) {
+            return returnNotRecord($id);
+        }
+        try {
+            $data = $this->filmSizeRepository->delete($data);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->filmSizeName));
+            // Gọi event để xóa index trong elastic
+            event(new DeleteIndex($data, $this->params->filmSizeName));
+            return returnDataDeleteSuccess();
+        } catch (\Throwable $e) {
+            return writeAndThrowError(config('params')['db_service']['error']['film_size'], $e);
+        }
+    }
 }

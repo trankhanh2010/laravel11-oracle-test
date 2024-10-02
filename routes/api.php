@@ -415,10 +415,10 @@ Route::group([
     });
     /// Cỡ phim
     Route::group(['as' => 'HIS.Desktop.Plugins.HisFilmSize'], function () {
-        Route::apiResource('v1/film-size', FilmSizeController::class)->only(['index', 'show']);
+        Route::apiResource('v1/film-size', FilmSizeController::class);
     });
     /// Loại thăm dò chức năng
-    Route::apiResource('v1/fuex-type', FuexTypeController::class)->only(['index', 'show']);
+    Route::apiResource('v1/fuex-type', FuexTypeController::class);
     /// Giới tính
     Route::apiResource('v1/gender', GenderController::class)->only(['index', 'show']);
     /// Đơn vị

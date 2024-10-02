@@ -67,6 +67,41 @@ class FuexTypeService
             return writeAndThrowError(config('params')['db_service']['error']['fuex_type'], $e);
         }
     }
+    public function createFuexType($request)
+    {
+        try {
+            $data = $this->fuexTypeRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->fuexTypeName));
+            // Gọi event để thêm index vào elastic
+            event(new InsertFuexTypeIndex($data, $this->params->fuexTypeName));
+            return returnDataCreateSuccess($data);
+        } catch (\Throwable $e) {
+            return writeAndThrowError(config('params')['db_service']['error']['fuex_type'], $e);
+        }
+    }
+
+    public function updateFuexType($id, $request)
+    {
+        if (!is_numeric($id)) {
+            return returnIdError($id);
+        }
+        $data = $this->fuexTypeRepository->getById($id);
+        if ($data == null) {
+            return returnNotRecord($id);
+        }
+        try {
+            $data = $this->fuexTypeRepository->update($request, $data, $this->params->time, $this->params->appModifier);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->fuexTypeName));
+            // Gọi event để thêm index vào elastic
+            event(new InsertFuexTypeIndex($data, $this->params->fuexTypeName));
+            return returnDataUpdateSuccess($data);
+        } catch (\Throwable $e) {
+            return writeAndThrowError(config('params')['db_service']['error']['fuex_type'], $e);
+        }
+    }
+
     public function deleteFuexType($id)
     {
         if (!is_numeric($id)) {

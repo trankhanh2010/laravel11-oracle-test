@@ -11,4 +11,8 @@ class FuexType extends Model
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his';
     protected $table = 'HIS_Fuex_Type';
+    public $timestamps = false;
+    protected $guarded = [
+        'id',
+    ];
 }

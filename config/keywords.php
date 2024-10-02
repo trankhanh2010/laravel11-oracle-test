@@ -1135,4 +1135,14 @@ return [
         'is_depa' => 'Xuất hao phí',
         'is_odd' => 'Là xuất lẻ',
     ],
+    // Cỡ phim
+    'film_size' => [
+        'film_size_code' => 'Mã cỡ phim',
+        'film_size_name' => 'Tên cỡ phim',
+    ],
+    // Loại thăm dò chức năng
+    'fuex_type' => [
+        'fuex_type_code' => 'Mã loại thăm dò chức năng',
+        'fuex_type_name' => 'Tên loại thăm dò chức năng',
+    ],
 ];
