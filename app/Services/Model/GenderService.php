@@ -67,6 +67,41 @@ class GenderService
             return writeAndThrowError(config('params')['db_service']['error']['gender'], $e);
         }
     }
+    public function createGender($request)
+    {
+        try {
+            $data = $this->genderRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->genderName));
+            // Gọi event để thêm index vào elastic
+            event(new InsertGenderIndex($data, $this->params->genderName));
+            return returnDataCreateSuccess($data);
+        } catch (\Throwable $e) {
+            return writeAndThrowError(config('params')['db_service']['error']['gender'], $e);
+        }
+    }
+
+    public function updateGender($id, $request)
+    {
+        if (!is_numeric($id)) {
+            return returnIdError($id);
+        }
+        $data = $this->genderRepository->getById($id);
+        if ($data == null) {
+            return returnNotRecord($id);
+        }
+        try {
+            $data = $this->genderRepository->update($request, $data, $this->params->time, $this->params->appModifier);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->genderName));
+            // Gọi event để thêm index vào elastic
+            event(new InsertGenderIndex($data, $this->params->genderName));
+            return returnDataUpdateSuccess($data);
+        } catch (\Throwable $e) {
+            return writeAndThrowError(config('params')['db_service']['error']['gender'], $e);
+        }
+    }
+
     public function deleteGender($id)
     {
         if (!is_numeric($id)) {

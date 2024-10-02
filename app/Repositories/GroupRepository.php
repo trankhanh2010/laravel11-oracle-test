@@ -74,7 +74,12 @@ class GroupRepository
             'is_active' => 1,
             'is_delete' => 0,
             'group_code' => $request->group_code,
-            'group_name' => $request->group_name,
+            'group_name' => $request->group_name, 
+            'g_code'  => $request->g_code,
+            'group_type_id'  => $request->group_type_id,
+            'parent_id' => $request->parent_id,
+            'code_path'  => $request->code_path,
+            'id_path'  => $request->id_path,
         ]);
         return $data;
     }
@@ -85,6 +90,11 @@ class GroupRepository
             'app_modifier' => $appModifier,
             'group_code' => $request->group_code,
             'group_name' => $request->group_name,
+            'g_code'  => $request->g_code,
+            'group_type_id'  => $request->group_type_id,
+            'parent_id' => $request->parent_id,
+            'code_path'  => $request->code_path,
+            'id_path'  => $request->id_path,
             'is_active' => $request->is_active
         ]);
         return $data;

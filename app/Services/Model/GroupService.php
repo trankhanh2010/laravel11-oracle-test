@@ -67,6 +67,41 @@ class GroupService
             return writeAndThrowError(config('params')['db_service']['error']['group'], $e);
         }
     }
+    public function createGroup($request)
+    {
+        try {
+            $data = $this->groupRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->groupName));
+            // Gọi event để thêm index vào elastic
+            event(new InsertGroupIndex($data, $this->params->groupName));
+            return returnDataCreateSuccess($data);
+        } catch (\Throwable $e) {
+            return writeAndThrowError(config('params')['db_service']['error']['group'], $e);
+        }
+    }
+
+    public function updateGroup($id, $request)
+    {
+        if (!is_numeric($id)) {
+            return returnIdError($id);
+        }
+        $data = $this->groupRepository->getById($id);
+        if ($data == null) {
+            return returnNotRecord($id);
+        }
+        try {
+            $data = $this->groupRepository->update($request, $data, $this->params->time, $this->params->appModifier);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->groupName));
+            // Gọi event để thêm index vào elastic
+            event(new InsertGroupIndex($data, $this->params->groupName));
+            return returnDataUpdateSuccess($data);
+        } catch (\Throwable $e) {
+            return writeAndThrowError(config('params')['db_service']['error']['group'], $e);
+        }
+    }
+
     public function deleteGroup($id)
     {
         if (!is_numeric($id)) {

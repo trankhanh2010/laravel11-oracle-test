@@ -47,7 +47,7 @@ class UpdateDataStoreRequest extends FormRequest
                                                     $query = $query
                                                     ->where(DB::connection('oracle_his')->raw("is_active"), 1);
                                                 }),
-                                                'not_in:'.$this->id,
+                                                'not_in:'.$this->data_store,
                                             ],
             'stored_department_id' =>       [
                                                 'nullable',

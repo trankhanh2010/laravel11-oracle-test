@@ -100,4 +100,16 @@ class GenderController extends BaseApiCacheController
         ];
         return returnDataSuccess($paramReturn, $data);
     }
+    public function store(CreateGenderRequest $request)
+    {
+        return $this->genderService->createGender($request);
+    }
+    public function update(UpdateGenderRequest $request, $id)
+    {
+        return $this->genderService->updateGender($id, $request);
+    }
+    public function destroy($id)
+    {
+        return $this->genderService->deleteGender($id);
+    }
 }

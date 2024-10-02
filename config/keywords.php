@@ -1145,4 +1145,19 @@ return [
         'fuex_type_code' => 'Mã loại thăm dò chức năng',
         'fuex_type_name' => 'Tên loại thăm dò chức năng',
     ],
+    // Giới tính
+    'gender' => [
+        'gender_code' => 'Mã giới tính',
+        'gender_name' => 'Tên giới tính',
+    ],
+    // Đơn vị
+    'group' => [
+        'group_code' => 'Mã đơn vị',
+        'group_name' => 'Tên đơn vị',   
+        'g_code'  => 'G code',
+        'group_type_id'  => 'Id loại đơn vị',
+        'parent_id' => 'Id cha',
+        'code_path'  => ' Code path',   
+        'id_path'  => 'Id path'
+    ],
 ];

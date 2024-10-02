@@ -100,4 +100,16 @@ class GroupController extends BaseApiCacheController
         ];
         return returnDataSuccess($paramReturn, $data);
     }
+    public function store(CreateGroupRequest $request)
+    {
+        return $this->groupService->createGroup($request);
+    }
+    public function update(UpdateGroupRequest $request, $id)
+    {
+        return $this->groupService->updateGroup($id, $request);
+    }
+    public function destroy($id)
+    {
+        return $this->groupService->deleteGroup($id);
+    }
 }

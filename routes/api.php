@@ -420,9 +420,9 @@ Route::group([
     /// Loại thăm dò chức năng
     Route::apiResource('v1/fuex-type', FuexTypeController::class);
     /// Giới tính
-    Route::apiResource('v1/gender', GenderController::class)->only(['index', 'show']);
+    Route::apiResource('v1/gender', GenderController::class);
     /// Đơn vị
-    Route::apiResource('v1/group', GroupController::class)->only(['index', 'show']);
+    Route::apiResource('v1/group', GroupController::class);
     /// Nhóm dịch vụ BHYT
     Route::group(['as' => 'HIS.Desktop.Plugins.HisHeinServiceType'], function () {
         Route::apiResource('v1/hein-service-type', HeinServiceTypeController::class)->only(['index', 'show']);
