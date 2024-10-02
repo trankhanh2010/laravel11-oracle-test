@@ -100,4 +100,16 @@ class DebateTypeController extends BaseApiCacheController
         ];
         return returnDataSuccess($paramReturn, $data);
     }
+    public function store(CreateDebateTypeRequest $request)
+    {
+        return $this->debateTypeService->createDebateType($request);
+    }
+    public function update(UpdateDebateTypeRequest $request, $id)
+    {
+        return $this->debateTypeService->updateDebateType($id, $request);
+    }
+    public function destroy($id)
+    {
+        return $this->debateTypeService->deleteDebateType($id);
+    }
 }

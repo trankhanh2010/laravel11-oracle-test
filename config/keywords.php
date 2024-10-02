@@ -1113,4 +1113,14 @@ return [
         'bed_type_code' => 'Mã loại giường',
         'bed_type_name' => 'Tên loại giường',
     ],
+    // Loại hội chẩn
+    'debate_type' => [
+        'debate_type_code' => 'Mã loại hội chẩn',
+        'debate_type_name' => 'Tên loại hội chẩn',
+    ],
+    // Loại chẩn đoán hình ảnh
+    'diim_type' => [
+        'diim_type_code' => 'Mã loại chẩn đoán hình ảnh',
+        'diim_type_name' => 'Tên loại chẩn đoán hình ảnh',
+    ],
 ];

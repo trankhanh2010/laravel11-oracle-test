@@ -100,4 +100,16 @@ class DiimTypeController extends BaseApiCacheController
         ];
         return returnDataSuccess($paramReturn, $data);
     }
+    public function store(CreateDiimTypeRequest $request)
+    {
+        return $this->diimTypeService->createDiimType($request);
+    }
+    public function update(UpdateDiimTypeRequest $request, $id)
+    {
+        return $this->diimTypeService->updateDiimType($id, $request);
+    }
+    public function destroy($id)
+    {
+        return $this->diimTypeService->deleteDiimType($id);
+    }
 }

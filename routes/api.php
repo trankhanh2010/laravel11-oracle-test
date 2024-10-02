@@ -350,14 +350,14 @@ Route::group([
         Route::apiResource('v1/debate-reason', DebateReasonController::class);
     });
     // Loại hội chẩn
-    Route::apiResource('v1/debate-type', DebateTypeController::class)->only(['index', 'show']);
+    Route::apiResource('v1/debate-type', DebateTypeController::class);
     /// Khoa phòng
     Route::group(['as' => 'HIS.Desktop.Plugins.HisDepartment'], function () {
         Route::apiResource('v1/department', DepartmentController::class);
         Route::get('v1/department-check', [CheckDepartmentController::class, "checkCode"])->name('.department_check_code');
     });
     /// Loại chẩn đoán hình ảnh
-    Route::apiResource('v1/diim-type', DiimTypeController::class)->only(['index', 'show']);
+    Route::apiResource('v1/diim-type', DiimTypeController::class);
     /// Huyện
     Route::group(['as' => 'SDA.Desktop.Plugins.SdaDistrict'], function () {
         Route::apiResource('v1/district', DistrictController::class);
