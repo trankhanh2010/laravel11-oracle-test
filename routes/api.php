@@ -399,11 +399,11 @@ Route::group([
     });
     /// Module xử lý dịch vụ
     Route::group(['as' => 'HIS.Desktop.Plugins.HisExeServiceModule'], function () {
-        Route::apiResource('v1/exe-service-module', ExeServiceModuleController::class)->only(['index', 'show']);
+        Route::apiResource('v1/exe-service-module', ExeServiceModuleController::class);
     });
     /// Lý do xuất
     Route::group(['as' => 'HIS.Desktop.Plugins.HisExpMestReason'], function () {
-        Route::apiResource('v1/exp-mest-reason', ExpMestReasonController::class)->only(['index', 'show']);
+        Route::apiResource('v1/exp-mest-reason', ExpMestReasonController::class);
     });
     /// Phòng chỉ định - Phòng thực hiện 
     Route::group(['as' => 'HIS.Desktop.Plugins.ExroRoom'], function () {

@@ -74,7 +74,7 @@ class ExeServiceModuleRepository
             'app_modifier' => $appModifier,
             'is_active' => 1,
             'is_delete' => 0,
-            'exe_service_module_code' => $request->exe_service_module_code,
+            'module_link' => $request->module_link,
             'exe_service_module_name' => $request->exe_service_module_name,
         ]);
         return $data;
@@ -84,7 +84,7 @@ class ExeServiceModuleRepository
             'modify_time' => now()->format('Ymdhis'),
             'modifier' => get_loginname_with_token($request->bearerToken(), $time),
             'app_modifier' => $appModifier,
-            'exe_service_module_code' => $request->exe_service_module_code,
+            'module_link' => $request->module_link,
             'exe_service_module_name' => $request->exe_service_module_name,
             'is_active' => $request->is_active
         ]);

@@ -79,4 +79,38 @@ class ExpMestReasonRepository
         }
         return $data;
     }
+    public function create($request, $time, $appCreator, $appModifier){
+        $data = $this->expMestReason::create([
+            'create_time' => now()->format('Ymdhis'),
+            'modify_time' => now()->format('Ymdhis'),
+            'creator' => get_loginname_with_token($request->bearerToken(), $time),
+            'modifier' => get_loginname_with_token($request->bearerToken(), $time),
+            'app_creator' => $appCreator,
+            'app_modifier' => $appModifier,
+            'is_active' => 1,
+            'is_delete' => 0,
+            'exp_mest_reason_code' => $request->exp_mest_reason_code,
+            'exp_mest_reason_name' => $request->exp_mest_reason_name,
+            'is_depa' => $request->is_depa,
+            'is_odd' => $request->is_odd,
+        ]);
+        return $data;
+    }
+    public function update($request, $data, $time, $appModifier){
+        $data->update([
+            'modify_time' => now()->format('Ymdhis'),
+            'modifier' => get_loginname_with_token($request->bearerToken(), $time),
+            'app_modifier' => $appModifier,
+            'exp_mest_reason_code' => $request->exp_mest_reason_code,
+            'exp_mest_reason_name' => $request->exp_mest_reason_name,
+            'is_depa' => $request->is_depa,
+            'is_odd' => $request->is_odd,
+            'is_active' => $request->is_active
+        ]);
+        return $data;
+    }
+    public function delete($data){
+        $data->delete();
+        return $data;
+    }
 }

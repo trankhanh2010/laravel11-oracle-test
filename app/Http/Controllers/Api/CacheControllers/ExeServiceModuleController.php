@@ -100,4 +100,16 @@ class ExeServiceModuleController extends BaseApiCacheController
         ];
         return returnDataSuccess($paramReturn, $data);
     }
+    public function store(CreateExeServiceModuleRequest $request)
+    {
+        return $this->exeServiceModuleService->createExeServiceModule($request);
+    }
+    public function update(UpdateExeServiceModuleRequest $request, $id)
+    {
+        return $this->exeServiceModuleService->updateExeServiceModule($id, $request);
+    }
+    public function destroy($id)
+    {
+        return $this->exeServiceModuleService->deleteExeServiceModule($id);
+    }
 }

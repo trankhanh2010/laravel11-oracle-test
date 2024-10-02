@@ -100,4 +100,16 @@ class ExpMestReasonController extends BaseApiCacheController
         ];
         return returnDataSuccess($paramReturn, $data);
     }
+    public function store(CreateExpMestReasonRequest $request)
+    {
+        return $this->expMestReasonService->createExpMestReason($request);
+    }
+    public function update(UpdateExpMestReasonRequest $request, $id)
+    {
+        return $this->expMestReasonService->updateExpMestReason($id, $request);
+    }
+    public function destroy($id)
+    {
+        return $this->expMestReasonService->deleteExpMestReason($id);
+    }
 }

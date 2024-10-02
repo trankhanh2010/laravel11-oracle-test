@@ -1123,4 +1123,16 @@ return [
         'diim_type_code' => 'Mã loại chẩn đoán hình ảnh',
         'diim_type_name' => 'Tên loại chẩn đoán hình ảnh',
     ],
+    // Module xử lý dịch vụ
+    'exe_service_module' => [
+        'module_link' => 'Link',
+        'exe_service_module_name' => 'Tên module xử lý dịch vụ',
+    ],
+    // Lý do xuất
+    'exp_mest_reason' => [
+        'exp_mest_reason_code' => 'Mã lý do xuất',
+        'exp_mest_reason_name' => 'Tên lý do xuất',
+        'is_depa' => 'Xuất hao phí',
+        'is_odd' => 'Là xuất lẻ',
+    ],
 ];

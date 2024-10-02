@@ -67,4 +67,59 @@ class ExpMestReasonService
             return writeAndThrowError(config('params')['db_service']['error']['exp_mest_reason'], $e);
         }
     }
+    public function createExpMestReason($request)
+    {
+        try {
+            $data = $this->expMestReasonRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->expMestReasonName));
+            // Gọi event để thêm index vào elastic
+            event(new InsertExpMestReasonIndex($data, $this->params->expMestReasonName));
+            return returnDataCreateSuccess($data);
+        } catch (\Throwable $e) {
+            return writeAndThrowError(config('params')['db_service']['error']['exp_mest_reason'], $e);
+        }
+    }
+
+    public function updateExpMestReason($id, $request)
+    {
+        if (!is_numeric($id)) {
+            return returnIdError($id);
+        }
+        $data = $this->expMestReasonRepository->getById($id);
+        if ($data == null) {
+            return returnNotRecord($id);
+        }
+        try {
+            $data = $this->expMestReasonRepository->update($request, $data, $this->params->time, $this->params->appModifier);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->expMestReasonName));
+            // Gọi event để thêm index vào elastic
+            event(new InsertExpMestReasonIndex($data, $this->params->expMestReasonName));
+            return returnDataUpdateSuccess($data);
+        } catch (\Throwable $e) {
+            return writeAndThrowError(config('params')['db_service']['error']['exp_mest_reason'], $e);
+        }
+    }
+
+    public function deleteExpMestReason($id)
+    {
+        if (!is_numeric($id)) {
+            return returnIdError($id);
+        }
+        $data = $this->expMestReasonRepository->getById($id);
+        if ($data == null) {
+            return returnNotRecord($id);
+        }
+        try {
+            $data = $this->expMestReasonRepository->delete($data);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->expMestReasonName));
+            // Gọi event để xóa index trong elastic
+            event(new DeleteIndex($data, $this->params->expMestReasonName));
+            return returnDataDeleteSuccess();
+        } catch (\Throwable $e) {
+            return writeAndThrowError(config('params')['db_service']['error']['exp_mest_reason'], $e);
+        }
+    }
 }
