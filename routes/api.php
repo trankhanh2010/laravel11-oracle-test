@@ -480,7 +480,7 @@ Route::group([
         Route::apiResource('v1/material-type-map', MaterialTypeMapController::class);
     });
     /// Thuốc
-    Route::apiResource('v1/medicine', MedicineController::class)->only(['index', 'show']);
+    Route::apiResource('v1/medicine', MedicineController::class);
     /// Nhóm thuốc
     Route::group(['as' => 'HIS.Desktop.Plugins.HisMedicineGroup'], function () {
         Route::apiResource('v1/medicine-group', MedicineGroupController::class)->only(['index', 'show']);
