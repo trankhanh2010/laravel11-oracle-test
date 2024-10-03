@@ -149,6 +149,8 @@ class BaseApiCacheController extends Controller
     protected $receptionRoomName = "reception_room";
     protected $area;
     protected $areaName = "area";
+    protected $materialTypeMap;
+    protected $materialTypeMapName = 'material_type_map';
     protected $refectory;
     protected $refectoryName = "refectory";
     protected $executeGroup;

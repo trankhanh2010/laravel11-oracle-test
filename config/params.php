@@ -65,6 +65,7 @@ return [
             'machine',
             'manufacturer',
             'material_type',
+            'material_type_map',
             'medicine',
             'medicine_group',
             'medicine_line',
@@ -295,7 +296,7 @@ return [
             'work_place' => 'Có lỗi khi thực hiện thao tác với bảng Nơi làm việc!',
             'group_type' => 'Có lỗi khi thực hiện thao tác với bảng Loại đơn vị!',
             'packing_type' => 'Có lỗi khi thực hiện thao tác với bảng Quy cách đóng gói!',
-
+            'material_type_map' => 'Có lỗi khi thực hiện thao tác với bảng Vật tư tương đương!',
         ]
     ]
     

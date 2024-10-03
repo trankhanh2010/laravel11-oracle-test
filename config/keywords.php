@@ -1203,7 +1203,7 @@ return [
         'is_reusable'  => 'Là vật tư tái sử dụng',
         'max_reuse_count'  => 'Số lần cho phép tái sử dụng',
         'material_group_bhyt'  => 'Tên nhóm vật tư BHYT',
-        'material_type_map_id' => 'Id vật tư ánh xạ',
+        'material_type_map_id' => 'Id vật tư tương đương',
         'last_exp_price'  => 'Giá bán mới nhất',
         'last_exp_vat_ratio'  => 'Thuế VAT bán mới nhất',
         'last_imp_price'  => 'Giá nhập mới nhất',
@@ -1236,5 +1236,10 @@ return [
     'packing_type' => [
         'packing_type_code' => 'Mã quy cách đóng gói',
         'packing_type_name' => 'Tên quy cách đóng gói',   
+    ],
+    // Vật tư tương đương
+    'material_type_map' => [
+        'material_type_map_code' => 'Mã vật tư tương đương',
+        'material_type_map_name' => 'Tên vật tư tương đương',   
     ],
 ];

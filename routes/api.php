@@ -136,6 +136,7 @@ use App\Http\Controllers\Api\CacheControllers\GroupTypeController;
 use App\Http\Controllers\Api\CacheControllers\MedicineController;
 use App\Http\Controllers\Api\CacheControllers\MedicineTypeController;
 use App\Http\Controllers\Api\CacheControllers\MaterialTypeController;
+use App\Http\Controllers\Api\CacheControllers\MaterialTypeMapController;
 use App\Http\Controllers\Api\CacheControllers\ModuleController;
 use App\Http\Controllers\Api\CacheControllers\PackingTypeController;
 // Base Api
@@ -473,6 +474,10 @@ Route::group([
     });
     /// Loại vật tư
     Route::apiResource('v1/material-type', MaterialTypeController::class);
+    /// Vật tư tương đương
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisMaterialTypeMap'], function () {
+        Route::apiResource('v1/material-type-map', MaterialTypeMapController::class);
+    });
     /// Thuốc
     Route::apiResource('v1/medicine', MedicineController::class)->only(['index', 'show']);
     /// Nhóm thuốc

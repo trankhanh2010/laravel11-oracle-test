@@ -128,6 +128,8 @@ use App\Events\Elastic\Manufacturer\CreateManufacturerIndex;
 use App\Events\Elastic\Manufacturer\InsertManufacturerIndex;
 use App\Events\Elastic\MaterialType\CreateMaterialTypeIndex;
 use App\Events\Elastic\MaterialType\InsertMaterialTypeIndex;
+use App\Events\Elastic\MaterialTypeMap\CreateMaterialTypeMapIndex;
+use App\Events\Elastic\MaterialTypeMap\InsertMaterialTypeMapIndex;
 use App\Events\Elastic\Medicine\CreateMedicineIndex;
 use App\Events\Elastic\Medicine\InsertMedicineIndex;
 use App\Events\Elastic\MedicineGroup\CreateMedicineGroupIndex;
@@ -395,6 +397,8 @@ use App\Listeners\Elastic\Manufacturer\ElasticCreateManufacturerIndex;
 use App\Listeners\Elastic\Manufacturer\ElasticInsertManufacturerIndex;
 use App\Listeners\Elastic\MaterialType\ElasticCreateMaterialTypeIndex;
 use App\Listeners\Elastic\MaterialType\ElasticInsertMaterialTypeIndex;
+use App\Listeners\Elastic\MaterialTypeMap\ElasticCreateMaterialTypeMapIndex;
+use App\Listeners\Elastic\MaterialTypeMap\ElasticInsertMaterialTypeMapIndex;
 use App\Listeners\Elastic\Medicine\ElasticCreateMedicineIndex;
 use App\Listeners\Elastic\Medicine\ElasticInsertMedicineIndex;
 use App\Listeners\Elastic\MedicineGroup\ElasticCreateMedicineGroupIndex;
@@ -1490,6 +1494,13 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertPackingTypeIndex::class => [
             ElasticInsertPackingTypeIndex::class,
+        ],
+
+        CreateMaterialTypeMapIndex::class => [
+            ElasticCreateMaterialTypeMapIndex::class,
+        ],
+        InsertMaterialTypeMapIndex::class => [
+            ElasticInsertMaterialTypeMapIndex::class,
         ],
     ];
 

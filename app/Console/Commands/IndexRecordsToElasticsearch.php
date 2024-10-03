@@ -67,6 +67,7 @@ use App\Events\Elastic\LocationStore\CreateLocationStoreIndex;
 use App\Events\Elastic\Machine\CreateMachineIndex;
 use App\Events\Elastic\Manufacturer\CreateManufacturerIndex;
 use App\Events\Elastic\MaterialType\CreateMaterialTypeIndex;
+use App\Events\Elastic\MaterialTypeMap\CreateMaterialTypeMapIndex;
 use App\Events\Elastic\Medicine\CreateMedicineIndex;
 use App\Events\Elastic\MedicineGroup\CreateMedicineGroupIndex;
 use App\Events\Elastic\MedicineLine\CreateMedicineLineIndex;
@@ -199,6 +200,7 @@ use App\Repositories\LicenseClassRepository;
 use App\Repositories\LocationStoreRepository;
 use App\Repositories\MachineRepository;
 use App\Repositories\ManufacturerRepository;
+use App\Repositories\MaterialTypeMapRepository;
 use App\Repositories\MaterialTypeRepository;
 use App\Repositories\MedicineGroupRepository;
 use App\Repositories\MedicineLineRepository;
@@ -327,35 +329,35 @@ class IndexRecordsToElasticsearch extends Command
             case 'accident_care':
                 $results = app(AccidentCareRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateAccidentCareIndex($name_table));
-                break;    
+                break;
             case 'accident_hurt_type':
                 $results = app(AccidentHurtTypeRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateAccidentHurtTypeIndex($name_table));
-                break;    
+                break;
             case 'accident_location':
                 $results = app(AccidentLocationRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateAccidentLocationIndex($name_table));
-                break;     
+                break;
             case 'age_type':
                 $results = app(AgeTypeRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateAgeTypeIndex($name_table));
-                break;     
+                break;
             case 'area':
                 $results = app(AreaRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateAreaIndex($name_table));
-                break;        
+                break;
             case 'atc_group':
                 $results = app(AtcGroupRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateAtcGroupIndex($name_table));
-                break;  
+                break;
             case 'awareness':
                 $results = app(AwarenessRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateAwarenessIndex($name_table));
-                break; 
+                break;
             case 'bed_bsty':
-                $results =app(BedBstyRepository::class)->getDataFromDbToElastic(null);
+                $results = app(BedBstyRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateBedBstyIndex($name_table));
-                break; 
+                break;
             case 'bed':
                 $results = app(BedRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateBedIndex($name_table));
@@ -567,6 +569,10 @@ class IndexRecordsToElasticsearch extends Command
             case 'material_type':
                 $results = app(MaterialTypeRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateMaterialTypeIndex($name_table));
+                break;
+            case 'material_type_map':
+                $results = app(MaterialTypeMapRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateMaterialTypeMapIndex($name_table));
                 break;
             case 'medicine':
                 $results = app(MedicineRepository::class)->getDataFromDbToElastic(null);
@@ -879,38 +885,38 @@ class IndexRecordsToElasticsearch extends Command
 
         //     $client->index($params);
         // }
-        if(isset($results)){
+        if (isset($results)) {
             // Dùng Bulk
-        $bulkData = [];
-        $batchSize = 10000; // Số lượng bản ghi mỗi batch, bạn có thể điều chỉnh
-        foreach ($results as $result) {
-            // Chuẩn bị dữ liệu cho mỗi bản ghi
-            $data = [];
-            // Decode và đổi tên trường về mặc định các bảng có dùng with
-            if(in_array($name_table, $arr_json_decode)){
-                $result = convertKeysToSnakeCase(json_decode($result, true));
+            $bulkData = [];
+            $batchSize = 10000; // Số lượng bản ghi mỗi batch, bạn có thể điều chỉnh
+            foreach ($results as $result) {
+                // Chuẩn bị dữ liệu cho mỗi bản ghi
+                $data = [];
+                // Decode và đổi tên trường về mặc định các bảng có dùng with
+                if (in_array($name_table, $arr_json_decode)) {
+                    $result = convertKeysToSnakeCase(json_decode($result, true));
+                }
+                foreach ($result as $key => $value) {
+                    $data[$key] = $value;
+                }
+                // Thêm các thông tin cần thiết cho mỗi tài liệu vào bulkData
+                $bulkData[] = [
+                    'index' => [
+                        '_index' => $name_table,
+                        '_id'    => $result['id'], // Sử dụng id của bản ghi làm id cho Elasticsearch
+                    ]
+                ];
+                $bulkData[] = $data;
+                // Khi số lượng bản ghi đạt batchSize, thực hiện bulk insert
+                if (count($bulkData) >= $batchSize * 2) { // Mỗi tài liệu chiếm 2 entry trong bulkData
+                    $client->bulk(['body' => $bulkData]);
+                    $bulkData = []; // Xóa dữ liệu sau khi chèn để chuẩn bị batch tiếp theo
+                }
             }
-            foreach ($result as $key => $value) {
-                $data[$key] = $value;
-            }
-            // Thêm các thông tin cần thiết cho mỗi tài liệu vào bulkData
-            $bulkData[] = [
-                'index' => [
-                    '_index' => $name_table,
-                    '_id'    => $result['id'], // Sử dụng id của bản ghi làm id cho Elasticsearch
-                ]
-            ];
-            $bulkData[] = $data;
-            // Khi số lượng bản ghi đạt batchSize, thực hiện bulk insert
-            if (count($bulkData) >= $batchSize * 2) { // Mỗi tài liệu chiếm 2 entry trong bulkData
+            // Chèn các bản ghi còn lại nếu có
+            if (!empty($bulkData)) {
                 $client->bulk(['body' => $bulkData]);
-                $bulkData = []; // Xóa dữ liệu sau khi chèn để chuẩn bị batch tiếp theo
             }
-        }
-        // Chèn các bản ghi còn lại nếu có
-        if (!empty($bulkData)) {
-            $client->bulk(['body' => $bulkData]);
-        }
         }
     }
 }
