@@ -1242,4 +1242,9 @@ return [
         'material_type_map_code' => 'Mã vật tư tương đương',
         'material_type_map_name' => 'Tên vật tư tương đương',   
     ],
+    // Mema Group
+    'mema_group' => [
+        'mema_group_code' => 'Mã',
+        'mema_group_name' => 'Tên',   
+    ],
 ];

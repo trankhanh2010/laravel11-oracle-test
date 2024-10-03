@@ -154,6 +154,8 @@ use App\Events\Elastic\MediStockMaty\CreateMediStockMatyIndex;
 use App\Events\Elastic\MediStockMaty\InsertMediStockMatyIndex;
 use App\Events\Elastic\MediStockMety\CreateMediStockMetyIndex;
 use App\Events\Elastic\MediStockMety\InsertMediStockMetyIndex;
+use App\Events\Elastic\MemaGroup\CreateMemaGroupIndex;
+use App\Events\Elastic\MemaGroup\InsertMemaGroupIndex;
 use App\Events\Elastic\MestPatientType\CreateMestPatientTypeIndex;
 use App\Events\Elastic\MestPatientType\InsertMestPatientTypeIndex;
 use App\Events\Elastic\MestRoom\CreateMestRoomIndex;
@@ -423,6 +425,8 @@ use App\Listeners\Elastic\MediStockMaty\ElasticCreateMediStockMatyIndex;
 use App\Listeners\Elastic\MediStockMaty\ElasticInsertMediStockMatyIndex;
 use App\Listeners\Elastic\MediStockMety\ElasticCreateMediStockMetyIndex;
 use App\Listeners\Elastic\MediStockMety\ElasticInsertMediStockMetyIndex;
+use App\Listeners\Elastic\MemaGroup\ElasticCreateMemaGroupIndex;
+use App\Listeners\Elastic\MemaGroup\ElasticInsertMemaGroupIndex;
 use App\Listeners\Elastic\MestPatientType\ElasticCreateMestPatientTypeIndex;
 use App\Listeners\Elastic\MestPatientType\ElasticInsertMestPatientTypeIndex;
 use App\Listeners\Elastic\MestRoom\ElasticCreateMestRoomIndex;
@@ -1501,6 +1505,13 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertMaterialTypeMapIndex::class => [
             ElasticInsertMaterialTypeMapIndex::class,
+        ],
+
+        CreateMemaGroupIndex::class => [
+            ElasticCreateMemaGroupIndex::class,
+        ],
+        InsertMemaGroupIndex::class => [
+            ElasticInsertMemaGroupIndex::class,
         ],
     ];
 

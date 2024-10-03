@@ -269,6 +269,8 @@ class BaseApiCacheController extends Controller
     protected $medicinePatyName = 'medicine_paty';
     protected $accidentBodyPart;
     protected $accidentBodyPartName = 'accident_body_part';
+    protected $memaGroup;
+    protected $memaGroupName = 'mema_group';
     protected $preparationsBlood;
     protected $preparationsBloodName = 'preparations_blood';
     protected $contraindication;

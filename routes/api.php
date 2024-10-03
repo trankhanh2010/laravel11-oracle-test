@@ -137,6 +137,7 @@ use App\Http\Controllers\Api\CacheControllers\MedicineController;
 use App\Http\Controllers\Api\CacheControllers\MedicineTypeController;
 use App\Http\Controllers\Api\CacheControllers\MaterialTypeController;
 use App\Http\Controllers\Api\CacheControllers\MaterialTypeMapController;
+use App\Http\Controllers\Api\CacheControllers\MemaGroupController;
 use App\Http\Controllers\Api\CacheControllers\ModuleController;
 use App\Http\Controllers\Api\CacheControllers\PackingTypeController;
 // Base Api
@@ -524,6 +525,8 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.MediStockMetyList'], function () {
         Route::apiResource('v1/medi-stock-mety-list', MediStockMetyController::class)->only(['index', 'show', 'store']);
     });
+    /// Mema Group
+    Route::apiResource('v1/mema-group', MemaGroupController::class);
     /// Kho - Đối tượng
     Route::group(['as' => 'HIS.Desktop.Plugins.MestPatientType'], function () {
         Route::apiResource('v1/mest-patient-type', MestPatientTypeController::class)->only(['index', 'show', 'store']);

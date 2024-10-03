@@ -80,6 +80,7 @@ use App\Events\Elastic\MediRecordType\CreateMediRecordTypeIndex;
 use App\Events\Elastic\MediStock\CreateMediStockIndex;
 use App\Events\Elastic\MediStockMaty\CreateMediStockMatyIndex;
 use App\Events\Elastic\MediStockMety\CreateMediStockMetyIndex;
+use App\Events\Elastic\MemaGroup\CreateMemaGroupIndex;
 use App\Events\Elastic\MestPatientType\CreateMestPatientTypeIndex;
 use App\Events\Elastic\MestRoom\CreateMestRoomIndex;
 use App\Events\Elastic\MilitaryRank\CreateMilitaryRankIndex;
@@ -214,6 +215,7 @@ use App\Repositories\MediRecordTypeRepository;
 use App\Repositories\MediStockMatyRepository;
 use App\Repositories\MediStockMetyRepository;
 use App\Repositories\MediStockRepository;
+use App\Repositories\MemaGroupRepository;
 use App\Repositories\MestPatientTypeRepository;
 use App\Repositories\MestRoomRepository;
 use App\Repositories\MilitaryRankRepository;
@@ -621,6 +623,10 @@ class IndexRecordsToElasticsearch extends Command
             case 'medi_stock_mety':
                 $results = app(MediStockMetyRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateMediStockMetyIndex($name_table));
+                break;
+            case 'mema_group':
+                $results = app(MemaGroupRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateMemaGroupIndex($name_table));
                 break;
             case 'mest_patient_type':
                 $results = app(MestPatientTypeRepository::class)->getDataFromDbToElastic(null);

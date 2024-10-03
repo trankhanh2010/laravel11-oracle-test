@@ -78,6 +78,7 @@ return [
             'medi_stock',
             'medi_stock_maty',
             'medi_stock_mety',
+            'mema_group',
             'mest_patient_type',
             'mest_room',
             'military_rank',
@@ -297,6 +298,7 @@ return [
             'group_type' => 'Có lỗi khi thực hiện thao tác với bảng Loại đơn vị!',
             'packing_type' => 'Có lỗi khi thực hiện thao tác với bảng Quy cách đóng gói!',
             'material_type_map' => 'Có lỗi khi thực hiện thao tác với bảng Vật tư tương đương!',
+            'mema_group' => 'Có lỗi khi thực hiện thao tác với bảng Mema Group!',
         ]
     ]
     
