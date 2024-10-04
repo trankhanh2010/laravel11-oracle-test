@@ -100,4 +100,16 @@ class MedicineLineController extends BaseApiCacheController
         ];
         return returnDataSuccess($paramReturn, $data);
     }
+    public function store(CreateMedicineLineRequest $request)
+    {
+        return $this->medicineLineService->createMedicineLine($request);
+    }
+    public function update(UpdateMedicineLineRequest $request, $id)
+    {
+        return $this->medicineLineService->updateMedicineLine($id, $request);
+    }
+    public function destroy($id)
+    {
+        return $this->medicineLineService->deleteMedicineLine($id);
+    }
 }

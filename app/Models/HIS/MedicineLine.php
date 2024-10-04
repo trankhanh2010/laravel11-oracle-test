@@ -12,7 +12,8 @@ class MedicineLine extends Model
     
     protected $connection = 'oracle_his';
     protected $table = 'HIS_Medicine_Line';
-    protected $fillable = [
-
+    public $timestamps = false;
+    protected $guarded = [
+        'id',
     ];
 }

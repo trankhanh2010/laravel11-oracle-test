@@ -498,11 +498,11 @@ Route::group([
     Route::apiResource('v1/medicine', MedicineController::class);
     /// Nhóm thuốc
     Route::group(['as' => 'HIS.Desktop.Plugins.HisMedicineGroup'], function () {
-        Route::apiResource('v1/medicine-group', MedicineGroupController::class)->only(['index', 'show']);
+        Route::apiResource('v1/medicine-group', MedicineGroupController::class);
     });
     /// Dòng thuốc
     Route::group(['as' => 'HIS.Desktop.Plugins.HisMedicineLine'], function () {
-        Route::apiResource('v1/medicine-line', MedicineLineController::class)->only(['index', 'show']);
+        Route::apiResource('v1/medicine-line', MedicineLineController::class);
     });
     /// Chính sách giá thuốc
     Route::group(['as' => 'HIS.Desktop.Plugins.HisMedicinePaty'], function () {

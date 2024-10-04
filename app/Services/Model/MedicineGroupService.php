@@ -67,4 +67,59 @@ class MedicineGroupService
             return writeAndThrowError(config('params')['db_service']['error']['medicine_group'], $e);
         }
     }
+    public function createMedicineGroup($request)
+    {
+        try {
+            $data = $this->medicineGroupRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->medicineGroupName));
+            // Gọi event để thêm index vào elastic
+            event(new InsertMedicineGroupIndex($data, $this->params->medicineGroupName));
+            return returnDataCreateSuccess($data);
+        } catch (\Throwable $e) {
+            return writeAndThrowError(config('params')['db_service']['error']['medicine_group'], $e);
+        }
+    }
+
+    public function updateMedicineGroup($id, $request)
+    {
+        if (!is_numeric($id)) {
+            return returnIdError($id);
+        }
+        $data = $this->medicineGroupRepository->getById($id);
+        if ($data == null) {
+            return returnNotRecord($id);
+        }
+        try {
+            $data = $this->medicineGroupRepository->update($request, $data, $this->params->time, $this->params->appModifier);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->medicineGroupName));
+            // Gọi event để thêm index vào elastic
+            event(new InsertMedicineGroupIndex($data, $this->params->medicineGroupName));
+            return returnDataUpdateSuccess($data);
+        } catch (\Throwable $e) {
+            return writeAndThrowError(config('params')['db_service']['error']['medicine_group'], $e);
+        }
+    }
+
+    public function deleteMedicineGroup($id)
+    {
+        if (!is_numeric($id)) {
+            return returnIdError($id);
+        }
+        $data = $this->medicineGroupRepository->getById($id);
+        if ($data == null) {
+            return returnNotRecord($id);
+        }
+        try {
+            $data = $this->medicineGroupRepository->delete($data);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->medicineGroupName));
+            // Gọi event để xóa index trong elastic
+            event(new DeleteIndex($data, $this->params->medicineGroupName));
+            return returnDataDeleteSuccess();
+        } catch (\Throwable $e) {
+            return writeAndThrowError(config('params')['db_service']['error']['medicine_group'], $e);
+        }
+    }
 }

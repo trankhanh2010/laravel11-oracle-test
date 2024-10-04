@@ -75,6 +75,13 @@ class MedicineGroupRepository
             'is_delete' => 0,
             'medicine_group_code' => $request->medicine_group_code,
             'medicine_group_name' => $request->medicine_group_name,
+            'num_order' =>  $request->num_order,      
+            'is_separate_printing'  => $request->is_separate_printing,
+            'is_numbered_tracking'  => $request->is_numbered_tracking,
+            'is_warning'  => $request->is_warning,
+            'number_day'  => $request->number_day,
+            'is_auto_treatment_day_count'  => $request->is_auto_treatment_day_count, 
+
         ]);
         return $data;
     }
@@ -85,6 +92,12 @@ class MedicineGroupRepository
             'app_modifier' => $appModifier,
             'medicine_group_code' => $request->medicine_group_code,
             'medicine_group_name' => $request->medicine_group_name,
+            'num_order' =>  $request->num_order,      
+            'is_separate_printing'  => $request->is_separate_printing,
+            'is_numbered_tracking'  => $request->is_numbered_tracking,
+            'is_warning'  => $request->is_warning,
+            'number_day'  => $request->number_day,
+            'is_auto_treatment_day_count'  => $request->is_auto_treatment_day_count, 
             'is_active' => $request->is_active
         ]);
         return $data;

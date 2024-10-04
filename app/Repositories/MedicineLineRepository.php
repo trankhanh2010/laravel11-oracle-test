@@ -75,6 +75,8 @@ class MedicineLineRepository
             'is_delete' => 0,
             'medicine_line_code' => $request->medicine_line_code,
             'medicine_line_name' => $request->medicine_line_name,
+            'num_order'  => $request->num_order,
+            'do_not_required_use_form'  => $request->do_not_required_use_form,
         ]);
         return $data;
     }
@@ -85,6 +87,8 @@ class MedicineLineRepository
             'app_modifier' => $appModifier,
             'medicine_line_code' => $request->medicine_line_code,
             'medicine_line_name' => $request->medicine_line_name,
+            'num_order'  => $request->num_order,
+            'do_not_required_use_form'  => $request->do_not_required_use_form,
             'is_active' => $request->is_active
         ]);
         return $data;

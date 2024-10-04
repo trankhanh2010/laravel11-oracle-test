@@ -1332,4 +1332,22 @@ return [
         'bid_form_id' => 'Id hình thức đấu thầu',
         'bid_apthau_code' => 'Mã đơn bị ban hành',
     ],
+    // Nhóm thuốc
+    'medicine_group' => [
+        'medicine_group_code'  => 'Mã nhóm thuốc', 
+        'medicine_group_name' => 'Tên nhóm thuốc',        
+        'num_order'  => 'Số ưu tiên', 
+        'is_separate_printing'  => 'In tách ở các phiếu', 
+        'is_numbered_tracking'  => 'Đánh số thứ tự trong tờ điều trị',
+        'is_warning'  => 'Có cảnh báo khi vượt quá', 
+        'number_day'  => 'Số ngày',
+        'is_auto_treatment_day_count' => 'Tự động tích đếm số ngày dùng trong màn Tạo loại thuốc'
+    ],
+    // Dòng thuốc
+    'medicine_line' => [
+        'medicine_line_code' => 'Mã dòng thuốc',        
+        'medicine_line_name'  => 'Tên dòng thuốc',    
+        'num_order'  => 'Thứ tự sắp xếp trên các biểu mẫu in',
+        'do_not_required_use_form'  => 'Không bắt buộc nhập đường dùng',
+    ],
 ];
