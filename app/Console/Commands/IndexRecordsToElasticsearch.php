@@ -20,6 +20,7 @@ use App\Events\Elastic\BedType\CreateBedTypeIndex;
 use App\Events\Elastic\BhytBlacklist\CreateBhytBlacklistIndex;
 use App\Events\Elastic\BhytParam\CreateBhytParamIndex;
 use App\Events\Elastic\BhytWhitelist\CreateBhytWhitelistIndex;
+use App\Events\Elastic\Bid\CreateBidIndex;
 use App\Events\Elastic\BidType\CreateBidTypeIndex;
 use App\Events\Elastic\BloodGroup\CreateBloodGroupIndex;
 use App\Events\Elastic\BloodVolume\CreateBloodVolumeIndex;
@@ -157,6 +158,7 @@ use App\Repositories\BedTypeRepository;
 use App\Repositories\BhytBlacklistRepository;
 use App\Repositories\BhytParamRepository;
 use App\Repositories\BhytWhitelistRepository;
+use App\Repositories\BidRepository;
 use App\Repositories\BidTypeRepository;
 use App\Repositories\BloodGroupRepository;
 use App\Repositories\BloodVolumeRepository;
@@ -387,6 +389,10 @@ class IndexRecordsToElasticsearch extends Command
             case 'bhyt_whitelist':
                 $results = app(BhytWhitelistRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateBhytWhitelistIndex($name_table));
+                break;
+            case 'bid':
+                $results = app(BidRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateBidIndex($name_table));
                 break;
             case 'bid_type':
                 $results = app(BidTypeRepository::class)->getDataFromDbToElastic(null);

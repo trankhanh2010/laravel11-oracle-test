@@ -18,6 +18,7 @@ return [
             'bhyt_blacklist',
             'bhyt_param',
             'bhyt_whitelist',
+            'bid',
             'bid_type',
             'blood_group',
             'blood_volume',
@@ -303,6 +304,7 @@ return [
             'mema_group' => 'Có lỗi khi thực hiện thao tác với bảng Mema Group!',
             'imp_source' => 'Có lỗi khi thực hiện thao tác với bảng Nguồn nhập!',
             'medical_contract' => 'Có lỗi khi thực hiện thao tác với bảng Hợp đồng dược!',
+            'bid' => 'Có lỗi khi thực hiện thao tác với bảng Thầu!',
         ]
     ]
     

@@ -211,6 +211,8 @@ class BaseApiCacheController extends Controller
     protected $religionName = 'religion';
     protected $impSource;
     protected $impSourceName = 'imp_source';
+    protected $bid;
+    protected $bidName = 'bid';
     protected $serviceUnit;
     protected $serviceUnitName = 'service_unit';
     protected $serviceType;

@@ -132,6 +132,7 @@ use App\Http\Controllers\Api\CacheControllers\TestIndexUnitController;
 use App\Http\Controllers\Api\CacheControllers\DebateTypeController;
 use App\Http\Controllers\Api\CacheControllers\IcdGroupController;
 use App\Http\Controllers\Api\CacheControllers\AgeTypeController;
+use App\Http\Controllers\Api\CacheControllers\BidController;
 use App\Http\Controllers\Api\CacheControllers\GroupTypeController;
 use App\Http\Controllers\Api\CacheControllers\ImpSourceController;
 use App\Http\Controllers\Api\CacheControllers\MedicineController;
@@ -291,6 +292,10 @@ Route::group([
     /// Đầu mã thẻ BHYT
     Route::group(['as' => 'BHYT HIS.Desktop.Plugins.HisBhytWhitelist'], function () {
         Route::apiResource('v1/bhyt-whitelist', BhytWhitelistController::class);
+    });
+    /// Thầu
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisBidList'], function () {
+        Route::apiResource('v1/bid', BidController::class);
     });
     /// Loại thầu
     Route::group(['as' => 'HIS.Desktop.Plugins.HisBidType'], function () {

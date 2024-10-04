@@ -1316,4 +1316,20 @@ return [
         'valid_to_date'  => 'Hiệu lực đến',       
         'note'  => 'Ghi chú',
     ],
+    // Thầu
+    'bid' => [
+        'bid_number' => 'Số quyết định thầu',
+        'bid_name'  => 'Tên thầu',       
+        'bid_type_id' => 'Id loại thầu', 
+        'bid_year'  => 'Năm quyết định thầu',
+        'valid_from_time' => 'Hiệu lực từ',
+        'valid_to_time'  => 'Hiệu lực đến',
+        'allow_update_loginnames'  => 'Danh sách các tài khoản được phép sửa thầu',
+        'approval_time'  => 'Thời gian duyệt',
+        'approval_loginname' => 'Loginname người chấp thuận',   
+        'approval_username'  => 'Username người chấp thuận',   
+        'bid_extra_code'  => 'Mã thầu bổ sung',  
+        'bid_form_id' => 'Id hình thức đấu thầu',
+        'bid_apthau_code' => 'Mã đơn bị ban hành',
+    ],
 ];

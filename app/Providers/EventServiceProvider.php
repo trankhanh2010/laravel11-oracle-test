@@ -33,6 +33,8 @@ use App\Events\Elastic\BhytParam\CreateBhytParamIndex;
 use App\Events\Elastic\BhytParam\InsertBhytParamIndex;
 use App\Events\Elastic\BhytWhitelist\CreateBhytWhitelistIndex;
 use App\Events\Elastic\BhytWhitelist\InsertBhytWhitelistIndex;
+use App\Events\Elastic\Bid\CreateBidIndex;
+use App\Events\Elastic\Bid\InsertBidIndex;
 use App\Events\Elastic\BidType\CreateBidTypeIndex;
 use App\Events\Elastic\BidType\InsertBidTypeIndex;
 use App\Events\Elastic\BloodGroup\CreateBloodGroupIndex;
@@ -308,6 +310,8 @@ use App\Listeners\Elastic\BhytParam\ElasticCreateBhytParamIndex;
 use App\Listeners\Elastic\BhytParam\ElasticInsertBhytParamIndex;
 use App\Listeners\Elastic\BhytWhitelist\ElasticCreateBhytWhitelistIndex;
 use App\Listeners\Elastic\BhytWhitelist\ElasticInsertBhytWhitelistIndex;
+use App\Listeners\Elastic\Bid\ElasticCreateBidIndex;
+use App\Listeners\Elastic\Bid\ElasticInsertBidIndex;
 use App\Listeners\Elastic\BidType\ElasticCreateBidTypeIndex;
 use App\Listeners\Elastic\BidType\ElasticInsertBidTypeIndex;
 use App\Listeners\Elastic\BloodGroup\ElasticCreateBloodGroupIndex;
@@ -1534,6 +1538,13 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertMedicalContractIndex::class => [
             ElasticInsertMedicalContractIndex::class,
+        ],
+
+        CreateBidIndex::class => [
+            ElasticCreateBidIndex::class,
+        ],
+        InsertBidIndex::class => [
+            ElasticInsertBidIndex::class,
         ],
     ];
 
