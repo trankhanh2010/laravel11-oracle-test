@@ -227,6 +227,8 @@ class BaseApiCacheController extends Controller
     protected $relationName = 'relation';
     protected $moduleRole;
     protected $moduleRoleName = 'module_role';
+    protected $medicalContract;
+    protected $medicalContractName = 'medical_contract';
     protected $mestPatientType;
     protected $mestPatientTypeName = 'mest_patient_type';
     protected $mediStockMetyList;

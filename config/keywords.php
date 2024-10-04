@@ -1304,4 +1304,16 @@ return [
         'imp_source_name' => 'Tên nguồn nhập',   
         'is_default' => 'Trường hiện khi thêm thuốc/vật tư',
     ],
+    // Hợp đồng dược
+    'medical_contract' => [
+        'medical_contract_code' => 'Mã hợp đồng dược',
+        'medical_contract_name' => 'Tên hợp đồng dược',   
+        'supplier_id' => 'Id nhà cung cấp',
+        'document_supplier_id' => 'Id công ty xuất hóa đơn',
+        'bid_id'  => 'Id thầu', 
+        'venture_agreening'  => 'Venture Agreening',     
+        'valid_from_date'  => 'Hiệu lực từ',      
+        'valid_to_date'  => 'Hiệu lực đến',       
+        'note'  => 'Ghi chú',
+    ],
 ];

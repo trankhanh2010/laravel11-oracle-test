@@ -138,6 +138,7 @@ use App\Http\Controllers\Api\CacheControllers\MedicineController;
 use App\Http\Controllers\Api\CacheControllers\MedicineTypeController;
 use App\Http\Controllers\Api\CacheControllers\MaterialTypeController;
 use App\Http\Controllers\Api\CacheControllers\MaterialTypeMapController;
+use App\Http\Controllers\Api\CacheControllers\MedicalContractController;
 use App\Http\Controllers\Api\CacheControllers\MemaGroupController;
 use App\Http\Controllers\Api\CacheControllers\ModuleController;
 use App\Http\Controllers\Api\CacheControllers\PackingTypeController;
@@ -483,6 +484,10 @@ Route::group([
     /// Vật tư tương đương
     Route::group(['as' => 'HIS.Desktop.Plugins.HisMaterialTypeMap'], function () {
         Route::apiResource('v1/material-type-map', MaterialTypeMapController::class);
+    });
+    /// Hợp đồng dược
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisMedicalContractList'], function () {
+        Route::apiResource('v1/medical-contract', MedicalContractController::class);
     });
     /// Thuốc
     Route::apiResource('v1/medicine', MedicineController::class);

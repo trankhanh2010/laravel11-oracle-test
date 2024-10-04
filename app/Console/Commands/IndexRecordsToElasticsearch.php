@@ -69,6 +69,7 @@ use App\Events\Elastic\Machine\CreateMachineIndex;
 use App\Events\Elastic\Manufacturer\CreateManufacturerIndex;
 use App\Events\Elastic\MaterialType\CreateMaterialTypeIndex;
 use App\Events\Elastic\MaterialTypeMap\CreateMaterialTypeMapIndex;
+use App\Events\Elastic\MedicalContract\CreateMedicalContractIndex;
 use App\Events\Elastic\Medicine\CreateMedicineIndex;
 use App\Events\Elastic\MedicineGroup\CreateMedicineGroupIndex;
 use App\Events\Elastic\MedicineLine\CreateMedicineLineIndex;
@@ -205,6 +206,7 @@ use App\Repositories\MachineRepository;
 use App\Repositories\ManufacturerRepository;
 use App\Repositories\MaterialTypeMapRepository;
 use App\Repositories\MaterialTypeRepository;
+use App\Repositories\MedicalContractRepository;
 use App\Repositories\MedicineGroupRepository;
 use App\Repositories\MedicineLineRepository;
 use App\Repositories\MedicinePatyRepository;
@@ -581,6 +583,10 @@ class IndexRecordsToElasticsearch extends Command
             case 'material_type_map':
                 $results = app(MaterialTypeMapRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateMaterialTypeMapIndex($name_table));
+                break;
+            case 'medical_contract':
+                $results = app(MedicalContractRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateMedicalContractIndex($name_table));
                 break;
             case 'medicine':
                 $results = app(MedicineRepository::class)->getDataFromDbToElastic(null);

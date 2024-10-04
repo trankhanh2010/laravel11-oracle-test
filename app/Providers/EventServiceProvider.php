@@ -132,6 +132,8 @@ use App\Events\Elastic\MaterialType\CreateMaterialTypeIndex;
 use App\Events\Elastic\MaterialType\InsertMaterialTypeIndex;
 use App\Events\Elastic\MaterialTypeMap\CreateMaterialTypeMapIndex;
 use App\Events\Elastic\MaterialTypeMap\InsertMaterialTypeMapIndex;
+use App\Events\Elastic\MedicalContract\CreateMedicalContractIndex;
+use App\Events\Elastic\MedicalContract\InsertMedicalContractIndex;
 use App\Events\Elastic\Medicine\CreateMedicineIndex;
 use App\Events\Elastic\Medicine\InsertMedicineIndex;
 use App\Events\Elastic\MedicineGroup\CreateMedicineGroupIndex;
@@ -405,6 +407,8 @@ use App\Listeners\Elastic\MaterialType\ElasticCreateMaterialTypeIndex;
 use App\Listeners\Elastic\MaterialType\ElasticInsertMaterialTypeIndex;
 use App\Listeners\Elastic\MaterialTypeMap\ElasticCreateMaterialTypeMapIndex;
 use App\Listeners\Elastic\MaterialTypeMap\ElasticInsertMaterialTypeMapIndex;
+use App\Listeners\Elastic\MedicalContract\ElasticCreateMedicalContractIndex;
+use App\Listeners\Elastic\MedicalContract\ElasticInsertMedicalContractIndex;
 use App\Listeners\Elastic\Medicine\ElasticCreateMedicineIndex;
 use App\Listeners\Elastic\Medicine\ElasticInsertMedicineIndex;
 use App\Listeners\Elastic\MedicineGroup\ElasticCreateMedicineGroupIndex;
@@ -1523,6 +1527,13 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertImpSourceIndex::class => [
             ElasticInsertImpSourceIndex::class,
+        ],
+
+        CreateMedicalContractIndex::class => [
+            ElasticCreateMedicalContractIndex::class,
+        ],
+        InsertMedicalContractIndex::class => [
+            ElasticInsertMedicalContractIndex::class,
         ],
     ];
 

@@ -67,6 +67,7 @@ return [
             'manufacturer',
             'material_type',
             'material_type_map',
+            'medical_contract',
             'medicine',
             'medicine_group',
             'medicine_line',
@@ -301,6 +302,7 @@ return [
             'material_type_map' => 'Có lỗi khi thực hiện thao tác với bảng Vật tư tương đương!',
             'mema_group' => 'Có lỗi khi thực hiện thao tác với bảng Mema Group!',
             'imp_source' => 'Có lỗi khi thực hiện thao tác với bảng Nguồn nhập!',
+            'medical_contract' => 'Có lỗi khi thực hiện thao tác với bảng Hợp đồng dược!',
         ]
     ]
     
