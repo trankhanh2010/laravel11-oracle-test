@@ -1298,4 +1298,10 @@ return [
         'locking_reason'  => 'Lý do khóa',
         'tt_thau'  => 'Thông tin thầu xml',
     ],
+    // Nguồn nhập
+    'imp_source' => [
+        'imp_source_code' => 'Mã nguồn nhập',
+        'imp_source_name' => 'Tên nguồn nhập',   
+        'is_default' => 'Trường hiện khi thêm thuốc/vật tư',
+    ],
 ];

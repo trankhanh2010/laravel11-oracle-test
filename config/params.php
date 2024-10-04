@@ -59,6 +59,7 @@ return [
             'icd_cm',
             'icd',
             'icd_group',
+            'imp_source',
             'interaction_reason',
             'license_class',
             'location_store',
@@ -299,6 +300,7 @@ return [
             'packing_type' => 'Có lỗi khi thực hiện thao tác với bảng Quy cách đóng gói!',
             'material_type_map' => 'Có lỗi khi thực hiện thao tác với bảng Vật tư tương đương!',
             'mema_group' => 'Có lỗi khi thực hiện thao tác với bảng Mema Group!',
+            'imp_source' => 'Có lỗi khi thực hiện thao tác với bảng Nguồn nhập!',
         ]
     ]
     

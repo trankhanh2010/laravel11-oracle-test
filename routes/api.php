@@ -133,6 +133,7 @@ use App\Http\Controllers\Api\CacheControllers\DebateTypeController;
 use App\Http\Controllers\Api\CacheControllers\IcdGroupController;
 use App\Http\Controllers\Api\CacheControllers\AgeTypeController;
 use App\Http\Controllers\Api\CacheControllers\GroupTypeController;
+use App\Http\Controllers\Api\CacheControllers\ImpSourceController;
 use App\Http\Controllers\Api\CacheControllers\MedicineController;
 use App\Http\Controllers\Api\CacheControllers\MedicineTypeController;
 use App\Http\Controllers\Api\CacheControllers\MaterialTypeController;
@@ -448,6 +449,10 @@ Route::group([
     });
     /// Nhóm ICD
     Route::apiResource('v1/icd-group', IcdGroupController::class);
+    /// Nguồn nhập
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisImpSource'], function () {
+        Route::apiResource('v1/imp-source', ImpSourceController::class);
+    });
     /// Thông tin tài khoản
     Route::group(['as' => 'HIS.Desktop.Plugins.InfoUser'], function () {
         Route::get("v1/info-user", [EmployeeController::class, "infoUser"])->name('.get_info_user');

@@ -61,6 +61,7 @@ use App\Events\Elastic\HospitalizeReason\CreateHospitalizeReasonIndex;
 use App\Events\Elastic\Icd\CreateIcdIndex;
 use App\Events\Elastic\IcdCm\CreateIcdCmIndex;
 use App\Events\Elastic\IcdGroup\CreateIcdGroupIndex;
+use App\Events\Elastic\ImpSource\CreateImpSourceIndex;
 use App\Events\Elastic\InteractionReason\CreateInteractionReasonIndex;
 use App\Events\Elastic\LicenseClass\CreateLicenseClassIndex;
 use App\Events\Elastic\LocationStore\CreateLocationStoreIndex;
@@ -196,6 +197,7 @@ use App\Repositories\HospitalizeReasonRepository;
 use App\Repositories\IcdCmRepository;
 use App\Repositories\IcdGroupRepository;
 use App\Repositories\IcdRepository;
+use App\Repositories\ImpSourceRepository;
 use App\Repositories\InteractionReasonRepository;
 use App\Repositories\LicenseClassRepository;
 use App\Repositories\LocationStoreRepository;
@@ -547,6 +549,10 @@ class IndexRecordsToElasticsearch extends Command
             case 'icd_group':
                 $results = app(IcdGroupRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateIcdGroupIndex($name_table));
+                break;
+            case 'imp_source':
+                $results = app(ImpSourceRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateImpSourceIndex($name_table));
                 break;
             case 'interaction_reason':
                 $results = app(InteractionReasonRepository::class)->getDataFromDbToElastic(null);

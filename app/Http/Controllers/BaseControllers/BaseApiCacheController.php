@@ -209,6 +209,8 @@ class BaseApiCacheController extends Controller
     protected $patientClassifyName = 'patient_classify';
     protected $religion;
     protected $religionName = 'religion';
+    protected $impSource;
+    protected $impSourceName = 'imp_source';
     protected $serviceUnit;
     protected $serviceUnitName = 'service_unit';
     protected $serviceType;

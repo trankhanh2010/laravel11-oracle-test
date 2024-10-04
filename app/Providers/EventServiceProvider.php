@@ -116,6 +116,8 @@ use App\Events\Elastic\IcdCm\CreateIcdCmIndex;
 use App\Events\Elastic\IcdCm\InsertIcdCmIndex;
 use App\Events\Elastic\IcdGroup\CreateIcdGroupIndex;
 use App\Events\Elastic\IcdGroup\InsertIcdGroupIndex;
+use App\Events\Elastic\ImpSource\CreateImpSourceIndex;
+use App\Events\Elastic\ImpSource\InsertImpSourceIndex;
 use App\Events\Elastic\InteractionReason\CreateInteractionReasonIndex;
 use App\Events\Elastic\InteractionReason\InsertInteractionReasonIndex;
 use App\Events\Elastic\LicenseClass\CreateLicenseClassIndex;
@@ -387,6 +389,8 @@ use App\Listeners\Elastic\IcdCm\ElasticCreateIcdCmIndex;
 use App\Listeners\Elastic\IcdCm\ElasticInsertIcdCmIndex;
 use App\Listeners\Elastic\IcdGroup\ElasticCreateIcdGroupIndex;
 use App\Listeners\Elastic\IcdGroup\ElasticInsertIcdGroupIndex;
+use App\Listeners\Elastic\ImpSource\ElasticCreateImpSourceIndex;
+use App\Listeners\Elastic\ImpSource\ElasticInsertImpSourceIndex;
 use App\Listeners\Elastic\InteractionReason\ElasticCreateInteractionReasonIndex;
 use App\Listeners\Elastic\InteractionReason\ElasticInsertInteractionReasonIndex;
 use App\Listeners\Elastic\LicenseClass\ElasticCreateLicenseClassIndex;
@@ -1512,6 +1516,13 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertMemaGroupIndex::class => [
             ElasticInsertMemaGroupIndex::class,
+        ],
+
+        CreateImpSourceIndex::class => [
+            ElasticCreateImpSourceIndex::class,
+        ],
+        InsertImpSourceIndex::class => [
+            ElasticInsertImpSourceIndex::class,
         ],
     ];
 
