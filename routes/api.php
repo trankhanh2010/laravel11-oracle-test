@@ -195,6 +195,8 @@ use App\Http\Controllers\Api\ValidateControllers\CheckSpecialityController;
 use App\Http\Controllers\Api\ValidateControllers\CheckServiceController;
 use App\Http\Controllers\Api\ValidateControllers\CheckTreatmentTypeController;
 use App\Http\Controllers\Api\CacheControllers\ProcessingMethodController;
+use App\Http\Controllers\Api\CacheControllers\StorageConditionController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -732,6 +734,10 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisSpeciality'], function () {
         Route::apiResource('v1/speciality', SpecialityController::class);
         Route::get('v1/speciality-check', [CheckSpecialityController::class, "checkCode"])->name('.speciality_check_code');
+    });
+    /// Điều kiện bảo quản
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisStorageCondition'], function () {
+        Route::apiResource('v1/storage-condition', StorageConditionController::class);
     });
     /// Chỉ số
     Route::group(['as' => 'HIS.Desktop.Plugins.HisSuimIndex'], function () {

@@ -1451,4 +1451,11 @@ return [
         'atc_code' => 'Mã ATC',
         'atc_name' => 'tên ATC',
     ],
+    // Điều kiện bảo quản
+    'storage_condition' => [
+        'storage_condition_code' => 'Mã điều kiện bảo quản',
+        'storage_condition_name' => 'Tên điều kiện bảo quản',
+        'from_temperature'  => 'Nhiệt độ từ',        
+        'to_temperature'  => 'Nhiệt độ đến',
+    ],
 ];

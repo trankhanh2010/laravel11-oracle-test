@@ -258,6 +258,8 @@ use App\Events\Elastic\ServSegr\CreateServSegrIndex;
 use App\Events\Elastic\ServSegr\InsertServSegrIndex;
 use App\Events\Elastic\Speciality\CreateSpecialityIndex;
 use App\Events\Elastic\Speciality\InsertSpecialityIndex;
+use App\Events\Elastic\StorageCondition\CreateStorageConditionIndex;
+use App\Events\Elastic\StorageCondition\InsertStorageConditionIndex;
 use App\Events\Elastic\SuimIndex\CreateSuimIndexIndex;
 use App\Events\Elastic\SuimIndex\InsertSuimIndexIndex;
 use App\Events\Elastic\Supplier\CreateSupplierIndex;
@@ -537,6 +539,8 @@ use App\Listeners\Elastic\ServSegr\ElasticCreateServSegrIndex;
 use App\Listeners\Elastic\ServSegr\ElasticInsertServSegrIndex;
 use App\Listeners\Elastic\Speciality\ElasticCreateSpecialityIndex;
 use App\Listeners\Elastic\Speciality\ElasticInsertSpecialityIndex;
+use App\Listeners\Elastic\StorageCondition\ElasticCreateStorageConditionIndex;
+use App\Listeners\Elastic\StorageCondition\ElasticInsertStorageConditionIndex;
 use App\Listeners\Elastic\SuimIndex\ElasticCreateSuimIndexIndex;
 use App\Listeners\Elastic\SuimIndex\ElasticInsertSuimIndexIndex;
 use App\Listeners\Elastic\Supplier\ElasticCreateSupplierIndex;
@@ -1556,6 +1560,13 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertAtcIndex::class => [
             ElasticInsertAtcIndex::class,
+        ],
+
+        CreateStorageConditionIndex::class => [
+            ElasticCreateStorageConditionIndex::class,
+        ],
+        InsertStorageConditionIndex::class => [
+            ElasticInsertStorageConditionIndex::class,
         ],
     ];
 

@@ -130,6 +130,7 @@ return [
             'service_unit',
             'serv_segr',
             'speciality',
+            'storage_condition',
             'suim_index',
             'supplier',
             'test_index',
@@ -307,7 +308,7 @@ return [
             'medical_contract' => 'Có lỗi khi thực hiện thao tác với bảng Hợp đồng dược!',
             'bid' => 'Có lỗi khi thực hiện thao tác với bảng Thầu!',
             'atc' => 'Có lỗi khi thực hiện thao tác với bảng ATC!',
-
+            'storage_condition' => 'Có lỗi khi thực hiện thao tác với bảng Điều kiện bảo quản!',
         ]
     ]
     

@@ -131,6 +131,8 @@ class BaseApiCacheController extends Controller
     protected $departmentName = "department";
     protected $bedRoom;
     protected $bedRoomName = "bed_room";
+    protected $storageCondition;
+    protected $storageConditionName = 'storage_condition';
     protected $executeRoom;
     protected $executeRoomName = "execute_room";
     protected $room;
