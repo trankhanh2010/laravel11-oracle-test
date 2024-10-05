@@ -75,6 +75,7 @@ class ProcessingMethodRepository
             'is_delete' => 0,
             'processing_method_code' => $request->processing_method_code,
             'processing_method_name' => $request->processing_method_name,
+            'processing_method_type' => $request->processing_method_type,
         ]);
         return $data;
     }
@@ -85,6 +86,7 @@ class ProcessingMethodRepository
             'app_modifier' => $appModifier,
             'processing_method_code' => $request->processing_method_code,
             'processing_method_name' => $request->processing_method_name,
+            'processing_method_type' => $request->processing_method_type,
             'is_active' => $request->is_active
         ]);
         return $data;

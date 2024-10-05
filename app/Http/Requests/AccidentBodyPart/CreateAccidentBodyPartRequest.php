@@ -40,6 +40,7 @@ class CreateAccidentBodyPartRequest extends FormRequest
             'accident_body_part_code.max'         => config('keywords')['accident_body_part']['accident_body_part_code'].config('keywords')['error']['string_max'],
             'accident_body_part_code.unique'      => config('keywords')['accident_body_part']['accident_body_part_code'].config('keywords')['error']['unique'],
 
+            'accident_body_part_name.required'    => config('keywords')['accident_body_part']['accident_body_part_name'].config('keywords')['error']['required'],
             'accident_body_part_name.string'      => config('keywords')['accident_body_part']['accident_body_part_name'].config('keywords')['error']['string'],
             'accident_body_part_name.max'         => config('keywords')['accident_body_part']['accident_body_part_name'].config('keywords')['error']['string_max'],
             'accident_body_part_name.unique'      => config('keywords')['accident_body_part']['accident_body_part_name'].config('keywords')['error']['unique'],

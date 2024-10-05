@@ -1482,4 +1482,15 @@ return [
         'package_name' => 'Tên gói',
         'is_not_fixed_service' => 'Không cố định các dịch vụ trong gói',
     ],
+    // Trường hợp bệnh
+    'patient_case' => [
+        'patient_case_code' => 'Mã trường hợp bệnh',
+        'patient_case_name' => 'Tên trường hợp bệnh',
+    ],
+    // Phương pháp chế biến
+    'processing_method' => [
+        'processing_method_code' => 'Mã phương pháp chế biến',
+        'processing_method_name' => 'Tên phương pháp chế biến',
+        'processing_method_type' => 'Loại phương pháp chế biến',
+    ],
 ];

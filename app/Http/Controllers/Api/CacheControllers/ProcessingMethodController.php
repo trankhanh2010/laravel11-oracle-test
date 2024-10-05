@@ -100,4 +100,16 @@ class ProcessingMethodController extends BaseApiCacheController
         ];
         return returnDataSuccess($paramReturn, $data);
     }
+    public function store(CreateProcessingMethodRequest $request)
+    {
+        return $this->processingMethodService->createProcessingMethod($request);
+    }
+    public function update(UpdateProcessingMethodRequest $request, $id)
+    {
+        return $this->processingMethodService->updateProcessingMethod($id, $request);
+    }
+    public function destroy($id)
+    {
+        return $this->processingMethodService->deleteProcessingMethod($id);
+    }
 }

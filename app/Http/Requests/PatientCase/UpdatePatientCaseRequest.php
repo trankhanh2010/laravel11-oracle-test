@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\AccidentBodyPart;
+namespace App\Http\Requests\PatientCase;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
@@ -8,7 +8,7 @@ use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
-class UpdateAccidentBodyPartRequest extends FormRequest
+class UpdatePatientCaseRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,17 +26,17 @@ class UpdateAccidentBodyPartRequest extends FormRequest
     public function rules()
     {
         // Kiểm tra Id nhập vào của người dùng trước khi dùng Rule
-        if(!is_numeric($this->accident_body_part)){
-            throw new HttpResponseException(returnIdError($this->accident_body_part));
+        if(!is_numeric($this->patient_case)){
+            throw new HttpResponseException(returnIdError($this->patient_case));
         }
         return [
-            'accident_body_part_code' =>        [
+            'patient_case_code' =>        [
                                                     'required',
                                                     'string',
                                                     'max:2',
-                                                    Rule::unique('App\Models\HIS\AccidentBodyPart')->ignore($this->accident_body_part),
+                                                    Rule::unique('App\Models\HIS\PatientCase')->ignore($this->patient_case),
                                                 ],
-            'accident_body_part_name' =>        'required|string|max:100',
+            'patient_case_name' =>        'required|string|max:100',
             'is_active' =>                      'required|integer|in:0,1'
 
         ];
@@ -44,15 +44,15 @@ class UpdateAccidentBodyPartRequest extends FormRequest
     public function messages()
     {
         return [
-            'accident_body_part_code.required'    => config('keywords')['accident_body_part']['accident_body_part_code'].config('keywords')['error']['required'],
-            'accident_body_part_code.string'      => config('keywords')['accident_body_part']['accident_body_part_code'].config('keywords')['error']['string'],
-            'accident_body_part_code.max'         => config('keywords')['accident_body_part']['accident_body_part_code'].config('keywords')['error']['string_max'],
-            'accident_body_part_code.unique'      => config('keywords')['accident_body_part']['accident_body_part_code'].config('keywords')['error']['unique'],
+            'patient_case_code.required'    => config('keywords')['patient_case']['patient_case_code'].config('keywords')['error']['required'],
+            'patient_case_code.string'      => config('keywords')['patient_case']['patient_case_code'].config('keywords')['error']['string'],
+            'patient_case_code.max'         => config('keywords')['patient_case']['patient_case_code'].config('keywords')['error']['string_max'],
+            'patient_case_code.unique'      => config('keywords')['patient_case']['patient_case_code'].config('keywords')['error']['unique'],
 
-            'accident_body_part_name.required'    => config('keywords')['accident_body_part']['accident_body_part_name'].config('keywords')['error']['required'],
-            'accident_body_part_name.string'      => config('keywords')['accident_body_part']['accident_body_part_name'].config('keywords')['error']['string'],
-            'accident_body_part_name.max'         => config('keywords')['accident_body_part']['accident_body_part_name'].config('keywords')['error']['string_max'],
-            'accident_body_part_name.unique'      => config('keywords')['accident_body_part']['accident_body_part_name'].config('keywords')['error']['unique'],
+            'patient_case_name.required'    => config('keywords')['patient_case']['patient_case_name'].config('keywords')['error']['required'],
+            'patient_case_name.string'      => config('keywords')['patient_case']['patient_case_name'].config('keywords')['error']['string'],
+            'patient_case_name.max'         => config('keywords')['patient_case']['patient_case_name'].config('keywords')['error']['string_max'],
+            'patient_case_name.unique'      => config('keywords')['patient_case']['patient_case_name'].config('keywords')['error']['unique'],
 
             'is_active.required'    => config('keywords')['all']['is_active'].config('keywords')['error']['required'],            
             'is_active.integer'     => config('keywords')['all']['is_active'].config('keywords')['error']['integer'], 

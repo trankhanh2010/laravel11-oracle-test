@@ -100,4 +100,16 @@ class PatientCaseController extends BaseApiCacheController
         ];
         return returnDataSuccess($paramReturn, $data);
     }
+    public function store(CreatePatientCaseRequest $request)
+    {
+        return $this->patientCaseService->createPatientCase($request);
+    }
+    public function update(UpdatePatientCaseRequest $request, $id)
+    {
+        return $this->patientCaseService->updatePatientCase($id, $request);
+    }
+    public function destroy($id)
+    {
+        return $this->patientCaseService->deletePatientCase($id);
+    }
 }

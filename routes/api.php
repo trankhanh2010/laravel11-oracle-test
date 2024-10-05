@@ -591,7 +591,7 @@ Route::group([
     });
     /// Trường hợp bệnh
     Route::group(['as' => 'HIS.Desktop.Plugins.HisPatientCase'], function () {
-        Route::apiResource('v1/patient-case', PatientCaseController::class)->only(['index', 'show']);
+        Route::apiResource('v1/patient-case', PatientCaseController::class);
     });
     /// Phân loại bệnh nhân
     Route::group(['as' => 'HIS.Desktop.Plugins.HisPatientClassify'], function () {
@@ -624,7 +624,7 @@ Route::group([
     });
     /// Phương pháp chế biến
     Route::group(['as' => 'HIS.Desktop.Plugins.HisProcessing'], function () {
-        Route::apiResource('v1/processing-method', ProcessingMethodController::class)->only(['index', 'show']);
+        Route::apiResource('v1/processing-method', ProcessingMethodController::class);
     });
     /// Tỉnh
     Route::group(['as' => 'SDA.Desktop.Plugins.SdaProvince'], function () {
