@@ -1458,4 +1458,10 @@ return [
         'from_temperature'  => 'Nhiệt độ từ',        
         'to_temperature'  => 'Nhiệt độ đến',
     ],
+    // Loại Vaccine
+    'vaccine_type' => [
+        'vaccine_type_code' => 'Mã loại Vaccine',
+        'vaccine_type_name' => 'Tên loại Vaccine',
+        'is_use_for_ksk' => 'Dùng cho thông tin khám sức khỏe',
+    ],
 ];

@@ -321,6 +321,8 @@ class BaseApiCacheController extends Controller
     protected $accidentHurtTypeName = 'accident_hurt_type';
     protected $supplier;
     protected $supplierName = 'supplier';
+    protected $vaccineType;
+    protected $vaccineTypeName = 'vaccine_type';
     protected $processingMethod;
     protected $processingMethodName = 'processing_method';
     protected $deathWithin;

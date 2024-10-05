@@ -196,6 +196,7 @@ use App\Http\Controllers\Api\ValidateControllers\CheckServiceController;
 use App\Http\Controllers\Api\ValidateControllers\CheckTreatmentTypeController;
 use App\Http\Controllers\Api\CacheControllers\ProcessingMethodController;
 use App\Http\Controllers\Api\CacheControllers\StorageConditionController;
+use App\Http\Controllers\Api\CacheControllers\VaccineTypeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -777,6 +778,10 @@ Route::group([
     /// Lý do mở trần
     Route::group(['as' => 'HIS.Desktop.Plugins.HisUnlimitReason'], function () {
         Route::apiResource('v1/unlimit-reason', UnlimitReasonController::class);
+    });
+    /// Loại Vaccine
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisVaccineType'], function () {
+        Route::apiResource('v1/vaccine-type', VaccineTypeController::class);
     });
     /// Nơi làm việc
     Route::group(['as' => 'HIS.Desktop.Plugins.HisWorkPlace'], function () {

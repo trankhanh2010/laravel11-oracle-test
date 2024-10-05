@@ -143,6 +143,7 @@ use App\Events\Elastic\TranPatiTech\CreateTranPatiTechIndex;
 use App\Events\Elastic\TreatmentEndType\CreateTreatmentEndTypeIndex;
 use App\Events\Elastic\TreatmentType\CreateTreatmentTypeIndex;
 use App\Events\Elastic\UnlimitReason\CreateUnlimitReasonIndex;
+use App\Events\Elastic\VaccineType\CreateVaccineTypeIndex;
 use App\Events\Elastic\WorkPlace\CreateWorkPlaceIndex;
 use App\Models\HIS\MedicineUseForm;
 use App\Repositories\AccidentBodyPartRepository;
@@ -283,6 +284,7 @@ use App\Repositories\TranPatiTechRepository;
 use App\Repositories\TreatmentEndTypeRepository;
 use App\Repositories\TreatmentTypeRepository;
 use App\Repositories\UnlimitReasonRepository;
+use App\Repositories\VaccineTypeRepository;
 use App\Repositories\WorkPlaceRepository;
 
 class IndexRecordsToElasticsearch extends Command
@@ -885,6 +887,10 @@ class IndexRecordsToElasticsearch extends Command
             case 'unlimit_reason':
                 $results = app(UnlimitReasonRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateUnlimitReasonIndex($name_table));
+                break;
+            case 'vaccine_type':
+                $results = app(VaccineTypeRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateVaccineTypeIndex($name_table));
                 break;
             case 'work_place':
                 $results = app(WorkPlaceRepository::class)->getDataFromDbToElastic(null);

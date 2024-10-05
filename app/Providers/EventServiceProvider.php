@@ -280,6 +280,8 @@ use App\Events\Elastic\TreatmentType\CreateTreatmentTypeIndex;
 use App\Events\Elastic\TreatmentType\InsertTreatmentTypeIndex;
 use App\Events\Elastic\UnlimitReason\CreateUnlimitReasonIndex;
 use App\Events\Elastic\UnlimitReason\InsertUnlimitReasonIndex;
+use App\Events\Elastic\VaccineType\CreateVaccineTypeIndex;
+use App\Events\Elastic\VaccineType\InsertVaccineTypeIndex;
 use App\Events\Elastic\WorkPlace\CreateWorkPlaceIndex;
 use App\Events\Elastic\WorkPlace\InsertWorkPlaceIndex;
 use App\Events\Telegram\SendMessageToChannel;
@@ -561,6 +563,8 @@ use App\Listeners\Elastic\TreatmentType\ElasticCreateTreatmentTypeIndex;
 use App\Listeners\Elastic\TreatmentType\ElasticInsertTreatmentTypeIndex;
 use App\Listeners\Elastic\UnlimitReason\ElasticCreateUnlimitReasonIndex;
 use App\Listeners\Elastic\UnlimitReason\ElasticInsertUnlimitReasonIndex;
+use App\Listeners\Elastic\VaccineType\ElasticCreateVaccineTypeIndex;
+use App\Listeners\Elastic\VaccineType\ElasticInsertVaccineTypeIndex;
 use App\Listeners\Elastic\WorkPlace\ElasticCreateWorkPlaceIndex;
 use App\Listeners\Elastic\WorkPlace\ElasticInsertWorkPlaceIndex;
 use App\Listeners\Telegram\TelegramSendMessageToChannel;
@@ -1567,6 +1571,13 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertStorageConditionIndex::class => [
             ElasticInsertStorageConditionIndex::class,
+        ],
+
+        CreateVaccineTypeIndex::class => [
+            ElasticCreateVaccineTypeIndex::class,
+        ],
+        InsertVaccineTypeIndex::class => [
+            ElasticInsertVaccineTypeIndex::class,
         ],
     ];
 
