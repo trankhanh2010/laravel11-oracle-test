@@ -513,7 +513,7 @@ Route::group([
         Route::apiResource('v1/medicine-type-acin', MedicineTypeAcinController::class)->only(['index', 'show', 'store']);
     });
     /// Loại thuốc
-    Route::apiResource('v1/medicine-type', MedicineTypeController::class)->only(['index', 'show']);
+    Route::apiResource('v1/medicine-type', MedicineTypeController::class);
     /// Đường dùng thuốc
     Route::group(['as' => 'HIS.Desktop.Plugins.HisMedicineUseForm'], function () {
         Route::apiResource('v1/medicine-use-form', MedicineUseFormController::class);

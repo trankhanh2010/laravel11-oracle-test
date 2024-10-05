@@ -11,8 +11,9 @@ class MedicineType extends Model
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his';
     protected $table = 'HIS_Medicine_Type';
-    protected $fillable = [
-       'tdl_service_unit_id'
+    public $timestamps = false;
+    protected $guarded = [
+        'id',
     ];
 
     public function medi_stocks()
