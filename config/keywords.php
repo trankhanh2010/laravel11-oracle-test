@@ -1470,4 +1470,16 @@ return [
         'htu_name' => 'Tên cách dùng thuốc',
         'num_order' => 'Số ưu tiên',
     ],
+    // Quân hàm
+    'military_rank' => [
+        'military_rank_code' => 'Mã quân hàm',
+        'military_rank_name' => 'Tên quân hàm',
+        'num_order' => 'Số ưu tiên',
+    ],
+    // Gói
+    'package' => [
+        'package_code' => 'Mã gói',
+        'package_name' => 'Tên gói',
+        'is_not_fixed_service' => 'Không cố định các dịch vụ trong gói',
+    ],
 ];

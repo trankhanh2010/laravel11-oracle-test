@@ -75,6 +75,7 @@ class PackageRepository
             'is_delete' => 0,
             'package_code' => $request->package_code,
             'package_name' => $request->package_name,
+            'is_not_fixed_service' => $request->is_not_fixed_service,
         ]);
         return $data;
     }
@@ -85,6 +86,7 @@ class PackageRepository
             'app_modifier' => $appModifier,
             'package_code' => $request->package_code,
             'package_name' => $request->package_name,
+            'is_not_fixed_service' => $request->is_not_fixed_service,
             'is_active' => $request->is_active
         ]);
         return $data;

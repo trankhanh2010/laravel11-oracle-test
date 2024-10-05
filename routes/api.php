@@ -564,7 +564,7 @@ Route::group([
         Route::apiResource('v1/mest-export-room', MestRoomController::class)->only(['index', 'show', 'store']);
     });
     /// Quân hàm
-    Route::apiResource('v1/military-rank', MilitaryRankController::class)->only(['index', 'show']);
+    Route::apiResource('v1/military-rank', MilitaryRankController::class);
     /// Chức năng
     Route::group(['as' => 'ACS.Desktop.Plugins.AcsModule'], function () {
         Route::apiResource('v1/module', ModuleController::class);
@@ -584,7 +584,7 @@ Route::group([
         Route::get('v1/other-pay-source-check', [CheckOtherPaySourceController::class, "checkCode"])->name('.other_pay_source_check_code');
     });
     /// Gói
-    Route::apiResource('v1/package', PackageController::class)->only(['index', 'show']);
+    Route::apiResource('v1/package', PackageController::class);
     /// Quy cách đóng gói 
     Route::group(['as' => 'HIS.Desktop.Plugins.HisPackingType'], function () {
         Route::apiResource('v1/packing-type', PackingTypeController::class);

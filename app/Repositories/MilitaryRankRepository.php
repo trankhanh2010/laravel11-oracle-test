@@ -75,6 +75,7 @@ class MilitaryRankRepository
             'is_delete' => 0,
             'military_rank_code' => $request->military_rank_code,
             'military_rank_name' => $request->military_rank_name,
+            'num_order' => $request->num_order,
         ]);
         return $data;
     }
@@ -85,6 +86,7 @@ class MilitaryRankRepository
             'app_modifier' => $appModifier,
             'military_rank_code' => $request->military_rank_code,
             'military_rank_name' => $request->military_rank_name,
+            'num_order' => $request->num_order,
             'is_active' => $request->is_active
         ]);
         return $data;

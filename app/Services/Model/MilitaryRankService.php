@@ -67,4 +67,59 @@ class MilitaryRankService
             return writeAndThrowError(config('params')['db_service']['error']['military_rank'], $e);
         }
     }
+    public function createMilitaryRank($request)
+    {
+        try {
+            $data = $this->militaryRankRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->militaryRankName));
+            // Gọi event để thêm index vào elastic
+            event(new InsertMilitaryRankIndex($data, $this->params->militaryRankName));
+            return returnDataCreateSuccess($data);
+        } catch (\Throwable $e) {
+            return writeAndThrowError(config('params')['db_service']['error']['military_rank'], $e);
+        }
+    }
+
+    public function updateMilitaryRank($id, $request)
+    {
+        if (!is_numeric($id)) {
+            return returnIdError($id);
+        }
+        $data = $this->militaryRankRepository->getById($id);
+        if ($data == null) {
+            return returnNotRecord($id);
+        }
+        try {
+            $data = $this->militaryRankRepository->update($request, $data, $this->params->time, $this->params->appModifier);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->militaryRankName));
+            // Gọi event để thêm index vào elastic
+            event(new InsertMilitaryRankIndex($data, $this->params->militaryRankName));
+            return returnDataUpdateSuccess($data);
+        } catch (\Throwable $e) {
+            return writeAndThrowError(config('params')['db_service']['error']['military_rank'], $e);
+        }
+    }
+
+    public function deleteMilitaryRank($id)
+    {
+        if (!is_numeric($id)) {
+            return returnIdError($id);
+        }
+        $data = $this->militaryRankRepository->getById($id);
+        if ($data == null) {
+            return returnNotRecord($id);
+        }
+        try {
+            $data = $this->militaryRankRepository->delete($data);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->militaryRankName));
+            // Gọi event để xóa index trong elastic
+            event(new DeleteIndex($data, $this->params->militaryRankName));
+            return returnDataDeleteSuccess();
+        } catch (\Throwable $e) {
+            return writeAndThrowError(config('params')['db_service']['error']['military_rank'], $e);
+        }
+    }
 }

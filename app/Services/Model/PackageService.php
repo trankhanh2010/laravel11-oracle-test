@@ -67,4 +67,59 @@ class PackageService
             return writeAndThrowError(config('params')['db_service']['error']['package'], $e);
         }
     }
+    public function createPackage($request)
+    {
+        try {
+            $data = $this->packageRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->packageName));
+            // Gọi event để thêm index vào elastic
+            event(new InsertPackageIndex($data, $this->params->packageName));
+            return returnDataCreateSuccess($data);
+        } catch (\Throwable $e) {
+            return writeAndThrowError(config('params')['db_service']['error']['package'], $e);
+        }
+    }
+
+    public function updatePackage($id, $request)
+    {
+        if (!is_numeric($id)) {
+            return returnIdError($id);
+        }
+        $data = $this->packageRepository->getById($id);
+        if ($data == null) {
+            return returnNotRecord($id);
+        }
+        try {
+            $data = $this->packageRepository->update($request, $data, $this->params->time, $this->params->appModifier);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->packageName));
+            // Gọi event để thêm index vào elastic
+            event(new InsertPackageIndex($data, $this->params->packageName));
+            return returnDataUpdateSuccess($data);
+        } catch (\Throwable $e) {
+            return writeAndThrowError(config('params')['db_service']['error']['package'], $e);
+        }
+    }
+
+    public function deletePackage($id)
+    {
+        if (!is_numeric($id)) {
+            return returnIdError($id);
+        }
+        $data = $this->packageRepository->getById($id);
+        if ($data == null) {
+            return returnNotRecord($id);
+        }
+        try {
+            $data = $this->packageRepository->delete($data);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->packageName));
+            // Gọi event để xóa index trong elastic
+            event(new DeleteIndex($data, $this->params->packageName));
+            return returnDataDeleteSuccess();
+        } catch (\Throwable $e) {
+            return writeAndThrowError(config('params')['db_service']['error']['package'], $e);
+        }
+    }
 }

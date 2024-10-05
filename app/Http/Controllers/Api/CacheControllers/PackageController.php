@@ -100,4 +100,16 @@ class PackageController extends BaseApiCacheController
         ];
         return returnDataSuccess($paramReturn, $data);
     }
+    public function store(CreatePackageRequest $request)
+    {
+        return $this->packageService->createPackage($request);
+    }
+    public function update(UpdatePackageRequest $request, $id)
+    {
+        return $this->packageService->updatePackage($id, $request);
+    }
+    public function destroy($id)
+    {
+        return $this->packageService->deletePackage($id);
+    }
 }

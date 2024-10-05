@@ -100,4 +100,17 @@ class MilitaryRankController extends BaseApiCacheController
         ];
         return returnDataSuccess($paramReturn, $data);
     }
+
+    public function store(CreateMilitaryRankRequest $request)
+    {
+        return $this->militaryRankService->createMilitaryRank($request);
+    }
+    public function update(UpdateMilitaryRankRequest $request, $id)
+    {
+        return $this->militaryRankService->updateMilitaryRank($id, $request);
+    }
+    public function destroy($id)
+    {
+        return $this->militaryRankService->deleteMilitaryRank($id);
+    }
 }
