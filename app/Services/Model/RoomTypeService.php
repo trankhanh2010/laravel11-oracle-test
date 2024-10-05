@@ -68,40 +68,40 @@ class RoomTypeService
         }
     }
 
-    // public function createRoomType($request)
-    // {
-    //     try {
-    //         $data = $this->roomTypeRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
-    //         // Gọi event để xóa cache
-    //         event(new DeleteCache($this->params->roomTypeName));
-    //         // Gọi event để thêm index vào elastic
-    //         event(new InsertRoomTypeIndex($data, $this->params->roomTypeName));
-    //         return returnDataCreateSuccess($data);
-    //     } catch (\Throwable $e) {
-    //         return writeAndThrowError(config('params')['db_service']['error']['room_type'], $e);
-    //     }
-    // }
+    public function createRoomType($request)
+    {
+        try {
+            $data = $this->roomTypeRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->roomTypeName));
+            // Gọi event để thêm index vào elastic
+            event(new InsertRoomTypeIndex($data, $this->params->roomTypeName));
+            return returnDataCreateSuccess($data);
+        } catch (\Throwable $e) {
+            return writeAndThrowError(config('params')['db_service']['error']['room_type'], $e);
+        }
+    }
 
-    // public function updateRoomType($id, $request)
-    // {
-    //     if (!is_numeric($id)) {
-    //         return returnIdError($id);
-    //     }
-    //     $data = $this->roomTypeRepository->getById($id);
-    //     if ($data == null) {
-    //         return returnNotRecord($id);
-    //     }
-    //     try {
-    //         $data = $this->roomTypeRepository->update($request, $data, $this->params->time, $this->params->appModifier);
-    //         // Gọi event để xóa cache
-    //         event(new DeleteCache($this->params->roomTypeName));
-    //         // Gọi event để thêm index vào elastic
-    //         event(new InsertRoomTypeIndex($data, $this->params->roomTypeName));
-    //         return returnDataUpdateSuccess($data);
-    //     } catch (\Throwable $e) {
-    //         return writeAndThrowError(config('params')['db_service']['error']['room_type'], $e);
-    //     }
-    // }
+    public function updateRoomType($id, $request)
+    {
+        if (!is_numeric($id)) {
+            return returnIdError($id);
+        }
+        $data = $this->roomTypeRepository->getById($id);
+        if ($data == null) {
+            return returnNotRecord($id);
+        }
+        try {
+            $data = $this->roomTypeRepository->update($request, $data, $this->params->time, $this->params->appModifier);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->roomTypeName));
+            // Gọi event để thêm index vào elastic
+            event(new InsertRoomTypeIndex($data, $this->params->roomTypeName));
+            return returnDataUpdateSuccess($data);
+        } catch (\Throwable $e) {
+            return writeAndThrowError(config('params')['db_service']['error']['room_type'], $e);
+        }
+    }
 
     public function deleteRoomType($id)
     {

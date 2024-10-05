@@ -687,7 +687,7 @@ Route::group([
     Route::apiResource('v1/room-group', RoomGroupController::class)->only(['index', 'show', 'store']);
     /// Loại phòng
     Route::group(['as' => 'HIS.Desktop.Plugins.RoomTypeModule'], function () {
-        Route::apiResource('v1/room-type', RoomTypeController::class)->only(['index', 'show']);
+        Route::apiResource('v1/room-type', RoomTypeController::class);
     });
     /// Thiết lập lợi nhuận xuất bán
     Route::group(['as' => 'HIS.Desktop.Plugins.EstablishSaleProfitCFG'], function () {
@@ -707,7 +707,7 @@ Route::group([
         Route::apiResource('v1/service-follow', ServiceFollowController::class);
     });
     /// Nhóm dịch vụ
-    Route::apiResource('v1/service-group', ServiceGroupController::class)->only(['index', 'show']);
+    Route::apiResource('v1/service-group', ServiceGroupController::class);
     /// Dịch vụ máy
     Route::group(['as' => 'HIS.Desktop.Plugins.ServiceMachine'], function () {
         Route::apiResource('v1/service-machine', ServiceMachineController::class)->only(['index', 'show', 'store']);

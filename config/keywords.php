@@ -1493,4 +1493,18 @@ return [
         'processing_method_name' => 'Tên phương pháp chế biến',
         'processing_method_type' => 'Loại phương pháp chế biến',
     ],
+    // Loại phòng
+    'room_type' => [
+        'room_type_code' => 'Mã loại phòng',
+        'room_type_name' => 'Tên loại phòng',
+    ],
+    // Nhóm dịch vụ
+    'service_group' => [
+        'service_group_code' => 'Mã dịch vụ',       
+        'service_group_name'  => 'Tên dịch vụ',           
+        'is_public'  => 'Public',       
+        'num_order'  => 'Số thứ tự khi hiển thị',
+        'parent_service_id'  => 'Id dịch vụ cha',     
+        'description' => 'Mô tả',
+    ],
 ];

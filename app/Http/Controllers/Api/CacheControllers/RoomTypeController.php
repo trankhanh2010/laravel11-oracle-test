@@ -100,4 +100,16 @@ class RoomTypeController extends BaseApiCacheController
         ];
         return returnDataSuccess($paramReturn, $data);
     }
+    public function store(CreateRoomTypeRequest $request)
+    {
+        return $this->roomTypeService->createRoomType($request);
+    }
+    public function update(UpdateRoomTypeRequest $request, $id)
+    {
+        return $this->roomTypeService->updateRoomType($id, $request);
+    }
+    public function destroy($id)
+    {
+        return $this->roomTypeService->deleteRoomType($id);
+    }
 }

@@ -75,6 +75,10 @@ class ServiceGroupRepository
             'is_delete' => 0,
             'service_group_code' => $request->service_group_code,
             'service_group_name' => $request->service_group_name,
+            'is_public'  => $request->is_public,     
+            'num_order' => $request->num_order,
+            'parent_service_id'  => $request->parent_service_id,
+            'description'  => $request->description,
         ]);
         return $data;
     }
@@ -85,6 +89,10 @@ class ServiceGroupRepository
             'app_modifier' => $appModifier,
             'service_group_code' => $request->service_group_code,
             'service_group_name' => $request->service_group_name,
+            'is_public'  => $request->is_public,     
+            'num_order' => $request->num_order,
+            'parent_service_id'  => $request->parent_service_id,
+            'description'  => $request->description,
             'is_active' => $request->is_active
         ]);
         return $data;

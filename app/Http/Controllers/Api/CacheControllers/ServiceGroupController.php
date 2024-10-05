@@ -100,4 +100,16 @@ class ServiceGroupController extends BaseApiCacheController
         ];
         return returnDataSuccess($paramReturn, $data);
     }
+    public function store(CreateServiceGroupRequest $request)
+    {
+        return $this->serviceGroupService->createServiceGroup($request);
+    }
+    public function update(UpdateServiceGroupRequest $request, $id)
+    {
+        return $this->serviceGroupService->updateServiceGroup($id, $request);
+    }
+    public function destroy($id)
+    {
+        return $this->serviceGroupService->deleteServiceGroup($id);
+    }
 }
