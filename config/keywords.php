@@ -1464,4 +1464,10 @@ return [
         'vaccine_type_name' => 'Tên loại Vaccine',
         'is_use_for_ksk' => 'Dùng cho thông tin khám sức khỏe',
     ],
+    // Cách dùng thuốc 
+    'htu' => [
+        'htu_code' => 'Mã cách dùng thuốc',
+        'htu_name' => 'Tên cách dùng thuốc',
+        'num_order' => 'Số ưu tiên',
+    ],
 ];

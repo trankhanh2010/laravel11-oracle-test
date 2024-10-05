@@ -58,6 +58,7 @@ return [
             'group_type',
             'hein_service_type',
             'hospitalize_reason',
+            'htu',
             'icd_cm',
             'icd',
             'icd_group',
@@ -311,6 +312,7 @@ return [
             'atc' => 'Có lỗi khi thực hiện thao tác với bảng ATC!',
             'storage_condition' => 'Có lỗi khi thực hiện thao tác với bảng Điều kiện bảo quản!',
             'vaccine_type' => 'Có lỗi khi thực hiện thao tác với bảng Loại Vaccine!',
+            'htu' => 'Có lỗi khi thực hiện thao tác với bảng Cách dùng thuốc!',
 
         ]
     ]

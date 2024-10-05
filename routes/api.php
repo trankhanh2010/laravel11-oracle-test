@@ -135,6 +135,7 @@ use App\Http\Controllers\Api\CacheControllers\AgeTypeController;
 use App\Http\Controllers\Api\CacheControllers\AtcController;
 use App\Http\Controllers\Api\CacheControllers\BidController;
 use App\Http\Controllers\Api\CacheControllers\GroupTypeController;
+use App\Http\Controllers\Api\CacheControllers\HtuController;
 use App\Http\Controllers\Api\CacheControllers\ImpSourceController;
 use App\Http\Controllers\Api\CacheControllers\MedicineController;
 use App\Http\Controllers\Api\CacheControllers\MedicineTypeController;
@@ -451,6 +452,10 @@ Route::group([
     /// Lý do nhập viện
     Route::group(['as' => 'HIS.Desktop.Plugins.HospitalizeReason'], function () {
         Route::apiResource('v1/hospitalize-reason', HospitalizeReasonController::class);
+    });
+    /// Cách dùng thuốc
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisHtu'], function () {
+        Route::apiResource('v1/htu', HtuController::class);
     });
     /// Icd - Cm
     Route::group(['as' => 'HIS.Desktop.Plugins.HisIcdCm'], function () {

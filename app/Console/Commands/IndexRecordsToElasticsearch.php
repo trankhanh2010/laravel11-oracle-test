@@ -60,6 +60,7 @@ use App\Events\Elastic\Group\CreateGroupIndex;
 use App\Events\Elastic\GroupType\CreateGroupTypeIndex;
 use App\Events\Elastic\HeinServiceType\CreateHeinServiceTypeIndex;
 use App\Events\Elastic\HospitalizeReason\CreateHospitalizeReasonIndex;
+use App\Events\Elastic\Htu\CreateHtuIndex;
 use App\Events\Elastic\Icd\CreateIcdIndex;
 use App\Events\Elastic\IcdCm\CreateIcdCmIndex;
 use App\Events\Elastic\IcdGroup\CreateIcdGroupIndex;
@@ -201,6 +202,7 @@ use App\Repositories\GroupRepository;
 use App\Repositories\GroupTypeRepository;
 use App\Repositories\HeinServiceTypeRepository;
 use App\Repositories\HospitalizeReasonRepository;
+use App\Repositories\HtuRepository;
 use App\Repositories\IcdCmRepository;
 use App\Repositories\IcdGroupRepository;
 use App\Repositories\IcdRepository;
@@ -555,6 +557,10 @@ class IndexRecordsToElasticsearch extends Command
             case 'hospitalize_reason':
                 $results = app(HospitalizeReasonRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateHospitalizeReasonIndex($name_table));
+                break;
+            case 'htu':
+                $results = app(HtuRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateHtuIndex($name_table));
                 break;
             case 'icd_cm':
                 $results = app(IcdCmRepository::class)->getDataFromDbToElastic(null);

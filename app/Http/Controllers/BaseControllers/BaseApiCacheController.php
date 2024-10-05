@@ -70,6 +70,8 @@ class BaseApiCacheController extends Controller
     protected $serviceIdName = 'ServiceId';
     protected $machineId;
     protected $machineIdName = 'MachineId';
+    protected $htu;
+    protected $htuName = 'htu';
     protected $packageId;
     protected $packageIdName = 'PackageId';
     protected $departmentId;

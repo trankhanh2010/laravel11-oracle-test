@@ -114,6 +114,8 @@ use App\Events\Elastic\HeinServiceType\CreateHeinServiceTypeIndex;
 use App\Events\Elastic\HeinServiceType\InsertHeinServiceTypeIndex;
 use App\Events\Elastic\HospitalizeReason\CreateHospitalizeReasonIndex;
 use App\Events\Elastic\HospitalizeReason\InsertHospitalizeReasonIndex;
+use App\Events\Elastic\Htu\CreateHtuIndex;
+use App\Events\Elastic\Htu\InsertHtuIndex;
 use App\Events\Elastic\Icd\CreateIcdIndex;
 use App\Events\Elastic\Icd\InsertIcdIndex;
 use App\Events\Elastic\IcdCm\CreateIcdCmIndex;
@@ -397,6 +399,8 @@ use App\Listeners\Elastic\HeinServiceType\ElasticCreateHeinServiceTypeIndex;
 use App\Listeners\Elastic\HeinServiceType\ElasticInsertHeinServiceTypeIndex;
 use App\Listeners\Elastic\HospitalizeReason\ElasticCreateHospitalizeReasonIndex;
 use App\Listeners\Elastic\HospitalizeReason\ElasticInsertHospitalizeReasonIndex;
+use App\Listeners\Elastic\Htu\ElasticCreateHtuIndex;
+use App\Listeners\Elastic\Htu\ElasticInsertHtuIndex;
 use App\Listeners\Elastic\Icd\ElasticCreateIcdIndex;
 use App\Listeners\Elastic\Icd\ElasticInsertIcdIndex;
 use App\Listeners\Elastic\IcdCm\ElasticCreateIcdCmIndex;
@@ -1578,6 +1582,13 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertVaccineTypeIndex::class => [
             ElasticInsertVaccineTypeIndex::class,
+        ],
+
+        CreateHtuIndex::class => [
+            ElasticCreateHtuIndex::class,
+        ],
+        InsertHtuIndex::class => [
+            ElasticInsertHtuIndex::class,
         ],
     ];
 
