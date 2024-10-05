@@ -15,6 +15,8 @@ use App\Events\Elastic\AgeType\CreateAgeTypeIndex;
 use App\Events\Elastic\AgeType\InsertAgeTypeIndex;
 use App\Events\Elastic\Area\CreateAreaIndex;
 use App\Events\Elastic\Area\InsertAreaIndex;
+use App\Events\Elastic\Atc\CreateAtcIndex;
+use App\Events\Elastic\Atc\InsertAtcIndex;
 use App\Events\Elastic\AtcGroup\CreateAtcGroupIndex;
 use App\Events\Elastic\AtcGroup\InsertAtcGroupIndex;
 use App\Events\Elastic\Awareness\CreateAwarenessIndex;
@@ -292,6 +294,8 @@ use App\Listeners\Elastic\AgeType\ElasticCreateAgeTypeIndex;
 use App\Listeners\Elastic\AgeType\ElasticInsertAgeTypeIndex;
 use App\Listeners\Elastic\Area\ElasticCreateAreaIndex;
 use App\Listeners\Elastic\Area\ElasticInsertAreaIndex;
+use App\Listeners\Elastic\Atc\ElasticCreateAtcIndex;
+use App\Listeners\Elastic\Atc\ElasticInsertAtcIndex;
 use App\Listeners\Elastic\AtcGroup\ElasticCreateAtcGroupIndex;
 use App\Listeners\Elastic\AtcGroup\ElasticInsertAtcGroupIndex;
 use App\Listeners\Elastic\Awareness\ElasticCreateAwarenessIndex;
@@ -1545,6 +1549,13 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertBidIndex::class => [
             ElasticInsertBidIndex::class,
+        ],
+
+        CreateAtcIndex::class => [
+            ElasticCreateAtcIndex::class,
+        ],
+        InsertAtcIndex::class => [
+            ElasticInsertAtcIndex::class,
         ],
     ];
 

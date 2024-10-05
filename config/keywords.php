@@ -1446,4 +1446,9 @@ return [
         'is_biologic' => 'Là sinh phẩm (thuốc sinh học)',
         'atc_group_codes'  => 'Danh sách mã nhóm ATC',
     ],
+    // ATC
+    'atc' => [
+        'atc_code' => 'Mã ATC',
+        'atc_name' => 'tên ATC',
+    ],
 ];

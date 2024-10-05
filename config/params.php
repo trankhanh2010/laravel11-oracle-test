@@ -4,6 +4,7 @@ return [
     'elastic' => [
         'all_table' => [
             'area',
+            'atc',
             'accident_body_part',
             'accident_location',
             'accident_hurt_type',
@@ -305,6 +306,8 @@ return [
             'imp_source' => 'Có lỗi khi thực hiện thao tác với bảng Nguồn nhập!',
             'medical_contract' => 'Có lỗi khi thực hiện thao tác với bảng Hợp đồng dược!',
             'bid' => 'Có lỗi khi thực hiện thao tác với bảng Thầu!',
+            'atc' => 'Có lỗi khi thực hiện thao tác với bảng ATC!',
+
         ]
     ]
     

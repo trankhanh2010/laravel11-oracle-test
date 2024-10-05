@@ -9,6 +9,7 @@ use App\Events\Elastic\AccidentHurtType\CreateAccidentHurtTypeIndex;
 use App\Events\Elastic\AccidentLocation\CreateAccidentLocationIndex;
 use App\Events\Elastic\AgeType\CreateAgeTypeIndex;
 use App\Events\Elastic\Area\CreateAreaIndex;
+use App\Events\Elastic\Atc\CreateAtcIndex;
 use App\Events\Elastic\AtcGroup\CreateAtcGroupIndex;
 use App\Events\Elastic\Awareness\CreateAwarenessIndex;
 use Illuminate\Console\Command;
@@ -150,6 +151,7 @@ use App\Repositories\AccidentLocationRepository;
 use App\Repositories\AgeTypeRepository;
 use App\Repositories\AreaRepository;
 use App\Repositories\AtcGroupRepository;
+use App\Repositories\AtcRepository;
 use App\Repositories\AwarenessRepository;
 use App\Repositories\BedBstyRepository;
 use App\Repositories\BedRepository;
@@ -353,6 +355,10 @@ class IndexRecordsToElasticsearch extends Command
             case 'area':
                 $results = app(AreaRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateAreaIndex($name_table));
+                break;
+            case 'atc':
+                $results = app(AtcRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateAtcIndex($name_table));
                 break;
             case 'atc_group':
                 $results = app(AtcGroupRepository::class)->getDataFromDbToElastic(null);

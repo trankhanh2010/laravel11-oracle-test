@@ -110,6 +110,8 @@ class BaseApiCacheController extends Controller
     protected $materialTypeIdName = 'MaterialTypeId';
     protected $roomId;
     protected $roomIdName = 'RoomId';
+    protected $atc;
+    protected $atcName = 'atc';
     protected $executeRoomId;
     protected $executeRoomIdName = 'ExecuteRoomId';
     protected $patientTypeAllowId;

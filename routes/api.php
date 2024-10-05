@@ -132,6 +132,7 @@ use App\Http\Controllers\Api\CacheControllers\TestIndexUnitController;
 use App\Http\Controllers\Api\CacheControllers\DebateTypeController;
 use App\Http\Controllers\Api\CacheControllers\IcdGroupController;
 use App\Http\Controllers\Api\CacheControllers\AgeTypeController;
+use App\Http\Controllers\Api\CacheControllers\AtcController;
 use App\Http\Controllers\Api\CacheControllers\BidController;
 use App\Http\Controllers\Api\CacheControllers\GroupTypeController;
 use App\Http\Controllers\Api\CacheControllers\ImpSourceController;
@@ -255,6 +256,10 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisArea'], function () {
         Route::apiResource('v1/area', AreaController::class);
         Route::get('v1/area-check', [CheckAreaController::class, "checkCode"])->name('.area_check_code');
+    });
+    /// ATC
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisAtc'], function () {
+        Route::apiResource('v1/atc', AtcController::class);
     });
     /// Nhóm ATC
     Route::group(['as' => 'HIS.Desktop.Plugins.HisAtcGroup'], function () {
