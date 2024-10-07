@@ -1560,4 +1560,20 @@ return [
         'result_blood_rh_plus'  => 'Kết quả xét nghiệm tương ứng với nhóm máu RH+',
         'result_blood_rh_minus'  => 'Kết quả xét nghiệm tương ứng với nhóm máu RH-',
     ],
+    // Đơn vị tính chỉ số xét nghiệm
+    'test_index_unit' => [
+        'test_index_unit_code' => 'Mã đơn vị tính chỉ số xét nghiệm',
+        'test_index_unit_name' => 'Tên đơn vị tính chỉ số xét nghiệm',
+        'test_index_unit_symbol' => 'Ký hiệu',
+    ],
+    // Loại mẫu bệnh phẩm
+    'test_sample_type' => [
+        'test_sample_type_code' => 'Mã loại mẫu bệnh phẩm',
+        'test_sample_type_name' => 'Tên loại mẫu bệnh phẩm',
+    ],
+    // Loại xét nghiệm
+    'test_type' => [
+        'test_type_code' => 'Mã loại xét nghiệm',
+        'test_type_name' => 'Tên loại xét nghiệm',         
+    ],
 ];

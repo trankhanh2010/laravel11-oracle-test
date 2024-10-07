@@ -759,14 +759,14 @@ Route::group([
     });
     /// Đơn vị tính chỉ số xét nghiệm
     Route::group(['as' => 'HIS.Desktop.Plugins.HisTestIndexUnit'], function () {
-        Route::apiResource('v1/test-index-unit', TestIndexUnitController::class)->only(['index', 'show']);
+        Route::apiResource('v1/test-index-unit', TestIndexUnitController::class);
     });
     /// Loại mẫu bệnh phẩm
     Route::group(['as' => 'HIS.Desktop.Plugins.HisTestSampleType'], function () {
-        Route::apiResource('v1/test-sample-type', TestSampleTypeController::class)->only(['index', 'show']);
+        Route::apiResource('v1/test-sample-type', TestSampleTypeController::class);
     });
     /// Loại xét nghiệm
-    Route::apiResource('v1/test-type', TestTypeController::class)->only(['index', 'show']);
+    Route::apiResource('v1/test-type', TestTypeController::class);
     /// Lý do chuyển tuyến chuyên môn
     Route::group(['as' => 'HIS.Desktop.Plugins.TranPatiTech'], function () {
         Route::apiResource('v1/tran-pati-tech', TranPatiTechController::class);

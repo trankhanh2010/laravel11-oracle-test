@@ -100,4 +100,16 @@ class TestSampleTypeController extends BaseApiCacheController
         ];
         return returnDataSuccess($paramReturn, $data);
     }
+    public function store(CreateTestSampleTypeRequest $request)
+    {
+        return $this->testSampleTypeService->createTestSampleType($request);
+    }
+    public function update(UpdateTestSampleTypeRequest $request, $id)
+    {
+        return $this->testSampleTypeService->updateTestSampleType($id, $request);
+    }
+    public function destroy($id)
+    {
+        return $this->testSampleTypeService->deleteTestSampleType($id);
+    }
 }

@@ -71,8 +71,7 @@ class TestTypeRepository
             'modifier' => get_loginname_with_token($request->bearerToken(), $time),
             'app_creator' => $appCreator,
             'app_modifier' => $appModifier,
-            'is_active' => 1,
-            'is_delete' => 0,
+
             'test_type_code' => $request->test_type_code,
             'test_type_name' => $request->test_type_name,
         ]);

@@ -75,6 +75,7 @@ class TestIndexUnitRepository
             'is_delete' => 0,
             'test_index_unit_code' => $request->test_index_unit_code,
             'test_index_unit_name' => $request->test_index_unit_name,
+            'test_index_unit_symbol' => $request->test_index_unit_symbol,
         ]);
         return $data;
     }
@@ -85,6 +86,7 @@ class TestIndexUnitRepository
             'app_modifier' => $appModifier,
             'test_index_unit_code' => $request->test_index_unit_code,
             'test_index_unit_name' => $request->test_index_unit_name,
+            'test_index_unit_symbol' => $request->test_index_unit_symbol,
             'is_active' => $request->is_active
         ]);
         return $data;

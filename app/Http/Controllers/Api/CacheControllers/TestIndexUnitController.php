@@ -100,4 +100,16 @@ class TestIndexUnitController extends BaseApiCacheController
         ];
         return returnDataSuccess($paramReturn, $data);
     }
+    public function store(CreateTestIndexUnitRequest $request)
+    {
+        return $this->testIndexUnitService->createTestIndexUnit($request);
+    }
+    public function update(UpdateTestIndexUnitRequest $request, $id)
+    {
+        return $this->testIndexUnitService->updateTestIndexUnit($id, $request);
+    }
+    public function destroy($id)
+    {
+        return $this->testIndexUnitService->deleteTestIndexUnit($id);
+    }
 }
