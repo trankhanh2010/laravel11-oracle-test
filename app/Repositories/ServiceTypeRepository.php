@@ -80,14 +80,14 @@ class ServiceTypeRepository
             'app_creator' => $appCreator,
             'app_modifier' => $appModifier,
 
-            'service_unit_code' => $request->service_unit_code,
-            'service_unit_name' => $request->service_unit_name,
-            'service_unit_symbol' => $request->service_unit_symbol,
-            'medicine_num_order' => $request->medicine_num_order,
-            'material_num_order' => $request->material_num_order,
-            'convert_id' => $request->convert_id,
-            'convert_ratio' => $request->convert_ratio,
-            'is_primary' => $request->is_primary,
+            'service_type_code'  => $request->service_type_code,      
+            'service_type_name'  => $request->service_type_name,      
+            'num_order'  => $request->num_order,        
+            'exe_service_module_id'  => $request->exe_service_module_id,
+            'is_auto_split_req'  => $request->is_auto_split_req, 
+            'is_not_display_assign'  => $request->is_not_display_assign,
+            'is_split_req_by_sample_type'  => $request->is_split_req_by_sample_type,
+            'is_required_sample_type' => $request->is_required_sample_type,
         ]);
         return $data;
     }
@@ -98,14 +98,14 @@ class ServiceTypeRepository
             'modifier' => get_loginname_with_token($request->bearerToken(), $time),
             'app_modifier' => $appModifier,
 
-            'service_unit_code' => $request->service_unit_code,
-            'service_unit_name' => $request->service_unit_name,
-            'service_unit_symbol' => $request->service_unit_symbol,
-            'medicine_num_order' => $request->medicine_num_order,
-            'material_num_order' => $request->material_num_order,
-            'convert_id' => $request->convert_id,
-            'convert_ratio' => $request->convert_ratio,
-            'is_primary' => $request->is_primary,
+            'service_type_code'  => $request->service_type_code,      
+            'service_type_name'  => $request->service_type_name,      
+            'num_order'  => $request->num_order,        
+            'exe_service_module_id'  => $request->exe_service_module_id,
+            'is_auto_split_req'  => $request->is_auto_split_req, 
+            'is_not_display_assign'  => $request->is_not_display_assign,
+            'is_split_req_by_sample_type'  => $request->is_split_req_by_sample_type,
+            'is_required_sample_type' => $request->is_required_sample_type,
 
             'is_active' => $request->is_active
         ]);

@@ -10,9 +10,10 @@ class ServiceType extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his';
-    protected $table = 'HIS_Service_Type';
-    protected $fillable = [
-        'exe_service_module_id',
+    protected $table = 'HIS_Service_Type';    
+    public $timestamps = false;
+    protected $guarded = [
+        'id',
     ];
 
     public function service()

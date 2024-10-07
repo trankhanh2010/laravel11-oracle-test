@@ -11,8 +11,8 @@ class ServiceReqType extends Model
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his';
     protected $table = 'HIS_service_req_type';
-
-    protected $fillable = [
-
+    public $timestamps = false;
+    protected $guarded = [
+        'id',
     ];
 }

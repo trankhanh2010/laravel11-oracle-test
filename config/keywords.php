@@ -1507,4 +1507,20 @@ return [
         'parent_service_id'  => 'Id dịch vụ cha',     
         'description' => 'Mô tả',
     ],
+    // Loại y lệnh
+    'service_req_type' => [
+        'service_req_type_code' => 'Mã loại y lệnh',
+        'service_req_type_name' => 'Tên loại y lệnh',
+    ],
+    // Loại dịch vụ
+    'service_type' => [
+        'service_type_code'  => 'Mã loại dịch vụ',     
+        'service_type_name'  => 'Tên loại dịch vụ',      
+        'num_order'  => 'Số ưu tiên',    
+        'exe_service_module_id'  => 'Module xử lý dịch vụ',
+        'is_auto_split_req' => 'Tự động tách thành nhiều phiếu nếu chỉ đinh nhiều dịch vụ khác nhau',
+        'is_not_display_assign'  => 'Không hiển thị khi chỉ định',
+        'is_split_req_by_sample_type'  => 'Tách y lệnh theo loại mẫu xét nghiệm',
+        'is_required_sample_type'  => 'Bắt buộc chọn loại mẫu bệnh phẩm khi chỉ định',
+    ],
 ];

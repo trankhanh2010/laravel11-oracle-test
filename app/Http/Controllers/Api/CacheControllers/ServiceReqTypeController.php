@@ -100,4 +100,17 @@ class ServiceReqTypeController extends BaseApiCacheController
         ];
         return returnDataSuccess($paramReturn, $data);
     }
+
+    public function store(CreateServiceReqTypeRequest $request)
+    {
+        return $this->serviceReqTypeService->createServiceReqType($request);
+    }
+    public function update(UpdateServiceReqTypeRequest $request, $id)
+    {
+        return $this->serviceReqTypeService->updateServiceReqType($id, $request);
+    }
+    public function destroy($id)
+    {
+        return $this->serviceReqTypeService->deleteServiceReqType($id);
+    }
 }

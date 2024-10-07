@@ -71,8 +71,6 @@ class ServiceReqTypeRepository
             'modifier' => get_loginname_with_token($request->bearerToken(), $time),
             'app_creator' => $appCreator,
             'app_modifier' => $appModifier,
-            'is_active' => 1,
-            'is_delete' => 0,
             'service_req_type_code' => $request->service_req_type_code,
             'service_req_type_name' => $request->service_req_type_name,
         ]);

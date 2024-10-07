@@ -718,7 +718,7 @@ Route::group([
     });
     /// Loại y lệnh 
     Route::group(['as' => 'HIS.Desktop.Plugins.ServiceReqType'], function () {
-        Route::apiResource('v1/service-req-type', ServiceReqTypeController::class)->only(['index', 'show']);
+        Route::apiResource('v1/service-req-type', ServiceReqTypeController::class);
     });
     /// Dịch vụ phòng
     Route::group(['as' => 'HIS.Desktop.Plugins.RoomService'], function () {
@@ -726,7 +726,7 @@ Route::group([
     });
     /// Loại dịch vụ
     Route::group(['as' => 'HIS.Desktop.Plugins.HisServiceType'], function () {
-        Route::apiResource('v1/service-type', ServiceTypeController::class)->only(['index', 'show']);
+        Route::apiResource('v1/service-type', ServiceTypeController::class);
     });
     /// Đơn vị tính
     Route::group(['as' => 'HIS.Desktop.Plugins.HisServiceUnitEdit'], function () {
