@@ -11,7 +11,8 @@ class TestIndexUnit extends Model
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his';
     protected $table = 'HIS_test_index_unit';
-    protected $fillable = [
-
+    public $timestamps = false;
+    protected $guarded = [
+        'id',
     ];
 }

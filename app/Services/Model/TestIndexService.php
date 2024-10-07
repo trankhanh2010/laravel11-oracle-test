@@ -67,4 +67,59 @@ class TestIndexService
             return writeAndThrowError(config('params')['db_service']['error']['test_index'], $e);
         }
     }
+    public function createTestIndex($request)
+    {
+        try {
+            $data = $this->testIndexRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->testIndexName));
+            // Gọi event để thêm index vào elastic
+            event(new InsertTestIndexIndex($data, $this->params->testIndexName));
+            return returnDataCreateSuccess($data);
+        } catch (\Throwable $e) {
+            return writeAndThrowError(config('params')['db_service']['error']['test_index'], $e);
+        }
+    }
+
+    public function updateTestIndex($id, $request)
+    {
+        if (!is_numeric($id)) {
+            return returnIdError($id);
+        }
+        $data = $this->testIndexRepository->getById($id);
+        if ($data == null) {
+            return returnNotRecord($id);
+        }
+        try {
+            $data = $this->testIndexRepository->update($request, $data, $this->params->time, $this->params->appModifier);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->testIndexName));
+            // Gọi event để thêm index vào elastic
+            event(new InsertTestIndexIndex($data, $this->params->testIndexName));
+            return returnDataUpdateSuccess($data);
+        } catch (\Throwable $e) {
+            return writeAndThrowError(config('params')['db_service']['error']['test_index'], $e);
+        }
+    }
+
+    public function deleteTestIndex($id)
+    {
+        if (!is_numeric($id)) {
+            return returnIdError($id);
+        }
+        $data = $this->testIndexRepository->getById($id);
+        if ($data == null) {
+            return returnNotRecord($id);
+        }
+        try {
+            $data = $this->testIndexRepository->delete($data);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->testIndexName));
+            // Gọi event để xóa index trong elastic
+            event(new DeleteIndex($data, $this->params->testIndexName));
+            return returnDataDeleteSuccess();
+        } catch (\Throwable $e) {
+            return writeAndThrowError(config('params')['db_service']['error']['test_index'], $e);
+        }
+    }
 }

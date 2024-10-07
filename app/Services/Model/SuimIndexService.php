@@ -67,4 +67,59 @@ class SuimIndexService
             return writeAndThrowError(config('params')['db_service']['error']['suim_index'], $e);
         }
     }
+    public function createSuimIndex($request)
+    {
+        try {
+            $data = $this->suimIndexRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->suimIndexName));
+            // Gọi event để thêm index vào elastic
+            event(new InsertSuimIndexIndex($data, $this->params->suimIndexName));
+            return returnDataCreateSuccess($data);
+        } catch (\Throwable $e) {
+            return writeAndThrowError(config('params')['db_service']['error']['suim_index'], $e);
+        }
+    }
+
+    public function updateSuimIndex($id, $request)
+    {
+        if (!is_numeric($id)) {
+            return returnIdError($id);
+        }
+        $data = $this->suimIndexRepository->getById($id);
+        if ($data == null) {
+            return returnNotRecord($id);
+        }
+        try {
+            $data = $this->suimIndexRepository->update($request, $data, $this->params->time, $this->params->appModifier);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->suimIndexName));
+            // Gọi event để thêm index vào elastic
+            event(new InsertSuimIndexIndex($data, $this->params->suimIndexName));
+            return returnDataUpdateSuccess($data);
+        } catch (\Throwable $e) {
+            return writeAndThrowError(config('params')['db_service']['error']['suim_index'], $e);
+        }
+    }
+
+    public function deleteSuimIndex($id)
+    {
+        if (!is_numeric($id)) {
+            return returnIdError($id);
+        }
+        $data = $this->suimIndexRepository->getById($id);
+        if ($data == null) {
+            return returnNotRecord($id);
+        }
+        try {
+            $data = $this->suimIndexRepository->delete($data);
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->suimIndexName));
+            // Gọi event để xóa index trong elastic
+            event(new DeleteIndex($data, $this->params->suimIndexName));
+            return returnDataDeleteSuccess();
+        } catch (\Throwable $e) {
+            return writeAndThrowError(config('params')['db_service']['error']['suim_index'], $e);
+        }
+    }
 }

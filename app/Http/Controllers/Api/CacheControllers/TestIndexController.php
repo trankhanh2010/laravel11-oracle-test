@@ -109,5 +109,16 @@ class TestIndexController extends BaseApiCacheController
             $this->isActiveName => $this->isActive,
         ];
         return returnDataSuccess($paramReturn, $data);
+    }    public function store(CreateTestIndexRequest $request)
+    {
+        return $this->testIndexService->createTestIndex($request);
+    }
+    public function update(UpdateTestIndexRequest $request, $id)
+    {
+        return $this->testIndexService->updateTestIndex($id, $request);
+    }
+    public function destroy($id)
+    {
+        return $this->testIndexService->deleteTestIndex($id);
     }
 }

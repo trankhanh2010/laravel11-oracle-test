@@ -100,4 +100,16 @@ class SuimIndexController extends BaseApiCacheController
         ];
         return returnDataSuccess($paramReturn, $data);
     }
+    public function store(CreateSuimIndexRequest $request)
+    {
+        return $this->suimIndexService->createSuimIndex($request);
+    }
+    public function update(UpdateSuimIndexRequest $request, $id)
+    {
+        return $this->suimIndexService->updateSuimIndex($id, $request);
+    }
+    public function destroy($id)
+    {
+        return $this->suimIndexService->deleteSuimIndex($id);
+    }
 }

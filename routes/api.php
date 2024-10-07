@@ -747,7 +747,7 @@ Route::group([
     });
     /// Chỉ số
     Route::group(['as' => 'HIS.Desktop.Plugins.HisSuimIndex'], function () {
-        Route::apiResource('v1/suim-index', SuimIndexController::class)->only(['index', 'show']);
+        Route::apiResource('v1/suim-index', SuimIndexController::class);
     });
     /// Nhà cung cấp
     Route::group(['as' => 'HIS.Desktop.Plugins.HisSupplier'], function () {
@@ -755,7 +755,7 @@ Route::group([
     });
     /// Chỉ số xét nghiệm
     Route::group(['as' => 'HIS.Desktop.Plugins.HisTestIndex'], function () {
-        Route::apiResource('v1/test-index', TestIndexController::class)->only(['index', 'show']);
+        Route::apiResource('v1/test-index', TestIndexController::class);
     });
     /// Đơn vị tính chỉ số xét nghiệm
     Route::group(['as' => 'HIS.Desktop.Plugins.HisTestIndexUnit'], function () {

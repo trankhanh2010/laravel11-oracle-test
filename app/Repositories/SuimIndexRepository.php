@@ -75,6 +75,8 @@ class SuimIndexRepository
             'is_delete' => 0,
             'suim_index_code' => $request->suim_index_code,
             'suim_index_name' => $request->suim_index_name,
+            'suim_index_unit_id' => $request->suim_index_unit_id,
+            'num_order' => $request->num_order,
         ]);
         return $data;
     }
@@ -85,6 +87,8 @@ class SuimIndexRepository
             'app_modifier' => $appModifier,
             'suim_index_code' => $request->suim_index_code,
             'suim_index_name' => $request->suim_index_name,
+            'suim_index_unit_id' => $request->suim_index_unit_id,
+            'num_order' => $request->num_order,
             'is_active' => $request->is_active
         ]);
         return $data;
