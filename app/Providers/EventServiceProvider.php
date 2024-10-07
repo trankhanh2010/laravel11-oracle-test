@@ -270,6 +270,8 @@ use App\Events\Elastic\Supplier\CreateSupplierIndex;
 use App\Events\Elastic\Supplier\InsertSupplierIndex;
 use App\Events\Elastic\TestIndex\CreateTestIndexIndex;
 use App\Events\Elastic\TestIndex\InsertTestIndexIndex;
+use App\Events\Elastic\TestIndexGroup\CreateTestIndexGroupIndex;
+use App\Events\Elastic\TestIndexGroup\InsertTestIndexGroupIndex;
 use App\Events\Elastic\TestIndexUnit\CreateTestIndexUnitIndex;
 use App\Events\Elastic\TestIndexUnit\InsertTestIndexUnitIndex;
 use App\Events\Elastic\TestSampleType\CreateTestSampleTypeIndex;
@@ -557,6 +559,8 @@ use App\Listeners\Elastic\Supplier\ElasticCreateSupplierIndex;
 use App\Listeners\Elastic\Supplier\ElasticInsertSupplierIndex;
 use App\Listeners\Elastic\TestIndex\ElasticCreateTestIndexIndex;
 use App\Listeners\Elastic\TestIndex\ElasticInsertTestIndexIndex;
+use App\Listeners\Elastic\TestIndexGroup\ElasticCreateTestIndexGroupIndex;
+use App\Listeners\Elastic\TestIndexGroup\ElasticInsertTestIndexGroupIndex;
 use App\Listeners\Elastic\TestIndexUnit\ElasticCreateTestIndexUnitIndex;
 use App\Listeners\Elastic\TestIndexUnit\ElasticInsertTestIndexUnitIndex;
 use App\Listeners\Elastic\TestSampleType\ElasticCreateTestSampleTypeIndex;
@@ -1600,6 +1604,13 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertSuimIndexUnitIndex::class => [
             ElasticInsertSuimIndexUnitIndex::class,
+        ],
+
+        CreateTestIndexGroupIndex::class => [
+            ElasticCreateTestIndexGroupIndex::class,
+        ],
+        InsertTestIndexGroupIndex::class => [
+            ElasticInsertTestIndexGroupIndex::class,
         ],
     ];
 

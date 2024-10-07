@@ -198,6 +198,7 @@ use App\Http\Controllers\Api\ValidateControllers\CheckTreatmentTypeController;
 use App\Http\Controllers\Api\CacheControllers\ProcessingMethodController;
 use App\Http\Controllers\Api\CacheControllers\StorageConditionController;
 use App\Http\Controllers\Api\CacheControllers\SuimIndexUnitController;
+use App\Http\Controllers\Api\CacheControllers\TestIndexGroupController;
 use App\Http\Controllers\Api\CacheControllers\VaccineTypeController;
 
 /*
@@ -761,6 +762,10 @@ Route::group([
     /// Chỉ số xét nghiệm
     Route::group(['as' => 'HIS.Desktop.Plugins.HisTestIndex'], function () {
         Route::apiResource('v1/test-index', TestIndexController::class);
+    });
+    /// Nhóm chỉ số xét nghiệm
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisTestIndexGroup'], function () {
+        Route::apiResource('v1/test-index-group', TestIndexGroupController::class);
     });
     /// Đơn vị tính chỉ số xét nghiệm
     Route::group(['as' => 'HIS.Desktop.Plugins.HisTestIndexUnit'], function () {

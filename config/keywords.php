@@ -1582,4 +1582,9 @@ return [
         'suim_index_unit_name' => 'Tên đơn vị tính chỉ số siêu âm',
         'suim_index_unit_symbol' => 'Ký hiệu',
     ],
+    // Nhóm chỉ số xét nghiệm
+    'test_index_group' => [
+        'test_index_group_code' => 'Mã nhóm chỉ số xét nghiệm',
+        'test_index_group_name' => 'Tên nhóm chỉ số xét nghiệm',
+    ],
 ];

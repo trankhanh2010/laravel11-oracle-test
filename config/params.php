@@ -136,6 +136,7 @@ return [
             'suim_index_unit',
             'supplier',
             'test_index',
+            'test_index_group',
             'test_index_unit',
             'test_sample_type',
             'test_type',
@@ -315,6 +316,7 @@ return [
             'vaccine_type' => 'Có lỗi khi thực hiện thao tác với bảng Loại Vaccine!',
             'htu' => 'Có lỗi khi thực hiện thao tác với bảng Cách dùng thuốc!',
             'suim_index_unit' => 'Có lỗi khi thực hiện thao tác với bảng Đơn vị tính chỉ số siêu âm!',
+            'test_index_group' => 'Có lỗi khi thực hiện thao tác với bảng Nhóm chỉ số xét nghiệm!',
 
         ]
     ]
