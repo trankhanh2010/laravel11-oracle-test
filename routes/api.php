@@ -197,6 +197,7 @@ use App\Http\Controllers\Api\ValidateControllers\CheckServiceController;
 use App\Http\Controllers\Api\ValidateControllers\CheckTreatmentTypeController;
 use App\Http\Controllers\Api\CacheControllers\ProcessingMethodController;
 use App\Http\Controllers\Api\CacheControllers\StorageConditionController;
+use App\Http\Controllers\Api\CacheControllers\SuimIndexUnitController;
 use App\Http\Controllers\Api\CacheControllers\VaccineTypeController;
 
 /*
@@ -748,6 +749,10 @@ Route::group([
     /// Chỉ số
     Route::group(['as' => 'HIS.Desktop.Plugins.HisSuimIndex'], function () {
         Route::apiResource('v1/suim-index', SuimIndexController::class);
+    });
+    /// Đơn vị tính chỉ số siêu âm
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisSuimIndexUnit'], function () {
+        Route::apiResource('v1/suim-index-unit', SuimIndexUnitController::class);
     });
     /// Nhà cung cấp
     Route::group(['as' => 'HIS.Desktop.Plugins.HisSupplier'], function () {

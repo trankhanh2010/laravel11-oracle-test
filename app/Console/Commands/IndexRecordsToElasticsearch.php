@@ -135,6 +135,7 @@ use App\Events\Elastic\ServSegr\CreateServSegrIndex;
 use App\Events\Elastic\Speciality\CreateSpecialityIndex;
 use App\Events\Elastic\StorageCondition\CreateStorageConditionIndex;
 use App\Events\Elastic\SuimIndex\CreateSuimIndexIndex;
+use App\Events\Elastic\SuimIndexUnit\CreateSuimIndexUnitIndex;
 use App\Events\Elastic\Supplier\CreateSupplierIndex;
 use App\Events\Elastic\TestIndex\CreateTestIndexIndex;
 use App\Events\Elastic\TestIndexUnit\CreateTestIndexUnitIndex;
@@ -277,6 +278,7 @@ use App\Repositories\ServSegrRepository;
 use App\Repositories\SpecialityRepository;
 use App\Repositories\StorageConditionRepository;
 use App\Repositories\SuimIndexRepository;
+use App\Repositories\SuimIndexUnitRepository;
 use App\Repositories\SupplierRepository;
 use App\Repositories\TestIndexRepository;
 use App\Repositories\TestIndexUnitRepository;
@@ -857,6 +859,10 @@ class IndexRecordsToElasticsearch extends Command
             case 'suim_index':
                 $results = app(SuimIndexRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateSuimIndexIndex($name_table));
+                break;
+            case 'suim_index_unit':
+                $results = app(SuimIndexUnitRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateSuimIndexUnitIndex($name_table));
                 break;
             case 'supplier':
                 $results = app(SupplierRepository::class)->getDataFromDbToElastic(null);

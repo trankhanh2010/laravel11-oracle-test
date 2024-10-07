@@ -264,6 +264,8 @@ use App\Events\Elastic\StorageCondition\CreateStorageConditionIndex;
 use App\Events\Elastic\StorageCondition\InsertStorageConditionIndex;
 use App\Events\Elastic\SuimIndex\CreateSuimIndexIndex;
 use App\Events\Elastic\SuimIndex\InsertSuimIndexIndex;
+use App\Events\Elastic\SuimIndexUnit\CreateSuimIndexUnitIndex;
+use App\Events\Elastic\SuimIndexUnit\InsertSuimIndexUnitIndex;
 use App\Events\Elastic\Supplier\CreateSupplierIndex;
 use App\Events\Elastic\Supplier\InsertSupplierIndex;
 use App\Events\Elastic\TestIndex\CreateTestIndexIndex;
@@ -549,6 +551,8 @@ use App\Listeners\Elastic\StorageCondition\ElasticCreateStorageConditionIndex;
 use App\Listeners\Elastic\StorageCondition\ElasticInsertStorageConditionIndex;
 use App\Listeners\Elastic\SuimIndex\ElasticCreateSuimIndexIndex;
 use App\Listeners\Elastic\SuimIndex\ElasticInsertSuimIndexIndex;
+use App\Listeners\Elastic\SuimIndexUnit\ElasticCreateSuimIndexUnitIndex;
+use App\Listeners\Elastic\SuimIndexUnit\ElasticInsertSuimIndexUnitIndex;
 use App\Listeners\Elastic\Supplier\ElasticCreateSupplierIndex;
 use App\Listeners\Elastic\Supplier\ElasticInsertSupplierIndex;
 use App\Listeners\Elastic\TestIndex\ElasticCreateTestIndexIndex;
@@ -1589,6 +1593,13 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertHtuIndex::class => [
             ElasticInsertHtuIndex::class,
+        ],
+
+        CreateSuimIndexUnitIndex::class => [
+            ElasticCreateSuimIndexUnitIndex::class,
+        ],
+        InsertSuimIndexUnitIndex::class => [
+            ElasticInsertSuimIndexUnitIndex::class,
         ],
     ];
 

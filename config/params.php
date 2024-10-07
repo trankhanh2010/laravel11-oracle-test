@@ -133,6 +133,7 @@ return [
             'speciality',
             'storage_condition',
             'suim_index',
+            'suim_index_unit',
             'supplier',
             'test_index',
             'test_index_unit',
@@ -313,6 +314,7 @@ return [
             'storage_condition' => 'Có lỗi khi thực hiện thao tác với bảng Điều kiện bảo quản!',
             'vaccine_type' => 'Có lỗi khi thực hiện thao tác với bảng Loại Vaccine!',
             'htu' => 'Có lỗi khi thực hiện thao tác với bảng Cách dùng thuốc!',
+            'suim_index_unit' => 'Có lỗi khi thực hiện thao tác với bảng Đơn vị tính chỉ số siêu âm!',
 
         ]
     ]

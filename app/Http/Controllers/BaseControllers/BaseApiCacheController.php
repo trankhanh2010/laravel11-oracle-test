@@ -153,6 +153,8 @@ class BaseApiCacheController extends Controller
     protected $mediStockName = "medi_stock";
     protected $receptionRoom;
     protected $receptionRoomName = "reception_room";
+    protected $suimIndexUnit;
+    protected $suimIndexUnitName = "suim_index_unit";
     protected $area;
     protected $areaName = "area";
     protected $materialTypeMap;

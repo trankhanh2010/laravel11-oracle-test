@@ -1576,4 +1576,10 @@ return [
         'test_type_code' => 'Mã loại xét nghiệm',
         'test_type_name' => 'Tên loại xét nghiệm',         
     ],
+    // Đơn vị tính chỉ số siêu âm
+    'suim_index_unit' => [
+        'suim_index_unit_code' => 'Mã đơn vị tính chỉ số siêu âm',
+        'suim_index_unit_name' => 'Tên đơn vị tính chỉ số siêu âm',
+        'suim_index_unit_symbol' => 'Ký hiệu',
+    ],
 ];
