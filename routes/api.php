@@ -145,6 +145,13 @@ use App\Http\Controllers\Api\CacheControllers\MedicalContractController;
 use App\Http\Controllers\Api\CacheControllers\MemaGroupController;
 use App\Http\Controllers\Api\CacheControllers\ModuleController;
 use App\Http\Controllers\Api\CacheControllers\PackingTypeController;
+use App\Http\Controllers\Api\CacheControllers\ProcessingMethodController;
+use App\Http\Controllers\Api\CacheControllers\StorageConditionController;
+use App\Http\Controllers\Api\CacheControllers\SuimIndexUnitController;
+use App\Http\Controllers\Api\CacheControllers\TestIndexGroupController;
+use App\Http\Controllers\Api\CacheControllers\VaccineTypeController;
+// No cache Controller
+use App\Http\Controllers\Api\NoCacheControllers\UserRoomController;
 // Base Api
 use App\Http\Controllers\BaseControllers\CacheController;
 use App\Http\Controllers\BaseControllers\ElasticSearchController;
@@ -152,23 +159,23 @@ use App\Http\Controllers\BaseControllers\LogController;
 use App\Http\Controllers\BaseControllers\TelegramController;
 use App\Http\Controllers\BaseControllers\BaseApiRequestController;
 // Data Controllers
-use App\Http\Controllers\Api\DataControllers\DebateController;
-use App\Http\Controllers\Api\DataControllers\DebateUserController;
-use App\Http\Controllers\Api\DataControllers\DebateEkipUserController;
-use App\Http\Controllers\Api\DataControllers\DhstController;
-use App\Http\Controllers\Api\DataControllers\PatientTypeAlterController;
-use App\Http\Controllers\Api\DataControllers\SereServController;
-use App\Http\Controllers\Api\DataControllers\ServiceReqController;
-use App\Http\Controllers\Api\DataControllers\SereServExtController;
-use App\Http\Controllers\Api\DataControllers\SereServTeinController;
-use App\Http\Controllers\Api\DataControllers\TrackingController;
-use App\Http\Controllers\Api\DataControllers\TreatmentController;
-use App\Http\Controllers\Api\DataControllers\TreatmentBedRoomController;
-use App\Http\Controllers\Api\DataControllers\UserRoomController;
-use App\Http\Controllers\Api\DataControllers\SereServBillController;
-use App\Http\Controllers\Api\DataControllers\SereServDepositController;
-use App\Http\Controllers\Api\DataControllers\SeseDepoRepayController;
-use App\Http\Controllers\Api\DataControllers\AccountBookController;
+// use App\Http\Controllers\Api\DataControllers\DebateController;
+// use App\Http\Controllers\Api\DataControllers\DebateUserController;
+// use App\Http\Controllers\Api\DataControllers\DebateEkipUserController;
+// use App\Http\Controllers\Api\DataControllers\DhstController;
+// use App\Http\Controllers\Api\DataControllers\PatientTypeAlterController;
+// use App\Http\Controllers\Api\DataControllers\SereServController;
+// use App\Http\Controllers\Api\DataControllers\ServiceReqController;
+// use App\Http\Controllers\Api\DataControllers\SereServExtController;
+// use App\Http\Controllers\Api\DataControllers\SereServTeinController;
+// use App\Http\Controllers\Api\DataControllers\TrackingController;
+// use App\Http\Controllers\Api\DataControllers\TreatmentController;
+// use App\Http\Controllers\Api\DataControllers\TreatmentBedRoomController;
+// use App\Http\Controllers\Api\DataControllers\UserRoomController;
+// use App\Http\Controllers\Api\DataControllers\SereServBillController;
+// use App\Http\Controllers\Api\DataControllers\SereServDepositController;
+// use App\Http\Controllers\Api\DataControllers\SeseDepoRepayController;
+// use App\Http\Controllers\Api\DataControllers\AccountBookController;
 
 // Validate Controllers
 use App\Http\Controllers\Api\ValidateControllers\CheckBedRoomController;
@@ -195,11 +202,7 @@ use App\Http\Controllers\Api\ValidateControllers\CheckRefectoryController;
 use App\Http\Controllers\Api\ValidateControllers\CheckSpecialityController;
 use App\Http\Controllers\Api\ValidateControllers\CheckServiceController;
 use App\Http\Controllers\Api\ValidateControllers\CheckTreatmentTypeController;
-use App\Http\Controllers\Api\CacheControllers\ProcessingMethodController;
-use App\Http\Controllers\Api\CacheControllers\StorageConditionController;
-use App\Http\Controllers\Api\CacheControllers\SuimIndexUnitController;
-use App\Http\Controllers\Api\CacheControllers\TestIndexGroupController;
-use App\Http\Controllers\Api\CacheControllers\VaccineTypeController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -802,112 +805,115 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisWorkPlace'], function () {
         Route::apiResource('v1/work-place', WorkPlaceController::class);
     });
-
     /// Nhân viên - Phòng
-    // Trả về nhân viên cùng phòng
-    Route::get("v1/user-room/get-view", [UserRoomController::class, "user_with_room"])->name('.get-view');
-
-    // Debate
-    Route::group(['as' => 'HIS.Desktop.Plugins.Debate'], function () {
-        Route::get("v1/debate/get", [DebateController::class, "debate_get"])->name('.get');
-        Route::get("v1/debate/get-view", [DebateController::class, "debate_get_view"])->name('.get-view');
-
-        Route::get("v2/debate/get", [DebateController::class, "debate_get_v2"])->name('.get_v2');
-        Route::get("v2/debate/get-view", [DebateController::class, "debate_get_view_v2"])->name('.get_view_v2');
-    });
+    Route::apiResource('v1/user-room', UserRoomController::class)->only(['index', 'show']);
 
 
-    // Debate User
-    Route::get("v1/debate-user/get", [DebateUserController::class, "debate_user"])->name('.get_debate_user');
-    Route::get("v2/debate-user/get", [DebateUserController::class, "debate_user_v2"])->name('.get_debate_user_v2');
+    // /// Nhân viên - Phòng
+    // // Trả về nhân viên cùng phòng
+    // Route::get("v1/user-room/get-view", [UserRoomController::class, "user_with_room"])->name('.get-view');
+
+    // // Debate
+    // Route::group(['as' => 'HIS.Desktop.Plugins.Debate'], function () {
+    //     Route::get("v1/debate/get", [DebateController::class, "debate_get"])->name('.get');
+    //     Route::get("v1/debate/get-view", [DebateController::class, "debate_get_view"])->name('.get-view');
+
+    //     Route::get("v2/debate/get", [DebateController::class, "debate_get_v2"])->name('.get_v2');
+    //     Route::get("v2/debate/get-view", [DebateController::class, "debate_get_view_v2"])->name('.get_view_v2');
+    // });
 
 
-    // Debate Ekip User
-    Route::get("v1/debate-ekip-user/get", [DebateEkipUserController::class, "debate_ekip_user"])->name('.get_debate_ekip_user');
-    Route::get("v2/debate-ekip-user/get", [DebateEkipUserController::class, "debate_ekip_user_v2"])->name('.get_debate_ekip_user_v2');
-
-    // Service Req
-    Route::group(['as' => 'HIS.Desktop.Plugins.ServiceReqList'], function () {
-        Route::get("v1/service-req/get-L-view", [ServiceReqController::class, "service_req_get_L_view"])->name('.get_L_view');
-        Route::get("v2/service-req/get-L-view", [ServiceReqController::class, "service_req_get_L_view_v2"])->name('.get_L_view_v2');
-        Route::get("v3/service-req/get-L-view", [ServiceReqController::class, "service_req_get_L_view_v3"])->name('.get_L_view_v3');
-    });
+    // // Debate User
+    // Route::get("v1/debate-user/get", [DebateUserController::class, "debate_user"])->name('.get_debate_user');
+    // Route::get("v2/debate-user/get", [DebateUserController::class, "debate_user_v2"])->name('.get_debate_user_v2');
 
 
-    // Tracking
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisTrackingList'], function () {
-        Route::get("v1/tracking/get", [TrackingController::class, "tracking_get"])->name('.get');
-        Route::get("v1/tracking/get-data", [TrackingController::class, "tracking_get_data"])->name('.get_data');
+    // // Debate Ekip User
+    // Route::get("v1/debate-ekip-user/get", [DebateEkipUserController::class, "debate_ekip_user"])->name('.get_debate_ekip_user');
+    // Route::get("v2/debate-ekip-user/get", [DebateEkipUserController::class, "debate_ekip_user_v2"])->name('.get_debate_ekip_user_v2');
 
-        Route::get("v2/tracking/get", [TrackingController::class, "tracking_get_v2"])->name('.get_v2');
-        Route::get("v2/tracking/get-data", [TrackingController::class, "tracking_get_data_v2"])->name('.get_data_v2');
-    });
-
-    // Sere Serv
-    Route::get("v1/sere-serv/get", [SereServController::class, "sere_serv_get"])->name('.get_sere_serv');
-
-    Route::get("v2/sere-serv/get", [SereServController::class, "sere_serv_get_v2"])->name('.get_sere_serv_v2');
-    Route::get("v2/sere-serv/get-count", [SereServController::class, "sere_serv_get_count_v2"])->name('.get_sere_serv_count_v2');
-
-    Route::get("v3/sere-serv/get", [SereServController::class, "sere_serv_get_v3"])->name('.get_sere_serv_v3');
-    Route::get("v3/sere-serv/get-count", [SereServController::class, "sere_serv_get_count_v3"])->name('.get_sere_serv_count_v3');
-
-    Route::get("v1/sere-serv/get-view-5", [SereServController::class, "sere_serv_get_view_5"])->name('.get_sere_serv_view_5');
+    // // Service Req
+    // Route::group(['as' => 'HIS.Desktop.Plugins.ServiceReqList'], function () {
+    //     Route::get("v1/service-req/get-L-view", [ServiceReqController::class, "service_req_get_L_view"])->name('.get_L_view');
+    //     Route::get("v2/service-req/get-L-view", [ServiceReqController::class, "service_req_get_L_view_v2"])->name('.get_L_view_v2');
+    //     Route::get("v3/service-req/get-L-view", [ServiceReqController::class, "service_req_get_L_view_v3"])->name('.get_L_view_v3');
+    // });
 
 
-    // Patient Type Alter
-    Route::group(['as' => 'HIS.Desktop.Plugins.CallPatientTypeAlter'], function () {
-        Route::get("v1/patient-type-alter/get-view", [PatientTypeAlterController::class, "patient_type_alter_get_view"])->name('.get_view');
-        Route::get("v2/patient-type-alter/get-view", [PatientTypeAlterController::class, "patient_type_alter_get_view_v2"])->name('.get_view_v2');
-    });
+    // // Tracking
+    // Route::group(['as' => 'HIS.Desktop.Plugins.HisTrackingList'], function () {
+    //     Route::get("v1/tracking/get", [TrackingController::class, "tracking_get"])->name('.get');
+    //     Route::get("v1/tracking/get-data", [TrackingController::class, "tracking_get_data"])->name('.get_data');
 
-    // Treatment
-    Route::get("v1/treatment/get-L-view", [TreatmentController::class, "treatment_get_L_view"])->name('.get_treatment_L_view');
-    Route::get("v1/treatment/get-treatment-with-patient-type-info-sdo", [TreatmentController::class, "treatment_get_treatment_with_patient_type_info_sdo"])->name('.get_treatment_treatment');
-    Route::get("v1/treatment/get-fee-view", [TreatmentController::class, "treatment_get_fee_view"])->name('.get_treatment_fee_view');
+    //     Route::get("v2/tracking/get", [TrackingController::class, "tracking_get_v2"])->name('.get_v2');
+    //     Route::get("v2/tracking/get-data", [TrackingController::class, "tracking_get_data_v2"])->name('.get_data_v2');
+    // });
 
-    Route::get("v2/treatment/get-L-view", [TreatmentController::class, "treatment_get_L_view_v2"])->name('.get_treatment_L_view_v2');
-    Route::get("v2/treatment/get-treatment-with-patient-type-info-sdo", [TreatmentController::class, "treatment_get_treatment_with_patient_type_info_sdo_v2"])->name('.get_treatment_treatment_v2');
+    // // Sere Serv
+    // Route::get("v1/sere-serv/get", [SereServController::class, "sere_serv_get"])->name('.get_sere_serv');
 
-    // Treatment Bed Room
-    Route::group(['as' => 'HIS.Desktop.Plugins.TreatmentBedRoomList'], function () {
-        Route::get("v1/treatment-bed-room/get-L-view", [TreatmentBedRoomController::class, "treatment_bed_room_get_L_view"])->name('.get_L_view');
-        Route::get("v2/treatment-bed-room/get-L-view", [TreatmentBedRoomController::class, "treatment_bed_room_get_L_view_v2"])->name('.get_L_view_v2');
-    });
+    // Route::get("v2/sere-serv/get", [SereServController::class, "sere_serv_get_v2"])->name('.get_sere_serv_v2');
+    // Route::get("v2/sere-serv/get-count", [SereServController::class, "sere_serv_get_count_v2"])->name('.get_sere_serv_count_v2');
 
-    // DHST
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisDhst'], function () {
-        Route::get("v1/dhst/get", [DhstController::class, "dhst_get"])->name('.get');
-        Route::get("v2/dhst/get", [DhstController::class, "dhst_get_v2"])->name('.get_v2');
-        Route::get("v3/dhst/get", [DhstController::class, "dhst_get_v3"])->name('.get_v3');
-    });
+    // Route::get("v3/sere-serv/get", [SereServController::class, "sere_serv_get_v3"])->name('.get_sere_serv_v3');
+    // Route::get("v3/sere-serv/get-count", [SereServController::class, "sere_serv_get_count_v3"])->name('.get_sere_serv_count_v3');
+
+    // Route::get("v1/sere-serv/get-view-5", [SereServController::class, "sere_serv_get_view_5"])->name('.get_sere_serv_view_5');
 
 
-    // Sere Serv Ext
-    Route::get("v1/sere-serv-ext/get", [SereServExtController::class, "sere_serv_ext"])->name('.get_sere_serv_ext');
-    Route::get("v2/sere-serv-ext/get", [SereServExtController::class, "sere_serv_ext_v2"])->name('.get_sere_serv_ext_v2');
+    // // Patient Type Alter
+    // Route::group(['as' => 'HIS.Desktop.Plugins.CallPatientTypeAlter'], function () {
+    //     Route::get("v1/patient-type-alter/get-view", [PatientTypeAlterController::class, "patient_type_alter_get_view"])->name('.get_view');
+    //     Route::get("v2/patient-type-alter/get-view", [PatientTypeAlterController::class, "patient_type_alter_get_view_v2"])->name('.get_view_v2');
+    // });
 
-    // Sere Serv Tein
-    Route::group(['as' => 'HIS.Desktop.Plugins.SereServTein'], function () {
-        Route::get("v1/sere-serv-tein/get", [SereServTeinController::class, "sere_serv_tein_get"])->name('.get');
-        Route::get("v1/sere-serv-tein/get-view", [SereServTeinController::class, "sere_serv_tein_get_view"])->name('.get_view');
+    // // Treatment
+    // Route::get("v1/treatment/get-L-view", [TreatmentController::class, "treatment_get_L_view"])->name('.get_treatment_L_view');
+    // Route::get("v1/treatment/get-treatment-with-patient-type-info-sdo", [TreatmentController::class, "treatment_get_treatment_with_patient_type_info_sdo"])->name('.get_treatment_treatment');
+    // Route::get("v1/treatment/get-fee-view", [TreatmentController::class, "treatment_get_fee_view"])->name('.get_treatment_fee_view');
 
-        Route::get("v2/sere-serv-tein/get", [SereServTeinController::class, "sere_serv_tein_get_v2"])->name('.get_v2');
-        Route::get("v2/sere-serv-tein/get-view", [SereServTeinController::class, "sere_serv_tein_get_view_v2"])->name('.get_view_v2');
-    });
+    // Route::get("v2/treatment/get-L-view", [TreatmentController::class, "treatment_get_L_view_v2"])->name('.get_treatment_L_view_v2');
+    // Route::get("v2/treatment/get-treatment-with-patient-type-info-sdo", [TreatmentController::class, "treatment_get_treatment_with_patient_type_info_sdo_v2"])->name('.get_treatment_treatment_v2');
+
+    // // Treatment Bed Room
+    // Route::group(['as' => 'HIS.Desktop.Plugins.TreatmentBedRoomList'], function () {
+    //     Route::get("v1/treatment-bed-room/get-L-view", [TreatmentBedRoomController::class, "treatment_bed_room_get_L_view"])->name('.get_L_view');
+    //     Route::get("v2/treatment-bed-room/get-L-view", [TreatmentBedRoomController::class, "treatment_bed_room_get_L_view_v2"])->name('.get_L_view_v2');
+    // });
+
+    // // DHST
+    // Route::group(['as' => 'HIS.Desktop.Plugins.HisDhst'], function () {
+    //     Route::get("v1/dhst/get", [DhstController::class, "dhst_get"])->name('.get');
+    //     Route::get("v2/dhst/get", [DhstController::class, "dhst_get_v2"])->name('.get_v2');
+    //     Route::get("v3/dhst/get", [DhstController::class, "dhst_get_v3"])->name('.get_v3');
+    // });
 
 
-    // Sere Serv Bill
-    Route::get("v1/sere-serv-bill/get", [SereServBillController::class, "sere_serv_bill_get"])->name('.get_sere_serv_bill');
+    // // Sere Serv Ext
+    // Route::get("v1/sere-serv-ext/get", [SereServExtController::class, "sere_serv_ext"])->name('.get_sere_serv_ext');
+    // Route::get("v2/sere-serv-ext/get", [SereServExtController::class, "sere_serv_ext_v2"])->name('.get_sere_serv_ext_v2');
 
-    // Sere Serv Deposit
-    Route::get("v1/sere-serv-deposit/get-view", [SereServDepositController::class, "sere_serv_deposit_get_view"])->name('.get_view_sere_serv_deposit');
+    // // Sere Serv Tein
+    // Route::group(['as' => 'HIS.Desktop.Plugins.SereServTein'], function () {
+    //     Route::get("v1/sere-serv-tein/get", [SereServTeinController::class, "sere_serv_tein_get"])->name('.get');
+    //     Route::get("v1/sere-serv-tein/get-view", [SereServTeinController::class, "sere_serv_tein_get_view"])->name('.get_view');
 
-    // Sese Depo Repay
-    Route::get("v1/sese-depo-repay/get-view", [SeseDepoRepayController::class, "sese_depo_repay_get_view"])->name('.get_view_sese_depo_repay');
+    //     Route::get("v2/sere-serv-tein/get", [SereServTeinController::class, "sere_serv_tein_get_v2"])->name('.get_v2');
+    //     Route::get("v2/sere-serv-tein/get-view", [SereServTeinController::class, "sere_serv_tein_get_view_v2"])->name('.get_view_v2');
+    // });
 
-    // Account Book
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisAccountBookList'], function () {
-        Route::get("v1/account-book/get-view", [AccountBookController::class, "account_book_get_view"])->name('.get_view');
-    });
+
+    // // Sere Serv Bill
+    // Route::get("v1/sere-serv-bill/get", [SereServBillController::class, "sere_serv_bill_get"])->name('.get_sere_serv_bill');
+
+    // // Sere Serv Deposit
+    // Route::get("v1/sere-serv-deposit/get-view", [SereServDepositController::class, "sere_serv_deposit_get_view"])->name('.get_view_sere_serv_deposit');
+
+    // // Sese Depo Repay
+    // Route::get("v1/sese-depo-repay/get-view", [SeseDepoRepayController::class, "sese_depo_repay_get_view"])->name('.get_view_sese_depo_repay');
+
+    // // Account Book
+    // Route::group(['as' => 'HIS.Desktop.Plugins.HisAccountBookList'], function () {
+    //     Route::get("v1/account-book/get-view", [AccountBookController::class, "account_book_get_view"])->name('.get_view');
+    // });
 });

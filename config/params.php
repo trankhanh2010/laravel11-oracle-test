@@ -146,6 +146,9 @@ return [
             'unlimit_reason',
             'vaccine_type',
             'work_place',
+
+
+            'user_room',
         ],
         'error' => [
             'elasticsearch_service' => 'Có lỗi khi thực hiện thao tác với Elastic Search!',
@@ -317,6 +320,9 @@ return [
             'htu' => 'Có lỗi khi thực hiện thao tác với bảng Cách dùng thuốc!',
             'suim_index_unit' => 'Có lỗi khi thực hiện thao tác với bảng Đơn vị tính chỉ số siêu âm!',
             'test_index_group' => 'Có lỗi khi thực hiện thao tác với bảng Nhóm chỉ số xét nghiệm!',
+
+
+            'user_room' => 'Có lỗi khi thực hiện thao tác với bảng Nhân viên - Phòng!',
 
         ]
     ]

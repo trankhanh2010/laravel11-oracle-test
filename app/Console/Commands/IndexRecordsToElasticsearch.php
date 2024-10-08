@@ -146,6 +146,7 @@ use App\Events\Elastic\TranPatiTech\CreateTranPatiTechIndex;
 use App\Events\Elastic\TreatmentEndType\CreateTreatmentEndTypeIndex;
 use App\Events\Elastic\TreatmentType\CreateTreatmentTypeIndex;
 use App\Events\Elastic\UnlimitReason\CreateUnlimitReasonIndex;
+use App\Events\Elastic\UserRoom\CreateUserRoomIndex;
 use App\Events\Elastic\VaccineType\CreateVaccineTypeIndex;
 use App\Events\Elastic\WorkPlace\CreateWorkPlaceIndex;
 use App\Models\HIS\MedicineUseForm;
@@ -290,6 +291,7 @@ use App\Repositories\TranPatiTechRepository;
 use App\Repositories\TreatmentEndTypeRepository;
 use App\Repositories\TreatmentTypeRepository;
 use App\Repositories\UnlimitReasonRepository;
+use App\Repositories\UserRoomRepository;
 use App\Repositories\VaccineTypeRepository;
 use App\Repositories\WorkPlaceRepository;
 
@@ -913,6 +915,11 @@ class IndexRecordsToElasticsearch extends Command
             case 'work_place':
                 $results = app(WorkPlaceRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateWorkPlaceIndex($name_table));
+                break;
+
+            case 'user_room':
+                $results = app(UserRoomRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateUserRoomIndex($name_table));
                 break;
             default:
                 // Xử lý mặc định hoặc xử lý khi không có bảng khớp

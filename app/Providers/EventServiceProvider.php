@@ -286,6 +286,8 @@ use App\Events\Elastic\TreatmentType\CreateTreatmentTypeIndex;
 use App\Events\Elastic\TreatmentType\InsertTreatmentTypeIndex;
 use App\Events\Elastic\UnlimitReason\CreateUnlimitReasonIndex;
 use App\Events\Elastic\UnlimitReason\InsertUnlimitReasonIndex;
+use App\Events\Elastic\UserRoom\CreateUserRoomIndex;
+use App\Events\Elastic\UserRoom\InsertUserRoomIndex;
 use App\Events\Elastic\VaccineType\CreateVaccineTypeIndex;
 use App\Events\Elastic\VaccineType\InsertVaccineTypeIndex;
 use App\Events\Elastic\WorkPlace\CreateWorkPlaceIndex;
@@ -575,6 +577,8 @@ use App\Listeners\Elastic\TreatmentType\ElasticCreateTreatmentTypeIndex;
 use App\Listeners\Elastic\TreatmentType\ElasticInsertTreatmentTypeIndex;
 use App\Listeners\Elastic\UnlimitReason\ElasticCreateUnlimitReasonIndex;
 use App\Listeners\Elastic\UnlimitReason\ElasticInsertUnlimitReasonIndex;
+use App\Listeners\Elastic\UserRoom\ElasticCreateUserRoomIndex;
+use App\Listeners\Elastic\UserRoom\ElasticInsertUserRoomIndex;
 use App\Listeners\Elastic\VaccineType\ElasticCreateVaccineTypeIndex;
 use App\Listeners\Elastic\VaccineType\ElasticInsertVaccineTypeIndex;
 use App\Listeners\Elastic\WorkPlace\ElasticCreateWorkPlaceIndex;
@@ -1611,6 +1615,13 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertTestIndexGroupIndex::class => [
             ElasticInsertTestIndexGroupIndex::class,
+        ],
+
+        CreateUserRoomIndex::class => [
+            ElasticCreateUserRoomIndex::class,
+        ],
+        InsertUserRoomIndex::class => [
+            ElasticInsertUserRoomIndex::class,
         ],
     ];
 
