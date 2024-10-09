@@ -28,6 +28,7 @@ class UserRoomService
             $data = $this->userRoomRepository->view();
             $data = $this->userRoomRepository->applyKeywordFilter($data, $this->params->keyword);
             $data = $this->userRoomRepository->applyIsActiveFilter($data, $this->params->isActive);
+            $data = $this->userRoomRepository->applyIsDeleteFilter($data, $this->params->isDelete);
             $data = $this->userRoomRepository->applyLoginnameFilter($data, $this->params->loginname);
             $count = $data->count();
             $data = $this->userRoomRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
@@ -42,6 +43,7 @@ class UserRoomService
         try {
             $data = $this->userRoomRepository->view();
             $data = $this->userRoomRepository->applyIsActiveFilter($data, $this->params->isActive);
+            $data = $this->userRoomRepository->applyIsDeleteFilter($data, $this->params->isDelete);
             $data = $this->userRoomRepository->applyLoginnameFilter($data, $this->params->loginname);
             $count = $data->count();
             $data = $this->userRoomRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
@@ -57,6 +59,7 @@ class UserRoomService
             $data = $this->userRoomRepository->view()
                 ->where('his_user_room.id', $id);
             $data = $this->userRoomRepository->applyIsActiveFilter($data, $this->params->isActive);
+            $data = $this->userRoomRepository->applyIsDeleteFilter($data, $this->params->isDelete);
             $data = $data->first();
             return $data;
         } catch (\Throwable $e) {

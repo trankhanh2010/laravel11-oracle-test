@@ -36,6 +36,7 @@ use App\Events\Elastic\Commune\CreateCommuneIndex;
 use App\Events\Elastic\Contraindication\CreateContraindicationIndex;
 use App\Events\Elastic\DataStore\CreateDataStoreIndex;
 use App\Events\Elastic\DeathWithin\CreateDeathWithinIndex;
+use App\Events\Elastic\Debate\CreateDebateIndex;
 use App\Events\Elastic\DebateReason\CreateDebateReasonIndex;
 use App\Events\Elastic\DebateType\CreateDebateTypeIndex;
 use App\Events\Elastic\Department\CreateDepartmentIndex;
@@ -182,6 +183,7 @@ use App\Repositories\ContraindicationRepository;
 use App\Repositories\DataStoreRepository;
 use App\Repositories\DeathWithinRepository;
 use App\Repositories\DebateReasonRepository;
+use App\Repositories\DebateRepository;
 use App\Repositories\DebateTypeRepository;
 use App\Repositories\DepartmentRepository;
 use App\Repositories\DiimTypeRepository;
@@ -916,10 +918,14 @@ class IndexRecordsToElasticsearch extends Command
                 $results = app(WorkPlaceRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateWorkPlaceIndex($name_table));
                 break;
-
+            // No Cache
             case 'user_room':
                 $results = app(UserRoomRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateUserRoomIndex($name_table));
+                break;
+            case 'debate':
+                $results = app(DebateRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateDebateIndex($name_table));
                 break;
             default:
                 // Xử lý mặc định hoặc xử lý khi không có bảng khớp
@@ -935,23 +941,10 @@ class IndexRecordsToElasticsearch extends Command
             'pttt_group',
             'reception_room',
             'role',
-            'service'
+            'service',
+            'debate',
         ];
 
-        // Chèn từng bản ghi
-        // foreach ($results as $result) {
-        //     $data = [];
-        //     foreach ($result as $key => $value) {
-        //         $data[$key] = $value;
-        //     }
-        //     $params = [
-        //         'index' => $name_table,
-        //         'id'    => $result['id'],
-        //         'body'  => $data
-        //     ];
-
-        //     $client->index($params);
-        // }
         if (isset($results)) {
             // Dùng Bulk
             $bulkData = [];

@@ -65,6 +65,8 @@ use App\Events\Elastic\DataStore\CreateDataStoreIndex;
 use App\Events\Elastic\DataStore\InsertDataStoreIndex;
 use App\Events\Elastic\DeathWithin\CreateDeathWithinIndex;
 use App\Events\Elastic\DeathWithin\InsertDeathWithinIndex;
+use App\Events\Elastic\Debate\CreateDebateIndex;
+use App\Events\Elastic\Debate\InsertDebateIndex;
 use App\Events\Elastic\DebateReason\CreateDebateReasonIndex;
 use App\Events\Elastic\DebateReason\InsertDebateReasonIndex;
 use App\Events\Elastic\DebateType\CreateDebateTypeIndex;
@@ -356,6 +358,8 @@ use App\Listeners\Elastic\DataStore\ElasticCreateDataStoreIndex;
 use App\Listeners\Elastic\DataStore\ElasticInsertDataStoreIndex;
 use App\Listeners\Elastic\DeathWithin\ElasticCreateDeathWithinIndex;
 use App\Listeners\Elastic\DeathWithin\ElasticInsertDeathWithinIndex;
+use App\Listeners\Elastic\Debate\ElasticCreateDebateIndex;
+use App\Listeners\Elastic\Debate\ElasticInsertDebateIndex;
 use App\Listeners\Elastic\DebateReason\ElasticCreateDebateReasonIndex;
 use App\Listeners\Elastic\DebateReason\ElasticInsertDebateReasonIndex;
 use App\Listeners\Elastic\DebateType\ElasticCreateDebateTypeIndex;
@@ -1622,6 +1626,13 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertUserRoomIndex::class => [
             ElasticInsertUserRoomIndex::class,
+        ],
+
+        CreateDebateIndex::class => [
+            ElasticCreateDebateIndex::class,
+        ],
+        InsertDebateIndex::class => [
+            ElasticInsertDebateIndex::class,
         ],
     ];
 

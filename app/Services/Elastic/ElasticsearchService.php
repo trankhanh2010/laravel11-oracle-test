@@ -448,6 +448,9 @@ class ElasticsearchService extends BaseApiCacheController
     {
         try {
             $data = [];
+            if($this->isNoCacheSelectField()){
+                $data['_source'] = config('params')['elastic']['no_cache_select_field'][str_replace('-', '_', $this->isNoCacheSelectField())];
+            }
             // Đếm chính xác số lượng bản ghi
             $data['track_total_hits'] = true;
             if ($index != null) {
@@ -512,13 +515,21 @@ class ElasticsearchService extends BaseApiCacheController
     public function handleElasticSearchGetAll($tableName)
     {
         try {
-            $data = Cache::remember('elastic_' . $tableName . '_start_' . $this->start . '_limit_' . $this->limit . $this->orderByString . '_is_active_' . $this->elasticIsActive . '_get_all_' . $this->getAll, $this->time, function () use ($tableName) {
+            if($this->isNoCacheSelectField()){
                 $body = $this->buildSearchBody($tableName);
                 $data = $this->executeSearch($tableName, $body, null);
                 $count = $this->counting($data);
                 $data = $this->applyResource($data);
                 return ['data' => $data, 'count' => $count];
-            });
+            }else{
+                $data = Cache::remember('elastic_' . $tableName . '_start_' . $this->start . '_limit_' . $this->limit . $this->orderByString . '_is_active_' . $this->elasticIsActive . '_get_all_' . $this->getAll, $this->time, function () use ($tableName) {
+                    $body = $this->buildSearchBody($tableName);
+                    $data = $this->executeSearch($tableName, $body, null);
+                    $count = $this->counting($data);
+                    $data = $this->applyResource($data);
+                    return ['data' => $data, 'count' => $count];
+                });
+            }
             return $data;
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['elastic']['error']['handle_elastic_search_get_all'], $e);
@@ -529,15 +540,36 @@ class ElasticsearchService extends BaseApiCacheController
     public function handleElasticSearchGetWithId($tableName, $id)
     {
         try {
-            $data = Cache::remember('elastic_' . $tableName . '_' . $id . '_is_active_' . $this->elasticIsActive, $this->time, function () use ($tableName, $id) {
+            if($this->isNoCacheSelectField()){
                 $body = $this->buildSearchBody($tableName);
                 $data = $this->executeSearch($tableName, $body, $id);
                 $data = $this->applyResource($data);
                 return $data;
-            });
+            }else{
+                $data = Cache::remember('elastic_' . $tableName . '_' . $id . '_is_active_' . $this->elasticIsActive, $this->time, function () use ($tableName, $id) {
+                    $body = $this->buildSearchBody($tableName);
+                    $data = $this->executeSearch($tableName, $body, $id);
+                    $data = $this->applyResource($data);
+                    return $data;
+                });
+            }
             return $data;
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['elastic']['error']['handle_elastic_search_get_with_id'], $e);
         }
+    }
+    public function getNameApi(){
+       $data = $this->request->segments();
+
+        return $data;
+    }
+    public function isNoCacheSelectField(){
+        $arr =  $this->getNameApi();
+        foreach($arr as $key => $item){
+            if(in_array(str_replace('-', '_', $item), array_keys(config('params')['elastic']['no_cache_select_field']))){
+                return $item;
+            }
+        }
+        return false;
     }
 }

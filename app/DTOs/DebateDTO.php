@@ -2,9 +2,9 @@
 
 namespace App\DTOs;
 
-class UserRoomDTO
+class DebateDTO
 {
-    public $userRoomName;
+    public $debateName;
     public $keyword;
     public $isActive;
     public $isDelete;
@@ -18,9 +18,11 @@ class UserRoomDTO
     public $appCreator;
     public $appModifier;
     public $time;
-    public $loginname;
+    public $treatmentId;
+    public $treatmentCode;
+    public $departmentIds;
     public function __construct(
-        $userRoomName,
+        $debateName,
         $keyword, 
         $isActive,
         $isDelete, 
@@ -34,10 +36,12 @@ class UserRoomDTO
         $appCreator,
         $appModifier,
         $time,
-        $loginname,
+        $treatmentId,
+        $treatmentCode,
+        $departmentIds,
         )
     {
-        $this->userRoomName = $userRoomName;
+        $this->debateName = $debateName;
         $this->keyword = $keyword;
         $this->isActive = $isActive;
         $this->isDelete = $isDelete;
@@ -51,6 +55,8 @@ class UserRoomDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
-        $this->loginname = $loginname;
+        $this->treatmentId = $treatmentId;
+        $this->treatmentCode = $treatmentCode;
+        $this->departmentIds = $departmentIds;
     }
 }

@@ -152,6 +152,7 @@ use App\Http\Controllers\Api\CacheControllers\TestIndexGroupController;
 use App\Http\Controllers\Api\CacheControllers\VaccineTypeController;
 // No cache Controller
 use App\Http\Controllers\Api\NoCacheControllers\UserRoomController;
+use App\Http\Controllers\Api\NoCacheControllers\DebateController;
 // Base Api
 use App\Http\Controllers\BaseControllers\CacheController;
 use App\Http\Controllers\BaseControllers\ElasticSearchController;
@@ -807,13 +808,18 @@ Route::group([
     });
     /// Nhân viên - Phòng
     Route::apiResource('v1/user-room', UserRoomController::class)->only(['index', 'show']);
-
+    // Biên bản hội chẩn
+    Route::group(['as' => 'HIS.Desktop.Plugins.Debate'], function () {
+        Route::apiResource('v1/debate', DebateController::class)->only(['index', 'show']);
+        Route::get("v1/debate-view", [DebateController::class, "indexView"])->name('.index_view');
+        Route::get("v1/debate-view/{id}", [DebateController::class, "showView"])->name('.show_view');
+    });
 
     // /// Nhân viên - Phòng
     // // Trả về nhân viên cùng phòng
     // Route::get("v1/user-room/get-view", [UserRoomController::class, "user_with_room"])->name('.get-view');
 
-    // // Debate
+    // // Biên bản hội chẩn
     // Route::group(['as' => 'HIS.Desktop.Plugins.Debate'], function () {
     //     Route::get("v1/debate/get", [DebateController::class, "debate_get"])->name('.get');
     //     Route::get("v1/debate/get-view", [DebateController::class, "debate_get_view"])->name('.get-view');

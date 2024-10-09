@@ -23,6 +23,7 @@ use App\Models\HIS\RoomType;
 use App\Models\HIS\Service;
 use Illuminate\Http\Request;
 use App\Models\HIS\ServiceType;
+use App\Models\HIS\Treatment;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
@@ -86,6 +87,8 @@ class BaseApiCacheController extends Controller
     protected $paramRequest;
     protected $isActive;
     protected $isActiveName = 'IsActive';
+    protected $isDelete;
+    protected $isDeleteName = 'IsDelete';
     protected $effective;
     protected $effectiveName = 'Effective';
     protected $roomTypeId;
@@ -122,6 +125,12 @@ class BaseApiCacheController extends Controller
     protected $activeIngredientIdName = 'ActiveIngredientId';
     protected $testServiceTypeId;
     protected $testServiceTypeIdName = 'TestServiceTypeId';
+    protected $treatmentId;
+    protected $treatmentIdName = 'TreatmentId';
+    protected $treatmentCode;
+    protected $treatmentCodeName = 'TreatmentCode';
+    protected $departmentIds;
+    protected $departmentIdsName = 'DepartmentIds';
     protected $patientTypeIdsString;
     protected $serviceTypeIdsString;
 
@@ -674,6 +683,14 @@ class BaseApiCacheController extends Controller
             }
         }
 
+        $this->isDelete = $this->paramRequest['ApiData']['IsDelete'] ?? null;
+        if ($this->isDelete !== null) {
+            if (!in_array($this->isDelete, [0, 1])) {
+                $this->errors[$this->isDeleteName] = $this->messFormat;
+                $this->isDelete = 1;
+            }
+        }
+
         $this->onlyActive = $this->paramRequest['ApiData']['OnlyActive'] ?? false;
         if (!is_bool($this->onlyActive)) {
             $this->errors[$this->onlyActiveName] = $this->messFormat;
@@ -901,6 +918,28 @@ class BaseApiCacheController extends Controller
                 }
             }
         }
+        $this->departmentIds = $this->paramRequest['ApiData']['DepartmentIds'] ?? null;
+        if ($this->departmentIds != null) {
+            foreach ($this->departmentIds as $key => $item) {
+                // Kiểm tra xem ID có tồn tại trong bảng  hay không
+                if (!is_numeric($item)) {
+                    $this->errors[$this->departmentIdsName] = $this->messFormat;
+                    unset($this->departmentIds[$key]);
+                } else {
+                    if (!Department::where('id', $item)->exists()) {
+                        $this->errors[$this->departmentIdsName] = $this->messRecordId;
+                        unset($this->departmentIds[$key]);
+                    }
+                }
+            }
+        }
+        $this->treatmentCode = $this->paramRequest['ApiData']['TreatmentCode'] ?? null;
+        if($this->treatmentCode !== null){
+            if (!is_string ($this->treatmentCode)) {
+                $this->errors[$this->treatmentCodeName] = $this->messFormat;
+                $this->treatmentCode = null;
+            }
+        }
         $this->isAddition = $this->paramRequest['ApiData']['IsAddition'] ?? null;
         if ($this->isAddition !== null) {
             if (!in_array($this->isAddition, [0, 1])) {
@@ -1098,6 +1137,19 @@ class BaseApiCacheController extends Controller
                 if (!MaterialType::where('id', $this->materialTypeId)->exists()) {
                     $this->errors[$this->materialTypeIdName] = $this->messRecordId;
                     $this->materialTypeId = null;
+                }
+            }
+        }
+        $this->treatmentId = $this->paramRequest['ApiData']['TreatmentId'] ?? null;
+        if ($this->treatmentId !== null) {
+            // Kiểm tra xem ID có tồn tại trong bảng  hay không
+            if (!is_numeric($this->treatmentId)) {
+                $this->errors[$this->treatmentIdName] = $this->messFormat;
+                $this->treatmentId = null;
+            } else {
+                if (!Treatment::where('id', $this->treatmentId)->exists()) {
+                    $this->errors[$this->treatmentIdName] = $this->messRecordId;
+                    $this->treatmentId = null;
                 }
             }
         }

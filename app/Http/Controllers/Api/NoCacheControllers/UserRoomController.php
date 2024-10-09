@@ -48,6 +48,7 @@ class UserRoomController extends BaseApiCacheController
             $this->userRoomName,
             $this->keyword,
             $this->isActive,
+            $this->isDelete,
             $this->orderBy,
             $this->orderByJoin,
             $this->orderByString,
@@ -87,6 +88,7 @@ class UserRoomController extends BaseApiCacheController
             $this->limitName => $this->getAll ? null : $this->limit,
             $this->countName => $data['count'],
             $this->isActiveName => $this->isActive,
+            $this->isDeleteName => $this->isDelete,
             $this->keywordName => $this->keyword,
             $this->orderByName => $this->orderByRequest
         ];

@@ -94,6 +94,13 @@ class UserRoomRepository
         }
         return $query;
     }
+    public function applyIsDeleteFilter($query, $isDelete)
+    {
+        if ($isDelete !== null) {
+            $query->where(DB::connection('oracle_his')->raw('his_user_room.is_delete'), $isDelete);
+        }
+        return $query;
+    }
     public function applyLoginnameFilter($query, $loginname)
     {
         if ($loginname !== null) {
