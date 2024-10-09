@@ -71,6 +71,8 @@ use App\Events\Elastic\DebateReason\CreateDebateReasonIndex;
 use App\Events\Elastic\DebateReason\InsertDebateReasonIndex;
 use App\Events\Elastic\DebateType\CreateDebateTypeIndex;
 use App\Events\Elastic\DebateType\InsertDebateTypeIndex;
+use App\Events\Elastic\DebateUser\CreateDebateUserIndex;
+use App\Events\Elastic\DebateUser\InsertDebateUserIndex;
 use App\Events\Elastic\DeleteIndex;
 use App\Events\Elastic\Department\CreateDepartmentIndex;
 use App\Events\Elastic\Department\InsertDepartmentIndex;
@@ -364,6 +366,8 @@ use App\Listeners\Elastic\DebateReason\ElasticCreateDebateReasonIndex;
 use App\Listeners\Elastic\DebateReason\ElasticInsertDebateReasonIndex;
 use App\Listeners\Elastic\DebateType\ElasticCreateDebateTypeIndex;
 use App\Listeners\Elastic\DebateType\ElasticInsertDebateTypeIndex;
+use App\Listeners\Elastic\DebateUser\ElasticCreateDebateUserIndex;
+use App\Listeners\Elastic\DebateUser\ElasticInsertDebateUserIndex;
 use App\Listeners\Elastic\Department\ElasticCreateDepartmentIndex;
 use App\Listeners\Elastic\Department\ElasticInsertDepartmentIndex;
 use App\Listeners\Elastic\DiimType\ElasticCreateDiimTypeIndex;
@@ -1633,6 +1637,13 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertDebateIndex::class => [
             ElasticInsertDebateIndex::class,
+        ],
+
+        CreateDebateUserIndex::class => [
+            ElasticCreateDebateUserIndex::class,
+        ],
+        InsertDebateUserIndex::class => [
+            ElasticInsertDebateUserIndex::class,
         ],
     ];
 

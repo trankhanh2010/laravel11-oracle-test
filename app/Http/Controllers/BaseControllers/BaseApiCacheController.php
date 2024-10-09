@@ -8,6 +8,7 @@ use App\Models\ACS\Module;
 use App\Models\ACS\Role;
 use App\Models\HIS\ActiveIngredient;
 use App\Models\HIS\Bed;
+use App\Models\HIS\Debate;
 use App\Models\HIS\Department;
 use App\Models\HIS\Employee;
 use App\Models\HIS\ExecuteRole;
@@ -93,6 +94,8 @@ class BaseApiCacheController extends Controller
     protected $effectiveName = 'Effective';
     protected $roomTypeId;
     protected $roomTypeIdName = 'RoomTypeId';
+    protected $debateId;
+    protected $debateIdName = 'DebateId';
     protected $isAddition;
     protected $isAdditionName = 'IsAddition';
     protected $serviceTypeId;
@@ -938,6 +941,19 @@ class BaseApiCacheController extends Controller
             if (!is_string ($this->treatmentCode)) {
                 $this->errors[$this->treatmentCodeName] = $this->messFormat;
                 $this->treatmentCode = null;
+            }
+        }
+        $this->debateId = $this->paramRequest['ApiData']['DebateId'] ?? null;
+        if ($this->debateId != null) {
+            // Kiểm tra xem ID có tồn tại trong bảng  hay không
+            if (!is_numeric($this->debateId)) {
+                $this->errors[$this->debateIdName] = $this->messFormat;
+                $this->debateId = null;
+            } else {
+                if (!Debate::where('id', $this->debateId)->exists()) {
+                    $this->errors[$this->debateIdName] = $this->messRecordId;
+                    $this->debateId = null;
+                }
             }
         }
         $this->isAddition = $this->paramRequest['ApiData']['IsAddition'] ?? null;

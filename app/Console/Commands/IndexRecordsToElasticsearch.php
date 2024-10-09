@@ -39,6 +39,7 @@ use App\Events\Elastic\DeathWithin\CreateDeathWithinIndex;
 use App\Events\Elastic\Debate\CreateDebateIndex;
 use App\Events\Elastic\DebateReason\CreateDebateReasonIndex;
 use App\Events\Elastic\DebateType\CreateDebateTypeIndex;
+use App\Events\Elastic\DebateUser\CreateDebateUserIndex;
 use App\Events\Elastic\Department\CreateDepartmentIndex;
 use App\Events\Elastic\DiimType\CreateDiimTypeIndex;
 use App\Events\Elastic\District\CreateDistrictIndex;
@@ -150,6 +151,7 @@ use App\Events\Elastic\UnlimitReason\CreateUnlimitReasonIndex;
 use App\Events\Elastic\UserRoom\CreateUserRoomIndex;
 use App\Events\Elastic\VaccineType\CreateVaccineTypeIndex;
 use App\Events\Elastic\WorkPlace\CreateWorkPlaceIndex;
+use App\Http\Resources\DebateUserResource;
 use App\Models\HIS\MedicineUseForm;
 use App\Repositories\AccidentBodyPartRepository;
 use App\Repositories\AccidentCareRepository;
@@ -185,6 +187,7 @@ use App\Repositories\DeathWithinRepository;
 use App\Repositories\DebateReasonRepository;
 use App\Repositories\DebateRepository;
 use App\Repositories\DebateTypeRepository;
+use App\Repositories\DebateUserRepository;
 use App\Repositories\DepartmentRepository;
 use App\Repositories\DiimTypeRepository;
 use App\Repositories\DistrictRepository;
@@ -918,6 +921,8 @@ class IndexRecordsToElasticsearch extends Command
                 $results = app(WorkPlaceRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateWorkPlaceIndex($name_table));
                 break;
+
+
             // No Cache
             case 'user_room':
                 $results = app(UserRoomRepository::class)->getDataFromDbToElastic(null);
@@ -926,6 +931,10 @@ class IndexRecordsToElasticsearch extends Command
             case 'debate':
                 $results = app(DebateRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateDebateIndex($name_table));
+                break;
+            case 'debate_user':
+                $results = app(DebateUserRepository::class)->getDataFromDbToElastic(null);
+                event(new CreateDebateUserIndex($name_table));
                 break;
             default:
                 // Xử lý mặc định hoặc xử lý khi không có bảng khớp
