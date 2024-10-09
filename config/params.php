@@ -149,7 +149,8 @@ return [
 
             'user_room',
             'debate',
-            'debate_user'
+            'debate_user',
+            'debate_ekip_user',
         ],
         'no_cache_select_field' => [
             'user_room' => true,
@@ -260,6 +261,7 @@ return [
                 "debate_reason_name",
             ],
             'debate_user' => true,
+            'debate_ekip_user' => true,
         ],
         'error' => [
             'elasticsearch_service' => 'Có lỗi khi thực hiện thao tác với Elastic Search!',
@@ -436,6 +438,7 @@ return [
             'user_room' => 'Có lỗi khi thực hiện thao tác với bảng Nhân viên - Phòng!',
             'debate' => 'Có lỗi khi thực hiện thao tác với bảng Biên bản hội chẩn!',
             'debate_user' => 'Có lỗi khi thực hiện thao tác với bảng Debate User!',
+            'debate_ekip_user' => 'Có lỗi khi thực hiện thao tác với bảng Debate Ekip User!',
         ]
     ]
 

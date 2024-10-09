@@ -153,6 +153,7 @@ use App\Http\Controllers\Api\CacheControllers\VaccineTypeController;
 // No cache Controller
 use App\Http\Controllers\Api\NoCacheControllers\UserRoomController;
 use App\Http\Controllers\Api\NoCacheControllers\DebateController;
+use App\Http\Controllers\Api\NoCacheControllers\DebateEkipUserController;
 use App\Http\Controllers\Api\NoCacheControllers\DebateUserController;
 // Base Api
 use App\Http\Controllers\BaseControllers\CacheController;
@@ -807,6 +808,9 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisWorkPlace'], function () {
         Route::apiResource('v1/work-place', WorkPlaceController::class);
     });
+
+/// No cache
+
     /// Nhân viên - Phòng
     Route::apiResource('v1/user-room', UserRoomController::class)->only(['index', 'show']);
     /// Biên bản hội chẩn
@@ -817,7 +821,8 @@ Route::group([
     });
     /// Debate User
     Route::apiResource('v1/debate-user', DebateUserController::class)->only(['index', 'show']);
-
+    /// Debate Ekip User
+    Route::apiResource('v1/debate-ekip-user', DebateEkipUserController::class)->only(['index', 'show']);
 
     // /// Nhân viên - Phòng
     // // Trả về nhân viên cùng phòng
