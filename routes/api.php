@@ -155,6 +155,7 @@ use App\Http\Controllers\Api\NoCacheControllers\UserRoomController;
 use App\Http\Controllers\Api\NoCacheControllers\DebateController;
 use App\Http\Controllers\Api\NoCacheControllers\DebateEkipUserController;
 use App\Http\Controllers\Api\NoCacheControllers\DebateUserController;
+use App\Http\Controllers\Api\NoCacheControllers\ServiceReqController;
 // Base Api
 use App\Http\Controllers\BaseControllers\CacheController;
 use App\Http\Controllers\BaseControllers\ElasticSearchController;
@@ -823,7 +824,11 @@ Route::group([
     Route::apiResource('v1/debate-user', DebateUserController::class)->only(['index', 'show']);
     /// Debate Ekip User
     Route::apiResource('v1/debate-ekip-user', DebateEkipUserController::class)->only(['index', 'show']);
-
+    /// Y lệnh
+    Route::group(['as' => 'HIS.Desktop.Plugins.ServiceReqList'], function () {
+        Route::get("v1/service-req-l-view", [ServiceReqController::class, "indexLView"])->name('.index_l_view');
+        Route::get("v1/service-req-l-view/{id}", [ServiceReqController::class, "showLView"])->name('.show_l_view');
+    });
     // /// Nhân viên - Phòng
     // // Trả về nhân viên cùng phòng
     // Route::get("v1/user-room/get-view", [UserRoomController::class, "user_with_room"])->name('.get-view');

@@ -646,8 +646,8 @@ if (!function_exists('return_data_fail_transaction')) {
     }
 }
 
-if (!function_exists('return_403')) {
-    function return_403()
+if (!function_exists('return403')) {
+    function return403()
     {
         return response()->json([
             'status'    => 403,

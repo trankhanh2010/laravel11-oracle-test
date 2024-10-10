@@ -22,6 +22,9 @@ use App\Models\HIS\PatientType;
 use App\Models\HIS\Room;
 use App\Models\HIS\RoomType;
 use App\Models\HIS\Service;
+use App\Models\HIS\ServiceReq;
+use App\Models\HIS\ServiceReqStt;
+use App\Models\HIS\ServiceReqType;
 use Illuminate\Http\Request;
 use App\Models\HIS\ServiceType;
 use App\Models\HIS\Treatment;
@@ -134,6 +137,22 @@ class BaseApiCacheController extends Controller
     protected $treatmentCodeName = 'TreatmentCode';
     protected $departmentIds;
     protected $departmentIdsName = 'DepartmentIds';
+    protected $serviceReqSttIds;
+    protected $serviceReqSttIdsName = 'ServiceReqSttIds';
+    protected $isNotKskRequriedAprovalOrIsKskApprove;
+    protected $isNotKskRequriedAprovalOrIsKskApproveName = 'IsNotKskRequriedAprovalOrIsKskApprove';
+    protected $hasExecute;
+    protected $hasExecuteName = 'HasExecute';
+    protected $intructionTimeTo;
+    protected $intructionTimeToName = 'IntructionTimeTo';
+    protected $intructionTimeFrom;
+    protected $intructionTimeFromName = 'IntructionTimeFrom';
+    protected $tdlPatientTypeIds;
+    protected $tdlPatientTypeIdsName = 'TdlPatientTypeIds';
+    protected $notInServiceReqTypeIds;
+    protected $notInServiceReqTypeIdsName = 'NotInServiceReqTypeIds';
+    protected $serviceReqId;
+    protected $serviceReqIdName = 'ServiceReqId';
     protected $patientTypeIdsString;
     protected $serviceTypeIdsString;
 
@@ -488,7 +507,7 @@ class BaseApiCacheController extends Controller
     protected $elasticIsActive;
     protected $elasticSearchTypeArr = ['match', 'term', 'wildcard', 'query_string', 'multi_match', 'match_phrase', 'prefix', 'bool',];
     protected $elasticSearchTypeMustShouldMustNot = ['match', 'term', 'wildcard', 'match_phrase', 'prefix', 'query_string', 'range'];
-    protected $elasticRangeArr = ['gt', 'gte', 'lt', 'lte'];
+    protected $elasticRangeArr = ['gt', 'gte', 'lt', 'lte', 'format'];
     protected $elasticSearchType;
     protected $elasticSearchTypeName = 'ElasticSearchType';
     protected $elasticField;
@@ -953,6 +972,88 @@ class BaseApiCacheController extends Controller
                 if (!Debate::where('id', $this->debateId)->exists()) {
                     $this->errors[$this->debateIdName] = $this->messRecordId;
                     $this->debateId = null;
+                }
+            }
+        }
+        $this->serviceReqSttIds = $this->paramRequest['ApiData']['ServiceReqSttIds'] ?? null;
+        if ($this->serviceReqSttIds != null) {
+            foreach ($this->serviceReqSttIds as $key => $item) {
+                // Kiểm tra xem ID có tồn tại trong bảng  hay không
+                if (!is_numeric($item)) {
+                    $this->errors[$this->serviceReqSttIdsName] = $this->messFormat;
+                    unset($this->serviceReqSttIds[$key]);
+                } else {
+                    if (!ServiceReqStt::where('id', $item)->exists()) {
+                        $this->errors[$this->serviceReqSttIdsName] = $this->messRecordId;
+                        unset($this->serviceReqSttIds[$key]);
+                    }
+                }
+            }
+        }
+        $this->hasExecute = $this->paramRequest['ApiData']['HasExecute'] ?? true;
+        if (!is_bool ($this->hasExecute)) {
+            $this->errors[$this->hasExecuteName] = $this->messFormat;
+            $this->hasExecute = true;
+        }
+        $this->intructionTimeTo = $this->paramRequest['ApiData']['IntructionTimeTo'] ?? null;
+        if($this->intructionTimeTo != null){
+            if(!preg_match('/^\d{14}$/',  $this->intructionTimeTo)){
+                $this->errors[$this->intructionTimeToName] = $this->messFormat;
+                $this->intructionTimeTo = null;
+            }
+        }
+        $this->intructionTimeFrom = $this->paramRequest['ApiData']['IntructionTimeFrom'] ?? null;
+        if($this->intructionTimeFrom != null){
+            if(!preg_match('/^\d{14}$/',  $this->intructionTimeFrom)){
+                $this->errors[$this->intructionTimeFromName] = $this->messFormat;
+                $this->intructionTimeFrom = null;
+            }
+        }
+        $this->tdlPatientTypeIds = $this->paramRequest['ApiData']['TdlPatientTypeIds'] ?? null;
+        if ($this->tdlPatientTypeIds != null) {
+            foreach ($this->tdlPatientTypeIds as $key => $item) {
+                // Kiểm tra xem ID có tồn tại trong bảng  hay không
+                if (!is_numeric($item)) {
+                    $this->errors[$this->tdlPatientTypeIdsName] = $this->messFormat;
+                    unset($this->tdlPatientTypeIds[$key]);
+                } else {
+                    if (!PatientType::where('id', $item)->exists()) {
+                        $this->errors[$this->tdlPatientTypeIdsName] = $this->messRecordId;
+                        unset($this->tdlPatientTypeIds[$key]);
+                    }
+                }
+            }
+        }
+        $this->notInServiceReqTypeIds = $this->paramRequest['ApiData']['NotInServiceReqTypeIds'] ?? null;
+        if ($this->notInServiceReqTypeIds != null) {
+            foreach ($this->notInServiceReqTypeIds as $key => $item) {
+                // Kiểm tra xem ID có tồn tại trong bảng  hay không
+                if (!is_numeric($item)) {
+                    $this->errors[$this->notInServiceReqTypeIdsName] = $this->messFormat;
+                    unset($this->notInServiceReqTypeIds[$key]);
+                } else {
+                    if (!ServiceReqType::where('id', $item)->exists()) {
+                        $this->errors[$this->notInServiceReqTypeIdsName] = $this->messRecordId;
+                        unset($this->notInServiceReqTypeIds[$key]);
+                    }
+                }
+            }
+        }
+        $this->isNotKskRequriedAprovalOrIsKskApprove = $this->paramRequest['ApiData']['IsNotKskRequriedAproval_Or_IsKskApprove'] ?? true;
+        if (!is_bool ($this->isNotKskRequriedAprovalOrIsKskApprove)) {
+            $this->errors[$this->isNotKskRequriedAprovalOrIsKskApproveName] = $this->messFormat;
+            $this->isNotKskRequriedAprovalOrIsKskApprove = true;
+        }
+        $this->serviceReqId = $this->paramRequest['ApiData']['ServiceReqId'] ?? null;
+        if ($this->serviceReqId != null) {
+            // Kiểm tra xem ID có tồn tại trong bảng  hay không
+            if (!is_numeric($this->serviceReqId)) {
+                $this->errors[$this->serviceReqIdName] = $this->messFormat;
+                $this->serviceReqId = null;
+            } else {
+                if (!ServiceReq::where('id', $this->serviceReqId)->exists()) {
+                    $this->errors[$this->serviceReqIdName] = $this->messRecordId;
+                    $this->serviceReqId = null;
                 }
             }
         }

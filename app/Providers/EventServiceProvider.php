@@ -254,6 +254,8 @@ use App\Events\Elastic\ServiceMachine\CreateServiceMachineIndex;
 use App\Events\Elastic\ServiceMachine\InsertServiceMachineIndex;
 use App\Events\Elastic\ServicePaty\CreateServicePatyIndex;
 use App\Events\Elastic\ServicePaty\InsertServicePatyIndex;
+use App\Events\Elastic\ServiceReq\CreateServiceReqIndex;
+use App\Events\Elastic\ServiceReq\InsertServiceReqIndex;
 use App\Events\Elastic\ServiceReqType\CreateServiceReqTypeIndex;
 use App\Events\Elastic\ServiceReqType\InsertServiceReqTypeIndex;
 use App\Events\Elastic\ServiceRoom\CreateServiceRoomIndex;
@@ -551,6 +553,8 @@ use App\Listeners\Elastic\ServiceMachine\ElasticCreateServiceMachineIndex;
 use App\Listeners\Elastic\ServiceMachine\ElasticInsertServiceMachineIndex;
 use App\Listeners\Elastic\ServicePaty\ElasticCreateServicePatyIndex;
 use App\Listeners\Elastic\ServicePaty\ElasticInsertServicePatyIndex;
+use App\Listeners\Elastic\ServiceReq\ElasticCreateServiceReqIndex;
+use App\Listeners\Elastic\ServiceReq\ElasticInsertServiceReqIndex;
 use App\Listeners\Elastic\ServiceReqType\ElasticCreateServiceReqTypeIndex;
 use App\Listeners\Elastic\ServiceReqType\ElasticInsertServiceReqTypeIndex;
 use App\Listeners\Elastic\ServiceRoom\ElasticCreateServiceRoomIndex;
@@ -1655,6 +1659,13 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertDebateEkipUserIndex::class => [
             ElasticInsertDebateEkipUserIndex::class,
+        ],
+
+        CreateServiceReqIndex::class => [
+            ElasticCreateServiceReqIndex::class,
+        ],
+        InsertServiceReqIndex::class => [
+            ElasticInsertServiceReqIndex::class,
         ],
     ];
 

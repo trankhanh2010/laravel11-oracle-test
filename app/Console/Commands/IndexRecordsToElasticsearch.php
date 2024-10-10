@@ -130,6 +130,7 @@ use App\Events\Elastic\ServiceFollow\CreateServiceFollowIndex;
 use App\Events\Elastic\ServiceGroup\CreateServiceGroupIndex;
 use App\Events\Elastic\ServiceMachine\CreateServiceMachineIndex;
 use App\Events\Elastic\ServicePaty\CreateServicePatyIndex;
+use App\Events\Elastic\ServiceReq\CreateServiceReqIndex;
 use App\Events\Elastic\ServiceReqType\CreateServiceReqTypeIndex;
 use App\Events\Elastic\ServiceRoom\CreateServiceRoomIndex;
 use App\Events\Elastic\ServiceType\CreateServiceTypeIndex;
@@ -279,6 +280,7 @@ use App\Repositories\ServiceGroupRepository;
 use App\Repositories\ServiceMachineRepository;
 use App\Repositories\ServicePatyRepository;
 use App\Repositories\ServiceRepository;
+use App\Repositories\ServiceReqRepository;
 use App\Repositories\ServiceReqTypeRepository;
 use App\Repositories\ServiceRoomRepository;
 use App\Repositories\ServiceTypeRepository;
@@ -350,6 +352,10 @@ class IndexRecordsToElasticsearch extends Command
     {
         // Khởi tạo kết nối đến Elastic
         $client = app('Elasticsearch');
+        // call back dùng chunk để indexing
+        $callback = function($dataBatch) use ($name_table, $client){
+            $this->indexing($name_table,$this->arrJsonDecode(),$client,$dataBatch);
+        };
         switch ($name_table) {
             case 'accident_body_part':
                 $results = app(AccidentBodyPartRepository::class)->getDataFromDbToElastic(null);
@@ -942,6 +948,10 @@ class IndexRecordsToElasticsearch extends Command
                 $results = app(DebateEkipUserRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateDebateEkipUserIndex($name_table));
                 break;
+            case 'service_req':
+                event(new CreateServiceReqIndex($name_table));
+                $results = app(ServiceReqRepository::class)->getDataFromDbToElastic($callback, 50000, null);
+                return response()->json(['message' => 'Ok.']);
             default:
                 // Xử lý mặc định hoặc xử lý khi không có bảng khớp
                 $this->error('Không có dữ liệu của bảng ' . $name_table . '.');
@@ -949,6 +959,10 @@ class IndexRecordsToElasticsearch extends Command
         }
 
 
+        
+        $this->indexing($name_table, $this->arrJsonDecode(), $client, $results);
+    }
+    public function arrJsonDecode(){
         // Danh sách các bảng dùng with cần phải decode trước khi thêm vào elastic
         $arr_json_decode = [
             'medi_stock',
@@ -959,11 +973,13 @@ class IndexRecordsToElasticsearch extends Command
             'service',
             'debate',
         ];
-
+        return  $arr_json_decode;
+    }
+    public function indexing($name_table, $arr_json_decode, $client, $results){
         if (isset($results)) {
             // Dùng Bulk
             $bulkData = [];
-            $batchSize = 10000; // Số lượng bản ghi mỗi batch, bạn có thể điều chỉnh
+            $batchSize = 50000; // Số lượng bản ghi mỗi batch, bạn có thể điều chỉnh
             foreach ($results as $result) {
                 // Chuẩn bị dữ liệu cho mỗi bản ghi
                 $data = [];

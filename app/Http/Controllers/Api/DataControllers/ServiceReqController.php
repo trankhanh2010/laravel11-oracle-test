@@ -330,7 +330,6 @@ class ServiceReqController extends BaseApiDataController
         if ($this->is_not_ksk_requried_aproval__or__is_ksk_approve) {
             $data = $data->where(function ($query) {
                 $query = $query->where(DB::connection('oracle_his')->raw('his_service_req.TDL_KSK_IS_REQUIRED_APPROVAL'), null);
-                $query = $query->orWhere(DB::connection('oracle_his')->raw('his_service_req.TDL_IS_KSK_APPROVE'), 0);
                 $query = $query->orwhere(DB::connection('oracle_his')->raw('his_service_req.TDL_IS_KSK_APPROVE'), 1);
             });
         }

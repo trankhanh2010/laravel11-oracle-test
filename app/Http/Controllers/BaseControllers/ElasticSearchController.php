@@ -28,8 +28,8 @@ class ElasticSearchController extends Controller
     }
     public function index_records_to_elasticsearch(Request $request)
     {
-        // Tăng thời gian chờ lên 600 giây (10 phút)
-        set_time_limit(600);
+        // Tăng thời gian chờ lên 
+        set_time_limit(3600);
         // Lấy tham số từ request (nếu có)
         $table = $request->input('table', 'all'); // Mặc định là 'all'
 

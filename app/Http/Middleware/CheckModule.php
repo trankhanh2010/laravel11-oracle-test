@@ -48,6 +48,6 @@ class CheckModule
         if ($has_module) {
             return $next($request);
         }
-        return return_403();
+        return return403();
     }
 }
