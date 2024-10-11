@@ -2,50 +2,35 @@
 
 namespace App\Http\Controllers\Api\NoCacheControllers;
 
-use App\DTOs\ServiceReqDTO;
+use App\DTOs\ServiceReqLViewDTO;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
-use App\Http\Requests\ServiceReq\CreateServiceReqRequest;
-use App\Http\Requests\ServiceReq\UpdateServiceReqRequest;
-use App\Models\HIS\ServiceReq;
+use App\Http\Requests\ServiceReqLView\CreateServiceReqLViewRequest;
+use App\Http\Requests\ServiceReqLView\UpdateServiceReqLViewRequest;
+use App\Models\View\ServiceReqLView;
 use App\Services\Elastic\ElasticsearchService;
-use App\Services\Model\ServiceReqService;
+use App\Services\Model\ServiceReqLViewService;
 use Illuminate\Http\Request;
 
 
-class ServiceReqController extends BaseApiCacheController
+class ServiceReqLViewController extends BaseApiCacheController
 {
-    protected $serviceReqService;
-    protected $serviceReqDTO;
-    public function __construct(Request $request, ElasticsearchService $elasticSearchService, ServiceReqService $serviceReqService, ServiceReq $serviceReq)
+    protected $serviceReqLViewService;
+    protected $serviceReqLViewDTO;
+    public function __construct(Request $request, ElasticsearchService $elasticSearchService, ServiceReqLViewService $serviceReqLViewService, ServiceReqLView $serviceReqLView)
     {
         parent::__construct($request); // Gọi constructor của BaseController
         $this->elasticSearchService = $elasticSearchService;
-        $this->serviceReqService = $serviceReqService;
-        $this->serviceReq = $serviceReq;
+        $this->serviceReqLViewService = $serviceReqLViewService;
+        $this->serviceReqLView = $serviceReqLView;
         // Kiểm tra tên trường trong bảng
         if ($this->orderBy != null) {
-            $this->orderByJoin = [
-                'is_pause',
-                'department_id',
-                'room_type_id',
-                'g_code',
-                'room_type_code',
-                'room_type_name',
-                'branch_id',
-                'department_code',
-                'department_name',
-                'branch_code',
-                'branch_name',
-                'hein_medi_org_code',
-                'room_name',
-                'room_code',
-            ];
-            $columns = $this->getColumnsTable($this->serviceReq);
+            $this->orderByJoin = [];
+            $columns = $this->getColumnsTable($this->serviceReqLView, true);
             $this->orderBy = $this->checkOrderBy($this->orderBy, $columns, $this->orderByJoin ?? []);
         }
         // Thêm tham số vào service
-        $this->serviceReqDTO = new ServiceReqDTO(
-            $this->serviceReqName,
+        $this->serviceReqLViewDTO = new ServiceReqLViewDTO(
+            $this->serviceReqLViewName,
             $this->keyword,
             $this->isActive,
             $this->isDelete,
@@ -56,8 +41,8 @@ class ServiceReqController extends BaseApiCacheController
             $this->start,
             $this->limit,
             $request,
-            $this->appCreator,
-            $this->appModifier,
+            $this->appCreator, 
+            $this->appModifier, 
             $this->time,
             $this->serviceReqSttIds,
             $this->notInServiceReqTypeIds,
@@ -68,33 +53,25 @@ class ServiceReqController extends BaseApiCacheController
             $this->hasExecute,
             $this->isNotKskRequriedAprovalOrIsKskApprove,
         );
-        $this->serviceReqService->withParams($this->serviceReqDTO);
+        $this->serviceReqLViewService->withParams($this->serviceReqLViewDTO);
     }
-    public function indexLView(Request $request)
+    public function index()
     {
         if ($this->checkParam()) {
             return $this->checkParam();
         }
-        // Kiểm tra xem User có quyền xem execute_room không
-        // if ($this->executeRoomId != null) {
-        //     if (!view_service_req($this->executeRoomId, $request->bearerToken(), $this->time)) {
-        //         return return403();
-        //     }
-        // } else {
-        //     return return400('Thiếu ExecuteRoomId!');
-        // }
         $keyword = $this->keyword;
         if (($keyword != null || $this->elasticSearchType != null) && !$this->cache) {
             if ($this->elasticSearchType != null) {
-                $data = $this->elasticSearchService->handleElasticSearchSearch($this->serviceReqName);
+                $data = $this->elasticSearchService->handleElasticSearchSearch($this->serviceReqLViewName);
             } else {
-                $data = $this->serviceReqService->handleDataBaseSearch();
+                $data = $this->serviceReqLViewService->handleDataBaseSearch();
             }
         } else {
             if ($this->elastic) {
-                $data = $this->elasticSearchService->handleElasticSearchGetAll($this->serviceReqName);
+                $data = $this->elasticSearchService->handleElasticSearchGetAll($this->serviceReqLViewName);
             } else {
-                $data = $this->serviceReqService->handleDataBaseGetAll();
+                $data = $this->serviceReqLViewService->handleDataBaseGetAll();
             }
         }
         $paramReturn = [
@@ -110,21 +87,21 @@ class ServiceReqController extends BaseApiCacheController
         return returnDataSuccess($paramReturn, $data['data']);
     }
 
-    public function showLView($id)
+    public function show($id)
     {
         if ($this->checkParam()) {
             return $this->checkParam();
         }
         if ($id !== null) {
-            $validationError = $this->validateAndCheckId($id, $this->serviceReq, $this->serviceReqName);
+            $validationError = $this->validateAndCheckId($id, $this->serviceReqLView, $this->serviceReqLViewName);
             if ($validationError) {
                 return $validationError;
             }
         }
         if ($this->elastic) {
-            $data = $this->elasticSearchService->handleElasticSearchGetWithId($this->serviceReqName, $id);
+            $data = $this->elasticSearchService->handleElasticSearchGetWithId($this->serviceReqLViewName, $id);
         } else {
-            $data = $this->serviceReqService->handleDataBaseGetWithId($id);
+            $data = $this->serviceReqLViewService->handleDataBaseGetWithId($id);
         }
         $paramReturn = [
             $this->idName => $id,

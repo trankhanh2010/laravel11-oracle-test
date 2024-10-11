@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Listeners\Elastic\ServiceReq;
+namespace App\Listeners\Elastic\ServiceReqLView;
 
-use App\Events\Elastic\ServiceReq\InsertServiceReqIndex;
-use App\Models\HIS\ServiceReq;
-use App\Repositories\ServiceReqRepository;
+use App\Events\Elastic\ServiceReqLView\InsertServiceReqLViewIndex;
+use App\Models\HIS\ServiceReqLView;
+use App\Repositories\ServiceReqLViewRepository;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 
-class ElasticInsertServiceReqIndex
+class ElasticInsertServiceReqLViewIndex
 {
     /**
      * Create the event listener.
@@ -22,11 +22,11 @@ class ElasticInsertServiceReqIndex
     /**
      * Handle the event.
      */
-    public function handle(InsertServiceReqIndex $event): void
+    public function handle(InsertServiceReqLViewIndex $event): void
     {
         try {
             $record = $event->record;
-            $data = app(ServiceReqRepository::class)->getDataFromDbToElastic($record->id);
+            $data = app(ServiceReqLViewRepository::class)->getDataFromDbToElastic($record->id);
             // Tạo chỉ mục hoặc cập nhật dữ liệu
             $params = [
                 'index' => $event->modelName, // Chỉ mục bạn muốn tạo hoặc cập nhật

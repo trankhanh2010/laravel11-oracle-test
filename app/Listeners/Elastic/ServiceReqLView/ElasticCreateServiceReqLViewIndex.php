@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Listeners\Elastic\ServiceReq;
+namespace App\Listeners\Elastic\ServiceReqLView;
 
-use App\Events\Elastic\ServiceReq\CreateServiceReqIndex;
+use App\Events\Elastic\ServiceReqLView\CreateServiceReqLViewIndex;
 
-class ElasticCreateServiceReqIndex
+class ElasticCreateServiceReqLViewIndex
 {
     /**
      * Create the event listener.
@@ -18,7 +18,7 @@ class ElasticCreateServiceReqIndex
     /**
      * Handle the event.
      */
-    public function handle(CreateServiceReqIndex $event): void
+    public function handle(CreateServiceReqLViewIndex $event): void
     {
         try {
             // Kiểm tra xem có tồn tại Index chưa

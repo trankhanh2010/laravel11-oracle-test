@@ -22,7 +22,7 @@ class Tracking extends Model
     {
         return $this->hasMany(Debate::class, 'tracking_id');
     }
-    public function Dhsts()
+    public function dhsts()
     {
         return $this->hasMany(DHST::class, 'tracking_id');
     }
@@ -38,7 +38,6 @@ class Tracking extends Model
     {
         return $this->belongsTo(Department::class);
     }
-
 
 
 }

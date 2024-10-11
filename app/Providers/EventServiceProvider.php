@@ -256,6 +256,8 @@ use App\Events\Elastic\ServicePaty\CreateServicePatyIndex;
 use App\Events\Elastic\ServicePaty\InsertServicePatyIndex;
 use App\Events\Elastic\ServiceReq\CreateServiceReqIndex;
 use App\Events\Elastic\ServiceReq\InsertServiceReqIndex;
+use App\Events\Elastic\ServiceReqLView\CreateServiceReqLViewIndex;
+use App\Events\Elastic\ServiceReqLView\InsertServiceReqLViewIndex;
 use App\Events\Elastic\ServiceReqType\CreateServiceReqTypeIndex;
 use App\Events\Elastic\ServiceReqType\InsertServiceReqTypeIndex;
 use App\Events\Elastic\ServiceRoom\CreateServiceRoomIndex;
@@ -286,6 +288,8 @@ use App\Events\Elastic\TestSampleType\CreateTestSampleTypeIndex;
 use App\Events\Elastic\TestSampleType\InsertTestSampleTypeIndex;
 use App\Events\Elastic\TestType\CreateTestTypeIndex;
 use App\Events\Elastic\TestType\InsertTestTypeIndex;
+use App\Events\Elastic\Tracking\CreateTrackingIndex;
+use App\Events\Elastic\Tracking\InsertTrackingIndex;
 use App\Events\Elastic\TranPatiTech\CreateTranPatiTechIndex;
 use App\Events\Elastic\TranPatiTech\InsertTranPatiTechIndex;
 use App\Events\Elastic\TreatmentEndType\CreateTreatmentEndTypeIndex;
@@ -555,6 +559,8 @@ use App\Listeners\Elastic\ServicePaty\ElasticCreateServicePatyIndex;
 use App\Listeners\Elastic\ServicePaty\ElasticInsertServicePatyIndex;
 use App\Listeners\Elastic\ServiceReq\ElasticCreateServiceReqIndex;
 use App\Listeners\Elastic\ServiceReq\ElasticInsertServiceReqIndex;
+use App\Listeners\Elastic\ServiceReqLView\ElasticCreateServiceReqLViewIndex;
+use App\Listeners\Elastic\ServiceReqLView\ElasticInsertServiceReqLViewIndex;
 use App\Listeners\Elastic\ServiceReqType\ElasticCreateServiceReqTypeIndex;
 use App\Listeners\Elastic\ServiceReqType\ElasticInsertServiceReqTypeIndex;
 use App\Listeners\Elastic\ServiceRoom\ElasticCreateServiceRoomIndex;
@@ -585,6 +591,8 @@ use App\Listeners\Elastic\TestSampleType\ElasticCreateTestSampleTypeIndex;
 use App\Listeners\Elastic\TestSampleType\ElasticInsertTestSampleTypeIndex;
 use App\Listeners\Elastic\TestType\ElasticCreateTestTypeIndex;
 use App\Listeners\Elastic\TestType\ElasticInsertTestTypeIndex;
+use App\Listeners\Elastic\Tracking\ElasticCreateTrackingIndex;
+use App\Listeners\Elastic\Tracking\ElasticInsertTrackingIndex;
 use App\Listeners\Elastic\TranPatiTech\ElasticCreateTranPatiTechIndex;
 use App\Listeners\Elastic\TranPatiTech\ElasticInsertTranPatiTechIndex;
 use App\Listeners\Elastic\TreatmentEndType\ElasticCreateTreatmentEndTypeIndex;
@@ -1661,11 +1669,11 @@ class EventServiceProvider extends ServiceProvider
             ElasticInsertDebateEkipUserIndex::class,
         ],
 
-        CreateServiceReqIndex::class => [
-            ElasticCreateServiceReqIndex::class,
+        CreateServiceReqLViewIndex::class => [
+            ElasticCreateServiceReqLViewIndex::class,
         ],
-        InsertServiceReqIndex::class => [
-            ElasticInsertServiceReqIndex::class,
+        InsertServiceReqLViewIndex::class => [
+            ElasticInsertServiceReqLViewIndex::class,
         ],
     ];
 

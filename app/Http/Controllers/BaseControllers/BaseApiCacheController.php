@@ -308,6 +308,8 @@ class BaseApiCacheController extends Controller
     protected $heinServiceTypeName = 'hein_service_type';
     protected $bhytParam;
     protected $bhytParamName = 'bhyt_param';
+    protected $serviceReqLView;
+    protected $serviceReqLViewName = 'service_req_l_view';
     protected $groupType;
     protected $groupTypeName = 'group_type_name';
     protected $bhytBlacklist;
@@ -583,10 +585,14 @@ class BaseApiCacheController extends Controller
     return null; // Trả về null nếu không có lỗi
 }
 
-    protected function getColumnsTable($table)
+    protected function getColumnsTable($table, $isView = false)
     {
         $parts = explode('_', $table->getTable());
-        $conn = strtolower($parts[0]);
+        if($isView){
+            $conn = strtolower($parts[1]);
+        }else{
+            $conn = strtolower($parts[0]);
+        }
         $columnsTable = Cache::remember('columns_' . $table->getTable(), $this->columnsTime, function () use ($table, $conn) {
             return  Schema::connection('oracle_' . $conn)->getColumnListing($table->getTable()) ?? [];
         });

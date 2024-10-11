@@ -13,7 +13,6 @@ use App\Events\Elastic\Atc\CreateAtcIndex;
 use App\Events\Elastic\AtcGroup\CreateAtcGroupIndex;
 use App\Events\Elastic\Awareness\CreateAwarenessIndex;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
 use App\Events\Elastic\Bed\CreateBedIndex;
 use App\Events\Elastic\BedBsty\CreateBedBstyIndex;
 use App\Events\Elastic\BedRoom\CreateBedRoomIndex;
@@ -36,11 +35,8 @@ use App\Events\Elastic\Commune\CreateCommuneIndex;
 use App\Events\Elastic\Contraindication\CreateContraindicationIndex;
 use App\Events\Elastic\DataStore\CreateDataStoreIndex;
 use App\Events\Elastic\DeathWithin\CreateDeathWithinIndex;
-use App\Events\Elastic\Debate\CreateDebateIndex;
-use App\Events\Elastic\DebateEkipUser\CreateDebateEkipUserIndex;
 use App\Events\Elastic\DebateReason\CreateDebateReasonIndex;
 use App\Events\Elastic\DebateType\CreateDebateTypeIndex;
-use App\Events\Elastic\DebateUser\CreateDebateUserIndex;
 use App\Events\Elastic\Department\CreateDepartmentIndex;
 use App\Events\Elastic\DiimType\CreateDiimTypeIndex;
 use App\Events\Elastic\District\CreateDistrictIndex;
@@ -130,7 +126,7 @@ use App\Events\Elastic\ServiceFollow\CreateServiceFollowIndex;
 use App\Events\Elastic\ServiceGroup\CreateServiceGroupIndex;
 use App\Events\Elastic\ServiceMachine\CreateServiceMachineIndex;
 use App\Events\Elastic\ServicePaty\CreateServicePatyIndex;
-use App\Events\Elastic\ServiceReq\CreateServiceReqIndex;
+use App\Events\Elastic\ServiceReqLView\CreateServiceReqLViewIndex;
 use App\Events\Elastic\ServiceReqType\CreateServiceReqTypeIndex;
 use App\Events\Elastic\ServiceRoom\CreateServiceRoomIndex;
 use App\Events\Elastic\ServiceType\CreateServiceTypeIndex;
@@ -150,11 +146,8 @@ use App\Events\Elastic\TranPatiTech\CreateTranPatiTechIndex;
 use App\Events\Elastic\TreatmentEndType\CreateTreatmentEndTypeIndex;
 use App\Events\Elastic\TreatmentType\CreateTreatmentTypeIndex;
 use App\Events\Elastic\UnlimitReason\CreateUnlimitReasonIndex;
-use App\Events\Elastic\UserRoom\CreateUserRoomIndex;
 use App\Events\Elastic\VaccineType\CreateVaccineTypeIndex;
 use App\Events\Elastic\WorkPlace\CreateWorkPlaceIndex;
-use App\Http\Resources\DebateUserResource;
-use App\Models\HIS\MedicineUseForm;
 use App\Repositories\AccidentBodyPartRepository;
 use App\Repositories\AccidentCareRepository;
 use App\Repositories\AccidentHurtTypeRepository;
@@ -186,11 +179,8 @@ use App\Repositories\CommuneRepository;
 use App\Repositories\ContraindicationRepository;
 use App\Repositories\DataStoreRepository;
 use App\Repositories\DeathWithinRepository;
-use App\Repositories\DebateEkipUserRepository;
 use App\Repositories\DebateReasonRepository;
-use App\Repositories\DebateRepository;
 use App\Repositories\DebateTypeRepository;
-use App\Repositories\DebateUserRepository;
 use App\Repositories\DepartmentRepository;
 use App\Repositories\DiimTypeRepository;
 use App\Repositories\DistrictRepository;
@@ -280,7 +270,7 @@ use App\Repositories\ServiceGroupRepository;
 use App\Repositories\ServiceMachineRepository;
 use App\Repositories\ServicePatyRepository;
 use App\Repositories\ServiceRepository;
-use App\Repositories\ServiceReqRepository;
+use App\Repositories\ServiceReqLViewRepository;
 use App\Repositories\ServiceReqTypeRepository;
 use App\Repositories\ServiceRoomRepository;
 use App\Repositories\ServiceTypeRepository;
@@ -300,7 +290,6 @@ use App\Repositories\TranPatiTechRepository;
 use App\Repositories\TreatmentEndTypeRepository;
 use App\Repositories\TreatmentTypeRepository;
 use App\Repositories\UnlimitReasonRepository;
-use App\Repositories\UserRoomRepository;
 use App\Repositories\VaccineTypeRepository;
 use App\Repositories\WorkPlaceRepository;
 
@@ -352,6 +341,9 @@ class IndexRecordsToElasticsearch extends Command
     {
         // Khởi tạo kết nối đến Elastic
         $client = app('Elasticsearch');
+        $batchSize = null;
+        // // Tùy chỉnh thời gian làm mới
+        // $this->setRefreshInterval(-1, '*', $client);
         // call back dùng chunk để indexing
         $callback = function($dataBatch) use ($name_table, $client){
             $this->indexing($name_table,$this->arrJsonDecode(),$client,$dataBatch);
@@ -930,37 +922,21 @@ class IndexRecordsToElasticsearch extends Command
                 event(new CreateWorkPlaceIndex($name_table));
                 break;
 
-
             // No Cache
-            case 'user_room':
-                $results = app(UserRoomRepository::class)->getDataFromDbToElastic(null);
-                event(new CreateUserRoomIndex($name_table));
+            case 'service_req_l_view':
+                $batchSize = 25000;
+                event(new CreateServiceReqLViewIndex($name_table));
+                app(ServiceReqLViewRepository::class)->getDataFromDbToElastic($callback, $batchSize, null);
+                $results = null;
                 break;
-            case 'debate':
-                $results = app(DebateRepository::class)->getDataFromDbToElastic(null);
-                event(new CreateDebateIndex($name_table));
-                break;
-            case 'debate_user':
-                $results = app(DebateUserRepository::class)->getDataFromDbToElastic(null);
-                event(new CreateDebateUserIndex($name_table));
-                break;
-            case 'debate_ekip_user':
-                $results = app(DebateEkipUserRepository::class)->getDataFromDbToElastic(null);
-                event(new CreateDebateEkipUserIndex($name_table));
-                break;
-            case 'service_req':
-                event(new CreateServiceReqIndex($name_table));
-                $results = app(ServiceReqRepository::class)->getDataFromDbToElastic($callback, 50000, null);
-                return response()->json(['message' => 'Ok.']);
             default:
                 // Xử lý mặc định hoặc xử lý khi không có bảng khớp
                 $this->error('Không có dữ liệu của bảng ' . $name_table . '.');
                 break;
         }
-
-
-        
         $this->indexing($name_table, $this->arrJsonDecode(), $client, $results);
+        // // Chỉnh lại thời gian làm mới
+        // $this->setRefreshInterval('1s', '*', $client);
     }
     public function arrJsonDecode(){
         // Danh sách các bảng dùng with cần phải decode trước khi thêm vào elastic
@@ -971,43 +947,71 @@ class IndexRecordsToElasticsearch extends Command
             'reception_room',
             'role',
             'service',
-            'debate',
         ];
         return  $arr_json_decode;
     }
     public function indexing($name_table, $arr_json_decode, $client, $results){
+        $maxBatchSizeMB = config('database')['connections']['elasticsearch']['bulk']['max_batch_size_mb'];
         if (isset($results)) {
             // Dùng Bulk
             $bulkData = [];
-            $batchSize = 50000; // Số lượng bản ghi mỗi batch, bạn có thể điều chỉnh
+            $currentBatchSizeBytes = 0;
+            $maxBatchSizeBytes = $maxBatchSizeMB * 1024 * 1024; // Chuyển đổi MB sang bytes
+    
             foreach ($results as $result) {
                 // Chuẩn bị dữ liệu cho mỗi bản ghi
                 $data = [];
                 // Decode và đổi tên trường về mặc định các bảng có dùng with
                 if (in_array($name_table, $arr_json_decode)) {
                     $result = convertKeysToSnakeCase(json_decode($result, true));
+                } else {
+                    // Nếu không cần decode, giả sử $result là mảng
+                    $result = is_string($result) ? json_decode($result, true) : $result;
                 }
                 foreach ($result as $key => $value) {
                     $data[$key] = $value;
                 }
                 // Thêm các thông tin cần thiết cho mỗi tài liệu vào bulkData
-                $bulkData[] = [
+                $actionMeta = [
                     'index' => [
                         '_index' => $name_table,
                         '_id'    => $result['id'], // Sử dụng id của bản ghi làm id cho Elasticsearch
                     ]
                 ];
-                $bulkData[] = $data;
-                // Khi số lượng bản ghi đạt batchSize, thực hiện bulk insert
-                if (count($bulkData) >= $batchSize * 2) { // Mỗi tài liệu chiếm 2 entry trong bulkData
-                    $client->bulk(['body' => $bulkData]);
-                    $bulkData = []; // Xóa dữ liệu sau khi chèn để chuẩn bị batch tiếp theo
+                // Tính kích thước của actionMeta và data
+                $actionMetaSize = strlen(json_encode($actionMeta)) + 1; // Thêm 1 byte cho dấu xuống dòng
+                $dataSize = strlen(json_encode($data)) + 1; // Thêm 1 byte cho dấu xuống dòng
+                // Kiểm tra nếu thêm vào lô hiện tại vượt quá giới hạn kích thước
+                if (($currentBatchSizeBytes + $actionMetaSize + $dataSize) > $maxBatchSizeBytes) {
+                    // Thực hiện bulk insert với lô hiện tại
+                    if (!empty($bulkData)) {
+                        $client->bulk(['body' => $bulkData]);
+                        // Reset bulkData và currentBatchSizeBytes sau khi bulk insert
+                        $bulkData = [];
+                        $currentBatchSizeBytes = 0;
+                    }
                 }
+                // Thêm actionMeta và data vào bulkData
+                $bulkData[] = $actionMeta;
+                $bulkData[] = $data;
+                $currentBatchSizeBytes += $actionMetaSize + $dataSize;
             }
             // Chèn các bản ghi còn lại nếu có
             if (!empty($bulkData)) {
                 $client->bulk(['body' => $bulkData]);
             }
         }
+    }
+    public function setRefreshInterval($time, $index = '*', $client){
+        $params = [
+            'index' => $index,
+            'body' => [
+                'settings' => [
+                    'refresh_interval' => $time, 
+                ],
+            ]
+        ];
+        // Sử dụng putSettings để thay đổi cài đặt
+        $client->indices()->putSettings($params);
     }
 }

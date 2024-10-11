@@ -155,7 +155,7 @@ use App\Http\Controllers\Api\NoCacheControllers\UserRoomController;
 use App\Http\Controllers\Api\NoCacheControllers\DebateController;
 use App\Http\Controllers\Api\NoCacheControllers\DebateEkipUserController;
 use App\Http\Controllers\Api\NoCacheControllers\DebateUserController;
-use App\Http\Controllers\Api\NoCacheControllers\ServiceReqController;
+use App\Http\Controllers\Api\NoCacheControllers\ServiceReqLViewController;
 // Base Api
 use App\Http\Controllers\BaseControllers\CacheController;
 use App\Http\Controllers\BaseControllers\ElasticSearchController;
@@ -206,7 +206,6 @@ use App\Http\Controllers\Api\ValidateControllers\CheckRefectoryController;
 use App\Http\Controllers\Api\ValidateControllers\CheckSpecialityController;
 use App\Http\Controllers\Api\ValidateControllers\CheckServiceController;
 use App\Http\Controllers\Api\ValidateControllers\CheckTreatmentTypeController;
-
 
 /*
 |--------------------------------------------------------------------------
@@ -826,8 +825,7 @@ Route::group([
     Route::apiResource('v1/debate-ekip-user', DebateEkipUserController::class)->only(['index', 'show']);
     /// Y lệnh
     Route::group(['as' => 'HIS.Desktop.Plugins.ServiceReqList'], function () {
-        Route::get("v1/service-req-l-view", [ServiceReqController::class, "indexLView"])->name('.index_l_view');
-        Route::get("v1/service-req-l-view/{id}", [ServiceReqController::class, "showLView"])->name('.show_l_view');
+        Route::apiResource('v1/service-req-l-view', ServiceReqLViewController::class)->only(['index', 'show']);
     });
     // /// Nhân viên - Phòng
     // // Trả về nhân viên cùng phòng

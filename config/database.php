@@ -152,6 +152,9 @@ return [
             'prefix' => '',
         ],
         'elasticsearch' => [
+            'bulk' => [
+                'max_batch_size_mb' => env('ELASTICSEARCH_MAX_BATCH_SIZE_MB'),
+            ],
             'driver' => 'elasticsearch',
             'hosts' => [
                 'host' => env('ELASTICSEARCH_HOST', 'localhost'),

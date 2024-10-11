@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Events\Elastic\ServiceReq;
+namespace App\Events\Elastic\ServiceReqLView;
 
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class InsertServiceReqIndex
+class InsertServiceReqLViewIndex
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -30,7 +30,7 @@ class InsertServiceReqIndex
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('elastic-service-req-insert-index'),
+            new PrivateChannel('elastic-service-req-l-view-insert-index'),
         ];
     }
 }
