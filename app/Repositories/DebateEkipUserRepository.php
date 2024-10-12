@@ -15,9 +15,15 @@ class DebateEkipUserRepository
     public function applyJoins()
     {
         return $this->debateEkipUser
+        ->leftJoin('his_execute_role as execute_role', 'execute_role.id', '=', 'his_debate_ekip_user.execute_role_id')
+        ->leftJoin('his_department as department', 'department.id', '=', 'his_debate_ekip_user.department_id')
             ->select(
-                'his_debate_ekip_user.*'
-            );
+                'his_debate_ekip_user.*',
+                'execute_role.execute_role_code',
+                'execute_role.execute_role_name',
+                'department.department_code',
+                'department.department_name'
+                );
     }
     public function view()
     {
@@ -125,19 +131,31 @@ class DebateEkipUserRepository
     //     $data->delete();
     //     return $data;
     // }
-    public function getDataFromDbToElastic($id = null){
-        $data = $this->view();
-        if($id != null){
-            $data = $data->where('his_debate_ekip_user.id','=', $id)->first();
+    public function getDataFromDbToElastic($callback, $batchSize = 5000, $id = null)
+    {
+        $query = $this->applyJoins();
+        if ($id != null) {
+            $data = $query ->where('his_debate_ekip_user.id', '=', $id)->first();
             if ($data) {
                 $data = $data->getAttributes();
+                return $data ;
             }
         } else {
-            $data = $data->get();
-            $data = $data->map(function ($item) {
-                return $item->getAttributes(); 
-            })->toArray(); 
+            $batchData = [];
+            $count = 0;
+            foreach ($query->cursor() as $item) {
+                $attributes = $item->getAttributes();
+                $batchData[] = $attributes;
+                $count++;
+                
+                if ($count % $batchSize == 0) {
+                    $callback($batchData);
+                    $batchData = [];
+                }
+            }
+            if (!empty($batchData)) {
+                $callback($batchData);
+            }
         }
-        return $data;
     }
 }

@@ -36,6 +36,7 @@ use App\Events\Elastic\Contraindication\CreateContraindicationIndex;
 use App\Events\Elastic\DataStore\CreateDataStoreIndex;
 use App\Events\Elastic\DeathWithin\CreateDeathWithinIndex;
 use App\Events\Elastic\Debate\CreateDebateIndex;
+use App\Events\Elastic\DebateEkipUser\CreateDebateEkipUserIndex;
 use App\Events\Elastic\DebateReason\CreateDebateReasonIndex;
 use App\Events\Elastic\DebateType\CreateDebateTypeIndex;
 use App\Events\Elastic\DebateUser\CreateDebateUserIndex;
@@ -183,6 +184,7 @@ use App\Repositories\CommuneRepository;
 use App\Repositories\ContraindicationRepository;
 use App\Repositories\DataStoreRepository;
 use App\Repositories\DeathWithinRepository;
+use App\Repositories\DebateEkipUserRepository;
 use App\Repositories\DebateReasonRepository;
 use App\Repositories\DebateRepository;
 use App\Repositories\DebateTypeRepository;
@@ -959,6 +961,12 @@ class IndexRecordsToElasticsearch extends Command
                 $batchSize = 25000;
                 event(new CreateDebateUserIndex($name_table));
                 app(DebateUserRepository::class)->getDataFromDbToElastic($callback, $batchSize, null);
+                $results = null;
+                break;
+            case 'debate_ekip_user':
+                $batchSize = 25000;
+                event(new CreateDebateEkipUserIndex($name_table));
+                app(DebateEkipUserRepository::class)->getDataFromDbToElastic($callback, $batchSize, null);
                 $results = null;
                 break;
             default:

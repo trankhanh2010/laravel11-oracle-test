@@ -152,6 +152,7 @@ return [
             'debate_v_view',
             'user_room_v_view',
             'debate_user',
+            'debate_ekip_user',
         ],
         'no_cache' => [
             'service_req_l_view',
@@ -159,6 +160,7 @@ return [
             'debate_v_view',
             'user_room_v_view',
             'debate_user',
+            'debate_ekip_user',
         ],
         'error' => [
             'elasticsearch_service' => 'Có lỗi khi thực hiện thao tác với Elastic Search!',
@@ -336,6 +338,7 @@ return [
             'debate_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm Biên bản hội chẩn!',
             'user_room_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm Nhân viên - Phòng!',
             'debate_user' => 'Có lỗi khi thực hiện thao tác với bảng DebateUser!',
+            'debate_ekip_user' => 'Có lỗi khi thực hiện thao tác với bảng DebateEkipUser!',
         ]
     ]
 

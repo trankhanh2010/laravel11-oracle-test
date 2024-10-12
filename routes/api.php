@@ -152,6 +152,7 @@ use App\Http\Controllers\Api\CacheControllers\TestIndexGroupController;
 use App\Http\Controllers\Api\CacheControllers\VaccineTypeController;
 // No cache Controller
 use App\Http\Controllers\Api\NoCacheControllers\DebateController;
+use App\Http\Controllers\Api\NoCacheControllers\DebateEkipUserController;
 use App\Http\Controllers\Api\NoCacheControllers\DebateUserController;
 use App\Http\Controllers\Api\NoCacheControllers\DebateVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\ServiceReqLViewController;
@@ -804,17 +805,10 @@ Route::group([
     });
     /// Nhân viên - Phòng
     Route::apiResource('v1/user-room-v-view', UserRoomVViewController::class)->only(['index', 'show']);
-    /// Debate - User
+    /// Debate User
     Route::apiResource('v1/debate-user', DebateUserController::class)->only(['index', 'show']);
-
-    // // Debate User
-    // Route::get("v1/debate-user/get", [DebateUserController::class, "debate_user"])->name('.get_debate_user');
-    // Route::get("v2/debate-user/get", [DebateUserController::class, "debate_user_v2"])->name('.get_debate_user_v2');
-
-
-    // // Debate Ekip User
-    // Route::get("v1/debate-ekip-user/get", [DebateEkipUserController::class, "debate_ekip_user"])->name('.get_debate_ekip_user');
-    // Route::get("v2/debate-ekip-user/get", [DebateEkipUserController::class, "debate_ekip_user_v2"])->name('.get_debate_ekip_user_v2');
+    /// Debate Ekip User
+    Route::apiResource('v1/debate-ekip-user', DebateEkipUserController::class)->only(['index', 'show']);
 
 
 
