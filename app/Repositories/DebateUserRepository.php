@@ -113,19 +113,31 @@ class DebateUserRepository
     //     $data->delete();
     //     return $data;
     // }
-    public function getDataFromDbToElastic($id = null){
-        $data = $this->view();
-        if($id != null){
-            $data = $data->where('his_debate_user.id','=', $id)->first();
+    public function getDataFromDbToElastic($callback, $batchSize = 5000, $id = null)
+    {
+        $query = $this->applyJoins();
+        if ($id != null) {
+            $data = $query ->where('his_debate_user.id', '=', $id)->first();
             if ($data) {
                 $data = $data->getAttributes();
+                return $data ;
             }
         } else {
-            $data = $data->get();
-            $data = $data->map(function ($item) {
-                return $item->getAttributes(); 
-            })->toArray(); 
+            $batchData = [];
+            $count = 0;
+            foreach ($query->cursor() as $item) {
+                $attributes = $item->getAttributes();
+                $batchData[] = $attributes;
+                $count++;
+                
+                if ($count % $batchSize == 0) {
+                    $callback($batchData);
+                    $batchData = [];
+                }
+            }
+            if (!empty($batchData)) {
+                $callback($batchData);
+            }
         }
-        return $data;
     }
 }

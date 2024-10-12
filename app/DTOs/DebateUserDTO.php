@@ -18,7 +18,6 @@ class DebateUserDTO
     public $appCreator;
     public $appModifier;
     public $time;
-    public $debateId;
     public function __construct(
         $debateUserName,
         $keyword, 
@@ -34,7 +33,6 @@ class DebateUserDTO
         $appCreator,
         $appModifier,
         $time,
-        $debateId,
         )
     {
         $this->debateUserName = $debateUserName;
@@ -51,6 +49,5 @@ class DebateUserDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
-        $this->debateId = $debateId;
     }
 }

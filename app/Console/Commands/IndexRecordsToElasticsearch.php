@@ -38,6 +38,7 @@ use App\Events\Elastic\DeathWithin\CreateDeathWithinIndex;
 use App\Events\Elastic\Debate\CreateDebateIndex;
 use App\Events\Elastic\DebateReason\CreateDebateReasonIndex;
 use App\Events\Elastic\DebateType\CreateDebateTypeIndex;
+use App\Events\Elastic\DebateUser\CreateDebateUserIndex;
 use App\Events\Elastic\DebateVView\CreateDebateVViewIndex;
 use App\Events\Elastic\Department\CreateDepartmentIndex;
 use App\Events\Elastic\DiimType\CreateDiimTypeIndex;
@@ -185,6 +186,7 @@ use App\Repositories\DeathWithinRepository;
 use App\Repositories\DebateReasonRepository;
 use App\Repositories\DebateRepository;
 use App\Repositories\DebateTypeRepository;
+use App\Repositories\DebateUserRepository;
 use App\Repositories\DebateVViewRepository;
 use App\Repositories\DepartmentRepository;
 use App\Repositories\DiimTypeRepository;
@@ -951,6 +953,12 @@ class IndexRecordsToElasticsearch extends Command
                 $batchSize = 25000;
                 event(new CreateUserRoomVViewIndex($name_table));
                 app(UserRoomVViewRepository::class)->getDataFromDbToElastic($callback, $batchSize, null);
+                $results = null;
+                break;
+            case 'debate_user':
+                $batchSize = 25000;
+                event(new CreateDebateUserIndex($name_table));
+                app(DebateUserRepository::class)->getDataFromDbToElastic($callback, $batchSize, null);
                 $results = null;
                 break;
             default:

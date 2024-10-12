@@ -152,6 +152,7 @@ use App\Http\Controllers\Api\CacheControllers\TestIndexGroupController;
 use App\Http\Controllers\Api\CacheControllers\VaccineTypeController;
 // No cache Controller
 use App\Http\Controllers\Api\NoCacheControllers\DebateController;
+use App\Http\Controllers\Api\NoCacheControllers\DebateUserController;
 use App\Http\Controllers\Api\NoCacheControllers\DebateVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\ServiceReqLViewController;
 use App\Http\Controllers\Api\NoCacheControllers\UserRoomVViewController;
@@ -802,21 +803,9 @@ Route::group([
         Route::apiResource('v1/service-req-l-view', ServiceReqLViewController::class)->only(['index', 'show']);
     });
     /// Nhân viên - Phòng
-    // Trả về nhân viên cùng phòng
     Route::apiResource('v1/user-room-v-view', UserRoomVViewController::class)->only(['index', 'show']);
-    // /// Nhân viên - Phòng
-    // // Trả về nhân viên cùng phòng
-    // Route::get("v1/user-room/get-view", [UserRoomController::class, "user_with_room"])->name('.get-view');
-
-    // // Biên bản hội chẩn
-    // Route::group(['as' => 'HIS.Desktop.Plugins.Debate'], function () {
-    //     Route::get("v1/debate/get", [DebateController::class, "debate_get"])->name('.get');
-    //     Route::get("v1/debate/get-view", [DebateController::class, "debate_get_view"])->name('.get-view');
-
-    //     Route::get("v2/debate/get", [DebateController::class, "debate_get_v2"])->name('.get_v2');
-    //     Route::get("v2/debate/get-view", [DebateController::class, "debate_get_view_v2"])->name('.get_view_v2');
-    // });
-
+    /// Debate - User
+    Route::apiResource('v1/debate-user', DebateUserController::class)->only(['index', 'show']);
 
     // // Debate User
     // Route::get("v1/debate-user/get", [DebateUserController::class, "debate_user"])->name('.get_debate_user');
@@ -827,12 +816,6 @@ Route::group([
     // Route::get("v1/debate-ekip-user/get", [DebateEkipUserController::class, "debate_ekip_user"])->name('.get_debate_ekip_user');
     // Route::get("v2/debate-ekip-user/get", [DebateEkipUserController::class, "debate_ekip_user_v2"])->name('.get_debate_ekip_user_v2');
 
-    // // Service Req
-    // Route::group(['as' => 'HIS.Desktop.Plugins.ServiceReqList'], function () {
-    //     Route::get("v1/service-req/get-L-view", [ServiceReqController::class, "service_req_get_L_view"])->name('.get_L_view');
-    //     Route::get("v2/service-req/get-L-view", [ServiceReqController::class, "service_req_get_L_view_v2"])->name('.get_L_view_v2');
-    //     Route::get("v3/service-req/get-L-view", [ServiceReqController::class, "service_req_get_L_view_v3"])->name('.get_L_view_v3');
-    // });
 
 
     // // Tracking

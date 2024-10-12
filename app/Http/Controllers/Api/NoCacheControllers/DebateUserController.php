@@ -24,7 +24,8 @@ class DebateUserController extends BaseApiCacheController
         $this->debateUser = $debateUser;
         // Kiểm tra tên trường trong bảng
         if ($this->orderBy != null) {
-            $this->orderByJoin = [];
+            $this->orderByJoin = [
+            ];
             $columns = $this->getColumnsTable($this->debateUser);
             $this->orderBy = $this->checkOrderBy($this->orderBy, $columns, $this->orderByJoin ?? []);
         }
@@ -44,7 +45,6 @@ class DebateUserController extends BaseApiCacheController
             $this->appCreator, 
             $this->appModifier, 
             $this->time,
-            $this->debateId,
         );
         $this->debateUserService->withParams($this->debateUserDTO);
     }
@@ -73,7 +73,6 @@ class DebateUserController extends BaseApiCacheController
             $this->limitName => $this->getAll ? null : $this->limit,
             $this->countName => $data['count'],
             $this->isActiveName => $this->isActive,
-            $this->isDeleteName => $this->isDelete,
             $this->keywordName => $this->keyword,
             $this->orderByName => $this->orderByRequest
         ];

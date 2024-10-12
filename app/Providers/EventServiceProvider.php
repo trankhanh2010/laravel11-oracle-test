@@ -1676,6 +1676,13 @@ class EventServiceProvider extends ServiceProvider
         InsertUserRoomVViewIndex::class => [
             ElasticInsertUserRoomVViewIndex::class,
         ],
+
+        CreateDebateUserIndex::class => [
+            ElasticCreateDebateUserIndex::class,
+        ],
+        InsertDebateUserIndex::class => [
+            ElasticInsertDebateUserIndex::class,
+        ],
     ];
 
     /**

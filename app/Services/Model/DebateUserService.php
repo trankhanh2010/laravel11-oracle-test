@@ -29,7 +29,6 @@ class DebateUserService
             $data = $this->debateUserRepository->applyKeywordFilter($data, $this->params->keyword);
             $data = $this->debateUserRepository->applyIsActiveFilter($data, $this->params->isActive);
             $data = $this->debateUserRepository->applyIsDeleteFilter($data, $this->params->isDelete);
-            $data = $this->debateUserRepository->applyDebateIdFilter($data, $this->params->debateId);
             $count = $data->count();
             $data = $this->debateUserRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
             $data = $this->debateUserRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
@@ -44,7 +43,6 @@ class DebateUserService
             $data = $this->debateUserRepository->view();
             $data = $this->debateUserRepository->applyIsActiveFilter($data, $this->params->isActive);
             $data = $this->debateUserRepository->applyIsDeleteFilter($data, $this->params->isDelete);
-            $data = $this->debateUserRepository->applyDebateIdFilter($data, $this->params->debateId);
             $count = $data->count();
             $data = $this->debateUserRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
             $data = $this->debateUserRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
