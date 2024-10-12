@@ -148,6 +148,7 @@ use App\Events\Elastic\TranPatiTech\CreateTranPatiTechIndex;
 use App\Events\Elastic\TreatmentEndType\CreateTreatmentEndTypeIndex;
 use App\Events\Elastic\TreatmentType\CreateTreatmentTypeIndex;
 use App\Events\Elastic\UnlimitReason\CreateUnlimitReasonIndex;
+use App\Events\Elastic\UserRoomVView\CreateUserRoomVViewIndex;
 use App\Events\Elastic\VaccineType\CreateVaccineTypeIndex;
 use App\Events\Elastic\WorkPlace\CreateWorkPlaceIndex;
 use App\Repositories\AccidentBodyPartRepository;
@@ -294,6 +295,7 @@ use App\Repositories\TranPatiTechRepository;
 use App\Repositories\TreatmentEndTypeRepository;
 use App\Repositories\TreatmentTypeRepository;
 use App\Repositories\UnlimitReasonRepository;
+use App\Repositories\UserRoomVViewRepository;
 use App\Repositories\VaccineTypeRepository;
 use App\Repositories\WorkPlaceRepository;
 
@@ -943,6 +945,12 @@ class IndexRecordsToElasticsearch extends Command
                 $batchSize = 25000;
                 event(new CreateDebateVViewIndex($name_table));
                 app(DebateVViewRepository::class)->getDataFromDbToElastic($callback, $batchSize, null);
+                $results = null;
+                break;
+            case 'user_room_v_view':
+                $batchSize = 25000;
+                event(new CreateUserRoomVViewIndex($name_table));
+                app(UserRoomVViewRepository::class)->getDataFromDbToElastic($callback, $batchSize, null);
                 $results = null;
                 break;
             default:

@@ -302,6 +302,8 @@ use App\Events\Elastic\UnlimitReason\CreateUnlimitReasonIndex;
 use App\Events\Elastic\UnlimitReason\InsertUnlimitReasonIndex;
 use App\Events\Elastic\UserRoom\CreateUserRoomIndex;
 use App\Events\Elastic\UserRoom\InsertUserRoomIndex;
+use App\Events\Elastic\UserRoomVView\CreateUserRoomVViewIndex;
+use App\Events\Elastic\UserRoomVView\InsertUserRoomVViewIndex;
 use App\Events\Elastic\VaccineType\CreateVaccineTypeIndex;
 use App\Events\Elastic\VaccineType\InsertVaccineTypeIndex;
 use App\Events\Elastic\WorkPlace\CreateWorkPlaceIndex;
@@ -607,6 +609,8 @@ use App\Listeners\Elastic\UnlimitReason\ElasticCreateUnlimitReasonIndex;
 use App\Listeners\Elastic\UnlimitReason\ElasticInsertUnlimitReasonIndex;
 use App\Listeners\Elastic\UserRoom\ElasticCreateUserRoomIndex;
 use App\Listeners\Elastic\UserRoom\ElasticInsertUserRoomIndex;
+use App\Listeners\Elastic\UserRoomVView\ElasticCreateUserRoomVViewIndex;
+use App\Listeners\Elastic\UserRoomVView\ElasticInsertUserRoomVViewIndex;
 use App\Listeners\Elastic\VaccineType\ElasticCreateVaccineTypeIndex;
 use App\Listeners\Elastic\VaccineType\ElasticInsertVaccineTypeIndex;
 use App\Listeners\Elastic\WorkPlace\ElasticCreateWorkPlaceIndex;
@@ -1664,6 +1668,13 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertDebateVViewIndex::class => [
             ElasticInsertDebateVViewIndex::class,
+        ],
+
+        CreateUserRoomVViewIndex::class => [
+            ElasticCreateUserRoomVViewIndex::class,
+        ],
+        InsertUserRoomVViewIndex::class => [
+            ElasticInsertUserRoomVViewIndex::class,
         ],
     ];
 

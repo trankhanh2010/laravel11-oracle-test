@@ -250,6 +250,8 @@ class BaseApiCacheController extends Controller
     protected $careerName = 'career';
     protected $patientClassify;
     protected $patientClassifyName = 'patient_classify';
+    protected $userRoomVView;
+    protected $userRoomVViewName = 'user_room_v_view';
     protected $religion;
     protected $religionName = 'religion';
     protected $impSource;

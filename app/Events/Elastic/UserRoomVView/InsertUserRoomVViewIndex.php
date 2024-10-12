@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Events\Elastic\UserRoom;
+namespace App\Events\Elastic\UserRoomVView;
 
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class InsertUserRoomIndex
+class InsertUserRoomVViewIndex
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -30,7 +30,7 @@ class InsertUserRoomIndex
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('elastic-user-room-insert-index'),
+            new PrivateChannel('elastic-user-room-v-view-insert-index'),
         ];
     }
 }

@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Listeners\Elastic\UserRoom;
+namespace App\Listeners\Elastic\UserRoomVView;
 
-use App\Events\Elastic\UserRoom\CreateUserRoomIndex;
+use App\Events\Elastic\UserRoomVView\CreateUserRoomVViewIndex;
 
-class ElasticCreateUserRoomIndex
+class ElasticCreateUserRoomVViewIndex
 {
     /**
      * Create the event listener.
@@ -18,7 +18,7 @@ class ElasticCreateUserRoomIndex
     /**
      * Handle the event.
      */
-    public function handle(CreateUserRoomIndex $event): void
+    public function handle(CreateUserRoomVViewIndex $event): void
     {
         try {
             // Kiểm tra xem có tồn tại Index chưa

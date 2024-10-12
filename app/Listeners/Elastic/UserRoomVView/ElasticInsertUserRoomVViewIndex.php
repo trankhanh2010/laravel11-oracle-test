@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Listeners\Elastic\UserRoom;
+namespace App\Listeners\Elastic\UserRoomVView;
 
-use App\Events\Elastic\UserRoom\InsertUserRoomIndex;
-use App\Models\HIS\UserRoom;
-use App\Repositories\UserRoomRepository;
+use App\Events\Elastic\UserRoomVView\InsertUserRoomVViewIndex;
+use App\Models\HIS\UserRoomVView;
+use App\Repositories\UserRoomVViewRepository;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 
-class ElasticInsertUserRoomIndex
+class ElasticInsertUserRoomVViewIndex
 {
     /**
      * Create the event listener.
@@ -22,11 +22,11 @@ class ElasticInsertUserRoomIndex
     /**
      * Handle the event.
      */
-    public function handle(InsertUserRoomIndex $event): void
+    public function handle(InsertUserRoomVViewIndex $event): void
     {
         try {
             $record = $event->record;
-            $data = app(UserRoomRepository::class)->getDataFromDbToElastic($record->id);
+            $data = app(UserRoomVViewRepository::class)->getDataFromDbToElastic($record->id);
             // Tạo chỉ mục hoặc cập nhật dữ liệu
             $params = [
                 'index' => $event->modelName, // Chỉ mục bạn muốn tạo hoặc cập nhật

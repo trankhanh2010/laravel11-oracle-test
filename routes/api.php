@@ -154,6 +154,7 @@ use App\Http\Controllers\Api\CacheControllers\VaccineTypeController;
 use App\Http\Controllers\Api\NoCacheControllers\DebateController;
 use App\Http\Controllers\Api\NoCacheControllers\DebateVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\ServiceReqLViewController;
+use App\Http\Controllers\Api\NoCacheControllers\UserRoomVViewController;
 // Base Api
 use App\Http\Controllers\BaseControllers\CacheController;
 use App\Http\Controllers\BaseControllers\ElasticSearchController;
@@ -800,6 +801,9 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.ServiceReqList'], function () {
         Route::apiResource('v1/service-req-l-view', ServiceReqLViewController::class)->only(['index', 'show']);
     });
+    /// Nhân viên - Phòng
+    // Trả về nhân viên cùng phòng
+    Route::apiResource('v1/user-room-v-view', UserRoomVViewController::class)->only(['index', 'show']);
     // /// Nhân viên - Phòng
     // // Trả về nhân viên cùng phòng
     // Route::get("v1/user-room/get-view", [UserRoomController::class, "user_with_room"])->name('.get-view');

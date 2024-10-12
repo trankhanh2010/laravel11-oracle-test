@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Events\Elastic\UserRoom;
+namespace App\Events\Elastic\UserRoomVView;
 
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class CreateUserRoomIndex
+class CreateUserRoomVViewIndex
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -77,7 +77,7 @@ class CreateUserRoomIndex
                         'group_code' => [
                             'type' => 'keyword'  // Chuỗi không phân tích, lưu trữ giá trị chính xác, có thể là null
                         ],
-                        'loginname' => [
+                        'loginname'  => [
                             'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
                             'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
                             'fields' => [
@@ -86,9 +86,9 @@ class CreateUserRoomIndex
                                 ]
                             ]
                         ],
-                        'room_id' => [
+                        'room_id'  => [
                             'type' => 'long'  // Số nguyên 64-bit, phù hợp với ID số
-                        ],
+                        ],    
                         'room_code'  => [
                             'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
                             'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
@@ -97,8 +97,8 @@ class CreateUserRoomIndex
                                     'type' => 'keyword'
                                 ]
                             ]
-                        ],    
-                        'room_name' => [
+                        ],  
+                        'room_name'  => [
                             'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
                             'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
                             'fields' => [
@@ -109,10 +109,10 @@ class CreateUserRoomIndex
                         ], 
                         'department_id'  => [
                             'type' => 'long'  // Số nguyên 64-bit, phù hợp với ID số
-                        ],    
-                        'room_type_id'   => [
+                        ],         
+                        'room_type_id'  => [
                             'type' => 'long'  // Số nguyên 64-bit, phù hợp với ID số
-                        ],      
+                        ],   
                         'room_type_code'  => [
                             'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
                             'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
@@ -121,7 +121,7 @@ class CreateUserRoomIndex
                                     'type' => 'keyword'
                                 ]
                             ]
-                        ],        
+                        ],   
                         'room_type_name'  => [
                             'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
                             'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
@@ -130,7 +130,7 @@ class CreateUserRoomIndex
                                     'type' => 'keyword'
                                 ]
                             ]
-                        ],       
+                        ],      
                         'department_code'  => [
                             'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
                             'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
@@ -139,8 +139,8 @@ class CreateUserRoomIndex
                                     'type' => 'keyword'
                                 ]
                             ]
-                        ],       
-                        'department_name'  => [
+                        ],    
+                        'department_name' => [
                             'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
                             'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
                             'fields' => [
@@ -148,10 +148,10 @@ class CreateUserRoomIndex
                                     'type' => 'keyword'
                                 ]
                             ]
-                        ],     
+                        ],  
                         'is_pause'  => [
                             'type' => 'byte'
-                        ], 
+                        ],
                         'g_code'  => [
                             'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
                             'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
@@ -160,10 +160,10 @@ class CreateUserRoomIndex
                                     'type' => 'keyword'
                                 ]
                             ]
-                        ],       
-                        'branch_id'   => [
+                        ],
+                        'branch_id'  => [
                             'type' => 'long'  // Số nguyên 64-bit, phù hợp với ID số
-                        ],       
+                        ],  
                         'branch_code' => [
                             'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
                             'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
@@ -172,7 +172,7 @@ class CreateUserRoomIndex
                                     'type' => 'keyword'
                                 ]
                             ]
-                        ],      
+                        ],
                         'branch_name'  => [
                             'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
                             'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
@@ -181,7 +181,7 @@ class CreateUserRoomIndex
                                     'type' => 'keyword'
                                 ]
                             ]
-                        ], 
+                        ],
                         'hein_medi_org_code'  => [
                             'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
                             'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
@@ -205,7 +205,7 @@ class CreateUserRoomIndex
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('elastic-user-room-create-index'),
+            new PrivateChannel('elastic-user-room-v-view-create-index'),
         ];
     }
 }
