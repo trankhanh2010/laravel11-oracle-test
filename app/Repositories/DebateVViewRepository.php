@@ -1,49 +1,35 @@
 <?php 
 namespace App\Repositories;
 
-use App\Models\HIS\Debate;
+use App\Models\View\DebateVView;
 use Illuminate\Support\Facades\DB;
 
-class DebateRepository
+class DebateVViewRepository
 {
-    protected $debate;
-    public function __construct(Debate $debate)
+    protected $debateVView;
+    public function __construct(DebateVView $debateVView)
     {
-        $this->debate = $debate;
+        $this->debateVView = $debateVView;
     }
 
     public function applyJoins()
     {
-        return $this->debate
-            ->with($this->paramWith())
+        return $this->debateVView
             ->select(
-                'his_debate.*'
+                'v_his_debate.*'
             );
-    }
-    public function paramWith(){
-        return [
-            'debate_ekip_users:id,debate_id,loginname,username,execute_role_id,department_id',
-            'debate_invite_users:id,debate_id,loginname,username,execute_role_id',
-            'debate_users:id,debate_id,loginname,username,execute_role_id',
-        ];
     }
     public function applyKeywordFilter($query, $keyword)
     {
         return $query->where(function ($query) use ($keyword) {
-            $query->where(DB::connection('oracle_his')->raw('his_debate.icd_code'), 'like', $keyword . '%');
+            $query->where(DB::connection('oracle_his')->raw('v_his_debate.TDL_PATIENT_FIRST_NAME'), 'like', $keyword . '%')
+                ->orWhere(DB::connection('oracle_his')->raw('v_his_debate.TDL_PATIENT_LAST_NAME'), 'like', $keyword . '%');
         });
     }
     public function applyIsActiveFilter($query, $isActive)
     {
         if ($isActive !== null) {
-            $query->where(DB::connection('oracle_his')->raw('his_debate.is_active'), $isActive);
-        }
-        return $query;
-    }
-    public function applyIsDeleteFilter($query, $isDelete)
-    {
-        if ($isDelete !== null) {
-            $query->where(DB::connection('oracle_his')->raw('his_debate.is_delete'), $isDelete);
+            $query->where(DB::connection('oracle_his')->raw('v_his_debate.is_active'), $isActive);
         }
         return $query;
     }
@@ -53,7 +39,7 @@ class DebateRepository
             foreach ($orderBy as $key => $item) {
                 if (in_array($key, $orderByJoin)) {
                 } else {
-                    $query->orderBy('his_debate.' . $key, $item);
+                    $query->orderBy('v_his_debate.' . $key, $item);
                 }
             }
         }
@@ -75,10 +61,10 @@ class DebateRepository
     }
     public function getById($id)
     {
-        return $this->debate->find($id);
+        return $this->debateVView->find($id);
     }
     public function create($request, $time, $appCreator, $appModifier){
-        $data = $this->debate::create([
+        $data = $this->debateVView::create([
             'create_time' => now()->format('Ymdhis'),
             'modify_time' => now()->format('Ymdhis'),
             'creator' => get_loginname_with_token($request->bearerToken(), $time),
@@ -87,8 +73,8 @@ class DebateRepository
             'app_modifier' => $appModifier,
             'is_active' => 1,
             'is_delete' => 0,
-            'debate_code' => $request->debate_code,
-            'debate_name' => $request->debate_name,
+            'debate_v_view_code' => $request->debate_v_view_code,
+            'debate_v_view_name' => $request->debate_v_view_name,
         ]);
         return $data;
     }
@@ -97,8 +83,8 @@ class DebateRepository
             'modify_time' => now()->format('Ymdhis'),
             'modifier' => get_loginname_with_token($request->bearerToken(), $time),
             'app_modifier' => $appModifier,
-            'debate_code' => $request->debate_code,
-            'debate_name' => $request->debate_name,
+            'debate_v_view_code' => $request->debate_v_view_code,
+            'debate_v_view_name' => $request->debate_v_view_name,
             'is_active' => $request->is_active
         ]);
         return $data;
@@ -111,25 +97,27 @@ class DebateRepository
     {
         $query = $this->applyJoins();
         if ($id != null) {
-            $data = $query ->where('his_debate.id', '=', $id)->first();
+            $data = $query ->where('v_his_debate.id', '=', $id)->first();
             if ($data) {
-                $data = $data->toArray();
+                $data = $data->getAttributes();
                 return $data ;
             }
         } else {
-            $query->chunkById($batchSize, function ($items) use ($callback) {
-                $batchData = [];
+            $batchData = [];
+            $count = 0;
+            foreach ($query->cursor() as $item) {
+                $attributes = $item->getAttributes();
+                $batchData[] = $attributes;
+                $count++;
                 
-                foreach ($items as $item) {
-                    $attributes = $item;
-                    $batchData[] = $attributes;
-                }
-                
-                if (!empty($batchData)) {
+                if ($count % $batchSize == 0) {
                     $callback($batchData);
+                    $batchData = [];
                 }
-            });
-            
+            }
+            if (!empty($batchData)) {
+                $callback($batchData);
+            }
         }
     }
 }

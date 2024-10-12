@@ -151,10 +151,8 @@ use App\Http\Controllers\Api\CacheControllers\SuimIndexUnitController;
 use App\Http\Controllers\Api\CacheControllers\TestIndexGroupController;
 use App\Http\Controllers\Api\CacheControllers\VaccineTypeController;
 // No cache Controller
-use App\Http\Controllers\Api\NoCacheControllers\UserRoomController;
 use App\Http\Controllers\Api\NoCacheControllers\DebateController;
-use App\Http\Controllers\Api\NoCacheControllers\DebateEkipUserController;
-use App\Http\Controllers\Api\NoCacheControllers\DebateUserController;
+use App\Http\Controllers\Api\NoCacheControllers\DebateVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\ServiceReqLViewController;
 // Base Api
 use App\Http\Controllers\BaseControllers\CacheController;
@@ -162,24 +160,6 @@ use App\Http\Controllers\BaseControllers\ElasticSearchController;
 use App\Http\Controllers\BaseControllers\LogController;
 use App\Http\Controllers\BaseControllers\TelegramController;
 use App\Http\Controllers\BaseControllers\BaseApiRequestController;
-// Data Controllers
-// use App\Http\Controllers\Api\DataControllers\DebateController;
-// use App\Http\Controllers\Api\DataControllers\DebateUserController;
-// use App\Http\Controllers\Api\DataControllers\DebateEkipUserController;
-// use App\Http\Controllers\Api\DataControllers\DhstController;
-// use App\Http\Controllers\Api\DataControllers\PatientTypeAlterController;
-// use App\Http\Controllers\Api\DataControllers\SereServController;
-// use App\Http\Controllers\Api\DataControllers\ServiceReqController;
-// use App\Http\Controllers\Api\DataControllers\SereServExtController;
-// use App\Http\Controllers\Api\DataControllers\SereServTeinController;
-// use App\Http\Controllers\Api\DataControllers\TrackingController;
-// use App\Http\Controllers\Api\DataControllers\TreatmentController;
-// use App\Http\Controllers\Api\DataControllers\TreatmentBedRoomController;
-// use App\Http\Controllers\Api\DataControllers\UserRoomController;
-// use App\Http\Controllers\Api\DataControllers\SereServBillController;
-// use App\Http\Controllers\Api\DataControllers\SereServDepositController;
-// use App\Http\Controllers\Api\DataControllers\SeseDepoRepayController;
-// use App\Http\Controllers\Api\DataControllers\AccountBookController;
 
 // Validate Controllers
 use App\Http\Controllers\Api\ValidateControllers\CheckBedRoomController;
@@ -811,18 +791,11 @@ Route::group([
 
 /// No cache
 
-    /// Nhân viên - Phòng
-    Route::apiResource('v1/user-room', UserRoomController::class)->only(['index', 'show']);
     /// Biên bản hội chẩn
     Route::group(['as' => 'HIS.Desktop.Plugins.Debate'], function () {
         Route::apiResource('v1/debate', DebateController::class)->only(['index', 'show']);
-        Route::get("v1/debate-view", [DebateController::class, "indexView"])->name('.index_view');
-        Route::get("v1/debate-view/{id}", [DebateController::class, "showView"])->name('.show_view');
+        Route::apiResource('v1/debate-v-view', DebateVViewController::class)->only(['index', 'show']);
     });
-    /// Debate User
-    Route::apiResource('v1/debate-user', DebateUserController::class)->only(['index', 'show']);
-    /// Debate Ekip User
-    Route::apiResource('v1/debate-ekip-user', DebateEkipUserController::class)->only(['index', 'show']);
     /// Y lệnh
     Route::group(['as' => 'HIS.Desktop.Plugins.ServiceReqList'], function () {
         Route::apiResource('v1/service-req-l-view', ServiceReqLViewController::class)->only(['index', 'show']);

@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Events\Elastic\Debate;
+namespace App\Events\Elastic\DebateVView;
 
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class CreateDebateIndex
+class CreateDebateVViewIndex
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -79,8 +79,8 @@ class CreateDebateIndex
                         ],
                         'treatment_id'  => [
                             'type' => 'long'  // Số nguyên 64-bit, phù hợp với ID số
-                        ],
-                        'icd_id_delete'  => [
+                        ],     
+                        'icd_id_delete' => [
                             'type' => 'long'  // Số nguyên 64-bit, phù hợp với ID số
                         ],
                         'icd_code'  => [
@@ -91,7 +91,7 @@ class CreateDebateIndex
                                     'type' => 'keyword'
                                 ]
                             ]
-                        ],       
+                        ],  
                         'icd_name'  => [
                             'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
                             'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
@@ -100,7 +100,7 @@ class CreateDebateIndex
                                     'type' => 'keyword'
                                 ]
                             ]
-                        ],   
+                        ],
                         'icd_sub_code'  => [
                             'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
                             'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
@@ -110,7 +110,7 @@ class CreateDebateIndex
                                 ]
                             ]
                         ],
-                        'icd_text' => [
+                        'icd_text'  => [
                             'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
                             'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
                             'fields' => [
@@ -121,8 +121,8 @@ class CreateDebateIndex
                         ],  
                         'department_id'  => [
                             'type' => 'long'  // Số nguyên 64-bit, phù hợp với ID số
-                        ],
-                        'debate_time'  => [
+                        ],  
+                        'debate_time' => [
                             'type' => 'date',  // Lưu trữ ngày giờ
                             'format' => 'yyyyMMddHHmmss'
                         ],
@@ -143,7 +143,7 @@ class CreateDebateIndex
                                     'type' => 'keyword'
                                 ]
                             ]
-                        ],
+                        ],      
                         'treatment_tracking' => [
                             'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
                             'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
@@ -152,15 +152,15 @@ class CreateDebateIndex
                                     'type' => 'keyword'
                                 ]
                             ]
-                        ],
-                        'treatment_from_time'  => [
+                        ],  
+                        'treatment_from_time' => [
                             'type' => 'date',  // Lưu trữ ngày giờ
                             'format' => 'yyyyMMddHHmmss'
-                        ],
+                        ],   
                         'treatment_to_time' => [
                             'type' => 'date',  // Lưu trữ ngày giờ
                             'format' => 'yyyyMMddHHmmss'
-                        ],
+                        ], 
                         'treatment_method'  => [
                             'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
                             'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
@@ -169,7 +169,7 @@ class CreateDebateIndex
                                     'type' => 'keyword'
                                 ]
                             ]
-                        ],
+                        ],   
                         'location'  => [
                             'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
                             'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
@@ -178,7 +178,7 @@ class CreateDebateIndex
                                     'type' => 'keyword'
                                 ]
                             ]
-                        ],
+                        ],      
                         'request_content'  => [
                             'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
                             'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
@@ -187,7 +187,7 @@ class CreateDebateIndex
                                     'type' => 'keyword'
                                 ]
                             ]
-                        ],
+                        ],    
                         'pathological_history'  => [
                             'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
                             'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
@@ -196,7 +196,7 @@ class CreateDebateIndex
                                     'type' => 'keyword'
                                 ]
                             ]
-                        ],
+                        ],      
                         'hospitalization_state'  => [
                             'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
                             'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
@@ -205,7 +205,7 @@ class CreateDebateIndex
                                     'type' => 'keyword'
                                 ]
                             ]
-                        ],
+                        ],    
                         'before_diagnostic'  => [
                             'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
                             'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
@@ -214,7 +214,7 @@ class CreateDebateIndex
                                     'type' => 'keyword'
                                 ]
                             ]
-                        ],
+                        ], 
                         'diagnostic'  => [
                             'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
                             'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
@@ -223,7 +223,7 @@ class CreateDebateIndex
                                     'type' => 'keyword'
                                 ]
                             ]
-                        ], 
+                        ],
                         'care_method'  => [
                             'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
                             'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
@@ -232,8 +232,8 @@ class CreateDebateIndex
                                     'type' => 'keyword'
                                 ]
                             ]
-                        ],
-                        'conclusion' => [
+                        ],      
+                        'conclusion'  => [
                             'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
                             'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
                             'fields' => [
@@ -286,17 +286,17 @@ class CreateDebateIndex
                                     'type' => 'keyword'
                                 ]
                             ]
-                        ],
+                        ],   
                         'medicine_use_time' => [
                             'type' => 'date',  // Lưu trữ ngày giờ
                             'format' => 'yyyyMMddHHmmss'
                         ],
-                        'debate_type_id'  => [
+                        'debate_type_id' => [
                             'type' => 'long'  // Số nguyên 64-bit, phù hợp với ID số
                         ],
                         'content_type'  => [
                             'type' => 'long'  // Số nguyên 64-bit, phù hợp với ID số
-                        ], 
+                        ],  
                         'subclinical_processes'  => [
                             'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
                             'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
@@ -305,8 +305,8 @@ class CreateDebateIndex
                                     'type' => 'keyword'
                                 ]
                             ]
-                        ],
-                        'internal_medicine_state' => [
+                        ],   
+                        'internal_medicine_state'  => [
                             'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
                             'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
                             'fields' => [
@@ -314,17 +314,17 @@ class CreateDebateIndex
                                     'type' => 'keyword'
                                 ]
                             ]
-                        ],
+                        ],   
                         'surgery_service_id'  => [
                             'type' => 'long'  // Số nguyên 64-bit, phù hợp với ID số
-                        ],
-                        'emotionless_method_id'  => [
+                        ],  
+                        'emotionless_method_id' => [
                             'type' => 'long'  // Số nguyên 64-bit, phù hợp với ID số
                         ],
                         'surgery_time'  => [
                             'type' => 'date',  // Lưu trữ ngày giờ
                             'format' => 'yyyyMMddHHmmss'
-                        ],
+                        ],  
                         'prognosis'  => [
                             'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
                             'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
@@ -334,7 +334,7 @@ class CreateDebateIndex
                                 ]
                             ]
                         ],
-                        'pttt_method_id'  => [
+                        'pttt_method_id' => [
                             'type' => 'long'  // Số nguyên 64-bit, phù hợp với ID số
                         ],
                         'pttt_method_name'  => [
@@ -345,7 +345,7 @@ class CreateDebateIndex
                                     'type' => 'keyword'
                                 ]
                             ]
-                        ],
+                        ],  
                         'medicine_type_ids'  => [
                             'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
                             'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
@@ -354,8 +354,8 @@ class CreateDebateIndex
                                     'type' => 'keyword'
                                 ]
                             ]
-                        ],
-                        'active_ingredient_ids' => [
+                        ],   
+                        'active_ingredient_ids'  => [
                             'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
                             'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
                             'fields' => [
@@ -363,14 +363,23 @@ class CreateDebateIndex
                                     'type' => 'keyword'
                                 ]
                             ]
-                        ],
+                        ],     
                         'tracking_id'  => [
                             'type' => 'long'  // Số nguyên 64-bit, phù hợp với ID số
-                        ],     
-                        'service_id'  => [
+                        ],  
+                        'service_id' => [
                             'type' => 'long'  // Số nguyên 64-bit, phù hợp với ID số
-                        ],
-                        'tmp_id' => [
+                        ],      
+                        'tmp_id'  => [
+                            'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
+                            'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
+                            'fields' => [
+                                'keyword' => [  // Phân tích không để sắp xếp và tìm kiếm chính xác
+                                    'type' => 'keyword'
+                                ]
+                            ]
+                        ], 
+                        'treatment_code'  => [
                             'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
                             'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
                             'fields' => [
@@ -379,104 +388,192 @@ class CreateDebateIndex
                                 ]
                             ]
                         ],
-                        'debate_reason_id' => [
+                        'patient_id'  => [
                             'type' => 'long'  // Số nguyên 64-bit, phù hợp với ID số
+                        ],     
+                        'tdl_patient_code'  => [
+                            'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
+                            'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
+                            'fields' => [
+                                'keyword' => [  // Phân tích không để sắp xếp và tìm kiếm chính xác
+                                    'type' => 'keyword'
+                                ]
+                            ]
+                        ],  
+                        'tdl_patient_first_name'  => [
+                            'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
+                            'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
+                            'fields' => [
+                                'keyword' => [  // Phân tích không để sắp xếp và tìm kiếm chính xác
+                                    'type' => 'keyword'
+                                ]
+                            ]
+                        ],     
+                        'tdl_patient_last_name'  => [
+                            'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
+                            'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
+                            'fields' => [
+                                'keyword' => [  // Phân tích không để sắp xếp và tìm kiếm chính xác
+                                    'type' => 'keyword'
+                                ]
+                            ]
+                        ],   
+                        'tdl_patient_name'  => [
+                            'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
+                            'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
+                            'fields' => [
+                                'keyword' => [  // Phân tích không để sắp xếp và tìm kiếm chính xác
+                                    'type' => 'keyword'
+                                ]
+                            ]
                         ],
-                        'debate_ekip_users' => [
-                            'properties' => [
-                                'id'  => [
-                                    'type' => 'long'  // Số nguyên 64-bit, phù hợp với ID số
-                                ], 
-                                'debate_id'  => [
-                                    'type' => 'long'  // Số nguyên 64-bit, phù hợp với ID số
-                                ], 
-                                'loginname' => [
-                                    'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
-                                    'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
-                                    'fields' => [
-                                        'keyword' => [  // Phân tích không để sắp xếp và tìm kiếm chính xác
-                                            'type' => 'keyword'
-                                        ]
-                                    ]
-                                ],
-                                'username' => [
-                                    'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
-                                    'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
-                                    'fields' => [
-                                        'keyword' => [  // Phân tích không để sắp xếp và tìm kiếm chính xác
-                                            'type' => 'keyword'
-                                        ]
-                                    ]
-                                ],
-                                'execute_role_id'  => [
-                                    'type' => 'long'  // Số nguyên 64-bit, phù hợp với ID số
-                                ], 
-                                'department_id'  => [
-                                    'type' => 'long'  // Số nguyên 64-bit, phù hợp với ID số
-                                ], 
-                            ],
+                        'tdl_patient_dob' => [
+                            'type' => 'date',  // Lưu trữ ngày giờ
+                            'format' => 'yyyyMMddHHmmss'
+                        ],    
+                        'tdl_patient_address'  => [
+                            'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
+                            'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
+                            'fields' => [
+                                'keyword' => [  // Phân tích không để sắp xếp và tìm kiếm chính xác
+                                    'type' => 'keyword'
+                                ]
+                            ]
+                        ],    
+                        'tdl_patient_gender_name'  => [
+                            'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
+                            'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
+                            'fields' => [
+                                'keyword' => [  // Phân tích không để sắp xếp và tìm kiếm chính xác
+                                    'type' => 'keyword'
+                                ]
+                            ]
+                        ],   
+                        'department_code'  => [
+                            'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
+                            'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
+                            'fields' => [
+                                'keyword' => [  // Phân tích không để sắp xếp và tìm kiếm chính xác
+                                    'type' => 'keyword'
+                                ]
+                            ]
+                        ],    
+                        'department_name'  => [
+                            'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
+                            'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
+                            'fields' => [
+                                'keyword' => [  // Phân tích không để sắp xếp và tìm kiếm chính xác
+                                    'type' => 'keyword'
+                                ]
+                            ]
                         ],
-                        'debate_users' => [
-                            'properties' => [
-                                'id'  => [
-                                    'type' => 'long'  // Số nguyên 64-bit, phù hợp với ID số
-                                ], 
-                                'debate_id'  => [
-                                    'type' => 'long'  // Số nguyên 64-bit, phù hợp với ID số
-                                ], 
-                                'loginname' => [
-                                    'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
-                                    'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
-                                    'fields' => [
-                                        'keyword' => [  // Phân tích không để sắp xếp và tìm kiếm chính xác
-                                            'type' => 'keyword'
-                                        ]
-                                    ]
-                                ],
-                                'username' => [
-                                    'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
-                                    'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
-                                    'fields' => [
-                                        'keyword' => [  // Phân tích không để sắp xếp và tìm kiếm chính xác
-                                            'type' => 'keyword'
-                                        ]
-                                    ]
-                                ],
-                                'execute_role_id'  => [
-                                    'type' => 'long'  // Số nguyên 64-bit, phù hợp với ID số
-                                ], 
-                            ],
+                        'debate_type_code'  => [
+                            'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
+                            'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
+                            'fields' => [
+                                'keyword' => [  // Phân tích không để sắp xếp và tìm kiếm chính xác
+                                    'type' => 'keyword'
+                                ]
+                            ]
+                        ],    
+                        'debate_type_name'  => [
+                            'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
+                            'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
+                            'fields' => [
+                                'keyword' => [  // Phân tích không để sắp xếp và tìm kiếm chính xác
+                                    'type' => 'keyword'
+                                ]
+                            ]
+                        ],   
+                        'surgery_service_name'  => [
+                            'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
+                            'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
+                            'fields' => [
+                                'keyword' => [  // Phân tích không để sắp xếp và tìm kiếm chính xác
+                                    'type' => 'keyword'
+                                ]
+                            ]
+                        ],      
+                        'surgery_service_code'  => [
+                            'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
+                            'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
+                            'fields' => [
+                                'keyword' => [  // Phân tích không để sắp xếp và tìm kiếm chính xác
+                                    'type' => 'keyword'
+                                ]
+                            ]
+                        ],     
+                        'emotionless_method_name'  => [
+                            'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
+                            'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
+                            'fields' => [
+                                'keyword' => [  // Phân tích không để sắp xếp và tìm kiếm chính xác
+                                    'type' => 'keyword'
+                                ]
+                            ]
+                        ],     
+                        'emotionless_method_code'  => [
+                            'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
+                            'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
+                            'fields' => [
+                                'keyword' => [  // Phân tích không để sắp xếp và tìm kiếm chính xác
+                                    'type' => 'keyword'
+                                ]
+                            ]
+                        ],    
+                        'pttt_method_code'  => [
+                            'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
+                            'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
+                            'fields' => [
+                                'keyword' => [  // Phân tích không để sắp xếp và tìm kiếm chính xác
+                                    'type' => 'keyword'
+                                ]
+                            ]
                         ],
-                        'debate_invite_users' => [
-                            'properties' => [
-                                'id'  => [
-                                    'type' => 'long'  // Số nguyên 64-bit, phù hợp với ID số
-                                ], 
-                                'debate_id'  => [
-                                    'type' => 'long'  // Số nguyên 64-bit, phù hợp với ID số
-                                ], 
-                                'loginname' => [
-                                    'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
-                                    'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
-                                    'fields' => [
-                                        'keyword' => [  // Phân tích không để sắp xếp và tìm kiếm chính xác
-                                            'type' => 'keyword'
-                                        ]
-                                    ]
-                                ],
-                                'username' => [
-                                    'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
-                                    'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
-                                    'fields' => [
-                                        'keyword' => [  // Phân tích không để sắp xếp và tìm kiếm chính xác
-                                            'type' => 'keyword'
-                                        ]
-                                    ]
-                                ],
-                                'execute_role_id'  => [
-                                    'type' => 'long'  // Số nguyên 64-bit, phù hợp với ID số
-                                ], 
-                            ],
+                        'debate_reason_code'  => [
+                            'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
+                            'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
+                            'fields' => [
+                                'keyword' => [  // Phân tích không để sắp xếp và tìm kiếm chính xác
+                                    'type' => 'keyword'
+                                ]
+                            ]
+                        ],       
+                        'debate_reason_name'  => [
+                            'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
+                            'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
+                            'fields' => [
+                                'keyword' => [  // Phân tích không để sắp xếp và tìm kiếm chính xác
+                                    'type' => 'keyword'
+                                ]
+                            ]
+                        ],    
+                        'invite_user_loginname'  => [
+                            'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
+                            'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
+                            'fields' => [
+                                'keyword' => [  // Phân tích không để sắp xếp và tìm kiếm chính xác
+                                    'type' => 'keyword'
+                                ]
+                            ]
+                        ],    
+                        'service_code'  => [
+                            'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
+                            'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
+                            'fields' => [
+                                'keyword' => [  // Phân tích không để sắp xếp và tìm kiếm chính xác
+                                    'type' => 'keyword'
+                                ]
+                            ]
+                        ],
+                        'service_name'  => [
+                            'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
+                            'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
+                            'fields' => [
+                                'keyword' => [  // Phân tích không để sắp xếp và tìm kiếm chính xác
+                                    'type' => 'keyword'
+                                ]
+                            ]
                         ],
                     ]
                 ]
@@ -492,7 +589,7 @@ class CreateDebateIndex
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('elastic-debate-create-index'),
+            new PrivateChannel('elastic-debate-v-view-create-index'),
         ];
     }
 }

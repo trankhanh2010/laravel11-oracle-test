@@ -35,8 +35,10 @@ use App\Events\Elastic\Commune\CreateCommuneIndex;
 use App\Events\Elastic\Contraindication\CreateContraindicationIndex;
 use App\Events\Elastic\DataStore\CreateDataStoreIndex;
 use App\Events\Elastic\DeathWithin\CreateDeathWithinIndex;
+use App\Events\Elastic\Debate\CreateDebateIndex;
 use App\Events\Elastic\DebateReason\CreateDebateReasonIndex;
 use App\Events\Elastic\DebateType\CreateDebateTypeIndex;
+use App\Events\Elastic\DebateVView\CreateDebateVViewIndex;
 use App\Events\Elastic\Department\CreateDepartmentIndex;
 use App\Events\Elastic\DiimType\CreateDiimTypeIndex;
 use App\Events\Elastic\District\CreateDistrictIndex;
@@ -180,7 +182,9 @@ use App\Repositories\ContraindicationRepository;
 use App\Repositories\DataStoreRepository;
 use App\Repositories\DeathWithinRepository;
 use App\Repositories\DebateReasonRepository;
+use App\Repositories\DebateRepository;
 use App\Repositories\DebateTypeRepository;
+use App\Repositories\DebateVViewRepository;
 use App\Repositories\DepartmentRepository;
 use App\Repositories\DiimTypeRepository;
 use App\Repositories\DistrictRepository;
@@ -929,6 +933,18 @@ class IndexRecordsToElasticsearch extends Command
                 app(ServiceReqLViewRepository::class)->getDataFromDbToElastic($callback, $batchSize, null);
                 $results = null;
                 break;
+            case 'debate':
+                $batchSize = 25000;
+                event(new CreateDebateIndex($name_table));
+                app(DebateRepository::class)->getDataFromDbToElastic($callback, $batchSize, null);
+                $results = null;
+                break;
+            case 'debate_v_view':
+                $batchSize = 25000;
+                event(new CreateDebateVViewIndex($name_table));
+                app(DebateVViewRepository::class)->getDataFromDbToElastic($callback, $batchSize, null);
+                $results = null;
+                break;
             default:
                 // Xử lý mặc định hoặc xử lý khi không có bảng khớp
                 $this->error('Không có dữ liệu của bảng ' . $name_table . '.');
@@ -947,6 +963,7 @@ class IndexRecordsToElasticsearch extends Command
             'reception_room',
             'role',
             'service',
+            'debate',
         ];
         return  $arr_json_decode;
     }

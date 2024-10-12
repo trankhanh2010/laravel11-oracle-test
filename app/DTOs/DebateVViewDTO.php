@@ -2,9 +2,9 @@
 
 namespace App\DTOs;
 
-class DebateDTO
+class DebateVViewDTO
 {
-    public $debateName;
+    public $debateVViewName;
     public $keyword;
     public $isActive;
     public $isDelete;
@@ -19,7 +19,7 @@ class DebateDTO
     public $appModifier;
     public $time;
     public function __construct(
-        $debateName,
+        $debateVViewName,
         $keyword, 
         $isActive, 
         $isDelete,
@@ -35,7 +35,7 @@ class DebateDTO
         $time,
         )
     {
-        $this->debateName = $debateName;
+        $this->debateVViewName = $debateVViewName;
         $this->keyword = $keyword;
         $this->isActive = $isActive;
         $this->isDelete = $isDelete;

@@ -148,9 +148,13 @@ return [
             'work_place',
 
             'service_req_l_view',
+            'debate',
+            'debate_v_view',
         ],
         'no_cache' => [
             'service_req_l_view',
+            'debate',
+            'debate_v_view',
         ],
         'error' => [
             'elasticsearch_service' => 'Có lỗi khi thực hiện thao tác với Elastic Search!',
@@ -324,6 +328,8 @@ return [
             'test_index_group' => 'Có lỗi khi thực hiện thao tác với bảng Nhóm chỉ số xét nghiệm!',
 
             'service_req_l_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm Y lệnh!',
+            'debate' => 'Có lỗi khi thực hiện thao tác với bảng Biên bản hội chẩn!',
+            'debate_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm Biên bản hội chẩn!',
         ]
     ]
 

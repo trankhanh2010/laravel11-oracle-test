@@ -75,6 +75,8 @@ use App\Events\Elastic\DebateType\CreateDebateTypeIndex;
 use App\Events\Elastic\DebateType\InsertDebateTypeIndex;
 use App\Events\Elastic\DebateUser\CreateDebateUserIndex;
 use App\Events\Elastic\DebateUser\InsertDebateUserIndex;
+use App\Events\Elastic\DebateVView\CreateDebateVViewIndex;
+use App\Events\Elastic\DebateVView\InsertDebateVViewIndex;
 use App\Events\Elastic\DeleteIndex;
 use App\Events\Elastic\Department\CreateDepartmentIndex;
 use App\Events\Elastic\Department\InsertDepartmentIndex;
@@ -378,6 +380,8 @@ use App\Listeners\Elastic\DebateType\ElasticCreateDebateTypeIndex;
 use App\Listeners\Elastic\DebateType\ElasticInsertDebateTypeIndex;
 use App\Listeners\Elastic\DebateUser\ElasticCreateDebateUserIndex;
 use App\Listeners\Elastic\DebateUser\ElasticInsertDebateUserIndex;
+use App\Listeners\Elastic\DebateVView\ElasticCreateDebateVViewIndex;
+use App\Listeners\Elastic\DebateVView\ElasticInsertDebateVViewIndex;
 use App\Listeners\Elastic\Department\ElasticCreateDepartmentIndex;
 use App\Listeners\Elastic\Department\ElasticInsertDepartmentIndex;
 use App\Listeners\Elastic\DiimType\ElasticCreateDiimTypeIndex;
@@ -1641,11 +1645,11 @@ class EventServiceProvider extends ServiceProvider
             ElasticInsertTestIndexGroupIndex::class,
         ],
 
-        CreateUserRoomIndex::class => [
-            ElasticCreateUserRoomIndex::class,
+        CreateServiceReqLViewIndex::class => [
+            ElasticCreateServiceReqLViewIndex::class,
         ],
-        InsertUserRoomIndex::class => [
-            ElasticInsertUserRoomIndex::class,
+        InsertServiceReqLViewIndex::class => [
+            ElasticInsertServiceReqLViewIndex::class,
         ],
 
         CreateDebateIndex::class => [
@@ -1655,25 +1659,11 @@ class EventServiceProvider extends ServiceProvider
             ElasticInsertDebateIndex::class,
         ],
 
-        CreateDebateUserIndex::class => [
-            ElasticCreateDebateUserIndex::class,
+        CreateDebateVViewIndex::class => [
+            ElasticCreateDebateVViewIndex::class,
         ],
-        InsertDebateUserIndex::class => [
-            ElasticInsertDebateUserIndex::class,
-        ],
-
-        CreateDebateEkipUserIndex::class => [
-            ElasticCreateDebateEkipUserIndex::class,
-        ],
-        InsertDebateEkipUserIndex::class => [
-            ElasticInsertDebateEkipUserIndex::class,
-        ],
-
-        CreateServiceReqLViewIndex::class => [
-            ElasticCreateServiceReqLViewIndex::class,
-        ],
-        InsertServiceReqLViewIndex::class => [
-            ElasticInsertServiceReqLViewIndex::class,
+        InsertDebateVViewIndex::class => [
+            ElasticInsertDebateVViewIndex::class,
         ],
     ];
 

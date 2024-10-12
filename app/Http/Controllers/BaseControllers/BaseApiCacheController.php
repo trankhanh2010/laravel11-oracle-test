@@ -190,6 +190,8 @@ class BaseApiCacheController extends Controller
     protected $suimIndexUnitName = "suim_index_unit";
     protected $area;
     protected $areaName = "area";
+    protected $debateVView;
+    protected $debateVViewName = 'debate_v_view';
     protected $materialTypeMap;
     protected $materialTypeMapName = 'material_type_map';
     protected $refectory;
