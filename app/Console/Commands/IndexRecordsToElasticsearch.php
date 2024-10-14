@@ -938,7 +938,7 @@ class IndexRecordsToElasticsearch extends Command
             case 'service_req_l_view':
                 $batchSize = 25000;
                 event(new CreateServiceReqLViewIndex($name_table));
-                app(ServiceReqLViewRepository::class)->getDataFromDbToElastic($callback, $batchSize, null);
+                app(ServiceReqLViewRepository::class)->getDataFromDbToElastic($batchSize, null);
                 $results = null;
                 break;
             case 'debate':

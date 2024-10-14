@@ -1,6 +1,7 @@
 <?php 
 namespace App\Repositories;
 
+use App\Jobs\ElasticSearch\Index\ProcessElasticIndexingJob;
 use App\Models\View\ServiceReqLView;
 use Illuminate\Support\Facades\DB;
 
@@ -156,30 +157,30 @@ class ServiceReqLViewRepository
         $data->delete();
         return $data;
     }
-    public function getDataFromDbToElastic($callback, $batchSize = 5000, $id = null)
+    public function getDataFromDbToElastic($batchSize = 5000, $id = null)
     {
-        $query = $this->applyJoins();
+        $numJobs = config('queue')['num_queue_worker']; // Số lượng job song song
         if ($id != null) {
-            $data = $query ->where('l_his_service_req.id', '=', $id)->first();
+            $data = $this->applyJoins()->where('l_his_service_req.id', '=', $id)->first();
             if ($data) {
                 $data = $data->getAttributes();
-                return $data ;
+                return $data;
             }
         } else {
-            $batchData = [];
-            $count = 0;
-            foreach ($query->cursor() as $item) {
-                $attributes = $item->getAttributes();
-                $batchData[] = $attributes;
-                $count++;
-                
-                if ($count % $batchSize == 0) {
-                    $callback($batchData);
-                    $batchData = [];
+            // Xác định min và max id
+            $minId = $this->applyJoins()->min('l_his_service_req.id');
+            $maxId = $this->applyJoins()->max('l_his_service_req.id');
+            $chunkSize = ceil(($maxId - $minId + 1) / $numJobs);
+    
+            for ($i = 0; $i < $numJobs; $i++) {
+                $startId = $minId + ($i * $chunkSize);
+                $endId = $startId + $chunkSize - 1;
+                // Đảm bảo chunk cuối cùng bao phủ đến maxId
+                if ($i == $numJobs - 1) {
+                    $endId = $maxId;
                 }
-            }
-            if (!empty($batchData)) {
-                $callback($batchData);
+                // Dispatch job cho mỗi phạm vi id
+                ProcessElasticIndexingJob::dispatch('service_req_l_view', 'l_his_service_req', $startId, $endId, $batchSize);
             }
         }
     }

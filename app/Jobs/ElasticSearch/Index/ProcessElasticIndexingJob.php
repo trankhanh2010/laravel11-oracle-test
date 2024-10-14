@@ -2,6 +2,8 @@
 
 namespace App\Jobs\ElasticSearch\Index;
 
+use App\Repositories\DebateRepository;
+use App\Repositories\ServiceReqLViewRepository;
 use App\Repositories\TrackingRepository;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -21,7 +23,6 @@ class ProcessElasticIndexingJob implements ShouldQueue
     protected $batchSize;
     protected $name;
     protected $nameTable;
-    protected $trackingRepository;
 
     /**
      * Create a new job instance.
@@ -35,8 +36,6 @@ class ProcessElasticIndexingJob implements ShouldQueue
         $this->startId = $startId;
         $this->endId = $endId;
         $this->batchSize = $batchSize;
-
-        $this->trackingRepository = app(TrackingRepository::class);
     }
 
     /**
@@ -71,7 +70,10 @@ class ProcessElasticIndexingJob implements ShouldQueue
         $repository = null;
         switch ($name) {
             case 'tracking':
-                $repository = $this->trackingRepository;
+                $repository = app(TrackingRepository::class);;
+                break;
+            case 'service_req_l_view':
+                $repository = app(ServiceReqLViewRepository::class);;
                 break;
             default:
                 break;
