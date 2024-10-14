@@ -153,6 +153,7 @@ return [
             'user_room_v_view',
             'debate_user',
             'debate_ekip_user',
+            'tracking',
         ],
         'no_cache' => [
             'service_req_l_view',
@@ -161,6 +162,16 @@ return [
             'user_room_v_view',
             'debate_user',
             'debate_ekip_user',
+            'tracking',
+        ],
+        'json_decode' => [
+            'medi_stock',
+            'patient_type',
+            'pttt_group',
+            'reception_room',
+            'role',
+            'service',
+            'debate',
         ],
         'error' => [
             'elasticsearch_service' => 'Có lỗi khi thực hiện thao tác với Elastic Search!',

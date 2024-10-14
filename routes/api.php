@@ -156,6 +156,7 @@ use App\Http\Controllers\Api\NoCacheControllers\DebateEkipUserController;
 use App\Http\Controllers\Api\NoCacheControllers\DebateUserController;
 use App\Http\Controllers\Api\NoCacheControllers\DebateVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\ServiceReqLViewController;
+use App\Http\Controllers\Api\NoCacheControllers\TrackingController;
 use App\Http\Controllers\Api\NoCacheControllers\UserRoomVViewController;
 // Base Api
 use App\Http\Controllers\BaseControllers\CacheController;
@@ -809,17 +810,11 @@ Route::group([
     Route::apiResource('v1/debate-user', DebateUserController::class)->only(['index', 'show']);
     /// Debate Ekip User
     Route::apiResource('v1/debate-ekip-user', DebateEkipUserController::class)->only(['index', 'show']);
-
-
-
-    // // Tracking
-    // Route::group(['as' => 'HIS.Desktop.Plugins.HisTrackingList'], function () {
-    //     Route::get("v1/tracking/get", [TrackingController::class, "tracking_get"])->name('.get');
-    //     Route::get("v1/tracking/get-data", [TrackingController::class, "tracking_get_data"])->name('.get_data');
-
-    //     Route::get("v2/tracking/get", [TrackingController::class, "tracking_get_v2"])->name('.get_v2');
-    //     Route::get("v2/tracking/get-data", [TrackingController::class, "tracking_get_data_v2"])->name('.get_data_v2');
-    // });
+    /// Tờ điều trị
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisTrackingList'], function () {
+        Route::apiResource('v1/tracking', TrackingController::class)->only(['index', 'show']);
+        // Route::apiResource('v1/tracking-data', TrackingDataController::class)->only(['index', 'show']);
+    });
 
     // // Sere Serv
     // Route::get("v1/sere-serv/get", [SereServController::class, "sere_serv_get"])->name('.get_sere_serv');

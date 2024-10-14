@@ -146,6 +146,7 @@ use App\Events\Elastic\TestIndexGroup\CreateTestIndexGroupIndex;
 use App\Events\Elastic\TestIndexUnit\CreateTestIndexUnitIndex;
 use App\Events\Elastic\TestSampleType\CreateTestSampleTypeIndex;
 use App\Events\Elastic\TestType\CreateTestTypeIndex;
+use App\Events\Elastic\Tracking\CreateTrackingIndex;
 use App\Events\Elastic\TranPatiTech\CreateTranPatiTechIndex;
 use App\Events\Elastic\TreatmentEndType\CreateTreatmentEndTypeIndex;
 use App\Events\Elastic\TreatmentType\CreateTreatmentTypeIndex;
@@ -295,6 +296,7 @@ use App\Repositories\TestIndexRepository;
 use App\Repositories\TestIndexUnitRepository;
 use App\Repositories\TestSampleTypeRepository;
 use App\Repositories\TestTypeRepository;
+use App\Repositories\TrackingRepository;
 use App\Repositories\TranPatiTechRepository;
 use App\Repositories\TreatmentEndTypeRepository;
 use App\Repositories\TreatmentTypeRepository;
@@ -969,6 +971,12 @@ class IndexRecordsToElasticsearch extends Command
                 app(DebateEkipUserRepository::class)->getDataFromDbToElastic($callback, $batchSize, null);
                 $results = null;
                 break;
+            case 'tracking':
+                $batchSize = 25000;
+                event(new CreateTrackingIndex($name_table));
+                app(TrackingRepository::class)->getDataFromDbToElastic($batchSize, null);
+                $results = null;
+                break;
             default:
                 // Xử lý mặc định hoặc xử lý khi không có bảng khớp
                 $this->error('Không có dữ liệu của bảng ' . $name_table . '.');
@@ -980,15 +988,7 @@ class IndexRecordsToElasticsearch extends Command
     }
     public function arrJsonDecode(){
         // Danh sách các bảng dùng with cần phải decode trước khi thêm vào elastic
-        $arr_json_decode = [
-            'medi_stock',
-            'patient_type',
-            'pttt_group',
-            'reception_room',
-            'role',
-            'service',
-            'debate',
-        ];
+        $arr_json_decode = config('params')['elastic']['json_decode'];
         return  $arr_json_decode;
     }
     public function indexing($name_table, $arr_json_decode, $client, $results){

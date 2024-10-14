@@ -315,7 +315,7 @@ class BaseApiCacheController extends Controller
     protected $serviceReqLView;
     protected $serviceReqLViewName = 'service_req_l_view';
     protected $groupType;
-    protected $groupTypeName = 'group_type_name';
+    protected $groupTypeName = 'group_type';
     protected $bhytBlacklist;
     protected $bhytBlacklistName = 'bhyt_blacklist';
     protected $medicinePaty;

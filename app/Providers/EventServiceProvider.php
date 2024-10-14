@@ -1690,6 +1690,13 @@ class EventServiceProvider extends ServiceProvider
         InsertDebateEkipUserIndex::class => [
             ElasticInsertDebateEkipUserIndex::class,
         ],
+
+        CreateTrackingIndex::class => [
+            ElasticCreateTrackingIndex::class,
+        ],
+        InsertTrackingIndex::class => [
+            ElasticInsertTrackingIndex::class,
+        ],
     ];
 
     /**

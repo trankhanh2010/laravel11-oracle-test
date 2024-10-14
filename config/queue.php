@@ -14,6 +14,7 @@ return [
     */
 
     'default' => env('QUEUE_CONNECTION', 'sync'),
+    'num_queue_worker' => env('NUM_QUEUE_WORKER', 4),
 
     /*
     |--------------------------------------------------------------------------
