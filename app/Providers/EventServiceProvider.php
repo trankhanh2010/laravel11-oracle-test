@@ -288,6 +288,8 @@ use App\Events\Elastic\TestIndexUnit\CreateTestIndexUnitIndex;
 use App\Events\Elastic\TestIndexUnit\InsertTestIndexUnitIndex;
 use App\Events\Elastic\TestSampleType\CreateTestSampleTypeIndex;
 use App\Events\Elastic\TestSampleType\InsertTestSampleTypeIndex;
+use App\Events\Elastic\TestServiceReqListVView\CreateTestServiceReqListVViewIndex;
+use App\Events\Elastic\TestServiceReqListVView\InsertTestServiceReqListVViewIndex;
 use App\Events\Elastic\TestType\CreateTestTypeIndex;
 use App\Events\Elastic\TestType\InsertTestTypeIndex;
 use App\Events\Elastic\Tracking\CreateTrackingIndex;
@@ -595,6 +597,8 @@ use App\Listeners\Elastic\TestIndexUnit\ElasticCreateTestIndexUnitIndex;
 use App\Listeners\Elastic\TestIndexUnit\ElasticInsertTestIndexUnitIndex;
 use App\Listeners\Elastic\TestSampleType\ElasticCreateTestSampleTypeIndex;
 use App\Listeners\Elastic\TestSampleType\ElasticInsertTestSampleTypeIndex;
+use App\Listeners\Elastic\TestServiceReqListVView\ElasticCreateTestServiceReqListVViewIndex;
+use App\Listeners\Elastic\TestServiceReqListVView\ElasticInsertTestServiceReqListVViewIndex;
 use App\Listeners\Elastic\TestType\ElasticCreateTestTypeIndex;
 use App\Listeners\Elastic\TestType\ElasticInsertTestTypeIndex;
 use App\Listeners\Elastic\Tracking\ElasticCreateTrackingIndex;
@@ -1696,6 +1700,13 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertTrackingIndex::class => [
             ElasticInsertTrackingIndex::class,
+        ],
+
+        CreateTestServiceReqListVViewIndex::class => [
+            ElasticCreateTestServiceReqListVViewIndex::class,
+        ],
+        InsertTestServiceReqListVViewIndex::class => [
+            ElasticInsertTestServiceReqListVViewIndex::class,
         ],
     ];
 

@@ -156,6 +156,7 @@ use App\Http\Controllers\Api\NoCacheControllers\DebateEkipUserController;
 use App\Http\Controllers\Api\NoCacheControllers\DebateUserController;
 use App\Http\Controllers\Api\NoCacheControllers\DebateVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\ServiceReqLViewController;
+use App\Http\Controllers\Api\NoCacheControllers\TestServiceReqListVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TrackingController;
 use App\Http\Controllers\Api\NoCacheControllers\UserRoomVViewController;
 // Base Api
@@ -815,7 +816,8 @@ Route::group([
         Route::apiResource('v1/tracking', TrackingController::class)->only(['index', 'show']);
         // Route::apiResource('v1/tracking-data', TrackingDataController::class)->only(['index', 'show']);
     });
-
+    /// Danh sách y lệnh chỉ định
+    Route::apiResource('v1/test-service-req-list-v-view', TestServiceReqListVViewController::class)->only(['index', 'show']);
     // // Sere Serv
     // Route::get("v1/sere-serv/get", [SereServController::class, "sere_serv_get"])->name('.get_sere_serv');
 

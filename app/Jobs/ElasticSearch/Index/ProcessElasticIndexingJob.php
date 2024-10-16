@@ -2,14 +2,15 @@
 
 namespace App\Jobs\ElasticSearch\Index;
 
-use App\Repositories\DebateRepository;
 use App\Repositories\ServiceReqLViewRepository;
+use App\Repositories\TestServiceReqListVViewRepository;
 use App\Repositories\TrackingRepository;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\DB;
 
 class ProcessElasticIndexingJob implements ShouldQueue
 {
@@ -23,46 +24,87 @@ class ProcessElasticIndexingJob implements ShouldQueue
     protected $batchSize;
     protected $name;
     protected $nameTable;
-
+    protected $paramWith;
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($name, $nameTable, $startId, $endId, $batchSize)
+    public function __construct($name, $nameTable, $startId, $endId, $batchSize, $paramWith = null)
     {
         $this->name = $name;
         $this->nameTable = $nameTable;
         $this->startId = $startId;
         $this->endId = $endId;
         $this->batchSize = $batchSize;
+        $this->paramWith = $paramWith;
     }
 
     /**
      * Execute the job.
      */
+    // public function handle()
+    // {
+    //     $batchData = [];
+    //     $count = 0;
+    //     $repository = $this->repository($this->name);
+    //     $query = $repository->applyJoins()
+    //         ->whereBetween($this->nameTable . '.id', [$this->startId, $this->endId]);
+    //     foreach ($query->cursor() as $item) {
+    //         if ($this->paramWith != null) {
+    //             $item->load($this->paramWith);
+    //             $attributes = $item;
+    //         }else{
+    //             $attributes = $item->getAttributes();
+    //         }
+    //         $batchData[] = $attributes;
+    //         $count++;
+
+    //         if ($count % $this->batchSize == 0) {
+    //             $this->indexing($this->name, $batchData);
+    //             $batchData = [];
+    //         }
+    //     }
+    //     // Gửi các bản ghi còn lại
+    //     if (!empty($batchData)) {
+    //         $this->indexing($this->name, $batchData);
+    //     }
+    // }
+
     public function handle()
     {
-        $batchData = [];
-        $count = 0;
-        $repository = $this->repository($this->name);
-        // Lấy dữ liệu trong phạm vi id đã xác định
-        $query = $repository->applyJoins()
-            ->whereBetween($this->nameTable.'.id', [$this->startId, $this->endId]);
-        foreach ($query->cursor() as $item) {
-            $attributes = $item->getAttributes();
-            $batchData[] = $attributes;
-            $count++;
-
-            if ($count % $this->batchSize == 0) {
-                $this->indexing($this->name,$batchData);
-                $batchData = [];
+        try {
+            $batchData = [];
+            $count = 0;
+            $repository = $this->repository($this->name);
+            $query = $repository->applyJoins()
+                ->whereBetween($this->nameTable . '.id', [$this->startId, $this->endId]);
+                if ($this->paramWith != null) {
+                    $query->with($this->paramWith)->chunkById($this->batchSize, function ($items) use (&$batchData, &$count) {
+                            $this->indexing($this->name, $items);
+                        });
+                } else {
+                    foreach ($query->cursor() as $item) {
+                        $attributes = $item->getAttributes();
+                        $batchData[] = $attributes;
+                        $count++;
+        
+                        if ($count % $this->batchSize == 0) {
+                            $this->indexing($this->name, $batchData);
+                            $batchData = [];
+                        }
+                    }
+                }
+            // Gửi các bản ghi còn lại
+            if (!empty($batchData)) {
+                $this->indexing($this->name, $batchData);
             }
+        } catch (\Exception $e) {
+
+        } finally {
+                DB::disconnect();
         }
-        // Gửi các bản ghi còn lại
-        if (!empty($batchData)) {
-            $this->indexing($this->name,$batchData);
-        }
+        
     }
 
     public function repository($name)
@@ -75,13 +117,17 @@ class ProcessElasticIndexingJob implements ShouldQueue
             case 'service_req_l_view':
                 $repository = app(ServiceReqLViewRepository::class);;
                 break;
+            case 'test_service_req_list_v_view':
+                $repository = app(TestServiceReqListVViewRepository::class);;
+                break;
             default:
                 break;
         }
         return $repository;
     }
 
-    public function indexing($name_table, $results){
+    public function indexing($name_table, $results)
+    {
         // Khởi tạo kết nối đến Elastic
         $client = app('Elasticsearch');
         $maxBatchSizeMB = config('database')['connections']['elasticsearch']['bulk']['max_batch_size_mb'];
@@ -90,11 +136,10 @@ class ProcessElasticIndexingJob implements ShouldQueue
             $bulkData = [];
             $currentBatchSizeBytes = 0;
             $maxBatchSizeBytes = $maxBatchSizeMB * 1024 * 1024; // Chuyển đổi MB sang bytes
-    
+
             foreach ($results as $result) {
                 // Chuẩn bị dữ liệu cho mỗi bản ghi
                 $data = [];
-
                 // Decode và đổi tên trường về mặc định các bảng có dùng with
                 if (in_array($name_table, config('params')['elastic']['json_decode'])) {
                     $result = convertKeysToSnakeCase(json_decode($result, true));

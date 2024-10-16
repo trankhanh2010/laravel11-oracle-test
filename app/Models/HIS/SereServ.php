@@ -14,9 +14,17 @@ class SereServ extends Model
     protected $fillable = [
 
     ];
+    public function getSearchCodeAttribute()
+    {
+        return $this->tdl_treatment_code + $this->tdl_service_red_code + $this->id; 
+    }
     public function sere_serv_bills()
     {
         return $this->hasMany(SereServBill::class);
+    }
+    public function services()
+    {
+        return $this->belongsTo(Service::class, 'service_id');
     }
     public function sere_serv_debts()
     {

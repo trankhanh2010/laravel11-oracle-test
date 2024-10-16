@@ -145,6 +145,8 @@ use App\Events\Elastic\TestIndex\CreateTestIndexIndex;
 use App\Events\Elastic\TestIndexGroup\CreateTestIndexGroupIndex;
 use App\Events\Elastic\TestIndexUnit\CreateTestIndexUnitIndex;
 use App\Events\Elastic\TestSampleType\CreateTestSampleTypeIndex;
+use App\Events\Elastic\TestServiceReq\CreateTestServiceReqIndex;
+use App\Events\Elastic\TestServiceReqListVView\CreateTestServiceReqListVViewIndex;
 use App\Events\Elastic\TestType\CreateTestTypeIndex;
 use App\Events\Elastic\Tracking\CreateTrackingIndex;
 use App\Events\Elastic\TranPatiTech\CreateTranPatiTechIndex;
@@ -295,6 +297,8 @@ use App\Repositories\TestIndexGroupRepository;
 use App\Repositories\TestIndexRepository;
 use App\Repositories\TestIndexUnitRepository;
 use App\Repositories\TestSampleTypeRepository;
+use App\Repositories\TestServiceReqListVViewRepository;
+use App\Repositories\TestServiceReqRepository;
 use App\Repositories\TestTypeRepository;
 use App\Repositories\TrackingRepository;
 use App\Repositories\TranPatiTechRepository;
@@ -975,6 +979,12 @@ class IndexRecordsToElasticsearch extends Command
                 $batchSize = 25000;
                 event(new CreateTrackingIndex($name_table));
                 app(TrackingRepository::class)->getDataFromDbToElastic($batchSize, null);
+                $results = null;
+                break;
+            case 'test_service_req_list_v_view':
+                $batchSize = 10000;
+                event(new CreateTestServiceReqListVViewIndex($name_table));
+                app(TestServiceReqListVViewRepository::class)->getDataFromDbToElastic($batchSize, null);
                 $results = null;
                 break;
             default:

@@ -154,6 +154,7 @@ return [
             'debate_user',
             'debate_ekip_user',
             'tracking',
+            'test_service_req_list_v_view',
         ],
         'no_cache' => [
             'service_req_l_view',
@@ -163,6 +164,7 @@ return [
             'debate_user',
             'debate_ekip_user',
             'tracking',
+            'test_service_req_list_v_view',
         ],
         'json_decode' => [
             'medi_stock',
@@ -172,6 +174,7 @@ return [
             'role',
             'service',
             'debate',
+            'test_service_req_list_v_view',
         ],
         'error' => [
             'elasticsearch_service' => 'Có lỗi khi thực hiện thao tác với Elastic Search!',
@@ -350,6 +353,7 @@ return [
             'user_room_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm Nhân viên - Phòng!',
             'debate_user' => 'Có lỗi khi thực hiện thao tác với bảng DebateUser!',
             'debate_ekip_user' => 'Có lỗi khi thực hiện thao tác với bảng DebateEkipUser!',
+            'test_service_req_list_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm Danh sách y lệnh chỉ định!',
         ]
     ]
 
