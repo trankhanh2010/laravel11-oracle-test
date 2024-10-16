@@ -1,6 +1,7 @@
 <?php 
 namespace App\Repositories;
 
+use App\Jobs\ElasticSearch\Index\ProcessElasticIndexingJob;
 use App\Models\HIS\DebateEkipUser;
 use Illuminate\Support\Facades\DB;
 
@@ -131,30 +132,29 @@ class DebateEkipUserRepository
     //     $data->delete();
     //     return $data;
     // }
-    public function getDataFromDbToElastic($callback, $batchSize = 5000, $id = null)
+    public function getDataFromDbToElastic($batchSize = 5000, $id = null)
     {
-        $query = $this->applyJoins();
+        $numJobs = config('queue')['num_queue_worker']; // Số lượng job song song
         if ($id != null) {
-            $data = $query ->where('his_debate_ekip_user.id', '=', $id)->first();
+            $data = $this->applyJoins()->where('his_debate_ekip_user.id', '=', $id)->first();
             if ($data) {
-                $data = $data->getAttributes();
-                return $data ;
+                $data = $data->toArray();
+                return $data;
             }
         } else {
-            $batchData = [];
-            $count = 0;
-            foreach ($query->cursor() as $item) {
-                $attributes = $item->getAttributes();
-                $batchData[] = $attributes;
-                $count++;
-                
-                if ($count % $batchSize == 0) {
-                    $callback($batchData);
-                    $batchData = [];
+            // Xác định min và max id
+            $minId = $this->applyJoins()->min('his_debate_ekip_user.id');
+            $maxId = $this->applyJoins()->max('his_debate_ekip_user.id');
+            $chunkSize = ceil(($maxId - $minId + 1) / $numJobs);
+            for ($i = 0; $i < $numJobs; $i++) {
+                $startId = $minId + ($i * $chunkSize);
+                $endId = $startId + $chunkSize - 1;
+                // Đảm bảo chunk cuối cùng bao phủ đến maxId
+                if ($i == $numJobs - 1) {
+                    $endId = $maxId;
                 }
-            }
-            if (!empty($batchData)) {
-                $callback($batchData);
+                // Dispatch job cho mỗi phạm vi id
+                ProcessElasticIndexingJob::dispatch('debate_ekip_user', 'his_debate_ekip_user', $startId, $endId, $batchSize);
             }
         }
     }

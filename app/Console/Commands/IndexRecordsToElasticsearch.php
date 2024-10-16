@@ -972,7 +972,7 @@ class IndexRecordsToElasticsearch extends Command
             case 'debate_ekip_user':
                 $batchSize = 25000;
                 event(new CreateDebateEkipUserIndex($name_table));
-                app(DebateEkipUserRepository::class)->getDataFromDbToElastic($callback, $batchSize, null);
+                app(DebateEkipUserRepository::class)->getDataFromDbToElastic($batchSize, null);
                 $results = null;
                 break;
             case 'tracking':
