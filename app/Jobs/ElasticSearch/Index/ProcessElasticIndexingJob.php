@@ -7,6 +7,7 @@ use App\Repositories\DebateVViewRepository;
 use App\Repositories\ServiceReqLViewRepository;
 use App\Repositories\TestServiceReqListVViewRepository;
 use App\Repositories\TrackingRepository;
+use App\Repositories\UserRoomVViewRepository;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Foundation\Queue\Queueable;
@@ -127,6 +128,9 @@ class ProcessElasticIndexingJob implements ShouldQueue
                 break;
             case 'debate_v_view':
                 $repository = app(DebateVViewRepository::class);;
+                break;
+            case 'user_room_v_view':
+                $repository = app(UserRoomVViewRepository::class);;
                 break;
             default:
                 break;

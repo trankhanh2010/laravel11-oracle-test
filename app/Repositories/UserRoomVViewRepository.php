@@ -1,6 +1,7 @@
 <?php 
 namespace App\Repositories;
 
+use App\Jobs\ElasticSearch\Index\ProcessElasticIndexingJob;
 use App\Models\View\UserRoomVView;
 use Illuminate\Support\Facades\DB;
 
@@ -93,30 +94,29 @@ class UserRoomVViewRepository
         $data->delete();
         return $data;
     }
-    public function getDataFromDbToElastic($callback, $batchSize = 5000, $id = null)
+    public function getDataFromDbToElastic($batchSize = 5000, $id = null)
     {
-        $query = $this->applyJoins();
+        $numJobs = config('queue')['num_queue_worker']; // Số lượng job song song
         if ($id != null) {
-            $data = $query ->where('v_his_user_room.id', '=', $id)->first();
+            $data = $this->applyJoins()->where('v_his_user_room.id', '=', $id)->first();
             if ($data) {
-                $data = $data->getAttributes();
-                return $data ;
+                $data = $data->toArray();
+                return $data;
             }
         } else {
-            $batchData = [];
-            $count = 0;
-            foreach ($query->cursor() as $item) {
-                $attributes = $item->getAttributes();
-                $batchData[] = $attributes;
-                $count++;
-                
-                if ($count % $batchSize == 0) {
-                    $callback($batchData);
-                    $batchData = [];
+            // Xác định min và max id
+            $minId = $this->applyJoins()->min('v_his_user_room.id');
+            $maxId = $this->applyJoins()->max('v_his_user_room.id');
+            $chunkSize = ceil(($maxId - $minId + 1) / $numJobs);
+            for ($i = 0; $i < $numJobs; $i++) {
+                $startId = $minId + ($i * $chunkSize);
+                $endId = $startId + $chunkSize - 1;
+                // Đảm bảo chunk cuối cùng bao phủ đến maxId
+                if ($i == $numJobs - 1) {
+                    $endId = $maxId;
                 }
-            }
-            if (!empty($batchData)) {
-                $callback($batchData);
+                // Dispatch job cho mỗi phạm vi id
+                ProcessElasticIndexingJob::dispatch('user_room_v_view', 'v_his_user_room', $startId, $endId, $batchSize);
             }
         }
     }
