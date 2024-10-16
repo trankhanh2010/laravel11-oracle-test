@@ -1,6 +1,7 @@
 <?php 
 namespace App\Repositories;
 
+use App\Jobs\ElasticSearch\Index\ProcessElasticIndexingJob;
 use App\Models\HIS\Debate;
 use Illuminate\Support\Facades\DB;
 
@@ -15,10 +16,12 @@ class DebateRepository
     public function applyJoins()
     {
         return $this->debate
-            ->with($this->paramWith())
             ->select(
                 'his_debate.*'
             );
+    }
+    public function applyWith($query){
+        return $query->with($this->paramWith());
     }
     public function paramWith(){
         return [
@@ -107,29 +110,30 @@ class DebateRepository
         $data->delete();
         return $data;
     }
-    public function getDataFromDbToElastic($callback, $batchSize = 5000, $id = null)
+    public function getDataFromDbToElastic($batchSize = 5000, $id = null)
     {
-        $query = $this->applyJoins();
+        $numJobs = config('queue')['num_queue_worker']; // Số lượng job song song
         if ($id != null) {
-            $data = $query ->where('his_debate.id', '=', $id)->first();
+            $data = $this->applyJoins()->where('his_debate.id', '=', $id)->first();
             if ($data) {
                 $data = $data->toArray();
-                return $data ;
+                return $data;
             }
         } else {
-            $query->chunkById($batchSize, function ($items) use ($callback) {
-                $batchData = [];
-                
-                foreach ($items as $item) {
-                    $attributes = $item;
-                    $batchData[] = $attributes;
+            // Xác định min và max id
+            $minId = $this->applyJoins()->min('his_debate.id');
+            $maxId = $this->applyJoins()->max('his_debate.id');
+            $chunkSize = ceil(($maxId - $minId + 1) / $numJobs);
+            for ($i = 0; $i < $numJobs; $i++) {
+                $startId = $minId + ($i * $chunkSize);
+                $endId = $startId + $chunkSize - 1;
+                // Đảm bảo chunk cuối cùng bao phủ đến maxId
+                if ($i == $numJobs - 1) {
+                    $endId = $maxId;
                 }
-                
-                if (!empty($batchData)) {
-                    $callback($batchData);
-                }
-            });
-            
+                // Dispatch job cho mỗi phạm vi id
+                ProcessElasticIndexingJob::dispatch('debate', 'his_debate', $startId, $endId, $batchSize, $this->paramWith());
+            }
         }
     }
 }

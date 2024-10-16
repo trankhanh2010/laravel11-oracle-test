@@ -2,6 +2,7 @@
 
 namespace App\Jobs\ElasticSearch\Index;
 
+use App\Repositories\DebateRepository;
 use App\Repositories\ServiceReqLViewRepository;
 use App\Repositories\TestServiceReqListVViewRepository;
 use App\Repositories\TrackingRepository;
@@ -119,6 +120,9 @@ class ProcessElasticIndexingJob implements ShouldQueue
                 break;
             case 'test_service_req_list_v_view':
                 $repository = app(TestServiceReqListVViewRepository::class);;
+                break;
+            case 'debate':
+                $repository = app(DebateRepository::class);;
                 break;
             default:
                 break;

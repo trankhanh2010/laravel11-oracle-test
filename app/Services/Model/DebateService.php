@@ -26,6 +26,7 @@ class DebateService
     {
         try {
             $data = $this->debateRepository->applyJoins();
+            $data = $this->debateRepository->applyWith($data);
             $data = $this->debateRepository->applyKeywordFilter($data, $this->params->keyword);
             $data = $this->debateRepository->applyIsActiveFilter($data, $this->params->isActive);
             $data = $this->debateRepository->applyIsDeleteFilter($data, $this->params->isDelete);
@@ -41,6 +42,7 @@ class DebateService
     {
         try {
             $data = $this->debateRepository->applyJoins();
+            $data = $this->debateRepository->applyWith($data);
             $data = $this->debateRepository->applyIsActiveFilter($data, $this->params->isActive);
             $data = $this->debateRepository->applyIsDeleteFilter($data, $this->params->isDelete);
             $count = $data->count();
@@ -56,6 +58,7 @@ class DebateService
         try {
             $data = $this->debateRepository->applyJoins()
                 ->where('his_debate.id', $id);
+            $data = $this->debateRepository->applyWith($data);
             $data = $this->debateRepository->applyIsActiveFilter($data, $this->params->isActive);
             $data = $this->debateRepository->applyIsDeleteFilter($data, $this->params->isDelete);
             $data = $data->first();
