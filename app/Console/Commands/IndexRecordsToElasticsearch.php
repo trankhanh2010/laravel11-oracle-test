@@ -954,7 +954,7 @@ class IndexRecordsToElasticsearch extends Command
             case 'debate_v_view':
                 $batchSize = 25000;
                 event(new CreateDebateVViewIndex($name_table));
-                app(DebateVViewRepository::class)->getDataFromDbToElastic($callback, $batchSize, null);
+                app(DebateVViewRepository::class)->getDataFromDbToElastic($batchSize, null);
                 $results = null;
                 break;
             case 'user_room_v_view':
