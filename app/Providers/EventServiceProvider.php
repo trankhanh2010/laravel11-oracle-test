@@ -244,6 +244,8 @@ use App\Events\Elastic\RoomType\CreateRoomTypeIndex;
 use App\Events\Elastic\RoomType\InsertRoomTypeIndex;
 use App\Events\Elastic\SaleProfitCfg\CreateSaleProfitCfgIndex;
 use App\Events\Elastic\SaleProfitCfg\InsertSaleProfitCfgIndex;
+use App\Events\Elastic\SereServ\CreateSereServIndex;
+use App\Events\Elastic\SereServ\InsertSereServIndex;
 use App\Events\Elastic\Service\CreateServiceIndex;
 use App\Events\Elastic\Service\InsertServiceIndex;
 use App\Events\Elastic\ServiceCondition\CreateServiceConditionIndex;
@@ -553,6 +555,8 @@ use App\Listeners\Elastic\RoomType\ElasticCreateRoomTypeIndex;
 use App\Listeners\Elastic\RoomType\ElasticInsertRoomTypeIndex;
 use App\Listeners\Elastic\SaleProfitCfg\ElasticCreateSaleProfitCfgIndex;
 use App\Listeners\Elastic\SaleProfitCfg\ElasticInsertSaleProfitCfgIndex;
+use App\Listeners\Elastic\SereServ\ElasticCreateSereServIndex;
+use App\Listeners\Elastic\SereServ\ElasticInsertSereServIndex;
 use App\Listeners\Elastic\Service\ElasticCreateServiceIndex;
 use App\Listeners\Elastic\Service\ElasticInsertServiceIndex;
 use App\Listeners\Elastic\ServiceCondition\ElasticCreateServiceConditionIndex;
@@ -1707,6 +1711,13 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertTestServiceReqListVViewIndex::class => [
             ElasticInsertTestServiceReqListVViewIndex::class,
+        ],
+
+        CreateSereServIndex::class => [
+            ElasticCreateSereServIndex::class,
+        ],
+        InsertSereServIndex::class => [
+            ElasticInsertSereServIndex::class,
         ],
     ];
 

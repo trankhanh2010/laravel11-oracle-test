@@ -6,6 +6,7 @@ use App\Repositories\DebateEkipUserRepository;
 use App\Repositories\DebateRepository;
 use App\Repositories\DebateUserRepository;
 use App\Repositories\DebateVViewRepository;
+use App\Repositories\SereServRepository;
 use App\Repositories\ServiceReqLViewRepository;
 use App\Repositories\TestServiceReqListVViewRepository;
 use App\Repositories\TrackingRepository;
@@ -139,6 +140,9 @@ class ProcessElasticIndexingJob implements ShouldQueue
                 break;
             case 'debate_ekip_user':
                 $repository = app(DebateEkipUserRepository::class);;
+                break;
+            case 'sere_serv':
+                $repository = app(SereServRepository::class);;
                 break;
             default:
                 break;

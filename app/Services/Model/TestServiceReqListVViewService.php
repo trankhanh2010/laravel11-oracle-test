@@ -29,6 +29,11 @@ class TestServiceReqListVViewService
             $data = $this->testServiceReqListVViewRepository->applyWith($data);
             $data = $this->testServiceReqListVViewRepository->applyKeywordFilter($data, $this->params->keyword);
             $data = $this->testServiceReqListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
+            $data = $this->testServiceReqListVViewRepository->applyFromTimeFilter($data, $this->params->fromTime);
+            $data = $this->testServiceReqListVViewRepository->applyToTimeFilter($data, $this->params->toTime);
+            $data = $this->testServiceReqListVViewRepository->applyExecuteDepartmentCodeFilter($data, $this->params->executeDepartmentCode);
+            $data = $this->testServiceReqListVViewRepository->applyIsConfirmNoExcuteFilter($data, $this->params->isConfirmNoExcute);
+            $data = $this->testServiceReqListVViewRepository->applyIsSpecimenFilter($data, $this->params->isSpecimen);
             $count = $data->count();
             $data = $this->testServiceReqListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
             $data = $this->testServiceReqListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
@@ -43,6 +48,11 @@ class TestServiceReqListVViewService
             $data = $this->testServiceReqListVViewRepository->applyJoins();
             $data = $this->testServiceReqListVViewRepository->applyWith($data);
             $data = $this->testServiceReqListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
+            $data = $this->testServiceReqListVViewRepository->applyFromTimeFilter($data, $this->params->fromTime);
+            $data = $this->testServiceReqListVViewRepository->applyToTimeFilter($data, $this->params->toTime);
+            $data = $this->testServiceReqListVViewRepository->applyExecuteDepartmentCodeFilter($data, $this->params->executeDepartmentCode);
+            $data = $this->testServiceReqListVViewRepository->applyIsConfirmNoExcuteFilter($data, $this->params->isConfirmNoExcute);
+            $data = $this->testServiceReqListVViewRepository->applyIsSpecimenFilter($data, $this->params->isSpecimen);
             $count = $data->count();
             $data = $this->testServiceReqListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
             $data = $this->testServiceReqListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);

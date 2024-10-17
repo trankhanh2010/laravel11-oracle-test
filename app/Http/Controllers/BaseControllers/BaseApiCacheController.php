@@ -113,6 +113,16 @@ class BaseApiCacheController extends Controller
     protected $roleIdName = 'RoleId';
     protected $mediStockId;
     protected $mediStockIdName = 'MediStockId';
+    protected $fromTime;
+    protected $fromTimeName = 'FromTime';
+    protected $toTime;
+    protected $toTimeName = 'ToTime';
+    protected $executeDepartmentCode;
+    protected $executeDepartmentCodeName = 'ExecuteDepartmentCode';
+    protected $isSpecimen;
+    protected $isSpecimenName = 'IsSpecimen';
+    protected $isConfirmNoExcute;
+    protected $isConfirmNoExcuteName = 'IsConfirmNoExcute';
     protected $patientTypeId;
     protected $patientTypeIdName = 'PatientTypeId';
     protected $medicineTypeId;
@@ -1006,6 +1016,41 @@ class BaseApiCacheController extends Controller
         if (!is_bool ($this->hasExecute)) {
             $this->errors[$this->hasExecuteName] = $this->messFormat;
             $this->hasExecute = true;
+        }
+        $this->fromTime = $this->paramRequest['ApiData']['FromTime'] ?? null;
+        if($this->fromTime != null){
+            if(!preg_match('/^\d{14}$/',  $this->fromTime)){
+                $this->errors[$this->fromTimeName] = $this->messFormat;
+                $this->fromTime = null;
+            }
+        }
+        $this->toTime = $this->paramRequest['ApiData']['ToTime'] ?? null;
+        if($this->toTime != null){
+            if(!preg_match('/^\d{14}$/',  $this->toTime)){
+                $this->errors[$this->toTimeName] = $this->messFormat;
+                $this->toTime = null;
+            }
+        }
+        $this->executeDepartmentCode = $this->paramRequest['ApiData']['ExecuteDepartmentCode'] ?? null;
+        if($this->executeDepartmentCode != null){
+            if(!preg_match('/^.{0,20}$/',  $this->executeDepartmentCode)){
+                $this->errors[$this->executeDepartmentCodeName] = $this->messFormat;
+                $this->executeDepartmentCode = null;
+            }
+        }
+        $this->isConfirmNoExcute = $this->paramRequest['ApiData']['IsConfirmNoExcute'] ?? null;
+        if($this->isConfirmNoExcute !== null){
+            if (!is_bool($this->isConfirmNoExcute)) {
+                $this->errors[$this->isConfirmNoExcuteName] = $this->messFormat;
+                $this->isConfirmNoExcute = null;
+            }
+        }
+        $this->isSpecimen = $this->paramRequest['ApiData']['IsSpecimen'] ?? null;
+        if($this->isSpecimen !== null){
+            if (!is_bool($this->isSpecimen)) {
+                $this->errors[$this->isSpecimenName] = $this->messFormat;
+                $this->isSpecimen = null;
+            }
         }
         $this->intructionTimeTo = $this->paramRequest['ApiData']['IntructionTimeTo'] ?? null;
         if($this->intructionTimeTo != null){

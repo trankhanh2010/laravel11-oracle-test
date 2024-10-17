@@ -155,6 +155,7 @@ use App\Http\Controllers\Api\NoCacheControllers\DebateController;
 use App\Http\Controllers\Api\NoCacheControllers\DebateEkipUserController;
 use App\Http\Controllers\Api\NoCacheControllers\DebateUserController;
 use App\Http\Controllers\Api\NoCacheControllers\DebateVViewController;
+use App\Http\Controllers\Api\NoCacheControllers\SereServController;
 use App\Http\Controllers\Api\NoCacheControllers\ServiceReqLViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TestServiceReqListVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TrackingController;
@@ -818,15 +819,8 @@ Route::group([
     });
     /// Danh sách y lệnh chỉ định
     Route::apiResource('v1/test-service-req-list-v-view', TestServiceReqListVViewController::class)->only(['index', 'show']);
-    // // Sere Serv
-    // Route::get("v1/sere-serv/get", [SereServController::class, "sere_serv_get"])->name('.get_sere_serv');
-
-    // Route::get("v2/sere-serv/get", [SereServController::class, "sere_serv_get_v2"])->name('.get_sere_serv_v2');
-    // Route::get("v2/sere-serv/get-count", [SereServController::class, "sere_serv_get_count_v2"])->name('.get_sere_serv_count_v2');
-
-    // Route::get("v3/sere-serv/get", [SereServController::class, "sere_serv_get_v3"])->name('.get_sere_serv_v3');
-    // Route::get("v3/sere-serv/get-count", [SereServController::class, "sere_serv_get_count_v3"])->name('.get_sere_serv_count_v3');
-
+    // /// Chi tiết các dịch vụ của y lệnh
+    // Route::apiResource('v1/sere-serv', SereServController::class)->only(['index', 'show']);
     // Route::get("v1/sere-serv/get-view-5", [SereServController::class, "sere_serv_get_view_5"])->name('.get_sere_serv_view_5');
 
 

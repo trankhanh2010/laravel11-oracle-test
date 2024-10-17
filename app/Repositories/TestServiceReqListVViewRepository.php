@@ -2,20 +2,30 @@
 namespace App\Repositories;
 
 use App\Jobs\ElasticSearch\Index\ProcessElasticIndexingJob;
+use App\Models\HIS\ServiceReqType;
 use App\Models\View\TestServiceReqListVView;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class TestServiceReqListVViewRepository
 {
+    protected $serviceReqTypeXNId;
     protected $testServiceReqListVView;
-    public function __construct(TestServiceReqListVView $testServiceReqListVView)
+    protected $serviceReqType;
+    public function __construct(TestServiceReqListVView $testServiceReqListVView, ServiceReqType $serviceReqType)
     {
         $this->testServiceReqListVView = $testServiceReqListVView;
+        $this->serviceReqType = $serviceReqType;
     }
 
     public function applyJoins()
     {
+        $this->serviceReqTypeXNId = Cache::remember('service_req_type_XN_id', now()->addMinutes(10080), function () {
+            $data =  $this->serviceReqType->where('service_req_type_code', 'XN')->get();
+            return $data->value('id');
+        });
         return $this->testServiceReqListVView
+            ->where('service_req_type_id', $this->serviceReqTypeXNId)
             ->select(
                 'v_his_test_service_req_list.*'
             );
@@ -39,6 +49,64 @@ class TestServiceReqListVViewRepository
     {
         if ($isActive !== null) {
             $query->where(DB::connection('oracle_his')->raw('v_his_test_service_req_list.is_active'), $isActive);
+        }
+        return $query;
+    }
+    public function applyFromTimeFilter($query, $param)
+    {
+        if($param !== null){
+            return $query->where(function ($query) use ($param) {
+                $query->where(DB::connection('oracle_his')->raw('v_his_test_service_req_list.create_time'), '>=', $param);
+            });
+        }
+        return $query;
+    }
+    public function applyToTimeFilter($query, $param)
+    {
+        if($param !== null){
+            return $query->where(function ($query) use ($param) {
+                $query->where(DB::connection('oracle_his')->raw('v_his_test_service_req_list.create_time'), '<=', $param);
+            });
+        }
+        return $query;
+    }
+    public function applyExecuteDepartmentCodeFilter($query, $param)
+    {
+        if($param !== null){
+            return $query->where(function ($query) use ($param) {
+                $query->where(DB::connection('oracle_his')->raw("execute_department_code"), 'like', $param);
+            });
+        } return $query;
+    }
+    public function applyIsSpecimenFilter($query, $param)
+    {
+        if($param !== null){
+            return $query->where(function ($query) use ($param) {
+                $query->whereHas('testServiceTypeList', function ($query) use ($param) {
+                    if($param){
+                        $query->where('is_specimen', 1);
+                    }else{
+                        $query->where('is_specimen', 0)
+                        ->orWhereNull('is_specimen');
+                    }
+                });
+            });
+        }
+        return $query;
+    }
+    public function applyIsConfirmNoExcuteFilter($query, $param)
+    {
+        if($param !== null){
+            return $query->where(function ($query) use ($param) {
+                $query->whereHas('testServiceTypeList', function ($query) use ($param) {
+                    if($param){
+                        $query->where('is_confirm_no_excute', 1);
+                    }else{
+                        $query->where('is_confirm_no_excute', 0)
+                        ->orWhereNull('is_confirm_no_excute');
+                    }
+                });
+            });
         }
         return $query;
     }

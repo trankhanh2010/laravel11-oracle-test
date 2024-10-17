@@ -2,9 +2,9 @@
 
 namespace App\DTOs;
 
-class TestServiceReqListVViewDTO
+class SereServDTO
 {
-    public $testServiceReqListVViewName;
+    public $sereServName;
     public $keyword;
     public $isActive;
     public $isDelete;
@@ -18,13 +18,8 @@ class TestServiceReqListVViewDTO
     public $appCreator;
     public $appModifier;
     public $time;
-    public $fromTime;
-    public $toTime;
-    public $executeDepartmentCode;
-    public $isConfirmNoExcute;
-    public $isSpecimen;
     public function __construct(
-        $testServiceReqListVViewName,
+        $sereServName,
         $keyword, 
         $isActive, 
         $isDelete,
@@ -38,14 +33,9 @@ class TestServiceReqListVViewDTO
         $appCreator,
         $appModifier,
         $time,
-        $fromTime,
-        $toTime,
-        $executeDepartmentCode,
-        $isConfirmNoExcute,
-        $isSpecimen,
         )
     {
-        $this->testServiceReqListVViewName = $testServiceReqListVViewName;
+        $this->sereServName = $sereServName;
         $this->keyword = $keyword;
         $this->isActive = $isActive;
         $this->isDelete = $isDelete;
@@ -59,10 +49,5 @@ class TestServiceReqListVViewDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
-        $this->fromTime = $fromTime;
-        $this->toTime = $toTime;
-        $this->executeDepartmentCode = $executeDepartmentCode;
-        $this->isConfirmNoExcute = $isConfirmNoExcute;
-        $this->isSpecimen = $isSpecimen;
     }
 }
