@@ -36,7 +36,7 @@ class TestServiceReqListVViewRepository
     }
     public function paramWith(){
         return [
-            'testServiceTypeList:id,service_req_id,is_specimen,is_confirm_no_excute,tdl_service_code,tdl_service_name',
+            'testServiceTypeList:id,service_req_id,is_specimen,is_no_execute,tdl_service_code,tdl_service_name',
         ];
     }
     public function applyKeywordFilter($query, $keyword)
@@ -94,16 +94,16 @@ class TestServiceReqListVViewRepository
         }
         return $query;
     }
-    public function applyIsConfirmNoExcuteFilter($query, $param)
+    public function applyIsNoExcuteFilter($query, $param)
     {
         if($param !== null){
             return $query->where(function ($query) use ($param) {
                 $query->whereHas('testServiceTypeList', function ($query) use ($param) {
                     if($param){
-                        $query->where('is_confirm_no_excute', 1);
+                        $query->where('is_no_execute', 1);
                     }else{
-                        $query->where('is_confirm_no_excute', 0)
-                        ->orWhereNull('is_confirm_no_excute');
+                        $query->where('is_no_execute', 0)
+                        ->orWhereNull('is_no_execute');
                     }
                 });
             });

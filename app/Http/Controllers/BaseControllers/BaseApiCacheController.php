@@ -121,8 +121,8 @@ class BaseApiCacheController extends Controller
     protected $executeDepartmentCodeName = 'ExecuteDepartmentCode';
     protected $isSpecimen;
     protected $isSpecimenName = 'IsSpecimen';
-    protected $isConfirmNoExcute;
-    protected $isConfirmNoExcuteName = 'IsConfirmNoExcute';
+    protected $isNoExcute;
+    protected $isNoExcuteName = 'IsNoExcute';
     protected $patientTypeId;
     protected $patientTypeIdName = 'PatientTypeId';
     protected $medicineTypeId;
@@ -131,6 +131,8 @@ class BaseApiCacheController extends Controller
     protected $materialTypeIdName = 'MaterialTypeId';
     protected $roomId;
     protected $roomIdName = 'RoomId';
+    protected $serviceReqIds;
+    protected $serviceReqIdsName = 'ServiceReqIds';
     protected $atc;
     protected $atcName = 'atc';
     protected $executeRoomId;
@@ -222,6 +224,8 @@ class BaseApiCacheController extends Controller
     protected $communeName = "commune";
     protected $service;
     protected $serviceName = "service";
+    protected $sereServVView4;
+    protected $sereServVView4Name = 'sere_serv_v_view_4';
     protected $servicePaty;
     protected $servicePatyName = 'service_paty';
     protected $serviceMachine;
@@ -754,15 +758,17 @@ class BaseApiCacheController extends Controller
             $this->cache = false;
         }
 
-        $this->elasticSearchType = strtolower($this->paramRequest['ApiData']['ElasticSearchType'] ?? null);
+        $this->elasticSearchType = ($this->paramRequest['ApiData']['ElasticSearchType'] ?? null);
         if ($this->elasticSearchType != null) {
+            $this->elasticSearchType = strtolower($this->elasticSearchType);
             if (!in_array($this->elasticSearchType, $this->elasticSearchTypeArr)) {
                 $this->errors[$this->elasticSearchTypeName] = $this->messFormat . ' Chỉ nhận giá trị thuộc mảng sau ' . implode(', ', $this->elasticSearchTypeArr);
             }
         }
 
-        $this->elasticOperator = strtoupper($this->paramRequest['ApiData']['ElasticOperator'] ?? null);
+        $this->elasticOperator = ($this->paramRequest['ApiData']['ElasticOperator'] ?? null);
         if ($this->elasticOperator != null) {
+            $this->elasticOperator = strtoupper($this->elasticOperator);
             if (!in_array($this->elasticOperator, $this->elasticOperatorArr)) {
                 $this->errors[$this->elasticOperatorName] = $this->messFormat . ' Chỉ nhận giá trị thuộc mảng sau ' . implode(', ', $this->elasticOperatorArr);
             }
@@ -884,6 +890,21 @@ class BaseApiCacheController extends Controller
         }
         if ($this->patientTypeIds !=  null) {
             $this->patientTypeIdsString = arrayToCustomStringNotKey($this->patientTypeIds);
+        }
+        $this->serviceReqIds = $this->paramRequest['ApiData']['ServiceReqIds'] ?? null;
+        if ($this->serviceReqIds != null) {
+            foreach ($this->serviceReqIds as $key => $item) {
+                // Kiểm tra xem ID có tồn tại trong bảng  hay không
+                if (!is_numeric($item)) {
+                    $this->errors[$this->serviceReqIdsName] = $this->messFormat;
+                    unset($this->serviceReqIds[$key]);
+                } else {
+                    if (!ServiceReq::where('id', $item)->exists()) {
+                        $this->errors[$this->serviceReqIdsName] = $this->messRecordId;
+                        unset($this->serviceReqIds[$key]);
+                    }
+                }
+            }
         }
         $this->serviceId = $this->paramRequest['ApiData']['ServiceId'] ?? null;
         if ($this->serviceId !== null) {
@@ -1038,11 +1059,11 @@ class BaseApiCacheController extends Controller
                 $this->executeDepartmentCode = null;
             }
         }
-        $this->isConfirmNoExcute = $this->paramRequest['ApiData']['IsConfirmNoExcute'] ?? null;
-        if($this->isConfirmNoExcute !== null){
-            if (!is_bool($this->isConfirmNoExcute)) {
-                $this->errors[$this->isConfirmNoExcuteName] = $this->messFormat;
-                $this->isConfirmNoExcute = null;
+        $this->isNoExcute = $this->paramRequest['ApiData']['IsNoExcute'] ?? null;
+        if($this->isNoExcute !== null){
+            if (!is_bool($this->isNoExcute)) {
+                $this->errors[$this->isNoExcuteName] = $this->messFormat;
+                $this->isNoExcute = null;
             }
         }
         $this->isSpecimen = $this->paramRequest['ApiData']['IsSpecimen'] ?? null;

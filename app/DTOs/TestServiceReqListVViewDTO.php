@@ -21,7 +21,7 @@ class TestServiceReqListVViewDTO
     public $fromTime;
     public $toTime;
     public $executeDepartmentCode;
-    public $isConfirmNoExcute;
+    public $isNoExcute;
     public $isSpecimen;
     public function __construct(
         $testServiceReqListVViewName,
@@ -41,7 +41,7 @@ class TestServiceReqListVViewDTO
         $fromTime,
         $toTime,
         $executeDepartmentCode,
-        $isConfirmNoExcute,
+        $isNoExcute,
         $isSpecimen,
         )
     {
@@ -62,7 +62,7 @@ class TestServiceReqListVViewDTO
         $this->fromTime = $fromTime;
         $this->toTime = $toTime;
         $this->executeDepartmentCode = $executeDepartmentCode;
-        $this->isConfirmNoExcute = $isConfirmNoExcute;
+        $this->isNoExcute = $isNoExcute;
         $this->isSpecimen = $isSpecimen;
     }
 }

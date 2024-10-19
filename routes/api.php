@@ -156,6 +156,7 @@ use App\Http\Controllers\Api\NoCacheControllers\DebateEkipUserController;
 use App\Http\Controllers\Api\NoCacheControllers\DebateUserController;
 use App\Http\Controllers\Api\NoCacheControllers\DebateVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\SereServController;
+use App\Http\Controllers\Api\NoCacheControllers\SereServVView4Controller;
 use App\Http\Controllers\Api\NoCacheControllers\ServiceReqLViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TestServiceReqListVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TrackingController;
@@ -819,9 +820,9 @@ Route::group([
     });
     /// Danh sách y lệnh chỉ định
     Route::apiResource('v1/test-service-req-list-v-view', TestServiceReqListVViewController::class)->only(['index', 'show']);
-    // /// Chi tiết các dịch vụ của y lệnh
-    // Route::apiResource('v1/sere-serv', SereServController::class)->only(['index', 'show']);
-    // Route::get("v1/sere-serv/get-view-5", [SereServController::class, "sere_serv_get_view_5"])->name('.get_sere_serv_view_5');
+    /// Chi tiết các dịch vụ của y lệnh
+    Route::apiResource('v1/sere-serv', SereServController::class)->only(['index', 'show']);
+    Route::apiResource('v1/sere-serv-v-view-4', SereServVView4Controller::class)->only(['index', 'show']);
 
 
     // // Patient Type Alter

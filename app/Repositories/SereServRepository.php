@@ -83,21 +83,21 @@ class SereServRepository
     }
     public function paramWith(){
         return [
-            'exp_mest_bloods',
-            'exp_mest_materials',
-            'exp_mest_medicines',
-            'sere_serv_bills',
-            'sere_serv_debts',
-            'sere_serv_deposits',
-            'sere_serv_files',
-            'sere_serv_matys',
-            'sere_serv_pttts',
-            'sere_serv_rehas',
-            'sere_serv_suins',
-            'sere_serv_teins',
-            'service_change_reqs',
-            'sese_depo_repays',
-            'sese_trans_reqs',
+            'exp_mest_bloods:id,tdl_service_req_id',
+            'exp_mest_materials:id,tdl_service_req_id',
+            'exp_mest_medicines:id,tdl_service_req_id',
+            'sere_serv_bills:id,tdl_service_req_id',
+            'sere_serv_debts:id,sere_serv_id',
+            'sere_serv_deposits:id,sere_serv_id',
+            'sere_serv_files:id,sere_serv_id',
+            'sere_serv_matys:id,sere_serv_id',
+            'sere_serv_pttts:id,sere_serv_id',
+            'sere_serv_rehas:id,sere_serv_id',
+            'sere_serv_suins:id,sere_serv_id',
+            'sere_serv_teins:id,sere_serv_id',
+            'service_change_reqs:id,sere_serv_id',
+            'sese_depo_repays:id,tdl_service_req_id',
+            'sese_trans_reqs:id,sere_serv_id',
         ];
     }
     public function view()
@@ -124,6 +124,27 @@ class SereServRepository
     {
         if ($isDelete !== null) {
             $query->where(DB::connection('oracle_his')->raw('his_sere_serv.is_delete'), $isDelete);
+        }
+        return $query;
+    }
+    public function applyServiceReqIdsFilter($query, $ids)
+    {
+        if ($ids !== null) {
+            $query->whereIn(DB::connection('oracle_his')->raw('his_sere_serv.service_req_id'), $ids);
+        }
+        return $query;
+    }
+    public function applyServiceTypeIdFilter($query, $id)
+    {
+        if ($id !== null) {
+            $query->where(DB::connection('oracle_his')->raw('his_sere_serv.tdl_service_type_id'), $id);
+        }
+        return $query;
+    }
+    public function applyTreatmentIdFilter($query, $id)
+    {
+        if ($id !== null) {
+            $query->where(DB::connection('oracle_his')->raw('his_sere_serv.tdl_treatment_id'), $id);
         }
         return $query;
     }

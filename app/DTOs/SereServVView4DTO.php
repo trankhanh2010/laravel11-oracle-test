@@ -2,9 +2,9 @@
 
 namespace App\DTOs;
 
-class SereServDTO
+class SereServVView4DTO
 {
-    public $sereServName;
+    public $sereServVView4Name;
     public $keyword;
     public $isActive;
     public $isDelete;
@@ -18,11 +18,8 @@ class SereServDTO
     public $appCreator;
     public $appModifier;
     public $time;
-    public $serviceReqIds;
-    public $serviceTypeId;
-    public $treatmentId;
     public function __construct(
-        $sereServName,
+        $sereServVView4Name,
         $keyword, 
         $isActive, 
         $isDelete,
@@ -36,12 +33,9 @@ class SereServDTO
         $appCreator,
         $appModifier,
         $time,
-        $serviceReqIds,
-        $serviceTypeId,
-        $treatmentId,
         )
     {
-        $this->sereServName = $sereServName;
+        $this->sereServVView4Name = $sereServVView4Name;
         $this->keyword = $keyword;
         $this->isActive = $isActive;
         $this->isDelete = $isDelete;
@@ -55,8 +49,5 @@ class SereServDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
-        $this->serviceReqIds = $serviceReqIds;
-        $this->serviceTypeId = $serviceTypeId;
-        $this->treatmentId = $treatmentId;
     }
 }

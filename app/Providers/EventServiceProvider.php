@@ -246,6 +246,8 @@ use App\Events\Elastic\SaleProfitCfg\CreateSaleProfitCfgIndex;
 use App\Events\Elastic\SaleProfitCfg\InsertSaleProfitCfgIndex;
 use App\Events\Elastic\SereServ\CreateSereServIndex;
 use App\Events\Elastic\SereServ\InsertSereServIndex;
+use App\Events\Elastic\SereServVView4\CreateSereServVView4Index;
+use App\Events\Elastic\SereServVView4\InsertSereServVView4Index;
 use App\Events\Elastic\Service\CreateServiceIndex;
 use App\Events\Elastic\Service\InsertServiceIndex;
 use App\Events\Elastic\ServiceCondition\CreateServiceConditionIndex;
@@ -557,6 +559,8 @@ use App\Listeners\Elastic\SaleProfitCfg\ElasticCreateSaleProfitCfgIndex;
 use App\Listeners\Elastic\SaleProfitCfg\ElasticInsertSaleProfitCfgIndex;
 use App\Listeners\Elastic\SereServ\ElasticCreateSereServIndex;
 use App\Listeners\Elastic\SereServ\ElasticInsertSereServIndex;
+use App\Listeners\Elastic\SereServVView4\ElasticCreateSereServVView4Index;
+use App\Listeners\Elastic\SereServVView4\ElasticInsertSereServVView4Index;
 use App\Listeners\Elastic\Service\ElasticCreateServiceIndex;
 use App\Listeners\Elastic\Service\ElasticInsertServiceIndex;
 use App\Listeners\Elastic\ServiceCondition\ElasticCreateServiceConditionIndex;
@@ -1718,6 +1722,13 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertSereServIndex::class => [
             ElasticInsertSereServIndex::class,
+        ],
+
+        CreateSereServVView4Index::class => [
+            ElasticCreateSereServVView4Index::class,
+        ],
+        InsertSereServVView4Index::class => [
+            ElasticInsertSereServVView4Index::class,
         ],
     ];
 

@@ -32,7 +32,7 @@ class TestServiceReqListVViewService
             $data = $this->testServiceReqListVViewRepository->applyFromTimeFilter($data, $this->params->fromTime);
             $data = $this->testServiceReqListVViewRepository->applyToTimeFilter($data, $this->params->toTime);
             $data = $this->testServiceReqListVViewRepository->applyExecuteDepartmentCodeFilter($data, $this->params->executeDepartmentCode);
-            $data = $this->testServiceReqListVViewRepository->applyIsConfirmNoExcuteFilter($data, $this->params->isConfirmNoExcute);
+            $data = $this->testServiceReqListVViewRepository->applyIsNoExcuteFilter($data, $this->params->isNoExcute);
             $data = $this->testServiceReqListVViewRepository->applyIsSpecimenFilter($data, $this->params->isSpecimen);
             $count = $data->count();
             $data = $this->testServiceReqListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
@@ -51,7 +51,7 @@ class TestServiceReqListVViewService
             $data = $this->testServiceReqListVViewRepository->applyFromTimeFilter($data, $this->params->fromTime);
             $data = $this->testServiceReqListVViewRepository->applyToTimeFilter($data, $this->params->toTime);
             $data = $this->testServiceReqListVViewRepository->applyExecuteDepartmentCodeFilter($data, $this->params->executeDepartmentCode);
-            $data = $this->testServiceReqListVViewRepository->applyIsConfirmNoExcuteFilter($data, $this->params->isConfirmNoExcute);
+            $data = $this->testServiceReqListVViewRepository->applyIsNoExcuteFilter($data, $this->params->isNoExcute);
             $data = $this->testServiceReqListVViewRepository->applyIsSpecimenFilter($data, $this->params->isSpecimen);
             $count = $data->count();
             $data = $this->testServiceReqListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);

@@ -11,6 +11,7 @@ use App\Repositories\ServiceReqLViewRepository;
 use App\Repositories\TestServiceReqListVViewRepository;
 use App\Repositories\TrackingRepository;
 use App\Repositories\UserRoomVViewRepository;
+use App\Repositories\SereServVView4Repository;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Foundation\Queue\Queueable;
@@ -143,6 +144,9 @@ class ProcessElasticIndexingJob implements ShouldQueue
                 break;
             case 'sere_serv':
                 $repository = app(SereServRepository::class);;
+                break;
+            case 'sere_serv_v_view_4':
+                $repository = app(SereServVView4Repository::class);;
                 break;
             default:
                 break;

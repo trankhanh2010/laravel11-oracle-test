@@ -20,7 +20,7 @@ class SereServ extends Model
     }
     public function sere_serv_bills()
     {
-        return $this->hasMany(SereServBill::class);
+        return $this->hasMany(SereServBill::class, 'tdl_service_req_id', 'service_req_id');
     }
     public function services()
     {
@@ -64,22 +64,35 @@ class SereServ extends Model
     }
     public function sese_depo_repays()
     {
-        return $this->hasManyThrough(SeseDepoRepay::class, SereServDeposit::class, 'sere_serv_id', 'sere_serv_deposit_id');
+        return $this->hasMany(SeseDepoRepay::class, 'tdl_service_req_id', 'service_req_id');
     }
     public function sese_trans_reqs()
     {
         return $this->hasMany(SeseTransReq::class);
     }
+    // public function exp_mest_bloods()
+    // {
+    //     return $this->hasManyThrough(ExpMestBlood::class, ExpMest::class, 'service_req_id', 'exp_mest_id', 'service_req_id', 'id');
+    // }
+    // public function exp_mest_materials()
+    // {
+    //     return $this->hasManyThrough(ExpMestMaterial::class, ExpMest::class, 'service_req_id', 'exp_mest_id', 'service_req_id', 'id');
+    // }
+    // public function exp_mest_medicines()
+    // {
+    //     return $this->hasManyThrough(ExpMestMedicine::class, ExpMest::class, 'service_req_id', 'exp_mest_id', 'service_req_id', 'id');
+    // }
+    
     public function exp_mest_bloods()
     {
-        return $this->hasManyThrough(ExpMestBlood::class, ExpMest::class, 'service_req_id', 'exp_mest_id', 'service_req_id', 'id');
+        return $this->hasMany(ExpMestBlood::class, 'tdl_service_req_id', 'service_req_id');
     }
     public function exp_mest_materials()
     {
-        return $this->hasManyThrough(ExpMestMaterial::class, ExpMest::class, 'service_req_id', 'exp_mest_id', 'service_req_id', 'id');
+        return $this->hasMany(ExpMestMaterial::class, 'tdl_service_req_id', 'service_req_id');
     }
     public function exp_mest_medicines()
     {
-        return $this->hasManyThrough(ExpMestMedicine::class, ExpMest::class, 'service_req_id', 'exp_mest_id', 'service_req_id', 'id');
+        return $this->hasMany(ExpMestMedicine::class, 'tdl_service_req_id', 'service_req_id');
     }
 }

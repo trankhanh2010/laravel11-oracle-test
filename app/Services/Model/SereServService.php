@@ -30,6 +30,9 @@ class SereServService
             $data = $this->sereServRepository->applyKeywordFilter($data, $this->params->keyword);
             $data = $this->sereServRepository->applyIsActiveFilter($data, $this->params->isActive);
             $data = $this->sereServRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+            $data = $this->sereServRepository->applyServiceReqIdsFilter($data, $this->params->serviceReqIds);
+            $data = $this->sereServRepository->applyServiceTypeIdFilter($data, $this->params->serviceTypeId);
+            $data = $this->sereServRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
             $count = $data->count();
             $data = $this->sereServRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
             $data = $this->sereServRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
@@ -45,6 +48,9 @@ class SereServService
             $data = $this->sereServRepository->applyWith($data);
             $data = $this->sereServRepository->applyIsActiveFilter($data, $this->params->isActive);
             $data = $this->sereServRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+            $data = $this->sereServRepository->applyServiceReqIdsFilter($data, $this->params->serviceReqIds);
+            $data = $this->sereServRepository->applyServiceTypeIdFilter($data, $this->params->serviceTypeId);
+            $data = $this->sereServRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
             $count = $data->count();
             $data = $this->sereServRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
             $data = $this->sereServRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);

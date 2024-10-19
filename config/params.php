@@ -156,6 +156,7 @@ return [
             'tracking',
             'test_service_req_list_v_view',
             'sere_serv',
+            'sere_serv_v_view_4',
         ],
         'no_cache' => [
             'service_req_l_view',
@@ -167,6 +168,7 @@ return [
             'tracking',
             'test_service_req_list_v_view',
             'sere_serv',
+            'sere_serv_v_view_4',
         ],
         'json_decode' => [
             'medi_stock',
@@ -358,6 +360,7 @@ return [
             'debate_ekip_user' => 'Có lỗi khi thực hiện thao tác với bảng DebateEkipUser!',
             'test_service_req_list_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm Danh sách y lệnh chỉ định!',
             'sere_serv' => 'Có lỗi khi thực hiện thao tác với bảng Chi tiết các dịch vụ của y lệnh!',
+            'sere_serv_v_view_4' => 'Có lỗi khi thực hiện thao tác với bảng tạm Chi tiết các dịch vụ của y lệnh 4!',
 
         ]
     ]
