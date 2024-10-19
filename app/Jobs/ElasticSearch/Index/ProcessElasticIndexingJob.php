@@ -13,6 +13,7 @@ use App\Repositories\TestServiceReqListVViewRepository;
 use App\Repositories\TrackingRepository;
 use App\Repositories\UserRoomVViewRepository;
 use App\Repositories\SereServVView4Repository;
+use App\Repositories\TreatmentLViewRepository;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Foundation\Queue\Queueable;
@@ -120,37 +121,40 @@ class ProcessElasticIndexingJob implements ShouldQueue
         $repository = null;
         switch ($name) {
             case 'tracking':
-                $repository = app(TrackingRepository::class);;
+                $repository = app(TrackingRepository::class);
                 break;
             case 'service_req_l_view':
-                $repository = app(ServiceReqLViewRepository::class);;
+                $repository = app(ServiceReqLViewRepository::class);
                 break;
             case 'test_service_req_list_v_view':
-                $repository = app(TestServiceReqListVViewRepository::class);;
+                $repository = app(TestServiceReqListVViewRepository::class);
                 break;
             case 'debate':
-                $repository = app(DebateRepository::class);;
+                $repository = app(DebateRepository::class);
                 break;
             case 'debate_v_view':
-                $repository = app(DebateVViewRepository::class);;
+                $repository = app(DebateVViewRepository::class);
                 break;
             case 'user_room_v_view':
-                $repository = app(UserRoomVViewRepository::class);;
+                $repository = app(UserRoomVViewRepository::class);
                 break;
             case 'debate_user':
-                $repository = app(DebateUserRepository::class);;
+                $repository = app(DebateUserRepository::class);
                 break;
             case 'debate_ekip_user':
-                $repository = app(DebateEkipUserRepository::class);;
+                $repository = app(DebateEkipUserRepository::class);
                 break;
             case 'sere_serv':
-                $repository = app(SereServRepository::class);;
+                $repository = app(SereServRepository::class);
                 break;
             case 'sere_serv_v_view_4':
-                $repository = app(SereServVView4Repository::class);;
+                $repository = app(SereServVView4Repository::class);
                 break;
             case 'patient_type_alter_v_view':
-                $repository = app(PatientTypeAlterVViewRepository::class);;
+                $repository = app(PatientTypeAlterVViewRepository::class);
+                break;
+            case 'treatment_l_view':
+                $repository = app(TreatmentLViewRepository::class);
                 break;
             default:
                 break;

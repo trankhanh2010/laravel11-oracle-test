@@ -61,6 +61,8 @@ class BaseApiCacheController extends Controller
     protected $patientTypeIdsName = 'PatientTypeIds';
     protected $serviceIds;
     protected $serviceIdsName = 'ServiceIds';
+    protected $patientCode;
+    protected $patientCodeName = 'PatientCode';
     protected $serviceIdsString;
     protected $machineIds;
     protected $machineIdsName = 'MachineIds';
@@ -460,6 +462,8 @@ class BaseApiCacheController extends Controller
     protected $testServiceReqListVViewName = 'test_service_req_list_v_view';
     protected $impMest;
     protected $impMestName = 'imp_mest';
+    protected $treatmentLView;
+    protected $treatmentLViewName = 'treatment_l_view';
     protected $sereServExt;
     protected $sereServExtName = 'sere_serv_ext';
     protected $sereServ;
@@ -1007,6 +1011,13 @@ class BaseApiCacheController extends Controller
             if (!is_string ($this->treatmentCode)) {
                 $this->errors[$this->treatmentCodeName] = $this->messFormat;
                 $this->treatmentCode = null;
+            }
+        }
+        $this->patientCode = $this->paramRequest['ApiData']['PatientCode'] ?? null;
+        if($this->patientCode !== null){
+            if (!is_string ($this->patientCode)) {
+                $this->errors[$this->patientCodeName] = $this->messFormat;
+                $this->patientCode = null;
             }
         }
         $this->debateId = $this->paramRequest['ApiData']['DebateId'] ?? null;

@@ -158,6 +158,7 @@ return [
             'sere_serv',
             'sere_serv_v_view_4',
             'patient_type_alter_v_view',
+            'treatment_l_view',
         ],
         'no_cache' => [
             'service_req_l_view',
@@ -171,6 +172,7 @@ return [
             'sere_serv',
             'sere_serv_v_view_4',
             'patient_type_alter_v_view',
+            'treatment_l_view',
         ],
         'json_decode' => [
             'medi_stock',
@@ -364,6 +366,8 @@ return [
             'sere_serv' => 'Có lỗi khi thực hiện thao tác với bảng Chi tiết các dịch vụ của y lệnh!',
             'sere_serv_v_view_4' => 'Có lỗi khi thực hiện thao tác với bảng tạm Chi tiết các dịch vụ của y lệnh 4!',
             'patient_type_alter_v_view' => 'Có lỗi khi thực hiện thao tác với bảng Đối tượng điều trị!',
+            'treatment_l_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm Hồ sơ điều trị!',
+
         ]
     ]
 

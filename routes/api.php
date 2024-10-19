@@ -161,6 +161,7 @@ use App\Http\Controllers\Api\NoCacheControllers\SereServVView4Controller;
 use App\Http\Controllers\Api\NoCacheControllers\ServiceReqLViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TestServiceReqListVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TrackingController;
+use App\Http\Controllers\Api\NoCacheControllers\TreatmentLViewController;
 use App\Http\Controllers\Api\NoCacheControllers\UserRoomVViewController;
 // Base Api
 use App\Http\Controllers\BaseControllers\CacheController;
@@ -824,15 +825,17 @@ Route::group([
     /// Chi tiết các dịch vụ của y lệnh
     Route::apiResource('v1/sere-serv', SereServController::class)->only(['index', 'show']);
     Route::apiResource('v1/sere-serv-v-view-4', SereServVView4Controller::class)->only(['index', 'show']);
-    // Đối tượng điều trị
+    /// Đối tượng điều trị
     Route::group(['as' => 'HIS.Desktop.Plugins.CallPatientTypeAlter'], function () {
         Route::apiResource('v1/patient-type-alter-v-view', PatientTypeAlterVViewController::class)->only(['index', 'show']);
     });
+    /// Hồ sơ điều trị
+    Route::group(['as' => 'HIS.Desktop.Plugins.TreatmentList'], function () {
+        Route::apiResource('v1/treatment-l-view', TreatmentLViewController::class)->only(['index', 'show']);
+        // Route::get("v1/treatment/get-treatment-with-patient-type-info-sdo", [TreatmentController::class, "treatment_get_treatment_with_patient_type_info_sdo"])->name('.get_treatment_treatment');
+        // Route::get("v1/treatment/get-fee-view", [TreatmentController::class, "treatment_get_fee_view"])->name('.get_treatment_fee_view');
+    });
 
-    // // Treatment
-    // Route::get("v1/treatment/get-L-view", [TreatmentController::class, "treatment_get_L_view"])->name('.get_treatment_L_view');
-    // Route::get("v1/treatment/get-treatment-with-patient-type-info-sdo", [TreatmentController::class, "treatment_get_treatment_with_patient_type_info_sdo"])->name('.get_treatment_treatment');
-    // Route::get("v1/treatment/get-fee-view", [TreatmentController::class, "treatment_get_fee_view"])->name('.get_treatment_fee_view');
 
     // Route::get("v2/treatment/get-L-view", [TreatmentController::class, "treatment_get_L_view_v2"])->name('.get_treatment_L_view_v2');
     // Route::get("v2/treatment/get-treatment-with-patient-type-info-sdo", [TreatmentController::class, "treatment_get_treatment_with_patient_type_info_sdo_v2"])->name('.get_treatment_treatment_v2');
