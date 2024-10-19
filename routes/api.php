@@ -155,6 +155,7 @@ use App\Http\Controllers\Api\NoCacheControllers\DebateController;
 use App\Http\Controllers\Api\NoCacheControllers\DebateEkipUserController;
 use App\Http\Controllers\Api\NoCacheControllers\DebateUserController;
 use App\Http\Controllers\Api\NoCacheControllers\DebateVViewController;
+use App\Http\Controllers\Api\NoCacheControllers\PatientTypeAlterVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\SereServController;
 use App\Http\Controllers\Api\NoCacheControllers\SereServVView4Controller;
 use App\Http\Controllers\Api\NoCacheControllers\ServiceReqLViewController;
@@ -823,13 +824,10 @@ Route::group([
     /// Chi tiết các dịch vụ của y lệnh
     Route::apiResource('v1/sere-serv', SereServController::class)->only(['index', 'show']);
     Route::apiResource('v1/sere-serv-v-view-4', SereServVView4Controller::class)->only(['index', 'show']);
-
-
-    // // Patient Type Alter
-    // Route::group(['as' => 'HIS.Desktop.Plugins.CallPatientTypeAlter'], function () {
-    //     Route::get("v1/patient-type-alter/get-view", [PatientTypeAlterController::class, "patient_type_alter_get_view"])->name('.get_view');
-    //     Route::get("v2/patient-type-alter/get-view", [PatientTypeAlterController::class, "patient_type_alter_get_view_v2"])->name('.get_view_v2');
-    // });
+    // Đối tượng điều trị
+    Route::group(['as' => 'HIS.Desktop.Plugins.CallPatientTypeAlter'], function () {
+        Route::apiResource('v1/patient-type-alter-v-view', PatientTypeAlterVViewController::class)->only(['index', 'show']);
+    });
 
     // // Treatment
     // Route::get("v1/treatment/get-L-view", [TreatmentController::class, "treatment_get_L_view"])->name('.get_treatment_L_view');

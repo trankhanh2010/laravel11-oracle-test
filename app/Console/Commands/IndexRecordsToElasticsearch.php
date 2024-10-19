@@ -102,6 +102,7 @@ use App\Events\Elastic\PatientCase\CreatePatientCaseIndex;
 use App\Events\Elastic\PatientClassify\CreatePatientClassifyIndex;
 use App\Events\Elastic\PatientType\CreatePatientTypeIndex;
 use App\Events\Elastic\PatientTypeAllow\CreatePatientTypeAllowIndex;
+use App\Events\Elastic\PatientTypeAlterVView\CreatePatientTypeAlterVViewIndex;
 use App\Events\Elastic\PatientTypeRoom\CreatePatientTypeRoomIndex;
 use App\Events\Elastic\Position\CreatePositionIndex;
 use App\Events\Elastic\PreparationsBlood\CreatePreparationsBloodIndex;
@@ -255,6 +256,7 @@ use App\Repositories\PackingTypeRepository;
 use App\Repositories\PatientCaseRepository;
 use App\Repositories\PatientClassifyRepository;
 use App\Repositories\PatientTypeAllowRepository;
+use App\Repositories\PatientTypeAlterVViewRepository;
 use App\Repositories\PatientTypeRepository;
 use App\Repositories\PatientTypeRoomRepository;
 use App\Repositories\PositionRepository;
@@ -1001,6 +1003,12 @@ class IndexRecordsToElasticsearch extends Command
                 $batchSize = 10000;
                 event(new CreateSereServVView4Index($name_table));
                 app(SereServVView4Repository::class)->getDataFromDbToElastic($batchSize, null);
+                $results = null;
+                break;
+            case 'patient_type_alter_v_view':
+                $batchSize = 25000;
+                event(new CreatePatientTypeAlterVViewIndex($name_table));
+                app(PatientTypeAlterVViewRepository::class)->getDataFromDbToElastic($batchSize, null);
                 $results = null;
                 break;
             default:

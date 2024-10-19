@@ -117,6 +117,8 @@ class BaseApiCacheController extends Controller
     protected $fromTimeName = 'FromTime';
     protected $toTime;
     protected $toTimeName = 'ToTime';
+    protected $logTimeTo;
+    protected $logTimeToName = 'LogTimeTo';
     protected $executeDepartmentCode;
     protected $executeDepartmentCodeName = 'ExecuteDepartmentCode';
     protected $isSpecimen;
@@ -292,6 +294,8 @@ class BaseApiCacheController extends Controller
     protected $medicalContractName = 'medical_contract';
     protected $mestPatientType;
     protected $mestPatientTypeName = 'mest_patient_type';
+    protected $patientTypeAlterVView;
+    protected $patientTypeAlterVViewName = 'patient_type_alter_v_view';
     protected $mediStockMetyList;
     protected $mediStockMetyListName = 'medi_stock_mety';
     protected $user;
@@ -1050,6 +1054,13 @@ class BaseApiCacheController extends Controller
             if(!preg_match('/^\d{14}$/',  $this->toTime)){
                 $this->errors[$this->toTimeName] = $this->messFormat;
                 $this->toTime = null;
+            }
+        }
+        $this->logTimeTo = $this->paramRequest['ApiData']['LogTimeTo'] ?? null;
+        if($this->logTimeTo != null){
+            if(!preg_match('/^\d{14}$/',  $this->logTimeTo)){
+                $this->errors[$this->logTimeToName] = $this->messFormat;
+                $this->logTimeTo = null;
             }
         }
         $this->executeDepartmentCode = $this->paramRequest['ApiData']['ExecuteDepartmentCode'] ?? null;

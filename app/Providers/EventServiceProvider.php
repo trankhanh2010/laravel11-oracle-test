@@ -200,6 +200,8 @@ use App\Events\Elastic\PatientType\CreatePatientTypeIndex;
 use App\Events\Elastic\PatientType\InsertPatientTypeIndex;
 use App\Events\Elastic\PatientTypeAllow\CreatePatientTypeAllowIndex;
 use App\Events\Elastic\PatientTypeAllow\InsertPatientTypeAllowIndex;
+use App\Events\Elastic\PatientTypeAlterVView\CreatePatientTypeAlterVViewIndex;
+use App\Events\Elastic\PatientTypeAlterVView\InsertPatientTypeAlterVViewIndex;
 use App\Events\Elastic\PatientTypeRoom\CreatePatientTypeRoomIndex;
 use App\Events\Elastic\PatientTypeRoom\InsertPatientTypeRoomIndex;
 use App\Events\Elastic\Position\CreatePositionIndex;
@@ -513,6 +515,8 @@ use App\Listeners\Elastic\PatientType\ElasticCreatePatientTypeIndex;
 use App\Listeners\Elastic\PatientType\ElasticInsertPatientTypeIndex;
 use App\Listeners\Elastic\PatientTypeAllow\ElasticCreatePatientTypeAllowIndex;
 use App\Listeners\Elastic\PatientTypeAllow\ElasticInsertPatientTypeAllowIndex;
+use App\Listeners\Elastic\PatientTypeAlterVView\ElasticCreatePatientTypeAlterVViewIndex;
+use App\Listeners\Elastic\PatientTypeAlterVView\ElasticInsertPatientTypeAlterVViewIndex;
 use App\Listeners\Elastic\PatientTypeRoom\ElasticCreatePatientTypeRoomIndex;
 use App\Listeners\Elastic\PatientTypeRoom\ElasticInsertPatientTypeRoomIndex;
 use App\Listeners\Elastic\Position\ElasticCreatePositionIndex;
@@ -1729,6 +1733,13 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertSereServVView4Index::class => [
             ElasticInsertSereServVView4Index::class,
+        ],
+       
+        CreatePatientTypeAlterVViewIndex::class => [
+            ElasticCreatePatientTypeAlterVViewIndex::class,
+        ],
+        InsertPatientTypeAlterVViewIndex::class => [
+            ElasticInsertPatientTypeAlterVViewIndex::class,
         ],
     ];
 
