@@ -304,6 +304,8 @@ use App\Events\Elastic\TranPatiTech\CreateTranPatiTechIndex;
 use App\Events\Elastic\TranPatiTech\InsertTranPatiTechIndex;
 use App\Events\Elastic\TreatmentEndType\CreateTreatmentEndTypeIndex;
 use App\Events\Elastic\TreatmentEndType\InsertTreatmentEndTypeIndex;
+use App\Events\Elastic\TreatmentFeeView\CreateTreatmentFeeViewIndex;
+use App\Events\Elastic\TreatmentFeeView\InsertTreatmentFeeViewIndex;
 use App\Events\Elastic\TreatmentLView\CreateTreatmentLViewIndex;
 use App\Events\Elastic\TreatmentLView\InsertTreatmentLViewIndex;
 use App\Events\Elastic\TreatmentType\CreateTreatmentTypeIndex;
@@ -621,6 +623,8 @@ use App\Listeners\Elastic\TranPatiTech\ElasticCreateTranPatiTechIndex;
 use App\Listeners\Elastic\TranPatiTech\ElasticInsertTranPatiTechIndex;
 use App\Listeners\Elastic\TreatmentEndType\ElasticCreateTreatmentEndTypeIndex;
 use App\Listeners\Elastic\TreatmentEndType\ElasticInsertTreatmentEndTypeIndex;
+use App\Listeners\Elastic\TreatmentFeeView\ElasticCreateTreatmentFeeViewIndex;
+use App\Listeners\Elastic\TreatmentFeeView\ElasticInsertTreatmentFeeViewIndex;
 use App\Listeners\Elastic\TreatmentLView\ElasticCreateTreatmentLViewIndex;
 use App\Listeners\Elastic\TreatmentLView\ElasticInsertTreatmentLViewIndex;
 use App\Listeners\Elastic\TreatmentType\ElasticCreateTreatmentTypeIndex;
@@ -1751,6 +1755,13 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertTreatmentLViewIndex::class => [
             ElasticInsertTreatmentLViewIndex::class,
+        ],
+
+        CreateTreatmentFeeViewIndex::class => [
+            ElasticCreateTreatmentFeeViewIndex::class,
+        ],
+        InsertTreatmentFeeViewIndex::class => [
+            ElasticInsertTreatmentFeeViewIndex::class,
         ],
     ];
 

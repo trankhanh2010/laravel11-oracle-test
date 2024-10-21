@@ -161,6 +161,7 @@ use App\Http\Controllers\Api\NoCacheControllers\SereServVView4Controller;
 use App\Http\Controllers\Api\NoCacheControllers\ServiceReqLViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TestServiceReqListVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TrackingController;
+use App\Http\Controllers\Api\NoCacheControllers\TreatmentFeeViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TreatmentLViewController;
 use App\Http\Controllers\Api\NoCacheControllers\UserRoomVViewController;
 // Base Api
@@ -195,6 +196,7 @@ use App\Http\Controllers\Api\ValidateControllers\CheckRefectoryController;
 use App\Http\Controllers\Api\ValidateControllers\CheckSpecialityController;
 use App\Http\Controllers\Api\ValidateControllers\CheckServiceController;
 use App\Http\Controllers\Api\ValidateControllers\CheckTreatmentTypeController;
+use Illuminate\Support\Facades\DB;
 
 /*
 |--------------------------------------------------------------------------
@@ -208,6 +210,13 @@ use App\Http\Controllers\Api\ValidateControllers\CheckTreatmentTypeController;
 */
 Route::get("v1/info", function () { return phpinfo();})->name('.get_info');
 Route::get("v1/test", function () { return microtime(true) - LARAVEL_START;})->name('.get_test');
+Route::get("v1/test-db", function () {
+    $start = microtime(true); 
+    DB::connection('oracle_his')->getPdo();
+    $end = microtime(true); 
+    $executionTime = ($end - $start) * 1000; 
+    return $executionTime;
+    })->name('.get_test_db');
 Route::fallback(function () {
     return return_404_error_page_not_found();
 });
@@ -832,6 +841,7 @@ Route::group([
     /// Hồ sơ điều trị
     Route::group(['as' => 'HIS.Desktop.Plugins.TreatmentList'], function () {
         Route::apiResource('v1/treatment-l-view', TreatmentLViewController::class)->only(['index', 'show']);
+        Route::apiResource('v1/treatment-fee-view', TreatmentFeeViewController::class)->only(['index', 'show']);
         // Route::get("v1/treatment/get-treatment-with-patient-type-info-sdo", [TreatmentController::class, "treatment_get_treatment_with_patient_type_info_sdo"])->name('.get_treatment_treatment');
         // Route::get("v1/treatment/get-fee-view", [TreatmentController::class, "treatment_get_fee_view"])->name('.get_treatment_fee_view');
     });

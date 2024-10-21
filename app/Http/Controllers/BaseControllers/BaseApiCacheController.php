@@ -8,6 +8,7 @@ use App\Models\ACS\Module;
 use App\Models\ACS\Role;
 use App\Models\HIS\ActiveIngredient;
 use App\Models\HIS\Bed;
+use App\Models\HIS\Branch;
 use App\Models\HIS\Debate;
 use App\Models\HIS\Department;
 use App\Models\HIS\Employee;
@@ -28,6 +29,7 @@ use App\Models\HIS\ServiceReqType;
 use Illuminate\Http\Request;
 use App\Models\HIS\ServiceType;
 use App\Models\HIS\Treatment;
+use App\Models\HIS\TreatmentType;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
@@ -139,6 +141,16 @@ class BaseApiCacheController extends Controller
     protected $serviceReqIdsName = 'ServiceReqIds';
     protected $atc;
     protected $atcName = 'atc';
+    protected $tdlTreatmentTypeIds;
+    protected $tdlTreatmentTypeIdsName = 'TdlTreatmentTypeIds';
+    protected $branchId;
+    protected $branchIdName = 'BranchId';
+    protected $inDateFrom;
+    protected $inDateFromName = 'InDateFrom';
+    protected $inDateTo;
+    protected $inDateToName = 'InDateTo';
+    protected $isApproveStore;
+    protected $isApproveStoreName = 'IsApproveStore';
     protected $executeRoomId;
     protected $executeRoomIdName = 'ExecuteRoomId';
     protected $patientTypeAllowId;
@@ -308,6 +320,8 @@ class BaseApiCacheController extends Controller
     protected $mediStockMatyListName = 'medi_stock_maty';
     protected $materialType;
     protected $materialTypeName = 'material_type';
+    protected $treatmentFeeView;
+    protected $treatmentFeeViewName = 'treatment_fee_view';
     protected $mestExportRoom;
     protected $mestExportRoomName = 'mest_export_room';
     protected $exroRoom;
@@ -535,11 +549,12 @@ class BaseApiCacheController extends Controller
     protected $cache;
     protected $cacheName = 'Cache';
     protected $elasticIsActive;
-    protected $elasticSearchTypeArr = ['match', 'term', 'wildcard', 'query_string', 'multi_match', 'match_phrase', 'prefix', 'bool',];
+    protected $elasticSearchTypeArr = ['match', 'term', 'wildcard', 'query_string', 'multi_match', 'match_phrase', 'prefix', 'bool', 'custom'];
     protected $elasticSearchTypeMustShouldMustNot = ['match', 'term', 'wildcard', 'match_phrase', 'prefix', 'query_string', 'range'];
     protected $elasticRangeArr = ['gt', 'gte', 'lt', 'lte', 'format'];
     protected $elasticSearchType;
     protected $elasticSearchTypeName = 'ElasticSearchType';
+    protected $elasticCustom;
     protected $elasticField;
     protected $elasticFieldName = 'ElasticField';
     protected $elasticFields;
@@ -773,6 +788,7 @@ class BaseApiCacheController extends Controller
                 $this->errors[$this->elasticSearchTypeName] = $this->messFormat . ' Chỉ nhận giá trị thuộc mảng sau ' . implode(', ', $this->elasticSearchTypeArr);
             }
         }
+        $this->elasticCustom = ($this->paramRequest['ApiData']['ElasticSearchCustom'] ?? null);
 
         $this->elasticOperator = ($this->paramRequest['ApiData']['ElasticOperator'] ?? null);
         if ($this->elasticOperator != null) {
@@ -1109,6 +1125,20 @@ class BaseApiCacheController extends Controller
                 $this->intructionTimeFrom = null;
             }
         }
+        $this->inDateFrom = $this->paramRequest['ApiData']['InDateFrom'] ?? null;
+        if($this->inDateFrom != null){
+            if(!preg_match('/^\d{14}$/',  $this->inDateFrom)){
+                $this->errors[$this->inDateFromName] = $this->messFormat;
+                $this->inDateFrom = null;
+            }
+        }
+        $this->inDateTo = $this->paramRequest['ApiData']['InDateTo'] ?? null;
+        if($this->inDateTo != null){
+            if(!preg_match('/^\d{14}$/',  $this->inDateTo)){
+                $this->errors[$this->inDateToName] = $this->messFormat;
+                $this->inDateTo = null;
+            }
+        }
         $this->tdlPatientTypeIds = $this->paramRequest['ApiData']['TdlPatientTypeIds'] ?? null;
         if ($this->tdlPatientTypeIds != null) {
             foreach ($this->tdlPatientTypeIds as $key => $item) {
@@ -1120,6 +1150,21 @@ class BaseApiCacheController extends Controller
                     if (!PatientType::where('id', $item)->exists()) {
                         $this->errors[$this->tdlPatientTypeIdsName] = $this->messRecordId;
                         unset($this->tdlPatientTypeIds[$key]);
+                    }
+                }
+            }
+        }
+        $this->tdlTreatmentTypeIds = $this->paramRequest['ApiData']['TdlTreatmentTypeIds'] ?? null;
+        if ($this->tdlTreatmentTypeIds != null) {
+            foreach ($this->tdlTreatmentTypeIds as $key => $item) {
+                // Kiểm tra xem ID có tồn tại trong bảng  hay không
+                if (!is_numeric($item)) {
+                    $this->errors[$this->tdlTreatmentTypeIdsName] = $this->messFormat;
+                    unset($this->tdlTreatmentTypeIds[$key]);
+                } else {
+                    if (!TreatmentType::where('id', $item)->exists()) {
+                        $this->errors[$this->tdlTreatmentTypeIdsName] = $this->messRecordId;
+                        unset($this->tdlTreatmentTypeIds[$key]);
                     }
                 }
             }
@@ -1175,6 +1220,26 @@ class BaseApiCacheController extends Controller
                     $this->errors[$this->serviceTypeIdName] = $this->messRecordId;
                     $this->serviceTypeId = null;
                 }
+            }
+        }
+        $this->branchId = $this->paramRequest['ApiData']['BranchId'] ?? null;
+        if ($this->branchId !== null) {
+            // Kiểm tra xem ID có tồn tại trong bảng  hay không
+            if (!is_numeric($this->branchId)) {
+                $this->errors[$this->branchIdName] = $this->messFormat;
+                $this->branchId = null;
+            } else {
+                if (!Branch::where('id', $this->branchId)->exists()) {
+                    $this->errors[$this->branchIdName] = $this->messRecordId;
+                    $this->branchId = null;
+                }
+            }
+        }
+        $this->isApproveStore = $this->paramRequest['ApiData']['IsApproveStore'] ?? null;
+        if($this->isApproveStore !== null){
+            if (!is_bool($this->isApproveStore)) {
+                $this->errors[$this->isApproveStoreName] = $this->messFormat;
+                $this->isApproveStore = null;
             }
         }
         $this->serviceIds = $this->paramRequest['ApiData']['ServiceIds'] ?? null;

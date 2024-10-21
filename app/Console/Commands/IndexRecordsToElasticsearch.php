@@ -154,6 +154,7 @@ use App\Events\Elastic\TestType\CreateTestTypeIndex;
 use App\Events\Elastic\Tracking\CreateTrackingIndex;
 use App\Events\Elastic\TranPatiTech\CreateTranPatiTechIndex;
 use App\Events\Elastic\TreatmentEndType\CreateTreatmentEndTypeIndex;
+use App\Events\Elastic\TreatmentFeeView\CreateTreatmentFeeViewIndex;
 use App\Events\Elastic\TreatmentLView\CreateTreatmentLViewIndex;
 use App\Events\Elastic\TreatmentType\CreateTreatmentTypeIndex;
 use App\Events\Elastic\UnlimitReason\CreateUnlimitReasonIndex;
@@ -310,6 +311,7 @@ use App\Repositories\TestTypeRepository;
 use App\Repositories\TrackingRepository;
 use App\Repositories\TranPatiTechRepository;
 use App\Repositories\TreatmentEndTypeRepository;
+use App\Repositories\TreatmentFeeViewRepository;
 use App\Repositories\TreatmentLViewRepository;
 use App\Repositories\TreatmentTypeRepository;
 use App\Repositories\UnlimitReasonRepository;
@@ -1017,6 +1019,12 @@ class IndexRecordsToElasticsearch extends Command
                 $batchSize = 25000;
                 event(new CreateTreatmentLViewIndex($name_table));
                 app(TreatmentLViewRepository::class)->getDataFromDbToElastic($batchSize, null);
+                $results = null;
+                break;
+            case 'treatment_fee_view':
+                $batchSize = 25000;
+                event(new CreateTreatmentFeeViewIndex($name_table));
+                app(TreatmentFeeViewRepository::class)->getDataFromDbToElastic($batchSize, null);
                 $results = null;
                 break;
             default:

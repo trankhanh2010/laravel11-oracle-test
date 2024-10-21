@@ -13,6 +13,7 @@ use App\Repositories\TestServiceReqListVViewRepository;
 use App\Repositories\TrackingRepository;
 use App\Repositories\UserRoomVViewRepository;
 use App\Repositories\SereServVView4Repository;
+use App\Repositories\TreatmentFeeViewRepository;
 use App\Repositories\TreatmentLViewRepository;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -155,6 +156,9 @@ class ProcessElasticIndexingJob implements ShouldQueue
                 break;
             case 'treatment_l_view':
                 $repository = app(TreatmentLViewRepository::class);
+                break;
+            case 'treatment_fee_view':
+                $repository = app(TreatmentFeeViewRepository::class);
                 break;
             default:
                 break;
