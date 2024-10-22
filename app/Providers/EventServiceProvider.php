@@ -80,6 +80,8 @@ use App\Events\Elastic\DebateVView\InsertDebateVViewIndex;
 use App\Events\Elastic\DeleteIndex;
 use App\Events\Elastic\Department\CreateDepartmentIndex;
 use App\Events\Elastic\Department\InsertDepartmentIndex;
+use App\Events\Elastic\Dhst\CreateDhstIndex;
+use App\Events\Elastic\Dhst\InsertDhstIndex;
 use App\Events\Elastic\DiimType\CreateDiimTypeIndex;
 use App\Events\Elastic\DiimType\InsertDiimTypeIndex;
 use App\Events\Elastic\District\CreateDistrictIndex;
@@ -400,6 +402,8 @@ use App\Listeners\Elastic\DebateVView\ElasticCreateDebateVViewIndex;
 use App\Listeners\Elastic\DebateVView\ElasticInsertDebateVViewIndex;
 use App\Listeners\Elastic\Department\ElasticCreateDepartmentIndex;
 use App\Listeners\Elastic\Department\ElasticInsertDepartmentIndex;
+use App\Listeners\Elastic\Dhst\ElasticCreateDhstIndex;
+use App\Listeners\Elastic\Dhst\ElasticInsertDhstIndex;
 use App\Listeners\Elastic\DiimType\ElasticCreateDiimTypeIndex;
 use App\Listeners\Elastic\DiimType\ElasticInsertDiimTypeIndex;
 use App\Listeners\Elastic\District\ElasticCreateDistrictIndex;
@@ -1773,6 +1777,13 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertTreatmentBedRoomLViewIndex::class => [
             ElasticInsertTreatmentBedRoomLViewIndex::class,
+        ],
+
+        CreateDhstIndex::class => [
+            ElasticCreateDhstIndex::class,
+        ],
+        InsertDhstIndex::class => [
+            ElasticInsertDhstIndex::class,
         ],
     ];
 

@@ -42,6 +42,7 @@ use App\Events\Elastic\DebateType\CreateDebateTypeIndex;
 use App\Events\Elastic\DebateUser\CreateDebateUserIndex;
 use App\Events\Elastic\DebateVView\CreateDebateVViewIndex;
 use App\Events\Elastic\Department\CreateDepartmentIndex;
+use App\Events\Elastic\Dhst\CreateDhstIndex;
 use App\Events\Elastic\DiimType\CreateDiimTypeIndex;
 use App\Events\Elastic\District\CreateDistrictIndex;
 use App\Events\Elastic\DosageForm\CreateDosageFormIndex;
@@ -200,6 +201,7 @@ use App\Repositories\DebateTypeRepository;
 use App\Repositories\DebateUserRepository;
 use App\Repositories\DebateVViewRepository;
 use App\Repositories\DepartmentRepository;
+use App\Repositories\DhstRepository;
 use App\Repositories\DiimTypeRepository;
 use App\Repositories\DistrictRepository;
 use App\Repositories\DosageFormRepository;
@@ -1033,6 +1035,12 @@ class IndexRecordsToElasticsearch extends Command
                 $batchSize = 25000;
                 event(new CreateTreatmentBedRoomLViewIndex($name_table));
                 app(TreatmentBedRoomLViewRepository::class)->getDataFromDbToElastic($batchSize, null);
+                $results = null;
+                break;
+            case 'dhst':
+                $batchSize = 10000;
+                event(new CreateDhstIndex($name_table));
+                app(DhstRepository::class)->getDataFromDbToElastic($batchSize, null);
                 $results = null;
                 break;
             default:

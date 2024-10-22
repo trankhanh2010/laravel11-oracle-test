@@ -155,6 +155,7 @@ use App\Http\Controllers\Api\NoCacheControllers\DebateController;
 use App\Http\Controllers\Api\NoCacheControllers\DebateEkipUserController;
 use App\Http\Controllers\Api\NoCacheControllers\DebateUserController;
 use App\Http\Controllers\Api\NoCacheControllers\DebateVViewController;
+use App\Http\Controllers\Api\NoCacheControllers\DhstController;
 use App\Http\Controllers\Api\NoCacheControllers\PatientTypeAlterVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\SereServController;
 use App\Http\Controllers\Api\NoCacheControllers\SereServVView4Controller;
@@ -849,13 +850,10 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.TreatmentBedRoomList'], function () {
         Route::apiResource('v1/treatment-bed-room-l-view', TreatmentBedRoomLViewController::class)->only(['index', 'show']);
     });
-
-    // // DHST
-    // Route::group(['as' => 'HIS.Desktop.Plugins.HisDhst'], function () {
-    //     Route::get("v1/dhst/get", [DhstController::class, "dhst_get"])->name('.get');
-    //     Route::get("v2/dhst/get", [DhstController::class, "dhst_get_v2"])->name('.get_v2');
-    //     Route::get("v3/dhst/get", [DhstController::class, "dhst_get_v3"])->name('.get_v3');
-    // });
+    /// Dấu hiệu sinh tồn
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisDhst'], function () {
+        Route::apiResource('v1/dhst', DhstController::class)->only(['index', 'show']);
+    });
 
 
     // // Sere Serv Ext

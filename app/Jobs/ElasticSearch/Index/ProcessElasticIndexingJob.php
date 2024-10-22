@@ -6,6 +6,7 @@ use App\Repositories\DebateEkipUserRepository;
 use App\Repositories\DebateRepository;
 use App\Repositories\DebateUserRepository;
 use App\Repositories\DebateVViewRepository;
+use App\Repositories\DhstRepository;
 use App\Repositories\PatientTypeAlterVViewRepository;
 use App\Repositories\SereServRepository;
 use App\Repositories\ServiceReqLViewRepository;
@@ -163,6 +164,9 @@ class ProcessElasticIndexingJob implements ShouldQueue
                 break;
             case 'treatment_bed_room_l_view':
                 $repository = app(TreatmentBedRoomLViewRepository::class);
+                break;
+            case 'dhst':
+                $repository = app(DhstRepository::class);
                 break;
             default:
                 break;

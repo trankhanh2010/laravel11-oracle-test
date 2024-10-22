@@ -16,7 +16,7 @@ class Dhst extends Model
     ];
     public function antibiotic_request()
     {
-        return $this->belongsTo(AntibioticRequest::class);
+        return $this->hasMany(AntibioticRequest::class);
     }
     public function cares()
     {

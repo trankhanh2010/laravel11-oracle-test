@@ -160,7 +160,8 @@ return [
             'patient_type_alter_v_view',
             'treatment_l_view',
             'treatment_fee_view',
-            'treatment_bed_room_l_view'
+            'treatment_bed_room_l_view',
+            'dhst',
         ],
         'no_cache' => [
             'service_req_l_view',
@@ -176,7 +177,8 @@ return [
             'patient_type_alter_v_view',
             'treatment_l_view',
             'treatment_fee_view',
-            'treatment_bed_room_l_view,'
+            'treatment_bed_room_l_view',
+            'dhst',
         ],
         'json_decode' => [
             'medi_stock',
@@ -188,6 +190,7 @@ return [
             'debate',
             'test_service_req_list_v_view',
             'sere_serv',
+            'dhst',
         ],
         'error' => [
             'elasticsearch_service' => 'Có lỗi khi thực hiện thao tác với Elastic Search!',
