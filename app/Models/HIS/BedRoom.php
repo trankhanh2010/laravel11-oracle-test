@@ -14,7 +14,7 @@ class BedRoom extends Model
     use HasFactory, dinh_dang_ten_truong;
     // public $time = 604800;
     protected $connection = 'oracle_his'; // Kết nối CSDL mặc định
-    protected $table = 'HIS_BED_ROOM';
+    protected $table = 'his_bed_room';
     // Đặt thuộc tính $timestamps thành false để tắt tự động thêm created_at và updated_at
     public $timestamps = false;
     // protected $appends = [

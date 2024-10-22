@@ -11,7 +11,7 @@ class Room extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; // Kết nối CSDL mặc định
-    protected $table = 'HIS_ROOM';
+    protected $table = 'his_room';
     // Đặt thuộc tính $timestamps thành false để tắt tự động thêm created_at và updated_at
     public $timestamps = false;
     protected $guarded = [

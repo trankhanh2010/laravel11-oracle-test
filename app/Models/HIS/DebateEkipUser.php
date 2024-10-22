@@ -11,7 +11,7 @@ class DebateEkipUser extends Model
     use HasFactory, dinh_dang_ten_truong;
     
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_Debate_Ekip_User';
+    protected $table = 'his_debate_ekip_user';
     protected $fillable = [
 
     ];

@@ -10,7 +10,7 @@ class TreatmentLView extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'L_HIS_treatment';
+    protected $table = 'l_his_treatment';
     public $timestamps = false;
     protected $guarded = [
         'id',

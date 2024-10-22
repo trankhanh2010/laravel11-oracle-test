@@ -10,7 +10,7 @@ class MediReactSum extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_MEDI_REACT_SUM';
+    protected $table = 'his_medi_react_sum';
     protected $fillable = [
 
     ];

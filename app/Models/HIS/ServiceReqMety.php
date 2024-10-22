@@ -10,7 +10,7 @@ class ServiceReqMety extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_SERVICE_REQ_METY';
+    protected $table = 'his_service_req_mety';
     protected $fillable = [
 
     ];

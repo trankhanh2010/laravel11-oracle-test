@@ -10,7 +10,7 @@ class Module extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_acs'; 
-    protected $table = 'ACS_MODULE';
+    protected $table = 'acs_module';
     public $timestamps = false;
     protected $guarded = [
         'id',

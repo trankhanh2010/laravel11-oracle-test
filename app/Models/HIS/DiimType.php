@@ -10,7 +10,7 @@ class DiimType extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his';
-    protected $table = 'HIS_Diim_Type';
+    protected $table = 'his_diim_type';
     public $timestamps = false;
     protected $guarded = [
         'id',

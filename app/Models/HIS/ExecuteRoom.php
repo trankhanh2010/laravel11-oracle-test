@@ -11,7 +11,7 @@ class ExecuteRoom extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_EXECUTE_ROOM';
+    protected $table = 'his_execute_room';
     public $timestamps = false;
     protected $guarded = [
         'id',

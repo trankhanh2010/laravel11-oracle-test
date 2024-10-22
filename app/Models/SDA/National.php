@@ -10,7 +10,7 @@ class National extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_sda'; 
-    protected $table = 'SDA_National';
+    protected $table = 'sda_national';
     public $timestamps = false;
     protected $guarded = [
         'id',

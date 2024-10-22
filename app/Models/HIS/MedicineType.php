@@ -10,7 +10,7 @@ class MedicineType extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his';
-    protected $table = 'HIS_Medicine_Type';
+    protected $table = 'his_medicine_type';
     public $timestamps = false;
     protected $guarded = [
         'id',

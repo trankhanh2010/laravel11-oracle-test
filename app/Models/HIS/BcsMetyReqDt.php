@@ -11,7 +11,7 @@ class BcsMetyReqDt extends Model
     use HasFactory, dinh_dang_ten_truong;
     
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_BCS_METY_REQ_DT';
+    protected $table = 'his_bcs_mety_req_dt';
     protected $fillable = [
 
     ];

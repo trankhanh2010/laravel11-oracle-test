@@ -11,7 +11,7 @@ class AtcGroup extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his';
-    protected $table = 'HIS_Atc_Group';
+    protected $table = 'his_atc_group';
     public $timestamps = false;
     protected $guarded = [
         'id',

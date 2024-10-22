@@ -10,7 +10,7 @@ class RoomType extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_Room_Type';
+    protected $table = 'his_room_type';
     public $timestamps = false;
     protected $guarded = [
         'id',

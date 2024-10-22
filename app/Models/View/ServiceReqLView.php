@@ -10,7 +10,7 @@ class ServiceReqLView extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'L_HIS_SERVICE_REQ';
+    protected $table = 'l_his_service_req';
     public $timestamps = false;
     protected $guarded = [
         'id',

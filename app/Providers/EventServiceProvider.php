@@ -302,6 +302,8 @@ use App\Events\Elastic\Tracking\CreateTrackingIndex;
 use App\Events\Elastic\Tracking\InsertTrackingIndex;
 use App\Events\Elastic\TranPatiTech\CreateTranPatiTechIndex;
 use App\Events\Elastic\TranPatiTech\InsertTranPatiTechIndex;
+use App\Events\Elastic\TreatmentBedRoomLView\CreateTreatmentBedRoomLViewIndex;
+use App\Events\Elastic\TreatmentBedRoomLView\InsertTreatmentBedRoomLViewIndex;
 use App\Events\Elastic\TreatmentEndType\CreateTreatmentEndTypeIndex;
 use App\Events\Elastic\TreatmentEndType\InsertTreatmentEndTypeIndex;
 use App\Events\Elastic\TreatmentFeeView\CreateTreatmentFeeViewIndex;
@@ -621,6 +623,8 @@ use App\Listeners\Elastic\Tracking\ElasticCreateTrackingIndex;
 use App\Listeners\Elastic\Tracking\ElasticInsertTrackingIndex;
 use App\Listeners\Elastic\TranPatiTech\ElasticCreateTranPatiTechIndex;
 use App\Listeners\Elastic\TranPatiTech\ElasticInsertTranPatiTechIndex;
+use App\Listeners\Elastic\TreatmentBedRoomLView\ElasticCreateTreatmentBedRoomLViewIndex;
+use App\Listeners\Elastic\TreatmentBedRoomLView\ElasticInsertTreatmentBedRoomLViewIndex;
 use App\Listeners\Elastic\TreatmentEndType\ElasticCreateTreatmentEndTypeIndex;
 use App\Listeners\Elastic\TreatmentEndType\ElasticInsertTreatmentEndTypeIndex;
 use App\Listeners\Elastic\TreatmentFeeView\ElasticCreateTreatmentFeeViewIndex;
@@ -1762,6 +1766,13 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertTreatmentFeeViewIndex::class => [
             ElasticInsertTreatmentFeeViewIndex::class,
+        ],
+
+        CreateTreatmentBedRoomLViewIndex::class => [
+            ElasticCreateTreatmentBedRoomLViewIndex::class,
+        ],
+        InsertTreatmentBedRoomLViewIndex::class => [
+            ElasticInsertTreatmentBedRoomLViewIndex::class,
         ],
     ];
 

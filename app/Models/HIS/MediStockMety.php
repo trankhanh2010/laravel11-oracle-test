@@ -10,7 +10,7 @@ class MediStockMety extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his';
-    protected $table = 'HIS_Medi_Stock_Mety';
+    protected $table = 'his_medi_stock_mety';
     public $timestamps = false;
     protected $guarded = [
         'id',

@@ -10,7 +10,7 @@ class Employee extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his';
-    protected $table = 'HIS_Employee';
+    protected $table = 'his_employee';
     public $timestamps = false;
     protected $guarded = [
         'id',

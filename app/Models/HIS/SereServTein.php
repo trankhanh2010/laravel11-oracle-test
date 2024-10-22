@@ -10,7 +10,7 @@ class SereServTein extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_SERE_SERV_TEIN';
+    protected $table = 'his_sere_serv_tein';
     protected $fillable = [
 
     ];

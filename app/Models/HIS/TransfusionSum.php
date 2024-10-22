@@ -10,7 +10,7 @@ class TransfusionSum extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_TRANSFUSION_SUM';
+    protected $table = 'his_transfusion_sum';
     protected $fillable = [
 
     ];

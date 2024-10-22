@@ -11,7 +11,7 @@ class Service extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his';
-    protected $table = 'HIS_Service';
+    protected $table = 'his_service';
     public $timestamps = false;
     protected $guarded = [
         'id',

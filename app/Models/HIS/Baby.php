@@ -10,7 +10,7 @@ class Baby extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_BABY';
+    protected $table = 'his_baby';
     protected $fillable = [
 
     ];

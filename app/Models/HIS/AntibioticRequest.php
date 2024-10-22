@@ -10,7 +10,7 @@ class AntibioticRequest extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_ANTIBIOTIC_REQUEST';
+    protected $table = 'his_antibiotic_request';
     protected $fillable = [
 
     ];

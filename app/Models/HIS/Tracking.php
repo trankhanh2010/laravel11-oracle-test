@@ -10,7 +10,7 @@ class Tracking extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_Tracking';
+    protected $table = 'his_tracking';
     protected $fillable = [
 
     ];

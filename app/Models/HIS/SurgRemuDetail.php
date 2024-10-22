@@ -10,5 +10,5 @@ class SurgRemuDetail extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_Surg_Remu_Detail';
+    protected $table = 'his_surg_remu_detail';
 }

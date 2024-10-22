@@ -11,7 +11,7 @@ class MestPatientType extends Model
     use HasFactory, dinh_dang_ten_truong;
     
     protected $connection = 'oracle_his';
-    protected $table = 'HIS_Mest_Patient_Type';
+    protected $table = 'his_mest_patient_type';
     protected $fillable = [
         'medi_stock_id',
         'patient_type_id',

@@ -10,7 +10,7 @@ class TreatmentBedRoom extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_TREATMENT_BED_ROOM';
+    protected $table = 'his_treatment_bed_room';
     protected $fillable = [
 
     ];

@@ -10,7 +10,7 @@ class PackingType extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his';
-    protected $table = 'HIS_Packing_type';
+    protected $table = 'his_packing_type';
     protected $guarded = [
         'id',
     ];

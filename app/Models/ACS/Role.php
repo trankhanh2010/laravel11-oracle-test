@@ -10,7 +10,7 @@ class Role extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_acs'; 
-    protected $table = 'ACS_ROLE';
+    protected $table = 'acs_role';
     public $timestamps = false;
     protected $guarded = [
         'id',

@@ -10,7 +10,7 @@ class Speciality extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_Speciality';
+    protected $table = 'his_speciality';
     public $timestamps = false;
     protected $guarded = [
         'id',

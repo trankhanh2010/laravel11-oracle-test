@@ -11,7 +11,7 @@ class SeseDepoRepay extends Model
     use HasFactory, dinh_dang_ten_truong;
     
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_SESE_DEPO_REPAY';
+    protected $table = 'his_sese_depo_repay';
     protected $fillable = [
 
     ];

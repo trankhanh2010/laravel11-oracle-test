@@ -10,7 +10,7 @@ class MedicalContract extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_Medical_Contract';
+    protected $table = 'his_medical_contract';
     public $timestamps = false;
     protected $guarded = [
         'id',

@@ -10,7 +10,7 @@ class Province extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_sda'; 
-    protected $table = 'SDA_Province';
+    protected $table = 'sda_province';
     public $timestamps = false;
     protected $guarded = [
         'id',

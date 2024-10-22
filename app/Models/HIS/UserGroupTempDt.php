@@ -10,5 +10,5 @@ class UserGroupTempDt extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_User_Group_Temp_Dt';
+    protected $table = 'his_user_group_temp_dt';
 }

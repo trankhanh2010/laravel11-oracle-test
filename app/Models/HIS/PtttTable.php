@@ -10,7 +10,7 @@ class PtttTable extends Model
 {
     use HasFactory,  dinh_dang_ten_truong;
     protected $connection = 'oracle_his';
-    protected $table = 'HIS_Pttt_Table';
+    protected $table = 'his_pttt_table';
     public $timestamps = false;
     protected $guarded = [
         'id',

@@ -10,7 +10,7 @@ class IcdGroup extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_ICD_Group';
+    protected $table = 'his_icd_group';
     public $timestamps = false;
     protected $guarded = [
         'id',

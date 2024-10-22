@@ -10,7 +10,7 @@ class RehaSum extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_REHA_SUM';
+    protected $table = 'his_reha_sum';
     protected $fillable = [
 
     ];

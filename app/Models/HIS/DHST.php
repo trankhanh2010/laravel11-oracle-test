@@ -10,7 +10,7 @@ class Dhst extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_DHST';
+    protected $table = 'his_dhst';
     protected $fillable = [
 
     ];

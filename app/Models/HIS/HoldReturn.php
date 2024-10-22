@@ -10,7 +10,7 @@ class HoldReturn extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_HOLD_RETURN';
+    protected $table = 'his_hold_return';
     protected $fillable = [
 
     ];

@@ -10,7 +10,7 @@ class DebateVView extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'V_HIS_Debate';
+    protected $table = 'v_his_debate';
     public $timestamps = false;
     protected $guarded = [
         'id',

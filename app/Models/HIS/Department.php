@@ -15,7 +15,7 @@ class Department extends Model
     // protected $connection = 'oracle_data'; // Kết nối CSDL khác
     // public $time = 604800;
     protected $connection = 'oracle_his'; // Kết nối CSDL mặc định
-    protected $table = 'HIS_DEPARTMENT';
+    protected $table = 'his_department';
     protected $guarded = [
         'id'
     ];

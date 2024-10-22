@@ -10,7 +10,7 @@ class DebateType extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_Debate_type';
+    protected $table = 'his_debate_type';
     public $timestamps = false;
     protected $guarded = [
         'id',

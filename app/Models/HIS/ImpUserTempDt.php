@@ -10,5 +10,5 @@ class ImpUserTempDt extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_Imp_User_Temp_Dt';
+    protected $table = 'his_imp_user_temp_dt';
 }

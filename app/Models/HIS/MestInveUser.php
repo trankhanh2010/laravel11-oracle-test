@@ -10,5 +10,5 @@ class MestInveUser extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_Mest_Inve_User';
+    protected $table = 'his_mest_inve_user';
 }

@@ -10,7 +10,7 @@ class MedicinePaty extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_Medicine_Paty';
+    protected $table = 'his_medicine_paty';
     public $timestamps = false;
     protected $guarded = [
         'id',

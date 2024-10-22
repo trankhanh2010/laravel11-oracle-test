@@ -11,7 +11,7 @@ class PtttCondition extends Model
     use HasFactory, dinh_dang_ten_truong;
     
     protected $connection = 'oracle_his';
-    protected $table = 'HIS_Pttt_Condition';
+    protected $table = 'his_pttt_condition';
     public $timestamps = false;
     protected $guarded = [
         'id',

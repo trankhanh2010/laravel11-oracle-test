@@ -10,7 +10,7 @@ class PreparationsBlood extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_Preparations_Blood';
+    protected $table = 'his_preparations_blood';
     public $timestamps = false;
     protected $guarded = [
         'id',

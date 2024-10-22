@@ -10,7 +10,7 @@ class Transaction extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_TRANSACTION';
+    protected $table = 'his_transaction';
     protected $fillable = [
 
     ];

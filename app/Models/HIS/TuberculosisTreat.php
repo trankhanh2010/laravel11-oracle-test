@@ -10,7 +10,7 @@ class TuberculosisTreat extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_TUBERCULOSIS_TREAT';
+    protected $table = 'his_tuberculosis_treat';
     protected $fillable = [
 
     ];

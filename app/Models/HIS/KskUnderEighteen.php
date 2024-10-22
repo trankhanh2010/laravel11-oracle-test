@@ -10,7 +10,7 @@ class KskUnderEighteen extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_KSK_UNDER_EIGHTEEN';
+    protected $table = 'his_ksk_under_eighteen';
     protected $fillable = [
 
     ];

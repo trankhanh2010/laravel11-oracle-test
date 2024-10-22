@@ -10,7 +10,7 @@ class Relation extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_emr'; 
-    protected $table = 'EMR_Relation';
+    protected $table = 'emr_relation';
     public $timestamps = false;
     protected $guarded = [
         'id',

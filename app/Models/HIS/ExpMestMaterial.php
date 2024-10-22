@@ -10,7 +10,7 @@ class ExpMestMaterial extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_EXP_MEST_MATERIAL';
+    protected $table = 'his_exp_mest_material';
     protected $fillable = [
 
     ];

@@ -11,7 +11,7 @@ class Awareness extends Model
     use HasFactory, dinh_dang_ten_truong;
     
     protected $connection = 'oracle_his';
-    protected $table = 'HIS_Awareness';
+    protected $table = 'his_awareness';
     public $timestamps = false;
     protected $guarded = [
         'id',

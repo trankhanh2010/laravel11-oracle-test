@@ -153,6 +153,7 @@ use App\Events\Elastic\TestServiceReqListVView\CreateTestServiceReqListVViewInde
 use App\Events\Elastic\TestType\CreateTestTypeIndex;
 use App\Events\Elastic\Tracking\CreateTrackingIndex;
 use App\Events\Elastic\TranPatiTech\CreateTranPatiTechIndex;
+use App\Events\Elastic\TreatmentBedRoomLView\CreateTreatmentBedRoomLViewIndex;
 use App\Events\Elastic\TreatmentEndType\CreateTreatmentEndTypeIndex;
 use App\Events\Elastic\TreatmentFeeView\CreateTreatmentFeeViewIndex;
 use App\Events\Elastic\TreatmentLView\CreateTreatmentLViewIndex;
@@ -310,6 +311,7 @@ use App\Repositories\TestServiceReqRepository;
 use App\Repositories\TestTypeRepository;
 use App\Repositories\TrackingRepository;
 use App\Repositories\TranPatiTechRepository;
+use App\Repositories\TreatmentBedRoomLViewRepository;
 use App\Repositories\TreatmentEndTypeRepository;
 use App\Repositories\TreatmentFeeViewRepository;
 use App\Repositories\TreatmentLViewRepository;
@@ -1025,6 +1027,12 @@ class IndexRecordsToElasticsearch extends Command
                 $batchSize = 25000;
                 event(new CreateTreatmentFeeViewIndex($name_table));
                 app(TreatmentFeeViewRepository::class)->getDataFromDbToElastic($batchSize, null);
+                $results = null;
+                break;
+            case 'treatment_bed_room_l_view':
+                $batchSize = 25000;
+                event(new CreateTreatmentBedRoomLViewIndex($name_table));
+                app(TreatmentBedRoomLViewRepository::class)->getDataFromDbToElastic($batchSize, null);
                 $results = null;
                 break;
             default:

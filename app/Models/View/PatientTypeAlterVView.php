@@ -10,7 +10,7 @@ class PatientTypeAlterVView extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'V_HIS_patient_type_alter';
+    protected $table = 'v_his_patient_type_alter';
     public $timestamps = false;
     protected $guarded = [
         'id',

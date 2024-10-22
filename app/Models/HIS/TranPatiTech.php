@@ -10,7 +10,7 @@ class TranPatiTech extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_Tran_Pati_Tech';
+    protected $table = 'his_tran_pati_tech';
     public $timestamps = false;
     protected $guarded = [
         'id',

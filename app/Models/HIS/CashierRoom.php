@@ -10,7 +10,7 @@ class CashierRoom extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_Cashier_Room';
+    protected $table = 'his_cashier_room';
     public $timestamps = false;
     protected $guarded = [
         'id',

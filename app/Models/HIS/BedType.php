@@ -10,7 +10,7 @@ class BedType extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_Bed_Type';
+    protected $table = 'his_bed_type';
     public $timestamps = false;
     protected $guarded = [
         'id',

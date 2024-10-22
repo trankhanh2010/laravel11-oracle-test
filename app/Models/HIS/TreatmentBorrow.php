@@ -10,7 +10,7 @@ class TreatmentBorrow extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_TREATMENT_BORROW';
+    protected $table = 'his_treatment_borrow';
     protected $fillable = [
 
     ];

@@ -11,7 +11,7 @@ class Commune extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_sda'; 
-    protected $table = 'SDA_Commune';
+    protected $table = 'sda_commune';
     public $timestamps = false;
     protected $guarded = [
         'id',

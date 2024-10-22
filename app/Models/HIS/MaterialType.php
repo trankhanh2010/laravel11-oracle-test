@@ -10,7 +10,7 @@ class MaterialType extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his';
-    protected $table = 'HIS_Material_Type';
+    protected $table = 'his_material_type';
     protected $guarded = [
         'id',
     ];

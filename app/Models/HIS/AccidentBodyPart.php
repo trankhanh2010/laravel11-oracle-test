@@ -11,7 +11,7 @@ class AccidentBodyPart extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_Accident_Body_Part';
+    protected $table = 'his_accident_body_part';
     public $timestamps = false;
     protected $guarded = [
         'id',

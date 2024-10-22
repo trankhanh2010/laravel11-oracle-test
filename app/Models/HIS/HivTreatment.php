@@ -10,7 +10,7 @@ class HivTreatment extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_HIV_TREATMENT';
+    protected $table = 'his_hiv_treatment';
     protected $fillable = [
 
     ];

@@ -11,7 +11,7 @@ class MedicineUseForm extends Model
     use HasFactory, dinh_dang_ten_truong;
     
     protected $connection = 'oracle_his';
-    protected $table = 'HIS_Medicine_Use_Form';
+    protected $table = 'his_medicine_use_form';
     public $timestamps = false;
     protected $guarded = [
         'id',

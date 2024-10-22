@@ -10,5 +10,5 @@ class AccountBook extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_Account_Book';
+    protected $table = 'his_account_book';
 }

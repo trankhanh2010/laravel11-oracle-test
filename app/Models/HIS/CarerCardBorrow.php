@@ -10,7 +10,7 @@ class CarerCardBorrow extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_CARER_CARD_BORROW';
+    protected $table = 'his_carer_card_borrow';
     protected $fillable = [
 
     ];

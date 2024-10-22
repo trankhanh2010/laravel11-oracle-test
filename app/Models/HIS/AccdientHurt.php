@@ -10,7 +10,7 @@ class AccdientHurt extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_ACCIDENT_HURT';
+    protected $table = 'his_accident_hurt';
     protected $fillable = [
 
     ];

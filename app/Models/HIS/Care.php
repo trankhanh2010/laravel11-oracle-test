@@ -10,7 +10,7 @@ class Care extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_Care';
+    protected $table = 'his_care';
     protected $fillable = [
 
     ];

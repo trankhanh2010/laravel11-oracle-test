@@ -10,7 +10,7 @@ class ExamSereDire extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_EXAM_SERE_DIRE';
+    protected $table = 'his_exam_sere_dire';
     protected $fillable = [
 
     ];

@@ -10,7 +10,7 @@ class ServSegr extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_Serv_Segr';
+    protected $table = 'his_serv_segr';
     protected $fillable = [
         'service_group_id',
         'service_id',

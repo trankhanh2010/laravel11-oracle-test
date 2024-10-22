@@ -10,7 +10,7 @@ class MedicineInteractive extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_MEDICINE_INTERACTIVE';
+    protected $table = 'his_medicine_interactive';
     protected $fillable = [
 
     ];

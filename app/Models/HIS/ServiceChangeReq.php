@@ -10,7 +10,7 @@ class ServiceChangeReq extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_SERVICE_CHANGE_REQ';
+    protected $table = 'his_service_change_req';
     protected $fillable = [
 
     ];

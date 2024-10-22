@@ -10,7 +10,7 @@ class BHYTParam extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_BHYT_param';
+    protected $table = 'his_bhyt_param';
     public $timestamps = false;
     protected $guarded = [
         'id',

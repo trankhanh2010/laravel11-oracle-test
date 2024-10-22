@@ -11,7 +11,7 @@ class ExecuteRole extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_Execute_Role';
+    protected $table = 'his_execute_role';
     protected $guarded = [
         'id',
     ];

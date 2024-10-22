@@ -10,7 +10,7 @@ class SereServPttt extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his';
-    protected $table = 'HIS_Sere_Serv_Pttt';
+    protected $table = 'his_sere_serv_pttt';
     protected $fillable = [
 
     ];

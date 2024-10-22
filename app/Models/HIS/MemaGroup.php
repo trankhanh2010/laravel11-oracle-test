@@ -10,7 +10,7 @@ class MemaGroup extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his';
-    protected $table = 'HIS_Mema_Group';
+    protected $table = 'his_mema_group';
     protected $guarded = [
         'id',
     ];

@@ -10,7 +10,7 @@ class Atc extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_Atc';
+    protected $table = 'his_atc';
     public $timestamps = false;
     protected $guarded = [
         'id',

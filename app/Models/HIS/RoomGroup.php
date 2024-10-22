@@ -10,7 +10,7 @@ class RoomGroup extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_Room_Group';
+    protected $table = 'his_room_group';
     public $timestamps = false;
     protected $fillable = [
         'create_time',

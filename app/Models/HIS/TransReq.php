@@ -10,7 +10,7 @@ class TransReq extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_TRANS_REQ';
+    protected $table = 'his_trans_req';
     protected $fillable = [
 
     ];

@@ -10,7 +10,7 @@ class SaleProfitCFG extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_sale_profit_cfg';
+    protected $table = 'his_sale_profit_cfg';
     public $timestamps = false;
     protected $guarded = [
         'id',

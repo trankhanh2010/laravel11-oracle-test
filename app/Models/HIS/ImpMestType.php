@@ -10,7 +10,7 @@ class ImpMestType extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his';
-    protected $table = 'HIS_Imp_Mest_Type';
+    protected $table = 'his_imp_mest_type';
     protected $guarded = [
         'id',
     ];

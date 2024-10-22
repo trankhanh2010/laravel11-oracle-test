@@ -13,7 +13,7 @@ class MediStock extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his';
-    protected $table = 'HIS_Medi_Stock';
+    protected $table = 'his_medi_stock';
     protected $guarded = [
         'id',
     ];

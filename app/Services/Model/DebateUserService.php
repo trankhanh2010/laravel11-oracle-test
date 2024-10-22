@@ -25,7 +25,7 @@ class DebateUserService
     public function handleDataBaseSearch()
     {
         try {
-            $data = $this->debateUserRepository->view();
+            $data = $this->debateUserRepository->applyJoins();
             $data = $this->debateUserRepository->applyKeywordFilter($data, $this->params->keyword);
             $data = $this->debateUserRepository->applyIsActiveFilter($data, $this->params->isActive);
             $data = $this->debateUserRepository->applyIsDeleteFilter($data, $this->params->isDelete);
@@ -40,7 +40,7 @@ class DebateUserService
     public function handleDataBaseGetAll()
     {
         try {
-            $data = $this->debateUserRepository->view();
+            $data = $this->debateUserRepository->applyJoins();
             $data = $this->debateUserRepository->applyIsActiveFilter($data, $this->params->isActive);
             $data = $this->debateUserRepository->applyIsDeleteFilter($data, $this->params->isDelete);
             $count = $data->count();
@@ -54,7 +54,7 @@ class DebateUserService
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $data = $this->debateUserRepository->view()
+            $data = $this->debateUserRepository->applyJoins()
                 ->where('his_debate_user.id', $id);
             $data = $this->debateUserRepository->applyIsActiveFilter($data, $this->params->isActive);
             $data = $this->debateUserRepository->applyIsDeleteFilter($data, $this->params->isDelete);

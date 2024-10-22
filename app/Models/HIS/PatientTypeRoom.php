@@ -11,7 +11,7 @@ class PatientTypeRoom extends Model
     use HasFactory, dinh_dang_ten_truong;
     
     protected $connection = 'oracle_his'; // Kết nối CSDL mặc định
-    protected $table = 'HIS_Patient_Type_Room';
+    protected $table = 'his_patient_type_room';
     public $timestamps = false;
     protected $guarded = [
         'id',

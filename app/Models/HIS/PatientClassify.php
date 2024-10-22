@@ -11,7 +11,7 @@ class PatientClassify extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his';
-    protected $table = 'HIS_Patient_Classify';
+    protected $table = 'his_patient_classify';
     public $timestamps = false;
     protected $guarded = [
         'id',

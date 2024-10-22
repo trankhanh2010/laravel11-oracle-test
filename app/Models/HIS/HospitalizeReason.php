@@ -11,7 +11,7 @@ class HospitalizeReason extends Model
     use HasFactory, dinh_dang_ten_truong;
     
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_Hospitalize_Reason';
+    protected $table = 'his_hospitalize_reason';
     public $timestamps = false;
     protected $guarded = [
         'id',

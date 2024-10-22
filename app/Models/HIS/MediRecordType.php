@@ -10,7 +10,7 @@ class MediRecordType extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_Medi_Record_Type';
+    protected $table = 'his_medi_record_type';
     public $timestamps = false;
     protected $guarded = [
         'id',

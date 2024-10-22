@@ -10,7 +10,7 @@ class DosageForm extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_Dosage_Form';
+    protected $table = 'his_dosage_form';
     public $timestamps = false;
     protected $guarded = [
         'id',

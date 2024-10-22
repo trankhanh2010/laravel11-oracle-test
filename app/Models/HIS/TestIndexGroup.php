@@ -10,7 +10,7 @@ class TestIndexGroup extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his';
-    protected $table = 'HIS_test_index_group';
+    protected $table = 'his_test_index_group';
     public $timestamps = false;
     protected $guarded = [
         'id',

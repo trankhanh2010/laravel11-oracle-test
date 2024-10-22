@@ -10,7 +10,7 @@ class ServiceRoom extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_Service_Room';
+    protected $table = 'his_service_room';
     protected $fillable = [
         'service_id',
         'room_id'

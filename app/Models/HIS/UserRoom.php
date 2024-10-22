@@ -10,7 +10,7 @@ class UserRoom extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; // Kết nối CSDL mặc định
-    protected $table = 'HIS_User_Room';
+    protected $table = 'his_user_room';
     protected $fillable = [
 
     ];

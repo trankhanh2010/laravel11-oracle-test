@@ -8,6 +8,7 @@ use App\Models\ACS\Module;
 use App\Models\ACS\Role;
 use App\Models\HIS\ActiveIngredient;
 use App\Models\HIS\Bed;
+use App\Models\HIS\BedRoom;
 use App\Models\HIS\Branch;
 use App\Models\HIS\Debate;
 use App\Models\HIS\Department;
@@ -181,6 +182,14 @@ class BaseApiCacheController extends Controller
     protected $notInServiceReqTypeIdsName = 'NotInServiceReqTypeIds';
     protected $serviceReqId;
     protected $serviceReqIdName = 'ServiceReqId';
+    protected $bedRoomIds;
+    protected $bedRoomIdsName = 'BedRoomIds';
+    protected $addTimeTo;
+    protected $addTimeToName = 'AddTimeTo';
+    protected $addTimeFrom;
+    protected $addTimeFromName = 'AddTimeFrom';
+    protected $isInRoom;
+    protected $isInRoomName = 'IsInRoom';
     protected $patientTypeIdsString;
     protected $serviceTypeIdsString;
 
@@ -208,6 +217,8 @@ class BaseApiCacheController extends Controller
     protected $testIndexGroupName = 'test_index_group';
     protected $branch;
     protected $branchName = "branch";
+    protected $treatmentBedRoomLView;
+    protected $treatmentBedRoomLViewName = 'treatment_bed_room_l_view';
     protected $district;
     protected $districtName = "district";
     protected $mediStock;
@@ -928,6 +939,42 @@ class BaseApiCacheController extends Controller
                         unset($this->serviceReqIds[$key]);
                     }
                 }
+            }
+        }
+        $this->bedRoomIds = $this->paramRequest['ApiData']['BedRoomIds'] ?? null;
+        if ($this->bedRoomIds != null) {
+            foreach ($this->bedRoomIds as $key => $item) {
+                // Kiểm tra xem ID có tồn tại trong bảng  hay không
+                if (!is_numeric($item)) {
+                    $this->errors[$this->bedRoomIdsName] = $this->messFormat;
+                    unset($this->bedRoomIds[$key]);
+                } else {
+                    if (!BedRoom::where('id', $item)->exists()) {
+                        $this->errors[$this->bedRoomIdsName] = $this->messRecordId;
+                        unset($this->bedRoomIds[$key]);
+                    }
+                }
+            }
+        }
+        $this->addTimeTo = $this->paramRequest['ApiData']['AddTimeTo'] ?? null;
+        if($this->addTimeTo != null){
+            if(!preg_match('/^\d{14}$/',  $this->addTimeTo)){
+                $this->errors[$this->addTimeToName] = $this->messFormat;
+                $this->addTimeTo = null;
+            }
+        }
+        $this->addTimeFrom = $this->paramRequest['ApiData']['AddTimeFrom'] ?? null;
+        if($this->addTimeFrom != null){
+            if(!preg_match('/^\d{14}$/',  $this->addTimeFrom)){
+                $this->errors[$this->addTimeFromName] = $this->messFormat;
+                $this->addTimeFrom = null;
+            }
+        }
+        $this->isInRoom = $this->paramRequest['ApiData']['IsInRoom'] ?? null;
+        if($this->isInRoom !== null){
+            if (!is_bool($this->isInRoom)) {
+                $this->errors[$this->isInRoomName] = $this->messFormat;
+                $this->isInRoom = null;
             }
         }
         $this->serviceId = $this->paramRequest['ApiData']['ServiceId'] ?? null;

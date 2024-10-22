@@ -10,7 +10,7 @@ class MrCheckSummary extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_MR_CHECK_SUMMARY';
+    protected $table = 'his_mr_check_summary';
     protected $fillable = [
 
     ];

@@ -10,7 +10,7 @@ class GroupType extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_sda';
-    protected $table = 'SDA_Group_Type';
+    protected $table = 'sda_group_type';
     public $timestamps = false;
     protected $guarded = [
         'id',

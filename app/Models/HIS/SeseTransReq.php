@@ -11,7 +11,7 @@ class SeseTransReq extends Model
     use HasFactory, dinh_dang_ten_truong;
     
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_SESE_TRANS_REQ';
+    protected $table = 'his_sese_trans_req';
     protected $fillable = [
 
     ];

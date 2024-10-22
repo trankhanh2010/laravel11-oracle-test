@@ -12,7 +12,7 @@ class DataStore extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his';
-    protected $table = 'HIS_Data_Store';
+    protected $table = 'his_data_store';
     protected $guarded = [
         'id',
     ];

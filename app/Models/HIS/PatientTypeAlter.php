@@ -10,7 +10,7 @@ class PatientTypeAlter extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_PATIENT_TYPE_ALTER';
+    protected $table = 'his_patient_type_alter';
     public $timestamps = false;
     protected $guarded = [
         'id',

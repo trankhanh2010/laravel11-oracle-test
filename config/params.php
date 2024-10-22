@@ -160,6 +160,7 @@ return [
             'patient_type_alter_v_view',
             'treatment_l_view',
             'treatment_fee_view',
+            'treatment_bed_room_l_view'
         ],
         'no_cache' => [
             'service_req_l_view',
@@ -175,6 +176,7 @@ return [
             'patient_type_alter_v_view',
             'treatment_l_view',
             'treatment_fee_view',
+            'treatment_bed_room_l_view,'
         ],
         'json_decode' => [
             'medi_stock',
@@ -370,6 +372,7 @@ return [
             'patient_type_alter_v_view' => 'Có lỗi khi thực hiện thao tác với bảng Đối tượng điều trị!',
             'treatment_l_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm Hồ sơ điều trị!',
             'treatment_fee_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm Treatment Fee!',
+            'treatment_bed_room_l_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm Lịch sử buồng bệnh!',
 
         ]
     ]

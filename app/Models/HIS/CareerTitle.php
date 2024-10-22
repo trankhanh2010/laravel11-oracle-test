@@ -10,7 +10,7 @@ class CareerTitle extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his';
-    protected $table = 'HIS_Career_Title';
+    protected $table = 'his_career_title';
     public $timestamps = false;
     protected $guarded = [
         'id',

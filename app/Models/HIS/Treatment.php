@@ -10,7 +10,7 @@ class Treatment extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; // Kết nối CSDL mặc định
-    protected $table = 'HIS_Treatment';
+    protected $table = 'his_treatment';
     protected $fillable = [
 
     ];

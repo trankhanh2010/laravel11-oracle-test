@@ -10,7 +10,7 @@ class Prepare extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_PREPARE';
+    protected $table = 'his_prepare';
     protected $fillable = [
 
     ];

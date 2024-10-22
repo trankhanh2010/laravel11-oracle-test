@@ -10,7 +10,7 @@ class KskGeneral extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_KSK_GENERAL';
+    protected $table = 'his_ksk_general';
     protected $fillable = [
 
     ];

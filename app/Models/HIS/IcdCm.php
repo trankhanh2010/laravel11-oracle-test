@@ -10,7 +10,7 @@ class IcdCm extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_Icd_Cm';
+    protected $table = 'his_icd_cm';
     public $timestamps = false;
     protected $guarded = [
         'id',

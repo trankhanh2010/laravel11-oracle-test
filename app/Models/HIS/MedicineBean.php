@@ -11,7 +11,7 @@ class MedicineBean extends Model
     use HasFactory, dinh_dang_ten_truong;
     
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_MEDICINE_BEAN';
+    protected $table = 'his_medicine_bean';
     protected $fillable = [
 
     ];

@@ -10,7 +10,7 @@ class PtttGroup extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_Pttt_Group';
+    protected $table = 'his_pttt_group';
     public $timestamps = false;
     protected $guarded = [
         'id',

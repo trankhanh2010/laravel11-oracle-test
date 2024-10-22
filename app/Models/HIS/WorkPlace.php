@@ -11,7 +11,7 @@ class WorkPlace extends Model
     use HasFactory, dinh_dang_ten_truong;
     
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_Work_Place';
+    protected $table = 'his_work_place';
     public $timestamps = false;
     protected $guarded = [
         'id',

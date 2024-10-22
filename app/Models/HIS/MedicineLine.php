@@ -11,7 +11,7 @@ class MedicineLine extends Model
     use HasFactory, dinh_dang_ten_truong;
     
     protected $connection = 'oracle_his';
-    protected $table = 'HIS_Medicine_Line';
+    protected $table = 'his_medicine_line';
     public $timestamps = false;
     protected $guarded = [
         'id',

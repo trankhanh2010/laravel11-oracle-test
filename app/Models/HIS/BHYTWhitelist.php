@@ -10,7 +10,7 @@ class BHYTWhitelist extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_BHYT_Whitelist';
+    protected $table = 'his_bhyt_whitelist';
     public $timestamps = false;
     protected $guarded = [
         'id',

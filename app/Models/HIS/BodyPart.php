@@ -10,7 +10,7 @@ class BodyPart extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his';
-    protected $table = 'HIS_Body_Part';
+    protected $table = 'his_body_part';
     protected $guarded = [
         'id',
     ];

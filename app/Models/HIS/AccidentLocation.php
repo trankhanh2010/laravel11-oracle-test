@@ -11,7 +11,7 @@ class AccidentLocation extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_Accident_Location';
+    protected $table = 'his_accident_location';
     public $timestamps = false;
     protected $guarded = [
         'id',

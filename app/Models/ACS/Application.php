@@ -10,7 +10,7 @@ class Application extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_acs'; 
-    protected $table = 'ACS_application';
+    protected $table = 'acs_application';
     public $timestamps = false;
     protected $guarded = [
         'id',

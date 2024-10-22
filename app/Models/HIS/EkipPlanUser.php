@@ -10,5 +10,5 @@ class EkipPlanUser extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_Ekip_Plan_User';
+    protected $table = 'his_ekip_plan_user';
 }

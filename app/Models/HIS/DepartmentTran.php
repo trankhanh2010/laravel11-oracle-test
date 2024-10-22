@@ -10,7 +10,7 @@ class DepartmentTran extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_DEPARTMENT_TRAN';
+    protected $table = 'his_department_tran';
     protected $fillable = [
 
     ];

@@ -14,7 +14,7 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable, dinh_dang_ten_truong;
     protected $connection = 'oracle_acs'; // Kết nối CSDL khác
-    protected $table = 'ACS_USER';
+    protected $table = 'acs_user';
 
     protected $fillable = [
         'loginname',

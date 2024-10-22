@@ -10,7 +10,7 @@ class Htu extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_Htu';
+    protected $table = 'his_htu';
     public $timestamps = false;
     protected $guarded = [
         'id',

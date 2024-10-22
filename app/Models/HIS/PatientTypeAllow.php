@@ -10,7 +10,7 @@ class PatientTypeAllow extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_patient_type_allow';
+    protected $table = 'his_patient_type_allow';
     public $timestamps = false;
     protected $guarded = [
         'id',

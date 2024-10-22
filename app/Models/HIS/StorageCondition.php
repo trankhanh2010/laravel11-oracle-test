@@ -10,7 +10,7 @@ class StorageCondition extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_Storage_Condition';
+    protected $table = 'his_storage_condition';
     public $timestamps = false;
     protected $guarded = [
         'id',

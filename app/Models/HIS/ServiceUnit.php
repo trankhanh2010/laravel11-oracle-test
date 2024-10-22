@@ -10,7 +10,7 @@ class ServiceUnit extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his';
-    protected $table = 'HIS_Service_Unit';
+    protected $table = 'his_service_unit';
     public $timestamps = false;
     protected $guarded = [
         'id',

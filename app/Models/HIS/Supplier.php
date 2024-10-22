@@ -10,7 +10,7 @@ class Supplier extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_Supplier';
+    protected $table = 'his_supplier';
     public $timestamps = false;
     protected $guarded = [
         'id',

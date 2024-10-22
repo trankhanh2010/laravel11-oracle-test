@@ -10,7 +10,7 @@ class ImpMestMediReq extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_IMP_MEST_MEDI_REQ';
+    protected $table = 'his_imp_mest_medi_req';
     protected $fillable = [
 
     ];

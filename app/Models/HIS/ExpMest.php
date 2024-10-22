@@ -10,7 +10,7 @@ class ExpMest extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_Exp_Mest';
+    protected $table = 'his_exp_mest';
     protected $fillable = [
 
     ];

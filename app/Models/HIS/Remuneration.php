@@ -10,5 +10,5 @@ class Remuneration extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_Remuneration';
+    protected $table = 'his_remuneration';
 }

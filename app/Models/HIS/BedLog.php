@@ -10,7 +10,7 @@ class BedLog extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_BED_LOG';
+    protected $table = 'his_bed_log';
     protected $fillable = [
 
     ];

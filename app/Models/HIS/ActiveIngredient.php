@@ -11,7 +11,7 @@ class ActiveIngredient extends Model
     use HasFactory, dinh_dang_ten_truong;
     
     protected $connection = 'oracle_his';
-    protected $table = 'HIS_Active_Ingredient';
+    protected $table = 'his_active_ingredient';
     protected $fillable = [
 
     ];

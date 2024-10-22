@@ -10,7 +10,7 @@ class PtttGroupBest extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_Pttt_Group_Best';
+    protected $table = 'his_pttt_group_best';
     public $timestamps = false;
     protected $guarded = [
         'id',

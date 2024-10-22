@@ -10,7 +10,7 @@ class ServiceType extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his';
-    protected $table = 'HIS_Service_Type';    
+    protected $table = 'his_service_type';    
     public $timestamps = false;
     protected $guarded = [
         'id',

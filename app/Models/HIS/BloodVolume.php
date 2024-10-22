@@ -11,7 +11,7 @@ class BloodVolume extends Model
     use HasFactory, dinh_dang_ten_truong;
     
     protected $connection = 'oracle_his';
-    protected $table = 'HIS_Blood_Volume';
+    protected $table = 'his_blood_volume';
     public $timestamps = false;
     protected $guarded = [
         'id',

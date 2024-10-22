@@ -11,7 +11,7 @@ class Refectory extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_Refectory';
+    protected $table = 'his_refectory';
     public $timestamps = false;
     protected $guarded = [
         'id',

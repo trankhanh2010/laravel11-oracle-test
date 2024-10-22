@@ -10,7 +10,7 @@ class MestRoom extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_Mest_Room';
+    protected $table = 'his_mest_room';
     public $timestamps = false;
     protected $guarded = [
         'id',

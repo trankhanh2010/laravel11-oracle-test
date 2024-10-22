@@ -10,7 +10,7 @@ class ExpBltyService extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_EXP_BLTY_SERVICE';
+    protected $table = 'his_exp_blty_service';
     protected $fillable = [
 
     ];

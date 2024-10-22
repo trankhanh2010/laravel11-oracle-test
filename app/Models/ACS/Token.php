@@ -11,7 +11,7 @@ class Token extends Model
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_acs'; // Kết nối CSDL khác
     // protected $connection = 'oracle'; // Kết nối CSDL mặc định
-    protected $table = 'ACS_TOKEN';
+    protected $table = 'acs_token';
 
 
 }

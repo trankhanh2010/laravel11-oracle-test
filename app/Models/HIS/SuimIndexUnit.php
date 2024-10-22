@@ -10,7 +10,7 @@ class SuimIndexUnit extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_Suim_Index_Unit';
+    protected $table = 'his_suim_index_unit';
     public $timestamps = false;
     protected $guarded = [
         'id',

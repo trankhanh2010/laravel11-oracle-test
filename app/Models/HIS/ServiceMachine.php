@@ -10,7 +10,7 @@ class ServiceMachine extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his';
-    protected $table = 'HIS_Service_Machine';
+    protected $table = 'his_service_machine';
     protected $fillable = [
         'service_id',
         'machine_id'

@@ -10,7 +10,7 @@ class ExecuteRoleUser extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_Execute_Role_User';
+    protected $table = 'his_execute_role_user';
     protected $fillable = [
         'execute_role_id',
         'loginname'

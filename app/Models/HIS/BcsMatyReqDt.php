@@ -10,7 +10,7 @@ class BcsMatyReqDt extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_BCS_MATY_REQ_DT';
+    protected $table = 'his_bcs_maty_req_dt';
     protected $fillable = [
 
     ];

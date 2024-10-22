@@ -10,7 +10,7 @@ class BHYTBlacklist extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_BHYT_Blacklist';
+    protected $table = 'his_bhyt_blacklist';
     public $timestamps = false;
     protected $guarded = [
         'id',

@@ -10,7 +10,7 @@ class BedBsty extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_Bed_Bsty';
+    protected $table = 'his_bed_bsty';
     protected $fillable = [
         'bed_id',
         'bed_service_type_id',

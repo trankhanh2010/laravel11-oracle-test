@@ -10,7 +10,7 @@ class MaterialBean extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_MATERIAL_BEAN';
+    protected $table = 'his_material_bean';
     protected $fillable = [
 
     ];

@@ -10,7 +10,7 @@ class MedicalAssessment extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_MEDICAL_ASSESSMENT';
+    protected $table = 'his_medical_assessment';
     protected $fillable = [
 
     ];

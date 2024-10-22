@@ -11,7 +11,7 @@ class PtttCatastrophe extends Model
     use HasFactory, dinh_dang_ten_truong;
     
     protected $connection = 'oracle_his';
-    protected $table = 'HIS_Pttt_Catastrophe';
+    protected $table = 'his_pttt_catastrophe';
     public $timestamps = false;
     protected $guarded = [
         'id',

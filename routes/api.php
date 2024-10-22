@@ -161,6 +161,7 @@ use App\Http\Controllers\Api\NoCacheControllers\SereServVView4Controller;
 use App\Http\Controllers\Api\NoCacheControllers\ServiceReqLViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TestServiceReqListVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TrackingController;
+use App\Http\Controllers\Api\NoCacheControllers\TreatmentBedRoomLViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TreatmentFeeViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TreatmentLViewController;
 use App\Http\Controllers\Api\NoCacheControllers\UserRoomVViewController;
@@ -843,18 +844,11 @@ Route::group([
         Route::apiResource('v1/treatment-l-view', TreatmentLViewController::class)->only(['index', 'show']);
         Route::apiResource('v1/treatment-fee-view', TreatmentFeeViewController::class)->only(['index', 'show']);
         // Route::get("v1/treatment/get-treatment-with-patient-type-info-sdo", [TreatmentController::class, "treatment_get_treatment_with_patient_type_info_sdo"])->name('.get_treatment_treatment');
-        // Route::get("v1/treatment/get-fee-view", [TreatmentController::class, "treatment_get_fee_view"])->name('.get_treatment_fee_view');
     });
-
-
-    // Route::get("v2/treatment/get-L-view", [TreatmentController::class, "treatment_get_L_view_v2"])->name('.get_treatment_L_view_v2');
-    // Route::get("v2/treatment/get-treatment-with-patient-type-info-sdo", [TreatmentController::class, "treatment_get_treatment_with_patient_type_info_sdo_v2"])->name('.get_treatment_treatment_v2');
-
-    // // Treatment Bed Room
-    // Route::group(['as' => 'HIS.Desktop.Plugins.TreatmentBedRoomList'], function () {
-    //     Route::get("v1/treatment-bed-room/get-L-view", [TreatmentBedRoomController::class, "treatment_bed_room_get_L_view"])->name('.get_L_view');
-    //     Route::get("v2/treatment-bed-room/get-L-view", [TreatmentBedRoomController::class, "treatment_bed_room_get_L_view_v2"])->name('.get_L_view_v2');
-    // });
+    /// Treatment Bed Room
+    Route::group(['as' => 'HIS.Desktop.Plugins.TreatmentBedRoomList'], function () {
+        Route::apiResource('v1/treatment-bed-room-l-view', TreatmentBedRoomLViewController::class)->only(['index', 'show']);
+    });
 
     // // DHST
     // Route::group(['as' => 'HIS.Desktop.Plugins.HisDhst'], function () {

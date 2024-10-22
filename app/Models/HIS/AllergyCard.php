@@ -10,7 +10,7 @@ class AllergyCard extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_ALLERGY_CARD';
+    protected $table = 'his_allergy_card';
     protected $fillable = [
 
     ];

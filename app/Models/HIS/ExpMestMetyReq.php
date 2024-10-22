@@ -10,7 +10,7 @@ class ExpMestMetyReq extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_EXP_MEST_METY_REQ';
+    protected $table = 'his_exp_mest_mety_req';
     protected $fillable = [
 
     ];

@@ -10,7 +10,7 @@ class LocationStore extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his';
-    protected $table = 'HIS_Location_Store';
+    protected $table = 'his_location_store';
     public $timestamps = false;
     protected $guarded = [
         'id',

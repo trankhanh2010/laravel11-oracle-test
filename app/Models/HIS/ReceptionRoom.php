@@ -11,7 +11,7 @@ class ReceptionRoom extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_Reception_Room';
+    protected $table = 'his_reception_room';
 
     public $timestamps = false;
     protected $appends = [

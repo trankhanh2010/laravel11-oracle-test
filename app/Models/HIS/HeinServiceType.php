@@ -10,5 +10,5 @@ class HeinServiceType extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his';
-    protected $table = 'HIS_Hein_Service_Type';
+    protected $table = 'his_hein_service_type';
 }

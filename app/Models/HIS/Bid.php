@@ -10,7 +10,7 @@ class Bid extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_Bid';
+    protected $table = 'his_bid';
     public $timestamps = false;
     protected $guarded = [
         'id',

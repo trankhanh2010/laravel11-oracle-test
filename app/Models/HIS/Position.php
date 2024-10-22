@@ -10,7 +10,7 @@ class Position extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'HIS_position';
+    protected $table = 'his_position';
     public $timestamps = false;
     protected $guarded = [
         'id',

@@ -20,13 +20,6 @@ class DebateUserRepository
                 'his_debate_user.*'
             );
     }
-    public function view()
-    {
-        return $this->debateUser
-            ->select(
-                'his_debate_user.*',
-                );
-    }
     public function applyKeywordFilter($query, $keyword)
     {
         return $query->where(function ($query) use ($keyword) {

@@ -10,7 +10,7 @@ class Religion extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_sda';
-    protected $table = 'SDA_Religion';
+    protected $table = 'sda_religion';
     protected $guarded = [
         'id',
     ];
