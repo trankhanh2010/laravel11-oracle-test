@@ -162,6 +162,7 @@ return [
             'treatment_fee_view',
             'treatment_bed_room_l_view',
             'dhst',
+            'sere_serv_ext',
         ],
         'no_cache' => [
             'service_req_l_view',
@@ -179,6 +180,7 @@ return [
             'treatment_fee_view',
             'treatment_bed_room_l_view',
             'dhst',
+            'sere_serv_ext',
         ],
         'json_decode' => [
             'medi_stock',
@@ -376,6 +378,7 @@ return [
             'treatment_l_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm Hồ sơ điều trị!',
             'treatment_fee_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm Treatment Fee!',
             'treatment_bed_room_l_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm Lịch sử buồng bệnh!',
+            'sere_serv_ext' => 'Có lỗi khi thực hiện thao tác với bảng Sere Serv Ext!',
 
         ]
     ]

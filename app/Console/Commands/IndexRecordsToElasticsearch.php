@@ -127,6 +127,7 @@ use App\Events\Elastic\RoomGroup\CreateRoomGroupIndex;
 use App\Events\Elastic\RoomType\CreateRoomTypeIndex;
 use App\Events\Elastic\SaleProfitCfg\CreateSaleProfitCfgIndex;
 use App\Events\Elastic\SereServ\CreateSereServIndex;
+use App\Events\Elastic\SereServExt\CreateSereServExtIndex;
 use App\Events\Elastic\SereServVView4\CreateSereServVView4Index;
 use App\Events\Elastic\Service\CreateServiceIndex;
 use App\Events\Elastic\ServiceCondition\CreateServiceConditionIndex;
@@ -285,6 +286,7 @@ use App\Repositories\RoomGroupRepository;
 use App\Repositories\RoomRepository;
 use App\Repositories\RoomTypeRepository;
 use App\Repositories\SaleProfitCfgRepository;
+use App\Repositories\SereServExtRepository;
 use App\Repositories\SereServRepository;
 use App\Repositories\SereServVView4Repository;
 use App\Repositories\ServiceConditionRepository;
@@ -1041,6 +1043,12 @@ class IndexRecordsToElasticsearch extends Command
                 $batchSize = 10000;
                 event(new CreateDhstIndex($name_table));
                 app(DhstRepository::class)->getDataFromDbToElastic($batchSize, null);
+                $results = null;
+                break;
+            case 'sere_serv_ext':
+                $batchSize = 25000;
+                event(new CreateSereServExtIndex($name_table));
+                app(SereServExtRepository::class)->getDataFromDbToElastic($batchSize, null);
                 $results = null;
                 break;
             default:

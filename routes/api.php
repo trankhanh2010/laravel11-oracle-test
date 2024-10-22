@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\NoCacheControllers\SereServExtController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\HISController;
@@ -854,11 +855,9 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisDhst'], function () {
         Route::apiResource('v1/dhst', DhstController::class)->only(['index', 'show']);
     });
+    /// Sere Serv Ext
+    Route::apiResource('v1/sere-serv-ext', SereServExtController::class)->only(['index', 'show']);
 
-
-    // // Sere Serv Ext
-    // Route::get("v1/sere-serv-ext/get", [SereServExtController::class, "sere_serv_ext"])->name('.get_sere_serv_ext');
-    // Route::get("v2/sere-serv-ext/get", [SereServExtController::class, "sere_serv_ext_v2"])->name('.get_sere_serv_ext_v2');
 
     // // Sere Serv Tein
     // Route::group(['as' => 'HIS.Desktop.Plugins.SereServTein'], function () {

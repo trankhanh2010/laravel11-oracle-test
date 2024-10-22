@@ -23,6 +23,7 @@ use App\Models\HIS\Package;
 use App\Models\HIS\PatientType;
 use App\Models\HIS\Room;
 use App\Models\HIS\RoomType;
+use App\Models\HIS\SereServ;
 use App\Models\HIS\Service;
 use App\Models\HIS\ServiceReq;
 use App\Models\HIS\ServiceReqStt;
@@ -182,6 +183,8 @@ class BaseApiCacheController extends Controller
     protected $notInServiceReqTypeIdsName = 'NotInServiceReqTypeIds';
     protected $serviceReqId;
     protected $serviceReqIdName = 'ServiceReqId';
+    protected $sereServIds;
+    protected $sereServIdsName = 'SereServIds';
     protected $bedRoomIds;
     protected $bedRoomIdsName = 'BedRoomIds';
     protected $addTimeTo;
@@ -937,6 +940,21 @@ class BaseApiCacheController extends Controller
                     if (!ServiceReq::where('id', $item)->exists()) {
                         $this->errors[$this->serviceReqIdsName] = $this->messRecordId;
                         unset($this->serviceReqIds[$key]);
+                    }
+                }
+            }
+        }
+        $this->sereServIds = $this->paramRequest['ApiData']['SereServIds'] ?? null;
+        if ($this->sereServIds != null) {
+            foreach ($this->sereServIds as $key => $item) {
+                // Kiểm tra xem ID có tồn tại trong bảng  hay không
+                if (!is_numeric($item)) {
+                    $this->errors[$this->sereServIdsName] = $this->messFormat;
+                    unset($this->sereServIds[$key]);
+                } else {
+                    if (!SereServ::where('id', $item)->exists()) {
+                        $this->errors[$this->sereServIdsName] = $this->messRecordId;
+                        unset($this->sereServIds[$key]);
                     }
                 }
             }
