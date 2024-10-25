@@ -145,6 +145,7 @@ use App\Events\Elastic\ServiceRoom\CreateServiceRoomIndex;
 use App\Events\Elastic\ServiceType\CreateServiceTypeIndex;
 use App\Events\Elastic\ServiceUnit\CreateServiceUnitIndex;
 use App\Events\Elastic\ServSegr\CreateServSegrIndex;
+use App\Events\Elastic\SeseDepoRepayVView\CreateSeseDepoRepayVViewIndex;
 use App\Events\Elastic\Speciality\CreateSpecialityIndex;
 use App\Events\Elastic\StorageCondition\CreateStorageConditionIndex;
 use App\Events\Elastic\SuimIndex\CreateSuimIndexIndex;
@@ -309,6 +310,7 @@ use App\Repositories\ServiceRoomRepository;
 use App\Repositories\ServiceTypeRepository;
 use App\Repositories\ServiceUnitRepository;
 use App\Repositories\ServSegrRepository;
+use App\Repositories\SeseDepoRepayVViewRepository;
 use App\Repositories\SpecialityRepository;
 use App\Repositories\StorageConditionRepository;
 use App\Repositories\SuimIndexRepository;
@@ -1081,6 +1083,12 @@ class IndexRecordsToElasticsearch extends Command
                 $batchSize = 25000;
                 event(new CreateSereServDepositVViewIndex($name_table));
                 app(SereServDepositVViewRepository::class)->getDataFromDbToElastic($batchSize, null);
+                $results = null;
+                break;
+            case 'sese_depo_repay_v_view':
+                $batchSize = 25000;
+                event(new CreateSeseDepoRepayVViewIndex($name_table));
+                app(SeseDepoRepayVViewRepository::class)->getDataFromDbToElastic($batchSize, null);
                 $results = null;
                 break;
             default:

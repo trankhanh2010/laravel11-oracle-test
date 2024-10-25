@@ -165,6 +165,7 @@ use App\Http\Controllers\Api\NoCacheControllers\SereServTeinController;
 use App\Http\Controllers\Api\NoCacheControllers\SereServTeinVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\SereServVView4Controller;
 use App\Http\Controllers\Api\NoCacheControllers\ServiceReqLViewController;
+use App\Http\Controllers\Api\NoCacheControllers\SeseDepoRepayVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TestServiceReqListVView2Controller;
 use App\Http\Controllers\Api\NoCacheControllers\TestServiceReqListVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TrackingController;
@@ -873,8 +874,8 @@ Route::group([
     /// Sere Serv Deposit
     Route::apiResource('v1/sere-serv-deposit-v-view', SereServDepositVViewController::class)->only(['index', 'show']);
 
-    // // Sese Depo Repay
-    // Route::get("v1/sese-depo-repay/get-view", [SeseDepoRepayController::class, "sese_depo_repay_get_view"])->name('.get_view_sese_depo_repay');
+    /// Sese Depo Repay
+    Route::apiResource('v1/sese-depo-repay-v-view', SeseDepoRepayVViewController::class)->only(['index', 'show']);
 
     // // Account Book
     // Route::group(['as' => 'HIS.Desktop.Plugins.HisAccountBookList'], function () {

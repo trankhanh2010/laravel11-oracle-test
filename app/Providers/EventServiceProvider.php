@@ -288,6 +288,8 @@ use App\Events\Elastic\ServiceUnit\CreateServiceUnitIndex;
 use App\Events\Elastic\ServiceUnit\InsertServiceUnitIndex;
 use App\Events\Elastic\ServSegr\CreateServSegrIndex;
 use App\Events\Elastic\ServSegr\InsertServSegrIndex;
+use App\Events\Elastic\SeseDepoRepayVView\CreateSeseDepoRepayVViewIndex;
+use App\Events\Elastic\SeseDepoRepayVView\InsertSeseDepoRepayVViewIndex;
 use App\Events\Elastic\Speciality\CreateSpecialityIndex;
 use App\Events\Elastic\Speciality\InsertSpecialityIndex;
 use App\Events\Elastic\StorageCondition\CreateStorageConditionIndex;
@@ -621,6 +623,8 @@ use App\Listeners\Elastic\ServiceUnit\ElasticCreateServiceUnitIndex;
 use App\Listeners\Elastic\ServiceUnit\ElasticInsertServiceUnitIndex;
 use App\Listeners\Elastic\ServSegr\ElasticCreateServSegrIndex;
 use App\Listeners\Elastic\ServSegr\ElasticInsertServSegrIndex;
+use App\Listeners\Elastic\SeseDepoRepayVView\ElasticCreateSeseDepoRepayVViewIndex;
+use App\Listeners\Elastic\SeseDepoRepayVView\ElasticInsertSeseDepoRepayVViewIndex;
 use App\Listeners\Elastic\Speciality\ElasticCreateSpecialityIndex;
 use App\Listeners\Elastic\Speciality\ElasticInsertSpecialityIndex;
 use App\Listeners\Elastic\StorageCondition\ElasticCreateStorageConditionIndex;
@@ -1839,6 +1843,13 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertSereServDepositVViewIndex::class => [
             ElasticInsertSereServDepositVViewIndex::class,
+        ],
+
+        CreateSeseDepoRepayVViewIndex::class => [
+            ElasticCreateSeseDepoRepayVViewIndex::class,
+        ],
+        InsertSeseDepoRepayVViewIndex::class => [
+            ElasticInsertSeseDepoRepayVViewIndex::class,
         ],
     ];
 
