@@ -11,6 +11,8 @@ use App\Events\Elastic\AccidentHurtType\CreateAccidentHurtTypeIndex;
 use App\Events\Elastic\AccidentHurtType\InsertAccidentHurtTypeIndex;
 use App\Events\Elastic\AccidentLocation\CreateAccidentLocationIndex;
 use App\Events\Elastic\AccidentLocation\InsertAccidentLocationIndex;
+use App\Events\Elastic\AccountBookVView\CreateAccountBookVViewIndex;
+use App\Events\Elastic\AccountBookVView\InsertAccountBookVViewIndex;
 use App\Events\Elastic\AgeType\CreateAgeTypeIndex;
 use App\Events\Elastic\AgeType\InsertAgeTypeIndex;
 use App\Events\Elastic\Area\CreateAreaIndex;
@@ -346,6 +348,8 @@ use App\Listeners\Elastic\AccidentHurtType\ElasticCreateAccidentHurtTypeIndex;
 use App\Listeners\Elastic\AccidentHurtType\ElasticInsertAccidentHurtTypeIndex;
 use App\Listeners\Elastic\AccidentLocation\ElasticCreateAccidentLocationIndex;
 use App\Listeners\Elastic\AccidentLocation\ElasticInsertAccidentLocationIndex;
+use App\Listeners\Elastic\AccountBookVView\ElasticCreateAccountBookVViewIndex;
+use App\Listeners\Elastic\AccountBookVView\ElasticInsertAccountBookVViewIndex;
 use App\Listeners\Elastic\AgeType\ElasticCreateAgeTypeIndex;
 use App\Listeners\Elastic\AgeType\ElasticInsertAgeTypeIndex;
 use App\Listeners\Elastic\Area\ElasticCreateAreaIndex;
@@ -1850,6 +1854,13 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertSeseDepoRepayVViewIndex::class => [
             ElasticInsertSeseDepoRepayVViewIndex::class,
+        ],
+
+        CreateAccountBookVViewIndex::class => [
+            ElasticCreateAccountBookVViewIndex::class,
+        ],
+        InsertAccountBookVViewIndex::class => [
+            ElasticInsertAccountBookVViewIndex::class,
         ],
     ];
 

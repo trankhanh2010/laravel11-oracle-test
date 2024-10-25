@@ -2,6 +2,7 @@
 
 namespace App\Jobs\ElasticSearch\Index;
 
+use App\Repositories\AccountBookVViewRepository;
 use App\Repositories\DebateEkipUserRepository;
 use App\Repositories\DebateRepository;
 use App\Repositories\DebateUserRepository;
@@ -189,6 +190,9 @@ class ProcessElasticIndexingJob implements ShouldQueue
                 break;
             case 'sese_depo_repay_v_view':
                 $repository = app(SeseDepoRepayVViewRepository::class);
+                break;
+            case 'account_book_v_view':
+                $repository = app(AccountBookVViewRepository::class);
                 break;
             default:
                 break;

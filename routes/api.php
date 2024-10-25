@@ -151,6 +151,7 @@ use App\Http\Controllers\Api\CacheControllers\StorageConditionController;
 use App\Http\Controllers\Api\CacheControllers\SuimIndexUnitController;
 use App\Http\Controllers\Api\CacheControllers\TestIndexGroupController;
 use App\Http\Controllers\Api\CacheControllers\VaccineTypeController;
+use App\Http\Controllers\Api\NoCacheControllers\AccountBookVViewController;
 // No cache Controller
 use App\Http\Controllers\Api\NoCacheControllers\DebateController;
 use App\Http\Controllers\Api\NoCacheControllers\DebateEkipUserController;
@@ -873,12 +874,10 @@ Route::group([
     Route::apiResource('v1/sere-serv-bill', SereServBillController::class)->only(['index', 'show']);
     /// Sere Serv Deposit
     Route::apiResource('v1/sere-serv-deposit-v-view', SereServDepositVViewController::class)->only(['index', 'show']);
-
     /// Sese Depo Repay
     Route::apiResource('v1/sese-depo-repay-v-view', SeseDepoRepayVViewController::class)->only(['index', 'show']);
-
-    // // Account Book
-    // Route::group(['as' => 'HIS.Desktop.Plugins.HisAccountBookList'], function () {
-    //     Route::get("v1/account-book/get-view", [AccountBookController::class, "account_book_get_view"])->name('.get_view');
-    // });
+    /// Account Book
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisAccountBookList'], function () {
+        Route::apiResource('v1/account-book-v-view', AccountBookVViewController::class)->only(['index', 'show']);
+    });
 });

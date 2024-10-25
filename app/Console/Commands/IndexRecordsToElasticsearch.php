@@ -7,6 +7,7 @@ use App\Events\Elastic\AccidentBodyPart\CreateAccidentBodyPartIndex;
 use App\Events\Elastic\AccidentCare\CreateAccidentCareIndex;
 use App\Events\Elastic\AccidentHurtType\CreateAccidentHurtTypeIndex;
 use App\Events\Elastic\AccidentLocation\CreateAccidentLocationIndex;
+use App\Events\Elastic\AccountBookVView\CreateAccountBookVViewIndex;
 use App\Events\Elastic\AgeType\CreateAgeTypeIndex;
 use App\Events\Elastic\Area\CreateAreaIndex;
 use App\Events\Elastic\Atc\CreateAtcIndex;
@@ -173,6 +174,7 @@ use App\Repositories\AccidentBodyPartRepository;
 use App\Repositories\AccidentCareRepository;
 use App\Repositories\AccidentHurtTypeRepository;
 use App\Repositories\AccidentLocationRepository;
+use App\Repositories\AccountBookVViewRepository;
 use App\Repositories\AgeTypeRepository;
 use App\Repositories\AreaRepository;
 use App\Repositories\AtcGroupRepository;
@@ -1089,6 +1091,12 @@ class IndexRecordsToElasticsearch extends Command
                 $batchSize = 25000;
                 event(new CreateSeseDepoRepayVViewIndex($name_table));
                 app(SeseDepoRepayVViewRepository::class)->getDataFromDbToElastic($batchSize, null);
+                $results = null;
+                break;
+            case 'account_book_v_view':
+                $batchSize = 25000;
+                event(new CreateAccountBookVViewIndex($name_table));
+                app(AccountBookVViewRepository::class)->getDataFromDbToElastic($batchSize, null);
                 $results = null;
                 break;
             default:
