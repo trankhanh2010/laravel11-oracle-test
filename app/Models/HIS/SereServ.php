@@ -18,9 +18,13 @@ class SereServ extends Model
     {
         return $this->tdl_treatment_code + $this->tdl_service_red_code + $this->id; 
     }
-    public function sere_serv_bills()
+    public function sereServBills()
     {
-        return $this->hasMany(SereServBill::class, 'tdl_service_req_id', 'service_req_id');
+        return $this->hasMany(SereServBill::class);
+    }
+    public function sereServDeposits()
+    {
+        return $this->hasMany(SereServDeposit::class);
     }
     public function services()
     {
@@ -29,10 +33,6 @@ class SereServ extends Model
     public function sere_serv_debts()
     {
         return $this->hasMany(SereServDebt::class);
-    }
-    public function sere_serv_deposits()
-    {
-        return $this->hasMany(SereServDeposit::class);
     }
     public function sere_serv_files()
     {

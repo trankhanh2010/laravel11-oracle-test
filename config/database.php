@@ -117,9 +117,9 @@ return [
             'service_name' => env('DB_HIS_SERVICE_NAME', 'orcl'),
             'charset' => 'AL32UTF8',
             'prefix' => '',
-            // 'options' => [
-            //     PDO::ATTR_PERSISTENT => true, // Kết nối liên tục
-            // ],
+            'options' => [
+                PDO::ATTR_PERSISTENT => true, // Kết nối liên tục
+            ],
         ],
         'oracle_acs' => [
             'driver' => 'oracle',

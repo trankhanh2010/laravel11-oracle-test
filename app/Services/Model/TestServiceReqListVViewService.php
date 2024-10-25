@@ -29,12 +29,20 @@ class TestServiceReqListVViewService
             $data = $this->testServiceReqListVViewRepository->applyWith($data);
             $data = $this->testServiceReqListVViewRepository->applyKeywordFilter($data, $this->params->keyword);
             $data = $this->testServiceReqListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
+            $data = $this->testServiceReqListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
             $data = $this->testServiceReqListVViewRepository->applyFromTimeFilter($data, $this->params->fromTime);
             $data = $this->testServiceReqListVViewRepository->applyToTimeFilter($data, $this->params->toTime);
+            $data = $this->testServiceReqListVViewRepository->applyTreatmentType01IdFilter($data);
+            $data = $this->testServiceReqListVViewRepository->applyTreatmentType01Filter($data);
+            $data = $this->testServiceReqListVViewRepository->applyCheckSufficientPaymentFilter($data);
             $data = $this->testServiceReqListVViewRepository->applyExecuteDepartmentCodeFilter($data, $this->params->executeDepartmentCode);
             $data = $this->testServiceReqListVViewRepository->applyIsNoExcuteFilter($data, $this->params->isNoExcute);
             $data = $this->testServiceReqListVViewRepository->applyIsSpecimenFilter($data, $this->params->isSpecimen);
-            $count = $data->count();
+            if($this->params->start == 0){
+                $count = $data->count();
+            }else{
+                $count = null;
+            }
             $data = $this->testServiceReqListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
             $data = $this->testServiceReqListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
             return ['data' => $data, 'count' => $count];
@@ -48,12 +56,20 @@ class TestServiceReqListVViewService
             $data = $this->testServiceReqListVViewRepository->applyJoins();
             $data = $this->testServiceReqListVViewRepository->applyWith($data);
             $data = $this->testServiceReqListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
+            $data = $this->testServiceReqListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
             $data = $this->testServiceReqListVViewRepository->applyFromTimeFilter($data, $this->params->fromTime);
             $data = $this->testServiceReqListVViewRepository->applyToTimeFilter($data, $this->params->toTime);
+            $data = $this->testServiceReqListVViewRepository->applyTreatmentType01IdFilter($data);
+            $data = $this->testServiceReqListVViewRepository->applyTreatmentType01Filter($data);
+            $data = $this->testServiceReqListVViewRepository->applyCheckSufficientPaymentFilter($data);
             $data = $this->testServiceReqListVViewRepository->applyExecuteDepartmentCodeFilter($data, $this->params->executeDepartmentCode);
             $data = $this->testServiceReqListVViewRepository->applyIsNoExcuteFilter($data, $this->params->isNoExcute);
             $data = $this->testServiceReqListVViewRepository->applyIsSpecimenFilter($data, $this->params->isSpecimen);
-            $count = $data->count();
+            if($this->params->start == 0){
+                $count = $data->count();
+            }else{
+                $count = null;
+            }
             $data = $this->testServiceReqListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
             $data = $this->testServiceReqListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
             return ['data' => $data, 'count' => $count];
@@ -68,6 +84,7 @@ class TestServiceReqListVViewService
                 ->where('v_his_test_service_req_list.id', $id);
             $data = $this->testServiceReqListVViewRepository->applyWith($data);
             $data = $this->testServiceReqListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
+            $data = $this->testServiceReqListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
             $data = $data->first();
             return $data;
         } catch (\Throwable $e) {

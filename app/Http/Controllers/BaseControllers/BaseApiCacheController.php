@@ -488,6 +488,8 @@ class BaseApiCacheController extends Controller
     protected $expMestMaterialName = 'exp_mest_material';
     protected $testServiceReqListVView;
     protected $testServiceReqListVViewName = 'test_service_req_list_v_view';
+    protected $testServiceReqListVView2;
+    protected $testServiceReqListVView2Name = 'test_service_req_list_v_view_2';
     protected $impMest;
     protected $impMestName = 'imp_mest';
     protected $treatmentLView;

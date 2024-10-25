@@ -1,8 +1,10 @@
-<?php 
+<?php
+
 namespace App\Repositories;
 
 use App\Jobs\ElasticSearch\Index\ProcessElasticIndexingJob;
 use App\Models\HIS\ServiceReqType;
+use App\Models\HIS\TreatmentType;
 use App\Models\View\TestServiceReqListVView;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -10,12 +12,15 @@ use Illuminate\Support\Facades\DB;
 class TestServiceReqListVViewRepository
 {
     protected $serviceReqTypeXNId;
+    protected $treatmentType01Id;
     protected $testServiceReqListVView;
     protected $serviceReqType;
-    public function __construct(TestServiceReqListVView $testServiceReqListVView, ServiceReqType $serviceReqType)
+    protected $treatmentType;
+    public function __construct(TestServiceReqListVView $testServiceReqListVView, ServiceReqType $serviceReqType, TreatmentType $treatmentType)
     {
         $this->testServiceReqListVView = $testServiceReqListVView;
         $this->serviceReqType = $serviceReqType;
+        $this->treatmentType = $treatmentType;
     }
 
     public function applyJoins()
@@ -27,16 +32,19 @@ class TestServiceReqListVViewRepository
         return $this->testServiceReqListVView
             ->where('service_req_type_id', $this->serviceReqTypeXNId)
             ->select(
-                'v_his_test_service_req_list.*'
+                'v_his_test_service_req_list.*',
             );
     }
     public function applyWith($query)
     {
         return $query->with($this->paramWith());
     }
-    public function paramWith(){
+    public function paramWith()
+    {
         return [
-            'testServiceTypeList:id,service_req_id,is_specimen,is_no_execute,tdl_service_code,tdl_service_name',
+            'testServiceTypeList:id,service_req_id,is_delete,is_no_pay,is_specimen,is_no_execute,tdl_service_code,tdl_service_name,vir_total_patient_price',
+            'testServiceTypeList.sereServBills:id,sere_serv_id,is_delete,bill_id',
+            'testServiceTypeList.sereServDeposits:id,sere_serv_id,is_delete,deposit_id',
         ];
     }
     public function applyKeywordFilter($query, $keyword)
@@ -52,9 +60,16 @@ class TestServiceReqListVViewRepository
         }
         return $query;
     }
+    public function applyIsDeleteFilter($query, $isActive)
+    {
+        if ($isActive !== null) {
+            $query->where(DB::connection('oracle_his')->raw('v_his_test_service_req_list.is_delete'), $isActive);
+        }
+        return $query;
+    }
     public function applyFromTimeFilter($query, $param)
     {
-        if($param !== null){
+        if ($param !== null) {
             return $query->where(function ($query) use ($param) {
                 $query->where(DB::connection('oracle_his')->raw('v_his_test_service_req_list.create_time'), '>=', $param);
             });
@@ -63,7 +78,7 @@ class TestServiceReqListVViewRepository
     }
     public function applyToTimeFilter($query, $param)
     {
-        if($param !== null){
+        if ($param !== null) {
             return $query->where(function ($query) use ($param) {
                 $query->where(DB::connection('oracle_his')->raw('v_his_test_service_req_list.create_time'), '<=', $param);
             });
@@ -72,40 +87,106 @@ class TestServiceReqListVViewRepository
     }
     public function applyExecuteDepartmentCodeFilter($query, $param)
     {
-        if($param !== null){
+        if ($param !== null) {
             return $query->where(function ($query) use ($param) {
                 $query->where(DB::connection('oracle_his')->raw("execute_department_code"), 'like', $param);
             });
-        } return $query;
+        }
+        return $query;
+    }
+    public function applyTreatmentType01IdFilter($query)
+    {
+        $this->treatmentType01Id = Cache::remember('treatment_type_01_id', now()->addMinutes(10080), function () {
+            $data =  $this->treatmentType->where('treatment_type_code', '01')->get();
+            return $data->value('id');
+        });
+        return $query->where(function ($query) {
+            $query->where(DB::connection('oracle_his')->raw("v_his_test_service_req_list.treatment_type_id"), $this->treatmentType01Id);
+        });
+    }
+    public function applyTreatmentType01Filter($query)
+    {
+        // - Nếu treatment_type_id=1 thì phải thỏa một trong các điều kiện sau:
+        // + Tồn tại dữ liệu his_sere_sere_bill với is_delete=0 tương ứng các sere_serv_id (is_delete=0 và is_no_execute is null) của service_req_id check thì trả tất cả dữ liệu thuộc his_service_req_id đó ngược lại bỏ qua không trả dữ liệu thuộc y lệnh đó.
+        // + Xử lý his_sere_sere_deposit tương tự his_sere_sere_bill
+        // + Tính tổng tiền cần thanh toán của treatment_id, với tiền cần thanh toán là cột vir_total_patient_price table his_sere_serv
+        //   Tính tổng tiền bệnh nhân thanh toán, qua table his_transaction, với transaction_type_id in (2,4) là phiếu hoàn tiền, còn lại là các giá trị khác là thu tiền. phiếu thu là + phiếu kia là -
+        //   Nếu tất cả giá all_vir_total_price_zero đều là 0 hết thì k cần check 
+        //   Trong sere_serv nếu IS_NO_PAY thì k cần check
+        //   Nếu tổng tiền bệnh nhân thanh toán - tổng tiền cần thanh toán là số dương thì trả tất cả dữ liệu thỏa điều kiện lọc
+
+        $query = $query->where(function ($query) {
+            $query->where(function ($query) {
+                $query->whereHas('testServiceTypeList', function ($query) {
+                    // Điều kiện is_delete = 0 và is_no_execute = null trong testServiceTypeList và IS_NO_PAY khác 1
+                    $query->where('is_delete', '0')
+                        ->whereNull('is_no_execute')
+                        ->where(function ($query) {
+                            $query->where('is_no_pay', '<>', 1)
+                                ->orWhereNull('is_no_pay');
+                        })
+                        ->where(function ($query) {
+                            // Kiểm tra tồn tại bản ghi trong sereServDeposits hoặc sereServBills với is_delete = 0
+                            $query->whereHas('sereServDeposits', function ($query) {
+                                $query->where('is_delete', '0');
+                            })
+                                ->orWhereHas('sereServBills', function ($query) {
+                                    $query->where('is_delete', '0');
+                                });
+                        });
+                });
+            })
+                //   Nếu tất cả giá all_vir_total_price_zero đều là 0 hết thì k cần check 
+                ->orWhere(function ($query) {
+                    $query = $query->where(DB::connection('oracle_his')->raw('all_vir_total_price_zero'), 1);
+                });
+        });
+        return $query;
+    }
+    // Kiểm tra xem tổng tiền bệnh nhân thanh toán - tổng tiền cần thanh toán có lớn hơn = 0 không
+    public function applyCheckSufficientPaymentFilter($query)
+    {
+        $query = $query->where(DB::connection('oracle_his')->raw('total_treatment_bill_amount - total_vir_total_patient_price'), '>=', 0);
+        return $query;
     }
     public function applyIsSpecimenFilter($query, $param)
     {
-        if($param !== null){
+        if ($param !== null) {
             return $query->where(function ($query) use ($param) {
-                $query->whereHas('testServiceTypeList', function ($query) use ($param) {
-                    if($param){
-                        $query->where('is_specimen', 1);
-                    }else{
-                        $query->where('is_specimen', 0)
-                        ->orWhereNull('is_specimen');
-                    }
-                });
+                if ($param) {
+                    // Tất cả bản ghi trong testServiceTypeList phải có is_no_execute = 1
+                    $query->whereDoesntHave('testServiceTypeList', function ($query) {
+                        $query->where('is_specimen', '<>', 1)
+                            ->orWhereNull('is_specimen');
+                    });
+                } else {
+                    // Tất cả bản ghi trong testServiceTypeList phải có is_no_execute = 0 hoặc null
+                    $query->whereDoesntHave('testServiceTypeList', function ($query) {
+                        $query->where('is_specimen', '<>', 0)
+                            ->whereNotNull('is_specimen');
+                    });
+                }
             });
         }
         return $query;
     }
     public function applyIsNoExcuteFilter($query, $param)
     {
-        if($param !== null){
+        if ($param !== null) {
             return $query->where(function ($query) use ($param) {
-                $query->whereHas('testServiceTypeList', function ($query) use ($param) {
-                    if($param){
-                        $query->where('is_no_execute', 1);
-                    }else{
-                        $query->where('is_no_execute', 0)
-                        ->orWhereNull('is_no_execute');
-                    }
-                });
+                if ($param) {
+                    // Tất cả bản ghi trong testServiceTypeList phải có is_no_execute = 1
+                    $query->whereDoesntHave('testServiceTypeList', function ($query) {
+                        $query->where('is_no_execute', '<>', 1)
+                            ->orWhereNull('is_no_execute');
+                    });
+                } else {
+                    // Tất cả bản ghi trong testServiceTypeList phải có is_no_execute = 0 hoặc null
+                    $query->whereDoesntHave('testServiceTypeList', function ($query) {
+                        $query->where('is_no_execute', '<>', 0)
+                            ->whereNotNull('is_no_execute');
+                    });
+                }
             });
         }
         return $query;

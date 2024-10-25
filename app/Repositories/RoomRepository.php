@@ -27,8 +27,8 @@ class RoomRepository
             ->leftJoin('his_station as station', 'his_room.id', '=', 'station.room_id')
             ->select(
                 'his_room.*',
-                'his_room.department_id',
-                'his_room.room_type_id',
+                // 'his_room.department_id',
+                // 'his_room.room_type_id',
                 DB::connection('oracle_his')->raw('NVL(bed.bed_room_name, 
             NVL(cashier.cashier_room_name, 
             NVL(execute.execute_room_name, 

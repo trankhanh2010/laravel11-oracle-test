@@ -161,6 +161,7 @@ use App\Http\Controllers\Api\NoCacheControllers\PatientTypeAlterVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\SereServController;
 use App\Http\Controllers\Api\NoCacheControllers\SereServVView4Controller;
 use App\Http\Controllers\Api\NoCacheControllers\ServiceReqLViewController;
+use App\Http\Controllers\Api\NoCacheControllers\TestServiceReqListVView2Controller;
 use App\Http\Controllers\Api\NoCacheControllers\TestServiceReqListVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TrackingController;
 use App\Http\Controllers\Api\NoCacheControllers\TreatmentBedRoomLViewController;
@@ -834,6 +835,7 @@ Route::group([
     });
     /// Danh sách y lệnh chỉ định
     Route::apiResource('v1/test-service-req-list-v-view', TestServiceReqListVViewController::class)->only(['index', 'show']);
+    Route::apiResource('v1/test-service-req-list-v-view-2', TestServiceReqListVView2Controller::class)->only(['index', 'show']);
     /// Chi tiết các dịch vụ của y lệnh
     Route::apiResource('v1/sere-serv', SereServController::class)->only(['index', 'show']);
     Route::apiResource('v1/sere-serv-v-view-4', SereServVView4Controller::class)->only(['index', 'show']);
@@ -857,15 +859,10 @@ Route::group([
     });
     /// Sere Serv Ext
     Route::apiResource('v1/sere-serv-ext', SereServExtController::class)->only(['index', 'show']);
-
-
     // // Sere Serv Tein
     // Route::group(['as' => 'HIS.Desktop.Plugins.SereServTein'], function () {
-    //     Route::get("v1/sere-serv-tein/get", [SereServTeinController::class, "sere_serv_tein_get"])->name('.get');
-    //     Route::get("v1/sere-serv-tein/get-view", [SereServTeinController::class, "sere_serv_tein_get_view"])->name('.get_view');
-
-    //     Route::get("v2/sere-serv-tein/get", [SereServTeinController::class, "sere_serv_tein_get_v2"])->name('.get_v2');
-    //     Route::get("v2/sere-serv-tein/get-view", [SereServTeinController::class, "sere_serv_tein_get_view_v2"])->name('.get_view_v2');
+    //     Route::apiResource('v1/sere-serv-tein', SereServTeinController::class)->only(['index', 'show']);
+    //     // Route::get("v1/sere-serv-tein/get-view", [SereServTeinController::class, "sere_serv_tein_get_view"])->name('.get_view');
     // });
 
 
