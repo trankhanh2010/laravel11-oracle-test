@@ -158,6 +158,7 @@ use App\Http\Controllers\Api\NoCacheControllers\DebateUserController;
 use App\Http\Controllers\Api\NoCacheControllers\DebateVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\DhstController;
 use App\Http\Controllers\Api\NoCacheControllers\PatientTypeAlterVViewController;
+use App\Http\Controllers\Api\NoCacheControllers\SereServBillController;
 use App\Http\Controllers\Api\NoCacheControllers\SereServController;
 use App\Http\Controllers\Api\NoCacheControllers\SereServTeinController;
 use App\Http\Controllers\Api\NoCacheControllers\SereServTeinVViewController;
@@ -866,10 +867,8 @@ Route::group([
         Route::apiResource('v1/sere-serv-tein', SereServTeinController::class)->only(['index', 'show']);
         Route::apiResource('v1/sere-serv-tein-v-view', SereServTeinVViewController::class)->only(['index', 'show']);
     });
-
-
-    // // Sere Serv Bill
-    // Route::get("v1/sere-serv-bill/get", [SereServBillController::class, "sere_serv_bill_get"])->name('.get_sere_serv_bill');
+    /// Sere Serv Bill
+    Route::apiResource('v1/sere-serv-bill', SereServBillController::class)->only(['index', 'show']);
 
     // // Sere Serv Deposit
     // Route::get("v1/sere-serv-deposit/get-view", [SereServDepositController::class, "sere_serv_deposit_get_view"])->name('.get_view_sere_serv_deposit');

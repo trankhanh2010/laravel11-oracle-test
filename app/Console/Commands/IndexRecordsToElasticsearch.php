@@ -127,6 +127,7 @@ use App\Events\Elastic\RoomGroup\CreateRoomGroupIndex;
 use App\Events\Elastic\RoomType\CreateRoomTypeIndex;
 use App\Events\Elastic\SaleProfitCfg\CreateSaleProfitCfgIndex;
 use App\Events\Elastic\SereServ\CreateSereServIndex;
+use App\Events\Elastic\SereServBill\CreateSereServBillIndex;
 use App\Events\Elastic\SereServExt\CreateSereServExtIndex;
 use App\Events\Elastic\SereServTein\CreateSereServTeinIndex;
 use App\Events\Elastic\SereServTeinVView\CreateSereServTeinVViewIndex;
@@ -288,6 +289,7 @@ use App\Repositories\RoomGroupRepository;
 use App\Repositories\RoomRepository;
 use App\Repositories\RoomTypeRepository;
 use App\Repositories\SaleProfitCfgRepository;
+use App\Repositories\SereServBillRepository;
 use App\Repositories\SereServExtRepository;
 use App\Repositories\SereServRepository;
 use App\Repositories\SereServTeinRepository;
@@ -381,8 +383,8 @@ class IndexRecordsToElasticsearch extends Command
         // // Tùy chỉnh thời gian làm mới
         // $this->setRefreshInterval(-1, '*', $client);
         // call back dùng chunk để indexing
-        $callback = function($dataBatch) use ($name_table, $client){
-            $this->indexing($name_table,$this->arrJsonDecode(),$client,$dataBatch);
+        $callback = function ($dataBatch) use ($name_table, $client) {
+            $this->indexing($name_table, $this->arrJsonDecode(), $client, $dataBatch);
         };
         switch ($name_table) {
             case 'accident_body_part':
@@ -958,7 +960,7 @@ class IndexRecordsToElasticsearch extends Command
                 event(new CreateWorkPlaceIndex($name_table));
                 break;
 
-            // No Cache
+                // No Cache
             case 'service_req_l_view':
                 $batchSize = 25000;
                 event(new CreateServiceReqLViewIndex($name_table));
@@ -1067,6 +1069,12 @@ class IndexRecordsToElasticsearch extends Command
                 app(SereServTeinVViewRepository::class)->getDataFromDbToElastic($batchSize, null);
                 $results = null;
                 break;
+            case 'sere_serv_bill':
+                $batchSize = 25000;
+                event(new CreateSereServBillIndex($name_table));
+                app(SereServBillRepository::class)->getDataFromDbToElastic($batchSize, null);
+                $results = null;
+                break;
             default:
                 // Xử lý mặc định hoặc xử lý khi không có bảng khớp
                 $this->error('Không có dữ liệu của bảng ' . $name_table . '.');
@@ -1076,19 +1084,21 @@ class IndexRecordsToElasticsearch extends Command
         // // Chỉnh lại thời gian làm mới
         // $this->setRefreshInterval('1s', '*', $client);
     }
-    public function arrJsonDecode(){
+    public function arrJsonDecode()
+    {
         // Danh sách các bảng dùng with cần phải decode trước khi thêm vào elastic
         $arr_json_decode = config('params')['elastic']['json_decode'];
         return  $arr_json_decode;
     }
-    public function indexing($name_table, $arr_json_decode, $client, $results){
+    public function indexing($name_table, $arr_json_decode, $client, $results)
+    {
         $maxBatchSizeMB = config('database')['connections']['elasticsearch']['bulk']['max_batch_size_mb'];
         if (isset($results)) {
             // Dùng Bulk
             $bulkData = [];
             $currentBatchSizeBytes = 0;
             $maxBatchSizeBytes = $maxBatchSizeMB * 1024 * 1024; // Chuyển đổi MB sang bytes
-    
+
             foreach ($results as $result) {
                 // Chuẩn bị dữ liệu cho mỗi bản ghi
                 $data = [];
@@ -1133,12 +1143,13 @@ class IndexRecordsToElasticsearch extends Command
             }
         }
     }
-    public function setRefreshInterval($time, $index = '*', $client){
+    public function setRefreshInterval($time, $index = '*', $client)
+    {
         $params = [
             'index' => $index,
             'body' => [
                 'settings' => [
-                    'refresh_interval' => $time, 
+                    'refresh_interval' => $time,
                 ],
             ]
         ];

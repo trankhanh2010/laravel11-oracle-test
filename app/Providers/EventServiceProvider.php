@@ -250,6 +250,8 @@ use App\Events\Elastic\SaleProfitCfg\CreateSaleProfitCfgIndex;
 use App\Events\Elastic\SaleProfitCfg\InsertSaleProfitCfgIndex;
 use App\Events\Elastic\SereServ\CreateSereServIndex;
 use App\Events\Elastic\SereServ\InsertSereServIndex;
+use App\Events\Elastic\SereServBill\CreateSereServBillIndex;
+use App\Events\Elastic\SereServBill\InsertSereServBillIndex;
 use App\Events\Elastic\SereServExt\CreateSereServExtIndex;
 use App\Events\Elastic\SereServExt\InsertSereServExtIndex;
 use App\Events\Elastic\SereServTein\CreateSereServTeinIndex;
@@ -579,6 +581,8 @@ use App\Listeners\Elastic\SaleProfitCfg\ElasticCreateSaleProfitCfgIndex;
 use App\Listeners\Elastic\SaleProfitCfg\ElasticInsertSaleProfitCfgIndex;
 use App\Listeners\Elastic\SereServ\ElasticCreateSereServIndex;
 use App\Listeners\Elastic\SereServ\ElasticInsertSereServIndex;
+use App\Listeners\Elastic\SereServBill\ElasticCreateSereServBillIndex;
+use App\Listeners\Elastic\SereServBill\ElasticInsertSereServBillIndex;
 use App\Listeners\Elastic\SereServExt\ElasticCreateSereServExtIndex;
 use App\Listeners\Elastic\SereServExt\ElasticInsertSereServExtIndex;
 use App\Listeners\Elastic\SereServTein\ElasticCreateSereServTeinIndex;
@@ -1817,6 +1821,13 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertSereServTeinVViewIndex::class => [
             ElasticInsertSereServTeinVViewIndex::class,
+        ],
+
+        CreateSereServBillIndex::class => [
+            ElasticCreateSereServBillIndex::class,
+        ],
+        InsertSereServBillIndex::class => [
+            ElasticInsertSereServBillIndex::class,
         ],
     ];
 
