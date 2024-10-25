@@ -561,6 +561,8 @@ class BaseApiCacheController extends Controller
     protected $ageTypeName = 'age_type';
     protected $medicine;
     protected $medicineName = 'medicine';
+    protected $sereServTeinVView;
+    protected $sereServTeinVViewName = 'sere_serv_tein_v_view';
 
     // Khai báo các biến cho Elastic
     protected $elasticSearchService;
