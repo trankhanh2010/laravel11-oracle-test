@@ -163,6 +163,7 @@ return [
             'treatment_bed_room_l_view',
             'dhst',
             'sere_serv_ext',
+            'sere_serv_tein',
         ],
         'no_cache' => [
             'service_req_l_view',
@@ -181,6 +182,7 @@ return [
             'treatment_bed_room_l_view',
             'dhst',
             'sere_serv_ext',
+            'sere_serv_tein',
         ],
         'json_decode' => [
             'medi_stock',

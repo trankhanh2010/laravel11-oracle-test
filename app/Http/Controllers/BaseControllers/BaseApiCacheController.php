@@ -30,6 +30,7 @@ use App\Models\HIS\ServiceReqStt;
 use App\Models\HIS\ServiceReqType;
 use Illuminate\Http\Request;
 use App\Models\HIS\ServiceType;
+use App\Models\HIS\TestIndex;
 use App\Models\HIS\Treatment;
 use App\Models\HIS\TreatmentType;
 use Illuminate\Support\Facades\Cache;
@@ -59,6 +60,10 @@ class BaseApiCacheController extends Controller
     protected $onlyActiveName = 'OnlyActive';
     protected $id;
     protected $idName = 'Id';
+    protected $testIndexIds;
+    protected $testIndexIdsName = 'TestIndexIds';
+    protected $tdlTreatmentId;
+    protected $tdlTreatmentIdName = 'TdlTreatmentId';
     protected $serviceTypeIds;
     protected $serviceTypeIdsName = 'ServiceTypeIds';
     protected $patientTypeIds;
@@ -931,6 +936,21 @@ class BaseApiCacheController extends Controller
         if ($this->patientTypeIds !=  null) {
             $this->patientTypeIdsString = arrayToCustomStringNotKey($this->patientTypeIds);
         }
+        $this->testIndexIds = $this->paramRequest['ApiData']['TestIndexIds'] ?? null;
+        if ($this->testIndexIds != null) {
+            foreach ($this->testIndexIds as $key => $item) {
+                // Kiểm tra xem ID có tồn tại trong bảng  hay không
+                if (!is_numeric($item)) {
+                    $this->errors[$this->testIndexIdsName] = $this->messFormat;
+                    unset($this->testIndexIds[$key]);
+                } else {
+                    if (!TestIndex::where('id', $item)->exists()) {
+                        $this->errors[$this->testIndexIdsName] = $this->messRecordId;
+                        unset($this->testIndexIds[$key]);
+                    }
+                }
+            }
+        }
         $this->serviceReqIds = $this->paramRequest['ApiData']['ServiceReqIds'] ?? null;
         if ($this->serviceReqIds != null) {
             foreach ($this->serviceReqIds as $key => $item) {
@@ -1046,6 +1066,19 @@ class BaseApiCacheController extends Controller
                 if (!Department::where('id', $this->departmentId)->exists()) {
                     $this->errors[$this->departmentIdName] = $this->messRecordId;
                     $this->departmentId = null;
+                }
+            }
+        }
+        $this->tdlTreatmentId = $this->paramRequest['ApiData']['TdlTreatmentId'] ?? null;
+        if ($this->tdlTreatmentId !== null) {
+            // Kiểm tra xem ID có tồn tại trong bảng  hay không
+            if (!is_numeric($this->tdlTreatmentId)) {
+                $this->errors[$this->tdlTreatmentIdName] = $this->messFormat;
+                $this->tdlTreatmentId = null;
+            } else {
+                if (!Treatment::where('id', $this->tdlTreatmentId)->exists()) {
+                    $this->errors[$this->tdlTreatmentIdName] = $this->messRecordId;
+                    $this->tdlTreatmentId = null;
                 }
             }
         }

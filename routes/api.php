@@ -159,6 +159,7 @@ use App\Http\Controllers\Api\NoCacheControllers\DebateVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\DhstController;
 use App\Http\Controllers\Api\NoCacheControllers\PatientTypeAlterVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\SereServController;
+use App\Http\Controllers\Api\NoCacheControllers\SereServTeinController;
 use App\Http\Controllers\Api\NoCacheControllers\SereServVView4Controller;
 use App\Http\Controllers\Api\NoCacheControllers\ServiceReqLViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TestServiceReqListVView2Controller;
@@ -859,11 +860,11 @@ Route::group([
     });
     /// Sere Serv Ext
     Route::apiResource('v1/sere-serv-ext', SereServExtController::class)->only(['index', 'show']);
-    // // Sere Serv Tein
-    // Route::group(['as' => 'HIS.Desktop.Plugins.SereServTein'], function () {
-    //     Route::apiResource('v1/sere-serv-tein', SereServTeinController::class)->only(['index', 'show']);
-    //     // Route::get("v1/sere-serv-tein/get-view", [SereServTeinController::class, "sere_serv_tein_get_view"])->name('.get_view');
-    // });
+    /// Kết quả xét nghiệm
+    Route::group(['as' => 'HIS.Desktop.Plugins.SereServTein'], function () {
+        Route::apiResource('v1/sere-serv-tein', SereServTeinController::class)->only(['index', 'show']);
+        // Route::get("v1/sere-serv-tein/get-view", [SereServTeinController::class, "sere_serv_tein_get_view"])->name('.get_view');
+    });
 
 
     // // Sere Serv Bill

@@ -10,6 +10,7 @@ use App\Repositories\DhstRepository;
 use App\Repositories\PatientTypeAlterVViewRepository;
 use App\Repositories\SereServExtRepository;
 use App\Repositories\SereServRepository;
+use App\Repositories\SereServTeinRepository;
 use App\Repositories\ServiceReqLViewRepository;
 use App\Repositories\TestServiceReqListVViewRepository;
 use App\Repositories\TrackingRepository;
@@ -92,32 +93,30 @@ class ProcessElasticIndexingJob implements ShouldQueue
             $repository = $this->repository($this->name);
             $query = $repository->applyJoins()
                 ->whereBetween($this->nameTable . '.id', [$this->startId, $this->endId]);
-                if ($this->paramWith != null) {
-                    $query->with($this->paramWith)->chunkById($this->batchSize, function ($items) use (&$batchData, &$count) {
-                            $this->indexing($this->name, $items);
-                        });
-                } else {
-                    foreach ($query->cursor() as $item) {
-                        $attributes = $item->getAttributes();
-                        $batchData[] = $attributes;
-                        $count++;
-        
-                        if ($count % $this->batchSize == 0) {
-                            $this->indexing($this->name, $batchData);
-                            $batchData = [];
-                        }
+            if ($this->paramWith != null) {
+                $query->with($this->paramWith)->chunkById($this->batchSize, function ($items) use (&$batchData, &$count) {
+                    $this->indexing($this->name, $items);
+                });
+            } else {
+                foreach ($query->cursor() as $item) {
+                    $attributes = $item->getAttributes();
+                    $batchData[] = $attributes;
+                    $count++;
+
+                    if ($count % $this->batchSize == 0) {
+                        $this->indexing($this->name, $batchData);
+                        $batchData = [];
                     }
                 }
+            }
             // Gửi các bản ghi còn lại
             if (!empty($batchData)) {
                 $this->indexing($this->name, $batchData);
             }
         } catch (\Exception $e) {
-
         } finally {
-                DB::disconnect();
+            DB::disconnect();
         }
-        
     }
 
     public function repository($name)
@@ -171,6 +170,9 @@ class ProcessElasticIndexingJob implements ShouldQueue
                 break;
             case 'sere_serv_ext':
                 $repository = app(SereServExtRepository::class);
+                break;
+            case 'sere_serv_tein':
+                $repository = app(SereServTeinRepository::class);
                 break;
             default:
                 break;
