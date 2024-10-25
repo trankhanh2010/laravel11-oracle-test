@@ -160,6 +160,7 @@ use App\Http\Controllers\Api\NoCacheControllers\DhstController;
 use App\Http\Controllers\Api\NoCacheControllers\PatientTypeAlterVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\SereServBillController;
 use App\Http\Controllers\Api\NoCacheControllers\SereServController;
+use App\Http\Controllers\Api\NoCacheControllers\SereServDepositVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\SereServTeinController;
 use App\Http\Controllers\Api\NoCacheControllers\SereServTeinVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\SereServVView4Controller;
@@ -869,9 +870,8 @@ Route::group([
     });
     /// Sere Serv Bill
     Route::apiResource('v1/sere-serv-bill', SereServBillController::class)->only(['index', 'show']);
-
-    // // Sere Serv Deposit
-    // Route::get("v1/sere-serv-deposit/get-view", [SereServDepositController::class, "sere_serv_deposit_get_view"])->name('.get_view_sere_serv_deposit');
+    /// Sere Serv Deposit
+    Route::apiResource('v1/sere-serv-deposit-v-view', SereServDepositVViewController::class)->only(['index', 'show']);
 
     // // Sese Depo Repay
     // Route::get("v1/sese-depo-repay/get-view", [SeseDepoRepayController::class, "sese_depo_repay_get_view"])->name('.get_view_sese_depo_repay');

@@ -565,6 +565,8 @@ class BaseApiCacheController extends Controller
     protected $sereServTeinVViewName = 'sere_serv_tein_v_view';
     protected $sereServBill;
     protected $sereServBillName = 'sere_serv_bill';
+    protected $sereServDepositVView;
+    protected $sereServDepositVViewName = 'sere_serv_deposit_v_view';
 
     // Khai báo các biến cho Elastic
     protected $elasticSearchService;

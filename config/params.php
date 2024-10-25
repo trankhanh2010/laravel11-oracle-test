@@ -166,6 +166,7 @@ return [
             'sere_serv_tein',
             'sere_serv_tein_v_view',
             'sere_serv_bill',
+            'sere_serv_deposit_v_view',
         ],
         'no_cache' => [
             'service_req_l_view',
@@ -187,6 +188,7 @@ return [
             'sere_serv_tein',
             'sere_serv_tein_v_view',
             'sere_serv_bill',
+            'sere_serv_deposit_v_view',
         ],
         'json_decode' => [
             'medi_stock',
@@ -389,6 +391,7 @@ return [
             'sere_serv_tein' => 'Có lỗi khi thực hiện thao tác với bảng Kết quả xét nghiệm!',
             'sere_serv_tein_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm Kết quả xét nghiệm!',
             'sere_serv_bill' => 'Có lỗi khi thực hiện thao tác với bảng tạm SereServBill!',
+            'sere_serv_deposit_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm SereServDeposit!',
 
         ]
     ]

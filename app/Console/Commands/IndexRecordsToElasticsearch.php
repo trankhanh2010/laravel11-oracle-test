@@ -128,6 +128,7 @@ use App\Events\Elastic\RoomType\CreateRoomTypeIndex;
 use App\Events\Elastic\SaleProfitCfg\CreateSaleProfitCfgIndex;
 use App\Events\Elastic\SereServ\CreateSereServIndex;
 use App\Events\Elastic\SereServBill\CreateSereServBillIndex;
+use App\Events\Elastic\SereServDepositVView\CreateSereServDepositVViewIndex;
 use App\Events\Elastic\SereServExt\CreateSereServExtIndex;
 use App\Events\Elastic\SereServTein\CreateSereServTeinIndex;
 use App\Events\Elastic\SereServTeinVView\CreateSereServTeinVViewIndex;
@@ -290,6 +291,7 @@ use App\Repositories\RoomRepository;
 use App\Repositories\RoomTypeRepository;
 use App\Repositories\SaleProfitCfgRepository;
 use App\Repositories\SereServBillRepository;
+use App\Repositories\SereServDepositVViewRepository;
 use App\Repositories\SereServExtRepository;
 use App\Repositories\SereServRepository;
 use App\Repositories\SereServTeinRepository;
@@ -1073,6 +1075,12 @@ class IndexRecordsToElasticsearch extends Command
                 $batchSize = 25000;
                 event(new CreateSereServBillIndex($name_table));
                 app(SereServBillRepository::class)->getDataFromDbToElastic($batchSize, null);
+                $results = null;
+                break;
+            case 'sere_serv_deposit_v_view':
+                $batchSize = 25000;
+                event(new CreateSereServDepositVViewIndex($name_table));
+                app(SereServDepositVViewRepository::class)->getDataFromDbToElastic($batchSize, null);
                 $results = null;
                 break;
             default:

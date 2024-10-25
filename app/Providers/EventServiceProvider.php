@@ -252,6 +252,8 @@ use App\Events\Elastic\SereServ\CreateSereServIndex;
 use App\Events\Elastic\SereServ\InsertSereServIndex;
 use App\Events\Elastic\SereServBill\CreateSereServBillIndex;
 use App\Events\Elastic\SereServBill\InsertSereServBillIndex;
+use App\Events\Elastic\SereServDepositVView\CreateSereServDepositVViewIndex;
+use App\Events\Elastic\SereServDepositVView\InsertSereServDepositVViewIndex;
 use App\Events\Elastic\SereServExt\CreateSereServExtIndex;
 use App\Events\Elastic\SereServExt\InsertSereServExtIndex;
 use App\Events\Elastic\SereServTein\CreateSereServTeinIndex;
@@ -583,6 +585,8 @@ use App\Listeners\Elastic\SereServ\ElasticCreateSereServIndex;
 use App\Listeners\Elastic\SereServ\ElasticInsertSereServIndex;
 use App\Listeners\Elastic\SereServBill\ElasticCreateSereServBillIndex;
 use App\Listeners\Elastic\SereServBill\ElasticInsertSereServBillIndex;
+use App\Listeners\Elastic\SereServDepositVView\ElasticCreateSereServDepositVViewIndex;
+use App\Listeners\Elastic\SereServDepositVView\ElasticInsertSereServDepositVViewIndex;
 use App\Listeners\Elastic\SereServExt\ElasticCreateSereServExtIndex;
 use App\Listeners\Elastic\SereServExt\ElasticInsertSereServExtIndex;
 use App\Listeners\Elastic\SereServTein\ElasticCreateSereServTeinIndex;
@@ -1828,6 +1832,13 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertSereServBillIndex::class => [
             ElasticInsertSereServBillIndex::class,
+        ],
+
+        CreateSereServDepositVViewIndex::class => [
+            ElasticCreateSereServDepositVViewIndex::class,
+        ],
+        InsertSereServDepositVViewIndex::class => [
+            ElasticInsertSereServDepositVViewIndex::class,
         ],
     ];
 
