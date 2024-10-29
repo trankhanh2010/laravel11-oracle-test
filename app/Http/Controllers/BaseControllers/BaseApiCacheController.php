@@ -200,6 +200,8 @@ class BaseApiCacheController extends Controller
     protected $isInRoomName = 'IsInRoom';
     protected $patientTypeIdsString;
     protected $serviceTypeIdsString;
+    protected $relations;
+    protected $relationsName = 'realtions';
 
     // Khai báo các biến mặc định model
     protected $appCreator = "MOS_v2";
@@ -571,6 +573,8 @@ class BaseApiCacheController extends Controller
     protected $seseDepoRepayVViewName = 'sese_depo_repay_v_view';
     protected $accountBookVView;
     protected $accountBookVViewName = 'account_book_v_view';
+    protected $trackingData;
+    protected $trackingDataName = 'tracking_data';
 
     // Khai báo các biến cho Elastic
     protected $elasticSearchService;
@@ -976,6 +980,7 @@ class BaseApiCacheController extends Controller
                 }
             }
         }
+        $this->relations = $this->paramRequest['ApiData']['Relations'] ?? [];
         $this->sereServIds = $this->paramRequest['ApiData']['SereServIds'] ?? null;
         if ($this->sereServIds != null) {
             foreach ($this->sereServIds as $key => $item) {

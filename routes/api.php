@@ -170,6 +170,7 @@ use App\Http\Controllers\Api\NoCacheControllers\SeseDepoRepayVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TestServiceReqListVView2Controller;
 use App\Http\Controllers\Api\NoCacheControllers\TestServiceReqListVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TrackingController;
+use App\Http\Controllers\Api\NoCacheControllers\TrackingDataController;
 use App\Http\Controllers\Api\NoCacheControllers\TreatmentBedRoomLViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TreatmentFeeViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TreatmentLViewController;
@@ -837,7 +838,7 @@ Route::group([
     /// Tờ điều trị
     Route::group(['as' => 'HIS.Desktop.Plugins.HisTrackingList'], function () {
         Route::apiResource('v1/tracking', TrackingController::class)->only(['index', 'show']);
-        // Route::apiResource('v1/tracking-data', TrackingDataController::class)->only(['index', 'show']);
+        Route::apiResource('v1/tracking-data', TrackingDataController::class)->only(['index']);
     });
     /// Danh sách y lệnh chỉ định
     Route::apiResource('v1/test-service-req-list-v-view', TestServiceReqListVViewController::class)->only(['index', 'show']);

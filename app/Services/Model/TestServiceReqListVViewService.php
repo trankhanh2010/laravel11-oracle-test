@@ -66,7 +66,8 @@ class TestServiceReqListVViewService
             $data = $this->testServiceReqListVViewRepository->applyIsNoExcuteFilter($data, $this->params->isNoExcute);
             $data = $this->testServiceReqListVViewRepository->applyIsSpecimenFilter($data, $this->params->isSpecimen);
             if($this->params->start == 0){
-                $count = $data->count();
+                // $count = $data->count();
+                $count = null;
             }else{
                 $count = null;
             }
