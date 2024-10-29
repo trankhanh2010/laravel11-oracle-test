@@ -174,6 +174,7 @@ use App\Http\Controllers\Api\NoCacheControllers\TrackingDataController;
 use App\Http\Controllers\Api\NoCacheControllers\TreatmentBedRoomLViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TreatmentFeeViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TreatmentLViewController;
+use App\Http\Controllers\Api\NoCacheControllers\TreatmentWithPatientTypeInfoSdoController;
 use App\Http\Controllers\Api\NoCacheControllers\UserRoomVViewController;
 // Base Api
 use App\Http\Controllers\BaseControllers\CacheController;
@@ -854,7 +855,7 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.TreatmentList'], function () {
         Route::apiResource('v1/treatment-l-view', TreatmentLViewController::class)->only(['index', 'show']);
         Route::apiResource('v1/treatment-fee-view', TreatmentFeeViewController::class)->only(['index', 'show']);
-        // Route::get("v1/treatment/get-treatment-with-patient-type-info-sdo", [TreatmentController::class, "treatment_get_treatment_with_patient_type_info_sdo"])->name('.get_treatment_treatment');
+        Route::apiResource('v1/treatment-with-patient-type-info-sdo', TreatmentWithPatientTypeInfoSdoController::class)->only(['index']);
     });
     /// Treatment Bed Room
     Route::group(['as' => 'HIS.Desktop.Plugins.TreatmentBedRoomList'], function () {

@@ -575,6 +575,8 @@ class BaseApiCacheController extends Controller
     protected $accountBookVViewName = 'account_book_v_view';
     protected $trackingData;
     protected $trackingDataName = 'tracking_data';
+    protected $treatmentWithPatientTypeInfoSdo;
+    protected $treatmentWithPatientTypeInfoSdoName = 'treatment_with_patient_type_info_sdo';
 
     // Khai báo các biến cho Elastic
     protected $elasticSearchService;
