@@ -11,8 +11,9 @@ class Care extends Model
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
     protected $table = 'his_care';
-    protected $fillable = [
-
+    protected $guarded = [
+        'id',
     ];
+    public $timestamps = false;
     
 }

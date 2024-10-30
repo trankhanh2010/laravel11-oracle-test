@@ -399,6 +399,7 @@ return [
             'sese_depo_repay_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm SeseDepoRepay!',
             'account_book_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm AccountBook!',
             'tracking_data' => 'Có lỗi khi thực hiện thao tác với Cơ sở dữ liệu!',
+            'care' => 'Có lỗi khi thực hiện thao tác với Chăm sóc!',
 
         ]
     ]

@@ -152,6 +152,7 @@ use App\Http\Controllers\Api\CacheControllers\SuimIndexUnitController;
 use App\Http\Controllers\Api\CacheControllers\TestIndexGroupController;
 use App\Http\Controllers\Api\CacheControllers\VaccineTypeController;
 use App\Http\Controllers\Api\NoCacheControllers\AccountBookVViewController;
+use App\Http\Controllers\Api\NoCacheControllers\CareController;
 // No cache Controller
 use App\Http\Controllers\Api\NoCacheControllers\DebateController;
 use App\Http\Controllers\Api\NoCacheControllers\DebateEkipUserController;
@@ -882,4 +883,6 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisAccountBookList'], function () {
         Route::apiResource('v1/account-book-v-view', AccountBookVViewController::class)->only(['index', 'show']);
     });
+    /// Chăm sóc
+    Route::apiResource('v1/care', CareController::class)->only(['index', 'show']);
 });
