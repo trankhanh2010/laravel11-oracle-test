@@ -25,6 +25,9 @@ class ElasticInsertWorkPlaceIndex
     public function handle(InsertWorkPlaceIndex $event): void
     {
         try {
+            if(!$this->client->indices()->exists(['index' => $event->modelName])->asBool()){
+                return ;
+            }
             $record = $event->record;
             $data = app(WorkPlaceRepository::class)->getDataFromDbToElastic($record->id);
             // Tạo chỉ mục hoặc cập nhật dữ liệu

@@ -25,6 +25,9 @@ class ElasticInsertDebateIndex
     public function handle(InsertDebateIndex $event): void
     {
         try {
+            if(!$this->client->indices()->exists(['index' => $event->modelName])->asBool()){
+                return ;
+            }
             $record = $event->record;
             $data = app(DebateRepository::class)->getDataFromDbToElastic($record->id);
             // Decode

@@ -28,6 +28,9 @@ class ElasticInsertBedBstyIndex
     public function handle(InsertBedBstyIndex $event): void
     {
         try {
+            if(!$this->client->indices()->exists(['index' => $event->modelName])->asBool()){
+                return ;
+            }
             $record = $event->record;
             $data = app(BedBstyRepository::class)->getDataFromDbToElastic($record->id);
             // Tạo chỉ mục hoặc cập nhật dữ liệu

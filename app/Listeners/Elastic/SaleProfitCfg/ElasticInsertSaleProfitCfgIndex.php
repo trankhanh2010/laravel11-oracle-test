@@ -25,6 +25,9 @@ class ElasticInsertSaleProfitCfgIndex
     public function handle(InsertSaleProfitCfgIndex $event): void
     {
         try {
+            if(!$this->client->indices()->exists(['index' => $event->modelName])->asBool()){
+                return ;
+            }
             $record = $event->record;
             $data = app(SaleProfitCfgRepository::class)->getDataFromDbToElastic($record->id);
             // Tạo chỉ mục hoặc cập nhật dữ liệu

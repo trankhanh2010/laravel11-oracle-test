@@ -26,6 +26,9 @@ class ElasticInsertTestTypeIndex
     public function handle(InsertTestTypeIndex $event): void
     {
         try {
+            if(!$this->client->indices()->exists(['index' => $event->modelName])->asBool()){
+                return ;
+            }
             $record = $event->record;
             $data = app(TestTypeRepository::class)->getDataFromDbToElastic($record->id);
             // Tạo chỉ mục hoặc cập nhật dữ liệu

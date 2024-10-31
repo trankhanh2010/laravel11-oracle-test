@@ -25,6 +25,9 @@ class ElasticInsertServiceMachineIndex
     public function handle(InsertServiceMachineIndex $event): void
     {
         try {
+            if(!$this->client->indices()->exists(['index' => $event->modelName])->asBool()){
+                return ;
+            }
             $record = $event->record;
             $data = app(ServiceMachineRepository::class)->getDataFromDbToElastic($record->id);
             // Tạo chỉ mục hoặc cập nhật dữ liệu

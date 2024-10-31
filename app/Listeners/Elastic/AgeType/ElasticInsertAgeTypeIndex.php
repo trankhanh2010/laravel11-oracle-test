@@ -25,6 +25,9 @@ class ElasticInsertAgeTypeIndex
     public function handle(InsertAgeTypeIndex $event): void
     {
         try {
+            if(!$this->client->indices()->exists(['index' => $event->modelName])->asBool()){
+                return ;
+            }
             $record = $event->record;
             $data = app(AgeTypeRepository::class)->getDataFromDbToElastic($record->id);
             // Tạo chỉ mục hoặc cập nhật dữ liệu

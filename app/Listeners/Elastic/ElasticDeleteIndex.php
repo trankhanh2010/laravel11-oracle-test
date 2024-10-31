@@ -25,20 +25,23 @@ class ElasticDeleteIndex
     public function handle(DeleteIndex $event): void
     {
         try {
+            if(!$this->client->indices()->exists(['index' => $event->modelName])->asBool()){
+                return ;
+            }
             $record = $event->record;
             if(is_array($record)){
                 foreach($record as $key => $item){
                     $params = [
-                        'index' => $event->modelName, // Chỉ mục bạn muốn tạo hoặc cập nhật
-                        'id'    => $item, // ID của bản ghi
+                        'index' => $event->modelName, 
+                        'id'    => $item, 
                     ];
                     $this->updateDocument($event, $item);
                     $this->client->delete($params);
                 }
             }else{
             $params = [
-                'index' => $event->modelName, // Chỉ mục bạn muốn tạo hoặc cập nhật
-                'id'    => $record['id'], // ID của bản ghi
+                'index' => $event->modelName, 
+                'id'    => $record['id'], 
             ];
             $this->updateDocument($event, $record);
             $this->client->delete($params);

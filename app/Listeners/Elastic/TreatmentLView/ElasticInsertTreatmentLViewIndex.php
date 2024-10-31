@@ -25,6 +25,9 @@ class ElasticInsertTreatmentLViewIndex
     public function handle(InsertTreatmentLViewIndex $event): void
     {
         try {
+            if(!$this->client->indices()->exists(['index' => $event->modelName])->asBool()){
+                return ;
+            }
             $record = $event->record;
             $data = app(TreatmentLViewRepository::class)->getDataFromDbToElastic($record->id);
             // Tạo chỉ mục hoặc cập nhật dữ liệu

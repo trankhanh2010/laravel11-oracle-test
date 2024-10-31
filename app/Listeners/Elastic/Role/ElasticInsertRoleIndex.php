@@ -26,6 +26,9 @@ class ElasticInsertRoleIndex
     public function handle(InsertRoleIndex $event): void
     {
         try {
+            if(!$this->client->indices()->exists(['index' => $event->modelName])->asBool()){
+                return ;
+            }
             $record = $event->record;
             $data = app(RoleRepository::class)->getDataFromDbToElastic($record->id);
             // Decode

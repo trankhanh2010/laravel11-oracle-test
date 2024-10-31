@@ -25,6 +25,9 @@ class ElasticInsertMediStockMetyIndex
     public function handle(InsertMediStockMetyIndex $event): void
     {
         try {
+            if(!$this->client->indices()->exists(['index' => $event->modelName])->asBool()){
+                return ;
+            }
             $record = $event->record;
             $data = app(MediStockMetyRepository::class)->getDataFromDbToElastic($record->id);
             // Tạo chỉ mục hoặc cập nhật dữ liệu

@@ -26,6 +26,9 @@ class ElasticInsertPtttGroupIndex
     public function handle(InsertPtttGroupIndex $event): void
     {
         try {
+            if(!$this->client->indices()->exists(['index' => $event->modelName])->asBool()){
+                return ;
+            }
             $record = $event->record;
             $data = app(PtttGroupRepository::class)->getDataFromDbToElastic($record->id);
             // Decode

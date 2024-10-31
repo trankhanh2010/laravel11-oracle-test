@@ -25,6 +25,9 @@ class ElasticInsertSereServTeinVViewIndex
     public function handle(InsertSereServTeinVViewIndex $event): void
     {
         try {
+            if(!$this->client->indices()->exists(['index' => $event->modelName])->asBool()){
+                return ;
+            }
             $record = $event->record;
             $data = app(SereServTeinVViewRepository::class)->getDataFromDbToElastic($record->id);
             // Tạo chỉ mục hoặc cập nhật dữ liệu

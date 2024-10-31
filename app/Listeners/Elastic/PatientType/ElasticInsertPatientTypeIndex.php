@@ -33,6 +33,9 @@ class ElasticInsertPatientTypeIndex
     public function handle(InsertPatientTypeIndex $event): void
     {
         try {
+            if(!$this->client->indices()->exists(['index' => $event->modelName])->asBool()){
+                return ;
+            }
             $record = $event->record;
             $data = app(PatientTypeRepository::class)->getDataFromDbToElastic($record->id);
             // Decode

@@ -28,6 +28,9 @@ class ElasticInsertBhytWhitelistIndex
     public function handle(InsertBhytWhitelistIndex $event): void
     {
         try {
+            if(!$this->client->indices()->exists(['index' => $event->modelName])->asBool()){
+                return ;
+            }
             $record = $event->record;
             $data = app(BhytWhitelistRepository::class)->getDataFromDbToElastic($record->id);
             // Tạo chỉ mục hoặc cập nhật dữ liệu

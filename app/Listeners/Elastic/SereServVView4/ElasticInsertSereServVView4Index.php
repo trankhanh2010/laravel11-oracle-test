@@ -25,6 +25,9 @@ class ElasticInsertSereServVView4Index
     public function handle(InsertSereServVView4Index $event): void
     {
         try {
+            if(!$this->client->indices()->exists(['index' => $event->modelName])->asBool()){
+                return ;
+            }
             $record = $event->record;
             $data = app(SereServVView4Repository::class)->getDataFromDbToElastic($record->id);
             // Tạo chỉ mục hoặc cập nhật dữ liệu

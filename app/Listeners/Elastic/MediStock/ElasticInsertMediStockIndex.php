@@ -31,6 +31,9 @@ class ElasticInsertMediStockIndex
     public function handle(InsertMediStockIndex $event): void
     {
         try {
+            if(!$this->client->indices()->exists(['index' => $event->modelName])->asBool()){
+                return ;
+            }
             $record = $event->record;
             $data = app(MediStockRepository::class)->getDataFromDbToElastic($record->id);
             // Decode

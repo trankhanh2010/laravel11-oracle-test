@@ -21,6 +21,9 @@ class ElasticCreateExeServiceModuleIndex
     public function handle(CreateExeServiceModuleIndex $event): void
     {
         try {
+            if(!$this->client->indices()->exists(['index' => $event->modelName])->asBool()){
+                return ;
+            }
             // Kiểm tra xem có tồn tại Index chưa
             $exists = $this->client->indices()->exists(['index' => $event->modelName])->asBool();
             if (!$exists) {

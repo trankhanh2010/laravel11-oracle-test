@@ -26,6 +26,9 @@ class ElasticInsertPatientTypeAllowIndex
     public function handle(InsertPatientTypeAllowIndex $event): void
     {
         try {
+            if(!$this->client->indices()->exists(['index' => $event->modelName])->asBool()){
+                return ;
+            }
             $record = $event->record;
             $data = app(PatientTypeAllowRepository::class)->getDataFromDbToElastic($record->id);
             // Tạo chỉ mục hoặc cập nhật dữ liệu

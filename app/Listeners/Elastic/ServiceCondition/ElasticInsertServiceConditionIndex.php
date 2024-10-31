@@ -25,6 +25,9 @@ class ElasticInsertServiceConditionIndex
     public function handle(InsertServiceConditionIndex $event): void
     {
         try {
+            if(!$this->client->indices()->exists(['index' => $event->modelName])->asBool()){
+                return ;
+            }
             $record = $event->record;
             $data = app(ServiceConditionRepository::class)->getDataFromDbToElastic($record->id);
             // Tạo chỉ mục hoặc cập nhật dữ liệu

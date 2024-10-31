@@ -89,7 +89,7 @@ class TestServiceReqListVViewRepository
     {
         if ($param !== null) {
             return $query->where(function ($query) use ($param) {
-                $query->where(DB::connection('oracle_his')->raw("execute_department_code"), 'like', $param);
+                $query->where(DB::connection('oracle_his')->raw("execute_department_code"), $param);
             });
         }
         return $query;

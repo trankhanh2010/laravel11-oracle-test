@@ -25,6 +25,9 @@ class ElasticInsertProcessingMethodIndex
     public function handle(InsertProcessingMethodIndex $event): void
     {
         try {
+            if(!$this->client->indices()->exists(['index' => $event->modelName])->asBool()){
+                return ;
+            }
             $record = $event->record;
             $data = app(ProcessingMethodRepository::class)->getDataFromDbToElastic($record->id);
             // Tạo chỉ mục hoặc cập nhật dữ liệu

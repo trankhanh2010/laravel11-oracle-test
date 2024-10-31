@@ -25,6 +25,9 @@ class ElasticInsertAccidentHurtTypeIndex
     public function handle(InsertAccidentHurtTypeIndex $event): void
     {
         try {
+            if(!$this->client->indices()->exists(['index' => $event->modelName])->asBool()){
+                return ;
+            }
             $record = $event->record;
             $data = app(AccidentHurtTypeRepository::class)->getDataFromDbToElastic($record->id);
             // Tạo chỉ mục hoặc cập nhật dữ liệu
