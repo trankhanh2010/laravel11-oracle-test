@@ -34,12 +34,12 @@ class TestServiceReqListVViewService
             $data = $this->testServiceReqListVViewRepository->applyToTimeFilter($data, $this->params->toTime);
             $data = $this->testServiceReqListVViewRepository->applyTreatmentType01IdFilter($data);
             $data = $this->testServiceReqListVViewRepository->applyTreatmentType01Filter($data);
-            $data = $this->testServiceReqListVViewRepository->applyCheckSufficientPaymentFilter($data);
             $data = $this->testServiceReqListVViewRepository->applyExecuteDepartmentCodeFilter($data, $this->params->executeDepartmentCode);
             $data = $this->testServiceReqListVViewRepository->applyIsNoExcuteFilter($data, $this->params->isNoExcute);
             $data = $this->testServiceReqListVViewRepository->applyIsSpecimenFilter($data, $this->params->isSpecimen);
             if($this->params->start == 0){
-                $count = $data->count();
+                // $count = $data->count();
+                $count = null;
             }else{
                 $count = null;
             }
@@ -61,7 +61,6 @@ class TestServiceReqListVViewService
             $data = $this->testServiceReqListVViewRepository->applyToTimeFilter($data, $this->params->toTime);
             $data = $this->testServiceReqListVViewRepository->applyTreatmentType01IdFilter($data);
             $data = $this->testServiceReqListVViewRepository->applyTreatmentType01Filter($data);
-            $data = $this->testServiceReqListVViewRepository->applyCheckSufficientPaymentFilter($data);
             $data = $this->testServiceReqListVViewRepository->applyExecuteDepartmentCodeFilter($data, $this->params->executeDepartmentCode);
             $data = $this->testServiceReqListVViewRepository->applyIsNoExcuteFilter($data, $this->params->isNoExcute);
             $data = $this->testServiceReqListVViewRepository->applyIsSpecimenFilter($data, $this->params->isSpecimen);

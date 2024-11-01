@@ -43,8 +43,8 @@ class TestServiceReqListVViewRepository
     {
         return [
             'testServiceTypeList:id,service_req_id,is_delete,is_no_pay,is_specimen,is_no_execute,tdl_service_code,tdl_service_name,vir_total_patient_price',
-            'testServiceTypeList.sereServBills:id,sere_serv_id,is_delete,bill_id',
-            'testServiceTypeList.sereServDeposits:id,sere_serv_id,is_delete,deposit_id',
+            'testServiceTypeList.sereServBills:id,sere_serv_id,is_delete,bill_id,is_cancel',
+            'testServiceTypeList.sereServDeposits:id,sere_serv_id,is_delete,deposit_id,is_cancel',
         ];
     }
     public function applyKeywordFilter($query, $keyword)
@@ -107,8 +107,8 @@ class TestServiceReqListVViewRepository
     public function applyTreatmentType01Filter($query)
     {
         // - Nếu treatment_type_id=1 thì phải thỏa một trong các điều kiện sau:
-        // + Tồn tại dữ liệu his_sere_sere_bill với is_delete=0 tương ứng các sere_serv_id (is_delete=0 và is_no_execute is null) của service_req_id check thì trả tất cả dữ liệu thuộc his_service_req_id đó ngược lại bỏ qua không trả dữ liệu thuộc y lệnh đó.
-        // + Xử lý his_sere_sere_deposit tương tự his_sere_sere_bill
+        // + Tồn tại dữ liệu his_sere_sere_bill (với is_cancel khác 1) với is_delete=0 tương ứng các sere_serv_id (is_delete=0 và is_no_execute is null) của service_req_id check thì trả tất cả dữ liệu thuộc his_service_req_id đó ngược lại bỏ qua không trả dữ liệu thuộc y lệnh đó.
+        // + Xử lý his_sere_sere_deposit (với is_cancel khác 1) tương tự his_sere_sere_bill
         // + Tính tổng tiền cần thanh toán của treatment_id, với tiền cần thanh toán là cột vir_total_patient_price table his_sere_serv
         //   Tính tổng tiền bệnh nhân thanh toán, qua table his_transaction, với transaction_type_id in (2,4) là phiếu hoàn tiền, còn lại là các giá trị khác là thu tiền. phiếu thu là + phiếu kia là -
         //   Nếu tất cả giá all_vir_total_price_zero đều là 0 hết thì k cần check 
@@ -116,29 +116,47 @@ class TestServiceReqListVViewRepository
         //   Nếu tổng tiền bệnh nhân thanh toán - tổng tiền cần thanh toán là số dương thì trả tất cả dữ liệu thỏa điều kiện lọc
 
         $query = $query->where(function ($query) {
-            $query->where(function ($query) {
-                $query->whereHas('testServiceTypeList', function ($query) {
+            $query
+                // Loại bỏ các bản ghi total sai
+                ->where(function ($query) {
+                    $query->whereDoesntHave('testServiceTypeList', function ($query) {
+                        // Kiểm tra có ít nhất một bản ghi không có cả sereServBills và sereServDeposits
+                        $query->whereDoesntHave('sereServBills')
+                              ->whereDoesntHave('sereServDeposits');
+                    })
+                    ->orWhereDoesntHave('testServiceTypeList', function ($query) {
+                        // Kiểm tra có ít nhất một bản ghi có ít nhất một trong hai quan hệ
+                        $query->whereHas('sereServBills')
+                              ->orWhereHas('sereServDeposits');
+                    });
+                })
+                ->whereHas('testServiceTypeList', function ($query) {
                     // Điều kiện is_delete = 0 và is_no_execute = null trong testServiceTypeList và IS_NO_PAY khác 1
-                    $query->where('is_delete', '0')
-                        ->whereNull('is_no_execute')
-                        ->where(function ($query) {
-                            $query->where('is_no_pay', '<>', 1)
-                                ->orWhereNull('is_no_pay');
-                        })
-                        ->where(function ($query) {
-                            // Kiểm tra tồn tại bản ghi trong sereServDeposits hoặc sereServBills với is_delete = 0
-                            $query->whereHas('sereServDeposits', function ($query) {
-                                $query->where('is_delete', '0');
-                            })
-                                ->orWhereHas('sereServBills', function ($query) {
-                                    $query->where('is_delete', '0');
+                    $query->where(function ($query) {
+                        // Kiểm tra tồn tại bản ghi trong sereServDeposits hoặc sereServBills với is_delete = 0
+                        $query->whereHas('sereServDeposits', function ($query) {
+                            $query->where('is_delete', '0')
+                                ->where(function ($query) {
+                                    $query->where('is_cancel', '0')
+                                        ->orWhereNull('is_cancel');
                                 });
-                        });
-                });
-            })
-                //   Nếu tất cả giá all_vir_total_price_zero đều là 0 hết thì k cần check 
+                        })
+                            ->orWhereHas('sereServBills', function ($query) {
+                                $query->where('is_delete', '0')
+                                    ->where(function ($query) {
+                                        $query->where('is_cancel', '0')
+                                            ->orWhereNull('is_cancel');
+                                    });
+                            });
+                    });
+                })
+                // Nếu tất cả giá all_vir_total_price_zero đều là 0 hết thì k cần check 
                 ->orWhere(function ($query) {
                     $query = $query->where(DB::connection('oracle_his')->raw('all_vir_total_price_zero'), 1);
+                })
+                // Nếu trả đủ tiền
+                ->orWhere(function ($query) {
+                    $query = $this->applyCheckSufficientPaymentFilter($query);
                 });
         });
         return $query;
