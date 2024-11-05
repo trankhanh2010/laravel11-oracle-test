@@ -33,10 +33,10 @@ class TestServiceReqListVViewService
             $data = $this->testServiceReqListVViewRepository->applyFromTimeFilter($data, $this->params->fromTime);
             $data = $this->testServiceReqListVViewRepository->applyToTimeFilter($data, $this->params->toTime);
             $data = $this->testServiceReqListVViewRepository->applyTreatmentType01IdFilter($data);
-            $data = $this->testServiceReqListVViewRepository->applyTreatmentType01Filter($data);
+            $data = $this->testServiceReqListVViewRepository->applyTreatmentType01Filter($data, $this->params->isNoExcute, $this->params->isSpecimen);
             $data = $this->testServiceReqListVViewRepository->applyExecuteDepartmentCodeFilter($data, $this->params->executeDepartmentCode);
-            $data = $this->testServiceReqListVViewRepository->applyIsNoExcuteFilter($data, $this->params->isNoExcute);
-            $data = $this->testServiceReqListVViewRepository->applyIsSpecimenFilter($data, $this->params->isSpecimen);
+            // $data = $this->testServiceReqListVViewRepository->applyIsNoExcuteFilter($data, $this->params->isNoExcute);
+            // $data = $this->testServiceReqListVViewRepository->applyIsSpecimenFilter($data, $this->params->isSpecimen);
             if($this->params->start == 0){
                 // $count = $data->count();
                 $count = null;
@@ -60,10 +60,10 @@ class TestServiceReqListVViewService
             $data = $this->testServiceReqListVViewRepository->applyFromTimeFilter($data, $this->params->fromTime);
             $data = $this->testServiceReqListVViewRepository->applyToTimeFilter($data, $this->params->toTime);
             $data = $this->testServiceReqListVViewRepository->applyTreatmentType01IdFilter($data);
-            $data = $this->testServiceReqListVViewRepository->applyTreatmentType01Filter($data);
+            $data = $this->testServiceReqListVViewRepository->applyTreatmentType01Filter($data, $this->params->isNoExcute, $this->params->isSpecimen);
             $data = $this->testServiceReqListVViewRepository->applyExecuteDepartmentCodeFilter($data, $this->params->executeDepartmentCode);
-            $data = $this->testServiceReqListVViewRepository->applyIsNoExcuteFilter($data, $this->params->isNoExcute);
-            $data = $this->testServiceReqListVViewRepository->applyIsSpecimenFilter($data, $this->params->isSpecimen);
+            // $data = $this->testServiceReqListVViewRepository->applyIsNoExcuteFilter($data, $this->params->isNoExcute);
+            // $data = $this->testServiceReqListVViewRepository->applyIsSpecimenFilter($data, $this->params->isSpecimen);
             if($this->params->start == 0){
                 // $count = $data->count();
                 $count = null;

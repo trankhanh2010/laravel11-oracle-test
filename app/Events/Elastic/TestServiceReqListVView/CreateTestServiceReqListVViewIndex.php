@@ -384,7 +384,10 @@ class CreateTestServiceReqListVViewIndex
                                 'is_specimen' => [
                                     'type' => 'byte'
                                 ],
-                                'confirm_no_excute' => [
+                                'is_no_execute' => [
+                                    'type' => 'byte'
+                                ],
+                                'is_no_pay' => [
                                     'type' => 'byte'
                                 ],
                                 'search_code' => [
