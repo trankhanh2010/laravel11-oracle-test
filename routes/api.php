@@ -209,6 +209,7 @@ use App\Http\Controllers\Api\ValidateControllers\CheckRefectoryController;
 use App\Http\Controllers\Api\ValidateControllers\CheckSpecialityController;
 use App\Http\Controllers\Api\ValidateControllers\CheckServiceController;
 use App\Http\Controllers\Api\ValidateControllers\CheckTreatmentTypeController;
+use App\Http\Controllers\BaseControllers\RedisController;
 use Illuminate\Support\Facades\DB;
 
 /*
@@ -236,6 +237,8 @@ Route::fallback(function () {
 Route::group([
     "middleware" => ["check_admin:api"]
 ], function () {
+    /// Redis
+    Route::get('v1/redis-ping', [RedisController::class, "ping"])->name('.redis_ping');
     /// Telegram
     Route::get('v1/updated-activity', [TelegramController::class, "updated_activity"])->name('.updated_activity');
     /// Log
@@ -246,6 +249,7 @@ Route::group([
     Route::get("v1/clear-cache", [CacheController::class, "clearCache"])->name('.clear_cache');
     Route::get("v1/clear-cache-elastic-index-keyword", [CacheController::class, "clearCacheElaticIndexKeyword"])->name('.clear_cache_elatic_index_keyword');
     /// Elastic Search
+    Route::get("v1/elastic-ping", [ElasticSearchController::class, "ping"])->name('.elastic_ping');
     Route::get("v1/get-all-name", [ElasticSearchController::class, "get_all_name"])->name('.get_all_name');
     Route::get("v1/index-records-to-elasticsearch", [ElasticSearchController::class, "index_records_to_elasticsearch"])->name('.index_records_to_elasticsearch');
     Route::get("v1/get-mapping", [ElasticSearchController::class, "get_mapping"])->name('.get_mapping');
@@ -844,7 +848,7 @@ Route::group([
     });
     /// Danh sách y lệnh chỉ định
     Route::apiResource('v1/test-service-req-list-v-view', TestServiceReqListVViewController::class)->only(['index', 'show']);
-    // Route::apiResource('v1/test-service-req-list-v-view-2', TestServiceReqListVView2Controller::class)->only(['index', 'show']);
+    Route::apiResource('v1/test-service-req-list-v-view-2', TestServiceReqListVView2Controller::class)->only(['index', 'show']);
     /// Chi tiết các dịch vụ của y lệnh
     Route::apiResource('v1/sere-serv', SereServController::class)->only(['index', 'show']);
     Route::apiResource('v1/sere-serv-v-view-4', SereServVView4Controller::class)->only(['index', 'show']);

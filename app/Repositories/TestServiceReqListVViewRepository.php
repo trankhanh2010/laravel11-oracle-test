@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Jobs\ElasticSearch\Index\ProcessElasticIndexingJob;
+use App\Models\HIS\Department;
 use App\Models\HIS\SereServ;
 use App\Models\HIS\ServiceReq;
 use App\Models\HIS\ServiceReqType;
@@ -20,18 +21,21 @@ class TestServiceReqListVViewRepository
     protected $treatmentType;
     protected $serviceReq;
     protected $sereServ;
+    protected $department;
     public function __construct(
         TestServiceReqListVView $testServiceReqListVView,
         ServiceReqType $serviceReqType,
         TreatmentType $treatmentType,
         ServiceReq $serviceReq,
         SereServ $sereServ,
+        Department $department,
     ) {
         $this->testServiceReqListVView = $testServiceReqListVView;
         $this->serviceReqType = $serviceReqType;
         $this->treatmentType = $treatmentType;
         $this->serviceReq = $serviceReq;
         $this->sereServ = $sereServ;
+        $this->department = $department;
     }
 
     public function applyJoins()
@@ -98,9 +102,19 @@ class TestServiceReqListVViewRepository
     }
     public function applyExecuteDepartmentCodeFilter($query, $param)
     {
+        // if ($param !== null) {
+        //     return $query->where(function ($query) use ($param) {
+        //         $query->where(DB::connection('oracle_his')->raw("execute_department_code"), $param);
+        //     });
+        // }
+
         if ($param !== null) {
-            return $query->where(function ($query) use ($param) {
-                $query->where(DB::connection('oracle_his')->raw("execute_department_code"), $param);
+            $id = Cache::remember('id_department_code_'.$param, now()->addMinutes(10080), function () use ($param) {
+                $data =  $this->department->where('department_code', $param)->first()->id ?? 0;
+                return $data;
+            });
+            return $query->where(function ($query) use ($id) {
+                $query->where("v_his_test_service_req_list.execute_department_id", $id);
             });
         }
         return $query;
@@ -111,9 +125,10 @@ class TestServiceReqListVViewRepository
             $data =  $this->treatmentType->where('treatment_type_code', '01')->get();
             return $data->value('id');
         });
-        return $query->where(function ($query) {
+        $query = $query->where(function ($query) {
             $query->where(DB::connection('oracle_his')->raw("v_his_test_service_req_list.treatment_type_id"), $this->treatmentType01Id);
         });
+        return $query;
     }
     public function applyTreatmentType01Filter($query, $isNoExecute, $isSpecimen)
     {

@@ -9,7 +9,7 @@ use App\Http\Resources\Elastic\ElasticResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Http;
-
+use Carbon\Carbon;
 class ElasticSearchController extends Controller
 {
     protected $client;
@@ -160,5 +160,32 @@ class ElasticSearchController extends Controller
                 'message' => $e->getMessage(),
             ], 500);
         }
+    }
+    public function ping(){
+            // Ghi nhận thời gian bắt đầu
+    $startTime = Carbon::now();
+
+    try {
+        // Khởi tạo client Elasticsearch
+        $client = $this->client;
+
+        // Kiểm tra kết nối với Elasticsearch (Ping request)
+        $response = $client->ping();
+    } catch (\Exception $e) {
+        return response()->json([
+            'error' => 'Không thể kết nối Elasticsearch: ' . $e->getMessage()
+        ], 500);
+    }
+
+    // Ghi nhận thời gian kết thúc
+    $endTime = Carbon::now();
+
+    // Tính thời gian kết nối
+    $elapsedTime = $startTime->diffInMilliseconds($endTime); // Thời gian tính bằng mili giây
+
+    return response()->json([
+        'status' => 'Elasticsearch connected successfully',
+        'elapsed_time_ms' => $elapsedTime . ' ms',
+    ]);
     }
 }
