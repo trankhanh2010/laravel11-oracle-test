@@ -362,10 +362,10 @@ class IndexRecordsToElasticsearch extends Command
 
         $param = $this->option('table');
         $table = [];
+
+        $table = $table_arr;
         if ($param != 'all' && $param != null) {
             $table = explode(',', $param);
-        } else {
-            $table = $table_arr;
         }
 
         if ($table !== null) {
