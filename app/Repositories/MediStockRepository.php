@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Jobs\ElasticSearch\Index\ProcessElasticIndexingJob;
 use App\Models\HIS\MediStock;
 use App\Models\HIS\Room;
 use Illuminate\Support\Facades\DB;
@@ -19,10 +20,6 @@ class MediStockRepository
     public function applyJoins()
     {
         return $this->mediStock
-            ->with([
-                'exp_mest_types:exp_mest_type_code,exp_mest_type_name',
-                'imp_mest_types:imp_mest_type_code,imp_mest_type_name'
-            ])
             ->leftJoin('his_room as room', 'room.id', '=', 'his_medi_stock.room_id')
             ->leftJoin('his_department as department', 'department.id', '=', 'room.department_id')
             ->leftJoin('his_room_type as room_type', 'room_type.id', '=', 'room.room_type_id')
@@ -36,6 +33,15 @@ class MediStockRepository
                 'parent.medi_stock_name as parent_name',
                 'parent.medi_stock_code as parent_code'
             );
+    }
+    public function applyWith($query){
+        return $query->with($this->paramWith());
+    }
+    public function paramWith(){
+        return [
+                'exp_mest_types:exp_mest_type_code,exp_mest_type_name',
+                'imp_mest_types:imp_mest_type_code,imp_mest_type_name'
+        ];
     }
     public function applyKeywordFilter($query, $keyword)
     {
@@ -270,18 +276,30 @@ class MediStockRepository
         DB::connection('oracle_his')->commit();
         return $data;
     }
-    public function getDataFromDbToElastic($id = null)
+    public function getDataFromDbToElastic($batchSize = 5000, $id = null)
     {
-        $data = $this->applyJoins();
+        $numJobs = config('queue')['num_queue_worker']; // Số lượng job song song
         if ($id != null) {
-            $data = $data->where('his_medi_stock.id', '=', $id)->first();
+            $data = $this->applyJoins()->where('his_medi_stock.id', '=', $id)->first();
             if ($data) {
-                $data->toArray();
+                $data = $data->toArray();
+                return $data;
             }
         } else {
-            $data = $data->get();
-            $data->toArray();
+            // Xác định min và max id
+            $minId = $this->applyJoins()->min('his_medi_stock.id');
+            $maxId = $this->applyJoins()->max('his_medi_stock.id');
+            $chunkSize = ceil(($maxId - $minId + 1) / $numJobs);
+            for ($i = 0; $i < $numJobs; $i++) {
+                $startId = $minId + ($i * $chunkSize);
+                $endId = $startId + $chunkSize - 1;
+                // Đảm bảo chunk cuối cùng bao phủ đến maxId
+                if ($i == $numJobs - 1) {
+                    $endId = $maxId;
+                }
+                // Dispatch job cho mỗi phạm vi id
+                ProcessElasticIndexingJob::dispatch('medi_stock', 'his_medi_stock', $startId, $endId, $batchSize, $this->paramWith());
+            }
         }
-        return $data;
     }
 }

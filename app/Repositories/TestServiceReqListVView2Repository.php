@@ -415,6 +415,7 @@ class TestServiceReqListVView2Repository
     {
         return $this->testServiceReqListVView2->find($id);
     }
+    //
     public function getDataFromDbToElastic($batchSize = 5000, $id = null)
     {
         $numJobs = config('queue')['num_queue_worker']; // Số lượng job song song

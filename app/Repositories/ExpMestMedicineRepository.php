@@ -157,7 +157,7 @@ class ExpMestMedicineRepository
         if ($id != null) {
             $data = $this->applyJoins()->where('his_exp_mest_medicine.id', '=', $id)->first();
             if ($data) {
-                $data = $data->toArray();
+                $data = $data->getAttributes();
                 return $data;
             }
         } else {

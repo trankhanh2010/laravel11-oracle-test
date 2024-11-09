@@ -26,6 +26,7 @@ class PatientTypeService
     {
         try {
             $data = $this->patientTypeRepository->applyJoins();
+            $data = $this->patientTypeRepository->applyWith($data);
             $data = $this->patientTypeRepository->applyKeywordFilter($data, $this->params->keyword);
             $data = $this->patientTypeRepository->applyIsActiveFilter($data, $this->params->isActive);
             $count = $data->count();
@@ -41,6 +42,7 @@ class PatientTypeService
         try {
             $data = Cache::remember($this->params->patientTypeName . '_start_' . $this->params->start . '_limit_' . $this->params->limit . $this->params->orderByString . '_is_active_' . $this->params->isActive . '_get_all_' . $this->params->getAll, $this->params->time, function (){
                 $data = $this->patientTypeRepository->applyJoins();
+                $data = $this->patientTypeRepository->applyWith($data);
                 $data = $this->patientTypeRepository->applyIsActiveFilter($data, $this->params->isActive);
                 $count = $data->count();
                 $data = $this->patientTypeRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
@@ -58,6 +60,7 @@ class PatientTypeService
             $data = Cache::remember($this->params->patientTypeName . '_' . $id . '_is_active_' . $this->params->isActive, $this->params->time, function () use ($id){
                 $data = $this->patientTypeRepository->applyJoins()
                     ->where('his_patient_type.id', $id);
+                $data = $this->patientTypeRepository->applyWith($data);
                 $data = $this->patientTypeRepository->applyIsActiveFilter($data, $this->params->isActive);
                 $data = $data->first();
                 return $data;

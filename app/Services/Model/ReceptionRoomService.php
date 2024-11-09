@@ -26,6 +26,7 @@ class ReceptionRoomService
     {
         try {
             $data = $this->receptionRoomRepository->applyJoins();
+            $data = $this->receptionRoomRepository->applyWith($data);
             $data = $this->receptionRoomRepository->applyKeywordFilter($data, $this->params->keyword);
             $data = $this->receptionRoomRepository->applyIsActiveFilter($data, $this->params->isActive);
             $count = $data->count();
@@ -41,6 +42,7 @@ class ReceptionRoomService
         try {
             $data = Cache::remember($this->params->receptionRoomName . '_start_' . $this->params->start . '_limit_' . $this->params->limit . $this->params->orderByString . '_is_active_' . $this->params->isActive . '_get_all_' . $this->params->getAll, $this->params->time, function (){
                 $data = $this->receptionRoomRepository->applyJoins();
+                $data = $this->receptionRoomRepository->applyWith($data);
                 $data = $this->receptionRoomRepository->applyIsActiveFilter($data, $this->params->isActive);
                 $count = $data->count();
                 $data = $this->receptionRoomRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
@@ -58,6 +60,7 @@ class ReceptionRoomService
             $data = Cache::remember($this->params->receptionRoomName . '_' . $id . '_is_active_' . $this->params->isActive, $this->params->time, function () use ($id){
                 $data = $this->receptionRoomRepository->applyJoins()
                     ->where('his_reception_room.id', $id);
+                $data = $this->receptionRoomRepository->applyWith($data);
                 $data = $this->receptionRoomRepository->applyIsActiveFilter($data, $this->params->isActive);
                 $data = $data->first();
                 return $data;

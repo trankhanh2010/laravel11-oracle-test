@@ -113,7 +113,7 @@ class SereServDepositVViewRepository
         if ($id != null) {
             $data = $this->applyJoins()->where('v_his_sere_serv_deposit.id', '=', $id)->first();
             if ($data) {
-                $data = $data->toArray();
+                $data = $data->getAttributes();
                 return $data;
             }
         } else {

@@ -113,7 +113,7 @@ class AccountBookVViewRepository
         if ($id != null) {
             $data = $this->applyJoins()->where('v_his_account_book.id', '=', $id)->first();
             if ($data) {
-                $data = $data->toArray();
+                $data = $data->getAttributes();
                 return $data;
             }
         } else {

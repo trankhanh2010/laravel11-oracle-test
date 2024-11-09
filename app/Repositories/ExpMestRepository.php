@@ -188,7 +188,7 @@ class ExpMestRepository
         if ($id != null) {
             $data = $this->applyJoins()->where('his_exp_mest.id', '=', $id)->first();
             if ($data) {
-                $data = $data->toArray();
+                $data = $data->getAttributes();
                 return $data;
             }
         } else {

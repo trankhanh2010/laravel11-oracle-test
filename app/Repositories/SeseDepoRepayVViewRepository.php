@@ -113,7 +113,7 @@ class SeseDepoRepayVViewRepository
         if ($id != null) {
             $data = $this->applyJoins()->where('v_his_sese_depo_repay.id', '=', $id)->first();
             if ($data) {
-                $data = $data->toArray();
+                $data = $data->getAttributes();
                 return $data;
             }
         } else {

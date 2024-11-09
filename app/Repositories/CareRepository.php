@@ -106,7 +106,7 @@ class CareRepository
         if ($id != null) {
             $data = $this->applyJoins()->where('his_care.id', '=', $id)->first();
             if ($data) {
-                $data = $data->toArray();
+                $data = $data->getAttributes();
                 return $data;
             }
         } else {

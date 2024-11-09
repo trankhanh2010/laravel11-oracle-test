@@ -11,7 +11,7 @@ class MedicineTypeAcIn extends Model
     use HasFactory, dinh_dang_ten_truong;
     
     protected $connection = 'oracle_his';
-    protected $table = 'his_medicine_type_ac_in';
+    protected $table = 'his_medicine_type_acin';
     protected $fillable = [
 
     ];

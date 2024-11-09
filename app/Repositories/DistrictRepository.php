@@ -1,6 +1,7 @@
 <?php 
 namespace App\Repositories;
 
+use App\Jobs\ElasticSearch\Index\ProcessElasticIndexingJob;
 use App\Models\SDA\District;
 use Illuminate\Support\Facades\DB;
 
@@ -104,19 +105,30 @@ class DistrictRepository
         $data->delete();
         return $data;
     }
-    public function getDataFromDbToElastic($id = null){
-        $data = $this->applyJoins();
-        if($id != null){
-            $data = $data->where('sda_district.id','=', $id)->first();
+    public function getDataFromDbToElastic($batchSize = 5000, $id = null)
+    {
+        $numJobs = config('queue')['num_queue_worker']; // Số lượng job song song
+        if ($id != null) {
+            $data = $this->applyJoins()->where('sda_district.id', '=', $id)->first();
             if ($data) {
                 $data = $data->getAttributes();
+                return $data;
             }
         } else {
-            $data = $data->get();
-            $data = $data->map(function ($item) {
-                return $item->getAttributes(); 
-            })->toArray(); 
+            // Xác định min và max id
+            $minId = $this->applyJoins()->min('sda_district.id');
+            $maxId = $this->applyJoins()->max('sda_district.id');
+            $chunkSize = ceil(($maxId - $minId + 1) / $numJobs);
+            for ($i = 0; $i < $numJobs; $i++) {
+                $startId = $minId + ($i * $chunkSize);
+                $endId = $startId + $chunkSize - 1;
+                // Đảm bảo chunk cuối cùng bao phủ đến maxId
+                if ($i == $numJobs - 1) {
+                    $endId = $maxId;
+                }
+                // Dispatch job cho mỗi phạm vi id
+                ProcessElasticIndexingJob::dispatch('district', 'sda_district', $startId, $endId, $batchSize);
+            }
         }
-        return $data;
     }
 }

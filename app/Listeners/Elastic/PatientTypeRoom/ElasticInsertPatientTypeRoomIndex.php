@@ -29,7 +29,7 @@ class ElasticInsertPatientTypeRoomIndex
                 return ;
             }
             $record = $event->record;
-            $data = app(PatientTypeRoomRepository::class)->getDataFromDbToElastic($record->id);
+            $data = app(PatientTypeRoomRepository::class)->getDataFromDbToElastic(null, $record->id);
             // Tạo chỉ mục hoặc cập nhật dữ liệu
             $params = [
                 'index' => $event->modelName, // Chỉ mục bạn muốn tạo hoặc cập nhật

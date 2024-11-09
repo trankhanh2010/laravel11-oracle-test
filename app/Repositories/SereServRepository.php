@@ -215,6 +215,7 @@ class SereServRepository
     //     $data->delete();
     //     return $data;
     // }
+    //
     public function getDataFromDbToElastic($batchSize = 5000, $id = null)
     {
         $numJobs = config('queue')['num_queue_worker']; // Số lượng job song song

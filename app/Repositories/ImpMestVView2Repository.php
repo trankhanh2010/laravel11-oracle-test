@@ -113,7 +113,7 @@ class ImpMestVView2Repository
         if ($id != null) {
             $data = $this->applyJoins()->where('v_his_imp_mest_2.id', '=', $id)->first();
             if ($data) {
-                $data = $data->toArray();
+                $data = $data->getAttributes();
                 return $data;
             }
         } else {

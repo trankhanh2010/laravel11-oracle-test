@@ -138,7 +138,7 @@ class DebateEkipUserRepository
         if ($id != null) {
             $data = $this->applyJoins()->where('his_debate_ekip_user.id', '=', $id)->first();
             if ($data) {
-                $data = $data->toArray();
+                $data = $data->getAttributes();
                 return $data;
             }
         } else {

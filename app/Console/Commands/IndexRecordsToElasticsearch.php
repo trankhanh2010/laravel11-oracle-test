@@ -373,7 +373,7 @@ class IndexRecordsToElasticsearch extends Command
                 if (in_array($item, $table_arr)) {
                     $this->processAndIndexData($item);
                     event(new DeleteCache($item));
-                    $this->info('Đã tạo Index cho bảng ' . $item . '.');
+                    $this->info('Đã tạo Job để tạo Index cho bảng ' . $item . '.');
                 } else {
                     $this->error('Không tồn tại bảng ' . $item . '.');
                 }
@@ -385,7 +385,8 @@ class IndexRecordsToElasticsearch extends Command
     {
         // Khởi tạo kết nối đến Elastic
         $client = app('Elasticsearch');
-        $batchSize = null;
+        $batchSize = 5000;
+        $results = null;
         // // Tùy chỉnh thời gian làm mới
         // $this->setRefreshInterval(-1, '*', $client);
         // call back dùng chunk để indexing
@@ -394,576 +395,576 @@ class IndexRecordsToElasticsearch extends Command
         };
         switch ($name_table) {
             case 'accident_body_part':
-                $results = app(AccidentBodyPartRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateAccidentBodyPartIndex($name_table));
+                app(AccidentBodyPartRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'accident_care':
-                $results = app(AccidentCareRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateAccidentCareIndex($name_table));
+                app(AccidentCareRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'accident_hurt_type':
-                $results = app(AccidentHurtTypeRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateAccidentHurtTypeIndex($name_table));
+                app(AccidentHurtTypeRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'accident_location':
-                $results = app(AccidentLocationRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateAccidentLocationIndex($name_table));
+                app(AccidentLocationRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'age_type':
-                $results = app(AgeTypeRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateAgeTypeIndex($name_table));
+                app(AgeTypeRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'area':
-                $results = app(AreaRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateAreaIndex($name_table));
+                app(AreaRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'atc':
-                $results = app(AtcRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateAtcIndex($name_table));
+                app(AtcRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'atc_group':
-                $results = app(AtcGroupRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateAtcGroupIndex($name_table));
+                app(AtcGroupRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'awareness':
-                $results = app(AwarenessRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateAwarenessIndex($name_table));
+                app(AwarenessRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'bed_bsty':
-                $results = app(BedBstyRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateBedBstyIndex($name_table));
+                app(BedBstyRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'bed':
-                $results = app(BedRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateBedIndex($name_table));
+                app(BedRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'bed_room':
-                $results = app(BedRoomRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateBedRoomIndex($name_table));
+                app(BedRoomRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'bed_type':
-                $results = app(BedTypeRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateBedTypeIndex($name_table));
+                app(BedTypeRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'bhyt_blacklist':
-                $results = app(BhytBlacklistRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateBhytBlacklistIndex($name_table));
+                app(BhytBlacklistRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'bhyt_param':
-                $results = app(BhytParamRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateBhytParamIndex($name_table));
+                app(BhytParamRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'bhyt_whitelist':
-                $results = app(BhytWhitelistRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateBhytWhitelistIndex($name_table));
+                app(BhytWhitelistRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'bid':
-                $results = app(BidRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateBidIndex($name_table));
+                app(BidRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'bid_type':
-                $results = app(BidTypeRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateBidTypeIndex($name_table));
+                app(BidTypeRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'blood_group':
-                $results = app(BloodGroupRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateBloodGroupIndex($name_table));
+                app(BloodGroupRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'blood_volume':
-                $results = app(BloodVolumeRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateBloodVolumeIndex($name_table));
+                app(BloodVolumeRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'body_part':
-                $results = app(BodyPartRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateBodyPartIndex($name_table));
+                app(BodyPartRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'born_position':
-                $results = app(BornPositionRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateBornPositionIndex($name_table));
+                app(BornPositionRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'branch':
-                $results = app(BranchRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateBranchIndex($name_table));
+                app(BranchRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'cancel_reason':
-                $results = app(CancelReasonRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateCancelReasonIndex($name_table));
+                app(CancelReasonRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'career':
-                $results = app(CareerRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateCareerIndex($name_table));
+                app(CareerRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'career_title':
-                $results = app(CareerTitleRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateCareerTitleIndex($name_table));
+                app(CareerTitleRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'cashier_room':
-                $results = app(CashierRoomRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateCashierRoomIndex($name_table));
+                app(CashierRoomRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'commune':
-                $results = app(CommuneRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateCommuneIndex($name_table));
+                app(CommuneRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'contraindication':
-                $results = app(ContraindicationRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateContraindicationIndex($name_table));
+                app(ContraindicationRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'data_store':
-                $results = app(DataStoreRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateDataStoreIndex($name_table));
+                app(DataStoreRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'death_within':
-                $results = app(DeathWithinRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateDeathWithinIndex($name_table));
+                app(DeathWithinRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'debate_reason':
-                $results = app(DebateReasonRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateDebateReasonIndex($name_table));
+                app(DebateReasonRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'debate_type':
-                $results = app(DebateTypeRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateDebateTypeIndex($name_table));
+                app(DebateTypeRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'department':
-                $results = app(DepartmentRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateDepartmentIndex($name_table));
+                app(DepartmentRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'diim_type':
-                $results = app(DiimTypeRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateDiimTypeIndex($name_table));
+                app(DiimTypeRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'district':
-                $results = app(DistrictRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateDistrictIndex($name_table));
+                app(DistrictRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'dosage_form':
-                $results = app(DosageFormRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateDosageFormIndex($name_table));
+                app(DosageFormRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'emotionless_method':
-                $results = app(EmotionlessMethodRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateEmotionlessMethodIndex($name_table));
+                app(EmotionlessMethodRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
-            case 'employee':
-                $results = app(EmployeeRepository::class)->getDataFromDbToElastic(null);
+            case 'employee':                
                 event(new CreateEmployeeIndex($name_table));
+                app(EmployeeRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'ethnic':
-                $results = app(EthnicRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateEthnicIndex($name_table));
+                app(EthnicRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'execute_group':
-                $results = app(ExecuteGroupRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateExecuteGroupIndex($name_table));
+                app(ExecuteGroupRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'execute_role':
-                $results = app(ExecuteRoleRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateExecuteRoleIndex($name_table));
+                app(ExecuteRoleRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'execute_role_user':
-                $results = app(ExecuteRoleUserRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateExecuteRoleUserIndex($name_table));
+                app(ExecuteRoleUserRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'execute_room':
-                $results = app(ExecuteRoomRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateExecuteRoomIndex($name_table));
+                app(ExecuteRoomRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'exe_service_module':
-                $results = app(ExeServiceModuleRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateExeServiceModuleIndex($name_table));
+                app(ExeServiceModuleRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'exp_mest_reason':
-                $results = app(ExpMestReasonRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateExpMestReasonIndex($name_table));
+                app(ExpMestReasonRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'exro_room':
-                $results = app(ExroRoomRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateExroRoomIndex($name_table));
+                app(ExroRoomRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'file_type':
-                $results = app(FileTypeRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateFileTypeIndex($name_table));
+                app(FileTypeRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'film_size':
-                $results = app(FilmSizeRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateFilmSizeIndex($name_table));
+                app(FilmSizeRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'fuex_type':
-                $results = app(FuexTypeRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateFuexTypeIndex($name_table));
+                app(FuexTypeRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'gender':
-                $results = app(GenderRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateGenderIndex($name_table));
+                app(GenderRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'group':
-                $results = app(GroupRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateGroupIndex($name_table));
+                app(GroupRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'group_type':
-                $results = app(GroupTypeRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateGroupTypeIndex($name_table));
+                app(GroupTypeRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'hein_service_type':
-                $results = app(HeinServiceTypeRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateHeinServiceTypeIndex($name_table));
+                app(HeinServiceTypeRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'hospitalize_reason':
-                $results = app(HospitalizeReasonRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateHospitalizeReasonIndex($name_table));
+                app(HospitalizeReasonRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'htu':
-                $results = app(HtuRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateHtuIndex($name_table));
+                app(HtuRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'icd_cm':
-                $results = app(IcdCmRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateIcdCmIndex($name_table));
+                app(IcdCmRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'icd':
-                $results = app(IcdRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateIcdIndex($name_table));
+                app(IcdRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'icd_group':
-                $results = app(IcdGroupRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateIcdGroupIndex($name_table));
+                app(IcdGroupRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'imp_source':
-                $results = app(ImpSourceRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateImpSourceIndex($name_table));
+                app(ImpSourceRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'interaction_reason':
-                $results = app(InteractionReasonRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateInteractionReasonIndex($name_table));
+                app(InteractionReasonRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'license_class':
-                $results = app(LicenseClassRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateLicenseClassIndex($name_table));
+                app(LicenseClassRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'location_store':
-                $results = app(LocationStoreRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateLocationStoreIndex($name_table));
+                app(LocationStoreRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'machine':
-                $results = app(MachineRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateMachineIndex($name_table));
+                app(MachineRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'manufacturer':
-                $results = app(ManufacturerRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateManufacturerIndex($name_table));
+                app(ManufacturerRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'material_type':
-                $results = app(MaterialTypeRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateMaterialTypeIndex($name_table));
+                app(MaterialTypeRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'material_type_map':
-                $results = app(MaterialTypeMapRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateMaterialTypeMapIndex($name_table));
+                app(MaterialTypeMapRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'medical_contract':
-                $results = app(MedicalContractRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateMedicalContractIndex($name_table));
+                app(MedicalContractRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'medicine':
-                $results = app(MedicineRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateMedicineIndex($name_table));
+                app(MedicineRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'medicine_group':
-                $results = app(MedicineGroupRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateMedicineGroupIndex($name_table));
+                app(MedicineGroupRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'medicine_line':
-                $results = app(MedicineLineRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateMedicineLineIndex($name_table));
+                app(MedicineLineRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'medicine_paty':
-                $results = app(MedicinePatyRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateMedicinePatyIndex($name_table));
+                app(MedicinePatyRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'medicine_type_acin':
-                $results = app(MedicineTypeAcinRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateMedicineTypeAcinIndex($name_table));
+                app(MedicineTypeAcinRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'medicine_type':
-                $results = app(MedicineTypeRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateMedicineTypeIndex($name_table));
+                app(MedicineTypeRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'medicine_use_form':
-                $results = app(MedicineUseFormRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateMedicineUseFormIndex($name_table));
+                app(MedicineUseFormRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'medi_org':
-                $results = app(MediOrgRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateMediOrgIndex($name_table));
+                app(MediOrgRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'medi_record_type':
-                $results = app(MediRecordTypeRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateMediRecordTypeIndex($name_table));
+                app(MediRecordTypeRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'medi_stock':
-                $results = app(MediStockRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateMediStockIndex($name_table));
+                app(MediStockRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'medi_stock_maty':
-                $results = app(MediStockMatyRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateMediStockMatyIndex($name_table));
+                app(MediStockMatyRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'medi_stock_mety':
-                $results = app(MediStockMetyRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateMediStockMetyIndex($name_table));
+                app(MediStockMetyRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'mema_group':
-                $results = app(MemaGroupRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateMemaGroupIndex($name_table));
+                app(MemaGroupRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'mest_patient_type':
-                $results = app(MestPatientTypeRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateMestPatientTypeIndex($name_table));
+                app(MestPatientTypeRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'mest_room':
-                $results = app(MestRoomRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateMestRoomIndex($name_table));
+                app(MestRoomRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'military_rank':
-                $results = app(MilitaryRankRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateMilitaryRankIndex($name_table));
+                app(MilitaryRankRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'module':
-                $results = app(ModuleRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateModuleIndex($name_table));
+                app(ModuleRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'module_role':
-                $results = app(ModuleRoleRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateModuleRoleIndex($name_table));
+                app(ModuleRoleRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'national':
-                $results = app(NationalRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateNationalIndex($name_table));
+                app(NationalRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'other_pay_source':
-                $results = app(OtherPaySourceRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateOtherPaySourceIndex($name_table));
+                app(OtherPaySourceRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'package':
-                $results = app(PackageRepository::class)->getDataFromDbToElastic(null);
                 event(new CreatePackageIndex($name_table));
+                app(PackageRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'packing_type':
-                $results = app(PackingTypeRepository::class)->getDataFromDbToElastic(null);
                 event(new CreatePackingTypeIndex($name_table));
+                app(PackingTypeRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'patient_case':
-                $results = app(PatientCaseRepository::class)->getDataFromDbToElastic(null);
                 event(new CreatePatientCaseIndex($name_table));
+                app(PatientCaseRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'patient_classify':
-                $results = app(PatientClassifyRepository::class)->getDataFromDbToElastic(null);
                 event(new CreatePatientClassifyIndex($name_table));
+                app(PatientClassifyRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'patient_type_allow':
-                $results = app(PatientTypeAllowRepository::class)->getDataFromDbToElastic(null);
                 event(new CreatePatientTypeAllowIndex($name_table));
+                app(PatientTypeAllowRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'patient_type':
-                $results = app(PatientTypeRepository::class)->getDataFromDbToElastic(null);
                 event(new CreatePatientTypeIndex($name_table));
+                app(PatientTypeRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'patient_type_room':
-                $results = app(PatientTypeRoomRepository::class)->getDataFromDbToElastic(null);
                 event(new CreatePatientTypeRoomIndex($name_table));
+                app(PatientTypeRoomRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'position':
-                $results = app(PositionRepository::class)->getDataFromDbToElastic(null);
                 event(new CreatePositionIndex($name_table));
+                app(PositionRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'preparations_blood':
-                $results = app(PreparationsBloodRepository::class)->getDataFromDbToElastic(null);
                 event(new CreatePreparationsBloodIndex($name_table));
+                app(PreparationsBloodRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'priority_type':
-                $results = app(PriorityTypeRepository::class)->getDataFromDbToElastic(null);
                 event(new CreatePriorityTypeIndex($name_table));
+                app(PriorityTypeRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'processing_method':
-                $results = app(ProcessingMethodRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateProcessingMethodIndex($name_table));
+                app(ProcessingMethodRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'province':
-                $results = app(ProvinceRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateProvinceIndex($name_table));
+                app(ProvinceRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'pttt_catastrophe':
-                $results = app(PtttCatastropheRepository::class)->getDataFromDbToElastic(null);
                 event(new CreatePtttCatastropheIndex($name_table));
+                app(PtttCatastropheRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'pttt_condition':
-                $results = app(PtttConditionRepository::class)->getDataFromDbToElastic(null);
                 event(new CreatePtttConditionIndex($name_table));
+                app(PtttConditionRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'pttt_group':
-                $results = app(PtttGroupRepository::class)->getDataFromDbToElastic(null);
                 event(new CreatePtttGroupIndex($name_table));
+                app(PtttGroupRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'pttt_method':
-                $results = app(PtttMethodRepository::class)->getDataFromDbToElastic(null);
                 event(new CreatePtttMethodIndex($name_table));
+                app(PtttMethodRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'pttt_table':
-                $results = app(PtttTableRepository::class)->getDataFromDbToElastic(null);
                 event(new CreatePtttTableIndex($name_table));
+                app(PtttTableRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'ration_group':
-                $results = app(RationGroupRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateRationGroupIndex($name_table));
+                app(RationGroupRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'ration_time':
-                $results = app(RationTimeRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateRationTimeIndex($name_table));
+                app(RationTimeRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'reception_room':
-                $results = app(ReceptionRoomRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateReceptionRoomIndex($name_table));
+                app(ReceptionRoomRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'refectory':
-                $results = app(RefectoryRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateRefectoryIndex($name_table));
+                app(RefectoryRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'relation':
-                $results = app(RelationRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateRelationIndex($name_table));
+                app(RelationRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'religion':
-                $results = app(ReligionRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateReligionIndex($name_table));
+                app(ReligionRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'role':
-                $results = app(RoleRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateRoleIndex($name_table));
+                app(RoleRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'room':
-                $results = app(RoomRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateRoomIndex($name_table));
+                app(RoomRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'room_group':
-                $results = app(RoomGroupRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateRoomGroupIndex($name_table));
+                app(RoomGroupRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'room_type':
-                $results = app(RoomTypeRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateRoomTypeIndex($name_table));
+                app(RoomTypeRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'sale_profit_cfg':
-                $results = app(SaleProfitCfgRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateSaleProfitCfgIndex($name_table));
+                app(SaleProfitCfgRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'service_condition':
-                $results = app(ServiceConditionRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateServiceConditionIndex($name_table));
+                app(ServiceConditionRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'service':
-                $results = app(ServiceRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateServiceIndex($name_table));
+                app(ServiceRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'service_follow':
-                $results = app(ServiceFollowRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateServiceFollowIndex($name_table));
+                app(ServiceFollowRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'service_group':
-                $results = app(ServiceGroupRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateServiceGroupIndex($name_table));
+                app(ServiceGroupRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'service_machine':
-                $results = app(ServiceMachineRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateServiceMachineIndex($name_table));
+                app(ServiceMachineRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'service_paty':
-                $results = app(ServicePatyRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateServicePatyIndex($name_table));
+                app(ServicePatyRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'service_req_type':
-                $results = app(ServiceReqTypeRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateServiceReqTypeIndex($name_table));
+                app(ServiceReqTypeRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'service_room':
-                $results = app(ServiceRoomRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateServiceRoomIndex($name_table));
+                app(ServiceRoomRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'service_type':
-                $results = app(ServiceTypeRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateServiceTypeIndex($name_table));
+                app(ServiceTypeRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'service_unit':
-                $results = app(ServiceUnitRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateServiceUnitIndex($name_table));
+                app(ServiceUnitRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'serv_segr':
-                $results = app(ServSegrRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateServSegrIndex($name_table));
+                app(ServSegrRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'speciality':
-                $results = app(SpecialityRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateSpecialityIndex($name_table));
+                app(SpecialityRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'storage_condition':
-                $results = app(StorageConditionRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateStorageConditionIndex($name_table));
+                app(StorageConditionRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'suim_index':
-                $results = app(SuimIndexRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateSuimIndexIndex($name_table));
+                app(SuimIndexRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'suim_index_unit':
-                $results = app(SuimIndexUnitRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateSuimIndexUnitIndex($name_table));
+                app(SuimIndexUnitRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'supplier':
-                $results = app(SupplierRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateSupplierIndex($name_table));
+                app(SupplierRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'test_index':
-                $results = app(TestIndexRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateTestIndexIndex($name_table));
+                app(TestIndexRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'test_index_group':
-                $results = app(TestIndexGroupRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateTestIndexGroupIndex($name_table));
+                app(TestIndexGroupRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'test_index_unit':
-                $results = app(TestIndexUnitRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateTestIndexUnitIndex($name_table));
+                app(TestIndexUnitRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'test_sample_type':
-                $results = app(TestSampleTypeRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateTestSampleTypeIndex($name_table));
+                app(TestSampleTypeRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'test_type':
-                $results = app(TestTypeRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateTestTypeIndex($name_table));
+                app(TestTypeRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'tran_pati_tech':
-                $results = app(TranPatiTechRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateTranPatiTechIndex($name_table));
+                app(TranPatiTechRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'treatment_end_type':
-                $results = app(TreatmentEndTypeRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateTreatmentEndTypeIndex($name_table));
+                app(TreatmentEndTypeRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'treatment_type':
-                $results = app(TreatmentTypeRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateTreatmentTypeIndex($name_table));
+                app(TreatmentTypeRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'unlimit_reason':
-                $results = app(UnlimitReasonRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateUnlimitReasonIndex($name_table));
+                app(UnlimitReasonRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'vaccine_type':
-                $results = app(VaccineTypeRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateVaccineTypeIndex($name_table));
+                app(VaccineTypeRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'work_place':
-                $results = app(WorkPlaceRepository::class)->getDataFromDbToElastic(null);
                 event(new CreateWorkPlaceIndex($name_table));
+                app(WorkPlaceRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
 
                 // No Cache
@@ -971,133 +972,111 @@ class IndexRecordsToElasticsearch extends Command
                 $batchSize = 25000;
                 event(new CreateServiceReqLViewIndex($name_table));
                 app(ServiceReqLViewRepository::class)->getDataFromDbToElastic($batchSize, null);
-                $results = null;
                 break;
             case 'debate':
                 $batchSize = 10000;
                 event(new CreateDebateIndex($name_table));
                 app(DebateRepository::class)->getDataFromDbToElastic($batchSize, null);
-                $results = null;
                 break;
             case 'debate_v_view':
                 $batchSize = 25000;
                 event(new CreateDebateVViewIndex($name_table));
                 app(DebateVViewRepository::class)->getDataFromDbToElastic($batchSize, null);
-                $results = null;
                 break;
             case 'user_room_v_view':
                 $batchSize = 25000;
                 event(new CreateUserRoomVViewIndex($name_table));
                 app(UserRoomVViewRepository::class)->getDataFromDbToElastic($batchSize, null);
-                $results = null;
                 break;
             case 'debate_user':
                 $batchSize = 25000;
                 event(new CreateDebateUserIndex($name_table));
                 app(DebateUserRepository::class)->getDataFromDbToElastic($batchSize, null);
-                $results = null;
                 break;
             case 'debate_ekip_user':
                 $batchSize = 25000;
                 event(new CreateDebateEkipUserIndex($name_table));
                 app(DebateEkipUserRepository::class)->getDataFromDbToElastic($batchSize, null);
-                $results = null;
                 break;
             case 'tracking':
                 $batchSize = 25000;
                 event(new CreateTrackingIndex($name_table));
                 app(TrackingRepository::class)->getDataFromDbToElastic($batchSize, null);
-                $results = null;
                 break;
             case 'test_service_req_list_v_view':
                 $batchSize = 10000;
                 event(new CreateTestServiceReqListVViewIndex($name_table));
                 app(TestServiceReqListVViewRepository::class)->getDataFromDbToElastic($batchSize, null);
-                $results = null;
                 break;
             case 'sere_serv':
                 $batchSize = 2000;
                 event(new CreateSereServIndex($name_table));
                 app(SereServRepository::class)->getDataFromDbToElastic($batchSize, null);
-                $results = null;
                 break;
             case 'sere_serv_v_view_4':
                 $batchSize = 10000;
                 event(new CreateSereServVView4Index($name_table));
                 app(SereServVView4Repository::class)->getDataFromDbToElastic($batchSize, null);
-                $results = null;
                 break;
             case 'patient_type_alter_v_view':
                 $batchSize = 25000;
                 event(new CreatePatientTypeAlterVViewIndex($name_table));
                 app(PatientTypeAlterVViewRepository::class)->getDataFromDbToElastic($batchSize, null);
-                $results = null;
                 break;
             case 'treatment_l_view':
                 $batchSize = 25000;
                 event(new CreateTreatmentLViewIndex($name_table));
                 app(TreatmentLViewRepository::class)->getDataFromDbToElastic($batchSize, null);
-                $results = null;
                 break;
             case 'treatment_fee_view':
                 $batchSize = 25000;
                 event(new CreateTreatmentFeeViewIndex($name_table));
                 app(TreatmentFeeViewRepository::class)->getDataFromDbToElastic($batchSize, null);
-                $results = null;
                 break;
             case 'treatment_bed_room_l_view':
                 $batchSize = 25000;
                 event(new CreateTreatmentBedRoomLViewIndex($name_table));
                 app(TreatmentBedRoomLViewRepository::class)->getDataFromDbToElastic($batchSize, null);
-                $results = null;
                 break;
             case 'dhst':
                 $batchSize = 10000;
                 event(new CreateDhstIndex($name_table));
                 app(DhstRepository::class)->getDataFromDbToElastic($batchSize, null);
-                $results = null;
                 break;
             case 'sere_serv_ext':
                 $batchSize = 25000;
                 event(new CreateSereServExtIndex($name_table));
                 app(SereServExtRepository::class)->getDataFromDbToElastic($batchSize, null);
-                $results = null;
                 break;
             case 'sere_serv_tein':
                 $batchSize = 25000;
                 event(new CreateSereServTeinIndex($name_table));
                 app(SereServTeinRepository::class)->getDataFromDbToElastic($batchSize, null);
-                $results = null;
                 break;
             case 'sere_serv_tein_v_view':
                 $batchSize = 25000;
                 event(new CreateSereServTeinVViewIndex($name_table));
                 app(SereServTeinVViewRepository::class)->getDataFromDbToElastic($batchSize, null);
-                $results = null;
                 break;
             case 'sere_serv_bill':
                 $batchSize = 25000;
                 event(new CreateSereServBillIndex($name_table));
                 app(SereServBillRepository::class)->getDataFromDbToElastic($batchSize, null);
-                $results = null;
                 break;
             case 'sere_serv_deposit_v_view':
                 $batchSize = 25000;
                 event(new CreateSereServDepositVViewIndex($name_table));
                 app(SereServDepositVViewRepository::class)->getDataFromDbToElastic($batchSize, null);
-                $results = null;
                 break;
             case 'sese_depo_repay_v_view':
                 $batchSize = 25000;
                 event(new CreateSeseDepoRepayVViewIndex($name_table));
                 app(SeseDepoRepayVViewRepository::class)->getDataFromDbToElastic($batchSize, null);
-                $results = null;
                 break;
             case 'account_book_v_view':
                 $batchSize = 25000;
                 event(new CreateAccountBookVViewIndex($name_table));
                 app(AccountBookVViewRepository::class)->getDataFromDbToElastic($batchSize, null);
-                $results = null;
                 break;
             default:
                 // Xử lý mặc định hoặc xử lý khi không có bảng khớp

@@ -30,7 +30,7 @@ class ElasticInsertPtttGroupIndex
                 return ;
             }
             $record = $event->record;
-            $data = app(PtttGroupRepository::class)->getDataFromDbToElastic($record->id);
+            $data = app(PtttGroupRepository::class)->getDataFromDbToElastic(null, $record->id);
             // Decode
             $data = convertKeysToSnakeCase(json_decode($data, true));
             // Tạo chỉ mục hoặc cập nhật dữ liệu

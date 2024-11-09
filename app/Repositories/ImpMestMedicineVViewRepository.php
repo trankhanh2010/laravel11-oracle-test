@@ -113,7 +113,7 @@ class ImpMestMedicineVViewRepository
         if ($id != null) {
             $data = $this->applyJoins()->where('v_his_imp_mest_medicine.id', '=', $id)->first();
             if ($data) {
-                $data = $data->toArray();
+                $data = $data->getAttributes();
                 return $data;
             }
         } else {

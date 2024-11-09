@@ -275,7 +275,7 @@ class TreatmentFeeViewRepository
         if ($id != null) {
             $data = $this->applyJoins()->where('v_his_treatment_fee.id', '=', $id)->first();
             if ($data) {
-                $data = $data->toArray();
+                $data = $data->getAttributes();
                 return $data;
             }
         } else {

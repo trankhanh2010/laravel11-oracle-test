@@ -113,7 +113,7 @@ class ExpMestBltyReqVView2Repository
         if ($id != null) {
             $data = $this->applyJoins()->where('v_his_exp_mest_blty_req_2.id', '=', $id)->first();
             if ($data) {
-                $data = $data->toArray();
+                $data = $data->getAttributes();
                 return $data;
             }
         } else {

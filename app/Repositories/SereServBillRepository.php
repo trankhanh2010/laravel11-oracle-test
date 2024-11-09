@@ -113,7 +113,7 @@ class SereServBillRepository
         if ($id != null) {
             $data = $this->applyJoins()->where('his_sere_serv_bill.id', '=', $id)->first();
             if ($data) {
-                $data = $data->toArray();
+                $data = $data->getAttributes();
                 return $data;
             }
         } else {

@@ -26,6 +26,7 @@ class RoleService
     {
         try {
             $data = $this->roleRepository->applyJoins();
+            $data = $this->roleRepository->applyWith($data);
             $data = $this->roleRepository->applyKeywordFilter($data, $this->params->keyword);
             $data = $this->roleRepository->applyIsActiveFilter($data, $this->params->isActive);
             $count = $data->count();
@@ -41,6 +42,7 @@ class RoleService
         try {
             $data = Cache::remember($this->params->roleName . '_start_' . $this->params->start . '_limit_' . $this->params->limit . $this->params->orderByString . '_is_active_' . $this->params->isActive . '_get_all_' . $this->params->getAll, $this->params->time, function (){
                 $data = $this->roleRepository->applyJoins();
+                $data = $this->roleRepository->applyWith($data);
                 $data = $this->roleRepository->applyIsActiveFilter($data, $this->params->isActive);
                 $count = $data->count();
                 $data = $this->roleRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
@@ -58,6 +60,7 @@ class RoleService
             $data = Cache::remember($this->params->roleName . '_' . $id . '_is_active_' . $this->params->isActive, $this->params->time, function () use ($id){
                 $data = $this->roleRepository->applyJoins()
                     ->where('acs_role.id', $id);
+                $data = $this->roleRepository->applyWith($data);
                 $data = $this->roleRepository->applyIsActiveFilter($data, $this->params->isActive);
                 $data = $data->first();
                 return $data;

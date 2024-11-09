@@ -1,6 +1,7 @@
 <?php 
 namespace App\Repositories;
 
+use App\Jobs\ElasticSearch\Index\ProcessElasticIndexingJob;
 use App\Models\HIS\PtttGroup;
 use Illuminate\Support\Facades\DB;
 
@@ -15,12 +16,17 @@ class PtttGroupRepository
     public function applyJoins()
     {
         return $this->ptttGroup
-        ->with([
-           'bed_services:service_name,service_code'
-        ])
             ->select(
                 'his_pttt_group.*'
             );
+    }
+    public function applyWith($query){
+        return $query->with($this->paramWith());
+    }
+    public function paramWith(){
+        return [
+           'bed_services:service_name,service_code'
+        ];
     }
     public function applyKeywordFilter($query, $keyword)
     {
@@ -139,18 +145,30 @@ class PtttGroupRepository
         $data->delete();
         return $data;
     }
-    public function getDataFromDbToElastic($id = null)
+    public function getDataFromDbToElastic($batchSize = 5000, $id = null)
     {
-        $data = $this->applyJoins();
+        $numJobs = config('queue')['num_queue_worker']; // Số lượng job song song
         if ($id != null) {
-            $data = $data->where('his_pttt_group.id', '=', $id)->first();
+            $data = $this->applyJoins()->where('his_pttt_group.id', '=', $id)->first();
             if ($data) {
-                $data->toArray();
+                $data = $data->toArray();
+                return $data;
             }
         } else {
-            $data = $data->get();
-            $data->toArray();
+            // Xác định min và max id
+            $minId = $this->applyJoins()->min('his_pttt_group.id');
+            $maxId = $this->applyJoins()->max('his_pttt_group.id');
+            $chunkSize = ceil(($maxId - $minId + 1) / $numJobs);
+            for ($i = 0; $i < $numJobs; $i++) {
+                $startId = $minId + ($i * $chunkSize);
+                $endId = $startId + $chunkSize - 1;
+                // Đảm bảo chunk cuối cùng bao phủ đến maxId
+                if ($i == $numJobs - 1) {
+                    $endId = $maxId;
+                }
+                // Dispatch job cho mỗi phạm vi id
+                ProcessElasticIndexingJob::dispatch('pttt_group', 'his_pttt_group', $startId, $endId, $batchSize, $this->paramWith());
+            }
         }
-        return $data;
     }
 }

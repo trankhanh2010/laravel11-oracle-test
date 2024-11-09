@@ -113,7 +113,7 @@ class ServiceReqMetyRepository
         if ($id != null) {
             $data = $this->applyJoins()->where('his_service_req_mety.id', '=', $id)->first();
             if ($data) {
-                $data = $data->toArray();
+                $data = $data->getAttributes();
                 return $data;
             }
         } else {

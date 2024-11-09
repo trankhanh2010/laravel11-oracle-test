@@ -29,7 +29,7 @@ class ElasticInsertSereServIndex
                 return ;
             }
             $record = $event->record;
-            $data = app(SereServRepository::class)->getDataFromDbToElastic($record->id);
+            $data = app(SereServRepository::class)->getDataFromDbToElastic(null, $record->id);
             // Tạo chỉ mục hoặc cập nhật dữ liệu
             $params = [
                 'index' => $event->modelName, // Chỉ mục bạn muốn tạo hoặc cập nhật

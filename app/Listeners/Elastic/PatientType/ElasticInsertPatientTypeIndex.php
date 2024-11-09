@@ -37,7 +37,7 @@ class ElasticInsertPatientTypeIndex
                 return ;
             }
             $record = $event->record;
-            $data = app(PatientTypeRepository::class)->getDataFromDbToElastic($record->id);
+            $data = app(PatientTypeRepository::class)->getDataFromDbToElastic(null, $record->id);
             // Decode
             $data = convertKeysToSnakeCase(json_decode($data, true));
             // Tạo chỉ mục hoặc cập nhật dữ liệu

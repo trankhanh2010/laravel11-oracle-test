@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Jobs\ElasticSearch\Index\ProcessElasticIndexingJob;
 use App\Models\HIS\WorkPlace;
 use Illuminate\Support\Facades\DB;
 
@@ -112,20 +113,30 @@ class WorkPlaceRepository
         $data->delete();
         return $data;
     }
-    public function getDataFromDbToElastic($id = null)
+    public function getDataFromDbToElastic($batchSize = 5000, $id = null)
     {
-        $data = $this->applyJoins();
+        $numJobs = config('queue')['num_queue_worker']; // Số lượng job song song
         if ($id != null) {
-            $data = $data->where('his_work_place.id', '=', $id)->first();
+            $data = $this->applyJoins()->where('his_work_place.id', '=', $id)->first();
             if ($data) {
                 $data = $data->getAttributes();
+                return $data;
             }
         } else {
-            $data = $data->get();
-            $data = $data->map(function ($item) {
-                return $item->getAttributes();
-            })->toArray();
+            // Xác định min và max id
+            $minId = $this->applyJoins()->min('his_work_place.id');
+            $maxId = $this->applyJoins()->max('his_work_place.id');
+            $chunkSize = ceil(($maxId - $minId + 1) / $numJobs);
+            for ($i = 0; $i < $numJobs; $i++) {
+                $startId = $minId + ($i * $chunkSize);
+                $endId = $startId + $chunkSize - 1;
+                // Đảm bảo chunk cuối cùng bao phủ đến maxId
+                if ($i == $numJobs - 1) {
+                    $endId = $maxId;
+                }
+                // Dispatch job cho mỗi phạm vi id
+                ProcessElasticIndexingJob::dispatch('work_place', 'his_work_place', $startId, $endId, $batchSize);
+            }
         }
-        return $data;
     }
 }

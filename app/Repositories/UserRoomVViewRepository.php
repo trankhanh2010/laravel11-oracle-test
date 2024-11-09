@@ -100,7 +100,7 @@ class UserRoomVViewRepository
         if ($id != null) {
             $data = $this->applyJoins()->where('v_his_user_room.id', '=', $id)->first();
             if ($data) {
-                $data = $data->toArray();
+                $data = $data->getAttributes();
                 return $data;
             }
         } else {

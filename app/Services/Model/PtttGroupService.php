@@ -26,6 +26,7 @@ class PtttGroupService
     {
         try {
             $data = $this->ptttGroupRepository->applyJoins();
+            $data = $this->ptttGroupRepository->applyWith($data);
             $data = $this->ptttGroupRepository->applyKeywordFilter($data, $this->params->keyword);
             $data = $this->ptttGroupRepository->applyIsActiveFilter($data, $this->params->isActive);
             $count = $data->count();
@@ -41,6 +42,7 @@ class PtttGroupService
         try {
             $data = Cache::remember($this->params->ptttGroupName . '_start_' . $this->params->start . '_limit_' . $this->params->limit . $this->params->orderByString . '_is_active_' . $this->params->isActive . '_get_all_' . $this->params->getAll, $this->params->time, function (){
                 $data = $this->ptttGroupRepository->applyJoins();
+                $data = $this->ptttGroupRepository->applyWith($data);
                 $data = $this->ptttGroupRepository->applyIsActiveFilter($data, $this->params->isActive);
                 $count = $data->count();
                 $data = $this->ptttGroupRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
@@ -58,6 +60,7 @@ class PtttGroupService
             $data = Cache::remember($this->params->ptttGroupName . '_' . $id . '_is_active_' . $this->params->isActive, $this->params->time, function () use ($id){
                 $data = $this->ptttGroupRepository->applyJoins()
                     ->where('his_pttt_group.id', $id);
+                $data = $this->ptttGroupRepository->applyWith($data);
                 $data = $this->ptttGroupRepository->applyIsActiveFilter($data, $this->params->isActive);
                 $data = $data->first();
                 return $data;

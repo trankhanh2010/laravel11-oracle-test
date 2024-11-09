@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Jobs\ElasticSearch\Index\ProcessElasticIndexingJob;
 use App\Models\ACS\Role;
 use Illuminate\Support\Facades\DB;
 
@@ -16,12 +17,17 @@ class RoleRepository
     public function applyJoins()
     {
         return $this->role
-            ->with([
-                'modules:id,module_name'
-            ])
             ->select(
                 'acs_role.*'
             );
+    }
+    public function applyWith($query){
+        return $query->with($this->paramWith());
+    }
+    public function paramWith(){
+        return [
+                'modules:id,module_name'
+        ];
     }
     public function applyKeywordFilter($query, $keyword)
     {
@@ -102,18 +108,30 @@ class RoleRepository
         $data->delete();
         return $data;
     }
-    public function getDataFromDbToElastic($id = null)
+    public function getDataFromDbToElastic($batchSize = 5000, $id = null)
     {
-        $data = $this->applyJoins();
+        $numJobs = config('queue')['num_queue_worker']; // Số lượng job song song
         if ($id != null) {
-            $data = $data->where('acs_role.id', '=', $id)->first();
+            $data = $this->applyJoins()->where('acs_role.id', '=', $id)->first();
             if ($data) {
-                $data->toArray();
+                $data = $data->toArray();
+                return $data;
             }
         } else {
-            $data = $data->get();
-            $data->toArray();
+            // Xác định min và max id
+            $minId = $this->applyJoins()->min('acs_role.id');
+            $maxId = $this->applyJoins()->max('acs_role.id');
+            $chunkSize = ceil(($maxId - $minId + 1) / $numJobs);
+            for ($i = 0; $i < $numJobs; $i++) {
+                $startId = $minId + ($i * $chunkSize);
+                $endId = $startId + $chunkSize - 1;
+                // Đảm bảo chunk cuối cùng bao phủ đến maxId
+                if ($i == $numJobs - 1) {
+                    $endId = $maxId;
+                }
+                // Dispatch job cho mỗi phạm vi id
+                ProcessElasticIndexingJob::dispatch('role', 'acs_role', $startId, $endId, $batchSize, $this->paramWith());
+            }
         }
-        return $data;
     }
 }

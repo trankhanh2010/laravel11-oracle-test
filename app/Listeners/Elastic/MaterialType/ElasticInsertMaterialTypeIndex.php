@@ -31,7 +31,7 @@ class ElasticInsertMaterialTypeIndex
                 return ;
             }
             $record = $event->record;
-            $data = app(MaterialTypeRepository::class)->getDataFromDbToElastic($record->id);
+            $data = app(MaterialTypeRepository::class)->getDataFromDbToElastic(null, $record->id);
             // Tạo chỉ mục hoặc cập nhật dữ liệu
             $params = [
                 'index' => $event->modelName, // Chỉ mục bạn muốn tạo hoặc cập nhật

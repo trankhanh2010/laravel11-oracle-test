@@ -200,7 +200,6 @@ return [
             'pttt_group',
             'reception_room',
             'role',
-            'service',
             'debate',
             'test_service_req_list_v_view',
             'sere_serv',

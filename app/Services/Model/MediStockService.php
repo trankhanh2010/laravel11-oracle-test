@@ -36,6 +36,7 @@ class MediStockService
     {
         try {
             $data = $this->mediStockRepository->applyJoins();
+            $data = $this->mediStockRepository->applyWith($data);
             $data = $this->mediStockRepository->applyKeywordFilter($data, $this->params->keyword);
             $data = $this->mediStockRepository->applyIsActiveFilter($data, $this->params->isActive);
             $count = $data->count();
@@ -52,6 +53,7 @@ class MediStockService
         try {
             $data = Cache::remember($this->params->mediStockName . '_start_' . $this->params->start . '_limit_' . $this->params->limit . $this->params->orderByString . '_is_active_' . $this->params->isActive . '_get_all_' . $this->params->getAll, $this->params->time, function (){
                 $data = $this->mediStockRepository->applyJoins();
+                $data = $this->mediStockRepository->applyWith($data);
                 $data = $this->mediStockRepository->applyIsActiveFilter($data, $this->params->isActive);
                 $count = $data->count();
                 $data = $this->mediStockRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
@@ -70,6 +72,7 @@ class MediStockService
             $data = Cache::remember($this->params->mediStockName . '_' . $id . '_is_active_' . $this->params->isActive, $this->params->time, function () use ($id){
                 $data = $this->mediStockRepository->applyJoins()
                     ->where('his_medi_stock.id', $id);
+                $data = $this->mediStockRepository->applyWith($data);
                 $data = $this->mediStockRepository->applyIsActiveFilter($data, $this->params->isActive);
                 $data = $data->first();
                 $data = $this->applyResource($data);

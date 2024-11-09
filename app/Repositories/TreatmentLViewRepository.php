@@ -120,7 +120,7 @@ class TreatmentLViewRepository
         if ($id != null) {
             $data = $this->applyJoins()->where('l_his_treatment.id', '=', $id)->first();
             if ($data) {
-                $data = $data->toArray();
+                $data = $data->getAttributes();
                 return $data;
             }
         } else {

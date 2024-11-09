@@ -127,7 +127,7 @@ class PatientTypeAlterVViewRepository
         if ($id != null) {
             $data = $this->applyJoins()->where('v_his_patient_type_alter.id', '=', $id)->first();
             if ($data) {
-                $data = $data->toArray();
+                $data = $data->getAttributes();
                 return $data;
             }
         } else {

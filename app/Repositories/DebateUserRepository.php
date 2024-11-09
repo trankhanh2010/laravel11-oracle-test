@@ -113,7 +113,7 @@ class DebateUserRepository
         if ($id != null) {
             $data = $this->applyJoins()->where('his_debate_user.id', '=', $id)->first();
             if ($data) {
-                $data = $data->toArray();
+                $data = $data->getAttributes();
                 return $data;
             }
         } else {
