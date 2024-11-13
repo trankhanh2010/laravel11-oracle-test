@@ -236,6 +236,9 @@ class ProcessElasticIndexingJob implements ShouldQueue
     public function handle()
     {
         try {
+            // $client = app('Elasticsearch');
+            // // Tạm thời tắt làm mới khi có bản ghi mới
+            // $this->setRefreshInterval(-1, $this->name, $client);
             $batchData = [];
             $count = 0;
             $repository = $this->repository($this->name);
@@ -263,6 +266,8 @@ class ProcessElasticIndexingJob implements ShouldQueue
             }
         } catch (\Exception $e) {
         } finally {
+            // // Đặt lại thời gian làm mới
+            // $this->setRefreshInterval(1, $this->name, $client);
             DB::disconnect();
         }
     }
@@ -830,5 +835,18 @@ class ProcessElasticIndexingJob implements ShouldQueue
                 $client->bulk(['body' => $bulkData]);
             }
         }
+    }
+    public function setRefreshInterval($time, $index = '*', $client)
+    {
+        $params = [
+            'index' => $index,
+            'body' => [
+                'settings' => [
+                    'refresh_interval' => $time,
+                ],
+            ]
+        ];
+        // Sử dụng putSettings để thay đổi cài đặt
+        $client->indices()->putSettings($params);
     }
 }

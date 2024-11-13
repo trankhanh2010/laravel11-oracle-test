@@ -167,6 +167,9 @@ return [
                 'pass' => env('ELASTICSEARCH_PASS'),
                 'ca' => env('ELASTICSEARCH_CA'),
             ],
+            'client' => [
+                'persistent' => true,  // Sử dụng persistent connections (Giữ kết nối liên tục)
+            ]
         ],
 
     ],
@@ -203,6 +206,8 @@ return [
             'cluster' => env('REDIS_CLUSTER', 'redis'),
             // 'prefix' => env('REDIS_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_').'_database_'),
             'prefix' => "",
+            'persistent' => true,  // Kết nối persistent (duy trì kết nối)
+            'timeout' => 0, // Không giới hạn thời gian chờ, để kết nối không bị ngắt
         ],
 
         'default' => [
