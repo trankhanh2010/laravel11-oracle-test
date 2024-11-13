@@ -401,6 +401,6 @@ return [
             'care' => 'Có lỗi khi thực hiện thao tác với Chăm sóc!',
 
         ]
-    ]
+    ],
 
 ];

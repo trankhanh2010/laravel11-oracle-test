@@ -208,6 +208,7 @@ return [
             'prefix' => "",
             'persistent' => true,  // Kết nối persistent (duy trì kết nối)
             'timeout' => 0, // Không giới hạn thời gian chờ, để kết nối không bị ngắt
+            'read_write_timeout' => -1,
         ],
 
         'default' => [

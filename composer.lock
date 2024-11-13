@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "97a2720975eb3603feaeeb63339a7d30",
+    "content-hash": "c41286e5245ad43551148dd725c01dbe",
     "packages": [
         {
             "name": "brick/math",
@@ -7800,6 +7800,85 @@
             "time": "2024-08-13T06:09:37+00:00"
         },
         {
+            "name": "rajentrivedi/queue-watch",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/rajentrivedi/queue-watch.git",
+                "reference": "ff565c85294a8a721f9ae0aa870c00cd95dcd106"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/rajentrivedi/queue-watch/zipball/ff565c85294a8a721f9ae0aa870c00cd95dcd106",
+                "reference": "ff565c85294a8a721f9ae0aa870c00cd95dcd106",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/contracts": "^10.0||^11.0",
+                "php": "^8.2",
+                "spatie/laravel-package-tools": "^1.16"
+            },
+            "require-dev": {
+                "larastan/larastan": "^2.9",
+                "laravel/pint": "^1.14",
+                "nunomaduro/collision": "^8.1.1||^7.10.0",
+                "orchestra/testbench": "^9.0.0||^8.22.0",
+                "pestphp/pest": "^2.34",
+                "pestphp/pest-plugin-arch": "^2.7",
+                "pestphp/pest-plugin-laravel": "^2.3",
+                "phpstan/extension-installer": "^1.3",
+                "phpstan/phpstan-deprecation-rules": "^1.1",
+                "phpstan/phpstan-phpunit": "^1.3",
+                "spatie/laravel-ray": "^1.35"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "QueueWatch\\QueueWatch\\QueueWatchServiceProvider"
+                    ],
+                    "aliases": {
+                        "QueueWatch": "QueueWatch\\QueueWatch\\Facades\\QueueWatch"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "QueueWatch\\QueueWatch\\": "src/",
+                    "QueueWatch\\QueueWatch\\Database\\Factories\\": "database/factories/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Rajen Trivedi",
+                    "email": "laravel.rajen@gmail.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "watch jobs, listeners and events folders for changes in files",
+            "homepage": "https://github.com/rajentrivedi/queue-watch",
+            "keywords": [
+                "Rajen Trivedi",
+                "laravel",
+                "queue-watch"
+            ],
+            "support": {
+                "issues": "https://github.com/rajentrivedi/queue-watch/issues",
+                "source": "https://github.com/rajentrivedi/queue-watch/tree/1.0.0"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/Rajen Trivedi",
+                    "type": "github"
+                }
+            ],
+            "time": "2024-09-19T05:59:16+00:00"
+        },
+        {
             "name": "sebastian/cli-parser",
             "version": "2.0.1",
             "source": {
@@ -9094,6 +9173,66 @@
                 }
             ],
             "time": "2024-06-12T15:01:18+00:00"
+        },
+        {
+            "name": "spatie/laravel-package-tools",
+            "version": "1.16.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/spatie/laravel-package-tools.git",
+                "reference": "c7413972cf22ffdff97b68499c22baa04eddb6a2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/spatie/laravel-package-tools/zipball/c7413972cf22ffdff97b68499c22baa04eddb6a2",
+                "reference": "c7413972cf22ffdff97b68499c22baa04eddb6a2",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/contracts": "^9.28|^10.0|^11.0",
+                "php": "^8.0"
+            },
+            "require-dev": {
+                "mockery/mockery": "^1.5",
+                "orchestra/testbench": "^7.7|^8.0",
+                "pestphp/pest": "^1.22",
+                "phpunit/phpunit": "^9.5.24",
+                "spatie/pest-plugin-test-time": "^1.1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Spatie\\LaravelPackageTools\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Freek Van der Herten",
+                    "email": "freek@spatie.be",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Tools for creating Laravel packages",
+            "homepage": "https://github.com/spatie/laravel-package-tools",
+            "keywords": [
+                "laravel-package-tools",
+                "spatie"
+            ],
+            "support": {
+                "issues": "https://github.com/spatie/laravel-package-tools/issues",
+                "source": "https://github.com/spatie/laravel-package-tools/tree/1.16.5"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/spatie",
+                    "type": "github"
+                }
+            ],
+            "time": "2024-08-27T18:56:10+00:00"
         },
         {
             "name": "theseer/tokenizer",
