@@ -29,6 +29,6 @@ class CheckAdmin
         if($check_super_admin){
             return $next($request);
         }
-        return return_403();
+        return return403();
     }
 }

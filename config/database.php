@@ -200,16 +200,15 @@ return [
 
     'redis' => [
         'expire' => 86400, // Thời gian hết hạn mặc định cho cache (đơn vị: giây)
-        'client' => env('REDIS_CLIENT', 'predis'),
+        'client' => env('REDIS_CLIENT', 'phpredis'),
 
         'options' => [
             'name' => env('APP_NAME', 'laravel'),  // Đặt tên cho kết nối
             'cluster' => env('REDIS_CLUSTER', 'redis'),
             // 'prefix' => env('REDIS_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_').'_database_'),
             'prefix' => "",
-            'persistent' => true,  // Kết nối persistent (duy trì kết nối)
-            'timeout' => 0, // Không giới hạn thời gian chờ, để kết nối không bị ngắt
-            'read_write_timeout' => -1,
+            // 'persistent' => true,  // Kết nối persistent (duy trì kết nối)
+            'read_timeout' => -1,
         ],
 
         'default' => [
