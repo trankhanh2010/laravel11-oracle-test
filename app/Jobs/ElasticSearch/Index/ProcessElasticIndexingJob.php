@@ -265,6 +265,10 @@ class ProcessElasticIndexingJob implements ShouldQueue
                 $this->indexing($this->name, $batchData);
             }
         } catch (\Exception $e) {
+             // Ghi lỗi vào log
+             logError($e);
+             // Gửi lỗi qua Telegram 
+             sendErrorToTelegram($e);
         } finally {
             // // Đặt lại thời gian làm mới
             // $this->setRefreshInterval(1, $this->name, $client);

@@ -203,6 +203,7 @@ return [
         'client' => env('REDIS_CLIENT', 'predis'),
 
         'options' => [
+            'name' => env('APP_NAME', 'laravel'),  // Đặt tên cho kết nối
             'cluster' => env('REDIS_CLUSTER', 'redis'),
             // 'prefix' => env('REDIS_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_').'_database_'),
             'prefix' => "",
