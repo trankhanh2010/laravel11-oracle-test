@@ -46,9 +46,7 @@ class TestServiceReqListVViewRepository
         });
         return $this->testServiceReqListVView
             ->where('service_req_type_id', $this->serviceReqTypeXNId)
-            ->select(
-                'v_his_test_service_req_list.*',
-            );
+            ->select('v_his_test_service_req_list.*');
     }
     public function applyWith($query)
     {
@@ -71,14 +69,14 @@ class TestServiceReqListVViewRepository
     public function applyIsActiveFilter($query, $isActive)
     {
         if ($isActive !== null) {
-            $query->where(DB::connection('oracle_his')->raw('v_his_test_service_req_list.is_active'), $isActive);
+            $query->where('is_active', $isActive);
         }
         return $query;
     }
-    public function applyIsDeleteFilter($query, $isActive)
+    public function applyIsDeleteFilter($query, $isDelete)
     {
-        if ($isActive !== null) {
-            $query->where(DB::connection('oracle_his')->raw('v_his_test_service_req_list.is_delete'), $isActive);
+        if ($isDelete !== null) {
+            $query->where('is_delete', $isDelete);
         }
         return $query;
     }
@@ -86,7 +84,7 @@ class TestServiceReqListVViewRepository
     {
         if ($param !== null) {
             return $query->where(function ($query) use ($param) {
-                $query->where(DB::connection('oracle_his')->raw('v_his_test_service_req_list.create_time'), '>=', $param);
+                $query->where('create_time', '>=', $param);
             });
         }
         return $query;
@@ -95,7 +93,7 @@ class TestServiceReqListVViewRepository
     {
         if ($param !== null) {
             return $query->where(function ($query) use ($param) {
-                $query->where(DB::connection('oracle_his')->raw('v_his_test_service_req_list.create_time'), '<=', $param);
+                $query->where('create_time', '<=', $param);
             });
         }
         return $query;
@@ -104,7 +102,7 @@ class TestServiceReqListVViewRepository
     {
         // if ($param !== null) {
         //     return $query->where(function ($query) use ($param) {
-        //         $query->where(DB::connection('oracle_his')->raw("execute_department_code"), $param);
+        //         $query->where("execute_department_code", $param);
         //     });
         // }
 
@@ -126,7 +124,7 @@ class TestServiceReqListVViewRepository
             return $data->value('id');
         });
         $query = $query->where(function ($query) {
-            $query->where(DB::connection('oracle_his')->raw("v_his_test_service_req_list.treatment_type_id"), $this->treatmentType01Id);
+            $query->where("v_his_test_service_req_list.treatment_type_id", $this->treatmentType01Id);
         });
         return $query;
     }
@@ -140,76 +138,6 @@ class TestServiceReqListVViewRepository
         //   Nếu tất cả giá all_vir_total_price_zero đều là 0 hết thì k cần check 
         //   Trong sere_serv nếu IS_NO_PAY thì k cần check
         //   Nếu tổng tiền bệnh nhân thanh toán - tổng tiền cần thanh toán là số dương thì trả tất cả dữ liệu thỏa điều kiện lọc
-
-        // $query = $query->where(function ($query) {
-        //     $query
-        //         // Phần kiểm tra ID không nằm trong danh sách
-        //         ->where(function ($query) {
-        //             // Trường hợp đầu tiên: NOT IN với điều kiện không có cả sereServBills và sereServDeposits
-        //             $subQuery1 = $this->sereServ
-        //                 ->select('SERVICE_REQ_ID')
-        //                 ->whereColumn('V_HIS_TEST_SERVICE_REQ_LIST.ID', 'HIS_SERE_SERV.SERVICE_REQ_ID')
-        //                 ->whereNotIn('HIS_SERE_SERV.ID', function ($query) {
-        //                     $query->select('SERE_SERV_ID')->from('HIS_SERE_SERV_BILL');
-        //                 })
-        //                 ->whereNotIn('HIS_SERE_SERV.ID', function ($query) {
-        //                     $query->select('SERE_SERV_ID')->from('HIS_SERE_SERV_DEPOSIT');
-        //                 });
-
-        //             // Trường hợp thứ hai: NOT IN với điều kiện có ít nhất một trong hai
-        //             $subQuery2 = $this->sereServ
-        //                 ->select('SERVICE_REQ_ID')
-        //                 ->whereColumn('V_HIS_TEST_SERVICE_REQ_LIST.ID', 'HIS_SERE_SERV.SERVICE_REQ_ID')
-        //                 ->whereIn('HIS_SERE_SERV.ID', function ($query) {
-        //                     $query->select('SERE_SERV_ID')->from('HIS_SERE_SERV_BILL');
-        //                 })
-        //                 ->orWhereIn('HIS_SERE_SERV.ID', function ($query) {
-        //                     $query->select('SERE_SERV_ID')->from('HIS_SERE_SERV_DEPOSIT');
-        //                 });
-
-        //             // Kết hợp cả hai trường hợp
-        //             $query->whereNotIn('V_HIS_TEST_SERVICE_REQ_LIST.ID', $subQuery1)
-        //                   ->orWhereNotIn('V_HIS_TEST_SERVICE_REQ_LIST.ID', $subQuery2);
-        //         })
-        //         // Kiểm tra ID có trong danh sách
-        //         ->whereIn('V_HIS_TEST_SERVICE_REQ_LIST.ID', function ($query) {
-        //             $query->select('SERVICE_REQ_ID')
-        //                   ->from('HIS_SERE_SERV')
-        //                   ->whereColumn('V_HIS_TEST_SERVICE_REQ_LIST.ID', 'HIS_SERE_SERV.SERVICE_REQ_ID')
-        //                   ->where(function ($query) {
-        //                       $query->whereIn('HIS_SERE_SERV.ID', function ($query) {
-        //                           $query->select('SERE_SERV_ID')
-        //                                 ->from('HIS_SERE_SERV_DEPOSIT')
-        //                                 ->where('IS_DELETE', 0)
-        //                                 ->where(function ($query) {
-        //                                     $query->where('IS_CANCEL', 0)
-        //                                           ->orWhereNull('IS_CANCEL');
-        //                                 });
-        //                       })
-        //                       ->orWhereIn('HIS_SERE_SERV.ID', function ($query) {
-        //                           $query->select('SERE_SERV_ID')
-        //                                 ->from('HIS_SERE_SERV_BILL')
-        //                                 ->where('IS_DELETE', 0)
-        //                                 ->where(function ($query) {
-        //                                     $query->where('IS_CANCEL', 0)
-        //                                           ->orWhereNull('IS_CANCEL');
-        //                                 });
-        //                       });
-        //                   });
-        //         })
-
-        //         ->orWhere(DB::connection('oracle_his')->raw('all_vir_total_price_zero'), 1)
-        //         ->orWhere(function ($query) {
-        //             $query = $this->applyCheckSufficientPaymentFilter($query);
-        //         });
-        // });
-
-
-
-        /// logic
-
-
-
         $query = $query->where(function ($query) use ($isNoExecute, $isSpecimen) {
             $query
                 // Loại bỏ các bản ghi total sai
@@ -219,11 +147,7 @@ class TestServiceReqListVViewRepository
                         $query->whereDoesntHave('sereServBills')
                             ->whereDoesntHave('sereServDeposits');
                     })
-                        ->orWhereDoesntHave('testServiceTypeList', function ($query) {
-                            // Kiểm tra có ít nhất một bản ghi có ít nhất một trong hai quan hệ
-                            $query->whereHas('sereServBills')
-                                ->orWhereHas('sereServDeposits');
-                        });
+                    ;
                 })
                 ->whereHas('testServiceTypeList', function ($query) use ($isNoExecute, $isSpecimen) {
                     // Điều kiện is_delete = 0 và is_no_execute = null trong testServiceTypeList và IS_NO_PAY khác 1
@@ -249,7 +173,7 @@ class TestServiceReqListVViewRepository
                 })
                 // Nếu tất cả giá all_vir_total_price_zero đều là 0 hết thì k cần check 
                 ->orWhere(function ($query) {
-                    $query = $query->where(DB::connection('oracle_his')->raw('all_vir_total_price_zero'), 1);
+                    $query = $query->where('all_vir_total_price_zero', 1);
                 })
                 // Nếu trả đủ tiền
                 ->orWhere(function ($query) {
@@ -267,33 +191,6 @@ class TestServiceReqListVViewRepository
     }
     public function applyIsSpecimenFilter($query, $param)
     {
-        // if ($param !== null) {
-        //     return $query->where(function ($query) use ($param) {
-        //         if ($param) {
-        //             $subQuery = $this->sereServ
-        //                 ->select('SERVICE_REQ_ID')
-        //                 ->where('SERVICE_REQ_ID', '=', DB::connection('oracle_his')->raw('"V_HIS_TEST_SERVICE_REQ_LIST"."ID"'))
-        //                 ->where(function ($subQuery) {
-        //                     $subQuery->where('IS_SPECIMEN', '<>', 1)
-        //                     ->orWhereNull('IS_SPECIMEN');
-        //                 });
-        //             $query->whereNotIn('V_HIS_TEST_SERVICE_REQ_LIST.ID', $subQuery);
-        //         } else {
-        //             $subQuery = $this->sereServ
-        //                 ->select('SERVICE_REQ_ID')
-        //                 ->where('SERVICE_REQ_ID', '=', DB::connection('oracle_his')->raw('"V_HIS_TEST_SERVICE_REQ_LIST"."ID"'))
-        //                 ->where(function ($subQuery) {
-        //                     $subQuery->where('IS_SPECIMEN', '<>', 0)
-        //                               ->whereNotNull('IS_SPECIMEN');
-        //                 });
-
-        //             $query->whereNotIn('V_HIS_TEST_SERVICE_REQ_LIST.ID', $subQuery);
-        //         }
-        //     });
-        // }
-
-        /// logic
-
         // if ($param !== null) {
         //     return $query->where(function ($query) use ($param) {
         //         if ($param) {
@@ -325,37 +222,6 @@ class TestServiceReqListVViewRepository
     }
     public function applyIsNoExcuteFilter($query, $param)
     {
-        // if ($param !== null) {
-        //     return $query->where(function ($query) use ($param) {
-        //         if ($param) {
-        //             // Lấy danh sách ID từ HIS_SERE_SERV nơi is_specimen không bằng 1 hoặc null
-        //             $subQuery = $this->sereServ
-        //                 ->select('SERVICE_REQ_ID')
-        //                 ->where('SERVICE_REQ_ID', '=', DB::connection('oracle_his')->raw('"V_HIS_TEST_SERVICE_REQ_LIST"."ID"'))
-        //                 ->where(function ($subQuery) {
-        //                     $subQuery->where('IS_NO_EXECUTE', '<>', 1)
-        //                               ->orWhereNull('IS_NO_EXECUTE');
-        //                 });
-        //             // Điều kiện NOT IN
-        //             $query->whereNotIn('V_HIS_TEST_SERVICE_REQ_LIST.ID', $subQuery);
-        //         } else {
-        //             // Lấy danh sách ID từ HIS_SERE_SERV nơi is_specimen không bằng 0 và không null
-        //             $subQuery = $this->sereServ
-        //                 ->select('SERVICE_REQ_ID')
-        //                 ->where('SERVICE_REQ_ID', '=', DB::connection('oracle_his')->raw('"V_HIS_TEST_SERVICE_REQ_LIST"."ID"'))
-        //                 ->where(function ($subQuery) {
-        //                     $subQuery->where('IS_NO_EXECUTE', '<>', 0)
-        //                               ->whereNotNull('IS_NO_EXECUTE');
-        //                 });
-        //             // Điều kiện NOT IN
-        //             $query->whereNotIn('V_HIS_TEST_SERVICE_REQ_LIST.ID', $subQuery);
-        //         }
-        //     });
-        // }
-
-        /// logic
-
-
         // if ($param !== null) {
         //     return $query->where(function ($query) use ($param) {
         //         if ($param) {

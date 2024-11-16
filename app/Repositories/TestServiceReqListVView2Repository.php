@@ -71,14 +71,14 @@ class TestServiceReqListVView2Repository
     public function applyIsActiveFilter($query, $isActive)
     {
         if ($isActive !== null) {
-            $query->where(DB::connection('oracle_his')->raw('v_his_test_service_req_list_2.is_active'), $isActive);
+            $query->where('is_active', $isActive);
         }
         return $query;
     }
     public function applyIsDeleteFilter($query, $isActive)
     {
         if ($isActive !== null) {
-            $query->where(DB::connection('oracle_his')->raw('v_his_test_service_req_list_2.is_delete'), $isActive);
+            $query->where('is_delete', $isActive);
         }
         return $query;
     }
@@ -86,7 +86,7 @@ class TestServiceReqListVView2Repository
     {
         if ($param !== null) {
             return $query->where(function ($query) use ($param) {
-                $query->where(DB::connection('oracle_his')->raw('v_his_test_service_req_list_2.create_time'), '>=', $param);
+                $query->where('create_time', '>=', $param);
             });
         }
         return $query;
@@ -95,7 +95,7 @@ class TestServiceReqListVView2Repository
     {
         if ($param !== null) {
             return $query->where(function ($query) use ($param) {
-                $query->where(DB::connection('oracle_his')->raw('v_his_test_service_req_list_2.create_time'), '<=', $param);
+                $query->where('create_time', '<=', $param);
             });
         }
         return $query;
@@ -104,7 +104,7 @@ class TestServiceReqListVView2Repository
     {
         // if ($param !== null) {
         //     return $query->where(function ($query) use ($param) {
-        //         $query->where(DB::connection('oracle_his')->raw("execute_department_code"), $param);
+        //         $query->where("execute_department_code", $param);
         //     });
         // }
 
@@ -126,7 +126,7 @@ class TestServiceReqListVView2Repository
             return $data->value('id');
         });
         $query = $query->where(function ($query) {
-            $query->where(DB::connection('oracle_his')->raw("v_his_test_service_req_list_2.treatment_type_id"), $this->treatmentType01Id);
+            $query->where("v_his_test_service_req_list_2.treatment_type_id", $this->treatmentType01Id);
         });
         return $query;
     }
@@ -219,11 +219,12 @@ class TestServiceReqListVView2Repository
                         $query->whereDoesntHave('sereServBills')
                             ->whereDoesntHave('sereServDeposits');
                     })
-                        ->orWhereDoesntHave('testServiceTypeList', function ($query) {
-                            // Kiểm tra có ít nhất một bản ghi có ít nhất một trong hai quan hệ
-                            $query->whereHas('sereServBills')
-                                ->orWhereHas('sereServDeposits');
-                        });
+                        // ->orWhereDoesntHave('testServiceTypeList', function ($query) {
+                        //     // Kiểm tra có ít nhất một bản ghi chỉ có một trong hai quan hệ
+                        //     $query->whereHas('sereServBills')
+                        //         ->orWhereHas('sereServDeposits');
+                        // })
+                    ;
                 })
                 ->whereHas('testServiceTypeList', function ($query) use ($isNoExecute, $isSpecimen) {
                     // Điều kiện is_delete = 0 và is_no_execute = null trong testServiceTypeList và IS_NO_PAY khác 1
@@ -249,7 +250,7 @@ class TestServiceReqListVView2Repository
                 })
                 // Nếu tất cả giá all_vir_total_price_zero đều là 0 hết thì k cần check 
                 ->orWhere(function ($query) {
-                    $query = $query->where(DB::connection('oracle_his')->raw('all_vir_total_price_zero'), 1);
+                    $query = $query->where('all_vir_total_price_zero', 1);
                 })
                 // Nếu trả đủ tiền
                 ->orWhere(function ($query) {
@@ -420,15 +421,15 @@ class TestServiceReqListVView2Repository
     {
         $numJobs = config('queue')['num_queue_worker']; // Số lượng job song song
         if ($id != null) {
-            $data = $this->applyJoins()->where('v_his_test_service_req_list_2.id', '=', $id)->first();
+            $data = $this->applyJoins()->where('v_his_test_service_req_list_2_2.id', '=', $id)->first();
             if ($data) {
                 $data = $data->toArray();
                 return $data;
             }
         } else {
             // Xác định min và max id
-            $minId = $this->applyJoins()->min('v_his_test_service_req_list_2.id');
-            $maxId = $this->applyJoins()->max('v_his_test_service_req_list_2.id');
+            $minId = $this->applyJoins()->min('v_his_test_service_req_list_2_2.id');
+            $maxId = $this->applyJoins()->max('v_his_test_service_req_list_2_2.id');
             $chunkSize = ceil(($maxId - $minId + 1) / $numJobs);
             for ($i = 0; $i < $numJobs; $i++) {
                 $startId = $minId + ($i * $chunkSize);
@@ -438,7 +439,7 @@ class TestServiceReqListVView2Repository
                     $endId = $maxId;
                 }
                 // Dispatch job cho mỗi phạm vi id
-                ProcessElasticIndexingJob::dispatch('test_service_req_list_v_view', 'v_his_test_service_req_list_2', $startId, $endId, $batchSize, $this->paramWith());
+                ProcessElasticIndexingJob::dispatch('test_service_req_list_v_view', 'v_his_test_service_req_list_2_2', $startId, $endId, $batchSize, $this->paramWith());
             }
         }
     }
