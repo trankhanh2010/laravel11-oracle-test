@@ -5,6 +5,8 @@ namespace App\Exceptions;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+
 class Handler extends ExceptionHandler
 {
     /**
@@ -34,6 +36,8 @@ class Handler extends ExceptionHandler
     public function register()
     {
         $this->renderable(function (Throwable $e, Request $request) {
+            // Đóng tất cả kết nối
+            DB::disconnect();
             // Ghi lỗi vào log
             logError($e);
             // Gửi lỗi qua Telegram 

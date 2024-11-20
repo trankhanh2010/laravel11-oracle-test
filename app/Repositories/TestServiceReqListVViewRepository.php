@@ -40,12 +40,12 @@ class TestServiceReqListVViewRepository
 
     public function applyJoins()
     {
-        $this->serviceReqTypeXNId = Cache::remember('service_req_type_XN_id', now()->addMinutes(10080), function () {
-            $data =  $this->serviceReqType->where('service_req_type_code', 'XN')->get();
-            return $data->value('id');
-        });
+        // $this->serviceReqTypeXNId = Cache::remember('service_req_type_XN_id', now()->addMinutes(10080), function () {
+        //     $data =  $this->serviceReqType->where('service_req_type_code', 'XN')->get();
+        //     return $data->value('id');
+        // });
         return $this->testServiceReqListVView
-            ->where('service_req_type_id', $this->serviceReqTypeXNId)
+            // ->where('service_req_type_id', $this->serviceReqTypeXNId)
             ->select('v_his_test_service_req_list.*');
     }
     public function applyWith($query)
@@ -107,7 +107,7 @@ class TestServiceReqListVViewRepository
         // }
 
         if ($param !== null) {
-            $id = Cache::remember('id_department_code_'.$param, now()->addMinutes(10080), function () use ($param) {
+            $id = Cache::remember('id_department_code_' . $param, now()->addMinutes(10080), function () use ($param) {
                 $data =  $this->department->where('department_code', $param)->first()->id ?? 0;
                 return $data;
             });
@@ -119,13 +119,17 @@ class TestServiceReqListVViewRepository
     }
     public function applyTreatmentType01IdFilter($query)
     {
-        $this->treatmentType01Id = Cache::remember('treatment_type_01_id', now()->addMinutes(10080), function () {
-            $data =  $this->treatmentType->where('treatment_type_code', '01')->get();
-            return $data->value('id');
-        });
-        $query = $query->where(function ($query) {
-            $query->where("v_his_test_service_req_list.treatment_type_id", $this->treatmentType01Id);
-        });
+        // $this->treatmentType01Id = Cache::remember('treatment_type_01_id', now()->addMinutes(10080), function () {
+        //     $data =  $this->treatmentType->where('treatment_type_code', '01')->get();
+        //     return $data->value('id');
+        // });
+        // $query = $query->where(function ($query) {
+        //     $query->where("v_his_test_service_req_list.treatment_type_id", $this->treatmentType01Id);
+        // });
+
+
+
+        // Kiểm trong View 
         return $query;
     }
     public function applyTreatmentType01Filter($query, $isNoExecute, $isSpecimen)
@@ -141,44 +145,45 @@ class TestServiceReqListVViewRepository
         $query = $query->where(function ($query) use ($isNoExecute, $isSpecimen) {
             $query
                 // Loại bỏ các bản ghi total sai
-                ->where(function ($query) use ($isNoExecute, $isSpecimen) {
-                    $query->whereDoesntHave('testServiceTypeList', function ($query) {
-                        // Kiểm tra có ít nhất một bản ghi không có cả sereServBills và sereServDeposits
-                        $query->whereDoesntHave('sereServBills')
-                            ->whereDoesntHave('sereServDeposits');
-                    })
-                    ;
-                })
+                // ->where(function ($query) use ($isNoExecute, $isSpecimen) {
+                //     $query->whereDoesntHave('testServiceTypeList', function ($query) {
+                //         // Kiểm tra có ít nhất một bản ghi không có cả sereServBills và sereServDeposits
+                //         $query->whereDoesntHave('sereServBills')
+                //             ->whereDoesntHave('sereServDeposits');
+                //     });
+                // })
                 ->whereHas('testServiceTypeList', function ($query) use ($isNoExecute, $isSpecimen) {
                     // Điều kiện is_delete = 0 và is_no_execute = null trong testServiceTypeList và IS_NO_PAY khác 1
                     $query->where(function ($query) use ($isNoExecute, $isSpecimen) {
                         $query = $this->applyIsNoExcuteFilter($query, $isNoExecute);
                         $query = $this->applyIsSpecimenFilter($query, $isSpecimen);
                         // Kiểm tra tồn tại bản ghi trong sereServDeposits hoặc sereServBills với is_delete = 0
-                        $query->whereHas('sereServDeposits', function ($query) {
-                            $query->where('is_delete', '0')
-                                ->where(function ($query) {
-                                    $query->where('is_cancel', '0')
-                                        ->orWhereNull('is_cancel');
-                                });
-                        })
-                            ->orWhereHas('sereServBills', function ($query) {
-                                $query->where('is_delete', '0')
-                                    ->where(function ($query) {
-                                        $query->where('is_cancel', '0')
-                                            ->orWhereNull('is_cancel');
-                                    });
-                            });
+                        // $query->whereHas('sereServDeposits', function ($query) {
+                        //     $query->where('is_delete', 0)
+                        //         ->where(function ($query) {
+                        //             $query->where('is_cancel', 0)
+                        //                 ->orWhereNull('is_cancel');
+                        //         });
+                        // })
+                        //     ->orWhereHas('sereServBills', function ($query) {
+                        //         $query->where('is_delete', 0)
+                        //             ->where(function ($query) {
+                        //                 $query->where('is_cancel', 0)
+                        //                     ->orWhereNull('is_cancel');
+                        //             });
+                        //     })
+                        ;
                     });
                 })
-                // Nếu tất cả giá all_vir_total_price_zero đều là 0 hết thì k cần check 
-                ->orWhere(function ($query) {
-                    $query = $query->where('all_vir_total_price_zero', 1);
-                })
-                // Nếu trả đủ tiền
-                ->orWhere(function ($query) {
-                    $query = $this->applyCheckSufficientPaymentFilter($query);
-                });
+                // // Nếu tất cả giá all_vir_total_price_zero đều là 0 hết thì k cần check 
+                // ->orWhere(function ($query) {
+                //     $query = $query->where('all_vir_total_price_zero', 1);
+                // })
+                // // Nếu trả đủ tiền
+                // ->orWhere(function ($query) {
+                //     $query = $this->applyCheckSufficientPaymentFilter($query);
+                // })
+            ;
         });
 
         return $query;
