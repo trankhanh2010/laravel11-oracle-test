@@ -57,6 +57,8 @@ class TestServiceReqListVViewController extends BaseApiCacheController
             $this->executeDepartmentCode,
             $this->isNoExcute,
             $this->isSpecimen,
+            $this->lastId,
+            $this->cursorPaginate,
         );
         $this->testServiceReqListVViewService->withParams($this->testServiceReqListVViewDTO);
     }

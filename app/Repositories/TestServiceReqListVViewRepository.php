@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Http\Resources\DB\TestServiceReqListVViewResource;
 use App\Jobs\ElasticSearch\Index\ProcessElasticIndexingJob;
 use App\Models\HIS\Department;
 use App\Models\HIS\SereServ;
@@ -44,7 +45,8 @@ class TestServiceReqListVViewRepository
         //     $data =  $this->serviceReqType->where('service_req_type_code', 'XN')->get();
         //     return $data->value('id');
         // });
-        return $this->testServiceReqListVView
+        $query = $this->testServiceReqListVView;
+        return $query
             // ->where('service_req_type_id', $this->serviceReqTypeXNId)
             ->select('v_his_test_service_req_list.*');
     }
@@ -269,8 +271,30 @@ class TestServiceReqListVViewRepository
 
         return $query;
     }
-    public function fetchData($query, $getAll, $start, $limit)
+    public function fetchData($query, $getAll, $start, $limit, $cursorPaginate, $lastId)
     {
+        if ($cursorPaginate) {
+            $sql = $query->toSql();
+            $bindings = $query->getBindings();
+
+            // Thêm các giá trị cần bind vào mảng $bindings
+            $bindings[] = $limit + $start; // Giá trị ROWNUM <= ($limit + $start)
+            $bindings[] = $lastId;         // Giá trị ID > $lastId
+            $bindings[] = $start;          // Giá trị rnum > $start
+        
+            $fullSql = 'SELECT * FROM (
+                            SELECT a.*, ROWNUM rnum 
+                            FROM (' . $sql . ') a 
+                            WHERE ROWNUM <= ?
+                              AND ID > ?
+                        ) WHERE rnum > ?';
+        
+            // Thực hiện truy vấn với các bindings
+            $data = DB::connection('oracle_his')->select($fullSql, $bindings);
+            $data = TestServiceReqListVViewResource::collection($data);
+            return $data;
+        }
+        
         if ($getAll) {
             // Lấy tất cả dữ liệu
             return $query->get();

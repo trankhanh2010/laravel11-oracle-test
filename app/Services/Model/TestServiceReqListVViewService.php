@@ -44,7 +44,7 @@ class TestServiceReqListVViewService
                 $count = null;
             }
             $data = $this->testServiceReqListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
-            $data = $this->testServiceReqListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+            $data = $this->testServiceReqListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit, $this->params->cursorPaginate, $this->params->lastId);
             return ['data' => $data, 'count' => $count];
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['test_service_req_list_v_view'], $e);
@@ -54,7 +54,7 @@ class TestServiceReqListVViewService
     {
         try {
             $data = $this->testServiceReqListVViewRepository->applyJoins();
-            $data = $this->testServiceReqListVViewRepository->applyWith($data);
+            // $data = $this->testServiceReqListVViewRepository->applyWith($data);
             $data = $this->testServiceReqListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
             $data = $this->testServiceReqListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
             $data = $this->testServiceReqListVViewRepository->applyFromTimeFilter($data, $this->params->fromTime);
@@ -71,7 +71,7 @@ class TestServiceReqListVViewService
             //     $count = null;
             // }
             $data = $this->testServiceReqListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
-            $data = $this->testServiceReqListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+            $data = $this->testServiceReqListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit, $this->params->cursorPaginate, $this->params->lastId);
             // Đếm sau khi đã tải tất cả bản ghi vào bộ nhớ
             if($this->params->getAll){
                 $count = $data->count();

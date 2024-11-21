@@ -41,6 +41,10 @@ class BaseApiCacheController extends Controller
 {
     protected $errors = [];
     protected $data = [];
+    protected $lastId;
+    protected $lastIdName = 'LastId';
+    protected $cursorPaginate;
+    protected $cursorPaginateName = 'CursorPaginate';
     protected $time;
     protected $date;
     protected $dateName = 'Date';
@@ -729,8 +733,8 @@ class BaseApiCacheController extends Controller
         if ($this->limit <= 0) {
             $this->limit = 10;
         }
-        $this->arrLimit = [10, 20, 50, 100, 200, 500, 1000, 2000, 4000];
-        if (($this->limit < 10) || (!in_array($this->limit, $this->arrLimit))) {
+        $this->arrLimit = [1, 10, 20, 50, 100, 200, 500, 1000, 2000, 4000];
+        if (($this->limit < 0) || (!in_array($this->limit, $this->arrLimit))) {
             $this->errors[$this->limitName] = $this->messFormat . ' Chỉ nhận giá trị thuộc mảng sau ' . implode(', ', $this->arrLimit);
             $this->limit = 10;
         }
@@ -740,6 +744,14 @@ class BaseApiCacheController extends Controller
                 $this->start = 0;
             }
         }
+        $this->lastId = $this->paramRequest['CommonParam']['LastId'] ?? 0;
+        if($this->lastId !== null){
+            if (!is_int($this->lastId)) {
+                $this->errors[$this->lastIdName] = $this->messFormat;
+            }
+        }
+        $this->cursorPaginate = $this->paramRequest['CommonParam']['CursorPaginate'] ?? false;
+
         // if (($this->limit != null) || ($this->start != null)) {
         //     if ((!is_numeric($this->limit)) || (!is_int($this->limit)) || ($this->limit > 4000) || ($this->limit <= 0)) {
         //         $this->errors[$this->limit_name] = $this->mess_format;
