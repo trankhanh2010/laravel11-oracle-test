@@ -29,6 +29,13 @@ class TestServiceReqListVViewController extends BaseApiCacheController
             $columns = $this->getColumnsTable($this->testServiceReqListVView, true);
             $this->orderBy = $this->checkOrderBy($this->orderBy, $columns, $this->orderByJoin ?? []);
         }
+        // Kiểm tra khoảng cách ngày
+        if(($this->fromTime !== null) && ($this->toTime !== null)){
+            if(($this->toTime - $this->fromTime) > 1235959){
+                $this->errors[$this->fromTimeName] = 'Khoảng thời gian vượt quá 2 ngày!';
+                $this->fromTime = null;
+            }
+        }
         // Thêm tham số vào service
         $this->testServiceReqListVViewDTO = new TestServiceReqListVViewDTO(
             $this->testServiceReqListVViewName,

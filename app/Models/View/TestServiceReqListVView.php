@@ -19,6 +19,9 @@ class TestServiceReqListVView extends Model
     protected $guarded = [
         'id',
     ];
+    protected $casts = [
+        'test_service_type_list' => 'array',
+    ];
     // protected $appends = [
     //     'total_vir_total_patient_price',
     //     'total_treatment_bill_amount',

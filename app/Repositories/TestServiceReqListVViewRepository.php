@@ -55,7 +55,7 @@ class TestServiceReqListVViewRepository
     public function paramWith()
     {
         return [
-            'testServiceTypeList:id,service_req_id,is_delete,is_no_pay,is_specimen,is_no_execute,tdl_service_code,tdl_service_name,vir_total_patient_price',
+            // 'testServiceTypeList:service_req_id,is_specimen,is_no_execute,tdl_service_code,tdl_service_name',
             // 'testServiceTypeList.sereServBills:id,sere_serv_id,is_delete,bill_id,is_cancel',
             // 'testServiceTypeList.sereServDeposits:id,sere_serv_id,is_delete,deposit_id,is_cancel',
         ];
