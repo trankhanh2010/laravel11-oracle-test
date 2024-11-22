@@ -142,7 +142,7 @@ if (!function_exists('get_token_header')) {
 }
 
 if (!function_exists('get_cache')) {
-    function get_cache($model, $name, $id = null, $time)
+    function get_cache($model, $name, $id, $time)
     {
         if (!$id) {
             $data = Cache::remember($name, $time, function () use ($model) {
@@ -162,7 +162,7 @@ if (!function_exists('get_cache')) {
         }
     }
 }
-function get_cache($model, $name, $id = null, $time, $start, $limit, $order_by)
+function get_cache($model, $name, $id, $time, $start, $limit, $order_by)
 {
     if (!$id) {
         $data = Cache::remember($name, $time, function () use ($model, $start, $limit, $order_by) {
@@ -216,7 +216,7 @@ if (!function_exists('get_cache_full')) {
     //         return $data;
     //     }
     // }
-    function get_cache_full($model, $relation_ship, $name, $id = null, $time, $start, $limit, $order_by, $is_active, $get_all)
+    function get_cache_full($model, $relation_ship, $name, $id, $time, $start, $limit, $order_by, $is_active, $get_all)
     {
         if (!$id) {
             $data = Cache::remember($name, $time, function () use ($model, $relation_ship, $start, $limit, $order_by, $is_active, $get_all) {
@@ -278,7 +278,7 @@ if (!function_exists('get_cache_full_select')) {
     //         return $data;
     //     }
     // }
-    function get_cache_full_select($model, $relation_ship, $select, $name, $id = null, $time, $start, $limit, $order_by, $is_active, $get_all)
+    function get_cache_full_select($model, $relation_ship, $select, $name, $id, $time, $start, $limit, $order_by, $is_active, $get_all)
     {
         if (!$id) {
             $data = Cache::remember($name, $time, function () use ($model, $relation_ship, $select, $start, $limit, $order_by, $is_active, $get_all) {
@@ -317,7 +317,7 @@ if (!function_exists('get_cache_full_select')) {
 }
 
 if (!function_exists('get_cache_full_select_paginate')) {
-    function get_cache_full_select_paginate($model, $relation_ship, $per_page, $select, $name, $id = null, $time)
+    function get_cache_full_select_paginate($model, $relation_ship, $per_page, $select, $name, $id, $time)
     {
         if (!$id) {
             $data = Cache::remember($name, $time, function () use ($model, $relation_ship, $select, $per_page) {
@@ -354,7 +354,7 @@ if (!function_exists('update_cache')) {
 // }
 
 if (!function_exists('get_cache_1_1')) {
-    function get_cache_1_1($model, $relationship_name, $name, $id = null, $time)
+    function get_cache_1_1($model, $relationship_name, $name, $id, $time)
     {
         if (!is_numeric($id)) {
             return response()->json(['error' => 'Id không hợp lệ'], 400)->original;
@@ -367,7 +367,7 @@ if (!function_exists('get_cache_1_1')) {
 }
 
 if (!function_exists('get_cache_1_n')) {
-    function get_cache_1_n($model, $relationship_name, $name, $id = null, $time)
+    function get_cache_1_n($model, $relationship_name, $name, $id, $time)
     {
         if (!is_numeric($id)) {
             return response()->json(['error' => 'Id không hợp lệ'], 400)->original;
@@ -381,7 +381,7 @@ if (!function_exists('get_cache_1_n')) {
 }
 
 if (!function_exists('get_cache_1_n_with_ids')) {
-    function get_cache_1_n_with_ids($model, $relationship_name, $name, $id = null, $time)
+    function get_cache_1_n_with_ids($model, $relationship_name, $name, $id, $time)
     {
         if (!is_numeric($id)) {
             return response()->json(['error' => 'Id không hợp lệ'], 400)->original;
@@ -395,7 +395,7 @@ if (!function_exists('get_cache_1_n_with_ids')) {
 }
 
 if (!function_exists('get_cache_1_1_n_with_ids')) {
-    function get_cache_1_1_n_with_ids($model, $relationship_name, $name, $id = null, $time)
+    function get_cache_1_1_n_with_ids($model, $relationship_name, $name, $id, $time)
     {
         if (!is_numeric($id)) {
             return response()->json(['error' => 'Id không hợp lệ'], 400)->original;
@@ -411,7 +411,7 @@ if (!function_exists('get_cache_1_1_n_with_ids')) {
 }
 
 if (!function_exists('get_cache_1_1_1')) {
-    function get_cache_1_1_1($model, $relationship_name, $name, $id = null, $time)
+    function get_cache_1_1_1($model, $relationship_name, $name, $id, $time)
     {
         if (!is_numeric($id)) {
             return response()->json(['error' => 'Id không hợp lệ'], 400)->original;
@@ -428,7 +428,7 @@ if (!function_exists('get_cache_1_1_1')) {
 
 
 if (!function_exists('get_cache_1_1_1_1')) {
-    function get_cache_1_1_1_1($model, $relationship_name, $name, $id = null, $time)
+    function get_cache_1_1_1_1($model, $relationship_name, $name, $id, $time)
     {
         if (!is_numeric($id)) {
             return response()->json(['error' => 'Id không hợp lệ'], 400)->original;
@@ -445,7 +445,7 @@ if (!function_exists('get_cache_1_1_1_1')) {
 }
 
 if (!function_exists('get_cache_1_1_1_1_1')) {
-    function get_cache_1_1_1_1_1($model, $relationship_name, $name, $id = null, $time)
+    function get_cache_1_1_1_1_1($model, $relationship_name, $name, $id, $time)
     {
         if (!is_numeric($id)) {
             return response()->json(['error' => 'Id không hợp lệ'], 400)->original;
