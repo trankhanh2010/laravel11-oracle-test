@@ -36,6 +36,10 @@ class TestServiceReqListVViewController extends BaseApiCacheController
                 $this->fromTime = null;
             }
         }
+        if(($this->fromTime == null) && ($this->toTime == null) && (!$this->cursorPaginate)){
+            $this->errors[$this->fromTimeName] = 'Thiếu thời gian!';
+            $this->errors[$this->toTimeName] = 'Thiếu thời gian!';
+        }
         // Thêm tham số vào service
         $this->testServiceReqListVViewDTO = new TestServiceReqListVViewDTO(
             $this->testServiceReqListVViewName,

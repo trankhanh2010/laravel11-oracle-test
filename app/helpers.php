@@ -134,10 +134,24 @@ if (!function_exists('get_user_with_loginname')) {
 if (!function_exists('get_token_header')) {
     function get_token_header($request, $token_header)
     {
-        $token = Cache::remember('token_' . $token_header, now()->addMinutes(1440), function () use ($token_header) {
-            return Token::where("token_code", $token_header)->first();
-        });
-        return $token;
+        $record = Cache::get('token_' . $token_header);
+
+        if (!$record) {
+            $record = Token::where("token_code", $token_header)->first();
+
+            if ($record && $record->expire_time) {
+                // Chuyển đổi expire_time (YYYYMMDDHHMMSS) thành Carbon instance
+                $expiresAt = \Carbon\Carbon::createFromFormat('YmdHis', $record->expire_time);
+
+                // Tính toán thời gian còn lại
+                $remainingTime = now()->diffInSeconds($expiresAt, false);
+                if ($remainingTime > 0) {
+                    // Lưu cache với thời gian hết hạn động
+                    Cache::put('token_' . $token_header, $record, $remainingTime);
+                }
+            }
+        }
+        return $record;
     }
 }
 

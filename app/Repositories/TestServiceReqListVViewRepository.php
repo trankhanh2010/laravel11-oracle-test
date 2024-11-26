@@ -288,6 +288,12 @@ class TestServiceReqListVViewRepository
                             WHERE ROWNUM <= ?
                               AND ID > ?
                         ) WHERE rnum > ?';
+            // $fullSql = 'SELECT * FROM (
+            //     SELECT a.*, ROWNUM rnum 
+            //     FROM (' . $sql . ') a 
+            //     WHERE ROWNUM <= '.($limit + $start).'
+            //       AND ID > ?
+            // ) WHERE rnum > '.$start;
         
             // Thực hiện truy vấn với các bindings
             $data = DB::connection('oracle_his')->select($fullSql, $bindings);
