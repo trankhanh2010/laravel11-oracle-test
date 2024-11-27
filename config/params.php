@@ -402,5 +402,6 @@ return [
 
         ]
     ],
+    'send_error_to_telegram' => env('SEND_ERROR_TO_TELEGRAM', false),
 
 ];

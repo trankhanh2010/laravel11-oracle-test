@@ -778,28 +778,31 @@ if (!function_exists('writeAndThrowError')) {
 if (!function_exists('sendErrorToTelegram')) {
     function sendErrorToTelegram($e)
     {
-        $request = request();
-        $mess_write = $e->getMessage();
-        $token = '';
-        $login_name = '';
-        $ip = '';
-        $hostname = '';
-        $path = '';
-        $token_header = $request->bearerToken();
-        if ($token_header) {
-            $token = get_token_header($request, $token_header);
-            $login_name = $token->login_name;
-            $ip = $request->ip();
-            $hostname = gethostbyaddr($ip);
-            $path =  $request->path();
+        $send_error_to_telegram = config('params')['send_error_to_telegram'];
+        if($send_error_to_telegram){
+            $request = request();
+            $mess_write = $e->getMessage();
+            $token = '';
+            $login_name = '';
+            $ip = '';
+            $hostname = '';
+            $path = '';
+            $token_header = $request->bearerToken();
+            if ($token_header) {
+                $token = get_token_header($request, $token_header);
+                $login_name = $token->login_name;
+                $ip = $request->ip();
+                $hostname = gethostbyaddr($ip);
+                $path =  $request->path();
+            }
+            $mess_tele =
+                "<b>Thông báo: </b>" . "$mess_write\n"
+                . "<b>Path: </b>" . "$path\n"
+                . "<b>Loginname: </b>" . "$login_name\n"
+                . "<b>Tên máy: </b>" . "$hostname\n"
+                . "<b>IP: </b>" . "$ip\n";
+            dispatch(new SendTelegramMessageJob($mess_tele));
         }
-        $mess_tele =
-            "<b>Thông báo: </b>" . "$mess_write\n"
-            . "<b>Path: </b>" . "$path\n"
-            . "<b>Loginname: </b>" . "$login_name\n"
-            . "<b>Tên máy: </b>" . "$hostname\n"
-            . "<b>IP: </b>" . "$ip\n";
-        dispatch(new SendTelegramMessageJob($mess_tele));
     }
 }
 
