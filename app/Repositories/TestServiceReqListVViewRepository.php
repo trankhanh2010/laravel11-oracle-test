@@ -87,7 +87,8 @@ class TestServiceReqListVViewRepository
         if ($param !== null) {
             $param = $param - ($param % 1000000);
             return $query->where(function ($query) use ($param) {
-                $query->where(DB::connection('oracle_his')->raw('CREATE_TIME-MOD(CREATE_TIME,1000000)'), '>=', $param);
+                // $query->where(DB::connection('oracle_his')->raw('CREATE_TIME-MOD(CREATE_TIME,1000000)'), '>=', $param);
+                $query->where('vir_create_date', '>=', $param);
             });
         }
         return $query;
@@ -97,28 +98,29 @@ class TestServiceReqListVViewRepository
         if ($param !== null) {
             $param = $param - ($param % 1000000);
             return $query->where(function ($query) use ($param) {
-                $query->where(DB::connection('oracle_his')->raw('CREATE_TIME-MOD(CREATE_TIME,1000000)'), '<=', $param);
+                // $query->where(DB::connection('oracle_his')->raw('CREATE_TIME-MOD(CREATE_TIME,1000000)'), '<=', $param);
+                $query->where('vir_create_date', '<=', $param);
             });
         }
         return $query;
     }
     public function applyExecuteDepartmentCodeFilter($query, $param)
     {
-        // if ($param !== null) {
-        //     return $query->where(function ($query) use ($param) {
-        //         $query->where("execute_department_code", $param);
-        //     });
-        // }
-
         if ($param !== null) {
-            $id = Cache::remember('id_department_code_' . $param, now()->addMinutes(10080), function () use ($param) {
-                $data =  $this->department->where('department_code', $param)->first()->id ?? 0;
-                return $data;
-            });
-            return $query->where(function ($query) use ($id) {
-                $query->where("v_his_test_service_req_list.execute_department_id", $id);
+            return $query->where(function ($query) use ($param) {
+                $query->where("execute_department_code", $param);
             });
         }
+
+        // if ($param !== null) {
+        //     $id = Cache::remember('id_department_code_' . $param, now()->addMinutes(10080), function () use ($param) {
+        //         $data =  $this->department->where('department_code', $param)->first()->id ?? 0;
+        //         return $data;
+        //     });
+        //     return $query->where(function ($query) use ($id) {
+        //         $query->where("v_his_test_service_req_list.execute_department_id", $id);
+        //     });
+        // }
         return $query;
     }
     public function applyTreatmentType01IdFilter($query)
@@ -136,7 +138,7 @@ class TestServiceReqListVViewRepository
         // Kiểm trong View 
         return $query;
     }
-    public function applyTreatmentType01Filter($query, $isNoExecute, $isSpecimen)
+    public function applyTreatmentType01Filter($query, $isNoExecute, $isSpecimen, $cursorPaginate)
     {
         // - Nếu treatment_type_id=1 thì phải thỏa một trong các điều kiện sau:
         // + Tồn tại dữ liệu his_sere_sere_bill (với is_cancel khác 1) với is_delete=0 tương ứng các sere_serv_id (is_delete=0 và is_no_execute is null) của service_req_id check thì trả tất cả dữ liệu thuộc his_service_req_id đó ngược lại bỏ qua không trả dữ liệu thuộc y lệnh đó.
@@ -146,50 +148,52 @@ class TestServiceReqListVViewRepository
         //   Nếu tất cả giá all_vir_total_price_zero đều là 0 hết thì k cần check 
         //   Trong sere_serv nếu IS_NO_PAY thì k cần check
         //   Nếu tổng tiền bệnh nhân thanh toán - tổng tiền cần thanh toán là số dương thì trả tất cả dữ liệu thỏa điều kiện lọc
-        $query = $query->where(function ($query) use ($isNoExecute, $isSpecimen) {
-            $query
-                // Loại bỏ các bản ghi total sai
-                // ->where(function ($query) use ($isNoExecute, $isSpecimen) {
-                //     $query->whereDoesntHave('testServiceTypeList', function ($query) {
-                //         // Kiểm tra có ít nhất một bản ghi không có cả sereServBills và sereServDeposits
-                //         $query->whereDoesntHave('sereServBills')
-                //             ->whereDoesntHave('sereServDeposits');
-                //     });
-                // })
-                ->whereHas('testServiceTypeList', function ($query) use ($isNoExecute, $isSpecimen) {
-                    // Điều kiện is_delete = 0 và is_no_execute = null trong testServiceTypeList và IS_NO_PAY khác 1
-                    $query->where(function ($query) use ($isNoExecute, $isSpecimen) {
-                        $query = $this->applyIsNoExcuteFilter($query, $isNoExecute);
-                        $query = $this->applyIsSpecimenFilter($query, $isSpecimen);
-                        // Kiểm tra tồn tại bản ghi trong sereServDeposits hoặc sereServBills với is_delete = 0
-                        // $query->whereHas('sereServDeposits', function ($query) {
-                        //     $query->where('is_delete', 0)
-                        //         ->where(function ($query) {
-                        //             $query->where('is_cancel', 0)
-                        //                 ->orWhereNull('is_cancel');
-                        //         });
-                        // })
-                        //     ->orWhereHas('sereServBills', function ($query) {
-                        //         $query->where('is_delete', 0)
-                        //             ->where(function ($query) {
-                        //                 $query->where('is_cancel', 0)
-                        //                     ->orWhereNull('is_cancel');
-                        //             });
-                        //     })
-                        ;
-                    });
-                })
-                // // Nếu tất cả giá all_vir_total_price_zero đều là 0 hết thì k cần check 
-                // ->orWhere(function ($query) {
-                //     $query = $query->where('all_vir_total_price_zero', 1);
-                // })
-                // // Nếu trả đủ tiền
-                // ->orWhere(function ($query) {
-                //     $query = $this->applyCheckSufficientPaymentFilter($query);
-                // })
-            ;
-        });
-
+        // if($cursorPaginate){
+            $query = $query->where(function ($query) use ($isNoExecute, $isSpecimen) {
+                $query
+                    // Loại bỏ các bản ghi total sai
+                    // ->where(function ($query) use ($isNoExecute, $isSpecimen) {
+                    //     $query->whereDoesntHave('testServiceTypeList', function ($query) {
+                    //         // Kiểm tra có ít nhất một bản ghi không có cả sereServBills và sereServDeposits
+                    //         $query->whereDoesntHave('sereServBills')
+                    //             ->whereDoesntHave('sereServDeposits');
+                    //     });
+                    // })
+                    ->whereHas('testServiceTypeList', function ($query) use ($isNoExecute, $isSpecimen) {
+                        // Điều kiện is_delete = 0 và is_no_execute = null trong testServiceTypeList và IS_NO_PAY khác 1
+                        $query->where(function ($query) use ($isNoExecute, $isSpecimen) {
+                            $query = $this->applyIsNoExcuteFilter($query, $isNoExecute);
+                            $query = $this->applyIsSpecimenFilter($query, $isSpecimen);
+                            // Kiểm tra tồn tại bản ghi trong sereServDeposits hoặc sereServBills với is_delete = 0
+                            // $query->whereHas('sereServDeposits', function ($query) {
+                            //     $query->where('is_delete', 0)
+                            //         ->where(function ($query) {
+                            //             $query->where('is_cancel', 0)
+                            //                 ->orWhereNull('is_cancel');
+                            //         });
+                            // })
+                            //     ->orWhereHas('sereServBills', function ($query) {
+                            //         $query->where('is_delete', 0)
+                            //             ->where(function ($query) {
+                            //                 $query->where('is_cancel', 0)
+                            //                     ->orWhereNull('is_cancel');
+                            //             });
+                            //     })
+                            ;
+                        });
+                    })
+                    // // Nếu tất cả giá all_vir_total_price_zero đều là 0 hết thì k cần check 
+                    // ->orWhere(function ($query) {
+                    //     $query = $query->where('all_vir_total_price_zero', 1);
+                    // })
+                    // // Nếu trả đủ tiền
+                    // ->orWhere(function ($query) {
+                    //     $query = $this->applyCheckSufficientPaymentFilter($query);
+                    // })
+                ;
+            });
+    
+        // }
         return $query;
     }
     // Kiểm tra xem tổng tiền bệnh nhân thanh toán - tổng tiền cần thanh toán có lớn hơn = 0 không

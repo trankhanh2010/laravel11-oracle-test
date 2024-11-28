@@ -33,7 +33,7 @@ class TestServiceReqListVViewService
             $data = $this->testServiceReqListVViewRepository->applyFromTimeFilter($data, $this->params->fromTime);
             $data = $this->testServiceReqListVViewRepository->applyToTimeFilter($data, $this->params->toTime);
             $data = $this->testServiceReqListVViewRepository->applyTreatmentType01IdFilter($data);
-            $data = $this->testServiceReqListVViewRepository->applyTreatmentType01Filter($data, $this->params->isNoExcute, $this->params->isSpecimen);
+            $data = $this->testServiceReqListVViewRepository->applyTreatmentType01Filter($data, $this->params->isNoExcute, $this->params->isSpecimen, $this->params->cursorPaginate);
             $data = $this->testServiceReqListVViewRepository->applyExecuteDepartmentCodeFilter($data, $this->params->executeDepartmentCode);
             // $data = $this->testServiceReqListVViewRepository->applyIsNoExcuteFilter($data, $this->params->isNoExcute);
             // $data = $this->testServiceReqListVViewRepository->applyIsSpecimenFilter($data, $this->params->isSpecimen);
@@ -60,7 +60,7 @@ class TestServiceReqListVViewService
             $data = $this->testServiceReqListVViewRepository->applyFromTimeFilter($data, $this->params->fromTime);
             $data = $this->testServiceReqListVViewRepository->applyToTimeFilter($data, $this->params->toTime);
             $data = $this->testServiceReqListVViewRepository->applyTreatmentType01IdFilter($data);
-            $data = $this->testServiceReqListVViewRepository->applyTreatmentType01Filter($data, $this->params->isNoExcute, $this->params->isSpecimen);
+            $data = $this->testServiceReqListVViewRepository->applyTreatmentType01Filter($data, $this->params->isNoExcute, $this->params->isSpecimen, $this->params->cursorPaginate);
             $data = $this->testServiceReqListVViewRepository->applyExecuteDepartmentCodeFilter($data, $this->params->executeDepartmentCode);
             // $data = $this->testServiceReqListVViewRepository->applyIsNoExcuteFilter($data, $this->params->isNoExcute);
             // $data = $this->testServiceReqListVViewRepository->applyIsSpecimenFilter($data, $this->params->isSpecimen);
@@ -72,6 +72,26 @@ class TestServiceReqListVViewService
             // }
             $data = $this->testServiceReqListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
             $data = $this->testServiceReqListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit, $this->params->cursorPaginate, $this->params->lastId);
+            // if ($this->params->getAll) {
+            //     $data = $data->filter(function ($item) {
+            //         // Kiểm tra điều kiện isSpecimen
+            //         $isSpecimenCondition = $this->params->isSpecimen ? 
+            //             collect($item['test_service_type_list'])->contains('isSpecimen', '1') :
+            //             collect($item['test_service_type_list'])->contains(function ($testServiceType) {
+            //                 return $testServiceType['isSpecimen'] === "0" || $testServiceType['isSpecimen'] === "";
+            //             });
+            
+            //         // Kiểm tra điều kiện isNoExecute
+            //         $isNoExecuteCondition = $this->params->isNoExcute ? 
+            //             collect($item['test_service_type_list'])->contains('isNoExecute', '1') :
+            //             collect($item['test_service_type_list'])->contains(function ($testServiceType) {
+            //                 return $testServiceType['isNoExecute'] === "0" || $testServiceType['isNoExecute'] === "";
+            //             });
+            
+            //         // Trả về true nếu cả hai điều kiện đều thỏa mãn
+            //         return $isSpecimenCondition && $isNoExecuteCondition;
+            //     });
+            // }            
             // Đếm sau khi đã tải tất cả bản ghi vào bộ nhớ
             if($this->params->getAll){
                 $count = $data->count();
