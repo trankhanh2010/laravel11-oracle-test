@@ -17,8 +17,8 @@ class CacheController extends BaseApiCacheController
     public function clearCache(Request $request)
     {
         if($request->table === null){
-            Redis::select(config('database')['redis']['cache']['database']);  // Chuyển về db cache
-            Redis::flushDB();
+            // Redis::select(config('database')['redis']['cache']['database']);  // Chuyển về db cache
+            Redis::connection('cache')->flushDB();
         }
         if($request->table != null){
             $tableName = Str::camel($request->table . 'Name' ?? 'a');
