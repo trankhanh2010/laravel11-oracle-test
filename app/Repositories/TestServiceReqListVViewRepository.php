@@ -85,10 +85,11 @@ class TestServiceReqListVViewRepository
     public function applyFromTimeFilter($query, $param)
     {
         if ($param !== null) {
-            $param = $param - ($param % 1000000);
+            // $param = $param - ($param % 1000000);
             return $query->where(function ($query) use ($param) {
                 // $query->where(DB::connection('oracle_his')->raw('CREATE_TIME-MOD(CREATE_TIME,1000000)'), '>=', $param);
-                $query->where('vir_create_date', '>=', $param);
+                // $query->where('vir_create_date', '>=', $param);
+                $query->where('INTRUCTION_TIME', '>=', $param);
             });
         }
         return $query;
@@ -96,10 +97,11 @@ class TestServiceReqListVViewRepository
     public function applyToTimeFilter($query, $param)
     {
         if ($param !== null) {
-            $param = $param - ($param % 1000000);
+            // $param = $param - ($param % 1000000);
             return $query->where(function ($query) use ($param) {
                 // $query->where(DB::connection('oracle_his')->raw('CREATE_TIME-MOD(CREATE_TIME,1000000)'), '<=', $param);
-                $query->where('vir_create_date', '<=', $param);
+                // $query->where('vir_create_date', '<=', $param);
+                $query->where('INTRUCTION_TIME', '<=', $param);
             });
         }
         return $query;

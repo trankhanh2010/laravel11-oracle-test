@@ -234,6 +234,9 @@ Route::get("v1/test-db", function () {
 Route::fallback(function () {
     return return_404_error_page_not_found();
 });
+/// Request
+Route::get("v1/get-column-name", [BaseApiRequestController::class, "getColumnname"])->name('.get_column_name')
+->withoutMiddleware('check_token');
 Route::group([
     "middleware" => ["check_admin:api"]
 ], function () {

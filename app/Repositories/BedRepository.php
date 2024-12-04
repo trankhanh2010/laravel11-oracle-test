@@ -113,6 +113,10 @@ class BedRepository
             'app_modifier' => $appModifier,
             'bed_code' => $request->bed_code,
             'bed_name' => $request->bed_name,
+            'bed_type_id' => $request->bed_type_id,
+            'bed_room_id' => $request->bed_room_id,
+            'max_capacity' => $request->max_capacity,
+            'is_bed_stretcher' => $request->is_bed_stretcher,
             'is_active' => $request->is_active
         ]);
         return $data;

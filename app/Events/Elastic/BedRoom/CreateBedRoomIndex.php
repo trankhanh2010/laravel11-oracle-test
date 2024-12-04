@@ -38,7 +38,7 @@ class CreateBedRoomIndex
                         'filter' => [
                             'my_stop_filter' => [
                                 'type' => 'stop',
-                                'stopwords' => ['khoa', 'khoa_phong'] // Danh sách từ dừng tùy chỉnh
+                                'stopwords' => ['khoa', 'khoa_phong', 'noi tru', 'ngoai tru', 'dieu tri', 'lien chuyen', 'khoa'] // Danh sách từ dừng tùy chỉnh
                             ]
                         ]
                     ]

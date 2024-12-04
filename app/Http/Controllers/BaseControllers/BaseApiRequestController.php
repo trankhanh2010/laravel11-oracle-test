@@ -11,4 +11,7 @@ class BaseApiRequestController extends Controller
     public function getAllRequestName(Request $request){
         return config('keywords');
     }
+    public function getColumnName(Request $request){
+        return returnDataSuccess([], config('params')['db_service']['table']);
+    }
 }

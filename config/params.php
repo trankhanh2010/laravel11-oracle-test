@@ -400,6 +400,37 @@ return [
             'tracking_data' => 'Có lỗi khi thực hiện thao tác với Cơ sở dữ liệu!',
             'care' => 'Có lỗi khi thực hiện thao tác với Chăm sóc!',
 
+        ],
+        'table' => [
+            'bed' => [
+                'column_name' => [
+                    "id"=> "Id giường",
+                    "createTime"=> "Thời gian tạo",
+                    "modifyTime"=> "Thời gian cập nhật",
+                    "creator"=> "Người tạo",
+                    "modifier"=> "Người cập nhật",
+                    "appCreator"=> "Phần mềm tạo",
+                    "appModifier"=> "Phần mềm cập nhật",
+                    "isActive"=> "Trạng thái",
+                    "isDelete"=> "Xóa",
+                    "groupCode"=> "Mã nhóm",
+                    "bedCode"=> "Mã giường",
+                    "bedName"=> "Tên giường",
+                    "bedRoomId"=> "Id buồng bệnh",
+                    "bedTypeId"=> "Id loại giường",
+                    "maxCapacity"=> "Sức chứa",
+                    "x"=> "x",
+                    "y"=> "y",
+                    "treatmentRoomId"=> "Id phòng",
+                    "isBedStretcher"=> "Là giường cáng",
+                    "bedTypeName"=> "Tên loại giường",
+                    "bedTypeCode"=> "Mã loại giường",
+                    "bedRoomName"=> "Tên buồng bệnh",
+                    "bedRoomCode"=> "Mã buồng bệnh",
+                    "departmentName"=> "Tên khoa",
+                    "departmentCode"=> "Mã khoa"
+                ]
+            ]
         ]
     ],
     'send_error_to_telegram' => env('SEND_ERROR_TO_TELEGRAM', false),
