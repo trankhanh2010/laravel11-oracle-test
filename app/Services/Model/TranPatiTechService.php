@@ -72,10 +72,11 @@ class TranPatiTechService
     {
         try {
             $data = $this->tranPatiTechRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->tranPatiTechName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertTranPatiTechIndex($data, $this->params->tranPatiTechName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->tranPatiTechName));
             return returnDataCreateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['tran_pati_tech'], $e);
@@ -93,10 +94,11 @@ class TranPatiTechService
         }
         try {
             $data = $this->tranPatiTechRepository->update($request, $data, $this->params->time, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->tranPatiTechName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertTranPatiTechIndex($data, $this->params->tranPatiTechName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->tranPatiTechName));
             return returnDataUpdateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['tran_pati_tech'], $e);
@@ -114,10 +116,11 @@ class TranPatiTechService
         }
         try {
             $data = $this->tranPatiTechRepository->delete($data);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->tranPatiTechName));
+            
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->tranPatiTechName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->tranPatiTechName));
             return returnDataDeleteSuccess();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['tran_pati_tech'], $e);

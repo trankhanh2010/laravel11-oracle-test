@@ -72,10 +72,11 @@ class ProvinceService
     {
         try {
             $data = $this->provinceRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->provinceName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertProvinceIndex($data, $this->params->provinceName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->provinceName));
             return returnDataCreateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['province'], $e);
@@ -93,10 +94,11 @@ class ProvinceService
         }
         try {
             $data = $this->provinceRepository->update($request, $data, $this->params->time, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->provinceName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertProvinceIndex($data, $this->params->provinceName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->provinceName));
             return returnDataUpdateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['province'], $e);
@@ -114,10 +116,11 @@ class ProvinceService
         }
         try {
             $data = $this->provinceRepository->delete($data);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->provinceName));
+            
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->provinceName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->provinceName));
             return returnDataDeleteSuccess();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['province'], $e);

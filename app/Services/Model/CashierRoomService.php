@@ -72,10 +72,11 @@ class CashierRoomService
     {
         try {
             $data = $this->cashierRoomRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->cashierRoomName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertCashierRoomIndex($data, $this->params->cashierRoomName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->cashierRoomName));
             return returnDataCreateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['cashier_room'], $e);
@@ -93,10 +94,11 @@ class CashierRoomService
         }
         try {
             $data = $this->cashierRoomRepository->update($request, $data, $this->params->time, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->cashierRoomName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertCashierRoomIndex($data, $this->params->cashierRoomName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->cashierRoomName));
             return returnDataUpdateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['cashier_room'], $e);
@@ -114,10 +116,11 @@ class CashierRoomService
         }
         try {
             $data = $this->cashierRoomRepository->delete($data);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->cashierRoomName));
+            
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->cashierRoomName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->cashierRoomName));
             return returnDataDeleteSuccess();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['cashier_room'], $e);

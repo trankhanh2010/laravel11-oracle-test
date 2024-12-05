@@ -52,6 +52,9 @@ class ElasticInsertMediStockIndex
             UpdateMestPatientTypeIndexJob::dispatch($record, 'medi_stock');
             UpdateMestRoomIndexJob::dispatch($record, 'medi_stock');
             UpdateRoomIndexJob::dispatch($record, 'medi_stock');
+            $this->client->indices()->refresh([
+                'index' => $event->modelName, // Chỉ mục cần refresh
+            ]); // Gọi lệnh refresh
         } catch (\Throwable $e) {
             writeAndThrowError(config('params')['elastic']['error']['insert_index'], $e);
         }

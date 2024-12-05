@@ -72,10 +72,11 @@ class FileTypeService
     {
         try {
             $data = $this->fileTypeRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->fileTypeName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertFileTypeIndex($data, $this->params->fileTypeName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->fileTypeName));
             return returnDataCreateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['file_type'], $e);
@@ -93,10 +94,11 @@ class FileTypeService
         }
         try {
             $data = $this->fileTypeRepository->update($request, $data, $this->params->time, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->fileTypeName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertFileTypeIndex($data, $this->params->fileTypeName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->fileTypeName));
             return returnDataUpdateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['file_type'], $e);
@@ -114,10 +116,11 @@ class FileTypeService
         }
         try {
             $data = $this->fileTypeRepository->delete($data);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->fileTypeName));
+            
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->fileTypeName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->fileTypeName));
             return returnDataDeleteSuccess();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['file_type'], $e);

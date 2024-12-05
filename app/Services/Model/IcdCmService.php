@@ -72,10 +72,11 @@ class IcdCmService
     {
         try {
             $data = $this->icdCmRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->icdCmName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertIcdCmIndex($data, $this->params->icdCmName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->icdCmName));
             return returnDataCreateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['icd_cm'], $e);
@@ -93,10 +94,11 @@ class IcdCmService
         }
         try {
             $data = $this->icdCmRepository->update($request, $data, $this->params->time, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->icdCmName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertIcdCmIndex($data, $this->params->icdCmName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->icdCmName));
             return returnDataUpdateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['icd_cm'], $e);
@@ -114,10 +116,11 @@ class IcdCmService
         }
         try {
             $data = $this->icdCmRepository->delete($data);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->icdCmName));
+            
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->icdCmName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->icdCmName));
             return returnDataDeleteSuccess();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['icd_cm'], $e);

@@ -72,10 +72,11 @@ class SpecialityService
     {
         try {
             $data = $this->specialityRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->specialityName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertSpecialityIndex($data, $this->params->specialityName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->specialityName));
             return returnDataCreateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['speciality'], $e);
@@ -93,10 +94,11 @@ class SpecialityService
         }
         try {
             $data = $this->specialityRepository->update($request, $data, $this->params->time, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->specialityName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertSpecialityIndex($data, $this->params->specialityName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->specialityName));
             return returnDataUpdateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['speciality'], $e);
@@ -114,10 +116,11 @@ class SpecialityService
         }
         try {
             $data = $this->specialityRepository->delete($data);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->specialityName));
+            
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->specialityName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->specialityName));
             return returnDataDeleteSuccess();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['speciality'], $e);

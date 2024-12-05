@@ -74,10 +74,11 @@ class BedRoomService
     {
         try {
             $data = $this->bedRoomRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->bedRoomName));
+
             // Gọi event để thêm index vào elastic
             event(new InsertBedRoomIndex($data, $this->params->bedRoomName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->bedRoomName));
             return returnDataCreateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['bed_room'], $e);
@@ -95,10 +96,11 @@ class BedRoomService
         }
         try {
             $data = $this->bedRoomRepository->update($request, $data, $this->params->time, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->bedRoomName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertBedRoomIndex($data, $this->params->bedRoomName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->bedRoomName));
             return returnDataUpdateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['bed_room'], $e);
@@ -116,10 +118,11 @@ class BedRoomService
         }
         try {
             $data = $this->bedRoomRepository->delete($data);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->bedRoomName));
+            
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->bedRoomName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->bedRoomName));
             return returnDataDeleteSuccess();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['bed_room'], $e);

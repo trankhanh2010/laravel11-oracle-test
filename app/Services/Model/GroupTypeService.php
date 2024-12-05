@@ -72,10 +72,11 @@ class GroupTypeService
     {
         try {
             $data = $this->groupTypeRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->groupTypeName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertGroupTypeIndex($data, $this->params->groupTypeName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->groupTypeName));
             return returnDataCreateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['group_type'], $e);
@@ -93,10 +94,11 @@ class GroupTypeService
         }
         try {
             $data = $this->groupTypeRepository->update($request, $data, $this->params->time, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->groupTypeName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertGroupTypeIndex($data, $this->params->groupTypeName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->groupTypeName));
             return returnDataUpdateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['group_type'], $e);
@@ -114,10 +116,11 @@ class GroupTypeService
         }
         try {
             $data = $this->groupTypeRepository->delete($data);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->groupTypeName));
+            
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->groupTypeName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->groupTypeName));
             return returnDataDeleteSuccess();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['group_type'], $e);

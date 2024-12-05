@@ -75,10 +75,11 @@ class ReceptionRoomService
     {
         try {
             $data = $this->receptionRoomRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->receptionRoomName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertReceptionRoomIndex($data, $this->params->receptionRoomName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->receptionRoomName));
             return returnDataCreateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['reception_room'], $e);
@@ -96,10 +97,11 @@ class ReceptionRoomService
         }
         try {
             $data = $this->receptionRoomRepository->update($request, $data, $this->params->time, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->receptionRoomName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertReceptionRoomIndex($data, $this->params->receptionRoomName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->receptionRoomName));
             return returnDataUpdateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['reception_room'], $e);
@@ -117,10 +119,11 @@ class ReceptionRoomService
         }
         try {
             $data = $this->receptionRoomRepository->delete($data);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->receptionRoomName));
+            
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->receptionRoomName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->receptionRoomName));
             return returnDataDeleteSuccess();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['reception_room'], $e);

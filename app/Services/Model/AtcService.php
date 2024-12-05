@@ -72,10 +72,11 @@ class AtcService
     {
         try {
             $data = $this->atcRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->atcName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertAtcIndex($data, $this->params->atcName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->atcName));
             return returnDataCreateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['atc'], $e);
@@ -93,10 +94,11 @@ class AtcService
         }
         try {
             $data = $this->atcRepository->update($request, $data, $this->params->time, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->atcName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertAtcIndex($data, $this->params->atcName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->atcName));
             return returnDataUpdateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['atc'], $e);
@@ -114,10 +116,11 @@ class AtcService
         }
         try {
             $data = $this->atcRepository->delete($data);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->atcName));
+            
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->atcName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->atcName));
             return returnDataDeleteSuccess();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['atc'], $e);

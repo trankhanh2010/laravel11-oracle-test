@@ -71,10 +71,11 @@ class MedicineLineService
     {
         try {
             $data = $this->medicineLineRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->medicineLineName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertMedicineLineIndex($data, $this->params->medicineLineName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->medicineLineName));
             return returnDataCreateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['medicine_line'], $e);
@@ -92,10 +93,11 @@ class MedicineLineService
         }
         try {
             $data = $this->medicineLineRepository->update($request, $data, $this->params->time, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->medicineLineName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertMedicineLineIndex($data, $this->params->medicineLineName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->medicineLineName));
             return returnDataUpdateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['medicine_line'], $e);
@@ -113,10 +115,11 @@ class MedicineLineService
         }
         try {
             $data = $this->medicineLineRepository->delete($data);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->medicineLineName));
+            
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->medicineLineName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->medicineLineName));
             return returnDataDeleteSuccess();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['medicine_line'], $e);

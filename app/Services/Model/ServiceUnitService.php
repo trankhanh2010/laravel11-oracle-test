@@ -72,10 +72,11 @@ class ServiceUnitService
     {
         try {
             $data = $this->serviceUnitRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->serviceUnitName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertServiceUnitIndex($data, $this->params->serviceUnitName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->serviceUnitName));
             return returnDataCreateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['service_unit'], $e);
@@ -93,10 +94,11 @@ class ServiceUnitService
         }
         try {
             $data = $this->serviceUnitRepository->update($request, $data, $this->params->time, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->serviceUnitName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertServiceUnitIndex($data, $this->params->serviceUnitName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->serviceUnitName));
             return returnDataUpdateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['service_unit'], $e);
@@ -114,10 +116,11 @@ class ServiceUnitService
         }
         try {
             $data = $this->serviceUnitRepository->delete($data);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->serviceUnitName));
+            
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->serviceUnitName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->serviceUnitName));
             return returnDataDeleteSuccess();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['service_unit'], $e);

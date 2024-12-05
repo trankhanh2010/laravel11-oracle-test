@@ -72,10 +72,11 @@ class ServiceGroupService
     {
         try {
             $data = $this->serviceGroupRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->serviceGroupName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertServiceGroupIndex($data, $this->params->serviceGroupName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->serviceGroupName));
             return returnDataCreateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['service_group'], $e);
@@ -93,10 +94,11 @@ class ServiceGroupService
         }
         try {
             $data = $this->serviceGroupRepository->update($request, $data, $this->params->time, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->serviceGroupName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertServiceGroupIndex($data, $this->params->serviceGroupName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->serviceGroupName));
             return returnDataUpdateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['service_group'], $e);
@@ -114,10 +116,11 @@ class ServiceGroupService
         }
         try {
             $data = $this->serviceGroupRepository->delete($data);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->serviceGroupName));
+            
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->serviceGroupName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->serviceGroupName));
             return returnDataDeleteSuccess();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['service_group'], $e);

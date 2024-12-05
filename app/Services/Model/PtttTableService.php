@@ -72,10 +72,11 @@ class PtttTableService
     {
         try {
             $data = $this->ptttTableRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->ptttTableName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertPtttTableIndex($data, $this->params->ptttTableName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->ptttTableName));
             return returnDataCreateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['pttt_table'], $e);
@@ -93,10 +94,11 @@ class PtttTableService
         }
         try {
             $data = $this->ptttTableRepository->update($request, $data, $this->params->time, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->ptttTableName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertPtttTableIndex($data, $this->params->ptttTableName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->ptttTableName));
             return returnDataUpdateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['pttt_table'], $e);
@@ -114,10 +116,11 @@ class PtttTableService
         }
         try {
             $data = $this->ptttTableRepository->delete($data);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->ptttTableName));
+            
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->ptttTableName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->ptttTableName));
             return returnDataDeleteSuccess();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['pttt_table'], $e);

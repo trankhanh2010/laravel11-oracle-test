@@ -72,10 +72,11 @@ class PatientClassifyService
     {
         try {
             $data = $this->patientClassifyRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->patientClassifyName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertPatientClassifyIndex($data, $this->params->patientClassifyName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->patientClassifyName));
             return returnDataCreateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['patient_classify'], $e);
@@ -93,10 +94,11 @@ class PatientClassifyService
         }
         try {
             $data = $this->patientClassifyRepository->update($request, $data, $this->params->time, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->patientClassifyName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertPatientClassifyIndex($data, $this->params->patientClassifyName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->patientClassifyName));
             return returnDataUpdateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['patient_classify'], $e);
@@ -114,10 +116,11 @@ class PatientClassifyService
         }
         try {
             $data = $this->patientClassifyRepository->delete($data);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->patientClassifyName));
+            
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->patientClassifyName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->patientClassifyName));
             return returnDataDeleteSuccess();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['patient_classify'], $e);

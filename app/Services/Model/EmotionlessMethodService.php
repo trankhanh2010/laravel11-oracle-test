@@ -72,10 +72,11 @@ class EmotionlessMethodService
     {
         try {
             $data = $this->emotionlessMethodRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->emotionlessMethodName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertEmotionlessMethodIndex($data, $this->params->emotionlessMethodName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->emotionlessMethodName));
             return returnDataCreateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['emotionless_method'], $e);
@@ -93,10 +94,11 @@ class EmotionlessMethodService
         }
         try {
             $data = $this->emotionlessMethodRepository->update($request, $data, $this->params->time, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->emotionlessMethodName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertEmotionlessMethodIndex($data, $this->params->emotionlessMethodName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->emotionlessMethodName));
             return returnDataUpdateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['emotionless_method'], $e);
@@ -114,10 +116,11 @@ class EmotionlessMethodService
         }
         try {
             $data = $this->emotionlessMethodRepository->delete($data);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->emotionlessMethodName));
+            
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->emotionlessMethodName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->emotionlessMethodName));
             return returnDataDeleteSuccess();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['emotionless_method'], $e);

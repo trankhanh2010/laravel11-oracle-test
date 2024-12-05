@@ -72,10 +72,11 @@ class BloodVolumeService
     {
         try {
             $data = $this->bloodVolumeRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->bloodVolumeName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertBloodVolumeIndex($data, $this->params->bloodVolumeName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->bloodVolumeName));
             return returnDataCreateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['blood_volume'], $e);
@@ -93,10 +94,11 @@ class BloodVolumeService
         }
         try {
             $data = $this->bloodVolumeRepository->update($request, $data, $this->params->time, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->bloodVolumeName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertBloodVolumeIndex($data, $this->params->bloodVolumeName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->bloodVolumeName));
             return returnDataUpdateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['blood_volume'], $e);
@@ -114,10 +116,11 @@ class BloodVolumeService
         }
         try {
             $data = $this->bloodVolumeRepository->delete($data);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->bloodVolumeName));
+            
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->bloodVolumeName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->bloodVolumeName));
             return returnDataDeleteSuccess();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['blood_volume'], $e);

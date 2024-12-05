@@ -42,6 +42,9 @@ class ElasticInsertMedicineTypeIndex
             // Cập nhật các index liên quan
             UpdateMedicineTypeAcinIndexJob::dispatch($record, 'medicine_type');
             UpdateMediStockMetyIndexJob::dispatch($record, 'medicine_type');
+            $this->client->indices()->refresh([
+                'index' => $event->modelName, // Chỉ mục cần refresh
+            ]); // Gọi lệnh refresh
         } catch (\Throwable $e) {
             writeAndThrowError(config('params')['elastic']['error']['insert_index'], $e);
         }

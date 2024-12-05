@@ -74,10 +74,11 @@ class ServiceConditionService
     {
         try {
             $data = $this->serviceConditionRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->serviceConditionName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertServiceConditionIndex($data, $this->params->serviceConditionName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->serviceConditionName));
             return returnDataCreateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['service_condition'], $e);
@@ -95,10 +96,11 @@ class ServiceConditionService
         }
         try {
             $data = $this->serviceConditionRepository->update($request, $data, $this->params->time, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->serviceConditionName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertServiceConditionIndex($data, $this->params->serviceConditionName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->serviceConditionName));
             return returnDataUpdateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['service_condition'], $e);
@@ -116,10 +118,11 @@ class ServiceConditionService
         }
         try {
             $data = $this->serviceConditionRepository->delete($data);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->serviceConditionName));
+            
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->serviceConditionName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->serviceConditionName));
             return returnDataDeleteSuccess();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['service_condition'], $e);

@@ -72,10 +72,11 @@ class DeathWithinService
     {
         try {
             $data = $this->deathWithinRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->deathWithinName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertDeathWithinIndex($data, $this->params->deathWithinName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->deathWithinName));
             return returnDataCreateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['death_within'], $e);
@@ -93,10 +94,11 @@ class DeathWithinService
         }
         try {
             $data = $this->deathWithinRepository->update($request, $data, $this->params->time, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->deathWithinName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertDeathWithinIndex($data, $this->params->deathWithinName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->deathWithinName));
             return returnDataUpdateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['death_within'], $e);
@@ -114,10 +116,11 @@ class DeathWithinService
         }
         try {
             $data = $this->deathWithinRepository->delete($data);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->deathWithinName));
+            
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->deathWithinName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->deathWithinName));
             return returnDataDeleteSuccess();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['death_within'], $e);

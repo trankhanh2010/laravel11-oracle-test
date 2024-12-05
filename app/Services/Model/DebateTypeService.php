@@ -72,10 +72,11 @@ class DebateTypeService
     {
         try {
             $data = $this->debateTypeRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->debateTypeName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertDebateTypeIndex($data, $this->params->debateTypeName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->debateTypeName));
             return returnDataCreateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['debate_type'], $e);
@@ -93,10 +94,11 @@ class DebateTypeService
         }
         try {
             $data = $this->debateTypeRepository->update($request, $data, $this->params->time, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->debateTypeName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertDebateTypeIndex($data, $this->params->debateTypeName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->debateTypeName));
             return returnDataUpdateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['debate_type'], $e);
@@ -114,10 +116,11 @@ class DebateTypeService
         }
         try {
             $data = $this->debateTypeRepository->delete($data);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->debateTypeName));
+            
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->debateTypeName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->debateTypeName));
             return returnDataDeleteSuccess();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['debate_type'], $e);

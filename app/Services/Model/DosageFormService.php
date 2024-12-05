@@ -72,10 +72,11 @@ class DosageFormService
     {
         try {
             $data = $this->dosageFormRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->dosageFormName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertDosageFormIndex($data, $this->params->dosageFormName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->dosageFormName));
             return returnDataCreateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['dosage_form'], $e);
@@ -93,10 +94,11 @@ class DosageFormService
         }
         try {
             $data = $this->dosageFormRepository->update($request, $data, $this->params->time, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->dosageFormName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertDosageFormIndex($data, $this->params->dosageFormName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->dosageFormName));
             return returnDataUpdateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['dosage_form'], $e);
@@ -114,10 +116,11 @@ class DosageFormService
         }
         try {
             $data = $this->dosageFormRepository->delete($data);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->dosageFormName));
+            
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->dosageFormName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->dosageFormName));
             return returnDataDeleteSuccess();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['dosage_form'], $e);

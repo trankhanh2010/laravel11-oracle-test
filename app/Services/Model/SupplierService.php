@@ -72,10 +72,11 @@ class SupplierService
     {
         try {
             $data = $this->supplierRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->supplierName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertSupplierIndex($data, $this->params->supplierName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->supplierName));
             return returnDataCreateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['supplier'], $e);
@@ -93,10 +94,11 @@ class SupplierService
         }
         try {
             $data = $this->supplierRepository->update($request, $data, $this->params->time, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->supplierName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertSupplierIndex($data, $this->params->supplierName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->supplierName));
             return returnDataUpdateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['supplier'], $e);
@@ -114,10 +116,11 @@ class SupplierService
         }
         try {
             $data = $this->supplierRepository->delete($data);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->supplierName));
+            
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->supplierName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->supplierName));
             return returnDataDeleteSuccess();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['supplier'], $e);

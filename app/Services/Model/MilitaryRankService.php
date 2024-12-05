@@ -71,10 +71,11 @@ class MilitaryRankService
     {
         try {
             $data = $this->militaryRankRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->militaryRankName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertMilitaryRankIndex($data, $this->params->militaryRankName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->militaryRankName));
             return returnDataCreateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['military_rank'], $e);
@@ -92,10 +93,11 @@ class MilitaryRankService
         }
         try {
             $data = $this->militaryRankRepository->update($request, $data, $this->params->time, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->militaryRankName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertMilitaryRankIndex($data, $this->params->militaryRankName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->militaryRankName));
             return returnDataUpdateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['military_rank'], $e);
@@ -113,10 +115,11 @@ class MilitaryRankService
         }
         try {
             $data = $this->militaryRankRepository->delete($data);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->militaryRankName));
+            
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->militaryRankName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->militaryRankName));
             return returnDataDeleteSuccess();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['military_rank'], $e);

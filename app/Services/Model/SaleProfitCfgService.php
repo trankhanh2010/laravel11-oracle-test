@@ -72,10 +72,11 @@ class SaleProfitCfgService
     {
         try {
             $data = $this->saleProfitCfgRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->saleProfitCfgName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertSaleProfitCfgIndex($data, $this->params->saleProfitCfgName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->saleProfitCfgName));
             return returnDataCreateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['sale_profit_cfg'], $e);
@@ -93,10 +94,11 @@ class SaleProfitCfgService
         }
         try {
             $data = $this->saleProfitCfgRepository->update($request, $data, $this->params->time, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->saleProfitCfgName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertSaleProfitCfgIndex($data, $this->params->saleProfitCfgName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->saleProfitCfgName));
             return returnDataUpdateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['sale_profit_cfg'], $e);
@@ -114,10 +116,11 @@ class SaleProfitCfgService
         }
         try {
             $data = $this->saleProfitCfgRepository->delete($data);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->saleProfitCfgName));
+            
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->saleProfitCfgName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->saleProfitCfgName));
             return returnDataDeleteSuccess();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['sale_profit_cfg'], $e);

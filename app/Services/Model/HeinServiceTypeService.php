@@ -78,10 +78,11 @@ class HeinServiceTypeService
         }
         try {
             $data = $this->heinServiceTypeRepository->delete($data);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->heinServiceTypeName));
+            
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->heinServiceTypeName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->heinServiceTypeName));
             return returnDataDeleteSuccess();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['hein_service_type'], $e);

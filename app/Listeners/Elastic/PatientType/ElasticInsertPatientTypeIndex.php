@@ -57,6 +57,9 @@ class ElasticInsertPatientTypeIndex
             UpdateServicePatyIndexJob::dispatch($record, 'patient_type');
             UpdateServiceIndexJob::dispatch($record, 'default_patient_type');
             UpdateServiceIndexJob::dispatch($record, 'bill_patient_type');
+            $this->client->indices()->refresh([
+                'index' => $event->modelName, // Chỉ mục cần refresh
+            ]); // Gọi lệnh refresh
         } catch (\Throwable $e) {
             writeAndThrowError(config('params')['elastic']['error']['insert_index'], $e);
         }

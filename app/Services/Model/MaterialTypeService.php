@@ -71,10 +71,11 @@ class MaterialTypeService
     {
         try {
             $data = $this->materialTypeRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->materialTypeName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertMaterialTypeIndex($data, $this->params->materialTypeName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->materialTypeName));
             return returnDataCreateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['material_type'], $e);
@@ -92,10 +93,11 @@ class MaterialTypeService
         }
         try {
             $data = $this->materialTypeRepository->update($request, $data, $this->params->time, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->materialTypeName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertMaterialTypeIndex($data, $this->params->materialTypeName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->materialTypeName));
             return returnDataUpdateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['material_type'], $e);
@@ -113,10 +115,11 @@ class MaterialTypeService
         }
         try {
             $data = $this->materialTypeRepository->delete($data);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->materialTypeName));
+            
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->materialTypeName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->materialTypeName));
             return returnDataDeleteSuccess();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['material_type'], $e);

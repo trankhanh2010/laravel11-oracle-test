@@ -72,10 +72,11 @@ class MemaGroupService
     {
         try {
             $data = $this->memaGroupRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->memaGroupName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertMemaGroupIndex($data, $this->params->memaGroupName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->memaGroupName));
             return returnDataCreateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['mema_group'], $e);
@@ -93,10 +94,11 @@ class MemaGroupService
         }
         try {
             $data = $this->memaGroupRepository->update($request, $data, $this->params->time, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->memaGroupName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertMemaGroupIndex($data, $this->params->memaGroupName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->memaGroupName));
             return returnDataUpdateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['mema_group'], $e);
@@ -114,10 +116,11 @@ class MemaGroupService
         }
         try {
             $data = $this->memaGroupRepository->delete($data);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->memaGroupName));
+            
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->memaGroupName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->memaGroupName));
             return returnDataDeleteSuccess();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['mema_group'], $e);

@@ -72,10 +72,11 @@ class TreatmentTypeService
     {
         try {
             $data = $this->treatmentTypeRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->treatmentTypeName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertTreatmentTypeIndex($data, $this->params->treatmentTypeName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->treatmentTypeName));
             return returnDataCreateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['treatment_type'], $e);
@@ -93,10 +94,11 @@ class TreatmentTypeService
         }
         try {
             $data = $this->treatmentTypeRepository->update($request, $data, $this->params->time, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->treatmentTypeName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertTreatmentTypeIndex($data, $this->params->treatmentTypeName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->treatmentTypeName));
             return returnDataUpdateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['treatment_type'], $e);
@@ -114,10 +116,11 @@ class TreatmentTypeService
         }
         try {
             $data = $this->treatmentTypeRepository->delete($data);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->treatmentTypeName));
+            
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->treatmentTypeName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->treatmentTypeName));
             return returnDataDeleteSuccess();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['treatment_type'], $e);

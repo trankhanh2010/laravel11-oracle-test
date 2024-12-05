@@ -45,6 +45,9 @@ class ElasticInsertBedRoomIndex
             // Cập nhật các index liên quan
             UpdateBedIndexJob::dispatch($record, 'bed_room');
             UpdateRoomIndexJob::dispatch($record, 'bed_room');
+            $this->client->indices()->refresh([
+                'index' => $event->modelName, // Chỉ mục cần refresh
+            ]); // Gọi lệnh refresh
         } catch (\Throwable $e) {
             writeAndThrowError(config('params')['elastic']['error']['insert_index'], $e);
         }

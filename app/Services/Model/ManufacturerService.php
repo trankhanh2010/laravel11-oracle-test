@@ -72,10 +72,11 @@ class ManufacturerService
     {
         try {
             $data = $this->manufacturerRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->manufacturerName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertManufacturerIndex($data, $this->params->manufacturerName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->manufacturerName));
             return returnDataCreateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['manufacturer'], $e);
@@ -93,10 +94,11 @@ class ManufacturerService
         }
         try {
             $data = $this->manufacturerRepository->update($request, $data, $this->params->time, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->manufacturerName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertManufacturerIndex($data, $this->params->manufacturerName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->manufacturerName));
             return returnDataUpdateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['manufacturer'], $e);
@@ -114,10 +116,11 @@ class ManufacturerService
         }
         try {
             $data = $this->manufacturerRepository->delete($data);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->manufacturerName));
+            
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->manufacturerName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->manufacturerName));
             return returnDataDeleteSuccess();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['manufacturer'], $e);

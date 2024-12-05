@@ -71,10 +71,11 @@ class TestSampleTypeService
     {
         try {
             $data = $this->testSampleTypeRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->testSampleTypeName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertTestSampleTypeIndex($data, $this->params->testSampleTypeName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->testSampleTypeName));
             return returnDataCreateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['test_sample_type'], $e);
@@ -92,10 +93,11 @@ class TestSampleTypeService
         }
         try {
             $data = $this->testSampleTypeRepository->update($request, $data, $this->params->time, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->testSampleTypeName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertTestSampleTypeIndex($data, $this->params->testSampleTypeName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->testSampleTypeName));
             return returnDataUpdateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['test_sample_type'], $e);
@@ -113,10 +115,11 @@ class TestSampleTypeService
         }
         try {
             $data = $this->testSampleTypeRepository->delete($data);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->testSampleTypeName));
+            
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->testSampleTypeName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->testSampleTypeName));
             return returnDataDeleteSuccess();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['test_sample_type'], $e);

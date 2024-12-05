@@ -72,10 +72,11 @@ class BidTypeService
     {
         try {
             $data = $this->bidTypeRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->bidTypeName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertBidTypeIndex($data, $this->params->bidTypeName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->bidTypeName));
             return returnDataCreateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['bid_type'], $e);
@@ -93,10 +94,11 @@ class BidTypeService
         }
         try {
             $data = $this->bidTypeRepository->update($request, $data, $this->params->time, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->bidTypeName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertBidTypeIndex($data, $this->params->bidTypeName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->bidTypeName));
             return returnDataUpdateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['bid_type'], $e);
@@ -114,10 +116,11 @@ class BidTypeService
         }
         try {
             $data = $this->bidTypeRepository->delete($data);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->bidTypeName));
+            
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->bidTypeName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->bidTypeName));
             return returnDataDeleteSuccess();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['bid_type'], $e);

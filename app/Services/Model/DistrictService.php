@@ -72,10 +72,11 @@ class DistrictService
     {
         try {
             $data = $this->districtRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->districtName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertDistrictIndex($data, $this->params->districtName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->districtName));
             return returnDataCreateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['district'], $e);
@@ -93,10 +94,11 @@ class DistrictService
         }
         try {
             $data = $this->districtRepository->update($request, $data, $this->params->time, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->districtName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertDistrictIndex($data, $this->params->districtName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->districtName));
             return returnDataUpdateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['district'], $e);
@@ -114,10 +116,11 @@ class DistrictService
         }
         try {
             $data = $this->districtRepository->delete($data);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->districtName));
+            
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->districtName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->districtName));
             return returnDataDeleteSuccess();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['district'], $e);

@@ -72,10 +72,11 @@ class DataStoreService
     {
         try {
             $data = $this->dataStoreRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->dataStoreName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertDataStoreIndex($data, $this->params->dataStoreName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->dataStoreName));
             return returnDataCreateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['data_store'], $e);
@@ -93,10 +94,11 @@ class DataStoreService
         }
         try {
             $data = $this->dataStoreRepository->update($request, $data, $this->params->time, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->dataStoreName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertDataStoreIndex($data, $this->params->dataStoreName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->dataStoreName));
             return returnDataUpdateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['data_store'], $e);
@@ -114,10 +116,11 @@ class DataStoreService
         }
         try {
             $data = $this->dataStoreRepository->delete($data);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->dataStoreName));
+            
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->dataStoreName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->dataStoreName));
             return returnDataDeleteSuccess();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['data_store'], $e);

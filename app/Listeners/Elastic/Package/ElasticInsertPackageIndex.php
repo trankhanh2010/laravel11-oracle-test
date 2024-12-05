@@ -42,6 +42,9 @@ class ElasticInsertPackageIndex
             // Cập nhật các index liên quan
             UpdateServicePatyIndexJob::dispatch($record, 'package');
             UpdateServiceIndexJob::dispatch($record, 'package');
+            $this->client->indices()->refresh([
+                'index' => $event->modelName, // Chỉ mục cần refresh
+            ]); // Gọi lệnh refresh
         } catch (\Throwable $e) {
             writeAndThrowError(config('params')['elastic']['error']['insert_index'], $e);
         }

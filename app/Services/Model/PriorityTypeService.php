@@ -72,10 +72,11 @@ class PriorityTypeService
     {
         try {
             $data = $this->priorityTypeRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->priorityTypeName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertPriorityTypeIndex($data, $this->params->priorityTypeName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->priorityTypeName));
             return returnDataCreateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['priority_type'], $e);
@@ -93,10 +94,11 @@ class PriorityTypeService
         }
         try {
             $data = $this->priorityTypeRepository->update($request, $data, $this->params->time, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->priorityTypeName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertPriorityTypeIndex($data, $this->params->priorityTypeName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->priorityTypeName));
             return returnDataUpdateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['priority_type'], $e);
@@ -114,10 +116,11 @@ class PriorityTypeService
         }
         try {
             $data = $this->priorityTypeRepository->delete($data);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->priorityTypeName));
+            
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->priorityTypeName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->priorityTypeName));
             return returnDataDeleteSuccess();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['priority_type'], $e);

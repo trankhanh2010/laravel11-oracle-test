@@ -66,10 +66,11 @@ class UserRoomVViewService
     {
         try {
             $data = $this->userRoomVViewRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->userRoomVViewName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertUserRoomVViewIndex($data, $this->params->userRoomVViewName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->userRoomVViewName));
             return returnDataCreateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['user_room_v_view'], $e);
@@ -87,10 +88,11 @@ class UserRoomVViewService
         }
         try {
             $data = $this->userRoomVViewRepository->update($request, $data, $this->params->time, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->userRoomVViewName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertUserRoomVViewIndex($data, $this->params->userRoomVViewName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->userRoomVViewName));
             return returnDataUpdateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['user_room_v_view'], $e);
@@ -108,10 +110,11 @@ class UserRoomVViewService
         }
         try {
             $data = $this->userRoomVViewRepository->delete($data);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->userRoomVViewName));
+            
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->userRoomVViewName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->userRoomVViewName));
             return returnDataDeleteSuccess();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['user_room_v_view'], $e);

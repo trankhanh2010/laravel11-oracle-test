@@ -72,10 +72,11 @@ class RelationService
     {
         try {
             $data = $this->relationRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->relationName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertRelationIndex($data, $this->params->relationName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->relationName));
             return returnDataCreateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['relation'], $e);
@@ -93,10 +94,11 @@ class RelationService
         }
         try {
             $data = $this->relationRepository->update($request, $data, $this->params->time, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->relationName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertRelationIndex($data, $this->params->relationName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->relationName));
             return returnDataUpdateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['relation'], $e);
@@ -114,10 +116,11 @@ class RelationService
         }
         try {
             $data = $this->relationRepository->delete($data);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->relationName));
+            
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->relationName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->relationName));
             return returnDataDeleteSuccess();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['relation'], $e);

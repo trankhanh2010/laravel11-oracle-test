@@ -72,10 +72,11 @@ class RoomGroupService
     {
         try {
             $data = $this->roomGroupRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->roomGroupName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertRoomGroupIndex($data, $this->params->roomGroupName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->roomGroupName));
             return returnDataCreateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['room_group'], $e);
@@ -93,10 +94,11 @@ class RoomGroupService
         }
         try {
             $data = $this->roomGroupRepository->update($request, $data, $this->params->time, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->roomGroupName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertRoomGroupIndex($data, $this->params->roomGroupName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->roomGroupName));
             return returnDataUpdateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['room_group'], $e);
@@ -114,10 +116,11 @@ class RoomGroupService
         }
         try {
             $data = $this->roomGroupRepository->delete($data);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->roomGroupName));
+            
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->roomGroupName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->roomGroupName));
             return returnDataDeleteSuccess();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['room_group'], $e);

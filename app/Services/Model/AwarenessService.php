@@ -72,10 +72,11 @@ class AwarenessService
     {
         try {
             $data = $this->awarenessRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->awarenessName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertAwarenessIndex($data, $this->params->awarenessName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->awarenessName));
             return returnDataCreateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['awareness'], $e);
@@ -93,10 +94,11 @@ class AwarenessService
         }
         try {
             $data = $this->awarenessRepository->update($request, $data, $this->params->time, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->awarenessName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertAwarenessIndex($data, $this->params->awarenessName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->awarenessName));
             return returnDataUpdateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['awareness'], $e);
@@ -114,10 +116,11 @@ class AwarenessService
         }
         try {
             $data = $this->awarenessRepository->delete($data);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->awarenessName));
+            
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->awarenessName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->awarenessName));
             return returnDataDeleteSuccess();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['awareness'], $e);

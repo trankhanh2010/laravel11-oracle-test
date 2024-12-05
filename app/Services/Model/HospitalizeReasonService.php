@@ -72,10 +72,11 @@ class HospitalizeReasonService
     {
         try {
             $data = $this->hospitalizeReasonRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->hospitalizeReasonName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertHospitalizeReasonIndex($data, $this->params->hospitalizeReasonName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->hospitalizeReasonName));
             return returnDataCreateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['hospitalize_reason'], $e);
@@ -93,10 +94,11 @@ class HospitalizeReasonService
         }
         try {
             $data = $this->hospitalizeReasonRepository->update($request, $data, $this->params->time, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->hospitalizeReasonName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertHospitalizeReasonIndex($data, $this->params->hospitalizeReasonName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->hospitalizeReasonName));
             return returnDataUpdateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['hospitalize_reason'], $e);
@@ -114,10 +116,11 @@ class HospitalizeReasonService
         }
         try {
             $data = $this->hospitalizeReasonRepository->delete($data);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->hospitalizeReasonName));
+            
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->hospitalizeReasonName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->hospitalizeReasonName));
             return returnDataDeleteSuccess();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['hospitalize_reason'], $e);

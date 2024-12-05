@@ -72,10 +72,11 @@ class BranchService
     {
         try {
             $data = $this->branchRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->branchName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertBranchIndex($data, $this->params->branchName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->branchName));
             return returnDataCreateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['branch'], $e);
@@ -93,10 +94,11 @@ class BranchService
         }
         try {
             $data = $this->branchRepository->update($request, $data, $this->params->time, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->branchName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertBranchIndex($data, $this->params->branchName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->branchName));
             return returnDataUpdateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['branch'], $e);
@@ -114,10 +116,11 @@ class BranchService
         }
         try {
             $data = $this->branchRepository->delete($data);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->branchName));
+            
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->branchName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->branchName));
             return returnDataDeleteSuccess();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['branch'], $e);

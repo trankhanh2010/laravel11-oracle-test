@@ -58,6 +58,9 @@ class ElasticInsertServiceIndex
             UpdateServiceRoomIndexJob::dispatch($record, 'service');
             UpdateServSegrIndexJob::dispatch($record, 'service');
             UpdateTestIndexIndexJob::dispatch($record, 'service');
+            $this->client->indices()->refresh([
+                'index' => $event->modelName, // Chỉ mục cần refresh
+            ]); // Gọi lệnh refresh
         } catch (\Throwable $e) {
             writeAndThrowError(config('params')['elastic']['error']['insert_index'], $e);
         }

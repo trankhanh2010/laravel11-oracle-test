@@ -72,10 +72,11 @@ class OtherPaySourceService
     {
         try {
             $data = $this->otherPaySourceRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->otherPaySourceName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertOtherPaySourceIndex($data, $this->params->otherPaySourceName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->otherPaySourceName));
             return returnDataCreateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['other_pay_source'], $e);
@@ -93,10 +94,11 @@ class OtherPaySourceService
         }
         try {
             $data = $this->otherPaySourceRepository->update($request, $data, $this->params->time, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->otherPaySourceName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertOtherPaySourceIndex($data, $this->params->otherPaySourceName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->otherPaySourceName));
             return returnDataUpdateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['other_pay_source'], $e);
@@ -114,10 +116,11 @@ class OtherPaySourceService
         }
         try {
             $data = $this->otherPaySourceRepository->delete($data);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->otherPaySourceName));
+            
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->otherPaySourceName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->otherPaySourceName));
             return returnDataDeleteSuccess();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['other_pay_source'], $e);

@@ -72,10 +72,11 @@ class MedicalContractService
     {
         try {
             $data = $this->medicalContractRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->medicalContractName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertMedicalContractIndex($data, $this->params->medicalContractName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->medicalContractName));
             return returnDataCreateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['medical_contract'], $e);
@@ -93,10 +94,11 @@ class MedicalContractService
         }
         try {
             $data = $this->medicalContractRepository->update($request, $data, $this->params->time, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->medicalContractName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertMedicalContractIndex($data, $this->params->medicalContractName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->medicalContractName));
             return returnDataUpdateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['medical_contract'], $e);
@@ -114,10 +116,11 @@ class MedicalContractService
         }
         try {
             $data = $this->medicalContractRepository->delete($data);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->medicalContractName));
+            
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->medicalContractName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->medicalContractName));
             return returnDataDeleteSuccess();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['medical_contract'], $e);

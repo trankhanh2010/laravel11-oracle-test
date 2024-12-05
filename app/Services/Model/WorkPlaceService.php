@@ -72,10 +72,11 @@ class WorkPlaceService
     {
         try {
             $data = $this->workPlaceRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->workPlaceName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertWorkPlaceIndex($data, $this->params->workPlaceName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->workPlaceName));
             return returnDataCreateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['work_place'], $e);
@@ -93,10 +94,11 @@ class WorkPlaceService
         }
         try {
             $data = $this->workPlaceRepository->update($request, $data, $this->params->time, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->workPlaceName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertWorkPlaceIndex($data, $this->params->workPlaceName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->workPlaceName));
             return returnDataUpdateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['work_place'], $e);
@@ -114,10 +116,11 @@ class WorkPlaceService
         }
         try {
             $data = $this->workPlaceRepository->delete($data);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->workPlaceName));
+            
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->workPlaceName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->workPlaceName));
             return returnDataDeleteSuccess();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['work_place'], $e);

@@ -72,10 +72,11 @@ class AccidentLocationService
     {
         try {
             $data = $this->accidentLocationRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->accidentLocationName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertAccidentLocationIndex($data, $this->params->accidentLocationName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->accidentLocationName));
             return returnDataCreateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['accident_location'], $e);
@@ -93,10 +94,11 @@ class AccidentLocationService
         }
         try {
             $data = $this->accidentLocationRepository->update($request, $data, $this->params->time, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->accidentLocationName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertAccidentLocationIndex($data, $this->params->accidentLocationName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->accidentLocationName));
             return returnDataUpdateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['accident_location'], $e);
@@ -114,10 +116,11 @@ class AccidentLocationService
         }
         try {
             $data = $this->accidentLocationRepository->delete($data);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->accidentLocationName));
+            
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->accidentLocationName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->accidentLocationName));
             return returnDataDeleteSuccess();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['accident_location'], $e);

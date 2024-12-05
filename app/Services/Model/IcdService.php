@@ -72,10 +72,11 @@ class IcdService
     {
         try {
             $data = $this->icdRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->icdName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertIcdIndex($data, $this->params->icdName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->icdName));
             return returnDataCreateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['icd'], $e);
@@ -93,10 +94,11 @@ class IcdService
         }
         try {
             $data = $this->icdRepository->update($request, $data, $this->params->time, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->icdName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertIcdIndex($data, $this->params->icdName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->icdName));
             return returnDataUpdateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['icd'], $e);
@@ -114,10 +116,11 @@ class IcdService
         }
         try {
             $data = $this->icdRepository->delete($data);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->icdName));
+            
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->icdName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->icdName));
             return returnDataDeleteSuccess();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['icd'], $e);

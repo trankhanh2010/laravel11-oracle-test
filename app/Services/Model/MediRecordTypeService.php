@@ -72,10 +72,11 @@ class MediRecordTypeService
     {
         try {
             $data = $this->mediRecordTypeRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->mediRecordTypeName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertMediRecordTypeIndex($data, $this->params->mediRecordTypeName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->mediRecordTypeName));
             return returnDataCreateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['medi_record_type'], $e);
@@ -93,10 +94,11 @@ class MediRecordTypeService
         }
         try {
             $data = $this->mediRecordTypeRepository->update($request, $data, $this->params->time, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->mediRecordTypeName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertMediRecordTypeIndex($data, $this->params->mediRecordTypeName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->mediRecordTypeName));
             return returnDataUpdateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['medi_record_type'], $e);
@@ -114,10 +116,11 @@ class MediRecordTypeService
         }
         try {
             $data = $this->mediRecordTypeRepository->delete($data);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->mediRecordTypeName));
+            
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->mediRecordTypeName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->mediRecordTypeName));
             return returnDataDeleteSuccess();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['medi_record_type'], $e);

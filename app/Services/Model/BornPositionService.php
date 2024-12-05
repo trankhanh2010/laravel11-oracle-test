@@ -72,10 +72,11 @@ class BornPositionService
     {
         try {
             $data = $this->bornPositionRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->bornPositionName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertBornPositionIndex($data, $this->params->bornPositionName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->bornPositionName));
             return returnDataCreateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['born_position'], $e);
@@ -93,10 +94,11 @@ class BornPositionService
         }
         try {
             $data = $this->bornPositionRepository->update($request, $data, $this->params->time, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->bornPositionName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertBornPositionIndex($data, $this->params->bornPositionName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->bornPositionName));
             return returnDataUpdateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['born_position'], $e);
@@ -114,10 +116,11 @@ class BornPositionService
         }
         try {
             $data = $this->bornPositionRepository->delete($data);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->bornPositionName));
+            
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->bornPositionName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->bornPositionName));
             return returnDataDeleteSuccess();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['born_position'], $e);

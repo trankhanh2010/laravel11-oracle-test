@@ -72,10 +72,11 @@ class AtcGroupService
     {
         try {
             $data = $this->atcGroupRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->atcGroupName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertAtcGroupIndex($data, $this->params->atcGroupName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->atcGroupName));
             return returnDataCreateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['atc_group'], $e);
@@ -93,10 +94,11 @@ class AtcGroupService
         }
         try {
             $data = $this->atcGroupRepository->update($request, $data, $this->params->time, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->atcGroupName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertAtcGroupIndex($data, $this->params->atcGroupName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->atcGroupName));
             return returnDataUpdateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['atc_group'], $e);
@@ -114,10 +116,11 @@ class AtcGroupService
         }
         try {
             $data = $this->atcGroupRepository->delete($data);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->atcGroupName));
+            
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->atcGroupName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->atcGroupName));
             return returnDataDeleteSuccess();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['atc_group'], $e);

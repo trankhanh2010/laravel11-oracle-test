@@ -66,10 +66,11 @@ class DebateVViewService
     {
         try {
             $data = $this->debateVViewRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->debateVViewName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertDebateVViewIndex($data, $this->params->debateVViewName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->debateVViewName));
             return returnDataCreateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['debate_v_view'], $e);
@@ -87,10 +88,11 @@ class DebateVViewService
         }
         try {
             $data = $this->debateVViewRepository->update($request, $data, $this->params->time, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->debateVViewName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertDebateVViewIndex($data, $this->params->debateVViewName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->debateVViewName));
             return returnDataUpdateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['debate_v_view'], $e);
@@ -108,10 +110,11 @@ class DebateVViewService
         }
         try {
             $data = $this->debateVViewRepository->delete($data);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->debateVViewName));
+            
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->debateVViewName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->debateVViewName));
             return returnDataDeleteSuccess();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['debate_v_view'], $e);

@@ -72,10 +72,11 @@ class UnlimitReasonService
     {
         try {
             $data = $this->unlimitReasonRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->unlimitReasonName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertUnlimitReasonIndex($data, $this->params->unlimitReasonName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->unlimitReasonName));
             return returnDataCreateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['unlimit_reason'], $e);
@@ -93,10 +94,11 @@ class UnlimitReasonService
         }
         try {
             $data = $this->unlimitReasonRepository->update($request, $data, $this->params->time, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->unlimitReasonName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertUnlimitReasonIndex($data, $this->params->unlimitReasonName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->unlimitReasonName));
             return returnDataUpdateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['unlimit_reason'], $e);
@@ -114,10 +116,11 @@ class UnlimitReasonService
         }
         try {
             $data = $this->unlimitReasonRepository->delete($data);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->unlimitReasonName));
+            
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->unlimitReasonName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->unlimitReasonName));
             return returnDataDeleteSuccess();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['unlimit_reason'], $e);

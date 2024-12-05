@@ -72,10 +72,11 @@ class SuimIndexUnitService
     {
         try {
             $data = $this->suimIndexUnitRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->suimIndexUnitName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertSuimIndexUnitIndex($data, $this->params->suimIndexUnitName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->suimIndexUnitName));
             return returnDataCreateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['suim_index_unit'], $e);
@@ -93,10 +94,11 @@ class SuimIndexUnitService
         }
         try {
             $data = $this->suimIndexUnitRepository->update($request, $data, $this->params->time, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->suimIndexUnitName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertSuimIndexUnitIndex($data, $this->params->suimIndexUnitName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->suimIndexUnitName));
             return returnDataUpdateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['suim_index_unit'], $e);
@@ -114,10 +116,11 @@ class SuimIndexUnitService
         }
         try {
             $data = $this->suimIndexUnitRepository->delete($data);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->suimIndexUnitName));
+            
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->suimIndexUnitName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->suimIndexUnitName));
             return returnDataDeleteSuccess();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['suim_index_unit'], $e);

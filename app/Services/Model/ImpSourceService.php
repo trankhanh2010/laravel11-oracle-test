@@ -72,10 +72,11 @@ class ImpSourceService
     {
         try {
             $data = $this->impSourceRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->impSourceName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertImpSourceIndex($data, $this->params->impSourceName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->impSourceName));
             return returnDataCreateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['imp_source'], $e);
@@ -93,10 +94,11 @@ class ImpSourceService
         }
         try {
             $data = $this->impSourceRepository->update($request, $data, $this->params->time, $this->params->appModifier);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->impSourceName));
+            
             // Gọi event để thêm index vào elastic
             event(new InsertImpSourceIndex($data, $this->params->impSourceName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->impSourceName));
             return returnDataUpdateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['imp_source'], $e);
@@ -114,10 +116,11 @@ class ImpSourceService
         }
         try {
             $data = $this->impSourceRepository->delete($data);
-            // Gọi event để xóa cache
-            event(new DeleteCache($this->params->impSourceName));
+            
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->impSourceName));
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->impSourceName));
             return returnDataDeleteSuccess();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['imp_source'], $e);
