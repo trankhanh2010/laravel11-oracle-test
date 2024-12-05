@@ -45,6 +45,9 @@ class ElasticDeleteIndex
             ];
             $this->updateDocument($event, $record);
             $this->client->delete($params);
+            $this->client->indices()->refresh([
+                'index' => $event->modelName, // Chỉ mục cần refresh
+            ]); // Gọi lệnh refresh
             }
         } catch (\Throwable $e) {
             writeAndThrowError(config('params')['elastic']['error']['delete_index'], $e);
