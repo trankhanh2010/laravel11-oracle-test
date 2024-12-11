@@ -185,6 +185,7 @@ use App\Http\Controllers\BaseControllers\TelegramController;
 use App\Http\Controllers\BaseControllers\BaseApiRequestController;
 
 // Validate Controllers
+use App\Http\Controllers\Api\ValidateControllers\CheckBedController;
 use App\Http\Controllers\Api\ValidateControllers\CheckBedRoomController;
 use App\Http\Controllers\Api\ValidateControllers\CheckAreaController;
 use App\Http\Controllers\Api\ValidateControllers\CheckBranchController;
@@ -302,6 +303,7 @@ Route::group([
     /// Giường
     Route::group(['as' => 'HIS.Desktop.Plugins.HisBed'], function () {
         Route::apiResource('v1/bed', BedController::class);
+        Route::get('v1/bed-check', [CheckBedController::class, "checkCode"])->name('.bed_check_code');
     });
     /// Giường - Dịch vụ giường
     Route::group(['as' => 'HIS.Desktop.Plugins.BedBsty'], function () {
