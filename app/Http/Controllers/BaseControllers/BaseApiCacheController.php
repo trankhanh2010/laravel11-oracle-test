@@ -141,6 +141,8 @@ class BaseApiCacheController extends Controller
     protected $isNoExcute;
     protected $isNoExcuteName = 'IsNoExcute';
     protected $patientTypeId;
+    protected $patientId;
+    protected $patientIdName = 'PatientId';
     protected $patientTypeIdName = 'PatientTypeId';
     protected $medicineTypeId;
     protected $medicineTypeIdName = 'MedicineTypeId';
@@ -581,7 +583,8 @@ class BaseApiCacheController extends Controller
     protected $trackingDataName = 'tracking_data';
     protected $treatmentWithPatientTypeInfoSdo;
     protected $treatmentWithPatientTypeInfoSdoName = 'treatment_with_patient_type_info_sdo';
-
+    protected $testServiceTypeListVView;
+    protected $testServiceTypeListVViewName = 'test_service_type_list_v_view';
     // Khai báo các biến cho Elastic
     protected $elasticSearchService;
     protected $client;
@@ -1512,6 +1515,8 @@ class BaseApiCacheController extends Controller
                 }
             }
         }
+        $this->patientId = $this->paramRequest['ApiData']['PatientId'] ?? 0;
+
         $this->patientTypeId = $this->paramRequest['ApiData']['PatientTypeId'] ?? null;
         if ($this->patientTypeId !== null) {
             // Kiểm tra xem ID có tồn tại trong bảng  hay không

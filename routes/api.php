@@ -177,6 +177,8 @@ use App\Http\Controllers\Api\NoCacheControllers\TreatmentFeeViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TreatmentLViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TreatmentWithPatientTypeInfoSdoController;
 use App\Http\Controllers\Api\NoCacheControllers\UserRoomVViewController;
+use App\Http\Controllers\Api\NoCacheControllers\TestServiceTypeListVViewController;
+
 // Base Api
 use App\Http\Controllers\BaseControllers\CacheController;
 use App\Http\Controllers\BaseControllers\ElasticSearchController;
@@ -894,4 +896,7 @@ Route::group([
     });
     /// Chăm sóc
     Route::apiResource('v1/care', CareController::class)->only(['index', 'show']);
+    /// Test Service Type List
+    Route::apiResource('v1/test-service-type-list-v-view', TestServiceTypeListVViewController::class)->only(['index']);
+
 });
