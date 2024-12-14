@@ -55,13 +55,22 @@ class TestServiceReqListVViewService
         try {
             $data = $this->testServiceReqListVViewRepository->applyJoins();
             // $data = $this->testServiceReqListVViewRepository->applyWith($data);
-            $data = $this->testServiceReqListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-            $data = $this->testServiceReqListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
-            $data = $this->testServiceReqListVViewRepository->applyFromTimeFilter($data, $this->params->fromTime);
-            $data = $this->testServiceReqListVViewRepository->applyToTimeFilter($data, $this->params->toTime);
-            $data = $this->testServiceReqListVViewRepository->applyTreatmentType01IdFilter($data);
-            $data = $this->testServiceReqListVViewRepository->applyTreatmentType01Filter($data, $this->params->isNoExcute, $this->params->isSpecimen, $this->params->cursorPaginate);
-            $data = $this->testServiceReqListVViewRepository->applyExecuteDepartmentCodeFilter($data, $this->params->executeDepartmentCode);
+            if($this->params->treatmentCode || $this->params->patientCode){
+                if($this->params->treatmentCode){
+                    $data = $this->testServiceReqListVViewRepository->applyTreatmentCodeFilter($data, $this->params->treatmentCode);
+                }
+                if($this->params->patientCode){
+                    $data = $this->testServiceReqListVViewRepository->applyPatientCodeFilter($data, $this->params->patientCode);
+                }
+            }else{
+                $data = $this->testServiceReqListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
+                $data = $this->testServiceReqListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+                $data = $this->testServiceReqListVViewRepository->applyFromTimeFilter($data, $this->params->fromTime);
+                $data = $this->testServiceReqListVViewRepository->applyToTimeFilter($data, $this->params->toTime);
+                $data = $this->testServiceReqListVViewRepository->applyTreatmentType01IdFilter($data);
+                $data = $this->testServiceReqListVViewRepository->applyTreatmentType01Filter($data, $this->params->isNoExcute, $this->params->isSpecimen, $this->params->cursorPaginate);
+                $data = $this->testServiceReqListVViewRepository->applyExecuteDepartmentCodeFilter($data, $this->params->executeDepartmentCode);
+            }
             // $data = $this->testServiceReqListVViewRepository->applyIsNoExcuteFilter($data, $this->params->isNoExcute);
             // $data = $this->testServiceReqListVViewRepository->applyIsSpecimenFilter($data, $this->params->isSpecimen);
             // if($this->params->start == 0){

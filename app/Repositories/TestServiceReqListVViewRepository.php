@@ -75,6 +75,20 @@ class TestServiceReqListVViewRepository
         }
         return $query;
     }
+    public function applyTreatmentCodeFilter($query, $code)
+    {
+        if ($code !== null) {
+            $query->where('treatment_code', $code);
+        }
+        return $query;
+    }
+    public function applyPatientCodeFilter($query, $code)
+    {
+        if ($code !== null) {
+            $query->where('patient_code', $code);
+        }
+        return $query;
+    }
     public function applyIsDeleteFilter($query, $isDelete)
     {
         if ($isDelete !== null) {

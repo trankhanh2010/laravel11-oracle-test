@@ -25,6 +25,8 @@ class TestServiceReqListVViewDTO
     public $isSpecimen;
     public $lastId;
     public $cursorPaginate;
+    public $treatmentCode;
+    public $patientCode;
     public function __construct(
         $testServiceReqListVViewName,
         $keyword, 
@@ -47,6 +49,8 @@ class TestServiceReqListVViewDTO
         $isSpecimen,
         $lastId,
         $cursorPaginate,
+        $treatmentCode,
+        $patientCode,
         )
     {
         $this->testServiceReqListVViewName = $testServiceReqListVViewName;
@@ -70,5 +74,7 @@ class TestServiceReqListVViewDTO
         $this->isSpecimen = $isSpecimen;
         $this->lastId = $lastId;
         $this->cursorPaginate = $cursorPaginate;
+        $this->treatmentCode = $treatmentCode;
+        $this->patientCode = $patientCode;
     }
 }
