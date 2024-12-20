@@ -31,8 +31,8 @@ class TestServiceReqListVViewController extends BaseApiCacheController
         }
         // Kiểm tra khoảng cách ngày
         if(($this->fromTime !== null) && ($this->toTime !== null)){
-            if(($this->toTime - $this->fromTime) > 6235959){
-                $this->errors[$this->fromTimeName] = 'Khoảng thời gian vượt quá 7 ngày!';
+            if(($this->toTime - $this->fromTime) > 60235959){
+                $this->errors[$this->fromTimeName] = 'Khoảng thời gian vượt quá 60 ngày!';
                 $this->fromTime = null;
             }
         }
@@ -65,6 +65,8 @@ class TestServiceReqListVViewController extends BaseApiCacheController
             $this->cursorPaginate,
             $this->treatmentCode,
             $this->patientCode,
+            $this->status,
+            $this->patientPhone,
         );
         $this->testServiceReqListVViewService->withParams($this->testServiceReqListVViewDTO);
     }

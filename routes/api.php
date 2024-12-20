@@ -215,6 +215,9 @@ use App\Http\Controllers\Api\ValidateControllers\CheckTreatmentTypeController;
 use App\Http\Controllers\BaseControllers\RedisController;
 use Illuminate\Support\Facades\DB;
 
+// Transaction
+use App\Http\Controllers\Api\TransactionControllers\ServiceReqPayMentController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -899,4 +902,7 @@ Route::group([
     /// Test Service Type List
     Route::apiResource('v1/test-service-type-list-v-view', TestServiceTypeListVViewController::class)->only(['index']);
 
+/////////
+// Transaction
+    Route::apiResource('v1/service-req-payment', ServiceReqPayMentController::class)->only(['index']);
 });

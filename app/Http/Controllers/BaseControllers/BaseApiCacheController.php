@@ -141,6 +141,8 @@ class BaseApiCacheController extends Controller
     protected $isNoExcute;
     protected $isNoExcuteName = 'IsNoExcute';
     protected $patientTypeId;
+    protected $serviceReqCode;
+    protected $serviceReqCodeName = 'ServiceReqCode';
     protected $patientId;
     protected $patientIdName = 'PatientId';
     protected $patientTypeIdName = 'PatientTypeId';
@@ -182,6 +184,10 @@ class BaseApiCacheController extends Controller
     protected $serviceReqSttIdsName = 'ServiceReqSttIds';
     protected $isNotKskRequriedAprovalOrIsKskApprove;
     protected $isNotKskRequriedAprovalOrIsKskApproveName = 'IsNotKskRequriedAprovalOrIsKskApprove';
+    protected $status;
+    protected $statusName = 'Status';
+    protected $patientPhone;
+    protected $patientPhoneName = 'PatientPhone';
     protected $hasExecute;
     protected $hasExecuteName = 'HasExecute';
     protected $intructionTimeTo;
@@ -811,6 +817,30 @@ class BaseApiCacheController extends Controller
             if (!in_array($this->isDelete, [0, 1])) {
                 $this->errors[$this->isDeleteName] = $this->messFormat;
                 $this->isDelete = 1;
+            }
+        }
+
+        $this->status = $this->paramRequest['ApiData']['Status']?? null;
+        if ($this->status !== null) {
+            if (!is_string($this->status)) {
+                $this->errors[$this->statusName] = $this->messFormat;
+                $this->status = null;
+            }
+        }
+
+        $this->patientPhone = $this->paramRequest['ApiData']['PatientPhone']?? null;
+        if ($this->patientPhone !== null) {
+            if (!is_string($this->patientPhone)) {
+                $this->errors[$this->patientPhoneName] = $this->messFormat;
+                $this->patientPhone = null;
+            }
+        }
+
+        $this->serviceReqCode = $this->paramRequest['ApiData']['ServiceReqCode']?? null;
+        if ($this->serviceReqCode !== null) {
+            if (!is_string($this->serviceReqCode)) {
+                $this->errors[$this->serviceReqCodeName] = $this->messFormat;
+                $this->serviceReqCode = null;
             }
         }
 

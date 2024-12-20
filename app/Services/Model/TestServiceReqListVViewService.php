@@ -62,9 +62,13 @@ class TestServiceReqListVViewService
                 if($this->params->patientCode){
                     $data = $this->testServiceReqListVViewRepository->applyPatientCodeFilter($data, $this->params->patientCode);
                 }
+                if($this->params->patientPhone){
+                    $data = $this->testServiceReqListVViewRepository->applyPatientPhoneFilter($data, $this->params->patientPhone);
+                }
             }else{
                 $data = $this->testServiceReqListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
                 $data = $this->testServiceReqListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+                $data = $this->testServiceReqListVViewRepository->applyStatusFilter($data, $this->params->status);
                 $data = $this->testServiceReqListVViewRepository->applyFromTimeFilter($data, $this->params->fromTime);
                 $data = $this->testServiceReqListVViewRepository->applyToTimeFilter($data, $this->params->toTime);
                 $data = $this->testServiceReqListVViewRepository->applyTreatmentType01IdFilter($data);

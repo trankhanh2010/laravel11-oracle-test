@@ -96,6 +96,40 @@ class TestServiceReqListVViewRepository
         }
         return $query;
     }
+    public function applyPatientPhoneFilter($query, $param)
+    {
+        if ($param !== null) {
+            $query->where('patient_phone', $param);
+        }
+        return $query;
+    }
+    public function applyStatusFilter($query, $param)
+    {
+        switch($param){
+            case 'ChuaKhoaVienPhi':
+                $query->whereNull('fee_lock_time');
+            break;
+            case 'DaKhoaVienPhi':
+                $query->whereNotNull('fee_lock_time');
+            break;
+            case 'DaKetThucDieuTriNhungChuaDuyetKhoaVienPhi':
+                $query->where('is_pause', 1)
+                ->whereNull('fee_lock_time');
+            break;
+            case 'ChuaKetThucDieuTri':
+                $query->whereNull('is_pause');
+            break;
+            case 'BenhNhanBHYT':
+                $query->where('patient_type_code', '01');
+            break;
+            case 'DaKhoaVienPhiNhungChuaDuyetBHYT':
+                $query->whereNotNull('fee_lock_time')
+                ->whereNotNull('hein_lock_time');
+            break;
+        };
+
+        return $query;
+    }
     public function applyFromTimeFilter($query, $param)
     {
         if ($param !== null) {
