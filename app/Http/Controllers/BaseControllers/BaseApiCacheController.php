@@ -591,6 +591,11 @@ class BaseApiCacheController extends Controller
     protected $treatmentWithPatientTypeInfoSdoName = 'treatment_with_patient_type_info_sdo';
     protected $testServiceTypeListVView;
     protected $testServiceTypeListVViewName = 'test_service_type_list_v_view';
+    // Thanh toán
+    protected $paymentMethod; // Hình thức thanh toán MoMo VNPay
+    protected $paymentMethodName = 'PaymentMethod';
+    protected $paymentOption; // Phương thức thanh toán QR Code Thẻ ngân hàng
+    protected $paymentOptionName = 'PaymentOption';
     // Khai báo các biến cho Elastic
     protected $elasticSearchService;
     protected $client;
@@ -786,6 +791,7 @@ class BaseApiCacheController extends Controller
                 $this->errors[$this->dateName] = $this->messFormat;
             }
         }
+        
         $this->getAll = $this->paramRequest['CommonParam']['GetAll'] ?? false;
         if (!is_bool($this->getAll)) {
             $this->errors[$this->getAllName] = $this->messFormat;
@@ -803,7 +809,19 @@ class BaseApiCacheController extends Controller
             $this->orderByString = arrayToCustomString($this->orderBy);
         }
         $this->orderByElastic = $this->orderBy;
-
+        /// Thanh toán
+        $this->paymentMethod = $this->paramRequest['ApiData']['PaymentMethod'] ?? null;
+        if($this->paymentMethod !== null){
+            if (!is_string($this->paymentMethod)) {
+                $this->errors[$this->paymentMethodName] = $this->messFormat;
+            }
+        }
+        $this->paymentOption = $this->paramRequest['ApiData']['PaymentOption'] ?? null;
+        if($this->paymentOption !== null){
+            if (!is_string($this->paymentOption)) {
+                $this->errors[$this->paymentOptionName] = $this->messFormat;
+            }
+        }
         $this->isActive = $this->paramRequest['ApiData']['IsActive'] ?? null;
         if ($this->isActive !== null) {
             if (!in_array($this->isActive, [0, 1])) {
