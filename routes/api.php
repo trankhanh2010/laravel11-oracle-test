@@ -217,6 +217,7 @@ use Illuminate\Support\Facades\DB;
 
 // Transaction
 use App\Http\Controllers\Api\TransactionControllers\ServiceReqPayMentController;
+use App\Http\Controllers\Api\TransactionControllers\MoMoController;
 
 /*
 |--------------------------------------------------------------------------
@@ -237,6 +238,12 @@ Route::get("v1/test-db", function () {
     $executionTime = ($end - $start) * 1000; 
     return $executionTime;
     })->name('.get_test_db');
+
+
+// Thông báo trạng thái /// k cần token
+Route::post('v1/momo-notify', [MoMoController::class, 'handleNotification'])
+->withoutMiddleware('check_token');
+
 Route::fallback(function () {
     return return_404_error_page_not_found();
 });
@@ -902,7 +909,6 @@ Route::group([
     /// Test Service Type List
     Route::apiResource('v1/test-service-type-list-v-view', TestServiceTypeListVViewController::class)->only(['index']);
 
-/////////
 // Transaction
     Route::apiResource('v1/service-req-payment', ServiceReqPayMentController::class)->only(['index']);
 });

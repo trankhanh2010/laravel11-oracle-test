@@ -26,7 +26,7 @@ class TestServiceTypeListVViewService
     {
         try {
             $data = $this->testServiceTypeListVViewRepository->applyJoins();
-            $data = $this->testServiceTypeListVViewRepository->applyPatientIdFilter($data, $this->params->patientId);
+            $data = $this->testServiceTypeListVViewRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
             $count = $data->count();
             $data = $this->testServiceTypeListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
             return ['data' => $data, 'count' => $count];
@@ -38,7 +38,7 @@ class TestServiceTypeListVViewService
     {
         try {
                 $data = $this->testServiceTypeListVViewRepository->applyJoins();
-                $data = $this->testServiceTypeListVViewRepository->applyPatientIdFilter($data, $this->params->patientId);
+                $data = $this->testServiceTypeListVViewRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
                 $count = $data->count();
                 $data = $this->testServiceTypeListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
                 return ['data' => $data, 'count' => $count];

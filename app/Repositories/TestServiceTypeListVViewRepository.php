@@ -34,10 +34,10 @@ class TestServiceTypeListVViewRepository
         }
         return $query;
     }
-    public function applyPatientIdFilter($query, $id)
+    public function applyTreatmentIdFilter($query, $id)
     {
         if ($id !== null) {
-            $query->where(DB::connection('oracle_his')->raw('v_his_test_service_type_list.tdl_patient_id'), $id);
+            $query->where(DB::connection('oracle_his')->raw('v_his_test_service_type_list.tdl_treatment_id'), $id);
         }
         return $query;
     }

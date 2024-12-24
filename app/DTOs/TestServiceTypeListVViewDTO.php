@@ -17,7 +17,7 @@ class TestServiceTypeListVViewDTO
     public $appCreator;
     public $appModifier;
     public $time;
-    public $patientId;
+    public $treatmentId;
 
     public function __construct(
         $testServiceTypeListVViewName,
@@ -33,7 +33,7 @@ class TestServiceTypeListVViewDTO
         $appCreator,
         $appModifier,
         $time,
-        $patientId,
+        $treatmentId,
         )
     {
         $this->testServiceTypeListVViewName = $testServiceTypeListVViewName;
@@ -49,6 +49,6 @@ class TestServiceTypeListVViewDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
-        $this->patientId = $patientId;
+        $this->treatmentId = $treatmentId;
     }
 }
