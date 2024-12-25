@@ -5,17 +5,40 @@ namespace App\Services\Transaction;
 use App\DTOs\ServiceReqPaymentDTO;
 use App\Repositories\TestServiceReqListVViewRepository;
 use App\Repositories\TestServiceTypeListVViewRepository;
+use App\Repositories\TreatmentMoMoPaymentsRepository;
 use GuzzleHttp\Client;
 
 class ServiceReqPaymentService
 {
     protected $testServiceReqListVViewRepository;
     protected $testServiceTypeListVViewRepository;
+    protected $treatmentMoMoPaymentsRepository;
     protected $params;
-    public function __construct(TestServiceReqListVViewRepository $testServiceReqListVViewRepository, TestServiceTypeListVViewRepository $testServiceTypeListVViewRepository)
+    protected $unit = ' VNĐ';
+    protected $partnerCode;
+    protected $accessKey;
+    protected $secretKey;
+    protected $endpointCreatePayment;
+    protected $endpointCheckTransaction;
+    protected $returnUrl;
+    protected $notifyUrl;
+    public function __construct(
+        TestServiceReqListVViewRepository $testServiceReqListVViewRepository, 
+        TestServiceTypeListVViewRepository $testServiceTypeListVViewRepository,
+        TreatmentMoMoPaymentsRepository $treatmentMoMoPaymentsRepository,
+        )
     {
         $this->testServiceReqListVViewRepository = $testServiceReqListVViewRepository;
         $this->testServiceTypeListVViewRepository = $testServiceTypeListVViewRepository;
+        $this->treatmentMoMoPaymentsRepository = $treatmentMoMoPaymentsRepository;
+
+        $this->partnerCode = config('database')['connections']['momo']['momo_partner_code'];
+        $this->accessKey = config('database')['connections']['momo']['momo_access_key'];
+        $this->secretKey = config('database')['connections']['momo']['momo_secret_key'];
+        $this->endpointCreatePayment = config('database')['connections']['momo']['momo_endpoint_create_payment'];
+        $this->endpointCheckTransaction = config('database')['connections']['momo']['momo_endpoint_check_transaction'];
+        $this->returnUrl = config('database')['connections']['momo']['momo_return_url'];
+        $this->notifyUrl = config('database')['connections']['momo']['momo_notify_url'];
     }
     public function withParams(ServiceReqPaymentDTO $params)
     {
@@ -27,13 +50,9 @@ class ServiceReqPaymentService
     {
         try {
             $data = $this->testServiceReqListVViewRepository->applyJoins();
-            // $data = $this->testServiceReqListVViewRepository->applyWith($data);
-            if ($this->params->treatmentCode || $this->params->patientCode) {
+            if ($this->params->treatmentCode) {
                 if ($this->params->treatmentCode) {
                     $data = $this->testServiceReqListVViewRepository->applyTreatmentCodeFilter($data, $this->params->treatmentCode);
-                }
-                if ($this->params->patientCode) {
-                    $data = $this->testServiceReqListVViewRepository->applyPatientCodeFilter($data, $this->params->patientCode);
                 }
             }
             $data = $data->first();
@@ -45,55 +64,59 @@ class ServiceReqPaymentService
                 $totalHeinPrice =  $listServiceType->sum('vir_total_hein_price');
                 $totalPatientPrice =  $listServiceType->sum('vir_total_patient_price');
 
-                // Lấy thông tin từ .env
-                $partnerCode = env('MOMO_PARTNER_CODE');
-                $accessKey = env('MOMO_ACCESS_KEY');
-                $secretKey = env('MOMO_SECRET_KEY');
-                $endpoint = env('MOMO_ENDPOINT') . '/v2/gateway/api/create';
-                $returnUrl = env('MOMO_RETURN_URL');
-                $notifyUrl = env('MOMO_NOTIFY_URL');
-
                 // Thông tin giao dịch
                 $orderId = 'order_' . time(); // Mã đơn hàng
-                $requestId = 'req_' . time(); // Mã yêu cầu
+                $requestId = $data->treatment_code; // Mã yêu cầu /// dùng treatment_code để thực hiện API Idempotency
                 $amount = $data->fee_add; // Số tiền (VND)
-                $orderInfo = "Tong chi phi: ".$totalVirPrice
-                ."; BHYT thanh toan: ".$totalHeinPrice
-                ."; BN phai thanh toan: ".$totalPatientPrice
-                ."; Da thu: ".$data->total_treatment_bill_amount
-                ."; BN can nop them: ".$data->fee_add
+                $orderInfo = "Tong chi phi: ".$totalVirPrice . $this->unit
+                ."; BHYT thanh toan: ".$totalHeinPrice . $this->unit
+                ."; BN phai thanh toan: ".$totalPatientPrice . $this->unit
+                ."; Da thu: ".$data->total_treatment_bill_amount . $this->unit
+                ."; BN can nop them: ".$data->fee_add . $this->unit
                 ;
                 $extraData = ''; // Thông tin thêm, có thể để trống
                 if ($this->params->paymentMethod == 'MoMo') {
                     switch ($this->params->paymentOption) {
                         case 'ThanhToanQRCode':
                             $requestType = 'captureWallet'; //Hình thức thanh toán
-                            $rawSignature = "accessKey=$accessKey&amount=$amount&extraData=$extraData&ipnUrl=$notifyUrl&orderId=$orderId&orderInfo=$orderInfo&partnerCode=$partnerCode&redirectUrl=$returnUrl&requestId=$requestId&requestType=$requestType";
-                            $signature = hash_hmac('sha256', $rawSignature, $secretKey);
+                            $rawSignature = "accessKey=$this->accessKey&amount=$amount&extraData=$extraData&ipnUrl=$this->notifyUrl&orderId=$orderId&orderInfo=$orderInfo&partnerCode=$this->partnerCode&redirectUrl=$this->returnUrl&requestId=$requestId&requestType=$requestType";
+                            $signature = hash_hmac('sha256', $rawSignature, $this->secretKey);
                             break;
                         case 'ThanhToanTheQuocTe':
                             $requestType = 'payWithCC'; //Hình thức thanh toán
-                            $rawSignature = "accessKey=$accessKey&amount=$amount&extraData=$extraData&ipnUrl=$notifyUrl&orderId=$orderId&orderInfo=$orderInfo&partnerCode=$partnerCode&redirectUrl=$returnUrl&requestId=$requestId&requestType=$requestType";
-                            $signature = hash_hmac('sha256', $rawSignature, $secretKey);
+                            $rawSignature = "accessKey=$this->accessKey&amount=$amount&extraData=$extraData&ipnUrl=$this->notifyUrl&orderId=$orderId&orderInfo=$orderInfo&partnerCode=$this->partnerCode&redirectUrl=$this->returnUrl&requestId=$requestId&requestType=$requestType";
+                            $signature = hash_hmac('sha256', $rawSignature, $this->secretKey);
                             break;
                         case 'ThanhToanTheATMNoiDia':
                             $requestType = 'payWithATM'; //Hình thức thanh toán
-                            $rawSignature = "accessKey=$accessKey&amount=$amount&extraData=$extraData&ipnUrl=$notifyUrl&orderId=$orderId&orderInfo=$orderInfo&partnerCode=$partnerCode&redirectUrl=$returnUrl&requestId=$requestId&requestType=$requestType";
-                            $signature = hash_hmac('sha256', $rawSignature, $secretKey);
+                            $rawSignature = "accessKey=$this->accessKey&amount=$amount&extraData=$extraData&ipnUrl=$this->notifyUrl&orderId=$orderId&orderInfo=$orderInfo&partnerCode=$this->partnerCode&redirectUrl=$this->returnUrl&requestId=$requestId&requestType=$requestType";
+                            $signature = hash_hmac('sha256', $rawSignature, $this->secretKey);
                             break;
                         default:
                     }
                 }
+                $check = $this->treatmentMoMoPaymentsRepository->check($data->treatment_code, $requestType);
+                if($check){
+                    $dataReturn['success'] = true;
+                    $dataReturn['deeplink'] = $check->deep_link;
+                    $dataReturn['qrCodeUrl'] = $check->qr_code_url;
+                    $dataReturn['orderId'] = $check->order_id;
+                    $dataReturn['amount'] = $amount;
+                    $dataReturn['orderInfo'] = $orderInfo;
+                    $dataReturn['payUrl'] = $check->pay_url;
+                    $dataReturn['requestId'] = $check->request_id;
+                    return ['data' => $dataReturn];
+                }
                 // Tạo dữ liệu gửi đến API MoMo
                 $dataMoMo = [
-                    'partnerCode' => $partnerCode,
-                    'accessKey' => $accessKey,
+                    'partnerCode' => $this->partnerCode,
+                    'accessKey' => $this->accessKey,
                     'requestId' => $requestId,
                     'amount' => $amount,
                     'orderId' => $orderId,
                     'orderInfo' => $orderInfo,
-                    'redirectUrl' => $returnUrl,
-                    'ipnUrl' => $notifyUrl,
+                    'redirectUrl' => $this->returnUrl,
+                    'ipnUrl' => $this->notifyUrl,
                     'extraData' => $extraData,
                     'requestType' => $requestType,
                     'signature' => $signature,
@@ -102,19 +125,17 @@ class ServiceReqPaymentService
                 // Gửi request đến MoMo
                 try {
                     $client = new Client();
-                    $response = $client->post($endpoint, ['json' => $dataMoMo]);
+                    $response = $client->post($this->endpointCreatePayment, ['json' => $dataMoMo]);
                     $body = json_decode($response->getBody(), true); // Chuyển kết quả thành mảng
                     // Kiểm tra nếu có response
                     if ($this->params->paymentMethod == 'MoMo') {
                         if ($this->params->paymentOption == 'ThanhToanQRCode') {
                             if (isset($body['qrCodeUrl'])) {
                                 $dataReturn['success'] = true;
-
                                 $qrCodeUrl = $body['qrCodeUrl'] ?? ""; // Lấy URL mã QR
                                 $payUrl = $body['payUrl']; // Lấy URL thanh toán
                                 $deeplink = $body['deeplink'] ?? ""; // Lấy deeplink
-
-                                $dataReturn['payUrl'] = $payUrl;
+                                $dataReturn['deeplink'] = $deeplink;
                                 $dataReturn['qrCodeUrl'] = $qrCodeUrl;
                                 $dataReturn['orderId'] = $orderId;
                                 $dataReturn['amount'] = $amount;
@@ -123,24 +144,20 @@ class ServiceReqPaymentService
                         }
                         if ($this->params->paymentOption == 'ThanhToanTheQuocTe') {
                             $dataReturn['success'] = true;
-
                             $payUrl = $body['payUrl']; // Lấy URL thanh toán
-
-                            $dataReturn['payUrl'] = $payUrl;
                             $dataReturn['orderId'] = $orderId;
                             $dataReturn['amount'] = $amount;
                             $dataReturn['orderInfo'] = $orderInfo;
                         }
                         if ($this->params->paymentOption == 'ThanhToanTheATMNoiDia') {
                             $dataReturn['success'] = true;
-
                             $payUrl = $body['payUrl']; // Lấy URL thanh toán
-
-                            $dataReturn['payUrl'] = $payUrl;
                             $dataReturn['orderId'] = $orderId;
                             $dataReturn['amount'] = $amount;
                             $dataReturn['orderInfo'] = $orderInfo;
                         }
+                        $dataReturn['payUrl'] = $payUrl;
+                        $dataReturn['requestId'] = $requestId;
                     }
                 } catch (\Exception $e) {
                     $dataReturn['success'] = false;
@@ -150,6 +167,7 @@ class ServiceReqPaymentService
             } else {
                 $dataReturn['success'] = false;
             }
+            $this->treatmentMoMoPaymentsRepository->create($data->treatment_code, $orderId, $requestId, $amount, '1000', $deeplink ?? '', $payUrl, $requestType, $qrCodeUrl ?? '');
             return ['data' => $dataReturn];
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['test_service_req_list_v_view'], $e);
