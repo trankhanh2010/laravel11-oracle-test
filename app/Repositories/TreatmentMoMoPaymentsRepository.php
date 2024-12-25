@@ -18,6 +18,12 @@ class TreatmentMoMoPaymentsRepository
         ->first();
         return $data;
     }
+    public function getByOrderId($orderId){
+        $data = $this->treatmentMoMoPayments
+        ->where('order_id', $orderId)
+        ->first();
+        return $data;
+    }
     public function checkNofityMoMo($param){
         $data = $this->treatmentMoMoPayments
         ->where('order_id', $param['orderId'])

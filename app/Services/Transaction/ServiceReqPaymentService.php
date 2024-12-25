@@ -6,6 +6,7 @@ use App\DTOs\ServiceReqPaymentDTO;
 use App\Repositories\TestServiceReqListVViewRepository;
 use App\Repositories\TestServiceTypeListVViewRepository;
 use App\Repositories\TreatmentMoMoPaymentsRepository;
+use Illuminate\Support\Str;
 use GuzzleHttp\Client;
 
 class ServiceReqPaymentService
@@ -23,11 +24,10 @@ class ServiceReqPaymentService
     protected $returnUrl;
     protected $notifyUrl;
     public function __construct(
-        TestServiceReqListVViewRepository $testServiceReqListVViewRepository, 
+        TestServiceReqListVViewRepository $testServiceReqListVViewRepository,
         TestServiceTypeListVViewRepository $testServiceTypeListVViewRepository,
         TreatmentMoMoPaymentsRepository $treatmentMoMoPaymentsRepository,
-        )
-    {
+    ) {
         $this->testServiceReqListVViewRepository = $testServiceReqListVViewRepository;
         $this->testServiceTypeListVViewRepository = $testServiceTypeListVViewRepository;
         $this->treatmentMoMoPaymentsRepository = $treatmentMoMoPaymentsRepository;
@@ -45,132 +45,195 @@ class ServiceReqPaymentService
         $this->params = $params;
         return $this;
     }
+    protected function getTreatmentData()
+    {
+        $data = $this->testServiceReqListVViewRepository->applyJoins();
+        if ($this->params->treatmentCode) {
+            $data = $this->testServiceReqListVViewRepository->applyTreatmentCodeFilter($data, $this->params->treatmentCode);
+        }
+        return $data->first();
+    }
+
+    protected function calculateCosts($treatmentId)
+    {
+        $listServiceType = $this->testServiceTypeListVViewRepository->applyJoins();
+        $listServiceType = $this->testServiceTypeListVViewRepository->applyTreatmentIdFilter($listServiceType, $treatmentId)->get();
+
+        return [
+            'totalVirPrice' => $listServiceType->sum('vir_total_price'),
+            'totalHeinPrice' => $listServiceType->sum('vir_total_hein_price'),
+            'totalPatientPrice' => $listServiceType->sum('vir_total_patient_price'),
+        ];
+    }
+
+    protected function generateTransactionInfo($data, $costs)
+    {
+        $orderId = Str::uuid();
+        $requestId = Str::uuid();
+        $orderInfo = "Tong chi phi: " . $costs['totalVirPrice'] . $this->unit
+            . "; BHYT thanh toan: " . $costs['totalHeinPrice'] . $this->unit
+            . "; BN phai thanh toan: " . $costs['totalPatientPrice'] . $this->unit
+            . "; Da thu: " . $data->total_treatment_bill_amount . $this->unit
+            . "; BN can nop them: " . $data->fee_add . $this->unit;
+
+        return [
+            'orderId' => $orderId,
+            'requestId' => $requestId,
+            'amount' => $data->fee_add,
+            'orderInfo' => $orderInfo,
+            'extraData' => '',
+        ];
+    }
+
+    protected function generateSignature($paymentOption, $transactionInfo)
+    {
+        switch ($paymentOption) {
+            case 'ThanhToanQRCode':
+                $requestType = 'captureWallet';
+                break;
+            case 'ThanhToanTheQuocTe':
+                $requestType = 'payWithCC';
+                break;
+            case 'ThanhToanTheATMNoiDia':
+                $requestType = 'payWithATM';
+                break;
+            default:
+                throw new \Exception('Invalid payment option');
+        }
+
+        $rawSignature = "accessKey={$this->accessKey}&amount={$transactionInfo['amount']}&extraData={$transactionInfo['extraData']}&ipnUrl={$this->notifyUrl}&orderId={$transactionInfo['orderId']}&orderInfo={$transactionInfo['orderInfo']}&partnerCode={$this->partnerCode}&redirectUrl={$this->returnUrl}&requestId={$transactionInfo['requestId']}&requestType=$requestType";
+        $signature = hash_hmac('sha256', $rawSignature, $this->secretKey);
+
+        return [$requestType, $signature];
+    }
+
+    protected function sendPaymentRequest($dataMoMo)
+    {
+        try {
+            $client = new Client();
+            $response = $client->post($this->endpointCreatePayment, ['json' => $dataMoMo]);
+            return json_decode($response->getBody(), true);
+        } catch (\Exception $e) {
+            throw new \Exception('Error sending payment request to MoMo');
+        }
+    }
+
+    protected function formatResponseFromRepository($check, $amount, $orderInfo)
+    {
+        return [
+            'success' => true,
+            'deeplink' => $check->deep_link ?? '',
+            'qrCodeUrl' => $check->qr_code_url ?? '',
+            'payUrl' => $check->pay_url ?? '',
+            'orderId' => $check->order_id,
+            'amount' => $amount,
+            'orderInfo' => $orderInfo,
+            'requestId' => $check->request_id,
+        ];
+    }
+
+    protected function formatResponseFromMoMo(array $response, array $transactionInfo)
+    {
+        $dataReturn = [
+            'success' => true,
+            'orderId' => $transactionInfo['orderId'],
+            'amount' => $transactionInfo['amount'],
+            'orderInfo' => $transactionInfo['orderInfo'],
+            'requestId' => $transactionInfo['requestId'],
+        ];
+        if (isset($response['qrCodeUrl'])) {
+            $dataReturn['qrCodeUrl'] = $response['qrCodeUrl'];
+        }
+        if (isset($response['payUrl'])) {
+            $dataReturn['payUrl'] = $response['payUrl'];
+        }
+        if (isset($response['deeplink'])) {
+            $dataReturn['deeplink'] = $response['deeplink'];
+        }
+        return $dataReturn;
+    }
 
     public function handleCreatePayment()
     {
         try {
-            $data = $this->testServiceReqListVViewRepository->applyJoins();
-            if ($this->params->treatmentCode) {
-                if ($this->params->treatmentCode) {
-                    $data = $this->testServiceReqListVViewRepository->applyTreatmentCodeFilter($data, $this->params->treatmentCode);
-                }
+            $data = $this->getTreatmentData();
+            if (!$data || $data->fee_add <= 0) {
+                return ['data' => ['success' => false]];
             }
-            $data = $data->first();
-            // Nếu cần thanh toán thêm
-            if ($data->fee_add > 0) {
-                $listServiceType = $this->testServiceTypeListVViewRepository->applyJoins();
-                $listServiceType = $this->testServiceTypeListVViewRepository->applyTreatmentIdFilter($listServiceType, $data->treatment_id)->get();
-                $totalVirPrice =  $listServiceType->sum('vir_total_price');
-                $totalHeinPrice =  $listServiceType->sum('vir_total_hein_price');
-                $totalPatientPrice =  $listServiceType->sum('vir_total_patient_price');
 
-                // Thông tin giao dịch
-                $orderId = 'order_' . time(); // Mã đơn hàng
-                $requestId = $data->treatment_code; // Mã yêu cầu /// dùng treatment_code để thực hiện API Idempotency
-                $amount = $data->fee_add; // Số tiền (VND)
-                $orderInfo = "Tong chi phi: ".$totalVirPrice . $this->unit
-                ."; BHYT thanh toan: ".$totalHeinPrice . $this->unit
-                ."; BN phai thanh toan: ".$totalPatientPrice . $this->unit
-                ."; Da thu: ".$data->total_treatment_bill_amount . $this->unit
-                ."; BN can nop them: ".$data->fee_add . $this->unit
-                ;
-                $extraData = ''; // Thông tin thêm, có thể để trống
-                if ($this->params->paymentMethod == 'MoMo') {
-                    switch ($this->params->paymentOption) {
-                        case 'ThanhToanQRCode':
-                            $requestType = 'captureWallet'; //Hình thức thanh toán
-                            $rawSignature = "accessKey=$this->accessKey&amount=$amount&extraData=$extraData&ipnUrl=$this->notifyUrl&orderId=$orderId&orderInfo=$orderInfo&partnerCode=$this->partnerCode&redirectUrl=$this->returnUrl&requestId=$requestId&requestType=$requestType";
-                            $signature = hash_hmac('sha256', $rawSignature, $this->secretKey);
-                            break;
-                        case 'ThanhToanTheQuocTe':
-                            $requestType = 'payWithCC'; //Hình thức thanh toán
-                            $rawSignature = "accessKey=$this->accessKey&amount=$amount&extraData=$extraData&ipnUrl=$this->notifyUrl&orderId=$orderId&orderInfo=$orderInfo&partnerCode=$this->partnerCode&redirectUrl=$this->returnUrl&requestId=$requestId&requestType=$requestType";
-                            $signature = hash_hmac('sha256', $rawSignature, $this->secretKey);
-                            break;
-                        case 'ThanhToanTheATMNoiDia':
-                            $requestType = 'payWithATM'; //Hình thức thanh toán
-                            $rawSignature = "accessKey=$this->accessKey&amount=$amount&extraData=$extraData&ipnUrl=$this->notifyUrl&orderId=$orderId&orderInfo=$orderInfo&partnerCode=$this->partnerCode&redirectUrl=$this->returnUrl&requestId=$requestId&requestType=$requestType";
-                            $signature = hash_hmac('sha256', $rawSignature, $this->secretKey);
-                            break;
-                        default:
-                    }
-                }
+            $costs = $this->calculateCosts($data->treatment_id);
+            $transactionInfo = $this->generateTransactionInfo($data, $costs);
+
+            if ($this->params->paymentMethod == 'MoMo') {
+                [$requestType, $signature] = $this->generateSignature($this->params->paymentOption, $transactionInfo);
                 $check = $this->treatmentMoMoPaymentsRepository->check($data->treatment_code, $requestType);
-                if($check){
-                    $dataReturn['success'] = true;
-                    $dataReturn['deeplink'] = $check->deep_link;
-                    $dataReturn['qrCodeUrl'] = $check->qr_code_url;
-                    $dataReturn['orderId'] = $check->order_id;
-                    $dataReturn['amount'] = $amount;
-                    $dataReturn['orderInfo'] = $orderInfo;
-                    $dataReturn['payUrl'] = $check->pay_url;
-                    $dataReturn['requestId'] = $check->request_id;
-                    return ['data' => $dataReturn];
+
+                if ($check) {
+                    return ['data' => $this->formatResponseFromRepository($check, $transactionInfo['amount'], $transactionInfo['orderInfo'])];
                 }
-                // Tạo dữ liệu gửi đến API MoMo
-                $dataMoMo = [
+
+                $dataMoMo = array_merge($transactionInfo, [
                     'partnerCode' => $this->partnerCode,
                     'accessKey' => $this->accessKey,
-                    'requestId' => $requestId,
-                    'amount' => $amount,
-                    'orderId' => $orderId,
-                    'orderInfo' => $orderInfo,
                     'redirectUrl' => $this->returnUrl,
                     'ipnUrl' => $this->notifyUrl,
-                    'extraData' => $extraData,
                     'requestType' => $requestType,
                     'signature' => $signature,
                     'lang' => 'vi',
-                ];
-                // Gửi request đến MoMo
-                try {
-                    $client = new Client();
-                    $response = $client->post($this->endpointCreatePayment, ['json' => $dataMoMo]);
-                    $body = json_decode($response->getBody(), true); // Chuyển kết quả thành mảng
-                    // Kiểm tra nếu có response
-                    if ($this->params->paymentMethod == 'MoMo') {
-                        if ($this->params->paymentOption == 'ThanhToanQRCode') {
-                            if (isset($body['qrCodeUrl'])) {
-                                $dataReturn['success'] = true;
-                                $qrCodeUrl = $body['qrCodeUrl'] ?? ""; // Lấy URL mã QR
-                                $payUrl = $body['payUrl']; // Lấy URL thanh toán
-                                $deeplink = $body['deeplink'] ?? ""; // Lấy deeplink
-                                $dataReturn['deeplink'] = $deeplink;
-                                $dataReturn['qrCodeUrl'] = $qrCodeUrl;
-                                $dataReturn['orderId'] = $orderId;
-                                $dataReturn['amount'] = $amount;
-                                $dataReturn['orderInfo'] = $orderInfo;
-                            }
-                        }
-                        if ($this->params->paymentOption == 'ThanhToanTheQuocTe') {
-                            $dataReturn['success'] = true;
-                            $payUrl = $body['payUrl']; // Lấy URL thanh toán
-                            $dataReturn['orderId'] = $orderId;
-                            $dataReturn['amount'] = $amount;
-                            $dataReturn['orderInfo'] = $orderInfo;
-                        }
-                        if ($this->params->paymentOption == 'ThanhToanTheATMNoiDia') {
-                            $dataReturn['success'] = true;
-                            $payUrl = $body['payUrl']; // Lấy URL thanh toán
-                            $dataReturn['orderId'] = $orderId;
-                            $dataReturn['amount'] = $amount;
-                            $dataReturn['orderInfo'] = $orderInfo;
-                        }
-                        $dataReturn['payUrl'] = $payUrl;
-                        $dataReturn['requestId'] = $requestId;
-                    }
-                } catch (\Exception $e) {
-                    $dataReturn['success'] = false;
-                    $dataReturn['message'] = 'Lỗi hệ thống';
-                    return ['data' => $dataReturn];
-                }
-            } else {
-                $dataReturn['success'] = false;
+                ]);
+
+                $response = $this->sendPaymentRequest($dataMoMo);
+                $dataReturn = $this->formatResponseFromMoMo($response, $transactionInfo);
+                // Lưu thông tin vào database
+                $this->treatmentMoMoPaymentsRepository->create(
+                    $data->treatment_code,
+                    $dataReturn['orderId'],
+                    $dataReturn['requestId'],
+                    $dataReturn['amount'],
+                    '1000',
+                    $dataReturn['deeplink'] ?? '',
+                    $dataReturn['payUrl'] ?? '',
+                    $requestType,
+                    $dataReturn['qrCodeUrl'] ?? ''
+                );
+                return ['data' => $dataReturn];
             }
-            $this->treatmentMoMoPaymentsRepository->create($data->treatment_code, $orderId, $requestId, $amount, '1000', $deeplink ?? '', $payUrl, $requestType, $qrCodeUrl ?? '');
-            return ['data' => $dataReturn];
+
+            return ['data' => ['success' => false]];
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['test_service_req_list_v_view'], $e);
+        }
+    }
+
+    public function checkTransactionStatus($orderId, $requestId = 0)
+    {
+        if(!$requestId){
+            $requestId = $this->treatmentMoMoPaymentsRepository->getByOrderId($orderId)->request_id ?? '0';
+        }    
+        // Tạo chữ ký (signature)
+        $rawSignature = "accessKey=$this->accessKey&orderId=$orderId&partnerCode=$this->partnerCode&requestId=$requestId";
+        $signature = hash_hmac('sha256', $rawSignature, $this->secretKey);
+
+        // Tạo dữ liệu gửi đến API MoMo
+        $data = [
+            'partnerCode' => $this->partnerCode,
+            'accessKey' => $this->accessKey,
+            'requestId' => $requestId,
+            'orderId' => $orderId,
+            'signature' => $signature,
+            'lang' => 'vi',
+        ];
+        // Gửi request đến API MoMo
+        try {
+            $client = new Client();
+            $response = $client->post($this->endpointCheckTransaction, ['json' => $data]);
+            $body = json_decode($response->getBody(), true); // Chuyển kết quả thành mảng
+            return ['data' => $body];
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => '500',
+                'message' => 'Lỗi hệ thống: ',
+            ], 500);
         }
     }
 }

@@ -5,14 +5,21 @@ namespace App\Http\Controllers\Api\TransactionControllers;
 use App\Events\Transaction\MoMoNotificationReceived;
 use App\Http\Controllers\Controller;
 use App\Repositories\TreatmentMoMoPaymentsRepository;
+use App\Services\Transaction\ServiceReqPaymentService;
+use App\Services\TreatmentMoMoPaymentsService;
 use Illuminate\Http\Request;
 
 class MoMoController extends Controller
 {
     protected $treatmentMoMoPaymentsRepository;
-    public function __construct(TreatmentMoMoPaymentsRepository $treatmentMoMoPaymentsRepository)
+    protected $serviceReqPaymentService;
+    public function __construct(
+        TreatmentMoMoPaymentsRepository $treatmentMoMoPaymentsRepository,
+        ServiceReqPaymentService $serviceReqPaymentService
+        )
     {
         $this->treatmentMoMoPaymentsRepository = $treatmentMoMoPaymentsRepository;
+        $this->serviceReqPaymentService = $serviceReqPaymentService;
     }
     public function handleNotification(Request $request)
     {
@@ -25,7 +32,9 @@ class MoMoController extends Controller
             // Nếu dữ liệu không khớp
         }
         // Nếu khớp thì cập nhật bên DB
-        $this->treatmentMoMoPaymentsRepository->update($data['orderId'], $data['resultCode']);
+        // Lấy resultCode từ MoMo
+        $resultCode = $this->serviceReqPaymentService->checkTransactionStatus($data['orderId'])['data']['resultCode'];
+        $this->treatmentMoMoPaymentsRepository->update($data['orderId'], $resultCode);
         // Gửi dữ liệu lên WebSocket
         broadcast(new MoMoNotificationReceived($data));
 
@@ -36,7 +45,6 @@ class MoMoController extends Controller
     private function isValid($data)
     {
         // kiểm tra xem dữ liệu có khớp với order_id hay không
-        $result = true;
         $result = $this->treatmentMoMoPaymentsRepository->checkNofityMoMo($data);
         return $result;
     }

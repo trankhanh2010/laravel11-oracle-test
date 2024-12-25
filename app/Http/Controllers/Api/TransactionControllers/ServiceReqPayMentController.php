@@ -34,4 +34,14 @@ class ServiceReqPayMentController extends BaseApiCacheController
         $paramReturn = [];
         return returnDataSuccess($paramReturn, $data['data']);
     }
+    public function checkTransactionStatus(Request $request)
+    {
+        $orderId = $request->orderId;
+        if (!$orderId) {
+            return 0;
+        }
+        $data = $this->serviceReqPaymentService->checkTransactionStatus($orderId);
+        $paramReturn = [];
+        return returnDataSuccess($paramReturn, $data['data']);
+    }
 }

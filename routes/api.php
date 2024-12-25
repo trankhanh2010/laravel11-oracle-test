@@ -244,6 +244,9 @@ Route::get("v1/test-db", function () {
 Route::post('v1/momo-notify', [MoMoController::class, 'handleNotification'])
 ->withoutMiddleware('check_token');
 
+Route::get('v1/check-transaction', [ServiceReqPayMentController::class, 'checkTransactionStatus'])
+->withoutMiddleware('check_token');
+
 Route::fallback(function () {
     return return_404_error_page_not_found();
 });
