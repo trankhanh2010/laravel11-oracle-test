@@ -153,6 +153,21 @@ class ServiceReqPaymentService
         return $dataReturn;
     }
 
+    protected function checkTimeLiveLinkPaymentMoMo($treatment_code, $requestType){
+        $dataReturn = null;
+        $dataDB = $this->treatmentMoMoPaymentsRepository->check($treatment_code, $requestType);
+        // Nếu có tồn tại trong DB và check bên MoMo ra mã 1000 thì trả về, k thì trả về null
+        if($dataDB){
+            $dataMoMo = $this->checkTransactionStatus($dataDB->order_id, $dataDB->request_id);
+            if($dataMoMo['data']['resultCode'] != 1000){
+                $dataReturn = null;
+                $this->treatmentMoMoPaymentsRepository->update($dataMoMo['data']);
+            }else{
+                $dataReturn = $dataDB;
+            }
+        }
+        return $dataReturn;
+    }
     public function handleCreatePayment()
     {
         try {
@@ -166,8 +181,7 @@ class ServiceReqPaymentService
 
             if ($this->params->paymentMethod == 'MoMo') {
                 [$requestType, $signature] = $this->generateSignature($this->params->paymentOption, $transactionInfo);
-                $check = $this->treatmentMoMoPaymentsRepository->check($data->treatment_code, $requestType);
-
+                $check = $this->checkTimeLiveLinkPaymentMoMo($data->treatment_code, $requestType);
                 if ($check) {
                     return ['data' => $this->formatResponseFromRepository($check, $transactionInfo['amount'], $transactionInfo['orderInfo'])];
                 }
@@ -185,17 +199,20 @@ class ServiceReqPaymentService
                 $response = $this->sendPaymentRequest($dataMoMo);
                 $dataReturn = $this->formatResponseFromMoMo($response, $transactionInfo);
                 // Lưu thông tin vào database
-                $this->treatmentMoMoPaymentsRepository->create(
-                    $data->treatment_code,
-                    $dataReturn['orderId'],
-                    $dataReturn['requestId'],
-                    $dataReturn['amount'],
-                    '1000',
-                    $dataReturn['deeplink'] ?? '',
-                    $dataReturn['payUrl'] ?? '',
-                    $requestType,
-                    $dataReturn['qrCodeUrl'] ?? ''
-                );
+                $dataCreate =                     
+                [
+                    'treatmentCode' => $data->treatment_code,
+                    'treatmentId' => $data->treatment_id,
+                    'orderId' => $dataReturn['orderId'],
+                    'requestId' => $dataReturn['requestId'],
+                    'amount' => $dataReturn['amount'],
+                    'resultCode' => 1000,
+                    'deeplink' => $dataReturn['deeplink'] ?? '',
+                    'payUrl' => $dataReturn['payUrl'] ?? '',
+                    'requestType' => $requestType,
+                    'qrCodeUrl' => $dataReturn['qrCodeUrl'] ?? ''
+                ];
+                $this->treatmentMoMoPaymentsRepository->create($dataCreate);
                 return ['data' => $dataReturn];
             }
 

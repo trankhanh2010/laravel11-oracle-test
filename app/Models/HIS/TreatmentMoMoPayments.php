@@ -15,4 +15,9 @@ class TreatmentMoMoPayments extends Model
     protected $guarded = [
         'id',
     ];
+    public function treatment()
+{
+    return $this->belongsTo(Treatment::class, 'treatment_id');
+}
+
 }

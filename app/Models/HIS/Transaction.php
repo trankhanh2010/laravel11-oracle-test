@@ -11,7 +11,8 @@ class Transaction extends Model
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
     protected $table = 'his_transaction';
-    protected $fillable = [
-
+    public $timestamps = false;
+    protected $guarded = [
+        'id',
     ];
 }

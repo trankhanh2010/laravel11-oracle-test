@@ -2,6 +2,7 @@
 namespace App\Repositories;
 
 use App\Models\HIS\TreatmentMoMoPayments;
+use Illuminate\Support\Facades\Log;
 
 class TreatmentMoMoPaymentsRepository
 {
@@ -24,6 +25,16 @@ class TreatmentMoMoPaymentsRepository
         ->first();
         return $data;
     }
+    public function getTreatmentByOrderId($orderId){
+        $data = $this->treatmentMoMoPayments
+        ->select([
+            'treatment_id',
+            'treatment_code'
+        ])
+        ->where('order_id', $orderId)
+        ->first();
+        return $data;
+    }
     public function checkNofityMoMo($param){
         $data = $this->treatmentMoMoPayments
         ->where('order_id', $param['orderId'])
@@ -32,25 +43,30 @@ class TreatmentMoMoPaymentsRepository
         ->exists();
         return $data;
     }
-    public function create($treatmentCode, $orderId, $requestId, $amount, $resultCode, $deeplink, $payUrl, $requestType, $qrCodeUrl){
+    public function create($data){
         $data = $this->treatmentMoMoPayments::create([
-            'treatment_code' =>  $treatmentCode,           
-            'order_id' =>  $orderId,           
-            'request_id' => $requestId,           
-            'amount' => $amount,           
-            'result_code' => $resultCode,        
-            'deeplink' =>  $deeplink,    
-            'pay_url' =>  $payUrl,
-            'request_type' => $requestType,
-            'qr_code_url' => $qrCodeUrl,
+            'create_time' => now()->format('Ymdhis'),
+            'modify_time' => now()->format('Ymdhis'),
+            'treatment_code' =>  $data['treatmentCode'], 
+            'treatment_id' => $data['treatmentId'],         
+            'order_id' =>  $data['orderId'],           
+            'request_id' => $data['requestId'],           
+            'amount' => $data['amount'],           
+            'result_code' => $data['resultCode'],        
+            'deeplink' =>  $data['deeplink'],    
+            'pay_url' =>  $data['payUrl'],
+            'request_type' => $data['requestType'],
+            'qr_code_url' => $data['qrCodeUrl'],
         ]);
         return $data;
     }
-    public function update($orderId, $resultCode){
-        $data = $this->treatmentMoMoPayments->where('order_id', $orderId)->first();
-        $data->update([
-            'result_code' => $resultCode,
+    public function update($data){
+        $dataDB = $this->treatmentMoMoPayments->where('order_id', $data['orderId'])->first();
+        $dataDB->update([
+            'modify_time' => now()->format('Ymdhis'),
+            'result_code' => $data['resultCode'],
+            'trans_id' => $data['transId'] ?? '',
         ]);
-        return $data;
+        return $dataDB;
     }
 }
