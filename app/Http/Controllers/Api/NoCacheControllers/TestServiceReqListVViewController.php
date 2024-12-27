@@ -24,21 +24,9 @@ class TestServiceReqListVViewController extends BaseApiCacheController
         $this->testServiceReqListVView = $testServiceReqListVView;
         // Kiểm tra tên trường trong bảng
         if ($this->orderBy != null) {
-            $this->orderByJoin = [
-            ];
+            $this->orderByJoin = [];
             $columns = $this->getColumnsTable($this->testServiceReqListVView, true);
             $this->orderBy = $this->checkOrderBy($this->orderBy, $columns, $this->orderByJoin ?? []);
-        }
-        // Kiểm tra khoảng cách ngày
-        if(($this->fromTime !== null) && ($this->toTime !== null)){
-            if(($this->toTime - $this->fromTime) > 60235959){
-                $this->errors[$this->fromTimeName] = 'Khoảng thời gian vượt quá 60 ngày!';
-                $this->fromTime = null;
-            }
-        }
-        if(($this->fromTime == null) && ($this->toTime == null) && (!$this->cursorPaginate)){
-            $this->errors[$this->fromTimeName] = 'Thiếu thời gian!';
-            $this->errors[$this->toTimeName] = 'Thiếu thời gian!';
         }
         // Thêm tham số vào service
         $this->testServiceReqListVViewDTO = new TestServiceReqListVViewDTO(
@@ -53,8 +41,8 @@ class TestServiceReqListVViewController extends BaseApiCacheController
             $this->start,
             $this->limit,
             $request,
-            $this->appCreator, 
-            $this->appModifier, 
+            $this->appCreator,
+            $this->appModifier,
             $this->time,
             $this->fromTime,
             $this->toTime,
@@ -72,6 +60,18 @@ class TestServiceReqListVViewController extends BaseApiCacheController
     }
     public function index()
     {
+        // Kiểm tra khoảng cách ngày
+        if (($this->fromTime !== null) && ($this->toTime !== null)) {
+            if (($this->toTime - $this->fromTime) > 60235959) {
+                $this->errors[$this->fromTimeName] = 'Khoảng thời gian vượt quá 60 ngày!';
+                $this->fromTime = null;
+            }
+        }
+        if (($this->fromTime == null) && ($this->toTime == null) && (!$this->cursorPaginate)) {
+            $this->errors[$this->fromTimeName] = 'Thiếu thời gian!';
+            $this->errors[$this->toTimeName] = 'Thiếu thời gian!';
+        }
+        
         if ($this->checkParam()) {
             return $this->checkParam();
         }
