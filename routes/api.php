@@ -868,6 +868,14 @@ Route::group([
     });
     /// Danh sách y lệnh chỉ định
     Route::apiResource('v1/test-service-req-list-v-view', TestServiceReqListVViewController::class)->only(['index', 'show']);
+    // Data không cần token
+    Route::get('v1/test-service-req-list-v-view-no-login', [TestServiceReqListVViewController::class, 'viewNoLogin'])
+    ->withoutMiddleware([
+        'check_token',
+        'check_admin:api',
+        'check_module:api',
+    ]);
+
     Route::apiResource('v1/test-service-req-list-v-view-2', TestServiceReqListVView2Controller::class)->only(['index', 'show']);
     /// Chi tiết các dịch vụ của y lệnh
     Route::apiResource('v1/sere-serv', SereServController::class)->only(['index', 'show']);
@@ -910,8 +918,20 @@ Route::group([
     /// Chăm sóc
     Route::apiResource('v1/care', CareController::class)->only(['index', 'show']);
     /// Test Service Type List
-    Route::apiResource('v1/test-service-type-list-v-view', TestServiceTypeListVViewController::class)->only(['index']);
+    // k cần token
+    Route::apiResource('v1/test-service-type-list-v-view', TestServiceTypeListVViewController::class)->only(['index'])
+    ->withoutMiddleware([
+        'check_token',
+        'check_admin:api',
+        'check_module:api',
+    ]);
 
-// Transaction
-    Route::apiResource('v1/service-req-payment', ServiceReqPayMentController::class)->only(['index']);
+    // Transaction
+    // k cần token
+    Route::apiResource('v1/service-req-payment', ServiceReqPayMentController::class)->only(['index'])
+    ->withoutMiddleware([
+        'check_token',
+        'check_admin:api',
+        'check_module:api',
+    ]);;
 });

@@ -131,6 +131,28 @@ class TestServiceReqListVViewService
         }
     }
 
+    public function handleViewNoLogin()
+    {
+        try {
+            $data = [];
+            $count = null;
+            if($this->params->treatmentCode || $this->params->patientCode){
+                $data = $this->testServiceReqListVViewRepository->applyJoins();
+                if($this->params->treatmentCode){
+                    $data = $this->testServiceReqListVViewRepository->applyTreatmentCodeFilter($data, $this->params->treatmentCode);
+                }
+                if($this->params->patientCode){
+                    $data = $this->testServiceReqListVViewRepository->applyPatientCodeFilter($data, $this->params->patientCode);
+                }
+                $data = $this->testServiceReqListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+                $data = $this->testServiceReqListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit, $this->params->cursorPaginate, $this->params->lastId);
+            }
+            return ['data' => $data, 'count' => $count];
+        } catch (\Throwable $e) {
+            return writeAndThrowError(config('params')['db_service']['error']['test_service_req_list_v_view'], $e);
+        }
+    }
+
     // public function createTestServiceReqListVView($request)
     // {
     //     try {

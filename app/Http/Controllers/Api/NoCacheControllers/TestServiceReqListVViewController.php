@@ -71,7 +71,7 @@ class TestServiceReqListVViewController extends BaseApiCacheController
             $this->errors[$this->fromTimeName] = 'Thiếu thời gian!';
             $this->errors[$this->toTimeName] = 'Thiếu thời gian!';
         }
-        
+
         if ($this->checkParam()) {
             return $this->checkParam();
         }
@@ -122,5 +122,24 @@ class TestServiceReqListVViewController extends BaseApiCacheController
             $this->isActiveName => $this->isActive,
         ];
         return returnDataSuccess($paramReturn, $data);
+    }
+
+    public function viewNoLogin(){
+
+        if ($this->checkParam()) {
+            return $this->checkParam();
+        }
+
+        $data = $this->testServiceReqListVViewService->handleViewNoLogin();
+        $paramReturn = [
+            $this->getAllName => $this->getAll,
+            $this->startName => $this->getAll ? null : $this->start,
+            $this->limitName => $this->getAll ? null : $this->limit,
+            $this->countName => $data['count'],
+            $this->isActiveName => $this->isActive,
+            $this->keywordName => $this->keyword,
+            $this->orderByName => $this->orderByRequest
+        ];
+        return returnDataSuccess($paramReturn, $data['data']);
     }
 }
