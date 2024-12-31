@@ -54,32 +54,32 @@ class ServiceReqPaymentService
         return $data->first();
     }
 
-    protected function calculateCosts($treatmentId)
-    {
-        $listServiceType = $this->testServiceTypeListVViewRepository->applyJoins();
-        $listServiceType = $this->testServiceTypeListVViewRepository->applyTreatmentIdFilter($listServiceType, $treatmentId)->get();
+    // protected function calculateCosts($treatmentId)
+    // {
+    //     $listServiceType = $this->testServiceTypeListVViewRepository->applyJoins();
+    //     $listServiceType = $this->testServiceTypeListVViewRepository->applyTreatmentIdFilter($listServiceType, $treatmentId)->get();
 
-        return [
-            'totalVirPrice' => $listServiceType->sum('vir_total_price'),
-            'totalHeinPrice' => $listServiceType->sum('vir_total_hein_price'),
-            'totalPatientPrice' => $listServiceType->sum('vir_total_patient_price'),
-        ];
-    }
+    //     return [
+    //         'totalVirPrice' => $listServiceType->sum('vir_total_price'),
+    //         'totalHeinPrice' => $listServiceType->sum('vir_total_hein_price'),
+    //         'totalPatientPrice' => $listServiceType->sum('vir_total_patient_price'),
+    //     ];
+    // }
 
     protected function generateTransactionInfo($data, $costs)
     {
         $orderId = Str::uuid();
         $requestId = Str::uuid();
-        $orderInfo = "Tong chi phi: " . $costs['totalVirPrice'] . $this->unit
-            . "; BHYT thanh toan: " . $costs['totalHeinPrice'] . $this->unit
-            . "; BN phai thanh toan: " . $costs['totalPatientPrice'] . $this->unit
-            . "; Da thu: " . $data->total_treatment_bill_amount . $this->unit
-            . "; BN can nop them: " . $data->fee_add . $this->unit;
+        $orderInfo = "Tong chi phi: " . $data->total_price . $this->unit
+            . "; BHYT thanh toan: " . $data->total_hein_price . $this->unit
+            . "; BN phai thanh toan: " . $data->total_patient_price . $this->unit
+            . "; Da thu: " . $data->da_thu . $this->unit
+            . "; BN can nop them: " . $data->fee . $this->unit;
 
         return [
             'orderId' => $orderId,
             'requestId' => $requestId,
-            'amount' => $data->fee_add,
+            'amount' => $data->fee,
             'orderInfo' => $orderInfo,
             'extraData' => '',
         ];
@@ -172,11 +172,12 @@ class ServiceReqPaymentService
     {
         try {
             $data = $this->getTreatmentData();
-            if (!$data || $data->fee_add <= 0) {
+            if (!$data || $data->fee <= 0) {
                 return ['data' => ['success' => false]];
             }
 
-            $costs = $this->calculateCosts($data->treatment_id);
+            // $costs = $this->calculateCosts($data->treatment_id);
+            $costs = null;
             $transactionInfo = $this->generateTransactionInfo($data, $costs);
 
             if ($this->params->paymentMethod == 'MoMo') {

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AuthControllers\CheckTokenController;
 use App\Http\Controllers\Api\NoCacheControllers\SereServExtController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -239,6 +240,7 @@ Route::get("v1/test-db", function () {
     return $executionTime;
     })->name('.get_test_db');
 
+Route::get('v1/check-token', [CheckTokenController::class, 'index']);
 
 // Thông báo trạng thái /// k cần token
 Route::post('v1/momo-notify', [MoMoController::class, 'handleNotification'])
@@ -867,7 +869,15 @@ Route::group([
         Route::apiResource('v1/tracking-data', TrackingDataController::class)->only(['index']);
     });
     /// Danh sách y lệnh chỉ định
-    Route::apiResource('v1/test-service-req-list-v-view', TestServiceReqListVViewController::class)->only(['index', 'show']);
+    Route::apiResource('v1/test-service-req-list-v-view', TestServiceReqListVViewController::class)->only(['index']);
+    // Lấy theo id k cần token
+    Route::get('v1/test-service-req-list-v-view/{id}', [TestServiceReqListVViewController::class, 'show'])
+    ->withoutMiddleware([
+        'check_token',
+        'check_admin:api',
+        'check_module:api',
+    ]);
+
     // Data không cần token
     Route::get('v1/test-service-req-list-v-view-no-login', [TestServiceReqListVViewController::class, 'viewNoLogin'])
     ->withoutMiddleware([
