@@ -585,6 +585,8 @@ class BaseApiCacheController extends Controller
     protected $seseDepoRepayVViewName = 'sese_depo_repay_v_view';
     protected $accountBookVView;
     protected $accountBookVViewName = 'account_book_v_view';
+    protected $treatmentFeeDetailVView;
+    protected $treatmentFeeDetailVViewName = 'treatment_fee_detail_v_view';
     protected $trackingData;
     protected $trackingDataName = 'tracking_data';
     protected $treatmentWithPatientTypeInfoSdo;

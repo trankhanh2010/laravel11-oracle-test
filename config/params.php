@@ -398,6 +398,8 @@ return [
             'sere_serv_deposit_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm SereServDeposit!',
             'sese_depo_repay_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm SeseDepoRepay!',
             'account_book_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm AccountBook!',
+            'treatment_fee_detail_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm Viện phí!',
+
             'tracking_data' => 'Có lỗi khi thực hiện thao tác với Cơ sở dữ liệu!',
             'care' => 'Có lỗi khi thực hiện thao tác với Chăm sóc!',
 

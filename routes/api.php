@@ -179,7 +179,7 @@ use App\Http\Controllers\Api\NoCacheControllers\TreatmentLViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TreatmentWithPatientTypeInfoSdoController;
 use App\Http\Controllers\Api\NoCacheControllers\UserRoomVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TestServiceTypeListVViewController;
-
+use App\Http\Controllers\Api\NoCacheControllers\TreatmentFeeDetailVViewController;
 // Base Api
 use App\Http\Controllers\BaseControllers\CacheController;
 use App\Http\Controllers\BaseControllers\ElasticSearchController;
@@ -935,7 +935,14 @@ Route::group([
         'check_admin:api',
         'check_module:api',
     ]);
-
+    /// Treatment Fee Detail
+    // k cần token
+    Route::apiResource('v1/treatment-fee-detail-v-view', TreatmentFeeDetailVViewController::class)->only(['index'])
+    ->withoutMiddleware([
+        'check_token',
+        'check_admin:api',
+        'check_module:api',
+    ]);
     // Transaction
     // k cần token
     Route::apiResource('v1/service-req-payment', ServiceReqPayMentController::class)->only(['index'])
