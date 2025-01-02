@@ -48,11 +48,7 @@ class TestServiceReqListVViewRepository
         $query = $this->testServiceReqListVView;
         return $query
             // ->where('service_req_type_id', $this->serviceReqTypeXNId)
-            ->select('v_his_test_service_req_list.*')
-            ->addSelect(DB::connection('oracle_his')->raw('(total_deposit_amount - total_repay_amount + total_bill_amount) as da_thu'))
-            ->addSelect(DB::connection('oracle_his')->raw('(total_deposit_amount - total_service_deposit_amount) as tam_ung'))
-            ->addSelect(DB::connection('oracle_his')->raw('(total_patient_price - (total_deposit_amount - total_repay_amount + total_bill_amount)) as fee'))
-            ;
+            ->select('v_his_test_service_req_list.*');
     }
     public function applyWith($query)
     {

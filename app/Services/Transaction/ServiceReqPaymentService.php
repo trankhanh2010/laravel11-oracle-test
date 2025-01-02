@@ -5,6 +5,7 @@ namespace App\Services\Transaction;
 use App\DTOs\ServiceReqPaymentDTO;
 use App\Repositories\TestServiceReqListVViewRepository;
 use App\Repositories\TestServiceTypeListVViewRepository;
+use App\Repositories\TreatmentFeeDetailVViewRepository;
 use App\Repositories\TreatmentMoMoPaymentsRepository;
 use Illuminate\Support\Str;
 use GuzzleHttp\Client;
@@ -13,6 +14,7 @@ class ServiceReqPaymentService
 {
     protected $testServiceReqListVViewRepository;
     protected $testServiceTypeListVViewRepository;
+    protected $treatmentFeeDetailVViewRepository;
     protected $treatmentMoMoPaymentsRepository;
     protected $params;
     protected $unit = ' VNĐ';
@@ -26,10 +28,12 @@ class ServiceReqPaymentService
     public function __construct(
         TestServiceReqListVViewRepository $testServiceReqListVViewRepository,
         TestServiceTypeListVViewRepository $testServiceTypeListVViewRepository,
+        TreatmentFeeDetailVViewRepository $treatmentFeeDetailVViewRepository,
         TreatmentMoMoPaymentsRepository $treatmentMoMoPaymentsRepository,
     ) {
         $this->testServiceReqListVViewRepository = $testServiceReqListVViewRepository;
         $this->testServiceTypeListVViewRepository = $testServiceTypeListVViewRepository;
+        $this->treatmentFeeDetailVViewRepository = $treatmentFeeDetailVViewRepository;
         $this->treatmentMoMoPaymentsRepository = $treatmentMoMoPaymentsRepository;
 
         $this->partnerCode = config('database')['connections']['momo']['momo_partner_code'];
@@ -45,11 +49,11 @@ class ServiceReqPaymentService
         $this->params = $params;
         return $this;
     }
-    protected function getTreatmentData()
+    protected function getTreatmentFeeData()
     {
-        $data = $this->testServiceReqListVViewRepository->applyJoins();
+        $data = $this->treatmentFeeDetailVViewRepository->applyJoins();
         if ($this->params->treatmentCode) {
-            $data = $this->testServiceReqListVViewRepository->applyTreatmentCodeFilter($data, $this->params->treatmentCode);
+            $data = $this->treatmentFeeDetailVViewRepository->applyTreatmentCodeFilter($data, $this->params->treatmentCode);
         }
         return $data->first();
     }
@@ -171,7 +175,7 @@ class ServiceReqPaymentService
     public function handleCreatePayment()
     {
         try {
-            $data = $this->getTreatmentData();
+            $data = $this->getTreatmentFeeData();
             if (!$data || $data->fee <= 0) {
                 return ['data' => ['success' => false]];
             }
@@ -203,7 +207,7 @@ class ServiceReqPaymentService
                 $dataCreate =                     
                 [
                     'treatmentCode' => $data->treatment_code,
-                    'treatmentId' => $data->treatment_id,
+                    'treatmentId' => $data->id,
                     'orderId' => $dataReturn['orderId'],
                     'requestId' => $dataReturn['requestId'],
                     'amount' => $dataReturn['amount'],

@@ -26,6 +26,7 @@ class TreatmentFeeDetailVViewService
     {
         try {
             $data = $this->treatmentFeeDetailVViewRepository->applyJoins();
+            $data = $this->treatmentFeeDetailVViewRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
             $data = $this->treatmentFeeDetailVViewRepository->applyTreatmentCodeFilter($data, $this->params->treatmentCode);
             $count = null;
             $data = $data->first();

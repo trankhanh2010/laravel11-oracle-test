@@ -18,7 +18,11 @@ class TreatmentFeeDetailVViewRepository
         return $this->treatmentFeeDetailVView
             ->select(
                 'v_his_treatment_fee_detail.*'
-            );
+            )
+            ->addSelect(DB::connection('oracle_his')->raw('(total_deposit_amount - total_repay_amount + total_bill_amount) as da_thu'))
+            ->addSelect(DB::connection('oracle_his')->raw('(total_deposit_amount - total_service_deposit_amount) as tam_ung'))
+            ->addSelect(DB::connection('oracle_his')->raw('(total_patient_price - (total_deposit_amount - total_repay_amount + total_bill_amount)) as fee'))
+            ;
     }
     public function applyKeywordFilter($query, $keyword)
     {
@@ -40,10 +44,17 @@ class TreatmentFeeDetailVViewRepository
         }
         return $query;
     }
-    public function applyTreatmentCodeFilter($query, $id)
+    public function applyTreatmentIdFilter($query, $id)
     {
         if ($id !== null) {
-            $query->where(DB::connection('oracle_his')->raw('v_his_treatment_fee_detail.treatment_code'), $id);
+            $query->where(DB::connection('oracle_his')->raw('v_his_treatment_fee_detail.id'), $id);
+        }
+        return $query;
+    }
+    public function applyTreatmentCodeFilter($query, $code)
+    {
+        if ($code !== null) {
+            $query->where(DB::connection('oracle_his')->raw('v_his_treatment_fee_detail.treatment_code'), $code);
         }
         return $query;
     }

@@ -30,8 +30,8 @@ class TreatmentFeeDetailVViewController extends BaseApiCacheController
             $this->orderBy = $this->checkOrderBy($this->orderBy, $columns, $this->orderByJoin ?? []);
         }
         // Kiểm tra tham số
-        if (($this->treatmentCode == null) ) {
-            $this->errors[$this->treatmentCode] = 'Thiếu mã điều trị!';
+        if (($this->treatmentId == null) ) {
+            $this->errors[$this->treatmentIdName] = 'Thiếu Id điều trị!';
         }
         // Thêm tham số vào service
         $this->treatmentFeeDetailVViewDTO = new TreatmentFeeDetailVViewDTO(
@@ -48,7 +48,8 @@ class TreatmentFeeDetailVViewController extends BaseApiCacheController
             $this->appCreator, 
             $this->appModifier, 
             $this->time,
-            $this->treatmentCode
+            $this->treatmentId,
+            $this->treatmentCode,
         );
         $this->treatmentFeeDetailVViewService->withParams($this->treatmentFeeDetailVViewDTO);
     }
