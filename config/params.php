@@ -399,7 +399,7 @@ return [
             'sese_depo_repay_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm SeseDepoRepay!',
             'account_book_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm AccountBook!',
             'treatment_fee_detail_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm Viện phí!',
-
+            'treatment_fee_list_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm Thông tin bệnh nhân viện phí!',
             'tracking_data' => 'Có lỗi khi thực hiện thao tác với Cơ sở dữ liệu!',
             'care' => 'Có lỗi khi thực hiện thao tác với Chăm sóc!',
 

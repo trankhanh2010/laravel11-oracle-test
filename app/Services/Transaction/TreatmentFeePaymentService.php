@@ -2,17 +2,17 @@
 
 namespace App\Services\Transaction;
 
-use App\DTOs\ServiceReqPaymentDTO;
-use App\Repositories\TestServiceReqListVViewRepository;
+use App\DTOs\TreatmentFeePaymentDTO;
+use App\Repositories\TreatmentFeeListVViewRepository;
 use App\Repositories\TestServiceTypeListVViewRepository;
 use App\Repositories\TreatmentFeeDetailVViewRepository;
 use App\Repositories\TreatmentMoMoPaymentsRepository;
 use Illuminate\Support\Str;
 use GuzzleHttp\Client;
 
-class ServiceReqPaymentService
+class TreatmentFeePaymentService
 {
-    protected $testServiceReqListVViewRepository;
+    protected $treatmentFeeListVViewRepository;
     protected $testServiceTypeListVViewRepository;
     protected $treatmentFeeDetailVViewRepository;
     protected $treatmentMoMoPaymentsRepository;
@@ -26,12 +26,12 @@ class ServiceReqPaymentService
     protected $returnUrl;
     protected $notifyUrl;
     public function __construct(
-        TestServiceReqListVViewRepository $testServiceReqListVViewRepository,
+        TreatmentFeeListVViewRepository $treatmentFeeListVViewRepository,
         TestServiceTypeListVViewRepository $testServiceTypeListVViewRepository,
         TreatmentFeeDetailVViewRepository $treatmentFeeDetailVViewRepository,
         TreatmentMoMoPaymentsRepository $treatmentMoMoPaymentsRepository,
     ) {
-        $this->testServiceReqListVViewRepository = $testServiceReqListVViewRepository;
+        $this->treatmentFeeListVViewRepository = $treatmentFeeListVViewRepository;
         $this->testServiceTypeListVViewRepository = $testServiceTypeListVViewRepository;
         $this->treatmentFeeDetailVViewRepository = $treatmentFeeDetailVViewRepository;
         $this->treatmentMoMoPaymentsRepository = $treatmentMoMoPaymentsRepository;
@@ -44,7 +44,7 @@ class ServiceReqPaymentService
         $this->returnUrl = config('database')['connections']['momo']['momo_return_url'];
         $this->notifyUrl = config('database')['connections']['momo']['momo_notify_url'];
     }
-    public function withParams(ServiceReqPaymentDTO $params)
+    public function withParams(TreatmentFeePaymentDTO $params)
     {
         $this->params = $params;
         return $this;

@@ -180,6 +180,7 @@ use App\Http\Controllers\Api\NoCacheControllers\TreatmentWithPatientTypeInfoSdoC
 use App\Http\Controllers\Api\NoCacheControllers\UserRoomVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TestServiceTypeListVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TreatmentFeeDetailVViewController;
+use App\Http\Controllers\Api\NoCacheControllers\TreatmentFeeListVViewController;
 // Base Api
 use App\Http\Controllers\BaseControllers\CacheController;
 use App\Http\Controllers\BaseControllers\ElasticSearchController;
@@ -217,7 +218,7 @@ use App\Http\Controllers\BaseControllers\RedisController;
 use Illuminate\Support\Facades\DB;
 
 // Transaction
-use App\Http\Controllers\Api\TransactionControllers\ServiceReqPayMentController;
+use App\Http\Controllers\Api\TransactionControllers\TreatmentFeePayMentController;
 use App\Http\Controllers\Api\TransactionControllers\MoMoController;
 
 /*
@@ -230,31 +231,36 @@ use App\Http\Controllers\Api\TransactionControllers\MoMoController;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-Route::get("v1/info", function () { return phpinfo();})->name('.get_info');
-Route::get("v1/test", function () { return microtime(true) - LARAVEL_START;})->name('.get_test');
+
+Route::get("v1/info", function () {
+    return phpinfo();
+})->name('.get_info');
+Route::get("v1/test", function () {
+    return microtime(true) - LARAVEL_START;
+})->name('.get_test');
 Route::get("v1/test-db", function () {
-    $start = microtime(true); 
+    $start = microtime(true);
     DB::connection('oracle_his')->getPdo();
-    $end = microtime(true); 
-    $executionTime = ($end - $start) * 1000; 
+    $end = microtime(true);
+    $executionTime = ($end - $start) * 1000;
     return $executionTime;
-    })->name('.get_test_db');
+})->name('.get_test_db');
 
 Route::get('v1/check-token', [CheckTokenController::class, 'index']);
 
 // Thông báo trạng thái /// k cần token
 Route::post('v1/momo-notify', [MoMoController::class, 'handleNotification'])
-->withoutMiddleware('check_token');
+    ->withoutMiddleware('check_token');
 
-Route::get('v1/check-transaction', [ServiceReqPayMentController::class, 'checkTransactionStatus'])
-->withoutMiddleware('check_token');
+Route::get('v1/check-transaction', [TreatmentFeePayMentController::class, 'checkTransactionStatus'])
+    ->withoutMiddleware('check_token');
 
 Route::fallback(function () {
     return return_404_error_page_not_found();
 });
 /// Request
 Route::get("v1/get-column-name", [BaseApiRequestController::class, "getColumnname"])->name('.get_column_name')
-->withoutMiddleware('check_token');
+    ->withoutMiddleware('check_token');
 Route::group([
     "middleware" => ["check_admin:api"]
 ], function () {
@@ -433,8 +439,7 @@ Route::group([
         Route::apiResource('v1/dosage-form', DosageFormController::class);
     });
     /// Phương pháp vô cảm
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisEmotionlessMethod'], function () {
-    });
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisEmotionlessMethod'], function () {});
     /// Tài khoản nhân viên
     Route::group(['as' => 'HIS.Desktop.Plugins.EmpUser'], function () {
         Route::apiResource('v1/emp-user', EmployeeController::class);
@@ -846,7 +851,7 @@ Route::group([
         Route::apiResource('v1/work-place', WorkPlaceController::class);
     });
 
-/// No cache
+    /// No cache
 
     /// Biên bản hội chẩn
     Route::group(['as' => 'HIS.Desktop.Plugins.Debate'], function () {
@@ -872,19 +877,19 @@ Route::group([
     Route::apiResource('v1/test-service-req-list-v-view', TestServiceReqListVViewController::class)->only(['index']);
     // Lấy theo id k cần token
     Route::get('v1/test-service-req-list-v-view/{id}', [TestServiceReqListVViewController::class, 'show'])
-    ->withoutMiddleware([
-        'check_token',
-        'check_admin:api',
-        'check_module:api',
-    ]);
+        ->withoutMiddleware([
+            'check_token',
+            'check_admin:api',
+            'check_module:api',
+        ]);
 
     // Data không cần token
     Route::get('v1/test-service-req-list-v-view-no-login', [TestServiceReqListVViewController::class, 'viewNoLogin'])
-    ->withoutMiddleware([
-        'check_token',
-        'check_admin:api',
-        'check_module:api',
-    ]);
+        ->withoutMiddleware([
+            'check_token',
+            'check_admin:api',
+            'check_module:api',
+        ]);
 
     Route::apiResource('v1/test-service-req-list-v-view-2', TestServiceReqListVView2Controller::class)->only(['index', 'show']);
     /// Chi tiết các dịch vụ của y lệnh
@@ -930,25 +935,41 @@ Route::group([
     /// Test Service Type List
     // k cần token
     Route::apiResource('v1/test-service-type-list-v-view', TestServiceTypeListVViewController::class)->only(['index'])
-    ->withoutMiddleware([
-        'check_token',
-        'check_admin:api',
-        'check_module:api',
-    ]);
+        ->withoutMiddleware([
+            'check_token',
+            'check_admin:api',
+            'check_module:api',
+        ]);
     /// Treatment Fee Detail
     // k cần token
     Route::apiResource('v1/treatment-fee-detail-v-view', TreatmentFeeDetailVViewController::class)->only(['index'])
-    ->withoutMiddleware([
-        'check_token',
-        'check_admin:api',
-        'check_module:api',
-    ]);
+        ->withoutMiddleware([
+            'check_token',
+            'check_admin:api',
+            'check_module:api',
+        ]);
+    /// Danh sách thông tin bệnh nhân viện phí
+    Route::apiResource('v1/treatment-fee-list-v-view', TreatmentFeeListVViewController::class)->only(['index']);
+    // Lấy theo id k cần token
+    Route::get('v1/treatment-fee-list-v-view/{id}', [TreatmentFeeListVViewController::class, 'show'])
+        ->withoutMiddleware([
+            'check_token',
+            'check_admin:api',
+            'check_module:api',
+        ]);
+    // Data không cần token
+    Route::get('v1/treatment-fee-list-v-view-no-login', [TreatmentFeeListVViewController::class, 'viewNoLogin'])
+        ->withoutMiddleware([
+            'check_token',
+            'check_admin:api',
+            'check_module:api',
+        ]);
     // Transaction
     // k cần token
-    Route::apiResource('v1/service-req-payment', ServiceReqPayMentController::class)->only(['index'])
-    ->withoutMiddleware([
-        'check_token',
-        'check_admin:api',
-        'check_module:api',
-    ]);;
+    Route::apiResource('v1/treatment-fee-payment', TreatmentFeePayMentController::class)->only(['index'])
+        ->withoutMiddleware([
+            'check_token',
+            'check_admin:api',
+            'check_module:api',
+        ]);;
 });

@@ -2,22 +2,22 @@
 
 namespace App\Http\Controllers\Api\TransactionControllers;
 
-use App\DTOs\ServiceReqPaymentDTO;
+use App\DTOs\TreatmentFeePaymentDTO;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
-use App\Services\Transaction\ServiceReqPaymentService;
+use App\Services\Transaction\TreatmentFeePaymentService;
 use Illuminate\Http\Request;
 
 
-class ServiceReqPayMentController extends BaseApiCacheController
+class TreatmentFeePayMentController extends BaseApiCacheController
 {
     protected $serviceReqPaymentService;
     protected $serviceReqPaymentDTO;
-    public function __construct(Request $request, ServiceReqPaymentService $serviceReqPaymentService)
+    public function __construct(Request $request, TreatmentFeePaymentService $serviceReqPaymentService)
     {
         parent::__construct($request); // Gọi constructor của BaseController
         $this->serviceReqPaymentService = $serviceReqPaymentService;
         // Thêm tham số vào service
-        $this->serviceReqPaymentDTO = new ServiceReqPaymentDTO(
+        $this->serviceReqPaymentDTO = new TreatmentFeePaymentDTO(
             $this->paymentMethod,
             $this->paymentOption,
             $this->patientCode,

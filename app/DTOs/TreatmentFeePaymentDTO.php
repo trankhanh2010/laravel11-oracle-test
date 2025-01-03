@@ -2,7 +2,7 @@
 
 namespace App\DTOs;
 
-class ServiceReqPaymentDTO
+class TreatmentFeePaymentDTO
 {
     public $paymentMethod;
     public $paymentOption;

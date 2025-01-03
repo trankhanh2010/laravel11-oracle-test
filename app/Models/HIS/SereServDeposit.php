@@ -11,7 +11,8 @@ class SereServDeposit extends Model
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
     protected $table = 'his_sere_serv_deposit';
-    protected $fillable = [
-
+    public $timestamps = false;
+    protected $guarded = [
+        'id',
     ];
 }

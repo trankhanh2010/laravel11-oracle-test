@@ -77,21 +77,22 @@ class SereServBillRepository
     {
         return $this->sereServBill->find($id);
     }
-    // public function create($request, $time, $appCreator, $appModifier){
-    //     $data = $this->sereServBill::create([
-    //         'create_time' => now()->format('Ymdhis'),
-    //         'modify_time' => now()->format('Ymdhis'),
-    //         'creator' => get_loginname_with_token($request->bearerToken(), $time),
-    //         'modifier' => get_loginname_with_token($request->bearerToken(), $time),
-    //         'app_creator' => $appCreator,
-    //         'app_modifier' => $appModifier,
-    //         'is_active' => 1,
-    //         'is_delete' => 0,
-    //         'sere_serv_bill_code' => $request->sere_serv_bill_code,
-    //         'sere_serv_bill_name' => $request->sere_serv_bill_name,
-    //     ]);
-    //     return $data;
-    // }
+    public function create($sereServ, $transaction, $appCreator, $appModifier){
+        $data = $this->sereServBill::create([
+            'create_time' => now()->format('Ymdhis'),
+            'modify_time' => now()->format('Ymdhis'),
+            'creator' => $appCreator,
+            'modifier' => $appModifier,
+            'app_creator' => $appCreator,
+            'app_modifier' => $appModifier,
+            'sere_serv_id' => $sereServ->id,
+            'bill_id' => $transaction->id,
+            'price' => $sereServ->price,
+            'vat_ratio' => $sereServ->vat_ratio,
+            'tdl_treatment_id' => $sereServ->tdl_treatment_id,
+        ]);
+        return $data;
+    }
     // public function update($request, $data, $time, $appModifier){
     //     $data->update([
     //         'modify_time' => now()->format('Ymdhis'),

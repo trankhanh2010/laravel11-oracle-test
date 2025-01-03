@@ -593,6 +593,8 @@ class BaseApiCacheController extends Controller
     protected $treatmentWithPatientTypeInfoSdoName = 'treatment_with_patient_type_info_sdo';
     protected $testServiceTypeListVView;
     protected $testServiceTypeListVViewName = 'test_service_type_list_v_view';
+    protected $treatmentFeeListVView;
+    protected $treatmentFeeListVViewName = 'treatment_fee_list_v_view';
     // Thanh toán
     protected $paymentMethod; // Hình thức thanh toán MoMo VNPay
     protected $paymentMethodName = 'PaymentMethod';
@@ -658,8 +660,8 @@ class BaseApiCacheController extends Controller
     protected function checkId($id, $model, $name)
     {
         if ($this->isActive !== null) {
-            $data = Cache::remember($name . '_check_id_' . $id . '_is_active_' . $this->isActive, $this->time, function () use ($id, $model) {
-                return $model->where('id', $id)->where('is_active', $this->isActive)->exists();
+            $data = Cache::remember($name . '_check_id_' . $id , $this->time, function () use ($id, $model) {
+                return $model->where('id', $id)->exists();
             });
         } else {
             $data = Cache::remember($name . '_check_id_' . $id, $this->time, function () use ($id, $model) {
