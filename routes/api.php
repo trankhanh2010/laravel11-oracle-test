@@ -151,6 +151,7 @@ use App\Http\Controllers\Api\CacheControllers\ProcessingMethodController;
 use App\Http\Controllers\Api\CacheControllers\StorageConditionController;
 use App\Http\Controllers\Api\CacheControllers\SuimIndexUnitController;
 use App\Http\Controllers\Api\CacheControllers\TestIndexGroupController;
+use App\Http\Controllers\Api\CacheControllers\TransactionTypeController;
 use App\Http\Controllers\Api\CacheControllers\VaccineTypeController;
 use App\Http\Controllers\Api\NoCacheControllers\AccountBookVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\CareController;
@@ -179,6 +180,7 @@ use App\Http\Controllers\Api\NoCacheControllers\TreatmentLViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TreatmentWithPatientTypeInfoSdoController;
 use App\Http\Controllers\Api\NoCacheControllers\UserRoomVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TestServiceTypeListVViewController;
+use App\Http\Controllers\Api\NoCacheControllers\TransactionListVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TreatmentFeeDetailVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TreatmentFeeListVViewController;
 // Base Api
@@ -829,6 +831,8 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.TranPatiTech'], function () {
         Route::apiResource('v1/tran-pati-tech', TranPatiTechController::class);
     });
+    /// Loại giao dịch
+    Route::apiResource('v1/transaction-type', TransactionTypeController::class)->only(['index', 'show']);
     /// Loại ra viện
     Route::group(['as' => 'HIS.Desktop.Plugins.HisTreatmentEndType'], function () {
         Route::apiResource('v1/treatment-end-type', TreatmentEndTypeController::class);
@@ -932,6 +936,10 @@ Route::group([
     });
     /// Chăm sóc
     Route::apiResource('v1/care', CareController::class)->only(['index', 'show']);
+    /// Transaction List
+    Route::group(['as' => 'HIS.Desktop.Plugins.TransactionList'], function () {
+        Route::apiResource('v1/transaction-list-v-view', TransactionListVViewController::class)->only(['index', 'show']);
+    });
     /// Test Service Type List
     // k cần token
     Route::apiResource('v1/test-service-type-list-v-view', TestServiceTypeListVViewController::class)->only(['index'])

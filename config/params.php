@@ -141,6 +141,7 @@ return [
             'test_sample_type',
             'test_type',
             'tran_pati_tech',
+            'transaction_type',
             'treatment_end_type',
             'treatment_type',
             'unlimit_reason',
@@ -354,6 +355,7 @@ return [
             'suim_index' => 'Có lỗi khi thực hiện thao tác với bảng Chỉ số!',
             'supplier' => 'Có lỗi khi thực hiện thao tác với bảng Nhà cung cấp!',
             'transaction_db' => 'Có lỗi khi thực hiện thao tác với bảng Transaction!',
+            'transaction_type' => 'Có lỗi khi thực hiện thao tác với bảng Loại giao dịch!',
             'test_index' => 'Có lỗi khi thực hiện thao tác với bảng Chỉ số xét nghiệm!',
             'test_index_unit' => 'Có lỗi khi thực hiện thao tác với bảng Đơn vị tính chỉ số xét nghiệm!',
             'test_sample_type' => 'Có lỗi khi thực hiện thao tác với bảng Loại mẫu bệnh phẩm!',
@@ -402,6 +404,7 @@ return [
             'treatment_fee_list_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm Thông tin bệnh nhân viện phí!',
             'tracking_data' => 'Có lỗi khi thực hiện thao tác với Cơ sở dữ liệu!',
             'care' => 'Có lỗi khi thực hiện thao tác với Chăm sóc!',
+            'transaction_list_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm Danh sách giao dịch!',
 
         ],
         'table' => [

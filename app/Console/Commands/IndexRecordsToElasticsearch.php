@@ -161,6 +161,7 @@ use App\Events\Elastic\TestServiceReqListVView\CreateTestServiceReqListVViewInde
 use App\Events\Elastic\TestType\CreateTestTypeIndex;
 use App\Events\Elastic\Tracking\CreateTrackingIndex;
 use App\Events\Elastic\TranPatiTech\CreateTranPatiTechIndex;
+use App\Events\Elastic\TransactionType\CreateTransactionTypeIndex;
 use App\Events\Elastic\TreatmentBedRoomLView\CreateTreatmentBedRoomLViewIndex;
 use App\Events\Elastic\TreatmentEndType\CreateTreatmentEndTypeIndex;
 use App\Events\Elastic\TreatmentFeeView\CreateTreatmentFeeViewIndex;
@@ -327,6 +328,7 @@ use App\Repositories\TestServiceReqRepository;
 use App\Repositories\TestTypeRepository;
 use App\Repositories\TrackingRepository;
 use App\Repositories\TranPatiTechRepository;
+use App\Repositories\TransactionTypeRepository;
 use App\Repositories\TreatmentBedRoomLViewRepository;
 use App\Repositories\TreatmentEndTypeRepository;
 use App\Repositories\TreatmentFeeViewRepository;
@@ -945,6 +947,10 @@ class IndexRecordsToElasticsearch extends Command
             case 'tran_pati_tech':
                 event(new CreateTranPatiTechIndex($name_table));
                 app(TranPatiTechRepository::class)->getDataFromDbToElastic($batchSize, null);
+                break;
+            case 'transaction_type':
+                event(new CreateTransactionTypeIndex($name_table));
+                app(TransactionTypeRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'treatment_end_type':
                 event(new CreateTreatmentEndTypeIndex($name_table));

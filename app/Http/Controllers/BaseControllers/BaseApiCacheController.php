@@ -31,6 +31,7 @@ use App\Models\HIS\ServiceReqType;
 use Illuminate\Http\Request;
 use App\Models\HIS\ServiceType;
 use App\Models\HIS\TestIndex;
+use App\Models\HIS\TransactionType;
 use App\Models\HIS\Treatment;
 use App\Models\HIS\TreatmentType;
 use Illuminate\Support\Facades\Cache;
@@ -150,6 +151,8 @@ class BaseApiCacheController extends Controller
     protected $medicineTypeIdName = 'MedicineTypeId';
     protected $materialTypeId;
     protected $materialTypeIdName = 'MaterialTypeId';
+    protected $transactionTypeIds;
+    protected $transactionTypeIdsName = 'TransactionTypeIds';
     protected $roomId;
     protected $roomIdName = 'RoomId';
     protected $serviceReqIds;
@@ -214,6 +217,8 @@ class BaseApiCacheController extends Controller
     protected $serviceTypeIdsString;
     protected $relations;
     protected $relationsName = 'realtions';
+    protected $transactionCode;
+    protected $transactionCodeName = 'TransactionCode';
 
     // Khai báo các biến mặc định model
     protected $appCreator = "MOS_v2";
@@ -585,6 +590,8 @@ class BaseApiCacheController extends Controller
     protected $seseDepoRepayVViewName = 'sese_depo_repay_v_view';
     protected $accountBookVView;
     protected $accountBookVViewName = 'account_book_v_view';
+    protected $transactionType;
+    protected $transactionTypeName = 'transaction_type';
     protected $treatmentFeeDetailVView;
     protected $treatmentFeeDetailVViewName = 'treatment_fee_detail_v_view';
     protected $trackingData;
@@ -595,6 +602,8 @@ class BaseApiCacheController extends Controller
     protected $testServiceTypeListVViewName = 'test_service_type_list_v_view';
     protected $treatmentFeeListVView;
     protected $treatmentFeeListVViewName = 'treatment_fee_list_v_view';
+    protected $transactionListVView;
+    protected $transactionListVViewName = 'transaction_list_v_view';
     // Thanh toán
     protected $paymentMethod; // Hình thức thanh toán MoMo VNPay
     protected $paymentMethodName = 'PaymentMethod';
@@ -847,6 +856,14 @@ class BaseApiCacheController extends Controller
             if (!is_string($this->status)) {
                 $this->errors[$this->statusName] = $this->messFormat;
                 $this->status = null;
+            }
+        }
+
+        $this->transactionCode = $this->paramRequest['ApiData']['TransactionCode']?? null;
+        if ($this->transactionCode !== null) {
+            if (!is_string($this->transactionCode)) {
+                $this->errors[$this->transactionCodeName] = $this->messFormat;
+                $this->transactionCode = null;
             }
         }
 
@@ -1124,6 +1141,21 @@ class BaseApiCacheController extends Controller
                 if (!Machine::where('id', $this->machineId)->exists()) {
                     $this->errors[$this->machineIdName] = $this->messRecordId;
                     $this->machineId = null;
+                }
+            }
+        }
+        $this->transactionTypeIds = $this->paramRequest['ApiData']['TransactionTypeIds'] ?? null;
+        if ($this->transactionTypeIds != null) {
+            foreach ($this->transactionTypeIds as $key => $item) {
+                // Kiểm tra xem ID có tồn tại trong bảng  hay không
+                if (!is_numeric($item)) {
+                    $this->errors[$this->transactionTypeIdsName] = $this->messFormat;
+                    unset($this->transactionTypeIds[$key]);
+                } else {
+                    if (!TransactionType::where('id', $item)->exists()) {
+                        $this->errors[$this->transactionTypeIdsName] = $this->messRecordId;
+                        unset($this->transactionTypeIds[$key]);
+                    }
                 }
             }
         }
