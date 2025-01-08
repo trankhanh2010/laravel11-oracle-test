@@ -151,6 +151,7 @@ use App\Http\Controllers\Api\CacheControllers\ProcessingMethodController;
 use App\Http\Controllers\Api\CacheControllers\StorageConditionController;
 use App\Http\Controllers\Api\CacheControllers\SuimIndexUnitController;
 use App\Http\Controllers\Api\CacheControllers\TestIndexGroupController;
+use App\Http\Controllers\Api\TransactionControllers\TransactionTamUngController;
 use App\Http\Controllers\Api\CacheControllers\TransactionTypeController;
 use App\Http\Controllers\Api\CacheControllers\VaccineTypeController;
 use App\Http\Controllers\Api\NoCacheControllers\AccountBookVViewController;
@@ -947,7 +948,7 @@ Route::group([
             'check_token',
             'check_admin:api',
             'check_module:api',
-        ]);
+    ]);
     /// Treatment Fee Detail
     // k cần token
     Route::apiResource('v1/treatment-fee-detail-v-view', TreatmentFeeDetailVViewController::class)->only(['index'])
@@ -955,7 +956,7 @@ Route::group([
             'check_token',
             'check_admin:api',
             'check_module:api',
-        ]);
+    ]);
     /// Danh sách thông tin bệnh nhân viện phí
     Route::apiResource('v1/treatment-fee-list-v-view', TreatmentFeeListVViewController::class)->only(['index']);
     // Lấy theo id k cần token
@@ -964,14 +965,14 @@ Route::group([
             'check_token',
             'check_admin:api',
             'check_module:api',
-        ]);
+    ]);
     // Data không cần token
     Route::get('v1/treatment-fee-list-v-view-no-login', [TreatmentFeeListVViewController::class, 'viewNoLogin'])
         ->withoutMiddleware([
             'check_token',
             'check_admin:api',
             'check_module:api',
-        ]);
+    ]);
     // Transaction
     // k cần token
     Route::apiResource('v1/treatment-fee-payment', TreatmentFeePayMentController::class)->only(['index'])
@@ -979,5 +980,7 @@ Route::group([
             'check_token',
             'check_admin:api',
             'check_module:api',
-        ]);;
+    ]);
+    /// Tạo giao dịch tạm ứng Transaction Tạm ứng
+    Route::apiResource('v1/transaction-tam-ung', TransactionTamUngController::class)->only(['store']);
 });

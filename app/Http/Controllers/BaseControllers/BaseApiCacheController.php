@@ -592,6 +592,8 @@ class BaseApiCacheController extends Controller
     protected $accountBookVViewName = 'account_book_v_view';
     protected $transactionType;
     protected $transactionTypeName = 'transaction_type';
+    protected $transaction;
+    protected $transactionName = 'transaction';
     protected $treatmentFeeDetailVView;
     protected $treatmentFeeDetailVViewName = 'treatment_fee_detail_v_view';
     protected $trackingData;
@@ -756,11 +758,11 @@ class BaseApiCacheController extends Controller
         $this->perPage = $request->query('perPage', 10);
         $this->page = $request->query('page', 1);
         $this->start = $this->paramRequest['CommonParam']['Start'] ?? intval($request->start) ?? 0;
-        $this->limit = $this->paramRequest['CommonParam']['Limit'] ?? intval($request->limit) ?? 10;
+        $this->limit = $this->paramRequest['CommonParam']['Limit'] ?? intval($request->limit) ?? 100;
         if ($this->limit <= 0) {
             $this->limit = 10;
         }
-        $this->arrLimit = [1, 10, 20, 50, 100, 200, 500, 1000, 2000, 4000];
+        $this->arrLimit = [10, 20, 50, 100, 200, 500, 1000, 2000, 4000];
         if (($this->limit < 0) || (!in_array($this->limit, $this->arrLimit))) {
             $this->errors[$this->limitName] = $this->messFormat . ' Chỉ nhận giá trị thuộc mảng sau ' . implode(', ', $this->arrLimit);
             $this->limit = 10;

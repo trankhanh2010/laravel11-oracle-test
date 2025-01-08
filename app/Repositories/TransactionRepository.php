@@ -4,6 +4,7 @@ namespace App\Repositories;
 use App\Jobs\ElasticSearch\Index\ProcessElasticIndexingJob;
 use App\Models\HIS\Transaction;
 use App\Models\HIS\TransactionType;
+use App\Models\HIS\Treatment;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -12,19 +13,28 @@ class TransactionRepository
 {
     protected $transaction;
     protected $transactionType;
+    protected $treatment;
     protected $transactionTypeTTId;
+    protected $transactionTypeTUId;
+
     public function __construct(
         Transaction $transaction,
         TransactionType $transactionType,
+        Treatment $treatment,
         )
     {
         $this->transaction = $transaction;
         $this->transactionType = $transactionType;
+        $this->treatment = $treatment;
 
         $this->transactionTypeTTId = Cache::remember('transaction_type_TT_id', now()->addMinutes(10080), function () {
-                $data =  $this->transactionType->where('transaction_type_code', 'TT')->get();
-                return $data->value('id');
-            });
+            $data =  $this->transactionType->where('transaction_type_code', 'TT')->get();
+            return $data->value('id');
+        });
+        $this->transactionTypeTUId = Cache::remember('transaction_type_TU_id', now()->addMinutes(10080), function () {
+            $data =  $this->transactionType->where('transaction_type_code', 'TU')->get();
+            return $data->value('id');
+        });
     }
 
     public function applyJoins()
@@ -98,6 +108,50 @@ class TransactionRepository
             'treatment_id' => $payment->treatment_id,
             'tdl_treatment_code' => $payment->treatment_code,
             'sere_serv_amount' => $data['amount'],
+        ]);
+        return $data;
+    }
+    public function createTransactionTamUng($request, $time, $appCreator, $appModifier){
+        $treatmentData = $this->treatment->where('id', $request->treatment_id)->first();
+        if(!$treatmentData) return;
+        $data = $this->transaction::create([
+            'create_time' => now()->format('Ymdhis'),
+            'modify_time' => now()->format('Ymdhis'),
+            'creator' => get_loginname_with_token($request->bearerToken(), $time),
+            'modifier' => get_loginname_with_token($request->bearerToken(), $time),
+            'app_creator' => $appCreator,
+            'app_modifier' => $appModifier,
+            'transaction_type_id' =>  $this->transactionTypeTUId,
+            'transaction_time' => now()->format('Ymdhis'),
+            'amount' => $request->amount,  
+            'account_book_id' => $request->account_book_id,      
+            'pay_form_id' => $request->pay_form_id,
+            'cashier_room_id' => $request->cashier_room_id,
+            'treatment_id' => $request->treatment_id,
+            // Dữ liệu dư thừa
+            'tdl_treatment_code' => $treatmentData->treatment_code,
+            'tdl_patient_id' => $treatmentData->patient_id,
+            'tdl_patient_code' => $treatmentData->tdl_patient_code,
+            'tdl_patient_name' => $treatmentData->tdl_patient_name,
+            'tdl_patient_first_name' => $treatmentData->tdl_patient_first_name,
+            'tdl_patient_last_name' => $treatmentData->tdl_patient_last_name,
+            'tdl_patient_dob' => $treatmentData->tdl_patient_dob,
+            'tdl_patient_is_has_not_day_dob' => $treatmentData->tdl_patient_is_has_not_day_dob,
+            'tdl_patient_address' => $treatmentData->tdl_patient_address,
+            'tdl_patient_gender_id'  => $treatmentData->tdl_patient_gender_id,        
+            'tdl_patient_gender_name'  => $treatmentData->tdl_patient_gender_name,  
+            'tdl_patient_career_name'  => $treatmentData->tdl_patient_career_name,  
+            'tdl_patient_work_place'  => $treatmentData->tdl_patient_work_place,  
+            'tdl_patient_work_place_name'  => $treatmentData->tdl_patient_work_place_name,     
+            'tdl_patient_district_code'  => $treatmentData->tdl_patient_district_code,      
+            'tdl_patient_province_code' => $treatmentData->tdl_patient_province_code,  
+            'tdl_patient_commune_code'  => $treatmentData->tdl_patient_commune_code,  
+            'tdl_patient_military_rank_name'  => $treatmentData->tdl_patient_military_rank_name,   
+            'tdl_patient_national_name'  => $treatmentData->tdl_patient_national_name,  
+            'tdl_patient_relative_type' => $treatmentData->tdl_patient_relative_type,  
+            'tdl_patient_relative_name'  => $treatmentData->tdl_patient_relative_name,  
+            'tdl_patient_account_number'  => $treatmentData->tdl_patient_account_number,  
+            'tdl_patient_tax_code'  => $treatmentData->tdl_patient_tax_code,  
         ]);
         return $data;
     }

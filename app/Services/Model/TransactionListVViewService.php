@@ -26,20 +26,17 @@ class TransactionListVViewService
     {
         try {
             $data = $this->transactionListVViewRepository->applyJoins();
-            if($this->params->treatmentCode || $this->params->transactionCode){
-                if($this->params->treatmentCode){
-                    $data = $this->transactionListVViewRepository->applyTreatmentCodeFilter($data, $this->params->treatmentCode);
-                }
-                if($this->params->transactionCode){
-                    $data = $this->transactionListVViewRepository->applyTransactionCodeFilter($data, $this->params->transactionCode);
-                }
-            }else{
-                $data = $this->transactionListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-                $data = $this->transactionListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
-                $data = $this->transactionListVViewRepository->applyTransactionTypeIdsFilter($data, $this->params->transactionTypeIds);
-                $data = $this->transactionListVViewRepository->applyCreateFromTimeFilter($data, $this->params->createFromTime);
-                $data = $this->transactionListVViewRepository->applyCreateToTimeFilter($data, $this->params->createToTime);
+            if ($this->params->treatmentCode) {
+                $data = $this->transactionListVViewRepository->applyTreatmentCodeFilter($data, $this->params->treatmentCode);
             }
+            if ($this->params->transactionCode) {
+                $data = $this->transactionListVViewRepository->applyTransactionCodeFilter($data, $this->params->transactionCode);
+            }
+            $data = $this->transactionListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
+            $data = $this->transactionListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+            $data = $this->transactionListVViewRepository->applyTransactionTypeIdsFilter($data, $this->params->transactionTypeIds);
+            $data = $this->transactionListVViewRepository->applyCreateFromTimeFilter($data, $this->params->createFromTime);
+            $data = $this->transactionListVViewRepository->applyCreateToTimeFilter($data, $this->params->createToTime);
             $data = $this->transactionListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
             $data = $this->transactionListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit, $this->params->cursorPaginate, $this->params->lastId);
             if ($this->params->getAll) {
