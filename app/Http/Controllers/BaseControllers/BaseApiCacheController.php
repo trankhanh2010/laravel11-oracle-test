@@ -155,6 +155,12 @@ class BaseApiCacheController extends Controller
     protected $transactionTypeIdsName = 'TransactionTypeIds';
     protected $roomId;
     protected $roomIdName = 'RoomId';
+    protected $isForDeposit;
+    protected $isForDepositName = 'IsForDeposit';
+    protected $isForRepay;
+    protected $isForRepayName = 'IsForRepay';
+    protected $isForBill;   
+    protected $isForBillName = 'isForBill';   
     protected $serviceReqIds;
     protected $serviceReqIdsName = 'ServiceReqIds';
     protected $atc;
@@ -580,6 +586,8 @@ class BaseApiCacheController extends Controller
     protected $ageTypeName = 'age_type';
     protected $medicine;
     protected $medicineName = 'medicine';
+    protected $payForm;
+    protected $payFormName = 'pay_form';
     protected $sereServTeinVView;
     protected $sereServTeinVViewName = 'sere_serv_tein_v_view';
     protected $sereServBill;
@@ -1097,6 +1105,27 @@ class BaseApiCacheController extends Controller
                         unset($this->bedRoomIds[$key]);
                     }
                 }
+            }
+        }
+        $this->isForBill = $this->paramRequest['ApiData']['IsForBill'] ?? null;
+        if ($this->isForBill !== null) {
+            if (!in_array($this->isForBill, [0, 1])) {
+                $this->errors[$this->isForBillName] = $this->messFormat;
+                $this->isForBill = null;
+            }
+        }
+        $this->isForRepay = $this->paramRequest['ApiData']['IsForRepay'] ?? null;
+        if ($this->isForRepay !== null) {
+            if (!in_array($this->isForRepay, [0, 1])) {
+                $this->errors[$this->isForRepayName] = $this->messFormat;
+                $this->isForRepay = null;
+            }
+        }
+        $this->isForDeposit = $this->paramRequest['ApiData']['IsForDeposit'] ?? null;
+        if ($this->isForDeposit !== null) {
+            if (!in_array($this->isForDeposit, [0, 1])) {
+                $this->errors[$this->isForDepositName] = $this->messFormat;
+                $this->isForDeposit = null;
             }
         }
         $this->addTimeTo = $this->paramRequest['ApiData']['AddTimeTo'] ?? null;

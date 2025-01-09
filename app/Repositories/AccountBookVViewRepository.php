@@ -23,7 +23,8 @@ class AccountBookVViewRepository
     public function applyKeywordFilter($query, $keyword)
     {
         return $query->where(function ($query) use ($keyword) {
-            $query->where(DB::connection('oracle_his')->raw('v_his_account_book.loginname'), 'like', $keyword . '%');
+            $query->where(DB::connection('oracle_his')->raw('v_his_account_book.account_book_code'), 'like', '%'. $keyword . '%')
+            ->orWhere(DB::connection('oracle_his')->raw('lower(v_his_account_book.account_book_name)'), 'like', '%'. strtolower($keyword) . '%');
         });
     }
     public function applyIsActiveFilter($query, $isActive)
@@ -37,6 +38,42 @@ class AccountBookVViewRepository
     {
         if ($isDelete !== null) {
             $query->where(DB::connection('oracle_his')->raw('v_his_account_book.is_delete'), $isDelete);
+        }
+        return $query;
+    }
+    public function applyIsForBillFilter($query, $param)
+    {
+        if ($param !== null) {
+            if($param == 1){
+                $query->where(DB::connection('oracle_his')->raw('v_his_account_book.is_for_bill'), $param);
+            }else{
+                $query->whereNull(DB::connection('oracle_his')->raw('v_his_account_book.is_for_bill'))
+                ->orWhereNull(DB::connection('oracle_his')->raw('v_his_account_book.is_for_bill'), $param);
+            }
+        }
+        return $query;
+    }
+    public function applyIsForRepayFilter($query, $param)
+    {
+        if ($param !== null) {
+            if($param == 1){
+                $query->where(DB::connection('oracle_his')->raw('v_his_account_book.is_for_repay'), $param);
+            }else{
+                $query->whereNull(DB::connection('oracle_his')->raw('v_his_account_book.is_for_repay'))
+                ->orWhereNull(DB::connection('oracle_his')->raw('v_his_account_book.is_for_repay'), $param);
+            }
+        }
+        return $query;
+    }
+    public function applyIsForDepositFilter($query, $param)
+    {
+        if ($param !== null) {
+            if($param == 1){
+                $query->where(DB::connection('oracle_his')->raw('v_his_account_book.is_for_deposit'), $param);
+            }else{
+                $query->whereNull(DB::connection('oracle_his')->raw('v_his_account_book.is_for_deposit'))
+                ->orWhereNull(DB::connection('oracle_his')->raw('v_his_account_book.is_for_deposit'), $param);
+            }
         }
         return $query;
     }

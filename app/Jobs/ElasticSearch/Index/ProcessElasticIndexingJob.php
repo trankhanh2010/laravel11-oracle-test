@@ -104,6 +104,7 @@ use App\Repositories\PatientTypeAllowRepository;
 use App\Repositories\PatientTypeAlterVViewRepository;
 use App\Repositories\PatientTypeRepository;
 use App\Repositories\PatientTypeRoomRepository;
+use App\Repositories\PayFormRepository;
 use App\Repositories\PositionRepository;
 use App\Repositories\PreparationsBloodRepository;
 use App\Repositories\PriorityTypeRepository;
@@ -565,6 +566,9 @@ class ProcessElasticIndexingJob implements ShouldQueue
                 break;
             case 'patient_type_room':
                 $repository = app(PatientTypeRoomRepository::class);
+                break;
+            case 'pay_form':
+                $repository = app(PayFormRepository::class);
                 break;
             case 'position':
                 $repository = app(PositionRepository::class);

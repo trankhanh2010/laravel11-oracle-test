@@ -106,6 +106,7 @@ use App\Events\Elastic\PatientType\CreatePatientTypeIndex;
 use App\Events\Elastic\PatientTypeAllow\CreatePatientTypeAllowIndex;
 use App\Events\Elastic\PatientTypeAlterVView\CreatePatientTypeAlterVViewIndex;
 use App\Events\Elastic\PatientTypeRoom\CreatePatientTypeRoomIndex;
+use App\Events\Elastic\PayForm\CreatePayFormIndex;
 use App\Events\Elastic\Position\CreatePositionIndex;
 use App\Events\Elastic\PreparationsBlood\CreatePreparationsBloodIndex;
 use App\Events\Elastic\PriorityType\CreatePriorityTypeIndex;
@@ -273,6 +274,7 @@ use App\Repositories\PatientTypeAllowRepository;
 use App\Repositories\PatientTypeAlterVViewRepository;
 use App\Repositories\PatientTypeRepository;
 use App\Repositories\PatientTypeRoomRepository;
+use App\Repositories\PayFormRepository;
 use App\Repositories\PositionRepository;
 use App\Repositories\PreparationsBloodRepository;
 use App\Repositories\PriorityTypeRepository;
@@ -775,6 +777,10 @@ class IndexRecordsToElasticsearch extends Command
             case 'patient_type_room':
                 event(new CreatePatientTypeRoomIndex($name_table));
                 app(PatientTypeRoomRepository::class)->getDataFromDbToElastic($batchSize, null);
+                break;
+            case 'pay_form':
+                event(new CreatePayFormIndex($name_table));
+                app(PayFormRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'position':
                 event(new CreatePositionIndex($name_table));

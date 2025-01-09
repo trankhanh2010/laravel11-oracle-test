@@ -1587,4 +1587,9 @@ return [
         'test_index_group_code' => 'Mã nhóm chỉ số xét nghiệm',
         'test_index_group_name' => 'Tên nhóm chỉ số xét nghiệm',
     ],
+    // Hình thức thanh toán
+    'pay_form' => [
+        'pay_form_code' => 'Mã hình thức thanh toán',
+        'pay_form_name' => 'Tên hình thức thanh toán',
+    ],
 ];

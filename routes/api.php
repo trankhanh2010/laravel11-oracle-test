@@ -147,6 +147,7 @@ use App\Http\Controllers\Api\CacheControllers\MedicalContractController;
 use App\Http\Controllers\Api\CacheControllers\MemaGroupController;
 use App\Http\Controllers\Api\CacheControllers\ModuleController;
 use App\Http\Controllers\Api\CacheControllers\PackingTypeController;
+use App\Http\Controllers\Api\CacheControllers\PayFormController;
 use App\Http\Controllers\Api\CacheControllers\ProcessingMethodController;
 use App\Http\Controllers\Api\CacheControllers\StorageConditionController;
 use App\Http\Controllers\Api\CacheControllers\SuimIndexUnitController;
@@ -662,6 +663,10 @@ Route::group([
     /// Phòng thực hiện - Đối tượng bệnh nhân
     Route::group(['as' => 'HIS.Desktop.Plugins.PatientTypeRoom'], function () {
         Route::apiResource('v1/patient-type-room', PatientTypeRoomController::class)->only(['index', 'show', 'store']);
+    });
+    /// Hình thức thanh toán
+    Route::group(['as' => 'HIS.Desktop.Plugins.HisPayForm'], function () {
+        Route::apiResource('v1/pay-form', PayFormController::class);
     });
     /// Chức vụ
     Route::group(['as' => 'HIS.Desktop.Plugins.HisPosition'], function () {

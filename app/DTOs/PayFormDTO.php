@@ -2,12 +2,11 @@
 
 namespace App\DTOs;
 
-class AccountBookVViewDTO
+class PayFormDTO
 {
-    public $accountBookVViewName;
+    public $payFormName;
     public $keyword;
     public $isActive;
-    public $isDelete;
     public $orderBy;
     public $orderByJoin;
     public $orderByString;
@@ -18,18 +17,10 @@ class AccountBookVViewDTO
     public $appCreator;
     public $appModifier;
     public $time;
-    public $isForDeposit;
-    public $isForRepay;
-    public $isForBill;   
-    // public $isOutOfBill;
-    // public $forDeposit;
-    // public $loginname;
-    // public $cashierroomId;
     public function __construct(
-        $accountBookVViewName,
+        $payFormName,
         $keyword, 
         $isActive, 
-        $isDelete,
         $orderBy, 
         $orderByJoin, 
         $orderByString, 
@@ -40,19 +31,11 @@ class AccountBookVViewDTO
         $appCreator,
         $appModifier,
         $time,
-        $isForDeposit,
-        $isForRepay,
-        $isForBill,
-        // $isOutOfBill,
-        // $forDeposit,
-        // $loginname,
-        // $cashierroomId,
         )
     {
-        $this->accountBookVViewName = $accountBookVViewName;
+        $this->payFormName = $payFormName;
         $this->keyword = $keyword;
         $this->isActive = $isActive;
-        $this->isDelete = $isDelete;
         $this->orderBy = $orderBy;
         $this->orderByJoin = $orderByJoin;
         $this->orderByString = $orderByString;
@@ -63,12 +46,5 @@ class AccountBookVViewDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
-        $this->isForDeposit = $isForDeposit;
-        $this->isForRepay = $isForRepay;
-        $this->isForBill = $isForBill;
-        // $this->isOutOfBill = $isOutOfBill;
-        // $this->forDeposit = $forDeposit;
-        // $this->loginname = $loginname;
-        // $this->cashierroomId = $cashierroomId;
     }
 }

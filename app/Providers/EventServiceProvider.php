@@ -208,6 +208,8 @@ use App\Events\Elastic\PatientTypeAlterVView\CreatePatientTypeAlterVViewIndex;
 use App\Events\Elastic\PatientTypeAlterVView\InsertPatientTypeAlterVViewIndex;
 use App\Events\Elastic\PatientTypeRoom\CreatePatientTypeRoomIndex;
 use App\Events\Elastic\PatientTypeRoom\InsertPatientTypeRoomIndex;
+use App\Events\Elastic\PayForm\CreatePayFormIndex;
+use App\Events\Elastic\PayForm\InsertPayFormIndex;
 use App\Events\Elastic\Position\CreatePositionIndex;
 use App\Events\Elastic\Position\InsertPositionIndex;
 use App\Events\Elastic\PreparationsBlood\CreatePreparationsBloodIndex;
@@ -547,6 +549,8 @@ use App\Listeners\Elastic\PatientTypeAlterVView\ElasticCreatePatientTypeAlterVVi
 use App\Listeners\Elastic\PatientTypeAlterVView\ElasticInsertPatientTypeAlterVViewIndex;
 use App\Listeners\Elastic\PatientTypeRoom\ElasticCreatePatientTypeRoomIndex;
 use App\Listeners\Elastic\PatientTypeRoom\ElasticInsertPatientTypeRoomIndex;
+use App\Listeners\Elastic\PayForm\ElasticCreatePayFormIndex;
+use App\Listeners\Elastic\PayForm\ElasticInsertPayFormIndex;
 use App\Listeners\Elastic\Position\ElasticCreatePositionIndex;
 use App\Listeners\Elastic\Position\ElasticInsertPositionIndex;
 use App\Listeners\Elastic\PreparationsBlood\ElasticCreatePreparationsBloodIndex;
@@ -1592,6 +1596,13 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertTranPatiTechIndex::class => [
             ElasticInsertTranPatiTechIndex::class,
+        ],
+
+        CreatePayFormIndex::class => [
+            ElasticCreatePayFormIndex::class,
+        ],
+        InsertPayFormIndex::class => [
+            ElasticInsertPayFormIndex::class,
         ],
 
         CreateTransactionTypeIndex::class => [

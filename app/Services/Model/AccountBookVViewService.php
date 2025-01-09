@@ -29,6 +29,9 @@ class AccountBookVViewService
             $data = $this->accountBookVViewRepository->applyKeywordFilter($data, $this->params->keyword);
             $data = $this->accountBookVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
             $data = $this->accountBookVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+            $data = $this->accountBookVViewRepository->applyIsForDepositFilter($data, $this->params->isForDeposit);
+            $data = $this->accountBookVViewRepository->applyIsForRepayFilter($data, $this->params->isForRepay);
+            $data = $this->accountBookVViewRepository->applyIsForBillFilter($data, $this->params->isForBill);
             $count = $data->count();
             $data = $this->accountBookVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
             $data = $this->accountBookVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
@@ -43,6 +46,9 @@ class AccountBookVViewService
             $data = $this->accountBookVViewRepository->applyJoins();
             $data = $this->accountBookVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
             $data = $this->accountBookVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+            $data = $this->accountBookVViewRepository->applyIsForDepositFilter($data, $this->params->isForDeposit);
+            $data = $this->accountBookVViewRepository->applyIsForRepayFilter($data, $this->params->isForRepay);
+            $data = $this->accountBookVViewRepository->applyIsForBillFilter($data, $this->params->isForBill);
             $count = $data->count();
             $data = $this->accountBookVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
             $data = $this->accountBookVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
