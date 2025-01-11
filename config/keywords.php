@@ -1592,4 +1592,15 @@ return [
         'pay_form_code' => 'Mã hình thức thanh toán',
         'pay_form_name' => 'Tên hình thức thanh toán',
     ],
+    // giao dịch tạm ứng
+    'transaction_tam_ung' => [
+        'treatment_id' => 'Id điều trị',
+        'amount' => 'Số tiền tạm ứng',
+        'account_book_id' => 'Id sổ thu chi',
+        'pay_form_id' => 'Id hình thức thanh toán',
+        'cashier_room_id' => 'Id phòng thu ngân',
+        'swipe_amount' => 'Số tiền quẹt thẻ',
+        'transfer_amount' => 'Số tiền chuyển khoản',
+        'description' => 'Lý do tạm ứng',
+    ],
 ];

@@ -217,7 +217,7 @@ return [
             // 'prefix' => env('REDIS_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_').'_database_'),
             'prefix' => "",
             // 'persistent' => true,  // Kết nối persistent (duy trì kết nối)
-            'read_timeout' => -1,
+            // 'read_timeout' => -1,
         ],
 
         'default' => [

@@ -2,15 +2,20 @@
 
 namespace App\Http\Requests\Transaction;
 
+use App\Models\HIS\PayForm;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Database\Query\Builder;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class CreateTransactionTamUngRequest extends FormRequest
 {
+    protected $payForm;
+    protected $payForm06;
+    protected $payForm03;
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -26,6 +31,15 @@ class CreateTransactionTamUngRequest extends FormRequest
      */
     public function rules()
     {
+        $this->payForm = new PayForm();
+        $this->payForm06 = Cache::remember('pay_form_06_id', now()->addMinutes(10080), function () {
+            $data =  $this->payForm->where('pay_form_code', '06')->get();
+            return $data->value('id');
+        });
+        $this->payForm03 = Cache::remember('pay_form_03_id', now()->addMinutes(10080), function () {
+            $data =  $this->payForm->where('pay_form_code', '03')->get();
+            return $data->value('id');
+        });
         return [
             'amount' =>                         'required|integer|min:0',  
             'account_book_id' => [
@@ -64,21 +78,44 @@ class CreateTransactionTamUngRequest extends FormRequest
                                         ->where(DB::connection('oracle_his')->raw("is_active"), 1);
                                     }),
                                 ], 
+            'description' =>        'nullable|string|max:2000',  
+            'swipe_amount' =>       'required_if:pay_form_id,'.$this->payForm06.'|lte:amount',
+            'transfer_amount' =>    'required_if:pay_form_id,'.$this->payForm03.'|lte:amount'
         ];
     }
     public function messages()
     {
         return [
-            // 'transaction_tam_ung_code.required'    => config('keywords')['transaction_tam_ung']['transaction_tam_ung_code'].config('keywords')['error']['required'],
-            // 'transaction_tam_ung_code.string'      => config('keywords')['transaction_tam_ung']['transaction_tam_ung_code'].config('keywords')['error']['string'],
-            // 'transaction_tam_ung_code.max'         => config('keywords')['transaction_tam_ung']['transaction_tam_ung_code'].config('keywords')['error']['string_max'],
-            // 'transaction_tam_ung_code.unique'      => config('keywords')['transaction_tam_ung']['transaction_tam_ung_code'].config('keywords')['error']['unique'],
+            'amount.required'      => config('keywords')['transaction_tam_ung']['amount'].config('keywords')['error']['required'],
+            'amount.integer'       => config('keywords')['transaction_tam_ung']['amount'].config('keywords')['error']['integer'],
+            'amount.min'           => config('keywords')['transaction_tam_ung']['amount'].config('keywords')['error']['integer_min'],
 
-            // 'transaction_tam_ung_name.required'    => config('keywords')['transaction_tam_ung']['transaction_tam_ung_name'].config('keywords')['error']['required'],
-            // 'transaction_tam_ung_name.string'      => config('keywords')['transaction_tam_ung']['transaction_tam_ung_name'].config('keywords')['error']['string'],
-            // 'transaction_tam_ung_name.max'         => config('keywords')['transaction_tam_ung']['transaction_tam_ung_name'].config('keywords')['error']['string_max'],
-            // 'transaction_tam_ung_name.unique'      => config('keywords')['transaction_tam_ung']['transaction_tam_ung_name'].config('keywords')['error']['unique'],
+            'account_book_id.required'      => config('keywords')['transaction_tam_ung']['account_book_id'].config('keywords')['error']['required'],
+            'account_book_id.integer'       => config('keywords')['transaction_tam_ung']['account_book_id'].config('keywords')['error']['integer'],
+            'account_book_id.exists'        => config('keywords')['transaction_tam_ung']['account_book_id'].config('keywords')['error']['exists'],  
 
+            'pay_form_id.required'      => config('keywords')['transaction_tam_ung']['pay_form_id'].config('keywords')['error']['required'],
+            'pay_form_id.integer'       => config('keywords')['transaction_tam_ung']['pay_form_id'].config('keywords')['error']['integer'],
+            'pay_form_id.exists'        => config('keywords')['transaction_tam_ung']['pay_form_id'].config('keywords')['error']['exists'], 
+
+            'cashier_room_id.required'      => config('keywords')['transaction_tam_ung']['cashier_room_id'].config('keywords')['error']['required'],
+            'cashier_room_id.integer'       => config('keywords')['transaction_tam_ung']['cashier_room_id'].config('keywords')['error']['integer'],
+            'cashier_room_id.exists'        => config('keywords')['transaction_tam_ung']['cashier_room_id'].config('keywords')['error']['exists'], 
+
+            'treatment_id.required'      => config('keywords')['transaction_tam_ung']['treatment_id'].config('keywords')['error']['required'],
+            'treatment_id.integer'       => config('keywords')['transaction_tam_ung']['treatment_id'].config('keywords')['error']['integer'],
+            'treatment_id.exists'        => config('keywords')['transaction_tam_ung']['treatment_id'].config('keywords')['error']['exists'], 
+
+            'description.string'        => config('keywords')['transaction_tam_ung']['description'].config('keywords')['error']['string'],
+            'description.max'           => config('keywords')['transaction_tam_ung']['description'].config('keywords')['error']['string_max'],
+
+            'swipe_amount.required_if'   => config('keywords')['transaction_tam_ung']['swipe_amount'].' không được bỏ trống nếu hình thức thanh toán là Tiền mặt/Quẹt thẻ',
+            'swipe_amount.integer'       => config('keywords')['transaction_tam_ung']['swipe_amount'].config('keywords')['error']['integer'],
+            'swipe_amount.lte'           => config('keywords')['transaction_tam_ung']['swipe_amount'].' phải bé hơn hoặc bằng '.config('keywords')['transaction_tam_ung']['amount'],
+
+            'transfer_amount.required_if'   => config('keywords')['transaction_tam_ung']['transfer_amount'].' không được bỏ trống nếu hình thức thanh toán là Tiền mặt/Chuyển khoản',
+            'transfer_amount.integer'       => config('keywords')['transaction_tam_ung']['transfer_amount'].config('keywords')['error']['integer'],
+            'transfer_amount.lte'           => config('keywords')['transaction_tam_ung']['transfer_amount'].' phải bé hơn hoặc bằng '.config('keywords')['transaction_tam_ung']['amount'],
         ];
     }
 
