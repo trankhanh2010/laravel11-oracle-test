@@ -80,7 +80,15 @@ class CreateTransactionTamUngRequest extends FormRequest
                                 ], 
             'description' =>        'nullable|string|max:2000',  
             'swipe_amount' =>       'required_if:pay_form_id,'.$this->payForm06.'|lte:amount',
-            'transfer_amount' =>    'required_if:pay_form_id,'.$this->payForm03.'|lte:amount'
+            'transfer_amount' =>    'required_if:pay_form_id,'.$this->payForm03.'|lte:amount',
+
+            'buyer_name' =>             'nullable|string|max:200',
+            'buyer_tax_code' =>         'nullable|string|max:20',
+            'buyer_account_number' =>   'nullable|string|max:500',
+            'buyer_organization' =>     'nullable|string|max:500',
+            'buyer_address' =>          'nullable|string|max:500',
+            'buyer_phone' =>            'nullable|string|max:20',
+
         ];
     }
     public function messages()

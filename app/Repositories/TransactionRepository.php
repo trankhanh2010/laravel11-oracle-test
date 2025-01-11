@@ -177,6 +177,13 @@ class TransactionRepository
             'treatment_id' => $request->treatment_id,
             'description' => $request->description,
             // Dữ liệu dư thừa
+            'buyer_name' => $request->buyer_name,
+            'buyer_tax_code' => $request->buyer_tax_code,
+            'buyer_account_number' => $request->buyer_account_number,
+            'buyer_organization' => $request->buyer_organization,
+            'buyer_address' => $request->buyer_address,
+            'buyer_phone' => $request->buyer_phone,
+
             'tdl_treatment_code' => $treatmentData->treatment_code,
             'tdl_patient_id' => $treatmentData->patient_id,
             'tdl_patient_code' => $treatmentData->tdl_patient_code,

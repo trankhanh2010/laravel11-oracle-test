@@ -11,10 +11,11 @@ class TreatmentMoMoPaymentsRepository
     {
         $this->treatmentMoMoPayments = $treatmentMoMoPayments;
     }
-    public function check($treatmentCode, $requestType){
+    public function check($treatmentCode, $requestType, $amount){
         $data = $this->treatmentMoMoPayments
         ->where('treatment_code', $treatmentCode)
         ->where('request_type', $requestType)
+        ->where('amount', $amount)
         ->where('result_code', '1000')
         ->first();
         return $data;
@@ -41,6 +42,16 @@ class TreatmentMoMoPaymentsRepository
         ->where('request_id', $param['requestId'])
         ->where('amount', $param['amount'])
         ->exists();
+        return $data;
+    }
+    public function setResultCode1005($treatmentCode){
+        $data = $this->treatmentMoMoPayments
+        ->where('treatment_code', $treatmentCode)
+        ->where('result_code', 1000)
+        ->update([
+            'modify_time' => now()->format('Ymdhis'),
+            'result_code' => 1005,
+        ]);
         return $data;
     }
     public function create($data){

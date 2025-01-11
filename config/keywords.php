@@ -1602,5 +1602,12 @@ return [
         'swipe_amount' => 'Số tiền quẹt thẻ',
         'transfer_amount' => 'Số tiền chuyển khoản',
         'description' => 'Lý do tạm ứng',
+
+        'buyer_name' => 'Tên người thanh toán',
+        'buyer_tax_code' => 'Mã số thuế người thanh toán',
+        'buyer_account_number' => 'Số tài khoản người thanh toán',
+        'buyer_organization' => 'Đơn vị',
+        'buyer_address' => 'Địa chỉ người thanh toán',
+        'buyer_phone' => 'Số điện thoại người thanh toán',
     ],
 ];

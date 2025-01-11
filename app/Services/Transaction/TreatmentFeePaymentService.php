@@ -157,9 +157,9 @@ class TreatmentFeePaymentService
         return $dataReturn;
     }
 
-    protected function checkTimeLiveLinkPaymentMoMo($treatment_code, $requestType){
+    protected function checkTimeLiveLinkPaymentMoMo($treatment_code, $requestType, $fee){
         $dataReturn = null;
-        $dataDB = $this->treatmentMoMoPaymentsRepository->check($treatment_code, $requestType);
+        $dataDB = $this->treatmentMoMoPaymentsRepository->check($treatment_code, $requestType, $fee);
         // Nếu có tồn tại trong DB và check bên MoMo ra mã 1000 thì trả về, k thì trả về null
         if($dataDB){
             $dataMoMo = $this->checkTransactionStatus($dataDB->order_id, $dataDB->request_id);
@@ -186,7 +186,7 @@ class TreatmentFeePaymentService
 
             if ($this->params->paymentMethod == 'MoMo') {
                 [$requestType, $signature] = $this->generateSignature($this->params->paymentOption, $transactionInfo);
-                $check = $this->checkTimeLiveLinkPaymentMoMo($data->treatment_code, $requestType);
+                $check = $this->checkTimeLiveLinkPaymentMoMo($data->treatment_code, $requestType, $data->fee);
                 if ($check) {
                     return ['data' => $this->formatResponseFromRepository($check, $transactionInfo['amount'], $transactionInfo['orderInfo'])];
                 }
