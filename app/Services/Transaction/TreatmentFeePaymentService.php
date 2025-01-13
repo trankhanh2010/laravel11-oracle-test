@@ -3,6 +3,7 @@
 namespace App\Services\Transaction;
 
 use App\DTOs\TreatmentFeePaymentDTO;
+use App\Repositories\SereServMomoPaymentsRepository;
 use App\Repositories\TreatmentFeeListVViewRepository;
 use App\Repositories\TestServiceTypeListVViewRepository;
 use App\Repositories\TreatmentFeeDetailVViewRepository;
@@ -16,6 +17,7 @@ class TreatmentFeePaymentService
     protected $testServiceTypeListVViewRepository;
     protected $treatmentFeeDetailVViewRepository;
     protected $treatmentMoMoPaymentsRepository;
+    protected $sereServMomoPayments;
     protected $params;
     protected $unit = ' VNĐ';
     protected $partnerCode;
@@ -30,11 +32,13 @@ class TreatmentFeePaymentService
         TestServiceTypeListVViewRepository $testServiceTypeListVViewRepository,
         TreatmentFeeDetailVViewRepository $treatmentFeeDetailVViewRepository,
         TreatmentMoMoPaymentsRepository $treatmentMoMoPaymentsRepository,
+        SereServMomoPaymentsRepository $sereServMomoPayments,
     ) {
         $this->treatmentFeeListVViewRepository = $treatmentFeeListVViewRepository;
         $this->testServiceTypeListVViewRepository = $testServiceTypeListVViewRepository;
         $this->treatmentFeeDetailVViewRepository = $treatmentFeeDetailVViewRepository;
         $this->treatmentMoMoPaymentsRepository = $treatmentMoMoPaymentsRepository;
+        $this->sereServMomoPayments = $sereServMomoPayments;
 
         $this->partnerCode = config('database')['connections']['momo']['momo_partner_code'];
         $this->accessKey = config('database')['connections']['momo']['momo_access_key'];
@@ -172,6 +176,14 @@ class TreatmentFeePaymentService
         }
         return $dataReturn;
     }
+    protected function getListSereServ($treatmentId){
+        $data = $this->testServiceTypeListVViewRepository->applyJoins();
+        $data = $this->testServiceTypeListVViewRepository->applyTreatmentIdFilter($data, $treatmentId);
+        $data = $this->testServiceTypeListVViewRepository->applyChuaThanhToanFilter($data);
+        $data = $this->testServiceTypeListVViewRepository->applyCoPhiFilter($data);
+        $data = $data->get();
+        return $data;
+    }
     public function handleCreatePayment()
     {
         try {
@@ -217,7 +229,17 @@ class TreatmentFeePaymentService
                     'requestType' => $requestType,
                     'qrCodeUrl' => $dataReturn['qrCodeUrl'] ?? ''
                 ];
-                $this->treatmentMoMoPaymentsRepository->create($dataCreate);
+                // Tạo payment momo
+                $treatmentMomoPayments = $this->treatmentMoMoPaymentsRepository->create($dataCreate, $this->params->appCreator, $this->params->appModifier);
+                // Tạo danh sách dịch vụ cho payment
+                $listSereServ = $this->getListSereServ($data->id);
+                foreach($listSereServ as $key => $item){
+                    $dataSereServCreate = [
+                        'sere_serv_id' => $item->id,
+                        'treatment_momo_payments_id' => $treatmentMomoPayments->id,
+                    ];
+                    $this->sereServMomoPayments->create($dataSereServCreate, $this->params->appCreator, $this->params->appModifier);
+                }
                 return ['data' => $dataReturn];
             }
 

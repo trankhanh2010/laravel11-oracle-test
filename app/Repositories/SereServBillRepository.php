@@ -2,15 +2,21 @@
 namespace App\Repositories;
 
 use App\Jobs\ElasticSearch\Index\ProcessElasticIndexingJob;
+use App\Models\HIS\SereServ;
 use App\Models\HIS\SereServBill;
 use Illuminate\Support\Facades\DB;
 
 class SereServBillRepository
 {
     protected $sereServBill;
-    public function __construct(SereServBill $sereServBill)
+    protected $sereServ;
+    public function __construct(
+        SereServBill $sereServBill,
+        SereServ $sereServ,
+        )
     {
         $this->sereServBill = $sereServBill;
+        $this->sereServ = $sereServ;
     }
 
     public function applyJoins()
@@ -77,7 +83,8 @@ class SereServBillRepository
     {
         return $this->sereServBill->find($id);
     }
-    public function create($sereServ, $transaction, $appCreator, $appModifier){
+    public function create($sereServId, $transaction, $appCreator, $appModifier){
+        $sereServ = $this->sereServ->find($sereServId);
         $data = $this->sereServBill::create([
             'create_time' => now()->format('Ymdhis'),
             'modify_time' => now()->format('Ymdhis'),
@@ -85,11 +92,49 @@ class SereServBillRepository
             'modifier' => $appModifier,
             'app_creator' => $appCreator,
             'app_modifier' => $appModifier,
-            'sere_serv_id' => $sereServ->id,
+            'sere_serv_id' => $sereServId,
             'bill_id' => $transaction->id,
             'price' => $sereServ->price,
             'vat_ratio' => $sereServ->vat_ratio,
             'tdl_treatment_id' => $sereServ->tdl_treatment_id,
+
+            'tdl_bill_type_id' => $sereServ->tdl_bill_type_id,   
+            'tdl_service_req_id' => $sereServ->tdl_service_req_id,   
+            'tdl_primary_price' => $sereServ->tdl_primary_price,   
+            'tdl_limit_price' => $sereServ->tdl_limit_price,   
+            'tdl_amount' => $sereServ->tdl_amount,   
+            'tdl_price' => $sereServ->tdl_price,   
+            'tdl_original_price' => $sereServ->tdl_original_price,   
+            'tdl_hein_price' => $sereServ->tdl_hein_price,   
+            'tdl_hein_ratio' => $sereServ->tdl_hein_ratio,   
+            'tdl_hein_limit_price' => $sereServ->tdl_hein_limit_price,   
+            'tdl_hein_limit_ratio' => $sereServ->tdl_hein_limit_ratio,   
+            'tdl_hein_normal_price' => $sereServ->tdl_hein_normal_price,   
+            'tdl_add_price' => $sereServ->tdl_add_price,   
+            'tdl_overtime_price' => $sereServ->tdl_overtime_price,    
+            'tdl_discount' => $sereServ->tdl_discount,   
+            'tdl_vat_ratio' => $sereServ->tdl_vat_ratio,   
+            'tdl_service_type_id'  => $sereServ->tdl_service_type_id,   
+            'tdl_hein_service_type_id' => $sereServ->tdl_hein_service_type_id,   
+            'tdl_user_price' => $sereServ->tdl_user_price,   
+            'tdl_other_source_price' => $sereServ->tdl_other_source_price,   
+            'tdl_total_hein_price' => $sereServ->tdl_total_hein_price,   
+            'tdl_total_patient_price' => $sereServ->tdl_total_patient_price,   
+            'tdl_total_patient_price_bhyt' => $sereServ->tdl_total_patient_price_bhyt,   
+            'tdl_service_id' => $sereServ->tdl_service_id,   
+            'tdl_service_code' => $sereServ->tdl_service_code,   
+            'tdl_service_name' => $sereServ->tdl_service_name,   
+            'tdl_service_unit_id' => $sereServ->tdl_service_unit_id,   
+            'tdl_patient_type_id'  => $sereServ->tdl_patient_type_id,   
+            'tdl_request_department_id' => $sereServ->tdl_request_department_id,   
+            'tdl_execute_department_id' => $sereServ->tdl_execute_department_id,   
+            'tdl_sere_serv_parent_id'  => $sereServ->tdl_sere_serv_parent_id,   
+            'tdl_is_out_parent_fee' => $sereServ->tdl_is_out_parent_fee,   
+            'tdl_real_price' => $sereServ->tdl_real_price,   
+            'tdl_real_patient_price'  => $sereServ->tdl_real_patient_price,   
+            'tdl_real_hein_price' => $sereServ->tdl_real_hein_price,   
+            'tdl_primary_patient_type_id' => $sereServ->tdl_primary_patient_type_id,   
+
         ]);
         return $data;
     }

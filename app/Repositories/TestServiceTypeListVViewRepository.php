@@ -34,6 +34,16 @@ class TestServiceTypeListVViewRepository
         }
         return $query;
     }
+    public function applyChuaThanhToanFilter($query)
+    {
+        $query->where(DB::connection('oracle_his')->raw('v_his_test_service_type_list.da_thanh_toan'), 0);
+        return $query;
+    }
+    public function applyCoPhiFilter($query)
+    {
+        $query->where(DB::connection('oracle_his')->raw('v_his_test_service_type_list.vir_total_patient_price'), '>', 0);
+        return $query;
+    }
     public function applyTreatmentIdFilter($query, $id)
     {
         if ($id !== null) {

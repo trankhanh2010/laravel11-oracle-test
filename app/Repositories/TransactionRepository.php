@@ -215,9 +215,19 @@ class TransactionRepository
             'modify_time' => now()->format('Ymdhis'),
             'modifier' => get_loginname_with_token($request->bearerToken(), $time),
             'app_modifier' => $appModifier,
-            'transaction_code' => $request->transaction_code,
-            'transaction_name' => $request->transaction_name,
-            'is_active' => $request->is_active
+
+            'amount' => $request->amount,  
+            'transfer_amount' => $request->pay_form_id == $this->payForm03Id ? $request->transfer_amount : 0, // Nếu đúng hình thức tiền mặt/chuyển khoản
+            'swipe_amount' => $request->pay_form_id == $this->payForm06Id ? $request->swipe_amount : 0, //Nếu đúng hình thức tiền mặt/quẹt thẻ
+            'pay_form_id' => $request->pay_form_id,
+            'replace_reason' => $request->replace_reason,
+
+            'buyer_name' => $request->buyer_name,
+            'buyer_tax_code' => $request->buyer_tax_code,
+            'buyer_account_number' => $request->buyer_account_number,
+            'buyer_organization' => $request->buyer_organization,
+            'buyer_address' => $request->buyer_address,
+            'buyer_phone' => $request->buyer_phone,
         ]);
         return $data;
     }

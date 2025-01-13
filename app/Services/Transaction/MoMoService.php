@@ -5,6 +5,7 @@ namespace App\Services\Transaction;
 use App\DTOs\MoMoDTO;
 use App\Events\Transaction\MoMoNotificationReceived;
 use App\Repositories\SereServBillRepository;
+use App\Repositories\SereServMomoPaymentsRepository;
 use App\Repositories\TestServiceTypeListVViewRepository;
 use App\Repositories\TransactionRepository;
 use App\Repositories\TreatmentMoMoPaymentsRepository;
@@ -15,7 +16,7 @@ class MoMoService
     protected $treatmentMoMoPaymentsRepository;
     protected $transactionRepository;
     protected $serviceReqPaymentService;
-    protected $testServiceTypeListVViewRepository;
+    protected $sereServMomoPaymentsRepository;
     protected $sereServBill;
     protected $params;
     protected $partnerCode;
@@ -29,14 +30,14 @@ class MoMoService
         TreatmentMoMoPaymentsRepository $treatmentMoMoPaymentsRepository,
         TransactionRepository $transactionRepository,
         TreatmentFeePaymentService $serviceReqPaymentService,
-        TestServiceTypeListVViewRepository $testServiceTypeListVViewRepository,
+        SereServMomoPaymentsRepository $sereServMomoPaymentsRepository,
         SereServBillRepository $sereServBill,
     )
     {
         $this->treatmentMoMoPaymentsRepository = $treatmentMoMoPaymentsRepository;
         $this->transactionRepository = $transactionRepository;
         $this->serviceReqPaymentService = $serviceReqPaymentService;
-        $this->testServiceTypeListVViewRepository = $testServiceTypeListVViewRepository;
+        $this->sereServMomoPaymentsRepository = $sereServMomoPaymentsRepository;
         $this->sereServBill = $sereServBill;
         $this->partnerCode = config('database')['connections']['momo']['momo_partner_code'];
         $this->accessKey = config('database')['connections']['momo']['momo_access_key'];
@@ -71,20 +72,19 @@ class MoMoService
         $dataMoMo = $this->serviceReqPaymentService->checkTransactionStatus($data['orderId'])['data'];
         // Cập nhật payment 
         $this->treatmentMoMoPaymentsRepository->update($dataMoMo);
-        // và lấy treatmentId, treatmentCode
-        $payment = $this->treatmentMoMoPaymentsRepository->getTreatmentByOrderId($dataMoMo['orderId']);
         // Nếu resultCode là 0 hoặc 9000 thì tạo transaction trong DB
         if ($dataMoMo['resultCode'] == 0 || $dataMoMo['resultCode'] == 9000) {
+            // và lấy treatmentId, treatmentCode
+            $payment = $this->treatmentMoMoPaymentsRepository->getTreatmentByOrderId($dataMoMo['orderId']);
             // Tạo transaction
             $transaction = $this->transactionRepository->createTransactionPaymentMoMo($payment, $dataMoMo, $this->params->appCreator, $this->params->appModifier);
+            // Cập nhật bill cho treatmentMomoPayments
+            $this->treatmentMoMoPaymentsRepository->updateBill($payment, $transaction->id);
             // sere_serv_bill
-            $listServiceType = $this->testServiceTypeListVViewRepository->applyJoins();
-            $listServiceType = $this->testServiceTypeListVViewRepository->applyTreatmentIdFilter($listServiceType, $transaction->treatment_id)
-            ->where('vir_total_patient_price', '>', 0)
-            ->get();
+            $listSereServ = $this->sereServMomoPaymentsRepository->getByTreatmentMomoPaymentsId($payment->id);
             // Lặp qua từng sere_serv để tạo mới
-            foreach($listServiceType as $key => $item){
-                $this->sereServBill->create($item, $transaction,  $this->params->appCreator, $this->params->appModifier);
+            foreach($listSereServ as $key => $item){
+                $this->sereServBill->create($item->sere_serv_id, $transaction,  $this->params->appCreator, $this->params->appModifier);
             }
         }
         // Gửi dữ liệu lên WebSocket

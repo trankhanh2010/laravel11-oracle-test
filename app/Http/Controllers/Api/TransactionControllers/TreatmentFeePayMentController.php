@@ -18,6 +18,8 @@ class TreatmentFeePayMentController extends BaseApiCacheController
         $this->serviceReqPaymentService = $serviceReqPaymentService;
         // Thêm tham số vào service
         $this->serviceReqPaymentDTO = new TreatmentFeePaymentDTO(
+            $this->appCreator,
+            $this->appModifier,
             $this->paymentMethod,
             $this->paymentOption,
             $this->patientCode,

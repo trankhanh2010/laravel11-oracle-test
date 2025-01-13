@@ -4,17 +4,23 @@ namespace App\DTOs;
 
 class TreatmentFeePaymentDTO
 {
+    public $appCreator;
+    public $appModifier;
     public $paymentMethod;
     public $paymentOption;
     public $patientCode;
     public $treatmentCode;
     public function __construct(
+        $appCreator,
+        $appModifier,
         $paymentMethod,
         $paymentOption,
         $patientCode,
         $treatmentCode, 
         )
     {
+        $this->appCreator = $appCreator;
+        $this->appModifier = $appModifier;
         $this->paymentMethod = $paymentMethod;
         $this->paymentOption = $paymentOption;
         $this->patientCode = $patientCode;

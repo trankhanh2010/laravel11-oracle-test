@@ -29,6 +29,7 @@ class TreatmentMoMoPaymentsRepository
     public function getTreatmentByOrderId($orderId){
         $data = $this->treatmentMoMoPayments
         ->select([
+            'id',
             'treatment_id',
             'treatment_code'
         ])
@@ -54,10 +55,17 @@ class TreatmentMoMoPaymentsRepository
         ]);
         return $data;
     }
-    public function create($data){
+    public function create($data, $appCreator, $appModifier){
         $data = $this->treatmentMoMoPayments::create([
             'create_time' => now()->format('Ymdhis'),
             'modify_time' => now()->format('Ymdhis'),
+            // 'creator' => get_loginname_with_token($request->bearerToken(), $time),
+            // 'modifier' => get_loginname_with_token($request->bearerToken(), $time),
+            'app_creator' => $appCreator,
+            'app_modifier' => $appModifier,
+            'is_active' => 1,
+            'is_delete' => 0,
+            
             'treatment_code' =>  $data['treatmentCode'], 
             'treatment_id' => $data['treatmentId'],         
             'order_id' =>  $data['orderId'],           
@@ -79,5 +87,12 @@ class TreatmentMoMoPaymentsRepository
             'trans_id' => $data['transId'] ?? '',
         ]);
         return $dataDB;
+    }
+    public function updateBill($data, $billId){
+        $data->update([
+            'modify_time' => now()->format('Ymdhis'),
+            'bill_id' => $billId,
+        ]);
+        return $data;
     }
 }
