@@ -81,6 +81,8 @@ class CreateTransactionTamUngRequest extends FormRequest
             'description' =>        'nullable|string|max:2000',  
             'swipe_amount' =>       'required_if:pay_form_id,'.$this->payForm06.'|lte:amount',
             'transfer_amount' =>    'required_if:pay_form_id,'.$this->payForm03.'|lte:amount',
+            'transaction_time' =>   'required|integer|regex:/^\d{14}$/',
+
 
             'buyer_name' =>             'nullable|string|max:200',
             'buyer_tax_code' =>         'nullable|string|max:20',
@@ -124,6 +126,10 @@ class CreateTransactionTamUngRequest extends FormRequest
             'transfer_amount.required_if'   => config('keywords')['transaction_tam_ung']['transfer_amount'].' không được bỏ trống nếu hình thức thanh toán là Tiền mặt/Chuyển khoản',
             'transfer_amount.integer'       => config('keywords')['transaction_tam_ung']['transfer_amount'].config('keywords')['error']['integer'],
             'transfer_amount.lte'           => config('keywords')['transaction_tam_ung']['transfer_amount'].' phải bé hơn hoặc bằng '.config('keywords')['transaction_tam_ung']['amount'],
+
+            'transaction_time.required'           => config('keywords')['transaction_tam_ung']['transaction_time'].config('keywords')['error']['required'],
+            'transaction_time.integer'            => config('keywords')['transaction_tam_ung']['transaction_time'].config('keywords')['error']['integer'],
+            'transaction_time.regex'              => config('keywords')['transaction_tam_ung']['transaction_time'].config('keywords')['error']['regex_ymdhis'],
         ];
     }
 

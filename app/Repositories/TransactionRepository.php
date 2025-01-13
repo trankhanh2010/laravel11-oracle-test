@@ -167,7 +167,7 @@ class TransactionRepository
             'app_creator' => $appCreator,
             'app_modifier' => $appModifier,
             'transaction_type_id' =>  $this->transactionTypeTUId,
-            'transaction_time' => now()->format('Ymdhis'),
+            'transaction_time' => $request->transaction_time,
             'amount' => $request->amount,  
             'transfer_amount' => $request->pay_form_id == $this->payForm03Id ? $request->transfer_amount : 0, // Nếu đúng hình thức tiền mặt/chuyển khoản
             'swipe_amount' => $request->pay_form_id == $this->payForm06Id ? $request->swipe_amount : 0, //Nếu đúng hình thức tiền mặt/quẹt thẻ

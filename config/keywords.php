@@ -1602,7 +1602,7 @@ return [
         'swipe_amount' => 'Số tiền quẹt thẻ',
         'transfer_amount' => 'Số tiền chuyển khoản',
         'description' => 'Lý do tạm ứng',
-
+        'transaction_time' => 'Thời gian giao dịch (Thời gian khi bắt đầu thao tác)',
         'buyer_name' => 'Tên người thanh toán',
         'buyer_tax_code' => 'Mã số thuế người thanh toán',
         'buyer_account_number' => 'Số tài khoản người thanh toán',
