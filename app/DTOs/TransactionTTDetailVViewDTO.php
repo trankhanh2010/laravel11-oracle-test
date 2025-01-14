@@ -2,9 +2,9 @@
 
 namespace App\DTOs;
 
-class SereServBillDTO
+class TransactionTTDetailVViewDTO
 {
-    public $sereServBillName;
+    public $transactionTTDetailVViewName;
     public $keyword;
     public $isActive;
     public $isDelete;
@@ -21,7 +21,7 @@ class SereServBillDTO
     public $billId;
     public $billCode;
     public function __construct(
-        $sereServBillName,
+        $transactionTTDetailVViewName,
         $keyword, 
         $isActive, 
         $isDelete,
@@ -39,7 +39,7 @@ class SereServBillDTO
         $billCode,
         )
     {
-        $this->sereServBillName = $sereServBillName;
+        $this->transactionTTDetailVViewName = $transactionTTDetailVViewName;
         $this->keyword = $keyword;
         $this->isActive = $isActive;
         $this->isDelete = $isDelete;

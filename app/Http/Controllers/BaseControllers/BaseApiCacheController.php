@@ -31,6 +31,7 @@ use App\Models\HIS\ServiceReqType;
 use Illuminate\Http\Request;
 use App\Models\HIS\ServiceType;
 use App\Models\HIS\TestIndex;
+use App\Models\HIS\Transaction;
 use App\Models\HIS\TransactionType;
 use App\Models\HIS\Treatment;
 use App\Models\HIS\TreatmentType;
@@ -127,6 +128,10 @@ class BaseApiCacheController extends Controller
     protected $moduleIdName = 'ModuleId';
     protected $roleId;
     protected $roleIdName = 'RoleId';
+    protected $billId;
+    protected $billIdName = 'BillId';
+    protected $billCode;
+    protected $billCodeName = 'BillCode';
     protected $mediStockId;
     protected $mediStockIdName = 'MediStockId';
     protected $fromTime;
@@ -592,6 +597,8 @@ class BaseApiCacheController extends Controller
     protected $sereServTeinVViewName = 'sere_serv_tein_v_view';
     protected $sereServBill;
     protected $sereServBillName = 'sere_serv_bill';
+    protected $transactionTTDetailVView;
+    protected $transactionTTDetailVViewName = 'TransactionTTDetailVView';
     protected $sereServDepositVView;
     protected $sereServDepositVViewName = 'sere_serv_deposit_v_view';
     protected $seseDepoRepayVView;
@@ -893,6 +900,14 @@ class BaseApiCacheController extends Controller
             }
         }
 
+        $this->billCode = $this->paramRequest['ApiData']['BillCode']?? null;
+        if ($this->billCode !== null) {
+            if (!is_string($this->billCode)) {
+                $this->errors[$this->billCodeName] = $this->messFormat;
+                $this->billCode = null;
+            }
+        }
+
         $this->onlyActive = $this->paramRequest['ApiData']['OnlyActive'] ?? false;
         if (!is_bool($this->onlyActive)) {
             $this->errors[$this->onlyActiveName] = $this->messFormat;
@@ -1159,6 +1174,19 @@ class BaseApiCacheController extends Controller
                 if (!Service::where('id', $this->serviceId)->exists()) {
                     $this->errors[$this->serviceIdName] = $this->messRecordId;
                     $this->serviceId = null;
+                }
+            }
+        }
+        $this->billId = $this->paramRequest['ApiData']['BillId'] ?? null;
+        if ($this->billId !== null) {
+            // Kiểm tra xem ID có tồn tại trong bảng  hay không
+            if (!is_numeric($this->billId)) {
+                $this->errors[$this->billIdName] = $this->messFormat;
+                $this->billId = null;
+            } else {
+                if (!Transaction::where('id', $this->billId)->exists()) {
+                    $this->errors[$this->billIdName] = $this->messRecordId;
+                    $this->billId = null;
                 }
             }
         }

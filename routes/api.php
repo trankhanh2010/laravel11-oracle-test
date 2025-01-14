@@ -182,6 +182,7 @@ use App\Http\Controllers\Api\NoCacheControllers\TreatmentLViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TreatmentWithPatientTypeInfoSdoController;
 use App\Http\Controllers\Api\NoCacheControllers\UserRoomVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TestServiceTypeListVViewController;
+use App\Http\Controllers\Api\NoCacheControllers\TransactionTTDetailVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TransactionListVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TreatmentFeeDetailVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TreatmentFeeListVViewController;
@@ -988,4 +989,8 @@ Route::group([
     ]);
     /// Tạo giao dịch tạm ứng Transaction Tạm ứng
     Route::apiResource('v1/transaction-tam-ung', TransactionTamUngController::class)->only(['store']);
+    /// Chi tiết giao dịch transaction detail
+    Route::group(['as' => 'HIS.Desktop.Plugins.TransactionBillDetail'], function () {
+        Route::apiResource('v1/transaction-tt-detail-v-view', TransactionTTDetailVViewController::class)->only(['index']);
+    });
 });

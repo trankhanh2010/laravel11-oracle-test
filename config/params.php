@@ -406,6 +406,7 @@ return [
             'tracking_data' => 'Có lỗi khi thực hiện thao tác với Cơ sở dữ liệu!',
             'care' => 'Có lỗi khi thực hiện thao tác với Chăm sóc!',
             'transaction_list_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm Danh sách giao dịch!',
+            'transaction_tt_detail_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm Chi tiết giao dịch!',
 
         ],
         'table' => [

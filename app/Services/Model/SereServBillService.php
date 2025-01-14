@@ -29,7 +29,8 @@ class SereServBillService
             $data = $this->sereServBillRepository->applyKeywordFilter($data, $this->params->keyword);
             $data = $this->sereServBillRepository->applyIsActiveFilter($data, $this->params->isActive);
             $data = $this->sereServBillRepository->applyIsDeleteFilter($data, $this->params->isDelete);
-            $data = $this->sereServBillRepository->applyTdlTreatmentIdFilter($data, $this->params->tdlTreatmentId);
+            $data = $this->sereServBillRepository->applyBillIdFilter($data, $this->params->billId);
+            $data = $this->sereServBillRepository->applyBillCodeFilter($data, $this->params->billCode);
             $count = $data->count();
             $data = $this->sereServBillRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
             $data = $this->sereServBillRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
@@ -44,7 +45,8 @@ class SereServBillService
             $data = $this->sereServBillRepository->applyJoins();
             $data = $this->sereServBillRepository->applyIsActiveFilter($data, $this->params->isActive);
             $data = $this->sereServBillRepository->applyIsDeleteFilter($data, $this->params->isDelete);
-            $data = $this->sereServBillRepository->applyTdlTreatmentIdFilter($data, $this->params->tdlTreatmentId);
+            $data = $this->sereServBillRepository->applyBillIdFilter($data, $this->params->billId);
+            $data = $this->sereServBillRepository->applyBillCodeFilter($data, $this->params->billCode);
             $count = $data->count();
             $data = $this->sereServBillRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
             $data = $this->sereServBillRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);

@@ -46,10 +46,18 @@ class SereServBillRepository
         }
         return $query;
     }
-    public function applyTdlTreatmentIdFilter($query, $id)
+    public function applyBillIdFilter($query, $id)
     {
         if ($id !== null) {
-            $query->where(DB::connection('oracle_his')->raw('his_sere_serv_bill.tdl_treatment_id'), $id);
+            $query->where(DB::connection('oracle_his')->raw('his_sere_serv_bill.bill_id'), $id);
+        }
+        return $query;
+    }
+    public function applyBillCodeFilter($query, $code)
+    {
+        if ($code !== null) {
+            $query->join('his_transaction', 'his_sere_serv_bill.bill_id', '=', 'his_transaction.id') 
+                  ->where('his_transaction.transaction_code', $code);
         }
         return $query;
     }

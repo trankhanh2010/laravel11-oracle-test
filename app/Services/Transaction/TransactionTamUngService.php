@@ -28,6 +28,7 @@ class TransactionTamUngService
     {
         try {
             $data = $this->transactionRepository->createTransactionTamUng($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);          
+            // Vô hiệu hóa các link thanh toán đã có trước khi tạm ứng
             $this->treatmentMomoPaymentsRepository->setResultCode1005($data->tdl_treatment_code);
             return returnDataCreateSuccess($data);
         } catch (\Throwable $e) {
