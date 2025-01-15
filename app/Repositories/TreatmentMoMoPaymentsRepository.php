@@ -42,6 +42,7 @@ class TreatmentMoMoPaymentsRepository
         ->where('order_id', $param['orderId'])
         ->where('request_id', $param['requestId'])
         ->where('amount', $param['amount'])
+        ->where('result_code', 1000) // Trạng thái đang chờ người dùng
         ->exists();
         return $data;
     }

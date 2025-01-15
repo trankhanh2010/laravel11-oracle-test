@@ -11,7 +11,7 @@ use App\Repositories\TransactionRepository;
 use App\Repositories\TreatmentMoMoPaymentsRepository;
 use App\Services\Transaction\TreatmentFeePaymentService;
 
-class MoMoService 
+class MoMoService
 {
     protected $treatmentMoMoPaymentsRepository;
     protected $transactionRepository;
@@ -26,14 +26,13 @@ class MoMoService
     protected $endpointCheckTransaction;
     protected $returnUrl;
     protected $notifyUrl;
-    public function __construct(        
+    public function __construct(
         TreatmentMoMoPaymentsRepository $treatmentMoMoPaymentsRepository,
         TransactionRepository $transactionRepository,
         TreatmentFeePaymentService $serviceReqPaymentService,
         SereServMomoPaymentsRepository $sereServMomoPaymentsRepository,
         SereServBillRepository $sereServBill,
-    )
-    {
+    ) {
         $this->treatmentMoMoPaymentsRepository = $treatmentMoMoPaymentsRepository;
         $this->transactionRepository = $transactionRepository;
         $this->serviceReqPaymentService = $serviceReqPaymentService;
@@ -56,16 +55,17 @@ class MoMoService
     {
         // Lấy dữ liệu gửi về từ MoMo hoặc nguồn khác
         $data = $this->params->request->all();
-        // Xác minh chữ ký từ MoMo
-        // $isVefify = $this->verifyMoMoSignature($data);
-        // if (!$isVefify) {
-        //     return response()->json([], 204);
-        //     // Nếu dữ liệu không khớp
-        // }
+        //Xác minh chữ ký từ MoMo
+        $isVefify = $this->verifyMoMoSignature($data);
+        if (!$isVefify) {
+            // Nếu dữ liệu không khớp thì bỏ qua
+            return response()->json([], 204);
+        }
+        // Check trong DB xem có tạo giao dịch cho payment này chưa
         $isValid = $this->isValid($data);
         if (!$isValid) {
+            // Nếu dữ liệu không khớp hoặc đã có rồi thì bỏ qua
             return response()->json([], 204);
-            // Nếu dữ liệu không khớp
         }
         // Nếu khớp thì cập nhật bên DB
         // Lấy resultCode từ MoMo
@@ -83,9 +83,11 @@ class MoMoService
             // sere_serv_bill
             $listSereServ = $this->sereServMomoPaymentsRepository->getByTreatmentMomoPaymentsId($payment->id);
             // Lặp qua từng sere_serv để tạo mới
-            foreach($listSereServ as $key => $item){
+            foreach ($listSereServ as $key => $item) {
                 $this->sereServBill->create($item->sere_serv_id, $transaction,  $this->params->appCreator, $this->params->appModifier);
             }
+            // Vô hiệu hóa các link thanh toán đã có trước khi thanh toán
+            $this->treatmentMoMoPaymentsRepository->setResultCode1005($payment->treatment_code);
         }
         // Gửi dữ liệu lên WebSocket
         broadcast(new MoMoNotificationReceived($data));
@@ -96,30 +98,13 @@ class MoMoService
         $result = $this->treatmentMoMoPaymentsRepository->checkNofityMoMo($data);
         return $result;
     }
-    // private function verifyMoMoSignature($data)
-    // {
-    // // Bước 1: Tạo chuỗi rawData theo thứ tự quy định
-    // $rawData = sprintf(
-    //     "partnerCode=%s&orderId=%s&requestId=%s&amount=%s&orderInfo=%s&orderType=%s&transId=%s&resultCode=%s&message=%s&payType=%s&responseTime=%s&extraData=%s",
-    //     $data['partnerCode'],
-    //     $data['orderId'],
-    //     $data['requestId'],
-    //     $data['amount'],
-    //     $data['orderInfo'],
-    //     $data['orderType'],
-    //     $data['transId'] ?? "", // Nếu transId là null, dùng chuỗi rỗng
-    //     $data['resultCode'],
-    //     $data['message'],
-    //     $data['payType'] ?? "", // Nếu payType là null, dùng chuỗi rỗng
-    //     $data['responseTime'],
-    //     $data['extraData'] ?? "" // Nếu extraData là null, dùng chuỗi rỗng
-    // );    
-    //     // Bước 2: Tạo chữ ký bằng HMAC-SHA256
-    // // dd($rawData);
-    // $generatedSignature = hash_hmac('sha256', $rawData, $this->secretKey);
-    // // dd(hash_equals($generatedSignature, $data['signature']));
-    // dd($generatedSignature);
-    // // Bước 3: So sánh chữ ký
-    // return hash_equals($generatedSignature, $data['signature']);
-    // }
+    private function verifyMoMoSignature($data)
+    {
+        // Bước 1: Tạo chuỗi rawData theo thứ tự quy định
+        $rawData = "accessKey={$this->accessKey}&amount={$data['amount']}&extraData={$data['extraData']}&message={$data['message']}&orderId={$data['orderId']}&orderInfo={$data['orderInfo']}&orderType={$data['orderType']}&partnerCode={$data['partnerCode']}&payType={$data['payType']}&requestId={$data['requestId']}&responseTime={$data['responseTime']}&resultCode={$data['resultCode']}&transId={$data['transId']}";
+        // Bước 2: Tạo chữ ký bằng HMAC-SHA256
+        $generatedSignature = hash_hmac('sha256', $rawData, $this->secretKey);
+        // Bước 3: So sánh chữ ký
+        return hash_equals($generatedSignature, $data['signature']);
+    }
 }
