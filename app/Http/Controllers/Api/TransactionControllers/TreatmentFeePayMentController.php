@@ -24,6 +24,7 @@ class TreatmentFeePayMentController extends BaseApiCacheController
             $this->paymentOption,
             $this->patientCode,
             $this->treatmentCode,
+            $this->transactionTypeCode,
         );
         $this->serviceReqPaymentService->withParams($this->serviceReqPaymentDTO);
     }

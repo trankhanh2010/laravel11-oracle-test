@@ -107,7 +107,7 @@ class TransactionRepository
     {
         return $this->transaction->find($id);
     }
-    public function createTransactionPaymentMoMo($payment, $data, $appCreator, $appModifier){
+    public function createTransactionPaymentMoMoThanhToan($payment, $data, $appCreator, $appModifier){
         $treatmentData = $this->treatment->where('id', $payment->treatment_id)->first();
         // if(!$treatmentData) return;
         $data = $this->transaction::create([

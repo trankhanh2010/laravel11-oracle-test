@@ -11,10 +11,11 @@ class TreatmentMoMoPaymentsRepository
     {
         $this->treatmentMoMoPayments = $treatmentMoMoPayments;
     }
-    public function check($treatmentCode, $requestType, $amount){
+    public function checkTT($treatmentCode, $requestType, $amount){
         $data = $this->treatmentMoMoPayments
         ->where('treatment_code', $treatmentCode)
         ->where('request_type', $requestType)
+        ->where('transaction_type_code', 'TT')
         ->where('amount', $amount)
         ->where('result_code', '1000')
         ->first();
@@ -77,6 +78,8 @@ class TreatmentMoMoPaymentsRepository
             'pay_url' =>  $data['payUrl'],
             'request_type' => $data['requestType'],
             'qr_code_url' => $data['qrCodeUrl'],
+            'transaction_type_code' => $data['transactionTypeCode'],
+
         ]);
         return $data;
     }

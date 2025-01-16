@@ -10,13 +10,15 @@ class TreatmentFeePaymentDTO
     public $paymentOption;
     public $patientCode;
     public $treatmentCode;
+    public $transactionTypeCode;
     public function __construct(
         $appCreator,
         $appModifier,
         $paymentMethod,
         $paymentOption,
         $patientCode,
-        $treatmentCode, 
+        $treatmentCode,
+        $transactionTypeCode, 
         )
     {
         $this->appCreator = $appCreator;
@@ -25,5 +27,6 @@ class TreatmentFeePaymentDTO
         $this->paymentOption = $paymentOption;
         $this->patientCode = $patientCode;
         $this->treatmentCode = $treatmentCode;
+        $this->transactionTypeCode = $transactionTypeCode;
     }
 }

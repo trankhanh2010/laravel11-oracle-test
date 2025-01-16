@@ -45,12 +45,16 @@ class TreatmentFeePaymentService
         $this->secretKey = config('database')['connections']['momo']['momo_secret_key'];
         $this->endpointCreatePayment = config('database')['connections']['momo']['momo_endpoint_create_payment'];
         $this->endpointCheckTransaction = config('database')['connections']['momo']['momo_endpoint_check_transaction'];
-        $this->returnUrl = config('database')['connections']['momo']['momo_return_url'];
-        $this->notifyUrl = config('database')['connections']['momo']['momo_notify_url'];
+
     }
     public function withParams(TreatmentFeePaymentDTO $params)
     {
         $this->params = $params;
+        // Lấy URL IPN tương ứng với loại giao dịch
+        if($this->params->transactionTypeCode == 'TT'){
+            $this->returnUrl = config('database')['connections']['momo']['momo_return_url_thanh_toan'];
+            $this->notifyUrl = config('database')['connections']['momo']['momo_notify_url_thanh_toan'];
+        }
         return $this;
     }
     protected function getTreatmentFeeData()
@@ -163,7 +167,10 @@ class TreatmentFeePaymentService
 
     protected function checkTimeLiveLinkPaymentMoMo($treatment_code, $requestType, $fee){
         $dataReturn = null;
-        $dataDB = $this->treatmentMoMoPaymentsRepository->check($treatment_code, $requestType, $fee);
+        // Nếu là giao dịch thanh toán
+        if($this->params->transactionTypeCode = 'TT'){
+            $dataDB = $this->treatmentMoMoPaymentsRepository->checkTT($treatment_code, $requestType, $fee);
+        }
         // Nếu có tồn tại trong DB và check bên MoMo ra mã 1000 thì trả về, k thì trả về null
         if($dataDB){
             $dataMoMo = $this->checkTransactionStatus($dataDB->order_id, $dataDB->request_id);
@@ -227,18 +234,24 @@ class TreatmentFeePaymentService
                     'deeplink' => $dataReturn['deeplink'] ?? '',
                     'payUrl' => $dataReturn['payUrl'] ?? '',
                     'requestType' => $requestType,
-                    'qrCodeUrl' => $dataReturn['qrCodeUrl'] ?? ''
+                    'qrCodeUrl' => $dataReturn['qrCodeUrl'] ?? '',
+                    'transactionTypeCode' => $this->params->transactionTypeCode ?? '',
                 ];
                 // Tạo payment momo
                 $treatmentMomoPayments = $this->treatmentMoMoPaymentsRepository->create($dataCreate, $this->params->appCreator, $this->params->appModifier);
-                // Tạo danh sách dịch vụ cho payment
-                $listSereServ = $this->getListSereServ($data->id);
-                foreach($listSereServ as $key => $item){
-                    $dataSereServCreate = [
-                        'sere_serv_id' => $item->id,
-                        'treatment_momo_payments_id' => $treatmentMomoPayments->id,
-                    ];
-                    $this->sereServMomoPayments->create($dataSereServCreate, $this->params->appCreator, $this->params->appModifier);
+
+                // Nếu là giao dịch thanh toán
+                if($this->params->transactionTypeCode == 'TT'){
+                    // Tạo danh sách dịch vụ cho payment
+                    $listSereServ = $this->getListSereServ($data->id);
+                    foreach($listSereServ as $key => $item){
+                        $dataSereServCreate = [
+                            'sere_serv_id' => $item->id,
+                            'treatment_momo_payments_id' => $treatmentMomoPayments->id,
+                            'transaction_type_code' => $this->params->transactionTypeCode,
+                        ];
+                        $this->sereServMomoPayments->create($dataSereServCreate, $this->params->appCreator, $this->params->appModifier);
+                    }
                 }
                 return ['data' => $dataReturn];
             }

@@ -10,7 +10,7 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class MoMoNotificationReceived implements ShouldBroadcast
+class MoMoNotificationThanhToanReceived implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
     public $data;
@@ -30,12 +30,12 @@ class MoMoNotificationReceived implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new Channel('momo-status-payment-channel')
+            new Channel('momo-status-payment-thanh-toan-channel')
         ];
     }
     public function broadcastAs()
     {
-        return 'momo-status-payment-event';
+        return 'momo-status-payment-thanh-toan-event';
     }
      // Gửi dữ liệu lên WebSocket
      public function broadcastWith()

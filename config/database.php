@@ -178,8 +178,13 @@ return [
             'momo_endpoint' => env('MOMO_ENDPOINT'),
             'momo_endpoint_create_payment' => env('MOMO_ENDPOINT'). '/v2/gateway/api/create',
             'momo_endpoint_check_transaction' => env('MOMO_ENDPOINT'). '/v2/gateway/api/query',
-            'momo_return_url' => env('MOMO_RETURN_URL'),
-            'momo_notify_url' => env('MOMO_NOTIFY_URL'),
+
+            'momo_return_url_thanh_toan' => env('MOMO_RETURN_URL_THANH_TOAN'),
+            'momo_notify_url_thanh_toan' => env('MOMO_NOTIFY_URL_THANH_TOAN'),
+
+            'momo_return_url_tam_ung' => env('MOMO_RETURN_URL_TAM_UNG'),
+            'momo_notify_url_tam_ung' => env('MOMO_NOTIFY_URL_TAM_UNG'),
+
         ],
     ],
 

@@ -24,9 +24,9 @@ class MoMoController extends BaseApiCacheController
         );
         $this->moMoService->withParams($this->moMoDTO);
     }
-    public function handleNotification()
+    public function handleNotificationThanhToan()
     {
-        $this->moMoService->handleNotification();
+        $this->moMoService->handleNotificationThanhToan();
         // Trả về phản hồi cho MoMo
         return response()->json([], 204);
     }

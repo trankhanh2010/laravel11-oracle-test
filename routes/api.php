@@ -253,16 +253,21 @@ Route::get("v1/test-db", function () {
 
 Route::get('v1/check-token', [CheckTokenController::class, 'index']);
 
-// Thông báo trạng thái /// k cần token
-Route::post('v1/momo-notify', [MoMoController::class, 'handleNotification'])
+Route::fallback(function () {
+    return return_404_error_page_not_found();
+});
+
+/// MOMO nofity ipn
+// Thông báo trạng thái thanh toán /// k cần token
+Route::post('v1/momo-notify-thanh-toan', [MoMoController::class, 'handleNotificationThanhToan'])
     ->withoutMiddleware('check_token');
 
 Route::get('v1/check-transaction', [TreatmentFeePayMentController::class, 'checkTransactionStatus'])
     ->withoutMiddleware('check_token');
 
-Route::fallback(function () {
-    return return_404_error_page_not_found();
-});
+
+
+
 /// Request
 Route::get("v1/get-column-name", [BaseApiRequestController::class, "getColumnname"])->name('.get_column_name')
     ->withoutMiddleware('check_token');

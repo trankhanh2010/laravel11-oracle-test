@@ -624,6 +624,8 @@ class BaseApiCacheController extends Controller
     // Thanh toán
     protected $paymentMethod; // Hình thức thanh toán MoMo VNPay
     protected $paymentMethodName = 'PaymentMethod';
+    protected $transactionTypeCode; // Tên loại giao dịch
+    protected $transactionTypeCodeName = 'PaymentMethod';
     protected $paymentOption; // Phương thức thanh toán QR Code Thẻ ngân hàng
     protected $paymentOptionName = 'PaymentOption';
     // Khai báo các biến cho Elastic
@@ -850,6 +852,12 @@ class BaseApiCacheController extends Controller
         if($this->paymentOption !== null){
             if (!is_string($this->paymentOption)) {
                 $this->errors[$this->paymentOptionName] = $this->messFormat;
+            }
+        }
+        $this->transactionTypeCode = $this->paramRequest['ApiData']['TransactionTypeCode'] ?? null;
+        if($this->transactionTypeCode !== null){
+            if (!is_string($this->transactionTypeCode)) {
+                $this->errors[$this->transactionTypeCodeName] = $this->messFormat;
             }
         }
         $this->isActive = $this->paramRequest['ApiData']['IsActive'] ?? null;

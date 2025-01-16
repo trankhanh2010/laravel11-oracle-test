@@ -79,6 +79,7 @@ class SereServMomoPaymentsRepository
             'is_delete' => 0,
             'sere_serv_id' =>$data['sere_serv_id'],
             'treatment_momo_payments_id' =>$data['treatment_momo_payments_id'],
+            'transaction_type_code' => $data['transaction_type_code'],
         ]);
         return $data;
     }
