@@ -100,11 +100,28 @@ class MoMoService
     }
     private function verifyMoMoSignature($data)
     {
-        // Bước 1: Tạo chuỗi rawData theo thứ tự quy định
-        $rawData = "accessKey={$this->accessKey}&amount={$data['amount']}&extraData={$data['extraData']}&message={$data['message']}&orderId={$data['orderId']}&orderInfo={$data['orderInfo']}&orderType={$data['orderType']}&partnerCode={$data['partnerCode']}&payType={$data['payType']}&requestId={$data['requestId']}&responseTime={$data['responseTime']}&resultCode={$data['resultCode']}&transId={$data['transId']}";
-        // Bước 2: Tạo chữ ký bằng HMAC-SHA256
+        // Kiểm tra `accessKey` trong `$data`, nếu không có thì dùng `$this->accessKey`
+        $accessKey = $data['accessKey'] ?? $this->accessKey;
+    
+        // Bước 1: Sắp xếp mảng `$data` theo thứ tự bảng chữ cái của key
+        ksort($data);
+    
+        // Bước 2: Tạo chuỗi `rawData` từ mảng đã sắp xếp, bỏ qua `signature`
+        $rawData = ["accessKey={$accessKey}"];
+        foreach ($data as $key => $value) {
+            if ($key === 'signature' || $key === 'accessKey') {
+                continue; // Bỏ qua trường `signature`
+            }
+            // Nối chuỗi
+            $rawData[] = "{$key}={$value}";
+        }
+        $rawData = implode('&', $rawData);
+
+        // Bước 3: Tạo chữ ký bằng HMAC-SHA256
         $generatedSignature = hash_hmac('sha256', $rawData, $this->secretKey);
-        // Bước 3: So sánh chữ ký
+
+        // Bước 4: So sánh chữ ký
         return hash_equals($generatedSignature, $data['signature']);
     }
+    
 }
