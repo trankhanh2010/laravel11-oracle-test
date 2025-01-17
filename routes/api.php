@@ -261,7 +261,10 @@ Route::fallback(function () {
 // Thông báo trạng thái thanh toán /// k cần token
 Route::post('v1/momo-notify-thanh-toan', [MoMoController::class, 'handleNotificationThanhToan'])
     ->withoutMiddleware('check_token');
-
+// Thông báo trạng thái tạm ứng /// k cần token
+Route::post('v1/momo-notify-tam-ung', [MoMoController::class, 'handleNotificationTamUng'])
+    ->withoutMiddleware('check_token');
+// check trạng thái payment momo
 Route::get('v1/check-transaction', [TreatmentFeePayMentController::class, 'checkTransactionStatus'])
     ->withoutMiddleware('check_token');
 

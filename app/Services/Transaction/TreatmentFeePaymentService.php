@@ -55,6 +55,10 @@ class TreatmentFeePaymentService
             $this->returnUrl = config('database')['connections']['momo']['momo_return_url_thanh_toan'];
             $this->notifyUrl = config('database')['connections']['momo']['momo_notify_url_thanh_toan'];
         }
+        if($this->params->transactionTypeCode == 'TU'){
+            $this->returnUrl = config('database')['connections']['momo']['momo_return_url_tam_ung'];
+            $this->notifyUrl = config('database')['connections']['momo']['momo_notify_url_tam_ung'];
+        }
         return $this;
     }
     protected function getTreatmentFeeData()
@@ -82,11 +86,14 @@ class TreatmentFeePaymentService
     {
         $orderId = Str::uuid();
         $requestId = Str::uuid();
-        $orderInfo = "Tong chi phi: " . $data->total_price . $this->unit
-            . "; BHYT thanh toan: " . $data->total_hein_price . $this->unit
-            . "; BN phai thanh toan: " . $data->total_patient_price . $this->unit
-            . "; Da thu: " . $data->da_thu . $this->unit
-            . "; BN can nop them: " . $data->fee . $this->unit;
+        $orderInfo = 
+            "Ten BN: " . $data->tdl_patient_name
+            . "; Ma dieu tri: " . $data->treatment_code
+            . "; Tong chi phi: " . number_format($data->total_price) . $this->unit
+            . "; BHYT thanh toan: " . number_format($data->total_hein_price) . $this->unit
+            . "; BN phai thanh toan: " . number_format($data->total_patient_price) . $this->unit
+            . "; Da thu: " . number_format($data->da_thu) . $this->unit
+            . "; BN can nop them: " . number_format($data->fee) . $this->unit;
 
         return [
             'orderId' => $orderId,
@@ -170,8 +177,12 @@ class TreatmentFeePaymentService
     protected function checkTimeLiveLinkPaymentMoMo($treatment_code, $requestType, $fee){
         $dataReturn = null;
         // Nếu là giao dịch thanh toán
-        if($this->params->transactionTypeCode = 'TT'){
+        if($this->params->transactionTypeCode == 'TT'){
             $dataDB = $this->treatmentMoMoPaymentsRepository->checkTT($treatment_code, $requestType, $fee);
+        }
+        // Nếu là giao dịch tạm ứng
+        if($this->params->transactionTypeCode == 'TU'){
+            $dataDB = $this->treatmentMoMoPaymentsRepository->checkTU($treatment_code, $requestType, $fee);
         }
         // Nếu có tồn tại trong DB và check bên MoMo ra mã 1000 thì trả về, k thì trả về null
         if($dataDB){
@@ -275,6 +286,10 @@ class TreatmentFeePaymentService
                         ];
                         $this->sereServMomoPayments->create($dataSereServCreate, $this->params->appCreator, $this->params->appModifier);
                     }
+                }
+                // Nếu là giao dịch tạm ứng
+                if($this->params->transactionTypeCode == 'TU'){
+                    // hành động cho giao dịch tạm ứng
                 }
                 return ['data' => $dataReturn];
             }

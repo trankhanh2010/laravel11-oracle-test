@@ -11,11 +11,30 @@ class TreatmentMoMoPaymentsRepository
     {
         $this->treatmentMoMoPayments = $treatmentMoMoPayments;
     }
+    public function check($treatmentCode, $requestType, $amount){
+        $data = $this->treatmentMoMoPayments
+        ->where('treatment_code', $treatmentCode)
+        ->where('request_type', $requestType)
+        ->where('amount', $amount)
+        ->where('result_code', '1000')
+        ->first();
+        return $data;
+    }
     public function checkTT($treatmentCode, $requestType, $amount){
         $data = $this->treatmentMoMoPayments
         ->where('treatment_code', $treatmentCode)
         ->where('request_type', $requestType)
         ->where('transaction_type_code', 'TT')
+        ->where('amount', $amount)
+        ->where('result_code', '1000')
+        ->first();
+        return $data;
+    }
+    public function checkTU($treatmentCode, $requestType, $amount){
+        $data = $this->treatmentMoMoPayments
+        ->where('treatment_code', $treatmentCode)
+        ->where('request_type', $requestType)
+        ->where('transaction_type_code', 'TU')
         ->where('amount', $amount)
         ->where('result_code', '1000')
         ->first();

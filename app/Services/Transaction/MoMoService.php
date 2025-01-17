@@ -4,6 +4,7 @@ namespace App\Services\Transaction;
 
 use App\DTOs\MoMoDTO;
 use App\Events\Transaction\MoMoNotificationThanhToanReceived;
+use App\Events\Transaction\MoMoNotificationTamUngReceived;
 use App\Repositories\SereServBillRepository;
 use App\Repositories\SereServMomoPaymentsRepository;
 use App\Repositories\TestServiceTypeListVViewRepository;
@@ -94,41 +95,41 @@ class MoMoService
         broadcast(new MoMoNotificationThanhToanReceived($data));
     }
     // Nhận ipn tạm ứng
-    // public function handleNotificationTamUng()
-    // {
-    //     // Lấy param từ request
-    //     $data = $this->getParamRequest();
-    //     //Xác minh chữ ký từ MoMo
-    //     $isVefify = $this->verifyMoMoSignature($data);
-    //     if (!$isVefify) {
-    //         // Nếu dữ liệu không khớp thì bỏ qua
-    //         return response()->json([], 204);
-    //     }
-    //     // Check trong DB xem có tạo giao dịch cho payment này chưa
-    //     $isValid = $this->isValid($data);
-    //     if (!$isValid) {
-    //         // Nếu dữ liệu không khớp hoặc đã có rồi thì bỏ qua
-    //         return response()->json([], 204);
-    //     }
-    //     // Nếu khớp thì cập nhật bên DB
-    //     // Lấy resultCode từ MoMo
-    //     $dataMoMo = $this->serviceReqPaymentService->checkTransactionStatus($data['orderId'])['data'];
-    //     // Cập nhật payment 
-    //     $this->treatmentMoMoPaymentsRepository->update($dataMoMo);
-    //     // Nếu resultCode là 0 hoặc 9000 thì tạo transaction trong DB
-    //     if ($dataMoMo['resultCode'] == 0 || $dataMoMo['resultCode'] == 9000) {
-    //         // và lấy treatmentId, treatmentCode
-    //         $payment = $this->treatmentMoMoPaymentsRepository->getTreatmentByOrderId($dataMoMo['orderId']);
-    //         // Tạo transaction
-    //         $transaction = $this->transactionRepository->createTransactionPaymentMoMoThanhToan($payment, $dataMoMo, $this->params->appCreator, $this->params->appModifier);
-    //         // Cập nhật bill cho treatmentMomoPayments
-    //         $this->treatmentMoMoPaymentsRepository->updateBill($payment, $transaction->id);
-    //         // Vô hiệu hóa các link thanh toán đã có trước khi thanh toán
-    //         $this->treatmentMoMoPaymentsRepository->setResultCode1005($payment->treatment_code);
-    //     }
-    //     // Gửi dữ liệu lên WebSocket
-    //     broadcast(new MoMoNotificationTamUngReceived($data));
-    // }
+    public function handleNotificationTamUng()
+    {
+        // Lấy param từ request
+        $data = $this->getParamRequest();
+        //Xác minh chữ ký từ MoMo
+        $isVefify = $this->verifyMoMoSignature($data);
+        if (!$isVefify) {
+            // Nếu dữ liệu không khớp thì bỏ qua
+            return response()->json([], 204);
+        }
+        // Check trong DB xem có tạo giao dịch cho payment này chưa
+        $isValid = $this->isValid($data);
+        if (!$isValid) {
+            // Nếu dữ liệu không khớp hoặc đã có rồi thì bỏ qua
+            return response()->json([], 204);
+        }
+        // Nếu khớp thì cập nhật bên DB
+        // Lấy resultCode từ MoMo
+        $dataMoMo = $this->serviceReqPaymentService->checkTransactionStatus($data['orderId'])['data'];
+        // Cập nhật payment 
+        $this->treatmentMoMoPaymentsRepository->update($dataMoMo);
+        // Nếu resultCode là 0 hoặc 9000 thì tạo transaction trong DB
+        if ($dataMoMo['resultCode'] == 0 || $dataMoMo['resultCode'] == 9000) {
+            // và lấy treatmentId, treatmentCode
+            $payment = $this->treatmentMoMoPaymentsRepository->getTreatmentByOrderId($dataMoMo['orderId']);
+            // Tạo transaction
+            $transaction = $this->transactionRepository->createTransactionPaymentMoMoTamUng($payment, $dataMoMo, $this->params->appCreator, $this->params->appModifier);
+            // Cập nhật bill cho treatmentMomoPayments
+            $this->treatmentMoMoPaymentsRepository->updateBill($payment, $transaction->id);
+            // Vô hiệu hóa các link thanh toán đã có trước khi thanh toán
+            $this->treatmentMoMoPaymentsRepository->setResultCode1005($payment->treatment_code);
+        }
+        // Gửi dữ liệu lên WebSocket
+        broadcast(new MoMoNotificationTamUngReceived($data));
+    }
     private function isValid($data)
     {
         // kiểm tra xem dữ liệu có khớp với order_id hay không
