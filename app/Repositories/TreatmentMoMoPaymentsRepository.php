@@ -38,7 +38,7 @@ class TreatmentMoMoPaymentsRepository
         ->first();
         return $data;
     }
-    public function checkNofityMoMo($param){
+    public function checkNotifyMoMo($param){
         $data = $this->treatmentMoMoPayments
         ->where('order_id', $param['orderId'])
         ->where('request_id', $param['requestId'])

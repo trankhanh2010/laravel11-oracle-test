@@ -132,7 +132,7 @@ class MoMoService
     private function isValid($data)
     {
         // kiểm tra xem dữ liệu có khớp với order_id hay không
-        $result = $this->treatmentMoMoPaymentsRepository->checkNofityMoMo($data);
+        $result = $this->treatmentMoMoPaymentsRepository->checkNotifyMoMo($data);
         return $result;
     }
 

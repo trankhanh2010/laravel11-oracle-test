@@ -126,28 +126,30 @@ class TreatmentFeePaymentService
             $response = $client->post($this->endpointCreatePayment, ['json' => $dataMoMo]);
             return json_decode($response->getBody(), true);
         } catch (\Exception $e) {
-            throw new \Exception('Error sending payment request to MoMo');
+            throw new \Exception('Error sending payment request to MoMo '. $e);
         }
     }
 
-    protected function formatResponseFromRepository($check, $amount, $orderInfo)
+    protected function formatResponseFromRepository($link, $amount, $orderInfo, $checkOtherLink = false)
     {
         return [
             'success' => true,
-            'deeplink' => $check->deep_link ?? '',
-            'qrCodeUrl' => $check->qr_code_url ?? '',
-            'payUrl' => $check->pay_url ?? '',
-            'orderId' => $check->order_id,
+            'checkOtherLink' => $checkOtherLink,
+            'deeplink' => $link->deep_link ?? '',
+            'qrCodeUrl' => $link->qr_code_url ?? '',
+            'payUrl' => $link->pay_url ?? '',
+            'orderId' => $link->order_id,
             'amount' => $amount,
             'orderInfo' => $orderInfo,
-            'requestId' => $check->request_id,
+            'requestId' => $link->request_id,
         ];
     }
 
-    protected function formatResponseFromMoMo(array $response, array $transactionInfo)
+    protected function formatResponseFromMoMo(array $response, array $transactionInfo, $checkOtherLink = false)
     {
         $dataReturn = [
             'success' => true,
+            'checkOtherLink' => $checkOtherLink,
             'orderId' => $transactionInfo['orderId'],
             'amount' => $transactionInfo['amount'],
             'orderInfo' => $transactionInfo['orderInfo'],
@@ -183,6 +185,16 @@ class TreatmentFeePaymentService
         }
         return $dataReturn;
     }
+    protected function checkOtherRequestTypeLinkPayment($treatmentCode, $requestType, $fee){
+        $allRequestType = ['payWithATM', 'payWithCC', 'captureWallet'];
+        $arrOtherRequestType = array_diff($allRequestType, [$requestType]);
+        // lặp qua các requestType khác với requestType của yêu cầu
+        foreach ($arrOtherRequestType as $key => $item){
+            $check = $this->checkTimeLiveLinkPaymentMoMo($treatmentCode, $item, $fee);
+            if($check) return $check;
+        }
+        return false;
+    }
     protected function getListSereServ($treatmentId){
         $data = $this->testServiceTypeListVViewRepository->applyJoins();
         $data = $this->testServiceTypeListVViewRepository->applyTreatmentIdFilter($data, $treatmentId);
@@ -199,15 +211,26 @@ class TreatmentFeePaymentService
                 return ['data' => ['success' => false]];
             }
 
-            // $costs = $this->calculateCosts($data->treatment_id);
             $costs = null;
             $transactionInfo = $this->generateTransactionInfo($data, $costs);
 
             if ($this->params->paymentMethod == 'MoMo') {
+                $checkOtherLink = false;
                 [$requestType, $signature] = $this->generateSignature($this->params->paymentOption, $transactionInfo);
-                $check = $this->checkTimeLiveLinkPaymentMoMo($data->treatment_code, $requestType, $data->fee);
-                if ($check) {
-                    return ['data' => $this->formatResponseFromRepository($check, $transactionInfo['amount'], $transactionInfo['orderInfo'])];
+
+                // Nếu đã có 1 link thanh toán của phương thức bất kỳ khác với cái đang chọn (qr, atm nội địa, atm quốc tế) 
+                // thì trả về link đó kèm theo checkOtherLink = true 
+                // người dùng phải tiếp tục thanh toán bằng link đó hoặc phải hủy link đó rồi mới được tạo link thanh toán mới
+                $otherLink = $this->checkOtherRequestTypeLinkPayment($data->treatment_code, $requestType, $data->fee);
+                if ($otherLink) {
+                    $checkOtherLink = true;
+                    return ['data' => $this->formatResponseFromRepository($otherLink, $transactionInfo['amount'], $transactionInfo['orderInfo'], $checkOtherLink)];
+                }
+
+                // Nếu không thì kiểm tra thời gian tồn tại của link và trả về như bình thường
+                $link = $this->checkTimeLiveLinkPaymentMoMo($data->treatment_code, $requestType, $data->fee);
+                if ($link) {
+                    return ['data' => $this->formatResponseFromRepository($link, $transactionInfo['amount'], $transactionInfo['orderInfo'], $checkOtherLink)];
                 }
 
                 $dataMoMo = array_merge($transactionInfo, [
@@ -258,7 +281,7 @@ class TreatmentFeePaymentService
 
             return ['data' => ['success' => false]];
         } catch (\Throwable $e) {
-            return writeAndThrowError(config('params')['db_service']['error']['test_service_req_list_v_view'], $e);
+            return writeAndThrowError('Có lỗi khi tạo link thanh toán!', $e);
         }
     }
 
