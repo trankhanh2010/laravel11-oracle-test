@@ -101,9 +101,17 @@ class TreatmentFeeListVViewService
                 $data = $this->treatmentFeeListVViewRepository->applyJoins();
                 if ($this->params->treatmentCode) {
                     $data = $this->treatmentFeeListVViewRepository->applyTreatmentCodeFilter($data, $this->params->treatmentCode);
+                    $data = $this->treatmentFeeListVViewRepository->applyOrdering($data, ['create_time'=>'desc'], []);
+                    $data = $this->treatmentFeeListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit, $this->params->cursorPaginate, $this->params->lastId);
+                    $count = $data->count();
+                    return ['data' => $data, 'count' => $count];
                 }
                 if ($this->params->patientCode) {
                     $data = $this->treatmentFeeListVViewRepository->applyPatientCodeFilter($data, $this->params->patientCode);
+                    $data = $this->treatmentFeeListVViewRepository->applyOrdering($data, ['create_time'=>'desc'], []);
+                    $data = $this->treatmentFeeListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit, $this->params->cursorPaginate, $this->params->lastId);
+                    $count = $data->count();
+                    return ['data' => $data, 'count' => $count];
                 }
                 $data = $this->treatmentFeeListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
                 $data = $this->treatmentFeeListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit, $this->params->cursorPaginate, $this->params->lastId);

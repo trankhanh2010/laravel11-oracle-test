@@ -847,7 +847,11 @@ Route::group([
         Route::apiResource('v1/tran-pati-tech', TranPatiTechController::class);
     });
     /// Loại giao dịch
-    Route::apiResource('v1/transaction-type', TransactionTypeController::class)->only(['index', 'show']);
+    Route::apiResource('v1/transaction-type', TransactionTypeController::class)->only(['index', 'show'])->withoutMiddleware([
+        'check_token',
+        'check_admin:api',
+        'check_module:api',
+    ]);
     /// Loại ra viện
     Route::group(['as' => 'HIS.Desktop.Plugins.HisTreatmentEndType'], function () {
         Route::apiResource('v1/treatment-end-type', TreatmentEndTypeController::class);

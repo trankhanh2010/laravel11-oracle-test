@@ -28,6 +28,10 @@ class TreatmentFeeListVViewController extends BaseApiCacheController
             $columns = $this->getColumnsTable($this->treatmentFeeListVView, true);
             $this->orderBy = $this->checkOrderBy($this->orderBy, $columns, $this->orderByJoin ?? []);
         }
+        if(($this->treatmentCode != null || $this->patientCode != null)){
+            $this->cursorPaginate = false;
+            $this->getAll = true;
+        }
         // Thêm tham số vào service
         $this->treatmentFeeListVViewDTO = new TreatmentFeeListVViewDTO(
             $this->treatmentFeeListVViewName,
@@ -37,7 +41,7 @@ class TreatmentFeeListVViewController extends BaseApiCacheController
             $this->orderBy,
             $this->orderByJoin,
             $this->orderByString,
-            $this->getAll,
+             $this->getAll,
             $this->start,
             $this->limit,
             $request,
@@ -65,9 +69,11 @@ class TreatmentFeeListVViewController extends BaseApiCacheController
                 $this->fromTime = null;
             }
         }
-        if (($this->fromTime == null) && ($this->toTime == null) && (!$this->cursorPaginate)) {
-            $this->errors[$this->fromTimeName] = 'Thiếu thời gian!';
-            $this->errors[$this->toTimeName] = 'Thiếu thời gian!';
+        if($this->treatmentCode == null && $this->patientCode == null){
+            if (($this->fromTime == null) && ($this->toTime == null) && (!$this->cursorPaginate)) {
+                $this->errors[$this->fromTimeName] = 'Thiếu thời gian!';
+                $this->errors[$this->toTimeName] = 'Thiếu thời gian!';
+            }
         }
 
         if ($this->checkParam()) {
