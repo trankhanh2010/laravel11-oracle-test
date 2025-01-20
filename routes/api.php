@@ -955,6 +955,11 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.TransactionList'], function () {
         Route::apiResource('v1/transaction-list-v-view', TransactionListVViewController::class)->only(['index', 'show']);
     });
+    Route::apiResource('v1/transaction-list-v-view-no-login', TransactionListVViewController::class)->only(['index', 'show'])->withoutMiddleware([
+        'check_token',
+        'check_admin:api',
+        'check_module:api',
+    ]);
     /// Test Service Type List
     // k cần token
     Route::apiResource('v1/test-service-type-list-v-view', TestServiceTypeListVViewController::class)->only(['index'])
@@ -998,7 +1003,12 @@ Route::group([
     /// Tạo giao dịch tạm ứng Transaction Tạm ứng
     Route::apiResource('v1/transaction-tam-ung', TransactionTamUngController::class)->only(['store']);
     /// Chi tiết giao dịch transaction detail
-    Route::group(['as' => 'HIS.Desktop.Plugins.TransactionBillDetail'], function () {
-        Route::apiResource('v1/transaction-tt-detail-v-view', TransactionTTDetailVViewController::class)->only(['index']);
-    });
+    // Route::group(['as' => 'HIS.Desktop.Plugins.TransactionBillDetail'], function () {
+        Route::apiResource('v1/transaction-tt-detail-v-view', TransactionTTDetailVViewController::class)->only(['index']) 
+        ->withoutMiddleware([
+            'check_token',
+            'check_admin:api',
+            'check_module:api',
+    ]);
+    // });
 });

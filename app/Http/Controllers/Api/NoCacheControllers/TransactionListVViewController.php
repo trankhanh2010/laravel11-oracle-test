@@ -63,10 +63,10 @@ class TransactionListVViewController extends BaseApiCacheController
                 $this->fromTime = null;
             }
         }
-        if (($this->fromTime == null) && ($this->toTime == null) && (!$this->cursorPaginate)) {
-            $this->errors[$this->fromTimeName] = 'Thiếu thời gian!';
-            $this->errors[$this->toTimeName] = 'Thiếu thời gian!';
-        }
+        // if (($this->fromTime == null) && ($this->toTime == null) && (!$this->cursorPaginate)) {
+        //     $this->errors[$this->fromTimeName] = 'Thiếu thời gian!';
+        //     $this->errors[$this->toTimeName] = 'Thiếu thời gian!';
+        // }
         if ($this->checkParam()) {
             return $this->checkParam();
         }
