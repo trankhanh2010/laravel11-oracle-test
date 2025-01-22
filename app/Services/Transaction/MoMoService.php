@@ -5,6 +5,7 @@ namespace App\Services\Transaction;
 use App\DTOs\MoMoDTO;
 use App\Events\Transaction\MoMoNotificationThanhToanReceived;
 use App\Events\Transaction\MoMoNotificationTamUngReceived;
+use App\Repositories\DepositReqRepository;
 use App\Repositories\SereServBillRepository;
 use App\Repositories\SereServMomoPaymentsRepository;
 use App\Repositories\TestServiceTypeListVViewRepository;
@@ -18,6 +19,7 @@ class MoMoService
     protected $transactionRepository;
     protected $serviceReqPaymentService;
     protected $sereServMomoPaymentsRepository;
+    protected $depositReqRepository;
     protected $sereServBill;
     protected $params;
     protected $partnerCode;
@@ -32,12 +34,14 @@ class MoMoService
         TransactionRepository $transactionRepository,
         TreatmentFeePaymentService $serviceReqPaymentService,
         SereServMomoPaymentsRepository $sereServMomoPaymentsRepository,
+        DepositReqRepository $depositReqRepository,
         SereServBillRepository $sereServBill,
     ) {
         $this->treatmentMoMoPaymentsRepository = $treatmentMoMoPaymentsRepository;
         $this->transactionRepository = $transactionRepository;
         $this->serviceReqPaymentService = $serviceReqPaymentService;
         $this->sereServMomoPaymentsRepository = $sereServMomoPaymentsRepository;
+        $this->depositReqRepository = $depositReqRepository;
         $this->sereServBill = $sereServBill;
         $this->partnerCode = config('database')['connections']['momo']['momo_partner_code'];
         $this->accessKey = config('database')['connections']['momo']['momo_access_key'];
@@ -122,10 +126,20 @@ class MoMoService
             $payment = $this->treatmentMoMoPaymentsRepository->getTreatmentByOrderId($dataMoMo['orderId']);
             // Tạo transaction
             $transaction = $this->transactionRepository->createTransactionPaymentMoMoTamUng($payment, $dataMoMo, $this->params->appCreator, $this->params->appModifier);
-            // Cập nhật bill cho treatmentMomoPayments
+            // Cập nhật bill_id và deposit_id cho treatmentMomoPayments (đã kiểm tra trong hàm updateBill)
             $this->treatmentMoMoPaymentsRepository->updateBill($payment, $transaction->id);
-            // Vô hiệu hóa các link thanh toán đã có trước khi thanh toán
-            $this->treatmentMoMoPaymentsRepository->setResultCode1005($payment->treatment_code);
+            // Nếu là thanh toán tạm ứng cho DepositReq thì cập nhật lại bản ghi trong his_deposit_req
+            // Có deposit_req_code tức là thanh toán theo yêu cầu của khoa
+            if($payment->deposit_req_code){
+                $depositRecord = $this->depositReqRepository->getByCode($payment->deposit_req_code);
+                if($depositRecord){
+                    // Cập nhật deposit_id cho his_deposit_req khi transaction tạo thành công
+                    $this->depositReqRepository->updateDepositId($depositRecord, $transaction->id);
+                }
+            }
+
+            // // Vô hiệu hóa các link thanh toán đã có trước khi thanh toán
+            // $this->treatmentMoMoPaymentsRepository->setResultCode1005($payment->treatment_code);
         }
         // Gửi dữ liệu lên WebSocket
         broadcast(new MoMoNotificationTamUngReceived($data));

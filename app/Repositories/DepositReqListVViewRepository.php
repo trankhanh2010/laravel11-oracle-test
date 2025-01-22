@@ -48,12 +48,22 @@ class DepositReqListVViewRepository
         }
         return $query;
     }
-    public function applyIsDepositFilter($query, $id)
+    public function applyIsDepositFilter($query, $param)
     {
-        if ($id) {
-            $query->whereNotNull(DB::connection('oracle_his')->raw('v_his_deposit_req_list.deposit_id'));
+        if ($param) {
+            // có transaction và transaction đó chưa bị hủy/ hoặc bị hủy mà đã được khôi phục
+            $query->whereNotNull(DB::connection('oracle_his')->raw('v_his_deposit_req_list.deposit_id'))
+            ->where(function ($subQuery) {
+                $subQuery->orWhere('transaction_is_cancel', 0)
+                         ->orWhereNull('transaction_is_cancel');
+            });
         }else{
-            $query->whereNull(DB::connection('oracle_his')->raw('v_his_deposit_req_list.deposit_id'));
+            // không có transaction hoặc transaction đã bị hủy
+            $query->where(function ($subQuery) {
+                $subQuery->whereNull(DB::connection('oracle_his')->raw('v_his_deposit_req_list.deposit_id'))
+                         ->orWhere('transaction_is_cancel', 1);
+            });
+            
         }
         return $query;
     }

@@ -63,7 +63,8 @@ class TreatmentMoMoPaymentsRepository
         ->select([
             'id',
             'treatment_id',
-            'treatment_code'
+            'treatment_code',
+            'deposit_req_code',
         ])
         ->where('order_id', $orderId)
         ->first();
@@ -154,6 +155,8 @@ class TreatmentMoMoPaymentsRepository
         $data->update([
             'modify_time' => now()->format('Ymdhis'),
             'bill_id' => $billId,
+            // Nếu là thanh toán tạm ứng cho DepositReq thì cập nhật deposit_id
+            'deposit_id' => ($data->deposit_req_code) ? $billId : null
         ]);
         return $data;
     }
