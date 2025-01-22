@@ -162,6 +162,7 @@ use App\Http\Controllers\Api\NoCacheControllers\DebateController;
 use App\Http\Controllers\Api\NoCacheControllers\DebateEkipUserController;
 use App\Http\Controllers\Api\NoCacheControllers\DebateUserController;
 use App\Http\Controllers\Api\NoCacheControllers\DebateVViewController;
+use App\Http\Controllers\Api\NoCacheControllers\DepositReqListVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\DhstController;
 use App\Http\Controllers\Api\NoCacheControllers\PatientTypeAlterVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\SereServBillController;
@@ -1004,6 +1005,14 @@ Route::group([
             'check_admin:api',
             'check_module:api',
     ]);
+    // Transaction cho yêu cầu tạm ứng 
+    // k cần token
+    Route::get('v1/treatment-fee-payment-deposit-req', [TreatmentFeePayMentController::class, 'createPaymentDepositReq'])
+        ->withoutMiddleware([
+            'check_token',
+            'check_admin:api',
+            'check_module:api',
+    ]);
     /// Tạo giao dịch tạm ứng Transaction Tạm ứng
     Route::apiResource('v1/transaction-tam-ung', TransactionTamUngController::class)->only(['store']);
     /// Chi tiết giao dịch transaction detail
@@ -1015,4 +1024,11 @@ Route::group([
             'check_module:api',
     ]);
     // });
+    // Danh sách yêu cầu tạm ứng
+    Route::apiResource('v1/deposit-req-list-v-view-no-login', DepositReqListVViewController::class)->only(['index', 'show']) 
+        ->withoutMiddleware([
+            'check_token',
+            'check_admin:api',
+            'check_module:api',
+    ]);
 });

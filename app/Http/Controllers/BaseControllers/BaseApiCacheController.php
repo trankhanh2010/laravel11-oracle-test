@@ -78,6 +78,8 @@ class BaseApiCacheController extends Controller
     protected $serviceIdsName = 'ServiceIds';
     protected $patientCode;
     protected $patientCodeName = 'PatientCode';
+    protected $depositReqCode;
+    protected $depositReqCodeName = 'DepositReqCode';
     protected $serviceIdsString;
     protected $machineIds;
     protected $machineIdsName = 'MachineIds';
@@ -118,6 +120,8 @@ class BaseApiCacheController extends Controller
     protected $debateIdName = 'DebateId';
     protected $isAddition;
     protected $isAdditionName = 'IsAddition';
+    protected $isDeposit;
+    protected $isDepositName = 'IsDeposit';
     protected $serviceTypeId;
     protected $serviceTypeIdName = 'ServiceTypeId';
     protected $loginname;
@@ -621,6 +625,8 @@ class BaseApiCacheController extends Controller
     protected $treatmentFeeListVViewName = 'treatment_fee_list_v_view';
     protected $transactionListVView;
     protected $transactionListVViewName = 'transaction_list_v_view';
+    protected $depositReqListVView;
+    protected $depositReqListVViewName = 'deposit_req_list_v_view';
     // Thanh toán
     protected $paymentMethod; // Hình thức thanh toán MoMo VNPay
     protected $paymentMethodName = 'PaymentMethod';
@@ -884,6 +890,15 @@ class BaseApiCacheController extends Controller
             }
         }
 
+        $this->isDeposit = $this->paramRequest['ApiData']['IsDeposit'] ?? null;
+        if ($this->isDeposit !== null) {
+            if (!in_array($this->isDeposit, [0, 1])) {
+                $this->errors[$this->isDepositName] = $this->messFormat;
+                $this->isDeposit = 1;
+            }
+        }
+
+
         $this->transactionCode = $this->paramRequest['ApiData']['TransactionCode']?? null;
         if ($this->transactionCode !== null) {
             if (!is_string($this->transactionCode)) {
@@ -913,6 +928,14 @@ class BaseApiCacheController extends Controller
             if (!is_string($this->billCode)) {
                 $this->errors[$this->billCodeName] = $this->messFormat;
                 $this->billCode = null;
+            }
+        }
+
+        $this->depositReqCode = $this->paramRequest['ApiData']['DepositReqCode']?? null;
+        if ($this->depositReqCode !== null) {
+            if (!is_string($this->depositReqCode)) {
+                $this->errors[$this->depositReqCodeName] = $this->messFormat;
+                $this->depositReqCode = null;
             }
         }
 

@@ -40,6 +40,18 @@ class TreatmentMoMoPaymentsRepository
         ->first();
         return $data;
     }
+
+    public function checkDepositReq($depositReqCode, $requestType, $amount){
+        $data = $this->treatmentMoMoPayments
+        ->where('deposit_req_code', $depositReqCode)
+        ->where('request_type', $requestType)
+        ->where('transaction_type_code', 'TU')
+        ->where('amount', $amount)
+        ->where('result_code', '1000')
+        ->whereNull('deposit_id')
+        ->first();
+        return $data;
+    }
     public function getByOrderId($orderId){
         $data = $this->treatmentMoMoPayments
         ->where('order_id', $orderId)
@@ -98,6 +110,33 @@ class TreatmentMoMoPaymentsRepository
             'request_type' => $data['requestType'],
             'qr_code_url' => $data['qrCodeUrl'],
             'transaction_type_code' => $data['transactionTypeCode'],
+
+        ]);
+        return $data;
+    }
+    public function createDepositReq($data, $appCreator, $appModifier){
+        $data = $this->treatmentMoMoPayments::create([
+            'create_time' => now()->format('Ymdhis'),
+            'modify_time' => now()->format('Ymdhis'),
+            // 'creator' => get_loginname_with_token($request->bearerToken(), $time),
+            // 'modifier' => get_loginname_with_token($request->bearerToken(), $time),
+            'app_creator' => $appCreator,
+            'app_modifier' => $appModifier,
+            'is_active' => 1,
+            'is_delete' => 0,
+            
+            'treatment_code' =>  $data['treatmentCode'], 
+            'treatment_id' => $data['treatmentId'],         
+            'order_id' =>  $data['orderId'],           
+            'request_id' => $data['requestId'],           
+            'amount' => $data['amount'],           
+            'result_code' => $data['resultCode'],        
+            'deeplink' =>  $data['deeplink'],    
+            'pay_url' =>  $data['payUrl'],
+            'request_type' => $data['requestType'],
+            'qr_code_url' => $data['qrCodeUrl'],
+            'transaction_type_code' => $data['transactionTypeCode'],
+            'deposit_req_code' => $data['depositReqCode'],
 
         ]);
         return $data;

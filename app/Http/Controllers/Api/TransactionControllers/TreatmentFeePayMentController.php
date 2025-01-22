@@ -25,6 +25,7 @@ class TreatmentFeePayMentController extends BaseApiCacheController
             $this->patientCode,
             $this->treatmentCode,
             $this->transactionTypeCode,
+            $this->depositReqCode,
         );
         $this->serviceReqPaymentService->withParams($this->serviceReqPaymentDTO);
     }
@@ -44,6 +45,19 @@ class TreatmentFeePayMentController extends BaseApiCacheController
             return 0;
         }
         $data = $this->serviceReqPaymentService->checkTransactionStatus($orderId);
+        $paramReturn = [];
+        return returnDataSuccess($paramReturn, $data['data']);
+    }
+
+    public function createPaymentDepositReq()
+    {
+        if($this->depositReqCode == null){
+            $this->errors[$this->depositReqCode] = 'Thiếu mã yêu cầu tạm ứng!';
+        }
+        if ($this->checkParam()) {
+            return $this->checkParam();
+        }
+        $data = $this->serviceReqPaymentService->handleCreatePaymentDepositReq();
         $paramReturn = [];
         return returnDataSuccess($paramReturn, $data['data']);
     }
