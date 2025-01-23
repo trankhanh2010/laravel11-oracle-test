@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Services\Transaction;
+use Illuminate\Support\Facades\DB;
 
 use App\DTOs\MoMoDTO;
 use App\Events\Transaction\MoMoNotificationThanhToanReceived;
@@ -17,7 +18,7 @@ class MoMoService
 {
     protected $treatmentMoMoPaymentsRepository;
     protected $transactionRepository;
-    protected $serviceReqPaymentService;
+    protected $treatmentFeePaymentService;
     protected $sereServMomoPaymentsRepository;
     protected $depositReqRepository;
     protected $sereServBill;
@@ -32,14 +33,14 @@ class MoMoService
     public function __construct(
         TreatmentMoMoPaymentsRepository $treatmentMoMoPaymentsRepository,
         TransactionRepository $transactionRepository,
-        TreatmentFeePaymentService $serviceReqPaymentService,
+        TreatmentFeePaymentService $treatmentFeePaymentService,
         SereServMomoPaymentsRepository $sereServMomoPaymentsRepository,
         DepositReqRepository $depositReqRepository,
         SereServBillRepository $sereServBill,
     ) {
         $this->treatmentMoMoPaymentsRepository = $treatmentMoMoPaymentsRepository;
         $this->transactionRepository = $transactionRepository;
-        $this->serviceReqPaymentService = $serviceReqPaymentService;
+        $this->treatmentFeePaymentService = $treatmentFeePaymentService;
         $this->sereServMomoPaymentsRepository = $sereServMomoPaymentsRepository;
         $this->depositReqRepository = $depositReqRepository;
         $this->sereServBill = $sereServBill;
@@ -75,7 +76,7 @@ class MoMoService
         }
         // Nếu khớp thì cập nhật bên DB
         // Lấy resultCode từ MoMo
-        $dataMoMo = $this->serviceReqPaymentService->checkTransactionStatus($data['orderId'])['data'];
+        $dataMoMo = $this->treatmentFeePaymentService->checkTransactionStatus($data['orderId'])['data'];
         // Cập nhật payment 
         $this->treatmentMoMoPaymentsRepository->update($dataMoMo);
         // Nếu resultCode là 0 hoặc 9000 thì tạo transaction trong DB
@@ -101,7 +102,7 @@ class MoMoService
     // Nhận ipn tạm ứng
     public function handleNotificationTamUng()
     {
-        // Lấy param từ request
+        // Lấy param từ request12
         $data = $this->getParamRequest();
         //Xác minh chữ ký từ MoMo
         $isVefify = $this->verifyMoMoSignature($data);
@@ -117,30 +118,14 @@ class MoMoService
         }
         // Nếu khớp thì cập nhật bên DB
         // Lấy resultCode từ MoMo
-        $dataMoMo = $this->serviceReqPaymentService->checkTransactionStatus($data['orderId'])['data'];
-        // Cập nhật payment 
-        $this->treatmentMoMoPaymentsRepository->update($dataMoMo);
-        // Nếu resultCode là 0 hoặc 9000 thì tạo transaction trong DB
-        if ($dataMoMo['resultCode'] == 0 || $dataMoMo['resultCode'] == 9000) {
-            // và lấy treatmentId, treatmentCode
-            $payment = $this->treatmentMoMoPaymentsRepository->getTreatmentByOrderId($dataMoMo['orderId']);
-            // Tạo transaction
-            $transaction = $this->transactionRepository->createTransactionPaymentMoMoTamUng($payment, $dataMoMo, $this->params->appCreator, $this->params->appModifier);
-            // Cập nhật bill_id và deposit_id cho treatmentMomoPayments (đã kiểm tra trong hàm updateBill)
-            $this->treatmentMoMoPaymentsRepository->updateBill($payment, $transaction->id);
-            // Nếu là thanh toán tạm ứng cho DepositReq thì cập nhật lại bản ghi trong his_deposit_req
-            // Có deposit_req_code tức là thanh toán theo yêu cầu của khoa
-            if($payment->deposit_req_code){
-                $depositRecord = $this->depositReqRepository->getByCode($payment->deposit_req_code);
-                if($depositRecord){
-                    // Cập nhật deposit_id cho his_deposit_req khi transaction tạo thành công
-                    $this->depositReqRepository->updateDepositId($depositRecord, $transaction->id);
-                }
-            }
+        $dataMoMo = $this->treatmentFeePaymentService->checkTransactionStatus($data['orderId'])['data'];
+        DB::connection('oracle_his')->transaction(function () use($dataMoMo) {
+            // Cập nhật payment 
+            $this->treatmentMoMoPaymentsRepository->update($dataMoMo);
+            // Nếu resultCode là 0 hoặc 9000 thì tạo transaction trong DB
+            $this->treatmentFeePaymentService->updateDBTransactionTamUng($dataMoMo, $this->params);
+        });
 
-            // // Vô hiệu hóa các link thanh toán đã có trước khi thanh toán
-            // $this->treatmentMoMoPaymentsRepository->setResultCode1005($payment->treatment_code);
-        }
         // Gửi dữ liệu lên WebSocket
         broadcast(new MoMoNotificationTamUngReceived($data));
     }
@@ -182,5 +167,5 @@ class MoMoService
         $data = $this->params->request->all();
         return $data;
     }
-    
+
 }
