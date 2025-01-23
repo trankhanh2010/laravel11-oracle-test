@@ -3,7 +3,7 @@
 namespace App\Services\Transaction;
 
 use Illuminate\Support\Facades\DB;
-
+use Exception;
 use App\DTOs\TreatmentFeePaymentDTO;
 use App\Repositories\DepositReqListVViewRepository;
 use App\Repositories\DepositReqRepository;
@@ -241,6 +241,14 @@ class TreatmentFeePaymentService
 
                 // // Vô hiệu hóa các link thanh toán đã có trước khi thanh toán
                 // $this->treatmentMoMoPaymentsRepository->setResultCode1005($payment->treatment_code);
+
+
+                 // Kiểm tra nếu payment không hợp lệ (tức đang tạo bản ghi trong his_transaction mà bên bản ghi bên his_treatment_momo_payments đã khác 1000)
+                if (!($this->treatmentMoMoPaymentsRepository->checkNotifyMoMo($dataMoMo))) {
+                    // nếu không hợp lệ thì ném ra lỗi và rollback lại
+                    throw new Exception("Lỗi giao dịch bên MoMo và bên DB hệ thống không đồng bộ");
+                }
+
             });
         }
     }
@@ -300,6 +308,7 @@ class TreatmentFeePaymentService
                 // nếu chưa thì tạo 
                 // Nếu là tạm ứng
                 if ($this->params->transactionTypeCode == 'TU') {
+                    // Tạo xong mới cập nhật payment, đang tạo mà payment đã khác 1000 thì rollback
                     $this->updateDBTransactionTamUng($dataMoMo['data'], $this->params);
                 }
             }

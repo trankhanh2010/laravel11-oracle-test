@@ -120,10 +120,11 @@ class MoMoService
         // Lấy resultCode từ MoMo
         $dataMoMo = $this->treatmentFeePaymentService->checkTransactionStatus($data['orderId'])['data'];
         DB::connection('oracle_his')->transaction(function () use($dataMoMo) {
+            // Nếu resultCode là 0 hoặc 9000 thì tạo transaction trong DB 
+            // Tạo xong mới cập nhật payment, đang tạo mà payment đã khác 1000 thì rollback
+            $this->treatmentFeePaymentService->updateDBTransactionTamUng($dataMoMo, $this->params);
             // Cập nhật payment 
             $this->treatmentMoMoPaymentsRepository->update($dataMoMo);
-            // Nếu resultCode là 0 hoặc 9000 thì tạo transaction trong DB
-            $this->treatmentFeePaymentService->updateDBTransactionTamUng($dataMoMo, $this->params);
         });
 
         // Gửi dữ liệu lên WebSocket
