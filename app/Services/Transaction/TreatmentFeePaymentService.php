@@ -93,6 +93,14 @@ class TreatmentFeePaymentService
         return $data->first();
     }
 
+    protected function getDepositReqListData($treatment)
+    {
+        $data = $this->depositReqListVViewRepository->applyJoins();
+        $data = $this->depositReqListVViewRepository->applyTreatmentIdFilter($data, $treatment->id);
+        $data = $this->depositReqListVViewRepository->applyIsDepositFilter($data, 0);
+
+        return $data->get();
+    }
     // protected function calculateCosts($treatmentId)
     // {
     //     $listServiceType = $this->testServiceTypeListVViewRepository->applyJoins();
@@ -362,6 +370,12 @@ class TreatmentFeePaymentService
         try {
             $data = $this->getTreatmentFeeData();
             if (!$data || $data->fee <= 0) {
+                return ['data' => ['success' => false]];
+            }
+
+            // Nếu có các yêu cầu tạm ứng thì phải thanh toán chúng trước => k trả về link thanh toán
+            $depositReqListData = $this->getDepositReqListData($data);
+            if($depositReqListData->isNotEmpty()){
                 return ['data' => ['success' => false]];
             }
 
