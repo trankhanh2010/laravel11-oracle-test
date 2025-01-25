@@ -283,8 +283,10 @@ class TreatmentFeePaymentService
                     // nếu không hợp lệ thì ném ra lỗi và rollback lại
                     throw new Exception("Lỗi giao dịch bên MoMo và bên DB hệ thống không đồng bộ");
                 }
-                return true;
             });
+            return true;
+        }else{
+            return true;
         }
     }
     public function refundPaymentMoMo($dataMoMo)
@@ -318,6 +320,9 @@ class TreatmentFeePaymentService
             // Thử lỗi khi hoàn tiền
             // throw new \Exception('Error sending refund payment request to MoMo ');
             $client = new Client();
+            // return [
+            //     'resultCode' => 1080,
+            // ];
             $response = $client->post($this->endpointRefundPayment, ['json' => $jsonData]);
             // Log::error($rawSignature);
             // Log::error($response->getBody()->getContents());

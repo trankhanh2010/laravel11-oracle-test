@@ -126,6 +126,7 @@ class MoMoService
             // Tạo xong mới cập nhật payment, đang tạo mà payment đã khác 1000 thì rollback
             $updateSuccess = $this->treatmentFeePaymentService->updateDBTransactionTamUng($dataMoMo, $this->params);
             // Cập nhật payment 
+            // Log::error($updateSuccess);
             if($updateSuccess){
                 // nếu tạo thành công hết thì cập nhật db, không thì để đó khi người ta gọi api thanh toán thì xử lý lại
                 $this->treatmentMoMoPaymentsRepository->update($dataMoMo);
