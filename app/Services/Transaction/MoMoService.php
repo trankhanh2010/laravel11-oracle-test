@@ -13,6 +13,7 @@ use App\Repositories\TestServiceTypeListVViewRepository;
 use App\Repositories\TransactionRepository;
 use App\Repositories\TreatmentMoMoPaymentsRepository;
 use App\Services\Transaction\TreatmentFeePaymentService;
+use Illuminate\Support\Facades\Log;
 
 class MoMoService
 {
@@ -102,6 +103,7 @@ class MoMoService
     // Nhận ipn tạm ứng
     public function handleNotificationTamUng()
     {
+        // dd(1);
         // Lấy param từ request12
         $data = $this->getParamRequest();
         //Xác minh chữ ký từ MoMo
@@ -122,9 +124,12 @@ class MoMoService
         DB::connection('oracle_his')->transaction(function () use($dataMoMo) {
             // Nếu resultCode là 0 hoặc 9000 thì tạo transaction trong DB 
             // Tạo xong mới cập nhật payment, đang tạo mà payment đã khác 1000 thì rollback
-            $this->treatmentFeePaymentService->updateDBTransactionTamUng($dataMoMo, $this->params);
+            $updateSuccess = $this->treatmentFeePaymentService->updateDBTransactionTamUng($dataMoMo, $this->params);
             // Cập nhật payment 
-            $this->treatmentMoMoPaymentsRepository->update($dataMoMo);
+            if($updateSuccess){
+                // nếu tạo thành công hết thì cập nhật db, không thì để đó khi người ta gọi api thanh toán thì xử lý lại
+                $this->treatmentMoMoPaymentsRepository->update($dataMoMo);
+            }
         });
 
         // Gửi dữ liệu lên WebSocket

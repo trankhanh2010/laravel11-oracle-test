@@ -20,6 +20,13 @@ class TreatmentMoMoPaymentsRepository
         ->first();
         return $data;
     }
+    public function getAllPayment1000($treatmentId){
+        $data = $this->treatmentMoMoPayments
+        ->where('treatment_id', $treatmentId)
+        ->where('result_code', '1000')
+        ->get();
+        return $data;
+    }
     public function checkTT($treatmentCode, $requestType, $amount){
         $data = $this->treatmentMoMoPayments
         ->where('treatment_code', $treatmentCode)
@@ -111,6 +118,7 @@ class TreatmentMoMoPaymentsRepository
             'request_type' => $data['requestType'],
             'qr_code_url' => $data['qrCodeUrl'],
             'transaction_type_code' => $data['transactionTypeCode'],
+            'order_info' => $data['orderInfo'],
 
         ]);
         return $data;
@@ -138,7 +146,7 @@ class TreatmentMoMoPaymentsRepository
             'qr_code_url' => $data['qrCodeUrl'],
             'transaction_type_code' => $data['transactionTypeCode'],
             'deposit_req_code' => $data['depositReqCode'],
-
+            'order_info' => $data['orderInfo'],
         ]);
         return $data;
     }

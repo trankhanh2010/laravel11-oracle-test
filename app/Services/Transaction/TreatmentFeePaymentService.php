@@ -2,6 +2,7 @@
 
 namespace App\Services\Transaction;
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use Exception;
 use App\DTOs\TreatmentFeePaymentDTO;
@@ -33,6 +34,7 @@ class TreatmentFeePaymentService
     protected $secretKey;
     protected $endpointCreatePayment;
     protected $endpointCheckTransaction;
+    protected $endpointRefundPayment;
     protected $returnUrl;
     protected $notifyUrl;
     public function __construct(
@@ -59,6 +61,7 @@ class TreatmentFeePaymentService
         $this->secretKey = config('database')['connections']['momo']['momo_secret_key'];
         $this->endpointCreatePayment = config('database')['connections']['momo']['momo_endpoint_create_payment'];
         $this->endpointCheckTransaction = config('database')['connections']['momo']['momo_endpoint_check_transaction'];
+        $this->endpointRefundPayment = config('database')['connections']['momo']['momo_endpoint_refund_payment'];
     }
     public function withParams(TreatmentFeePaymentDTO $params)
     {
@@ -232,6 +235,30 @@ class TreatmentFeePaymentService
         if ($dataMoMo['resultCode'] == 0 || $dataMoMo['resultCode'] == 9000) {
             // và lấy treatmentId, treatmentCode
             $payment = $this->treatmentMoMoPaymentsRepository->getTreatmentByOrderId($dataMoMo['orderId']);
+
+            // Nếu đã giao dịch thành công mà bị khóa viện phí thì hoàn tiền 
+            $treatmentMoMoPaymentData = $this->treatmentMoMoPaymentsRepository->getByOrderId($dataMoMo['orderId']);
+            $treatmentFeeData = $this->treatmentFeeDetailVViewRepository->getById($treatmentMoMoPaymentData->treatment_id);
+            // Nếu hoàn tiền thành công thì ngắt không tạo các transaction trong db, còn nếu không hoàn tiền được thì vẫn tạo như bình thường để giải quyết tiền mặt
+            // chỉ hoàn tiền các giao dịch = 0, = 9000 là ủy quyền
+            if ($treatmentFeeData['fee_lock_time'] != null && $dataMoMo['resultCode'] == 0) {
+
+                // Nếu mã khác 0 => không thành công thì chạy lại việc hoàn tiền cho đến khi thành công
+                $maxAttempts = 5; // Giới hạn số lần thử
+                $attempt = 0;
+
+                do {
+                    $dataRefund = $this->refundPaymentMoMo($dataMoMo);
+                    $attempt++;
+                } while ($dataRefund['resultCode'] != 0 && $attempt < $maxAttempts);
+
+
+                // Nếu hoàn tiền thành công, tức là mã = 0 thì trả về data này và dừng lại 
+                if ($dataRefund['resultCode'] == 0) {
+                    // Ngắt luôn để không tạo các transaction trong db và cập nhật trạng thái
+                    return true;
+                } 
+            }
             DB::connection('oracle_his')->transaction(function () use ($payment, $dataMoMo, $params) {
                 // Tạo transaction
                 $transaction = $this->transactionRepository->createTransactionPaymentMoMoTamUng($payment, $dataMoMo, $params->appCreator, $params->appModifier);
@@ -251,18 +278,62 @@ class TreatmentFeePaymentService
                 // $this->treatmentMoMoPaymentsRepository->setResultCode1005($payment->treatment_code);
 
 
-                 // Kiểm tra nếu payment không hợp lệ (tức đang tạo bản ghi trong his_transaction mà bên bản ghi bên his_treatment_momo_payments đã khác 1000)
+                // Kiểm tra nếu payment không hợp lệ (tức đang tạo bản ghi trong his_transaction mà bên bản ghi bên his_treatment_momo_payments đã khác 1000)
                 if (!($this->treatmentMoMoPaymentsRepository->checkNotifyMoMo($dataMoMo))) {
                     // nếu không hợp lệ thì ném ra lỗi và rollback lại
                     throw new Exception("Lỗi giao dịch bên MoMo và bên DB hệ thống không đồng bộ");
                 }
-
+                return true;
             });
         }
     }
-    protected function checkTimeLiveLinkPaymentMoMo($treatment_code, $requestType, $fee)
+    public function refundPaymentMoMo($dataMoMo)
+    {
+        /// kiểm tra xem trong db của mình đã refund lại tiền cho giao dịch momo này chưa
+        /// hoàn tiền xong thì mới cập nhật lại đã hoàn tiền trong db
+        /// nếu chưa thì hoàn tiền
+        // dd(1);
+        $orderId = Str::uuid();
+        $requestId = Str::uuid();
+        $transId = $dataMoMo['transId'];
+        $treatmentMoMoPaymentData = $this->treatmentMoMoPaymentsRepository->getByOrderId($dataMoMo['orderId']);
+        $description = 'Hoan tien ' . $treatmentMoMoPaymentData['order_info'] . '; Ma GD MOMO: '.$transId;
+        // Log::error($description);
+        // Thử lỗi số tiền hoàn lớn
+        // $transId = 1000000;
+
+        $rawSignature = "accessKey={$this->accessKey}&amount={$dataMoMo['amount']}&description={$description}&orderId={$orderId}&partnerCode={$this->partnerCode}&requestId={$requestId}&transId=$transId";
+        $signature = hash_hmac('sha256', $rawSignature, $this->secretKey);
+        $jsonData = [
+            'partnerCode' => $this->partnerCode,
+            'orderId' => $orderId,
+            'requestId' => $requestId,
+            'amount' => $dataMoMo['amount'],
+            'transId' => $transId,
+            'lang' => 'vi',
+            'description' => $description,
+            'signature' => $signature,
+        ];
+        try {
+            // Thử lỗi khi hoàn tiền
+            // throw new \Exception('Error sending refund payment request to MoMo ');
+            $client = new Client();
+            $response = $client->post($this->endpointRefundPayment, ['json' => $jsonData]);
+            // Log::error($rawSignature);
+            // Log::error($response->getBody()->getContents());
+
+            return json_decode($response->getBody(), true);
+        } catch (\Exception $e) {
+            return [
+                'resultCode' => -1,
+            ];
+            // throw new \Exception('Error sending refund payment request to MoMo ' . $e);
+        }
+    }
+    public function checkTimeLiveLinkPaymentMoMo($treatment_code, $requestType, $fee)
     {
         $dataReturn = null;
+        $updateSuccess = true; // nếu k có gì
         // Nếu là giao dịch thanh toán
         if ($this->params->transactionTypeCode == 'TT') {
             $dataDB = $this->treatmentMoMoPaymentsRepository->checkTT($treatment_code, $requestType, $fee);
@@ -283,14 +354,16 @@ class TreatmentFeePaymentService
                 // nếu chưa thì tạo 
                 // Nếu là tạm ứng
                 if ($this->params->transactionTypeCode == 'TU') {
-                    $this->updateDBTransactionTamUng($dataMoMo['data'], $this->params);
+                    $updateSuccess = $this->updateDBTransactionTamUng($dataMoMo['data'], $this->params);
                 }
             }
 
             // cập nhật lại trạng thái trong bảng his_treatment_momo_payments
             if ($dataMoMo['data']['resultCode'] != 1000) {
                 $dataReturn = null;
-                $this->treatmentMoMoPaymentsRepository->update($dataMoMo['data']);
+                if ($updateSuccess) {
+                    $this->treatmentMoMoPaymentsRepository->update($dataMoMo['data']);
+                }
             } else {
                 $dataReturn = $dataDB;
             }
@@ -298,9 +371,10 @@ class TreatmentFeePaymentService
         return $dataReturn;
     }
 
-    protected function checkTimeLiveLinkPaymentDepositReqMoMo($deposit_req_code, $requestType, $fee)
+    public function checkTimeLiveLinkPaymentDepositReqMoMo($deposit_req_code, $requestType, $fee)
     {
         $dataReturn = null;
+        $updateSuccess = true; // nếu k có gì
         // Nếu là giao dịch tạm ứng
         if ($this->params->transactionTypeCode == 'TU') {
             $dataDB = $this->treatmentMoMoPaymentsRepository->checkDepositReq($deposit_req_code, $requestType, $fee);
@@ -317,14 +391,16 @@ class TreatmentFeePaymentService
                 // Nếu là tạm ứng
                 if ($this->params->transactionTypeCode == 'TU') {
                     // Tạo xong mới cập nhật payment, đang tạo mà payment đã khác 1000 thì rollback
-                    $this->updateDBTransactionTamUng($dataMoMo['data'], $this->params);
+                    $updateSuccess = $this->updateDBTransactionTamUng($dataMoMo['data'], $this->params);
                 }
             }
-            
+
             // cập nhật lại trạng thái trong bảng his_treatment_momo_payments
             if ($dataMoMo['data']['resultCode'] != 1000) {
                 $dataReturn = null;
-                $this->treatmentMoMoPaymentsRepository->update($dataMoMo['data']);
+                if ($updateSuccess) {
+                    $this->treatmentMoMoPaymentsRepository->update($dataMoMo['data']);
+                }
             } else {
                 $dataReturn = $dataDB;
             }
@@ -375,7 +451,7 @@ class TreatmentFeePaymentService
 
             // Nếu có các yêu cầu tạm ứng thì phải thanh toán chúng trước => k trả về link thanh toán
             $depositReqListData = $this->getDepositReqListData($data);
-            if($depositReqListData->isNotEmpty()){
+            if ($depositReqListData->isNotEmpty()) {
                 return ['data' => ['success' => false]];
             }
 
@@ -398,6 +474,11 @@ class TreatmentFeePaymentService
                 // Nếu không thì kiểm tra thời gian tồn tại của link và trả về như bình thường
                 $link = $this->checkTimeLiveLinkPaymentMoMo($data->treatment_code, $requestType, $data->fee);
                 if ($link) {
+                    // Nếu bị khóa viện phí thì k trả về link
+                    $treatmentFeeData = $this->treatmentFeeDetailVViewRepository->getById($data->id);
+                    if ($treatmentFeeData['fee_lock_time'] != null) {
+                        return ['data' => ['success' => false]];
+                    }
                     return ['data' => $this->formatResponseFromRepository($link, $transactionInfo['amount'], $transactionInfo['orderInfo'], $checkOtherLink)];
                 }
 
@@ -410,6 +491,12 @@ class TreatmentFeePaymentService
                     'signature' => $signature,
                     'lang' => 'vi',
                 ]);
+
+                // Nếu bị khóa viện phí thì k tạo link 
+                $treatmentFeeData = $this->treatmentFeeDetailVViewRepository->getById($data->id);
+                if ($treatmentFeeData['fee_lock_time'] != null) {
+                    return ['data' => ['success' => false]];
+                }
 
                 $response = $this->sendPaymentRequest($dataMoMo, $this->getTreatmentFeeData()->fee);
                 // nếu không có response => không có phí hoặc lỗi => trả về false luôn
@@ -429,6 +516,7 @@ class TreatmentFeePaymentService
                         'requestType' => $requestType,
                         'qrCodeUrl' => $dataReturn['qrCodeUrl'] ?? '',
                         'transactionTypeCode' => $this->params->transactionTypeCode ?? '',
+                        'orderInfo' => $dataReturn['orderInfo'] ?? '',
                     ];
                 // Tạo payment momo
                 $treatmentMomoPayments = $this->treatmentMoMoPaymentsRepository->create($dataCreate, $this->params->appCreator, $this->params->appModifier);
@@ -490,6 +578,11 @@ class TreatmentFeePaymentService
                 // Nếu không thì kiểm tra thời gian tồn tại của link và trả về như bình thường
                 $link = $this->checkTimeLiveLinkPaymentDepositReqMoMo($data->deposit_req_code, $requestType, $data->amount);
                 if ($link) {
+                    // Nếu bị khóa viện phí thì k trả về link 
+                    $treatmentFeeData = $this->treatmentFeeDetailVViewRepository->getById($data->treatment_id);
+                    if ($treatmentFeeData['fee_lock_time'] != null) {
+                        return ['data' => ['success' => false]];
+                    }
                     return ['data' => $this->formatResponseFromRepository($link, $transactionInfo['amount'], $transactionInfo['orderInfo'], $checkOtherLink)];
                 }
 
@@ -502,6 +595,13 @@ class TreatmentFeePaymentService
                     'signature' => $signature,
                     'lang' => 'vi',
                 ]);
+
+                // Nếu bị khóa viện phí thì k tạo link 
+                $treatmentFeeData = $this->treatmentFeeDetailVViewRepository->getById($data->treatment_id);
+                if ($treatmentFeeData['fee_lock_time'] != null) {
+                    return ['data' => ['success' => false]];
+                }
+
                 $response = $this->sendPaymentRequest($dataMoMo, $this->getDepositReqData()->amount ?? 0);
                 // nếu không có response => không có phí hoặc lỗi => trả về false luôn
                 if (!$response)  return ['data' => ['success' => false]];
@@ -521,7 +621,7 @@ class TreatmentFeePaymentService
                         'qrCodeUrl' => $dataReturn['qrCodeUrl'] ?? '',
                         'transactionTypeCode' => $this->params->transactionTypeCode ?? '',
                         'depositReqCode' => $data->deposit_req_code,
-
+                        'orderInfo' => $dataReturn['orderInfo'] ?? '',
                     ];
                 // Tạo payment momo
                 $treatmentMomoPayments = $this->treatmentMoMoPaymentsRepository->createDepositReq($dataCreate, $this->params->appCreator, $this->params->appModifier);
