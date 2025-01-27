@@ -240,7 +240,7 @@ class TreatmentFeePaymentService
             $treatmentMoMoPaymentData = $this->treatmentMoMoPaymentsRepository->getByOrderId($dataMoMo['orderId']);
             $treatmentFeeData = $this->treatmentFeeDetailVViewRepository->getById($treatmentMoMoPaymentData->treatment_id);
             // Nếu hoàn tiền thành công thì ngắt không tạo các transaction trong db, còn nếu không hoàn tiền được thì vẫn tạo như bình thường để giải quyết tiền mặt
-            // chỉ hoàn tiền các giao dịch = 0, = 9000 là ủy quyền
+            // chỉ hoàn tiền các giao dịch = 0, = 9000 là ủy quyền k hoàn
             if ($treatmentFeeData['fee_lock_time'] != null && $dataMoMo['resultCode'] == 0) {
 
                 // Nếu mã khác 0 => không thành công thì chạy lại việc hoàn tiền cho đến khi thành công
@@ -255,6 +255,8 @@ class TreatmentFeePaymentService
 
                 // Nếu hoàn tiền thành công, tức là mã = 0 thì trả về data này và dừng lại 
                 if ($dataRefund['resultCode'] == 0) {
+                    // tạo 1 phiếu thu với is_cancel = 1 và nội dung cancel là hủy do hoàn tiền thành công, link giao dịch tồn tại đến sau khi tờ điều trị được khóa viện phí
+                    $transaction = $this->transactionRepository->createTransactionRefundSuccess($payment, $dataMoMo, $params->appCreator, $params->appModifier);
                     // Ngắt luôn để không tạo các transaction trong db và cập nhật trạng thái
                     return true;
                 } 
