@@ -226,6 +226,7 @@ use Illuminate\Support\Facades\DB;
 // Transaction
 use App\Http\Controllers\Api\TransactionControllers\TreatmentFeePayMentController;
 use App\Http\Controllers\Api\TransactionControllers\MoMoController;
+use App\Http\Controllers\Api\ValidateControllers\OtpController;
 
 /*
 |--------------------------------------------------------------------------
@@ -257,6 +258,10 @@ Route::get('v1/check-token', [CheckTokenController::class, 'index']);
 Route::fallback(function () {
     return return_404_error_page_not_found();
 });
+
+/// mã OTP
+Route::get('v1/check-otp', [OtpController::class, 'index'])
+    ->withoutMiddleware('check_token');
 
 /// MOMO nofity ipn
 // Thông báo trạng thái thanh toán /// k cần token

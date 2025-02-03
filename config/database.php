@@ -185,8 +185,13 @@ return [
 
             'momo_return_url_tam_ung' => env('MOMO_RETURN_URL_TAM_UNG'),
             'momo_notify_url_tam_ung' => env('MOMO_NOTIFY_URL_TAM_UNG'),
-
         ],
+        'twilio' => [
+            'sid' => env('TWILIO_SID'),
+            'auth_token' => env('TWILIO_AUTH_TOKEN'),
+            'phone_number' => env('TWILIO_PHONE_NUMBER'),
+        ],
+
     ],
 
     /*

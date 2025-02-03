@@ -634,6 +634,8 @@ class BaseApiCacheController extends Controller
     protected $transactionTypeCodeName = 'PaymentMethod';
     protected $paymentOption; // Phương thức thanh toán QR Code Thẻ ngân hàng
     protected $paymentOptionName = 'PaymentOption';
+    // OTP
+    protected $authOtpName = 'authOtp';
     // Khai báo các biến cho Elastic
     protected $elasticSearchService;
     protected $client;

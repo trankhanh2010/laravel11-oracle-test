@@ -9,26 +9,34 @@ use App\Http\Requests\TreatmentFeeListVView\UpdateTreatmentFeeListVViewRequest;
 use App\Models\View\TreatmentFeeListVView;
 use App\Services\Elastic\ElasticsearchService;
 use App\Services\Model\TreatmentFeeListVViewService;
+use App\Services\Sms\TwilioService;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Cache;
 
 class TreatmentFeeListVViewController extends BaseApiCacheController
 {
     protected $treatmentFeeListVViewService;
     protected $treatmentFeeListVViewDTO;
-    public function __construct(Request $request, ElasticsearchService $elasticSearchService, TreatmentFeeListVViewService $treatmentFeeListVViewService, TreatmentFeeListVView $treatmentFeeListVView)
-    {
+    protected $twilioService;
+    public function __construct(
+        Request $request,
+        ElasticsearchService $elasticSearchService,
+        TreatmentFeeListVViewService $treatmentFeeListVViewService,
+        TreatmentFeeListVView $treatmentFeeListVView,
+        TwilioService $twilioService,
+    ) {
         parent::__construct($request); // Gọi constructor của BaseController
         $this->elasticSearchService = $elasticSearchService;
         $this->treatmentFeeListVViewService = $treatmentFeeListVViewService;
         $this->treatmentFeeListVView = $treatmentFeeListVView;
+        $this->twilioService = $twilioService;
         // Kiểm tra tên trường trong bảng
         if ($this->orderBy != null) {
             $this->orderByJoin = [];
             $columns = $this->getColumnsTable($this->treatmentFeeListVView, true);
             $this->orderBy = $this->checkOrderBy($this->orderBy, $columns, $this->orderByJoin ?? []);
         }
-        if(($this->treatmentCode != null || $this->patientCode != null)){
+        if (($this->treatmentCode != null || $this->patientCode != null)) {
             $this->cursorPaginate = false;
             $this->getAll = true;
         }
@@ -41,7 +49,7 @@ class TreatmentFeeListVViewController extends BaseApiCacheController
             $this->orderBy,
             $this->orderByJoin,
             $this->orderByString,
-             $this->getAll,
+            $this->getAll,
             $this->start,
             $this->limit,
             $request,
@@ -69,7 +77,7 @@ class TreatmentFeeListVViewController extends BaseApiCacheController
                 $this->fromTime = null;
             }
         }
-        if($this->treatmentCode == null && $this->patientCode == null){
+        if ($this->treatmentCode == null && $this->patientCode == null) {
             if (($this->fromTime == null) && ($this->toTime == null) && (!$this->cursorPaginate)) {
                 $this->errors[$this->fromTimeName] = 'Thiếu thời gian!';
                 $this->errors[$this->toTimeName] = 'Thiếu thời gian!';
@@ -113,7 +121,8 @@ class TreatmentFeeListVViewController extends BaseApiCacheController
         return returnDataSuccess($paramReturn, $data);
     }
 
-    public function viewNoLogin(){
+    public function viewNoLogin()
+    {
 
         if ($this->checkParam()) {
             return $this->checkParam();
@@ -127,8 +136,41 @@ class TreatmentFeeListVViewController extends BaseApiCacheController
             $this->countName => $data['count'],
             $this->isActiveName => $this->isActive,
             $this->keywordName => $this->keyword,
-            $this->orderByName => $this->orderByRequest
+            $this->orderByName => $this->orderByRequest,
+
+            // Xác thực OTP
+            $this->authOtpName => false,
+
         ];
+
+        // nếu có dữ liệu
+        if ($data['count'] > 0) {
+
+            $phoneNumber = '18777804236'; // Lấy số điện thoại bệnh nhân
+            $otpCode = rand(100000, 999999);
+            $cacheTTL = 120;
+            $cacheKey = 'OTP_treatment_fee_' . $phoneNumber;
+
+            // Kiểm tra xem tên và địa chỉ có xác thực otp chưa, nếu chưa thì k trả data về
+            $patientCode = $data['data'][0]->patient_code;
+            $deviceInfo = request()->header('User-Agent'); // Lấy thông tin thiết bị từ User-Agent
+            // Loại bỏ các ký tự đặc biệt, chỉ giữ lại chữ cái, chữ số, gạch dưới và gạch nối
+            $sanitizedDeviceInfo = preg_replace('/[^a-zA-Z0-9-_]/', '', $deviceInfo);
+            $ipAddress = request()->ip(); // Lấy địa chỉ IP
+            // Nếu chưa xác thực thì tạo mã
+            if (!Cache::has($cacheKey .'_'. $patientCode . '_' . $sanitizedDeviceInfo . '_' . $ipAddress)) {
+                // Kiểm tra nếu đã có mã OTP trong cache
+                if (!Cache::has($cacheKey)) {
+                    Cache::put($cacheKey, $otpCode, $cacheTTL);
+
+                    $this->twilioService->sendOtp($phoneNumber, $otpCode);
+                }
+            }else{
+                // Nếu xác thực rồi
+                $paramReturn[$this->authOtpName] = true;
+            } 
+        }
+
         return returnDataSuccess($paramReturn, $data['data']);
     }
 }
