@@ -28,7 +28,7 @@ class OtpController extends Controller
             // Xác minh thành công
             Cache::forget($cacheKey); // Xóa mã OTP sau khi sử dụng
             // Tạo cache lưu trạng thái
-            Cache::put($name.'_'.$phone.'_'.$patientCode.'_'.$sanitizedDeviceInfo.'_'.$ipAddress, 1, $cacheTTL);
+            Cache::put($name.'_'.$patientCode.'_'.$sanitizedDeviceInfo.'_'.$ipAddress, 1, $cacheTTL);
 
             return returnDataSuccess([], ['success' => true]);
         } else {

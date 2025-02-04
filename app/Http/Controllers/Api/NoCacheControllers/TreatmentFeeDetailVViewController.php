@@ -7,6 +7,7 @@ use App\Http\Controllers\BaseControllers\BaseApiCacheController;
 use App\Http\Requests\TreatmentFeeDetailVView\CreateTreatmentFeeDetailVViewRequest;
 use App\Http\Requests\TreatmentFeeDetailVView\UpdateTreatmentFeeDetailVViewRequest;
 use App\Models\View\TreatmentFeeDetailVView;
+use App\Services\Auth\OtpService;
 use App\Services\Elastic\ElasticsearchService;
 use App\Services\Model\TreatmentFeeDetailVViewService;
 use Illuminate\Http\Request;
@@ -16,12 +17,18 @@ class TreatmentFeeDetailVViewController extends BaseApiCacheController
 {
     protected $treatmentFeeDetailVViewService;
     protected $treatmentFeeDetailVViewDTO;
-    public function __construct(Request $request, ElasticsearchService $elasticSearchService, TreatmentFeeDetailVViewService $treatmentFeeDetailVViewService, TreatmentFeeDetailVView $treatmentFeeDetailVView)
+    protected $otpService;
+    public function __construct(
+        Request $request, 
+        TreatmentFeeDetailVViewService $treatmentFeeDetailVViewService, 
+        TreatmentFeeDetailVView $treatmentFeeDetailVView,
+        OtpService $otpService,
+        )
     {
         parent::__construct($request); // Gọi constructor của BaseController
-        $this->elasticSearchService = $elasticSearchService;
         $this->treatmentFeeDetailVViewService = $treatmentFeeDetailVViewService;
         $this->treatmentFeeDetailVView = $treatmentFeeDetailVView;
+        $this->otpService = $otpService;
         // Kiểm tra tên trường trong bảng
         if ($this->orderBy != null) {
             $this->orderByJoin = [
@@ -66,8 +73,24 @@ class TreatmentFeeDetailVViewController extends BaseApiCacheController
             $this->countName => $data['count'],
             $this->isActiveName => $this->isActive,
             $this->keywordName => $this->keyword,
-            $this->orderByName => $this->orderByRequest
+            $this->orderByName => $this->orderByRequest,
+            // Xác thực OTP
+            // true => k xác thực
+            // false => cần xác thực
+            $this->authOtpName => false,
         ];
+        // nếu có dữ liệu
+        if ($data['data']) {
+            $patientCode = $data['data']->patient_code;
+            $deviceInfo = request()->header('User-Agent'); // Lấy thông tin thiết bị từ User-Agent
+            $ipAddress = request()->ip(); // Lấy địa chỉ IP
+            // Gọi OtpService để xác thực OTP
+            $otpVerified = $this->otpService->isOtpVerified( $patientCode, $deviceInfo, $ipAddress);
+    
+            if ($otpVerified) {
+                $paramReturn[$this->authOtpName] = true;
+            }
+        }
         return returnDataSuccess($paramReturn, $data['data']);
     }
 
@@ -82,11 +105,7 @@ class TreatmentFeeDetailVViewController extends BaseApiCacheController
                 return $validationError;
             }
         }
-        if ($this->elastic) {
-            $data = $this->elasticSearchService->handleElasticSearchGetWithId($this->treatmentFeeDetailVViewName, $id);
-        } else {
-            $data = $this->treatmentFeeDetailVViewService->handleDataBaseGetWithId($id);
-        }
+        $data = $this->treatmentFeeDetailVViewService->handleDataBaseGetWithId($id);
         $paramReturn = [
             $this->idName => $id,
             $this->isActiveName => $this->isActive,

@@ -18,21 +18,16 @@ class TreatmentFeeListVViewController extends BaseApiCacheController
 {
     protected $treatmentFeeListVViewService;
     protected $treatmentFeeListVViewDTO;
-    protected $twilioService;
     protected $otpService;
     public function __construct(
         Request $request,
-        ElasticsearchService $elasticSearchService,
         TreatmentFeeListVViewService $treatmentFeeListVViewService,
         TreatmentFeeListVView $treatmentFeeListVView,
-        TwilioService $twilioService,
         OtpService $otpService,
     ) {
         parent::__construct($request); // Gọi constructor của BaseController
-        $this->elasticSearchService = $elasticSearchService;
         $this->treatmentFeeListVViewService = $treatmentFeeListVViewService;
         $this->treatmentFeeListVView = $treatmentFeeListVView;
-        $this->twilioService = $twilioService;
         $this->otpService = $otpService;
         // Kiểm tra tên trường trong bảng
         if ($this->orderBy != null) {
