@@ -9,6 +9,7 @@ use App\Http\Requests\TreatmentFeeListVView\UpdateTreatmentFeeListVViewRequest;
 use App\Models\View\TreatmentFeeListVView;
 use App\Services\Elastic\ElasticsearchService;
 use App\Services\Model\TreatmentFeeListVViewService;
+use App\Services\Auth\OtpService;
 use App\Services\Sms\TwilioService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -18,18 +19,21 @@ class TreatmentFeeListVViewController extends BaseApiCacheController
     protected $treatmentFeeListVViewService;
     protected $treatmentFeeListVViewDTO;
     protected $twilioService;
+    protected $otpService;
     public function __construct(
         Request $request,
         ElasticsearchService $elasticSearchService,
         TreatmentFeeListVViewService $treatmentFeeListVViewService,
         TreatmentFeeListVView $treatmentFeeListVView,
         TwilioService $twilioService,
+        OtpService $otpService,
     ) {
         parent::__construct($request); // Gọi constructor của BaseController
         $this->elasticSearchService = $elasticSearchService;
         $this->treatmentFeeListVViewService = $treatmentFeeListVViewService;
         $this->treatmentFeeListVView = $treatmentFeeListVView;
         $this->twilioService = $twilioService;
+        $this->otpService = $otpService;
         // Kiểm tra tên trường trong bảng
         if ($this->orderBy != null) {
             $this->orderByJoin = [];
@@ -139,36 +143,25 @@ class TreatmentFeeListVViewController extends BaseApiCacheController
             $this->orderByName => $this->orderByRequest,
 
             // Xác thực OTP
+            // true => k xác thực
+            // false => cần xác thực
             $this->authOtpName => false,
 
         ];
 
         // nếu có dữ liệu
         if ($data['count'] > 0) {
-
-            $phoneNumber = '18777804236'; // Lấy số điện thoại bệnh nhân
-            $otpCode = rand(100000, 999999);
-            $cacheTTL = 120;
-            $cacheKey = 'OTP_treatment_fee_' . $phoneNumber;
-
-            // Kiểm tra xem tên và địa chỉ có xác thực otp chưa, nếu chưa thì k trả data về
+            $phoneNumber = $data['data'][0]->patient_phone; // Lấy số điện thoại bệnh nhân
             $patientCode = $data['data'][0]->patient_code;
             $deviceInfo = request()->header('User-Agent'); // Lấy thông tin thiết bị từ User-Agent
-            // Loại bỏ các ký tự đặc biệt, chỉ giữ lại chữ cái, chữ số, gạch dưới và gạch nối
-            $sanitizedDeviceInfo = preg_replace('/[^a-zA-Z0-9-_]/', '', $deviceInfo);
             $ipAddress = request()->ip(); // Lấy địa chỉ IP
-            // Nếu chưa xác thực thì tạo mã
-            if (!Cache::has($cacheKey .'_'. $patientCode . '_' . $sanitizedDeviceInfo . '_' . $ipAddress)) {
-                // Kiểm tra nếu đã có mã OTP trong cache
-                if (!Cache::has($cacheKey)) {
-                    Cache::put($cacheKey, $otpCode, $cacheTTL);
-
-                    $this->twilioService->sendOtp($phoneNumber, $otpCode);
-                }
-            }else{
-                // Nếu xác thực rồi
+    
+            // Gọi OtpService để xác thực OTP
+            $otpVerified = $this->otpService->generateAndSendOtpTreatmentFee($phoneNumber, $patientCode, $deviceInfo, $ipAddress);
+    
+            if ($otpVerified) {
                 $paramReturn[$this->authOtpName] = true;
-            } 
+            }
         }
 
         return returnDataSuccess($paramReturn, $data['data']);

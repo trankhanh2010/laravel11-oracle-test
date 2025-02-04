@@ -21,7 +21,7 @@ class OtpController extends Controller
         $ipAddress = request()->ip(); // Lấy địa chỉ IP
 
         $cacheKey = $name.'_'. $phone;
-        $cacheTTL = 3600;
+        $cacheTTL = 14400;
         // Kiểm tra mã OTP trong cache
         $cachedOtp = Cache::get($cacheKey);
         if ($cachedOtp && $cachedOtp == $inputOtp) {
