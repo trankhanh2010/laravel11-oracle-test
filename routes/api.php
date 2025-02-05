@@ -260,7 +260,9 @@ Route::fallback(function () {
 });
 
 /// mã OTP
-Route::get('v1/check-otp', [OtpController::class, 'index'])
+Route::get('v1/check-otp-treatment-fee', [OtpController::class, 'index'])
+    ->withoutMiddleware('check_token');
+Route::get('v1/send-otp-treatment-fee', [OtpController::class, 'sendOtpTreatmentFee'])
     ->withoutMiddleware('check_token');
 
 /// MOMO nofity ipn

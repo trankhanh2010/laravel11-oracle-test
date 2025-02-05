@@ -3,11 +3,16 @@
 namespace App\Http\Controllers\Api\ValidateControllers;
 
 use App\Http\Controllers\Controller;
+use App\Services\Auth\OtpService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
 class OtpController extends Controller
 {
+    protected $OtpService;
+    public function __construct(OtpService $OtpService){
+        $this->OtpService = $OtpService;
+    }
     public function index(Request $request){
         // Lấy data từ request
         $inputOtp = $request->input('otp');
@@ -35,6 +40,12 @@ class OtpController extends Controller
             // Xác minh thất bại
             return returnDataSuccess([], ['success' => false]);
         }
+    }
+
+    public function sendOtpTreatmentFee(Request $request){
+        $patientCode = $request->input('patientCode');
+        $data = $this->OtpService->createAndSendOtpTreatmentFee($patientCode);
+        return returnDataSuccess([], ['success' => $data]);
     }
 
 }

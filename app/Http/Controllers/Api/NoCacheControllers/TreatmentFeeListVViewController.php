@@ -146,13 +146,13 @@ class TreatmentFeeListVViewController extends BaseApiCacheController
 
         // nếu có dữ liệu
         if ($data['count'] > 0) {
-            $phoneNumber = $data['data'][0]->patient_phone; // Lấy số điện thoại bệnh nhân
+
             $patientCode = $data['data'][0]->patient_code;
             $deviceInfo = request()->header('User-Agent'); // Lấy thông tin thiết bị từ User-Agent
             $ipAddress = request()->ip(); // Lấy địa chỉ IP
     
             // Gọi OtpService để xác thực OTP
-            $otpVerified = $this->otpService->generateAndSendOtpTreatmentFee($phoneNumber, $patientCode, $deviceInfo, $ipAddress);
+            $otpVerified = $this->otpService->generateAndSendOtpTreatmentFee( $patientCode, $deviceInfo, $ipAddress);
     
             if ($otpVerified) {
                 $paramReturn[$this->authOtpName] = true;
