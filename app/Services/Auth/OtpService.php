@@ -2,20 +2,24 @@
 namespace App\Services\Auth;
 
 use App\Repositories\PatientRepository;
+use App\Services\Mail\MailService;
 use Illuminate\Support\Facades\Cache;
 use App\Services\Sms\TwilioService;
 
 class OtpService
 {
     protected $twilioService;
+    protected $mailService;
     protected $patientRepository;
 
     public function __construct(
         TwilioService $twilioService,
+        MailService $mailService,
         PatientRepository $patientRepository,
         )
     {
         $this->twilioService = $twilioService;
+        $this->mailService = $mailService;
         $this->patientRepository = $patientRepository;
     }
 
@@ -33,7 +37,7 @@ class OtpService
         /**
      * Tạo và gửi OTP nếu chưa có trong cache
      */
-    public function createAndSendOtpTreatmentFee($patientCode)
+    public function createAndSendOtpPhoneTreatmentFee($patientCode)
     {
         $phoneNumber = $this->patientRepository->getByPatientCode($patientCode)->phone ?? null;
         if(!$phoneNumber){
@@ -41,7 +45,7 @@ class OtpService
         }
         $otpCode = rand(100000, 999999);
         $cacheTTL = 120;
-        $cacheKey = 'OTP_treatment_fee_' . $phoneNumber;
+        $cacheKey = 'OTP_treatment_fee_' . $patientCode;
 
         if (!Cache::has($cacheKey)) {
             try {
@@ -56,6 +60,27 @@ class OtpService
         }else return false;
         return true;
     }    
+    public function createAndSendOtpMailTreatmentFee($patientCode)
+    {
+        $email = $this->patientRepository->getByPatientCode($patientCode)->email ?? null;
+        if(!$email){
+            return false;
+        }
+        $otpCode = rand(100000, 999999);
+        $cacheTTL = 120;
+        $cacheKey = 'OTP_treatment_fee_' . $patientCode;
+
+        if (!Cache::has($cacheKey)) {
+            try {
+                $this->mailService->sendOtp($email, $otpCode);
+            }catch (\Throwable $e){
+                return false;
+            }
+            // Gửi thành công thì mới tạo cache
+            Cache::put($cacheKey, $otpCode, $cacheTTL);
+        }else return false;
+        return true;
+    }  
     /**
      * Tạo và gửi OTP để thanh toán viện phí
      */
@@ -68,7 +93,7 @@ class OtpService
 
         // Nếu chưa có OTP trong cache thì tạo mới
         // Gọi hàm tạo và gửi OTP
-        $this->createAndSendOtpTreatmentFee($patientCode);
+        $this->createAndSendOtpPhoneTreatmentFee($patientCode);
 
         return false;
     }

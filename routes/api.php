@@ -260,10 +260,15 @@ Route::fallback(function () {
 });
 
 /// mã OTP
-Route::get('v1/check-otp-treatment-fee', [OtpController::class, 'index'])
+Route::get('v1/check-otp-treatment-fee', [OtpController::class, 'verifyOtpTreatmentFee'])
     ->withoutMiddleware('check_token');
-Route::get('v1/send-otp-treatment-fee', [OtpController::class, 'sendOtpTreatmentFee'])
+// Gửi qua SMS
+Route::get('v1/send-otp-phone-treatment-fee', [OtpController::class, 'sendOtpPhoneTreatmentFee'])
     ->withoutMiddleware('check_token');
+// Gửi qua Mail
+Route::get('v1/send-otp-mail-treatment-fee', [OtpController::class, 'sendOtpMailTreatmentFee'])
+    ->withoutMiddleware('check_token');
+
 
 /// MOMO nofity ipn
 // Thông báo trạng thái thanh toán /// k cần token

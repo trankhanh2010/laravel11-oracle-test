@@ -13,11 +13,10 @@ class OtpController extends Controller
     public function __construct(OtpService $OtpService){
         $this->OtpService = $OtpService;
     }
-    public function index(Request $request){
+    public function verifyOtpTreatmentFee(Request $request){
         // Lấy data từ request
         $inputOtp = $request->input('otp');
-        $name = $request->input('name');
-        $phone = $request->input('phone');
+        $name = 'OTP_treatment_fee';
 
         $patientCode = $request->input('patientCode');
         $deviceInfo = request()->header('User-Agent'); // Lấy thông tin thiết bị từ User-Agent
@@ -25,7 +24,7 @@ class OtpController extends Controller
         $sanitizedDeviceInfo = preg_replace('/[^a-zA-Z0-9-_]/', '', $deviceInfo);
         $ipAddress = request()->ip(); // Lấy địa chỉ IP
 
-        $cacheKey = $name.'_'. $phone;
+        $cacheKey = $name.'_'. $patientCode;
         $cacheTTL = 14400;
         // Kiểm tra mã OTP trong cache
         $cachedOtp = Cache::get($cacheKey);
@@ -42,10 +41,14 @@ class OtpController extends Controller
         }
     }
 
-    public function sendOtpTreatmentFee(Request $request){
+    public function sendOtpPhoneTreatmentFee(Request $request){
         $patientCode = $request->input('patientCode');
-        $data = $this->OtpService->createAndSendOtpTreatmentFee($patientCode);
+        $data = $this->OtpService->createAndSendOtpPhoneTreatmentFee($patientCode);
         return returnDataSuccess([], ['success' => $data]);
     }
-
+    public function sendOtpMailTreatmentFee(Request $request){
+        $patientCode = $request->input('patientCode');
+        $data = $this->OtpService->createAndSendOtpMailTreatmentFee($patientCode);
+        return returnDataSuccess([], ['success' => $data]);
+    }
 }
