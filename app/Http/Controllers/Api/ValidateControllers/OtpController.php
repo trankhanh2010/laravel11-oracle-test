@@ -46,6 +46,16 @@ class OtpController extends Controller
         $data = $this->OtpService->createAndSendOtpPhoneTreatmentFee($patientCode);
         return returnDataSuccess([], ['success' => $data]);
     }
+    public function sendOtpPatientRelativePhoneTreatmentFee(Request $request){
+        $patientCode = $request->input('patientCode');
+        $data = $this->OtpService->createAndSendOtpPatientRelativePhoneTreatmentFee($patientCode);
+        return returnDataSuccess([], ['success' => $data]);
+    }
+    public function sendOtpPatientRelativeMobileTreatmentFee(Request $request){
+        $patientCode = $request->input('patientCode');
+        $data = $this->OtpService->createAndSendOtpPatientRelativeMobileTreatmentFee($patientCode);
+        return returnDataSuccess([], ['success' => $data]);
+    }
     public function sendOtpMailTreatmentFee(Request $request){
         $patientCode = $request->input('patientCode');
         $data = $this->OtpService->createAndSendOtpMailTreatmentFee($patientCode);
