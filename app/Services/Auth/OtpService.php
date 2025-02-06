@@ -8,6 +8,7 @@ use App\Services\Sms\TwilioService;
 
 class OtpService
 {
+    protected $smsSerivce;
     protected $twilioService;
     protected $mailService;
     protected $patientRepository;
@@ -21,6 +22,10 @@ class OtpService
         $this->twilioService = $twilioService;
         $this->mailService = $mailService;
         $this->patientRepository = $patientRepository;
+
+
+        // Chọn loại dịch vụ dùng để gửi sms
+        $this->smsSerivce = $this->twilioService;
     }
 
     /**
@@ -52,7 +57,7 @@ class OtpService
             try {
                 // Test ở local khi bị hạn chế số lượng tin
                 // Cache::put($cacheKey, $otpCode, $cacheTTL);
-                $this->twilioService->sendOtp($phoneNumber, $otpCode);
+                $this->smsSerivce->sendOtp($phoneNumber, $otpCode);
             }catch (\Throwable $e){
                 return false;
             }
@@ -75,7 +80,7 @@ class OtpService
             try {
                 // Test ở local khi bị hạn chế số lượng tin
                 // Cache::put($cacheKey, $otpCode, $cacheTTL);
-                $this->twilioService->sendOtp($phoneNumber, $otpCode);
+                $this->smsSerivce->sendOtp($phoneNumber, $otpCode);
             }catch (\Throwable $e){
                 return false;
             }
@@ -100,7 +105,7 @@ class OtpService
             try {
                 // Test ở local khi bị hạn chế số lượng tin
                 // Cache::put($cacheKey, $otpCode, $cacheTTL);
-                $this->twilioService->sendOtp($phoneNumber, $otpCode);
+                $this->smsSerivce->sendOtp($phoneNumber, $otpCode);
             }catch (\Throwable $e){
                 return false;
             }
