@@ -11,10 +11,41 @@ class OtpController extends Controller
 {
     protected $otpService;
     protected $maxRequestSendOtpOnday;
+    protected $otpMaxRequestsVerifyPerOtp;
     public function __construct(OtpService $otpService)
     {
         $this->otpService = $otpService;
         $this->maxRequestSendOtpOnday = config('database')['connections']['otp']['otp_max_requests_per_day'];
+        $this->otpMaxRequestsVerifyPerOtp = config('database')['connections']['otp']['otp_max_requests_verify_per_otp'];
+    }
+    public function getTotalRequestVerifyOtp()
+    {
+        $deviceInfo = request()->header('User-Agent'); // Lấy thông tin thiết bị từ User-Agent
+        $ipAddress = request()->ip(); // Lấy địa chỉ IP
+        $cacheKey = 'total_verify_OTP_treatment_fee_' . md5($deviceInfo . '_' . $ipAddress); // Tránh key quá dài
+        // Kiểm tra xem cache đã tồn tại chưa
+        if (!Cache::has($cacheKey)) {
+            // Nếu chưa có, đặt giá trị là 1 và hết hạn sau 1 ngày
+            Cache::put($cacheKey, 1, now()->addHour());
+        } else {
+            // Nếu đã có, tăng giá trị lên 1
+            Cache::increment($cacheKey);
+        }
+
+        // Trả về số lần gửi OTP của thiết bị này trong ngày
+        return Cache::get($cacheKey);
+    }
+    public function checkLimitTotalRequestVerifyOtp($total)
+    {
+        return $total > $this->otpMaxRequestsVerifyPerOtp;
+    }
+    public function deleteCacheLimitTotalRequestVerifyOtp()
+    {
+        $deviceInfo = request()->header('User-Agent'); // Lấy thông tin thiết bị từ User-Agent
+        $ipAddress = request()->ip(); // Lấy địa chỉ IP
+        $cacheKey = 'total_verify_OTP_treatment_fee_' . md5($deviceInfo . '_' . $ipAddress); // Tránh key quá dài
+
+        Cache::forget($cacheKey); // Xóa cache với key tương ứng
     }
     public function verifyOtpTreatmentFee(Request $request)
     {
@@ -30,18 +61,36 @@ class OtpController extends Controller
 
         $cacheKey = $name . '_' . $patientCode;
         $cacheTTL = 14400;
-        // Kiểm tra mã OTP trong cache
-        $cachedOtp = Cache::get($cacheKey);
-        if ($cachedOtp && $cachedOtp == $inputOtp) {
-            // Xác minh thành công
-            Cache::forget($cacheKey); // Xóa mã OTP sau khi sử dụng
-            // Tạo cache lưu trạng thái
-            Cache::put($name . '_' . $patientCode . '_' . $sanitizedDeviceInfo . '_' . $ipAddress, 1, $cacheTTL);
-
-            return returnDataSuccess([], ['success' => true]);
+        // Check xem đã xác thực bao lần trong 2 phút
+        $checkLimitVerify = $this->checkLimitTotalRequestVerifyOtp($this->getTotalRequestVerifyOtp());
+        $limitRequest = false;
+        if ($checkLimitVerify) {
+            $limitRequest = true;
+            return returnDataSuccess([], [
+                'success' => false,
+                'limitRequest' => $limitRequest,
+            ]);
         } else {
-            // Xác minh thất bại
-            return returnDataSuccess([], ['success' => false]);
+            // Kiểm tra mã OTP trong cache
+            $cachedOtp = Cache::get($cacheKey);
+            if ($cachedOtp && $cachedOtp == $inputOtp) {
+                // Xác minh thành công
+                Cache::forget($cacheKey); // Xóa mã OTP sau khi sử dụng
+                $this->deleteCacheLimitTotalRequestVerifyOtp(); // Nếu xác minh thành công thì xóa cache limitRequestVerifyOtp
+                // Tạo cache lưu trạng thái
+                Cache::put($name . '_' . $patientCode . '_' . $sanitizedDeviceInfo . '_' . $ipAddress, 1, $cacheTTL);
+
+                return returnDataSuccess([], [
+                    'success' => true,
+                    'limitRequest' => $limitRequest,
+                ]);
+            } else {
+                // Xác minh thất bại
+                return returnDataSuccess([], [
+                    'success' => false,
+                    'limitRequest' => $limitRequest,
+                ]);
+            }
         }
     }
     public function getTotalRequestSendOtp()
@@ -76,6 +125,7 @@ class OtpController extends Controller
             $data = false;
         } else {
             $data = $this->otpService->createAndSendOtpPhoneTreatmentFee($patientCode);
+            if($data) {$this->deleteCacheLimitTotalRequestVerifyOtp();} // Nếu gửi mã OTP mới thì xóa cache limitRequestVerifyOtp
         }
         return returnDataSuccess([], [
             'success' => $data,
@@ -93,11 +143,13 @@ class OtpController extends Controller
             $data = false;
         } else {
             $data = $this->otpService->createAndSendOtpPatientRelativePhoneTreatmentFee($patientCode);
+            if($data) {$this->deleteCacheLimitTotalRequestVerifyOtp();} // Nếu gửi mã OTP mới thì xóa cache limitRequestVerifyOtp
         }
         return returnDataSuccess([], [
             'success' => $data,
             'limitRequest' => $limitRequest,
-        ]);    }
+        ]);
+    }
     public function sendOtpPatientRelativeMobileTreatmentFee(Request $request)
     {
         $patientCode = $request->input('patientCode');
@@ -109,11 +161,13 @@ class OtpController extends Controller
             $data = false;
         } else {
             $data = $this->otpService->createAndSendOtpPatientRelativeMobileTreatmentFee($patientCode);
+            if($data) {$this->deleteCacheLimitTotalRequestVerifyOtp();} // Nếu gửi mã OTP mới thì xóa cache limitRequestVerifyOtp
         }
         return returnDataSuccess([], [
             'success' => $data,
             'limitRequest' => $limitRequest,
-        ]);    }
+        ]);
+    }
     public function sendOtpMailTreatmentFee(Request $request)
     {
         $patientCode = $request->input('patientCode');
@@ -125,9 +179,11 @@ class OtpController extends Controller
             $data = false;
         } else {
             $data = $this->otpService->createAndSendOtpMailTreatmentFee($patientCode);
+            if($data) {$this->deleteCacheLimitTotalRequestVerifyOtp();} // Nếu gửi mã OTP mới thì xóa cache limitRequestVerifyOtp
         }
         return returnDataSuccess([], [
             'success' => $data,
             'limitRequest' => $limitRequest,
-        ]);    }
+        ]);
+    }
 }

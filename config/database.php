@@ -193,6 +193,7 @@ return [
         ],
         'otp' => [
             'otp_max_requests_per_day' => env('OTP_MAX_REQUESTS_PER_DAY'),
+            'otp_max_requests_verify_per_otp' => env('OTP_MAX_REQUESTS_VERIFY_PER_OTP'),
         ],
 
     ],
