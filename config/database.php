@@ -191,6 +191,9 @@ return [
             'auth_token' => env('TWILIO_AUTH_TOKEN'),
             'phone_number' => env('TWILIO_PHONE_NUMBER'),
         ],
+        'otp' => [
+            'otp_max_requests_per_day' => env('OTP_MAX_REQUESTS_PER_DAY'),
+        ],
 
     ],
 

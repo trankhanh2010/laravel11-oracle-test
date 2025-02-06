@@ -9,11 +9,15 @@ use Illuminate\Support\Facades\Cache;
 
 class OtpController extends Controller
 {
-    protected $OtpService;
-    public function __construct(OtpService $OtpService){
-        $this->OtpService = $OtpService;
+    protected $otpService;
+    protected $maxRequestSendOtpOnday;
+    public function __construct(OtpService $otpService)
+    {
+        $this->otpService = $otpService;
+        $this->maxRequestSendOtpOnday = config('database')['connections']['otp']['otp_max_requests_per_day'];
     }
-    public function verifyOtpTreatmentFee(Request $request){
+    public function verifyOtpTreatmentFee(Request $request)
+    {
         // Lấy data từ request
         $inputOtp = $request->input('otp');
         $name = 'OTP_treatment_fee';
@@ -24,7 +28,7 @@ class OtpController extends Controller
         $sanitizedDeviceInfo = preg_replace('/[^a-zA-Z0-9-_]/', '', $deviceInfo);
         $ipAddress = request()->ip(); // Lấy địa chỉ IP
 
-        $cacheKey = $name.'_'. $patientCode;
+        $cacheKey = $name . '_' . $patientCode;
         $cacheTTL = 14400;
         // Kiểm tra mã OTP trong cache
         $cachedOtp = Cache::get($cacheKey);
@@ -32,7 +36,7 @@ class OtpController extends Controller
             // Xác minh thành công
             Cache::forget($cacheKey); // Xóa mã OTP sau khi sử dụng
             // Tạo cache lưu trạng thái
-            Cache::put($name.'_'.$patientCode.'_'.$sanitizedDeviceInfo.'_'.$ipAddress, 1, $cacheTTL);
+            Cache::put($name . '_' . $patientCode . '_' . $sanitizedDeviceInfo . '_' . $ipAddress, 1, $cacheTTL);
 
             return returnDataSuccess([], ['success' => true]);
         } else {
@@ -40,25 +44,90 @@ class OtpController extends Controller
             return returnDataSuccess([], ['success' => false]);
         }
     }
+    public function getTotalRequestSendOtp()
+    {
+        $deviceInfo = request()->header('User-Agent'); // Lấy thông tin thiết bị từ User-Agent
+        $ipAddress = request()->ip(); // Lấy địa chỉ IP
+        $cacheKey = 'total_OTP_treatment_fee_' . md5($deviceInfo . '_' . $ipAddress); // Tránh key quá dài
+        // Kiểm tra xem cache đã tồn tại chưa
+        if (!Cache::has($cacheKey)) {
+            // Nếu chưa có, đặt giá trị là 1 và hết hạn sau 1 ngày
+            Cache::put($cacheKey, 1, now()->addDay());
+        } else {
+            // Nếu đã có, tăng giá trị lên 1
+            Cache::increment($cacheKey);
+        }
 
-    public function sendOtpPhoneTreatmentFee(Request $request){
-        $patientCode = $request->input('patientCode');
-        $data = $this->OtpService->createAndSendOtpPhoneTreatmentFee($patientCode);
-        return returnDataSuccess([], ['success' => $data]);
+        // Trả về số lần gửi OTP của thiết bị này trong ngày
+        return Cache::get($cacheKey);
     }
-    public function sendOtpPatientRelativePhoneTreatmentFee(Request $request){
-        $patientCode = $request->input('patientCode');
-        $data = $this->OtpService->createAndSendOtpPatientRelativePhoneTreatmentFee($patientCode);
-        return returnDataSuccess([], ['success' => $data]);
+    public function checkLimitTotalRequestSendOtp($total)
+    {
+        return $total >= $this->maxRequestSendOtpOnday;
     }
-    public function sendOtpPatientRelativeMobileTreatmentFee(Request $request){
+    public function sendOtpPhoneTreatmentFee(Request $request)
+    {
         $patientCode = $request->input('patientCode');
-        $data = $this->OtpService->createAndSendOtpPatientRelativeMobileTreatmentFee($patientCode);
-        return returnDataSuccess([], ['success' => $data]);
+        $checkTotalRequest = $this->checkLimitTotalRequestSendOtp($this->getTotalRequestSendOtp());
+        $limitRequest = false;
+        // Đạt giới hạn thì k gửi otp
+        if ($checkTotalRequest) {
+            $limitRequest = true;
+            $data = false;
+        } else {
+            $data = $this->otpService->createAndSendOtpPhoneTreatmentFee($patientCode);
+        }
+        return returnDataSuccess([], [
+            'success' => $data,
+            'limitRequest' => $limitRequest,
+        ]);
     }
-    public function sendOtpMailTreatmentFee(Request $request){
+    public function sendOtpPatientRelativePhoneTreatmentFee(Request $request)
+    {
         $patientCode = $request->input('patientCode');
-        $data = $this->OtpService->createAndSendOtpMailTreatmentFee($patientCode);
-        return returnDataSuccess([], ['success' => $data]);
-    }
+        $checkTotalRequest = $this->checkLimitTotalRequestSendOtp($this->getTotalRequestSendOtp());
+        $limitRequest = false;
+        // Đạt giới hạn thì k gửi otp
+        if ($checkTotalRequest) {
+            $limitRequest = true;
+            $data = false;
+        } else {
+            $data = $this->otpService->createAndSendOtpPatientRelativePhoneTreatmentFee($patientCode);
+        }
+        return returnDataSuccess([], [
+            'success' => $data,
+            'limitRequest' => $limitRequest,
+        ]);    }
+    public function sendOtpPatientRelativeMobileTreatmentFee(Request $request)
+    {
+        $patientCode = $request->input('patientCode');
+        $checkTotalRequest = $this->checkLimitTotalRequestSendOtp($this->getTotalRequestSendOtp());
+        $limitRequest = false;
+        // Đạt giới hạn thì k gửi otp
+        if ($checkTotalRequest) {
+            $limitRequest = true;
+            $data = false;
+        } else {
+            $data = $this->otpService->createAndSendOtpPatientRelativeMobileTreatmentFee($patientCode);
+        }
+        return returnDataSuccess([], [
+            'success' => $data,
+            'limitRequest' => $limitRequest,
+        ]);    }
+    public function sendOtpMailTreatmentFee(Request $request)
+    {
+        $patientCode = $request->input('patientCode');
+        $checkTotalRequest = $this->checkLimitTotalRequestSendOtp($this->getTotalRequestSendOtp());
+        $limitRequest = false;
+        // Đạt giới hạn thì k gửi otp
+        if ($checkTotalRequest) {
+            $limitRequest = true;
+            $data = false;
+        } else {
+            $data = $this->otpService->createAndSendOtpMailTreatmentFee($patientCode);
+        }
+        return returnDataSuccess([], [
+            'success' => $data,
+            'limitRequest' => $limitRequest,
+        ]);    }
 }
