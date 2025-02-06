@@ -47,6 +47,14 @@ class OtpController extends Controller
 
         Cache::forget($cacheKey); // Xóa cache với key tương ứng
     }
+    public function getTotalRetryVerifyOtp(){
+        $deviceInfo = request()->header('User-Agent'); // Lấy thông tin thiết bị từ User-Agent
+        $ipAddress = request()->ip(); // Lấy địa chỉ IP
+        $cacheKey = 'total_verify_OTP_treatment_fee_' . md5($deviceInfo . '_' . $ipAddress); // Tránh key quá dài
+        
+        $totalRequestVerify = Cache::get($cacheKey) ?? 0;
+        return $this->otpMaxRequestsVerifyPerOtp - $totalRequestVerify;
+    }
     public function verifyOtpTreatmentFee(Request $request)
     {
         // Lấy data từ request
@@ -69,6 +77,7 @@ class OtpController extends Controller
             return returnDataSuccess([], [
                 'success' => false,
                 'limitRequest' => $limitRequest,
+                'totalRetryVerify' => $this->getTotalRetryVerifyOtp(),
             ]);
         } else {
             // Kiểm tra mã OTP trong cache
@@ -83,12 +92,14 @@ class OtpController extends Controller
                 return returnDataSuccess([], [
                     'success' => true,
                     'limitRequest' => $limitRequest,
+                    'totalRetryVerify' => $this->getTotalRetryVerifyOtp(),
                 ]);
             } else {
                 // Xác minh thất bại
                 return returnDataSuccess([], [
                     'success' => false,
                     'limitRequest' => $limitRequest,
+                    'totalRetryVerify' => $this->getTotalRetryVerifyOtp(),
                 ]);
             }
         }
