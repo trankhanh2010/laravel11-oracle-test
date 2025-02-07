@@ -152,7 +152,7 @@ class TreatmentFeeListVViewController extends BaseApiCacheController
             $ipAddress = request()->ip(); // Lấy địa chỉ IP
     
             // Gọi OtpService để xác thực OTP
-            $otpVerified = $this->otpService->generateAndSendOtpTreatmentFee( $patientCode, $deviceInfo, $ipAddress);
+            $otpVerified = $this->otpService->isOtpTreatmentFeeVerified( $patientCode, $deviceInfo, $ipAddress);
     
             if ($otpVerified) {
                 $paramReturn[$this->authOtpName] = true;

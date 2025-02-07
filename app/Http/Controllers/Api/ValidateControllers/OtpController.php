@@ -43,6 +43,14 @@ class OtpController extends Controller
 
         Cache::forget($cacheKey); // Xóa cache với key tương ứng
     }
+    public function deleteCacheLimitTotalRequestSendOtp()
+    {
+        $deviceInfo = request()->header('User-Agent'); // Lấy thông tin thiết bị từ User-Agent
+        $ipAddress = request()->ip(); // Lấy địa chỉ IP
+        $cacheKey = 'total_OTP_treatment_fee_' . md5($deviceInfo . '_' . $ipAddress); // Tránh key quá dài
+
+        Cache::forget($cacheKey); // Xóa cache với key tương ứng
+    }
     public function getTotalRetryVerifyOtp($patientCode){
         $cacheKey = 'total_verify_OTP_treatment_fee_' . $patientCode; // Tránh key quá dài
         
@@ -80,6 +88,7 @@ class OtpController extends Controller
                 // Xác minh thành công
                 Cache::forget($cacheKey); // Xóa mã OTP sau khi sử dụng
                 $this->deleteCacheLimitTotalRequestVerifyOtp($patientCode); // Nếu xác minh thành công thì xóa cache limitRequestVerifyOtp
+                $this->deleteCacheLimitTotalRequestSendOtp(); // Nếu xác minh thành công thì xóa cache limitRequestSendOtp
                 // Tạo cache lưu trạng thái
                 Cache::put($name . '_' . $patientCode . '_' . $sanitizedDeviceInfo . '_' . $ipAddress, 1, $cacheTTL);
 
