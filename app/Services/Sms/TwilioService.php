@@ -7,18 +7,20 @@ use Twilio\Rest\Client;
 class TwilioService
 {
     protected $twilio;
-
+    protected $otpTTL;
     public function __construct()
     {
         $this->twilio = new Client(
             config('database')['connections']['twilio']['sid'],
             config('database')['connections']['twilio']['auth_token'],
         );
+        $this->otpTTL = config('database')['connections']['otp']['otp_ttl'];
+
     }
 
     public function sendOtp($phoneNumber, $otpCode)
     {
-        $message = "Ma OTP cua ban: $otpCode. Hieu luc trong 2 phut.";
+        $message = "Ma OTP cua ban: $otpCode. Hieu luc trong ".$this->otpTTL." phut.";
 
         $this->twilio->messages->create(
             $phoneNumber, // Số điện thoại nhận

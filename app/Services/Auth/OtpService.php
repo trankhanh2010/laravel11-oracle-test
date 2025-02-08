@@ -12,6 +12,7 @@ class OtpService
     protected $twilioService;
     protected $mailService;
     protected $patientRepository;
+    protected $otpTTL;
 
     public function __construct(
         TwilioService $twilioService,
@@ -23,7 +24,7 @@ class OtpService
         $this->mailService = $mailService;
         $this->patientRepository = $patientRepository;
 
-
+        $this->otpTTL = config('database')['connections']['otp']['otp_ttl'];
         // Chọn loại dịch vụ dùng để gửi sms
         $this->smsSerivce = $this->twilioService;
     }
@@ -50,7 +51,7 @@ class OtpService
             return false;
         }
         $otpCode = rand(100000, 999999);
-        $cacheTTL = 120;
+        $cacheTTL = $this->otpTTL;
         $cacheKey = 'OTP_treatment_fee_' . $patientCode;
 
         if (!Cache::has($cacheKey)) {
@@ -62,7 +63,7 @@ class OtpService
                 return false;
             }
             // Gửi thành công thì mới tạo cache
-            Cache::put($cacheKey, $otpCode, $cacheTTL);
+            Cache::put($cacheKey, $otpCode, now()->addMinutes($cacheTTL));
         }else return false;
         return true;
     }  
@@ -74,7 +75,7 @@ class OtpService
             return false;
         }
         $otpCode = rand(100000, 999999);
-        $cacheTTL = 120;
+        $cacheTTL = $this->otpTTL;
         $cacheKey = 'OTP_treatment_fee_' . $patientCode;
         if (!Cache::has($cacheKey)) {
             try {
@@ -85,7 +86,7 @@ class OtpService
                 return false;
             }
             // Gửi thành công thì mới tạo cache
-            Cache::put($cacheKey, $otpCode, $cacheTTL);
+            Cache::put($cacheKey, $otpCode, now()->addMinutes($cacheTTL));
         }else return false;
         return true;
     }  
@@ -98,7 +99,7 @@ class OtpService
             return false;
         }
         $otpCode = rand(100000, 999999);
-        $cacheTTL = 120;
+        $cacheTTL = $this->otpTTL;
         $cacheKey = 'OTP_treatment_fee_' . $patientCode;
 
         if (!Cache::has($cacheKey)) {
@@ -110,7 +111,7 @@ class OtpService
                 return false;
             }
             // Gửi thành công thì mới tạo cache
-            Cache::put($cacheKey, $otpCode, $cacheTTL);
+            Cache::put($cacheKey, $otpCode, now()->addMinutes($cacheTTL));
         }else return false;
         return true;
     }    
@@ -121,7 +122,7 @@ class OtpService
             return false;
         }
         $otpCode = rand(100000, 999999);
-        $cacheTTL = 120;
+        $cacheTTL = $this->otpTTL;
         $cacheKey = 'OTP_treatment_fee_' . $patientCode;
 
         if (!Cache::has($cacheKey)) {
@@ -131,7 +132,7 @@ class OtpService
                 return false;
             }
             // Gửi thành công thì mới tạo cache
-            Cache::put($cacheKey, $otpCode, $cacheTTL);
+            Cache::put($cacheKey, $otpCode, now()->addMinutes($cacheTTL));
         }else return false;
         return true;
     }  

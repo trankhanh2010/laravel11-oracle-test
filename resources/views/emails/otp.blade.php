@@ -7,7 +7,7 @@
 </head>
 <body>
     <p>Mã OTP của bạn là: <strong>{{ $otp }}</strong></p>
-    <p>Mã này có hiệu lực trong 2 phút.</p>
+    <p>Mã này có hiệu lực trong {{$otpTTL}} phút.</p>
     <p>Vui lòng không chia sẻ mã này với bất kỳ ai.</p>
 </body>
 </html>
