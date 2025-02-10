@@ -191,10 +191,19 @@ return [
             'auth_token' => env('TWILIO_AUTH_TOKEN'),
             'phone_number' => env('TWILIO_PHONE_NUMBER'),
         ],
+        'e_sms' => [
+            'api_key' => env('E_SMS_API_KEY'),
+            'secret_key' => env('E_SMS_SECRET_KEY'),
+            'brand_name' => env('E_SMS_BRAND_NAME'),
+        ],
+        'speed_sms' => [
+            'api_key' => env('SPEED_SMS_API_KEY'),
+            'sender' => env('SPEED_SMS_SENDER',""),
+        ],
         'otp' => [
-            'otp_max_requests_per_day' => env('OTP_MAX_REQUESTS_PER_DAY'),
-            'otp_max_requests_verify_per_otp' => env('OTP_MAX_REQUESTS_VERIFY_PER_OTP'),
-            'otp_ttl' => intval(env('OTP_TTL')),
+            'otp_max_requests_per_day' => env('OTP_MAX_REQUESTS_PER_DAY',20),
+            'otp_max_requests_verify_per_otp' => env('OTP_MAX_REQUESTS_VERIFY_PER_OTP',5),
+            'otp_ttl' => intval(env('OTP_TTL',5)),
         ],
 
     ],

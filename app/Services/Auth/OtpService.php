@@ -3,6 +3,8 @@ namespace App\Services\Auth;
 
 use App\Repositories\PatientRepository;
 use App\Services\Mail\MailService;
+use App\Services\Sms\ESmsService;
+use App\Services\Sms\SpeedSmsService;
 use Illuminate\Support\Facades\Cache;
 use App\Services\Sms\TwilioService;
 
@@ -10,23 +12,29 @@ class OtpService
 {
     protected $smsSerivce;
     protected $twilioService;
+    protected $eSmsService;
+    protected $speedSmsService;
     protected $mailService;
     protected $patientRepository;
     protected $otpTTL;
 
     public function __construct(
         TwilioService $twilioService,
+        ESmsService $eSmsService,
+        SpeedSmsService $speedSmsService,
         MailService $mailService,
         PatientRepository $patientRepository,
         )
     {
         $this->twilioService = $twilioService;
+        $this->eSmsService = $eSmsService;
+        $this->speedSmsService = $speedSmsService;
         $this->mailService = $mailService;
         $this->patientRepository = $patientRepository;
 
         $this->otpTTL = config('database')['connections']['otp']['otp_ttl'];
         // Chọn loại dịch vụ dùng để gửi sms
-        $this->smsSerivce = $this->twilioService;
+        $this->smsSerivce = $this->speedSmsService;
     }
 
     /**
