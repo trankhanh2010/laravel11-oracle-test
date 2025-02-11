@@ -226,6 +226,7 @@ use Illuminate\Support\Facades\DB;
 // Transaction
 use App\Http\Controllers\Api\TransactionControllers\TreatmentFeePayMentController;
 use App\Http\Controllers\Api\TransactionControllers\MoMoController;
+use App\Http\Controllers\Api\ValidateControllers\DeviceGetOtpController;
 use App\Http\Controllers\Api\ValidateControllers\OtpController;
 
 /*
@@ -320,6 +321,9 @@ Route::group([
 Route::group([
     "middleware" => ["check_module:api"]
 ], function () {
+    /// Quản lí thiết bị nhận OTP
+    Route::get('v1/device-get-otp-treatment-fee-list', [DeviceGetOtpController::class, "getDeviceGetOtpTreatmentFeeList"]);
+
     /// Bộ phận thương tích
     Route::group(['as' => 'HIS.Desktop.Plugins.HisAccidentBodyPart'], function () {
         Route::apiResource('v1/accident-body-part', AccidentBodyPartController::class);

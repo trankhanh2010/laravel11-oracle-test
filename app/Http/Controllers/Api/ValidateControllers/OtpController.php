@@ -52,7 +52,7 @@ class OtpController extends Controller
     {
         $deviceInfo = request()->header('User-Agent'); // Lấy thông tin thiết bị từ User-Agent
         $ipAddress = request()->ip(); // Lấy địa chỉ IP
-        $cacheKey = 'total_OTP_treatment_fee_' . md5($deviceInfo . '_' . $ipAddress); // Tránh key quá dài
+        $cacheKey = 'total_OTP_treatment_fee_' . $deviceInfo . '_' . $ipAddress; // Tránh key quá dài
 
         Cache::forget($cacheKey); // Xóa cache với key tương ứng
     }
@@ -125,32 +125,58 @@ class OtpController extends Controller
     {
         $deviceInfo = request()->header('User-Agent'); // Lấy thông tin thiết bị từ User-Agent
         $ipAddress = request()->ip(); // Lấy địa chỉ IP
-        $cacheKey = 'total_OTP_treatment_fee_' . md5($deviceInfo . '_' . $ipAddress); // Tránh key quá dài
-        // Kiểm tra xem cache đã tồn tại chưa
-        if (!Cache::has($cacheKey)) {
-            // Nếu chưa có, đặt giá trị là 0 và hết hạn sau 1 ngày
-            Cache::put($cacheKey, 0, now()->addDay());
-        } 
+        $cacheKey = 'total_OTP_treatment_fee_' . $deviceInfo . '_' . $ipAddress; // Tránh key quá dài
 
-        // Trả về số lần gửi OTP của thiết bị này trong ngày
-        return Cache::get($cacheKey);
+        // Kiểm tra cache hiện tại
+        $cacheData = Cache::get($cacheKey);
+
+        // Nếu cache chưa tồn tại, khởi tạo dữ liệu
+        if (!$cacheData) {
+            $cacheData = [
+                'device' => $deviceInfo,
+                'ip' => $ipAddress,
+                'total_requests' => 0,  // Số lần gửi OTP
+                'first_request_at' => now()->toDateTimeString(), // Thời gian gọi lần đầu
+                'last_request_at' => null, // Chưa có lần cuối
+                'patientCodeList' => [
+
+                ],
+
+            ];
+        }
+
+        // **Lưu lại vào cache với TTL 
+        Cache::put($cacheKey, $cacheData, now()->addDay());
+
+        return $cacheData['total_requests'];
     }
     public function addTotalRequestSendOtp()
     {
         $deviceInfo = request()->header('User-Agent'); // Lấy thông tin thiết bị từ User-Agent
         $ipAddress = request()->ip(); // Lấy địa chỉ IP
-        $cacheKey = 'total_OTP_treatment_fee_' . md5($deviceInfo . '_' . $ipAddress); // Tránh key quá dài
-        // Kiểm tra xem cache đã tồn tại chưa
-        if (!Cache::has($cacheKey)) {
-            // Nếu chưa có, đặt giá trị là 1 và hết hạn sau 1 ngày
-            Cache::put($cacheKey, 1, now()->addDay());
+        $cacheKey = 'total_OTP_treatment_fee_' .$deviceInfo . '_' . $ipAddress; // Tránh key quá dài
+        // Kiểm tra cache hiện tại
+        $cacheData = Cache::get($cacheKey);
+
+        // Nếu cache chưa tồn tại, khởi tạo dữ liệu
+        if (!$cacheData) {
+            $cacheData = [
+                'device' => $deviceInfo,
+                'ip' => $ipAddress,
+                'total_requests' => 1,  // Lần gửi đầu tiên
+                'first_request_at' => now()->toDateTimeString(), // Thời gian gửi lần đầu
+                'last_request_at' => now()->toDateTimeString(), // Cập nhật lần gửi cuối
+            ];
         } else {
-            // Nếu đã có, tăng giá trị lên 1
-            Cache::increment($cacheKey);
+            // Nếu đã tồn tại, tăng số lần gửi OTP
+            $cacheData['total_requests'] += 1;
+            $cacheData['last_request_at'] = now()->toDateTimeString(); // Cập nhật lần cuối gửi OTP
         }
 
-        // Trả về số lần gửi OTP của thiết bị này trong ngày
-        return Cache::get($cacheKey);
+        // Lưu lại vào cache với TTL 1 ngày
+        Cache::put($cacheKey, $cacheData, now()->addDay());
+
+        return $cacheData['total_requests'];
     }
     public function checkLimitTotalRequestSendOtp($total)
     {
