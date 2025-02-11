@@ -121,7 +121,7 @@ class OtpController extends Controller
             }
         }
     }
-    public function getTotalRequestSendOtp()
+    public function getTotalRequestSendOtp($patientCode)
     {
         $deviceInfo = request()->header('User-Agent'); // Lấy thông tin thiết bị từ User-Agent
         $ipAddress = request()->ip(); // Lấy địa chỉ IP
@@ -138,10 +138,7 @@ class OtpController extends Controller
                 'total_requests' => 0,  // Số lần gửi OTP
                 'first_request_at' => now()->toDateTimeString(), // Thời gian gọi lần đầu
                 'last_request_at' => null, // Chưa có lần cuối
-                'patientCodeList' => [
-
-                ],
-
+                'patient_code_list' => [$patientCode => 1] // Thêm patientCode đầu tiên
             ];
         }
 
@@ -150,7 +147,7 @@ class OtpController extends Controller
 
         return $cacheData['total_requests'];
     }
-    public function addTotalRequestSendOtp()
+    public function addTotalRequestSendOtp($patientCode)
     {
         $deviceInfo = request()->header('User-Agent'); // Lấy thông tin thiết bị từ User-Agent
         $ipAddress = request()->ip(); // Lấy địa chỉ IP
@@ -166,11 +163,18 @@ class OtpController extends Controller
                 'total_requests' => 1,  // Lần gửi đầu tiên
                 'first_request_at' => now()->toDateTimeString(), // Thời gian gửi lần đầu
                 'last_request_at' => now()->toDateTimeString(), // Cập nhật lần gửi cuối
+                'patient_code_list' => [$patientCode => 1] // Thêm patientCode đầu tiên
             ];
         } else {
             // Nếu đã tồn tại, tăng số lần gửi OTP
             $cacheData['total_requests'] += 1;
             $cacheData['last_request_at'] = now()->toDateTimeString(); // Cập nhật lần cuối gửi OTP
+            // Kiểm tra patientCode đã có chưa
+            if (isset($cacheData['patient_code_list'][$patientCode])) {
+                $cacheData['patient_code_list'][$patientCode] += 1; // Tăng số lần gửi cho patientCode
+            } else {
+                $cacheData['patient_code_list'][$patientCode] = 1; // Thêm patientCode mới
+            }
         }
 
         // Lưu lại vào cache với TTL 1 ngày
@@ -185,7 +189,7 @@ class OtpController extends Controller
     public function sendOtpPhoneTreatmentFee(Request $request)
     {
         $patientCode = $request->input('patientCode');
-        $checkTotalRequest = $this->checkLimitTotalRequestSendOtp($this->getTotalRequestSendOtp());
+        $checkTotalRequest = $this->checkLimitTotalRequestSendOtp($this->getTotalRequestSendOtp($patientCode));
         $limitRequest = false;
         // Đạt giới hạn thì k gửi otp
         if ($checkTotalRequest) {
@@ -195,7 +199,7 @@ class OtpController extends Controller
             $data = $this->otpService->createAndSendOtpPhoneTreatmentFee($patientCode);
             if($data) {
                 $this->deleteCacheLimitTotalRequestVerifyOtp($patientCode); // Nếu gửi mã OTP mới thì xóa cache limitRequestVerifyOtp
-                $this->addTotalRequestSendOtp(); // Nếu gửi mã OTP thì tăng tổng lên 1
+                $this->addTotalRequestSendOtp($patientCode); // Nếu gửi mã OTP thì tăng tổng lên 1
             } 
 
         }
@@ -210,7 +214,7 @@ class OtpController extends Controller
     public function sendOtpPatientRelativePhoneTreatmentFee(Request $request)
     {
         $patientCode = $request->input('patientCode');
-        $checkTotalRequest = $this->checkLimitTotalRequestSendOtp($this->getTotalRequestSendOtp());
+        $checkTotalRequest = $this->checkLimitTotalRequestSendOtp($this->getTotalRequestSendOtp($patientCode));
         $limitRequest = false;
         // Đạt giới hạn thì k gửi otp
         if ($checkTotalRequest) {
@@ -220,7 +224,7 @@ class OtpController extends Controller
             $data = $this->otpService->createAndSendOtpPatientRelativePhoneTreatmentFee($patientCode);
             if($data) {
                 $this->deleteCacheLimitTotalRequestVerifyOtp($patientCode); // Nếu gửi mã OTP mới thì xóa cache limitRequestVerifyOtp
-                $this->addTotalRequestSendOtp(); // Nếu gửi mã OTP thì tăng tổng lên 1
+                $this->addTotalRequestSendOtp($patientCode); // Nếu gửi mã OTP thì tăng tổng lên 1
             } 
         }
         return returnDataSuccess([], [
@@ -234,7 +238,7 @@ class OtpController extends Controller
     public function sendOtpPatientRelativeMobileTreatmentFee(Request $request)
     {
         $patientCode = $request->input('patientCode');
-        $checkTotalRequest = $this->checkLimitTotalRequestSendOtp($this->getTotalRequestSendOtp());
+        $checkTotalRequest = $this->checkLimitTotalRequestSendOtp($this->getTotalRequestSendOtp($patientCode));
         $limitRequest = false;
         // Đạt giới hạn thì k gửi otp
         if ($checkTotalRequest) {
@@ -244,7 +248,7 @@ class OtpController extends Controller
             $data = $this->otpService->createAndSendOtpPatientRelativeMobileTreatmentFee($patientCode);
             if($data) {
                 $this->deleteCacheLimitTotalRequestVerifyOtp($patientCode); // Nếu gửi mã OTP mới thì xóa cache limitRequestVerifyOtp
-                $this->addTotalRequestSendOtp(); // Nếu gửi mã OTP thì tăng tổng lên 1
+                $this->addTotalRequestSendOtp($patientCode); // Nếu gửi mã OTP thì tăng tổng lên 1
             } 
         }
         return returnDataSuccess([], [
@@ -258,7 +262,7 @@ class OtpController extends Controller
     public function sendOtpMailTreatmentFee(Request $request)
     {
         $patientCode = $request->input('patientCode');
-        $checkTotalRequest = $this->checkLimitTotalRequestSendOtp($this->getTotalRequestSendOtp());
+        $checkTotalRequest = $this->checkLimitTotalRequestSendOtp($this->getTotalRequestSendOtp($patientCode));
         $limitRequest = false;
         // Đạt giới hạn thì k gửi otp
         if ($checkTotalRequest) {
@@ -268,7 +272,7 @@ class OtpController extends Controller
             $data = $this->otpService->createAndSendOtpMailTreatmentFee($patientCode);
             if($data) {
                 $this->deleteCacheLimitTotalRequestVerifyOtp($patientCode); // Nếu gửi mã OTP mới thì xóa cache limitRequestVerifyOtp
-                $this->addTotalRequestSendOtp(); // Nếu gửi mã OTP thì tăng tổng lên 1
+                $this->addTotalRequestSendOtp($patientCode); // Nếu gửi mã OTP thì tăng tổng lên 1
             } 
         }
         return returnDataSuccess([], [

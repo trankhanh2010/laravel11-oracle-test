@@ -323,6 +323,8 @@ Route::group([
 ], function () {
     /// Quản lí thiết bị nhận OTP
     Route::get('v1/device-get-otp-treatment-fee-list', [DeviceGetOtpController::class, "getDeviceGetOtpTreatmentFeeList"]);
+    /// Mở khóa thiết bị đang bị chặn nhận mã OTP xem viện phí
+    Route::get('v1/unlock-device-get-otp-treatment-fee-list', [DeviceGetOtpController::class, "unlockDeviceLimitTotalRequestSendOtp"]);
 
     /// Bộ phận thương tích
     Route::group(['as' => 'HIS.Desktop.Plugins.HisAccidentBodyPart'], function () {

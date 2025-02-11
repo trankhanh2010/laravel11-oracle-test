@@ -31,18 +31,32 @@ class DeviceGetOtpController extends Controller
     
                 // **Chỉ lấy nếu total_requests >= maxRequestSendOtpOnday**
                 if (($cacheData['total_requests'] ?? 0) >= $this->maxRequestSendOtpOnday) {
+                    $ttl = Cache::getRedis()->ttl($key); // Lấy TTL của cache (nếu dùng Redis)
                     $devices[] = [
                         'device' => $cacheData['device'] ?? 'Unknown',
                         'ip' => $cacheData['ip'] ?? 'Unknown',
                         'totalRequests' => $cacheData['total_requests'] ?? 0,
                         'firstRequestAt' => $cacheData['first_request_at'] ?? null,
                         'lastRequestAt' => $cacheData['last_request_at'] ?? null,
+                        'patientCodeList' => $cacheData['patient_code_list'] ?? [],
+                        'ttl' => $ttl ?? 0, // Thêm TTL vào kết quả
                     ];
                 }
             }
         }
     
         return returnDataSuccess([], $devices);
+    }
+
+    public function unlockDeviceLimitTotalRequestSendOtp(Request $request)
+    {
+        $deviceInfo = $request->deviceInfo;
+        $ipAddress = $request->ipAddress;
+        if(!$deviceInfo || !$ipAddress) return returnDataSuccess([], ['success' => false]);
+
+        $cacheKey = 'total_OTP_treatment_fee_' . $deviceInfo . '_' . $ipAddress; // Tránh key quá dài
+        $result = Cache::forget($cacheKey);
+        return returnDataSuccess([], ['success' => $result]);
     }
     
 }
