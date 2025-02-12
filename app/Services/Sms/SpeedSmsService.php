@@ -26,7 +26,7 @@ class SpeedSmsService
         $content = [
             'to' => [$phoneNumber], 
             'content' => $message,
-            'sms_type' => 6, 
+            'sms_type' => 5, 
             'sender' => $this->sender, 
         ];
 

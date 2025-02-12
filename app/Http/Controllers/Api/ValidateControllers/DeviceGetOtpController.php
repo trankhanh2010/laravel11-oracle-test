@@ -52,11 +52,29 @@ class DeviceGetOtpController extends Controller
     {
         $deviceInfo = $request->deviceInfo;
         $ipAddress = $request->ipAddress;
-        if(!$deviceInfo || !$ipAddress) return returnDataSuccess([], ['success' => false]);
-
-        $cacheKey = 'total_OTP_treatment_fee_' . $deviceInfo . '_' . $ipAddress; // Tránh key quá dài
-        $result = Cache::forget($cacheKey);
-        return returnDataSuccess([], ['success' => $result]);
+    
+        if (!$deviceInfo || !$ipAddress) {
+            return returnDataSuccess([], ['success' => false]);
+        }
+    
+        $cacheKey = 'total_OTP_treatment_fee_' . $deviceInfo . '_' . $ipAddress;
+    
+        // Lấy dữ liệu từ cache
+        $cachedData = Cache::get($cacheKey);
+    
+        if ($cachedData && is_array($cachedData)) {
+            // Cập nhật giá trị total_requests
+            $cachedData['total_requests'] = $this->maxRequestSendOtpOnday - 3;
+    
+            // Ghi đè lại dữ liệu vào cache với thời gian lưu không đổi
+            Cache::put($cacheKey, $cachedData, now()->addHours(24)); // Giữ thời gian cache theo nhu cầu
+        } else {
+            return returnDataSuccess([], ['success' => false, 'message' => 'Không tìm thấy dữ liệu cache']);
+        }
+    
+        return returnDataSuccess([], ['success' => true, 'total_requests' => $cachedData['total_requests']]);
     }
+    
+    
     
 }
