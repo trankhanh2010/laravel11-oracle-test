@@ -626,6 +626,8 @@ class BaseApiCacheController extends Controller
     protected $accountBookVViewName = 'account_book_v_view';
     protected $medicalCaseCoverListVView;
     protected $medicalCaseCoverListVViewName = 'medical_case_cover_list_v_view';
+    protected $treatmentBedRoomListVView;
+    protected $treatmentBedRoomListVViewName = 'treatment_bed_room_list_v_view';
     protected $isInBed;
     protected $isInBedName = 'IsInBed';
     protected $transactionType;

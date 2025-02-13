@@ -186,6 +186,7 @@ use App\Http\Controllers\Api\NoCacheControllers\UserRoomVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TestServiceTypeListVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TransactionTTDetailVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TransactionListVViewController;
+use App\Http\Controllers\Api\NoCacheControllers\TreatmentBedRoomListVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TreatmentFeeDetailVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TreatmentFeeListVViewController;
 // Base Api
@@ -1058,5 +1059,6 @@ Route::group([
     ]);
     /// Vỏ bệnh án
     Route::apiResource('v1/medical-case-cover-list-v-view', MedicalCaseCoverListVViewController::class)->only(['index', 'show']);
-
+    /// TreatmentBedRoomList
+    Route::apiResource('v1/treatment-bed-room-list-v-view', TreatmentBedRoomListVViewController::class)->only(['index', 'show']);
 });
