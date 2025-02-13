@@ -164,6 +164,7 @@ use App\Http\Controllers\Api\NoCacheControllers\DebateUserController;
 use App\Http\Controllers\Api\NoCacheControllers\DebateVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\DepositReqListVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\DhstController;
+use App\Http\Controllers\Api\NoCacheControllers\MedicalCaseCoverListVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\PatientTypeAlterVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\SereServBillController;
 use App\Http\Controllers\Api\NoCacheControllers\SereServController;
@@ -1055,4 +1056,7 @@ Route::group([
             'check_admin:api',
             'check_module:api',
     ]);
+    /// Vỏ bệnh án
+    Route::apiResource('v1/medical-case-cover-list-v-view', MedicalCaseCoverListVViewController::class)->only(['index', 'show']);
+
 });

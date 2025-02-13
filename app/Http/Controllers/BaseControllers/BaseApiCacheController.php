@@ -20,6 +20,7 @@ use App\Models\HIS\MaterialType;
 use App\Models\HIS\MedicineType;
 use App\Models\HIS\MediStock;
 use App\Models\HIS\Package;
+use App\Models\HIS\PatientClassify;
 use App\Models\HIS\PatientType;
 use App\Models\HIS\Room;
 use App\Models\HIS\RoomType;
@@ -78,6 +79,20 @@ class BaseApiCacheController extends Controller
     protected $serviceIdsName = 'ServiceIds';
     protected $patientCode;
     protected $patientCodeName = 'PatientCode';
+    protected $departmentCode;
+    protected $departmentCodeName = 'DepartmentCode';
+    protected $treatmentTypeIds;
+    protected $treatmentTypeIdsName = 'TreatmentTypeIds';
+    protected $treatmentTypeIdsString;
+    protected $isCoTreatDepartment;
+    protected $isCoTreatDepartmentName = 'IsCoTreatDepartment';
+    protected $patientClassifyIds;
+    protected $patientClassifyIdsName = 'PatientClassifyIds';
+    protected $patientClassifyIdsString;
+    protected $isOut;
+    protected $isOutName = 'IsOut';
+    protected $addLoginname;
+    protected $addLoginnameName = 'AddLoginname';
     protected $depositReqCode;
     protected $depositReqCodeName = 'DepositReqCode';
     protected $serviceIdsString;
@@ -609,6 +624,10 @@ class BaseApiCacheController extends Controller
     protected $seseDepoRepayVViewName = 'sese_depo_repay_v_view';
     protected $accountBookVView;
     protected $accountBookVViewName = 'account_book_v_view';
+    protected $medicalCaseCoverListVView;
+    protected $medicalCaseCoverListVViewName = 'medical_case_cover_list_v_view';
+    protected $isInBed;
+    protected $isInBedName = 'IsInBed';
     protected $transactionType;
     protected $transactionTypeName = 'transaction_type';
     protected $transaction;
@@ -909,6 +928,22 @@ class BaseApiCacheController extends Controller
             }
         }
 
+        $this->departmentCode = $this->paramRequest['ApiData']['DepartmentCode']?? null;
+        if ($this->departmentCode !== null) {
+            if (!is_string($this->departmentCode)) {
+                $this->errors[$this->departmentCodeName] = $this->messFormat;
+                $this->departmentCode = null;
+            }
+        }
+
+        $this->addLoginname = $this->paramRequest['ApiData']['AddLoginname']?? null;
+        if ($this->addLoginname !== null) {
+            if (!is_string($this->addLoginname)) {
+                $this->errors[$this->addLoginnameName] = $this->messFormat;
+                $this->addLoginname = null;
+            }
+        }
+
         $this->patientPhone = $this->paramRequest['ApiData']['PatientPhone']?? null;
         if ($this->patientPhone !== null) {
             if (!is_string($this->patientPhone)) {
@@ -1076,6 +1111,44 @@ class BaseApiCacheController extends Controller
         if ($this->serviceTypeIds != null) {
             $this->serviceTypeIdsString = arrayToCustomStringNotKey($this->serviceTypeIds);
         }
+        $this->treatmentTypeIds = $this->paramRequest['ApiData']['TreatmentTypeIds'] ?? null;
+        if ($this->treatmentTypeIds != null) {
+            foreach ($this->treatmentTypeIds as $key => $item) {
+                // Kiểm tra xem ID có tồn tại trong bảng  hay không
+                if (!is_numeric($item)) {
+                    $this->errors[$this->treatmentTypeIdsName] = $this->messFormat;
+                    unset($this->treatmentTypeIds[$key]);
+                } else {
+                    if (!TreatmentType::where('id', $item)->exists()) {
+                        $this->errors[$this->treatmentTypeIdsName] = $this->messRecordId;
+                        unset($this->treatmentTypeIds[$key]);
+                    }
+                }
+            }
+        }
+        if ($this->treatmentTypeIds != null) {
+            $this->treatmentTypeIdsString = arrayToCustomStringNotKey($this->treatmentTypeIds);
+        }
+
+        $this->patientClassifyIds = $this->paramRequest['ApiData']['PatientClassifyIds'] ?? null;
+        if ($this->patientClassifyIds != null) {
+            foreach ($this->patientClassifyIds as $key => $item) {
+                // Kiểm tra xem ID có tồn tại trong bảng  hay không
+                if (!is_numeric($item)) {
+                    $this->errors[$this->patientClassifyIdsName] = $this->messFormat;
+                    unset($this->patientClassifyIds[$key]);
+                } else {
+                    if (!PatientClassify::where('id', $item)->exists()) {
+                        $this->errors[$this->patientClassifyIdsName] = $this->messRecordId;
+                        unset($this->patientClassifyIds[$key]);
+                    }
+                }
+            }
+        }
+        if ($this->patientClassifyIds != null) {
+            $this->patientClassifyIdsString = arrayToCustomStringNotKey($this->patientClassifyIds);
+        }
+
         $this->patientTypeIds = $this->paramRequest['ApiData']['PatientTypeIds'] ?? null;
         if ($this->patientTypeIds != null) {
             foreach ($this->patientTypeIds as $key => $item) {
@@ -1195,6 +1268,27 @@ class BaseApiCacheController extends Controller
             if (!is_bool($this->isInRoom)) {
                 $this->errors[$this->isInRoomName] = $this->messFormat;
                 $this->isInRoom = null;
+            }
+        }
+        $this->isInBed = $this->paramRequest['ApiData']['IsInBed'] ?? null;
+        if($this->isInBed !== null){
+            if (!is_bool($this->isInBed)) {
+                $this->errors[$this->isInBedName] = $this->messFormat;
+                $this->isInBed = null;
+            }
+        }
+        $this->isCoTreatDepartment = $this->paramRequest['ApiData']['IsCoTreatDepartment'] ?? null;
+        if($this->isCoTreatDepartment !== null){
+            if (!is_bool($this->isCoTreatDepartment)) {
+                $this->errors[$this->isCoTreatDepartmentName] = $this->messFormat;
+                $this->isCoTreatDepartment = null;
+            }
+        }
+        $this->isOut = $this->paramRequest['ApiData']['IsOut'] ?? null;
+        if($this->isOut !== null){
+            if (!is_bool($this->isOut)) {
+                $this->errors[$this->isOutName] = $this->messFormat;
+                $this->isOut = null;
             }
         }
         $this->serviceId = $this->paramRequest['ApiData']['ServiceId'] ?? null;

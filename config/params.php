@@ -408,6 +408,7 @@ return [
             'transaction_list_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm Danh sách giao dịch!',
             'transaction_tt_detail_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm Chi tiết giao dịch!',
             'deposit_req_list_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm Danh sách yêu cầu tạm ứng!',
+            'medical_case_cover_list_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm Vỏ bệnh án!',
 
         ],
         'table' => [
