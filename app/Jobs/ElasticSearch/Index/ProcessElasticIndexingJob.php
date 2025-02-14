@@ -47,6 +47,8 @@ use App\Repositories\DistrictRepository;
 use App\Repositories\DosageFormRepository;
 use App\Repositories\EmotionlessMethodRepository;
 use App\Repositories\EmployeeRepository;
+use App\Repositories\EmrCoverTypeRepository;
+use App\Repositories\EmrFormRepository;
 use App\Repositories\EthnicRepository;
 use App\Repositories\ExecuteGroupRepository;
 use App\Repositories\ExecuteRoleRepository;
@@ -717,7 +719,12 @@ class ProcessElasticIndexingJob implements ShouldQueue
             case 'work_place':
                 $repository = app(WorkPlaceRepository::class);
                 break;
-
+            case 'emr_cover_type':
+                $repository = app(EmrCoverTypeRepository::class);
+                break;
+            case 'emr_form':
+                $repository = app(EmrFormRepository::class);
+                break;
             /// No Cache
             case 'tracking':
                 $repository = app(TrackingRepository::class);

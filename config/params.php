@@ -148,7 +148,8 @@ return [
             'unlimit_reason',
             'vaccine_type',
             'work_place',
-
+            'emr_cover_type',
+            'emr_form',
             // 'service_req_l_view',
             // 'debate',
             // 'debate_v_view',
@@ -379,6 +380,8 @@ return [
             'htu' => 'Có lỗi khi thực hiện thao tác với bảng Cách dùng thuốc!',
             'suim_index_unit' => 'Có lỗi khi thực hiện thao tác với bảng Đơn vị tính chỉ số siêu âm!',
             'test_index_group' => 'Có lỗi khi thực hiện thao tác với bảng Nhóm chỉ số xét nghiệm!',
+            'emr_cover_type' => 'Có lỗi khi thực hiện thao tác với bảng Loại vỏ bệnh án!',
+            'emr_form' => 'Có lỗi khi thực hiện thao tác với bảng Loại phiếu!',
 
             'service_req_l_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm Y lệnh!',
             'debate' => 'Có lỗi khi thực hiện thao tác với bảng Biên bản hội chẩn!',

@@ -510,6 +510,10 @@ class BaseApiCacheController extends Controller
     protected $bloodGroupName = 'blood_group';
     protected $medicineGroup;
     protected $medicineGroupName = 'medicine_group';
+    protected $emrCoverType;
+    protected $emrCoverTypeName = 'emr_cover_type';
+    protected $emrForm;
+    protected $emrFormName = 'emr_form';
     protected $testIndex;
     protected $testIndexName = 'test_index';
     protected $testIndexUnit;

@@ -136,6 +136,8 @@ use App\Http\Controllers\Api\CacheControllers\IcdGroupController;
 use App\Http\Controllers\Api\CacheControllers\AgeTypeController;
 use App\Http\Controllers\Api\CacheControllers\AtcController;
 use App\Http\Controllers\Api\CacheControllers\BidController;
+use App\Http\Controllers\Api\CacheControllers\EmrCoverTypeController;
+use App\Http\Controllers\Api\CacheControllers\EmrFormController;
 use App\Http\Controllers\Api\CacheControllers\GroupTypeController;
 use App\Http\Controllers\Api\CacheControllers\HtuController;
 use App\Http\Controllers\Api\CacheControllers\ImpSourceController;
@@ -1061,4 +1063,8 @@ Route::group([
     Route::apiResource('v1/medical-case-cover-list-v-view', MedicalCaseCoverListVViewController::class)->only(['index', 'show']);
     /// TreatmentBedRoomList
     Route::apiResource('v1/treatment-bed-room-list-v-view', TreatmentBedRoomListVViewController::class)->only(['index', 'show']);
+    /// Loại vỏ bệnh án
+    Route::apiResource('v1/emr-cover-type', EmrCoverTypeController::class);
+    /// Loại phiếu
+    Route::apiResource('v1/emr-form', EmrFormController::class);
 });

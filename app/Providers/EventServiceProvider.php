@@ -94,6 +94,10 @@ use App\Events\Elastic\EmotionlessMethod\CreateEmotionlessMethodIndex;
 use App\Events\Elastic\EmotionlessMethod\InsertEmotionlessMethodIndex;
 use App\Events\Elastic\Employee\CreateEmployeeIndex;
 use App\Events\Elastic\Employee\InsertEmployeeIndex;
+use App\Events\Elastic\EmrCoverType\CreateEmrCoverTypeIndex;
+use App\Events\Elastic\EmrCoverType\InsertEmrCoverTypeIndex;
+use App\Events\Elastic\EmrForm\CreateEmrFormIndex;
+use App\Events\Elastic\EmrForm\InsertEmrFormIndex;
 use App\Events\Elastic\Ethnic\CreateEthnicIndex;
 use App\Events\Elastic\Ethnic\InsertEthnicIndex;
 use App\Events\Elastic\ExecuteGroup\CreateExecuteGroupIndex;
@@ -435,6 +439,10 @@ use App\Listeners\Elastic\EmotionlessMethod\ElasticCreateEmotionlessMethodIndex;
 use App\Listeners\Elastic\EmotionlessMethod\ElasticInsertEmotionlessMethodIndex;
 use App\Listeners\Elastic\Employee\ElasticCreateEmployeeIndex;
 use App\Listeners\Elastic\Employee\ElasticInsertEmployeeIndex;
+use App\Listeners\Elastic\EmrCoverType\ElasticCreateEmrCoverTypeIndex;
+use App\Listeners\Elastic\EmrCoverType\ElasticInsertEmrCoverTypeIndex;
+use App\Listeners\Elastic\EmrForm\ElasticCreateEmrFormIndex;
+use App\Listeners\Elastic\EmrForm\ElasticInsertEmrFormIndex;
 use App\Listeners\Elastic\Ethnic\ElasticCreateEthnicIndex;
 use App\Listeners\Elastic\Ethnic\ElasticInsertEthnicIndex;
 use App\Listeners\Elastic\ExecuteGroup\ElasticCreateExecuteGroupIndex;
@@ -1883,6 +1891,20 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertAccountBookVViewIndex::class => [
             ElasticInsertAccountBookVViewIndex::class,
+        ],
+
+        CreateEmrCoverTypeIndex::class => [
+            ElasticCreateEmrCoverTypeIndex::class,
+        ],
+        InsertEmrCoverTypeIndex::class => [
+            ElasticInsertEmrCoverTypeIndex::class,
+        ],
+
+        CreateEmrFormIndex::class => [
+            ElasticCreateEmrFormIndex::class,
+        ],
+        InsertEmrFormIndex::class => [
+            ElasticInsertEmrFormIndex::class,
         ],
     ];
 

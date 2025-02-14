@@ -49,6 +49,8 @@ use App\Events\Elastic\District\CreateDistrictIndex;
 use App\Events\Elastic\DosageForm\CreateDosageFormIndex;
 use App\Events\Elastic\EmotionlessMethod\CreateEmotionlessMethodIndex;
 use App\Events\Elastic\Employee\CreateEmployeeIndex;
+use App\Events\Elastic\EmrCoverType\CreateEmrCoverTypeIndex;
+use App\Events\Elastic\EmrForm\CreateEmrFormIndex;
 use App\Events\Elastic\Ethnic\CreateEthnicIndex;
 use App\Events\Elastic\ExecuteGroup\CreateExecuteGroupIndex;
 use App\Events\Elastic\ExecuteRole\CreateExecuteRoleIndex;
@@ -217,6 +219,8 @@ use App\Repositories\DistrictRepository;
 use App\Repositories\DosageFormRepository;
 use App\Repositories\EmotionlessMethodRepository;
 use App\Repositories\EmployeeRepository;
+use App\Repositories\EmrCoverTypeRepository;
+use App\Repositories\EmrFormRepository;
 use App\Repositories\EthnicRepository;
 use App\Repositories\ExecuteGroupRepository;
 use App\Repositories\ExecuteRoleRepository;
@@ -977,6 +981,14 @@ class IndexRecordsToElasticsearch extends Command
             case 'work_place':
                 event(new CreateWorkPlaceIndex($name_table));
                 app(WorkPlaceRepository::class)->getDataFromDbToElastic($batchSize, null);
+                break;
+            case 'emr_cover_type':
+                event(new CreateEmrCoverTypeIndex($name_table));
+                app(EmrCoverTypeRepository::class)->getDataFromDbToElastic($batchSize, null);
+                break;
+            case 'emr_form':
+                event(new CreateEmrFormIndex($name_table));
+                app(EmrFormRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
 
                 // No Cache
