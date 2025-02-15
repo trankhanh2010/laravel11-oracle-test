@@ -376,8 +376,23 @@ class ElasticsearchService extends BaseApiCacheController
                         ];
                     }
                     break;
+                case 'custom':
+                    $fields = [];
+                    if ($this->elasticFields != null) {
+                        foreach ($this->elasticFields as $key => $item) {
+                            $fields[$item] = [
+                                'pre_tags' => ['<em>'],  // Tag mở đầu cho highlight
+                                'post_tags' => ['</em>'], // Tag kết thúc cho highlight
+                                'number_of_fragments' => 0, // Hiển thị toàn bộ văn bản
+                                'fragment_size' => 150  // Kích thước của mỗi đoạn highlight
+                            ];
+                        }
+                        $highlight  = [
+                            'fields' => $fields
+                        ];
+                    }
+                    break;
             }
-
             return $highlight;
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['elastic']['error']['build_highlight'], $e);
