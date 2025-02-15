@@ -168,6 +168,7 @@ use App\Http\Controllers\Api\NoCacheControllers\DepositReqListVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\DhstController;
 use App\Http\Controllers\Api\NoCacheControllers\MedicalCaseCoverListVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\PatientTypeAlterVViewController;
+use App\Http\Controllers\Api\NoCacheControllers\RoomVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\SereServBillController;
 use App\Http\Controllers\Api\NoCacheControllers\SereServController;
 use App\Http\Controllers\Api\NoCacheControllers\SereServDepositVViewController;
@@ -1067,4 +1068,7 @@ Route::group([
     Route::apiResource('v1/emr-cover-type', EmrCoverTypeController::class);
     /// Loại phiếu
     Route::apiResource('v1/emr-form', EmrFormController::class);
+    /// Phòng
+    Route::apiResource('v1/room-v-view', RoomVViewController::class)->only(['index', 'show']);
+
 });

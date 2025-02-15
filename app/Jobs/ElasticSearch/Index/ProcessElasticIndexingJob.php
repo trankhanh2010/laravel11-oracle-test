@@ -127,6 +127,7 @@ use App\Repositories\RoleRepository;
 use App\Repositories\RoomGroupRepository;
 use App\Repositories\RoomRepository;
 use App\Repositories\RoomTypeRepository;
+use App\Repositories\RoomVViewRepository;
 use App\Repositories\SaleProfitCfgRepository;
 use App\Repositories\SereServBillRepository;
 use App\Repositories\SereServDepositVViewRepository;
@@ -791,6 +792,9 @@ class ProcessElasticIndexingJob implements ShouldQueue
                 break;
             case 'account_book_v_view':
                 $repository = app(AccountBookVViewRepository::class);
+                break;
+            case 'room_v_view':
+                $repository = app(RoomVViewRepository::class);
                 break;
             default:
                 break;

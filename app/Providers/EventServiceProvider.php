@@ -254,6 +254,8 @@ use App\Events\Elastic\RoomGroup\CreateRoomGroupIndex;
 use App\Events\Elastic\RoomGroup\InsertRoomGroupIndex;
 use App\Events\Elastic\RoomType\CreateRoomTypeIndex;
 use App\Events\Elastic\RoomType\InsertRoomTypeIndex;
+use App\Events\Elastic\RoomVView\CreateRoomVViewIndex;
+use App\Events\Elastic\RoomVView\InsertRoomVViewIndex;
 use App\Events\Elastic\SaleProfitCfg\CreateSaleProfitCfgIndex;
 use App\Events\Elastic\SaleProfitCfg\InsertSaleProfitCfgIndex;
 use App\Events\Elastic\SereServ\CreateSereServIndex;
@@ -599,6 +601,8 @@ use App\Listeners\Elastic\RoomGroup\ElasticCreateRoomGroupIndex;
 use App\Listeners\Elastic\RoomGroup\ElasticInsertRoomGroupIndex;
 use App\Listeners\Elastic\RoomType\ElasticCreateRoomTypeIndex;
 use App\Listeners\Elastic\RoomType\ElasticInsertRoomTypeIndex;
+use App\Listeners\Elastic\RoomVView\ElasticCreateRoomVViewIndex;
+use App\Listeners\Elastic\RoomVView\ElasticInsertRoomVViewIndex;
 use App\Listeners\Elastic\SaleProfitCfg\ElasticCreateSaleProfitCfgIndex;
 use App\Listeners\Elastic\SaleProfitCfg\ElasticInsertSaleProfitCfgIndex;
 use App\Listeners\Elastic\SereServ\ElasticCreateSereServIndex;
@@ -1905,6 +1909,13 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertEmrFormIndex::class => [
             ElasticInsertEmrFormIndex::class,
+        ],
+
+        CreateRoomVViewIndex::class => [
+            ElasticCreateRoomVViewIndex::class,
+        ],
+        InsertRoomVViewIndex::class => [
+            ElasticInsertRoomVViewIndex::class,
         ],
     ];
 

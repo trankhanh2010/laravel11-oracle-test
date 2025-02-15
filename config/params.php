@@ -150,6 +150,7 @@ return [
             'work_place',
             'emr_cover_type',
             'emr_form',
+            'room_v_view',
             // 'service_req_l_view',
             // 'debate',
             // 'debate_v_view',
@@ -383,6 +384,7 @@ return [
             'emr_cover_type' => 'Có lỗi khi thực hiện thao tác với bảng Loại vỏ bệnh án!',
             'emr_form' => 'Có lỗi khi thực hiện thao tác với bảng Loại phiếu!',
 
+            'room_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm Phòng!',
             'service_req_l_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm Y lệnh!',
             'debate' => 'Có lỗi khi thực hiện thao tác với bảng Biên bản hội chẩn!',
             'debate_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm Biên bản hội chẩn!',

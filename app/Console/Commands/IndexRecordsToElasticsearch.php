@@ -129,6 +129,7 @@ use App\Events\Elastic\Role\CreateRoleIndex;
 use App\Events\Elastic\Room\CreateRoomIndex;
 use App\Events\Elastic\RoomGroup\CreateRoomGroupIndex;
 use App\Events\Elastic\RoomType\CreateRoomTypeIndex;
+use App\Events\Elastic\RoomVView\CreateRoomVViewIndex;
 use App\Events\Elastic\SaleProfitCfg\CreateSaleProfitCfgIndex;
 use App\Events\Elastic\SereServ\CreateSereServIndex;
 use App\Events\Elastic\SereServBill\CreateSereServBillIndex;
@@ -299,6 +300,7 @@ use App\Repositories\RoleRepository;
 use App\Repositories\RoomGroupRepository;
 use App\Repositories\RoomRepository;
 use App\Repositories\RoomTypeRepository;
+use App\Repositories\RoomVViewRepository;
 use App\Repositories\SaleProfitCfgRepository;
 use App\Repositories\SereServBillRepository;
 use App\Repositories\SereServDepositVViewRepository;
@@ -1102,6 +1104,11 @@ class IndexRecordsToElasticsearch extends Command
                 event(new CreateAccountBookVViewIndex($name_table));
                 app(AccountBookVViewRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
+            case 'room_v_view':
+                $batchSize = 25000;
+                event(new CreateRoomVViewIndex($name_table));
+                app(RoomVViewRepository::class)->getDataFromDbToElastic($batchSize, null);
+                 break;
             default:
                 // Xử lý mặc định hoặc xử lý khi không có bảng khớp
                 $this->error('Không có dữ liệu của bảng ' . $name_table . '.');
