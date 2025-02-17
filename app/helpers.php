@@ -671,6 +671,17 @@ if (!function_exists('return403')) {
     }
 }
 
+if (!function_exists('return401')) {
+    function return401()
+    {
+        return response()->json([
+            'status'    => 401,
+            'success' => false,
+            'message' => 'Thiếu token!'
+        ], 401);
+    }
+}
+
 if (!function_exists('return400')) {
     function return400($mess)
     {

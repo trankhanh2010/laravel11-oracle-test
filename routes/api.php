@@ -260,6 +260,7 @@ Route::get("v1/test-db", function () {
 })->name('.get_test_db');
 
 Route::get('v1/check-token', [CheckTokenController::class, 'index']);
+Route::get('v1/log-out', [CheckTokenController::class, 'logOut']);
 
 Route::fallback(function () {
     return return_404_error_page_not_found();
