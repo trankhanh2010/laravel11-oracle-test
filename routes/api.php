@@ -140,6 +140,7 @@ use App\Http\Controllers\Api\CacheControllers\EmrCoverTypeController;
 use App\Http\Controllers\Api\CacheControllers\EmrFormController;
 use App\Http\Controllers\Api\CacheControllers\GroupTypeController;
 use App\Http\Controllers\Api\CacheControllers\HtuController;
+use App\Http\Controllers\Api\CacheControllers\IcdListVViewController;
 use App\Http\Controllers\Api\CacheControllers\ImpSourceController;
 use App\Http\Controllers\Api\CacheControllers\MedicineController;
 use App\Http\Controllers\Api\CacheControllers\MedicineTypeController;
@@ -1071,5 +1072,7 @@ Route::group([
     Route::apiResource('v1/emr-form', EmrFormController::class);
     /// Phòng
     Route::apiResource('v1/room-v-view', RoomVViewController::class)->only(['index', 'show']);
+    /// Icd List
+    Route::apiResource('v1/icd-list-v-view', IcdListVViewController::class)->only(['index', 'show']);
 
 });

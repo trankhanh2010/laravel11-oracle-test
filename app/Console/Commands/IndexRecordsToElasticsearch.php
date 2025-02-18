@@ -71,6 +71,7 @@ use App\Events\Elastic\Htu\CreateHtuIndex;
 use App\Events\Elastic\Icd\CreateIcdIndex;
 use App\Events\Elastic\IcdCm\CreateIcdCmIndex;
 use App\Events\Elastic\IcdGroup\CreateIcdGroupIndex;
+use App\Events\Elastic\IcdListVView\CreateIcdListVViewIndex;
 use App\Events\Elastic\ImpSource\CreateImpSourceIndex;
 use App\Events\Elastic\InteractionReason\CreateInteractionReasonIndex;
 use App\Events\Elastic\LicenseClass\CreateLicenseClassIndex;
@@ -241,6 +242,7 @@ use App\Repositories\HospitalizeReasonRepository;
 use App\Repositories\HtuRepository;
 use App\Repositories\IcdCmRepository;
 use App\Repositories\IcdGroupRepository;
+use App\Repositories\IcdListVViewRepository;
 use App\Repositories\IcdRepository;
 use App\Repositories\ImpSourceRepository;
 use App\Repositories\InteractionReasonRepository;
@@ -1109,6 +1111,11 @@ class IndexRecordsToElasticsearch extends Command
                 event(new CreateRoomVViewIndex($name_table));
                 app(RoomVViewRepository::class)->getDataFromDbToElastic($batchSize, null);
                  break;
+            case 'icd_list_v_view':
+                $batchSize = 25000;
+                event(new CreateIcdListVViewIndex($name_table));
+                app(IcdListVViewRepository::class)->getDataFromDbToElastic($batchSize, null);
+                break;
             default:
                 // Xử lý mặc định hoặc xử lý khi không có bảng khớp
                 $this->error('Không có dữ liệu của bảng ' . $name_table . '.');

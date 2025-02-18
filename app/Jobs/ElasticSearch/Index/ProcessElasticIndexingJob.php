@@ -68,6 +68,7 @@ use App\Repositories\HospitalizeReasonRepository;
 use App\Repositories\HtuRepository;
 use App\Repositories\IcdCmRepository;
 use App\Repositories\IcdGroupRepository;
+use App\Repositories\IcdListVViewRepository;
 use App\Repositories\IcdRepository;
 use App\Repositories\ImpSourceRepository;
 use App\Repositories\InteractionReasonRepository;
@@ -795,6 +796,9 @@ class ProcessElasticIndexingJob implements ShouldQueue
                 break;
             case 'room_v_view':
                 $repository = app(RoomVViewRepository::class);
+                break;
+            case 'icd_list_v_view':
+                $repository = app(IcdListVViewRepository::class);
                 break;
             default:
                 break;

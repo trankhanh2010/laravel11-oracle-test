@@ -151,6 +151,7 @@ return [
             'emr_cover_type',
             'emr_form',
             'room_v_view',
+            'icd_list_v_view',
             // 'service_req_l_view',
             // 'debate',
             // 'debate_v_view',
@@ -415,6 +416,7 @@ return [
             'deposit_req_list_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm Danh sách yêu cầu tạm ứng!',
             'medical_case_cover_list_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm Vỏ bệnh án!',
             'treatment_bed_room_list_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm TreatmentBedRoomList!',
+            'icd_list_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm IcdList!',
 
         ],
         'table' => [

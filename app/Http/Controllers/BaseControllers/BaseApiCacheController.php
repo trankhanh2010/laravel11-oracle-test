@@ -426,6 +426,8 @@ class BaseApiCacheController extends Controller
     protected $medicinePatyName = 'medicine_paty';
     protected $accidentBodyPart;
     protected $accidentBodyPartName = 'accident_body_part';
+    protected $icdListVView;
+    protected $icdListVViewName = 'icd_list_v_view';
     protected $memaGroup;
     protected $memaGroupName = 'mema_group';
     protected $preparationsBlood;
@@ -662,7 +664,7 @@ class BaseApiCacheController extends Controller
     protected $paymentOption; // Phương thức thanh toán QR Code Thẻ ngân hàng
     protected $paymentOptionName = 'PaymentOption';
     // OTP
-    protected $authOtpName = 'authOtp';
+    protected $authOtpName = 'AuthOtp';
     // Khai báo các biến cho Elastic
     protected $elasticSearchService;
     protected $client;
@@ -808,8 +810,8 @@ class BaseApiCacheController extends Controller
 
         // Gán và kiểm tra các tham số được gửi lên
         $this->perPage = $request->query('perPage', 10);
-        $this->page = $request->query('page', 1);
-        $this->start = $this->paramRequest['CommonParam']['Start'] ?? intval($request->start) ?? 0;
+        $this->page = $this->paramRequest['CommonParam']['Page'] ?? 1;
+        $this->start = $this->paramRequest['CommonParam']['Start'] ?? null;
         $this->limit = $this->paramRequest['CommonParam']['Limit'] ?? intval($request->limit) ?? 100;
         if ($this->limit <= 0) {
             $this->limit = 10;
@@ -818,6 +820,9 @@ class BaseApiCacheController extends Controller
         if (($this->limit < 0) || (!in_array($this->limit, $this->arrLimit))) {
             $this->errors[$this->limitName] = $this->messFormat . ' Chỉ nhận giá trị thuộc mảng sau ' . implode(', ', $this->arrLimit);
             $this->limit = 10;
+        }
+        if($this->start === null){
+            $this->start = ($this->page-1) * $this->limit;
         }
         if ($this->start != null) {
             if ((!is_numeric($this->start)) || (!is_int($this->start)) || ($this->start < 0)) {

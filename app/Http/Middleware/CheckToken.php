@@ -47,7 +47,6 @@ class CheckToken
         $user = Cache::remember('loginname_'.$token->login_name, now()->addMinutes(1440) , function () use ($token) {
             return User::where('loginname','=',$token->login_name)->get();
         });
-        
         // Đặt người dùng hiện tại vào request
         $request->setUserResolver(function () use ($user) {
             return $user;
