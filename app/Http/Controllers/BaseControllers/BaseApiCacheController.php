@@ -426,6 +426,10 @@ class BaseApiCacheController extends Controller
     protected $medicinePatyName = 'medicine_paty';
     protected $accidentBodyPart;
     protected $accidentBodyPartName = 'accident_body_part';
+    protected $deathCause;
+    protected $deathCauseName = 'death_cause';
+    protected $treatmentResult;
+    protected $treatmentResultName = 'treatment_result';
     protected $icdListVView;
     protected $icdListVViewName = 'icd_list_v_view';
     protected $memaGroup;

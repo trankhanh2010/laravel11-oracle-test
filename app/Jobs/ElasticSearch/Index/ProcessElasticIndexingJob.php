@@ -33,6 +33,7 @@ use App\Repositories\CashierRoomRepository;
 use App\Repositories\CommuneRepository;
 use App\Repositories\ContraindicationRepository;
 use App\Repositories\DataStoreRepository;
+use App\Repositories\DeathCauseRepository;
 use App\Repositories\DeathWithinRepository;
 use App\Repositories\DebateEkipUserRepository;
 use App\Repositories\DebateReasonRepository;
@@ -169,6 +170,7 @@ use App\Repositories\TreatmentBedRoomLViewRepository;
 use App\Repositories\TreatmentEndTypeRepository;
 use App\Repositories\TreatmentFeeViewRepository;
 use App\Repositories\TreatmentLViewRepository;
+use App\Repositories\TreatmentResultRepository;
 use App\Repositories\TreatmentTypeRepository;
 use App\Repositories\UnlimitReasonRepository;
 use App\Repositories\VaccineTypeRepository;
@@ -726,6 +728,12 @@ class ProcessElasticIndexingJob implements ShouldQueue
                 break;
             case 'emr_form':
                 $repository = app(EmrFormRepository::class);
+                break;
+            case 'death_cause':
+                $repository = app(DeathCauseRepository::class);
+                break;
+            case 'treatment_result':
+                $repository = app(TreatmentResultRepository::class);
                 break;
             /// No Cache
             case 'tracking':

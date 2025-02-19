@@ -152,6 +152,8 @@ return [
             'emr_form',
             'room_v_view',
             'icd_list_v_view',
+            'death_cause',
+            'treatment_result',
             // 'service_req_l_view',
             // 'debate',
             // 'debate_v_view',
@@ -384,6 +386,8 @@ return [
             'test_index_group' => 'Có lỗi khi thực hiện thao tác với bảng Nhóm chỉ số xét nghiệm!',
             'emr_cover_type' => 'Có lỗi khi thực hiện thao tác với bảng Loại vỏ bệnh án!',
             'emr_form' => 'Có lỗi khi thực hiện thao tác với bảng Loại phiếu!',
+            'death_cause' => 'Có lỗi khi thực hiện thao tác với bảng Nguyên nhân tử vong!',
+            'treatment_result' => 'Có lỗi khi thực hiện thao tác với bảng Kết quả điều trị!',
 
             'room_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm Phòng!',
             'service_req_l_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm Y lệnh!',

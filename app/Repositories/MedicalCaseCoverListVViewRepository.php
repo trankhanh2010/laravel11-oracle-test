@@ -20,6 +20,13 @@ class MedicalCaseCoverListVViewRepository
                 'v_his_medical_case_cover_list.*'
             );
     }
+    public function applyWithParam($query)
+    {
+        return $query->with([
+            'department_trans:id,department_id,previous_id,department_in_time,request_time,treatment_id',
+            'department_trans.department:id,department_name,department_code',
+        ]);
+    }
     public function applyKeywordFilter($query, $keyword)
     {
         return $query->where(function ($query) use ($keyword) {

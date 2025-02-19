@@ -136,6 +136,7 @@ use App\Http\Controllers\Api\CacheControllers\IcdGroupController;
 use App\Http\Controllers\Api\CacheControllers\AgeTypeController;
 use App\Http\Controllers\Api\CacheControllers\AtcController;
 use App\Http\Controllers\Api\CacheControllers\BidController;
+use App\Http\Controllers\Api\CacheControllers\DeathCauseController;
 use App\Http\Controllers\Api\CacheControllers\EmrCoverTypeController;
 use App\Http\Controllers\Api\CacheControllers\EmrFormController;
 use App\Http\Controllers\Api\CacheControllers\GroupTypeController;
@@ -157,6 +158,7 @@ use App\Http\Controllers\Api\CacheControllers\SuimIndexUnitController;
 use App\Http\Controllers\Api\CacheControllers\TestIndexGroupController;
 use App\Http\Controllers\Api\TransactionControllers\TransactionTamUngController;
 use App\Http\Controllers\Api\CacheControllers\TransactionTypeController;
+use App\Http\Controllers\Api\CacheControllers\TreatmentResultController;
 use App\Http\Controllers\Api\CacheControllers\VaccineTypeController;
 use App\Http\Controllers\Api\NoCacheControllers\AccountBookVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\CareController;
@@ -461,6 +463,10 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisDeathWithin'], function () {
         Route::apiResource('v1/death-within', DeathWithinController::class);
     });
+    /// Nguyên nhân tử vong
+    Route::apiResource('v1/death-cause', DeathCauseController::class)->only(['index', 'show']);
+    /// Kết quả điều trị
+    Route::apiResource('v1/treatment-result', TreatmentResultController::class)->only(['index', 'show']);
     /// Lý do hội chẩn
     Route::group(['as' => 'HIS.Desktop.Plugins.HisDebateReason'], function () {
         Route::apiResource('v1/debate-reason', DebateReasonController::class);

@@ -35,6 +35,7 @@ use App\Events\Elastic\CashierRoom\CreateCashierRoomIndex;
 use App\Events\Elastic\Commune\CreateCommuneIndex;
 use App\Events\Elastic\Contraindication\CreateContraindicationIndex;
 use App\Events\Elastic\DataStore\CreateDataStoreIndex;
+use App\Events\Elastic\DeathCause\CreateDeathCauseIndex;
 use App\Events\Elastic\DeathWithin\CreateDeathWithinIndex;
 use App\Events\Elastic\Debate\CreateDebateIndex;
 use App\Events\Elastic\DebateEkipUser\CreateDebateEkipUserIndex;
@@ -171,6 +172,7 @@ use App\Events\Elastic\TreatmentBedRoomLView\CreateTreatmentBedRoomLViewIndex;
 use App\Events\Elastic\TreatmentEndType\CreateTreatmentEndTypeIndex;
 use App\Events\Elastic\TreatmentFeeView\CreateTreatmentFeeViewIndex;
 use App\Events\Elastic\TreatmentLView\CreateTreatmentLViewIndex;
+use App\Events\Elastic\TreatmentResult\CreateTreatmentResultIndex;
 use App\Events\Elastic\TreatmentType\CreateTreatmentTypeIndex;
 use App\Events\Elastic\UnlimitReason\CreateUnlimitReasonIndex;
 use App\Events\Elastic\UserRoomVView\CreateUserRoomVViewIndex;
@@ -207,6 +209,7 @@ use App\Repositories\CashierRoomRepository;
 use App\Repositories\CommuneRepository;
 use App\Repositories\ContraindicationRepository;
 use App\Repositories\DataStoreRepository;
+use App\Repositories\DeathCauseRepository;
 use App\Repositories\DeathWithinRepository;
 use App\Repositories\DebateEkipUserRepository;
 use App\Repositories\DebateReasonRepository;
@@ -343,6 +346,7 @@ use App\Repositories\TreatmentBedRoomLViewRepository;
 use App\Repositories\TreatmentEndTypeRepository;
 use App\Repositories\TreatmentFeeViewRepository;
 use App\Repositories\TreatmentLViewRepository;
+use App\Repositories\TreatmentResultRepository;
 use App\Repositories\TreatmentTypeRepository;
 use App\Repositories\UnlimitReasonRepository;
 use App\Repositories\UserRoomVViewRepository;
@@ -994,7 +998,14 @@ class IndexRecordsToElasticsearch extends Command
                 event(new CreateEmrFormIndex($name_table));
                 app(EmrFormRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
-
+            case 'death_cause':
+                event(new CreateDeathCauseIndex($name_table));
+                app(DeathCauseRepository::class)->getDataFromDbToElastic($batchSize, null);
+                break;
+            case 'treatment_result':
+                event(new CreateTreatmentResultIndex($name_table));
+                app(TreatmentResultRepository::class)->getDataFromDbToElastic($batchSize, null);
+                break;
                 // No Cache
             case 'service_req_l_view':
                 $batchSize = 25000;

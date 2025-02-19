@@ -1,23 +1,19 @@
 <?php
 
-namespace App\Models\View;
+namespace App\Models\HIS;
 
-use App\Models\HIS\DepartmentTran;
 use App\Traits\dinh_dang_ten_truong;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
-class MedicalCaseCoverListVView extends Model
+class TreatmentResult extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'v_his_medical_case_cover_list';
+    protected $table = 'his_treatment_result';
     public $timestamps = false;
     protected $guarded = [
         'id',
     ];
-    public function department_trans()
-    {
-        return $this->hasMany(DepartmentTran::class, 'treatment_id', 'treatment_id');
-    }
 }

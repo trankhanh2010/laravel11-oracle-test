@@ -65,6 +65,8 @@ use App\Events\Elastic\Contraindication\CreateContraindicationIndex;
 use App\Events\Elastic\Contraindication\InsertContraindicationIndex;
 use App\Events\Elastic\DataStore\CreateDataStoreIndex;
 use App\Events\Elastic\DataStore\InsertDataStoreIndex;
+use App\Events\Elastic\DeathCause\CreateDeathCauseIndex;
+use App\Events\Elastic\DeathCause\InsertDeathCauseIndex;
 use App\Events\Elastic\DeathWithin\CreateDeathWithinIndex;
 use App\Events\Elastic\DeathWithin\InsertDeathWithinIndex;
 use App\Events\Elastic\Debate\CreateDebateIndex;
@@ -338,6 +340,8 @@ use App\Events\Elastic\TreatmentFeeView\CreateTreatmentFeeViewIndex;
 use App\Events\Elastic\TreatmentFeeView\InsertTreatmentFeeViewIndex;
 use App\Events\Elastic\TreatmentLView\CreateTreatmentLViewIndex;
 use App\Events\Elastic\TreatmentLView\InsertTreatmentLViewIndex;
+use App\Events\Elastic\TreatmentResult\CreateTreatmentResultIndex;
+use App\Events\Elastic\TreatmentResult\InsertTreatmentResultIndex;
 use App\Events\Elastic\TreatmentType\CreateTreatmentTypeIndex;
 use App\Events\Elastic\TreatmentType\InsertTreatmentTypeIndex;
 use App\Events\Elastic\UnlimitReason\CreateUnlimitReasonIndex;
@@ -414,6 +418,8 @@ use App\Listeners\Elastic\Contraindication\ElasticCreateContraindicationIndex;
 use App\Listeners\Elastic\Contraindication\ElasticInsertContraindicationIndex;
 use App\Listeners\Elastic\DataStore\ElasticCreateDataStoreIndex;
 use App\Listeners\Elastic\DataStore\ElasticInsertDataStoreIndex;
+use App\Listeners\Elastic\DeathCause\ElasticCreateDeathCauseIndex;
+use App\Listeners\Elastic\DeathCause\ElasticInsertDeathCauseIndex;
 use App\Listeners\Elastic\DeathWithin\ElasticCreateDeathWithinIndex;
 use App\Listeners\Elastic\DeathWithin\ElasticInsertDeathWithinIndex;
 use App\Listeners\Elastic\Debate\ElasticCreateDebateIndex;
@@ -687,6 +693,8 @@ use App\Listeners\Elastic\TreatmentFeeView\ElasticCreateTreatmentFeeViewIndex;
 use App\Listeners\Elastic\TreatmentFeeView\ElasticInsertTreatmentFeeViewIndex;
 use App\Listeners\Elastic\TreatmentLView\ElasticCreateTreatmentLViewIndex;
 use App\Listeners\Elastic\TreatmentLView\ElasticInsertTreatmentLViewIndex;
+use App\Listeners\Elastic\TreatmentResult\ElasticCreateTreatmentResultIndex;
+use App\Listeners\Elastic\TreatmentResult\ElasticInsertTreatmentResultIndex;
 use App\Listeners\Elastic\TreatmentType\ElasticCreateTreatmentTypeIndex;
 use App\Listeners\Elastic\TreatmentType\ElasticInsertTreatmentTypeIndex;
 use App\Listeners\Elastic\UnlimitReason\ElasticCreateUnlimitReasonIndex;
@@ -1927,6 +1935,20 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertIcdListVViewIndex::class => [
             ElasticInsertIcdListVViewIndex::class,
+        ],
+
+        CreateDeathCauseIndex::class => [
+            ElasticCreateDeathCauseIndex::class,
+        ],
+        InsertDeathCauseIndex::class => [
+            ElasticInsertDeathCauseIndex::class,
+        ],
+
+        CreateTreatmentResultIndex::class => [
+            ElasticCreateTreatmentResultIndex::class,
+        ],
+        InsertTreatmentResultIndex::class => [
+            ElasticInsertTreatmentResultIndex::class,
         ],
     ];
 
