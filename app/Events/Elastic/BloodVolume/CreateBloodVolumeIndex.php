@@ -24,10 +24,18 @@ class CreateBloodVolumeIndex
             'body' => [
                 'settings' => [
                     'analysis' => [
+                        'tokenizer' => [
+                            'ngram_tokenizer' => [
+                                'type' => 'ngram',
+                                'min_gram' => 1,
+                                'max_gram' => 1,
+                                'token_chars' => ['letter', 'digit', 'whitespace']
+                            ]
+                        ],
                         'analyzer' => [
                             'my_custom_analyzer' => [
                                 'type' => 'custom',
-                                'tokenizer' => 'standard',
+                                'tokenizer' => 'ngram_tokenizer',
                                 'filter' => [
                                     'lowercase',       // Chuyển chữ hoa thành chữ thường
                                     'asciifolding',    // Loại bỏ dấu
