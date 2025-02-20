@@ -328,6 +328,8 @@ use App\Events\Elastic\TestType\CreateTestTypeIndex;
 use App\Events\Elastic\TestType\InsertTestTypeIndex;
 use App\Events\Elastic\Tracking\CreateTrackingIndex;
 use App\Events\Elastic\Tracking\InsertTrackingIndex;
+use App\Events\Elastic\TranPatiForm\CreateTranPatiFormIndex;
+use App\Events\Elastic\TranPatiForm\InsertTranPatiFormIndex;
 use App\Events\Elastic\TranPatiTech\CreateTranPatiTechIndex;
 use App\Events\Elastic\TranPatiTech\InsertTranPatiTechIndex;
 use App\Events\Elastic\TransactionType\CreateTransactionTypeIndex;
@@ -681,6 +683,8 @@ use App\Listeners\Elastic\TestType\ElasticCreateTestTypeIndex;
 use App\Listeners\Elastic\TestType\ElasticInsertTestTypeIndex;
 use App\Listeners\Elastic\Tracking\ElasticCreateTrackingIndex;
 use App\Listeners\Elastic\Tracking\ElasticInsertTrackingIndex;
+use App\Listeners\Elastic\TranPatiForm\ElasticCreateTranPatiFormIndex;
+use App\Listeners\Elastic\TranPatiForm\ElasticInsertTranPatiFormIndex;
 use App\Listeners\Elastic\TranPatiTech\ElasticCreateTranPatiTechIndex;
 use App\Listeners\Elastic\TranPatiTech\ElasticInsertTranPatiTechIndex;
 use App\Listeners\Elastic\TransactionType\ElasticCreateTransactionTypeIndex;
@@ -1949,6 +1953,13 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertTreatmentResultIndex::class => [
             ElasticInsertTreatmentResultIndex::class,
+        ],
+
+        CreateTranPatiFormIndex::class => [
+            ElasticCreateTranPatiFormIndex::class,
+        ],
+        InsertTranPatiFormIndex::class => [
+            ElasticInsertTranPatiFormIndex::class,
         ],
     ];
 

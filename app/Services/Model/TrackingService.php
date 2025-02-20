@@ -27,6 +27,7 @@ class TrackingService
         try {
             $data = $this->trackingRepository->applyJoins();
             $data = $this->trackingRepository->applyKeywordFilter($data, $this->params->keyword);
+            $data = $this->trackingRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
             $data = $this->trackingRepository->applyIsActiveFilter($data, $this->params->isActive);
             $count = $data->count();
             $data = $this->trackingRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
@@ -41,6 +42,7 @@ class TrackingService
         try {
             $data = $this->trackingRepository->applyJoins();
             $data = $this->trackingRepository->applyIsActiveFilter($data, $this->params->isActive);
+            $data = $this->trackingRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
             $count = $data->count();
             $data = $this->trackingRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
             $data = $this->trackingRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);

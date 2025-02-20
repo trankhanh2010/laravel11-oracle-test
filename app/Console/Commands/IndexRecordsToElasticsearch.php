@@ -166,6 +166,7 @@ use App\Events\Elastic\TestServiceReq\CreateTestServiceReqIndex;
 use App\Events\Elastic\TestServiceReqListVView\CreateTestServiceReqListVViewIndex;
 use App\Events\Elastic\TestType\CreateTestTypeIndex;
 use App\Events\Elastic\Tracking\CreateTrackingIndex;
+use App\Events\Elastic\TranPatiForm\CreateTranPatiFormIndex;
 use App\Events\Elastic\TranPatiTech\CreateTranPatiTechIndex;
 use App\Events\Elastic\TransactionType\CreateTransactionTypeIndex;
 use App\Events\Elastic\TreatmentBedRoomLView\CreateTreatmentBedRoomLViewIndex;
@@ -340,6 +341,7 @@ use App\Repositories\TestServiceReqListVViewRepository;
 use App\Repositories\TestServiceReqRepository;
 use App\Repositories\TestTypeRepository;
 use App\Repositories\TrackingRepository;
+use App\Repositories\TranPatiFormRepository;
 use App\Repositories\TranPatiTechRepository;
 use App\Repositories\TransactionTypeRepository;
 use App\Repositories\TreatmentBedRoomLViewRepository;
@@ -1005,6 +1007,10 @@ class IndexRecordsToElasticsearch extends Command
             case 'treatment_result':
                 event(new CreateTreatmentResultIndex($name_table));
                 app(TreatmentResultRepository::class)->getDataFromDbToElastic($batchSize, null);
+                break;
+            case 'tran_pati_form':
+                event(new CreateTranPatiFormIndex($name_table));
+                app(TranPatiFormRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
                 // No Cache
             case 'service_req_l_view':

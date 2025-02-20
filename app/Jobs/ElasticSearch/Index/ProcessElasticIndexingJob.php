@@ -164,6 +164,7 @@ use App\Repositories\TestIndexRepository;
 use App\Repositories\TestIndexUnitRepository;
 use App\Repositories\TestSampleTypeRepository;
 use App\Repositories\TestTypeRepository;
+use App\Repositories\TranPatiFormRepository;
 use App\Repositories\TranPatiTechRepository;
 use App\Repositories\TransactionTypeRepository;
 use App\Repositories\TreatmentBedRoomLViewRepository;
@@ -734,6 +735,9 @@ class ProcessElasticIndexingJob implements ShouldQueue
                 break;
             case 'treatment_result':
                 $repository = app(TreatmentResultRepository::class);
+                break;
+            case 'tran_pati_form':
+                $repository = app(TranPatiFormRepository::class);
                 break;
             /// No Cache
             case 'tracking':

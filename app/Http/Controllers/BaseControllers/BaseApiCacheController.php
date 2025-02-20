@@ -426,6 +426,8 @@ class BaseApiCacheController extends Controller
     protected $medicinePatyName = 'medicine_paty';
     protected $accidentBodyPart;
     protected $accidentBodyPartName = 'accident_body_part';
+    protected $tranPatiForm;
+    protected $tranPatiFormName = 'tran_pati_form';
     protected $deathCause;
     protected $deathCauseName = 'death_cause';
     protected $treatmentResult;

@@ -1,40 +1,39 @@
 <?php
 
-namespace App\Http\Controllers\Api\NoCacheControllers;
+namespace App\Http\Controllers\Api\CacheControllers;
 
-use App\DTOs\TrackingDTO;
+use App\DTOs\TranPatiFormDTO;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
-use App\Http\Requests\Tracking\CreateTrackingRequest;
-use App\Http\Requests\Tracking\UpdateTrackingRequest;
-use App\Models\HIS\Tracking;
+use App\Http\Requests\TranPatiForm\CreateTranPatiFormRequest;
+use App\Http\Requests\TranPatiForm\UpdateTranPatiFormRequest;
+use App\Models\HIS\TranPatiForm;
 use App\Services\Elastic\ElasticsearchService;
-use App\Services\Model\TrackingService;
+use App\Services\Model\TranPatiFormService;
 use Illuminate\Http\Request;
 
 
-class TrackingController extends BaseApiCacheController
+class TranPatiFormController extends BaseApiCacheController
 {
-    protected $trackingService;
-    protected $trackingDTO;
-    public function __construct(Request $request, ElasticsearchService $elasticSearchService, TrackingService $trackingService, Tracking $tracking)
+    protected $tranPatiFormService;
+    protected $tranPatiFormDTO;
+    public function __construct(Request $request, ElasticsearchService $elasticSearchService, TranPatiFormService $tranPatiFormService, TranPatiForm $tranPatiForm)
     {
         parent::__construct($request); // Gọi constructor của BaseController
         $this->elasticSearchService = $elasticSearchService;
-        $this->trackingService = $trackingService;
-        $this->tracking = $tracking;
+        $this->tranPatiFormService = $tranPatiFormService;
+        $this->tranPatiForm = $tranPatiForm;
         // Kiểm tra tên trường trong bảng
         if ($this->orderBy != null) {
             $this->orderByJoin = [
             ];
-            $columns = $this->getColumnsTable($this->tracking);
+            $columns = $this->getColumnsTable($this->tranPatiForm);
             $this->orderBy = $this->checkOrderBy($this->orderBy, $columns, $this->orderByJoin ?? []);
         }
         // Thêm tham số vào service
-        $this->trackingDTO = new TrackingDTO(
-            $this->trackingName,
+        $this->tranPatiFormDTO = new TranPatiFormDTO(
+            $this->tranPatiFormName,
             $this->keyword,
             $this->isActive,
-            $this->isDelete,
             $this->orderBy,
             $this->orderByJoin,
             $this->orderByString,
@@ -45,9 +44,8 @@ class TrackingController extends BaseApiCacheController
             $this->appCreator, 
             $this->appModifier, 
             $this->time,
-            $this->treatmentId,
         );
-        $this->trackingService->withParams($this->trackingDTO);
+        $this->tranPatiFormService->withParams($this->tranPatiFormDTO);
     }
     public function index()
     {
@@ -57,15 +55,15 @@ class TrackingController extends BaseApiCacheController
         $keyword = $this->keyword;
         if (($keyword != null || $this->elasticSearchType != null) && !$this->cache) {
             if ($this->elasticSearchType != null) {
-                $data = $this->elasticSearchService->handleElasticSearchSearch($this->trackingName);
+                $data = $this->elasticSearchService->handleElasticSearchSearch($this->tranPatiFormName);
             } else {
-                $data = $this->trackingService->handleDataBaseSearch();
+                $data = $this->tranPatiFormService->handleDataBaseSearch();
             }
         } else {
             if ($this->elastic) {
-                $data = $this->elasticSearchService->handleElasticSearchGetAll($this->trackingName);
+                $data = $this->elasticSearchService->handleElasticSearchGetAll($this->tranPatiFormName);
             } else {
-                $data = $this->trackingService->handleDataBaseGetAll();
+                $data = $this->tranPatiFormService->handleDataBaseGetAll();
             }
         }
         $paramReturn = [
@@ -86,15 +84,15 @@ class TrackingController extends BaseApiCacheController
             return $this->checkParam();
         }
         if ($id !== null) {
-            $validationError = $this->validateAndCheckId($id, $this->tracking, $this->trackingName);
+            $validationError = $this->validateAndCheckId($id, $this->tranPatiForm, $this->tranPatiFormName);
             if ($validationError) {
                 return $validationError;
             }
         }
         if ($this->elastic) {
-            $data = $this->elasticSearchService->handleElasticSearchGetWithId($this->trackingName, $id);
+            $data = $this->elasticSearchService->handleElasticSearchGetWithId($this->tranPatiFormName, $id);
         } else {
-            $data = $this->trackingService->handleDataBaseGetWithId($id);
+            $data = $this->tranPatiFormService->handleDataBaseGetWithId($id);
         }
         $paramReturn = [
             $this->idName => $id,

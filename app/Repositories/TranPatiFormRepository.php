@@ -2,40 +2,35 @@
 namespace App\Repositories;
 
 use App\Jobs\ElasticSearch\Index\ProcessElasticIndexingJob;
-use App\Models\HIS\Tracking;
+use App\Models\HIS\TranPatiForm;
 use Illuminate\Support\Facades\DB;
 
-class TrackingRepository
+class TranPatiFormRepository
 {
-    protected $tracking;
-    public function __construct(Tracking $tracking)
+    protected $tranPatiForm;
+    public function __construct(TranPatiForm $tranPatiForm)
     {
-        $this->tracking = $tracking;
+        $this->tranPatiForm = $tranPatiForm;
     }
 
     public function applyJoins()
     {
-        return $this->tracking
-            ->select();
+        return $this->tranPatiForm
+            ->select(
+                'his_tran_pati_form.*'
+            );
     }
     public function applyKeywordFilter($query, $keyword)
     {
         return $query->where(function ($query) use ($keyword) {
-            $query->where(DB::connection('oracle_his')->raw('his_tracking.icd_code'), 'like', $keyword . '%')
-                ->orWhere(DB::connection('oracle_his')->raw('his_tracking.icd_name'), 'like', $keyword . '%');
+            $query->where(DB::connection('oracle_his')->raw('his_tran_pati_form.tran_pati_form_code'), 'like', $keyword . '%')
+                ->orWhere(DB::connection('oracle_his')->raw('his_tran_pati_form.tran_pati_form_name'), 'like', $keyword . '%');
         });
     }
     public function applyIsActiveFilter($query, $isActive)
     {
         if ($isActive !== null) {
-            $query->where(DB::connection('oracle_his')->raw('his_tracking.is_active'), $isActive);
-        }
-        return $query;
-    }
-    public function applyTreatmentIdFilter($query, $param)
-    {
-        if ($param !== null) {
-            $query->where(DB::connection('oracle_his')->raw('his_tracking.treatment_id'), $param);
+            $query->where(DB::connection('oracle_his')->raw('his_tran_pati_form.is_active'), $isActive);
         }
         return $query;
     }
@@ -45,7 +40,7 @@ class TrackingRepository
             foreach ($orderBy as $key => $item) {
                 if (in_array($key, $orderByJoin)) {
                 } else {
-                    $query->orderBy('his_tracking.' . $key, $item);
+                    $query->orderBy('his_tran_pati_form.' . $key, $item);
                 }
             }
         }
@@ -67,10 +62,10 @@ class TrackingRepository
     }
     public function getById($id)
     {
-        return $this->tracking->find($id);
+        return $this->tranPatiForm->find($id);
     }
     public function create($request, $time, $appCreator, $appModifier){
-        $data = $this->tracking::create([
+        $data = $this->tranPatiForm::create([
             'create_time' => now()->format('Ymdhis'),
             'modify_time' => now()->format('Ymdhis'),
             'creator' => get_loginname_with_token($request->bearerToken(), $time),
@@ -79,8 +74,8 @@ class TrackingRepository
             'app_modifier' => $appModifier,
             'is_active' => 1,
             'is_delete' => 0,
-            'tracking_code' => $request->tracking_code,
-            'tracking_name' => $request->tracking_name,
+            'tran_pati_form_code' => $request->tran_pati_form_code,
+            'tran_pati_form_name' => $request->tran_pati_form_name,
         ]);
         return $data;
     }
@@ -89,8 +84,8 @@ class TrackingRepository
             'modify_time' => now()->format('Ymdhis'),
             'modifier' => get_loginname_with_token($request->bearerToken(), $time),
             'app_modifier' => $appModifier,
-            'tracking_code' => $request->tracking_code,
-            'tracking_name' => $request->tracking_name,
+            'tran_pati_form_code' => $request->tran_pati_form_code,
+            'tran_pati_form_name' => $request->tran_pati_form_name,
             'is_active' => $request->is_active
         ]);
         return $data;
@@ -103,17 +98,16 @@ class TrackingRepository
     {
         $numJobs = config('queue')['num_queue_worker']; // Số lượng job song song
         if ($id != null) {
-            $data = $this->applyJoins()->where('his_tracking.id', '=', $id)->first();
+            $data = $this->applyJoins()->where('his_tran_pati_form.id', '=', $id)->first();
             if ($data) {
                 $data = $data->getAttributes();
                 return $data;
             }
         } else {
             // Xác định min và max id
-            $minId = $this->applyJoins()->min('his_tracking.id');
-            $maxId = $this->applyJoins()->max('his_tracking.id');
+            $minId = $this->applyJoins()->min('his_tran_pati_form.id');
+            $maxId = $this->applyJoins()->max('his_tran_pati_form.id');
             $chunkSize = ceil(($maxId - $minId + 1) / $numJobs);
-    
             for ($i = 0; $i < $numJobs; $i++) {
                 $startId = $minId + ($i * $chunkSize);
                 $endId = $startId + $chunkSize - 1;
@@ -122,7 +116,7 @@ class TrackingRepository
                     $endId = $maxId;
                 }
                 // Dispatch job cho mỗi phạm vi id
-                ProcessElasticIndexingJob::dispatch('tracking', 'his_tracking', $startId, $endId, $batchSize);
+                ProcessElasticIndexingJob::dispatch('tran_pati_form', 'his_tran_pati_form', $startId, $endId, $batchSize);
             }
         }
     }

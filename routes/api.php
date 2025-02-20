@@ -156,6 +156,7 @@ use App\Http\Controllers\Api\CacheControllers\ProcessingMethodController;
 use App\Http\Controllers\Api\CacheControllers\StorageConditionController;
 use App\Http\Controllers\Api\CacheControllers\SuimIndexUnitController;
 use App\Http\Controllers\Api\CacheControllers\TestIndexGroupController;
+use App\Http\Controllers\Api\CacheControllers\TranPatiFormController;
 use App\Http\Controllers\Api\TransactionControllers\TransactionTamUngController;
 use App\Http\Controllers\Api\CacheControllers\TransactionTypeController;
 use App\Http\Controllers\Api\CacheControllers\TreatmentResultController;
@@ -929,6 +930,8 @@ Route::group([
     Route::apiResource('v1/debate-user', DebateUserController::class)->only(['index', 'show']);
     /// Debate Ekip User
     Route::apiResource('v1/debate-ekip-user', DebateEkipUserController::class)->only(['index', 'show']);
+    /// Hình thức chuyển viện
+    Route::apiResource('v1/tran-pati-form', TranPatiFormController::class)->only(['index', 'show']);
     /// Tờ điều trị
     Route::group(['as' => 'HIS.Desktop.Plugins.HisTrackingList'], function () {
         Route::apiResource('v1/tracking', TrackingController::class)->only(['index', 'show']);

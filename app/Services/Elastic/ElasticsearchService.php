@@ -384,7 +384,7 @@ class ElasticsearchService extends BaseApiCacheController
                                 'pre_tags' => ['<em>'],  // Tag mở đầu cho highlight
                                 'post_tags' => ['</em>'], // Tag kết thúc cho highlight
                                 'number_of_fragments' => 0, // Hiển thị toàn bộ văn bản
-                                'fragment_size' => 150  // Kích thước của mỗi đoạn highlight
+                                'fragment_size' => 150,  // Kích thước của mỗi đoạn highlight
                             ];
                         }
                         $highlight  = [

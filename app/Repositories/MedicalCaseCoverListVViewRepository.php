@@ -25,6 +25,8 @@ class MedicalCaseCoverListVViewRepository
         return $query->with([
             'department_trans:id,department_id,previous_id,department_in_time,request_time,treatment_id',
             'department_trans.department:id,department_name,department_code',
+            'service_req_KH',
+            'dhsts',
         ]);
     }
     public function applyKeywordFilter($query, $keyword)

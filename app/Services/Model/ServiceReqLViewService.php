@@ -27,8 +27,8 @@ class ServiceReqLViewService
         try {
             $data = $this->serviceReqLViewRepository->applyJoins();
             $data = $this->serviceReqLViewRepository->applyKeywordFilter($data, $this->params->keyword);
-            // $data = $this->serviceReqLViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-            // $data = $this->serviceReqLViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+            $data = $this->serviceReqLViewRepository->applyIsActiveFilter($data, $this->params->isActive);
+            $data = $this->serviceReqLViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
             $data = $this->serviceReqLViewRepository->applyServiceReqSttIdsFilter($data, $this->params->serviceReqSttIds);
             $data = $this->serviceReqLViewRepository->applyNotInServiceReqTypeIdsFilter($data, $this->params->notInServiceReqTypeIds);
             $data = $this->serviceReqLViewRepository->applyTdlPatientTypeIdsFilter($data, $this->params->tdlPatientTypeIds);

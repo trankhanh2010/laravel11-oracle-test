@@ -2,12 +2,11 @@
 
 namespace App\DTOs;
 
-class TrackingDTO
+class TranPatiFormDTO
 {
-    public $trackingName;
+    public $tranPatiFormName;
     public $keyword;
     public $isActive;
-    public $isDelete;
     public $orderBy;
     public $orderByJoin;
     public $orderByString;
@@ -18,12 +17,10 @@ class TrackingDTO
     public $appCreator;
     public $appModifier;
     public $time;
-    public $treatmentId;
     public function __construct(
-        $trackingName,
+        $tranPatiFormName,
         $keyword, 
         $isActive, 
-        $isDelete,
         $orderBy, 
         $orderByJoin, 
         $orderByString, 
@@ -34,13 +31,11 @@ class TrackingDTO
         $appCreator,
         $appModifier,
         $time,
-        $treatmentId,
         )
     {
-        $this->trackingName = $trackingName;
+        $this->tranPatiFormName = $tranPatiFormName;
         $this->keyword = $keyword;
         $this->isActive = $isActive;
-        $this->isDelete = $isDelete;
         $this->orderBy = $orderBy;
         $this->orderByJoin = $orderByJoin;
         $this->orderByString = $orderByString;
@@ -51,6 +46,5 @@ class TrackingDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
-        $this->treatmentId = $treatmentId;
     }
 }

@@ -154,6 +154,7 @@ return [
             'icd_list_v_view',
             'death_cause',
             'treatment_result',
+            'tran_pati_form',
             // 'service_req_l_view',
             // 'debate',
             // 'debate_v_view',
@@ -421,6 +422,7 @@ return [
             'medical_case_cover_list_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm Vỏ bệnh án!',
             'treatment_bed_room_list_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm TreatmentBedRoomList!',
             'icd_list_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm IcdList!',
+            'tran_pati_form' => 'Có lỗi khi thực hiện thao tác với bảng tạm Hình thức chuyển viện!',
 
         ],
         'table' => [
