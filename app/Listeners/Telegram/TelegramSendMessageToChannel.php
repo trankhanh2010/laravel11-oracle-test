@@ -22,11 +22,11 @@ class TelegramSendMessageToChannel
      */
     public function handle(SendMessageToChannel $event): void
     {
-        $text = $event->mess;
-        Telegram::sendMessage([
-            'chat_id' => env('TELEGRAM_CHANNEL_ID', ''),
-            'parse_mode' => 'HTML',
-            'text' => $text
-        ]);
+        // $text = $event->mess;
+        // Telegram::sendMessage([
+        //     'chat_id' => env('TELEGRAM_CHANNEL_ID', ''),
+        //     'parse_mode' => 'HTML',
+        //     'text' => $text
+        // ]);
     }
 }

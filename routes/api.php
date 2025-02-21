@@ -285,7 +285,19 @@ Route::get('v1/send-otp-patient-relative-mobile-treatment-fee', [OtpController::
 // Gửi qua Mail
 Route::get('v1/send-otp-mail-treatment-fee', [OtpController::class, 'sendOtpMailTreatmentFee'])
     ->withoutMiddleware('check_token');
+// Gửi qua Zalo Phone
+Route::get('v1/send-otp-zalo-phone-treatment-fee', [OtpController::class, 'sendOtpZaloPhoneTreatmentFee'])
+    ->withoutMiddleware('check_token');
 
+// refresh AccessToken OA zalo
+Route::get('v1/refresh-access-token-otp-zalo', [OtpController::class, 'refreshAccessTokenOtpZalo'])
+    ->withoutMiddleware('check_token');
+// cập nhật token zalo trong db
+Route::get('v1/set-token-otp-zalo', [OtpController::class, 'setTokenOtpZalo'])
+    ->withoutMiddleware('check_token');    
+// // Lấy AccessToken và RefreshToken từ đầu
+// Route::get('v1/get-access-and-refresh-token', [OtpController::class, 'getAccessAndRefreshToken'])
+//     ->withoutMiddleware('check_token');
 
 /// MOMO nofity ipn
 // Thông báo trạng thái thanh toán /// k cần token
@@ -311,6 +323,7 @@ Route::group([
     Route::get('v1/redis-ping', [RedisController::class, "ping"])->name('.redis_ping');
     /// Telegram
     Route::get('v1/updated-activity', [TelegramController::class, "updated_activity"])->name('.updated_activity');
+    Route::get('v1/test-send-mess-to-chanel-telegram', [TelegramController::class, "testSendMessToChanelTelegram"])->name('.test_send_mess_to_chanel_telegram');
     /// Log
     Route::get("v1/log", [LogController::class, "getLog"])->name('.get_log');
     /// Request

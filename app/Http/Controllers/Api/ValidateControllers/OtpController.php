@@ -4,19 +4,25 @@ namespace App\Http\Controllers\Api\ValidateControllers;
 
 use App\Http\Controllers\Controller;
 use App\Services\Auth\OtpService;
+use App\Services\Zalo\ZaloService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
 class OtpController extends Controller
 {
     protected $otpService;
+    protected $zaloSerivce;
     protected $maxRequestSendOtpOnday;
     protected $otpMaxRequestsVerifyPerOtp;
     protected $otpTTL;
     protected $otpMaxRequestsPerDay;
-    public function __construct(OtpService $otpService)
+    public function __construct(
+        OtpService $otpService,
+        ZaloService $zaloSerivce,
+        )
     {
         $this->otpService = $otpService;
+        $this->zaloSerivce = $zaloSerivce;
         $this->maxRequestSendOtpOnday = config('database')['connections']['otp']['otp_max_requests_per_day'];
         $this->otpMaxRequestsVerifyPerOtp = config('database')['connections']['otp']['otp_max_requests_verify_per_otp'];
         $this->otpTTL = config('database')['connections']['otp']['otp_ttl'];
@@ -44,7 +50,7 @@ class OtpController extends Controller
     }
     public function deleteCacheLimitTotalRequestVerifyOtp($patientCode)
     {
-        $cacheKey = 'total_verify_OTP_treatment_fee_' .$patientCode; // Tránh key quá dài
+        $cacheKey = 'total_verify_OTP_treatment_fee_' . $patientCode; // Tránh key quá dài
 
         Cache::forget($cacheKey); // Xóa cache với key tương ứng
     }
@@ -56,9 +62,10 @@ class OtpController extends Controller
 
         Cache::forget($cacheKey); // Xóa cache với key tương ứng
     }
-    public function getTotalRetryVerifyOtp($patientCode){
+    public function getTotalRetryVerifyOtp($patientCode)
+    {
         $cacheKey = 'total_verify_OTP_treatment_fee_' . $patientCode; // Tránh key quá dài
-        
+
         $totalRequestVerify = Cache::get($cacheKey) ?? 0;
         return $this->otpMaxRequestsVerifyPerOtp - $totalRequestVerify;
     }
@@ -151,7 +158,7 @@ class OtpController extends Controller
     {
         $deviceInfo = request()->header('User-Agent'); // Lấy thông tin thiết bị từ User-Agent
         $ipAddress = request()->ip(); // Lấy địa chỉ IP
-        $cacheKey = 'total_OTP_treatment_fee_' .$deviceInfo . '_' . $ipAddress; // Tránh key quá dài
+        $cacheKey = 'total_OTP_treatment_fee_' . $deviceInfo . '_' . $ipAddress; // Tránh key quá dài
         // Kiểm tra cache hiện tại
         $cacheData = Cache::get($cacheKey);
 
@@ -197,11 +204,10 @@ class OtpController extends Controller
             $data = false;
         } else {
             $data = $this->otpService->createAndSendOtpPhoneTreatmentFee($patientCode);
-            if($data) {
+            if ($data) {
                 $this->deleteCacheLimitTotalRequestVerifyOtp($patientCode); // Nếu gửi mã OTP mới thì xóa cache limitRequestVerifyOtp
                 $this->addTotalRequestSendOtp($patientCode); // Nếu gửi mã OTP thì tăng tổng lên 1
-            } 
-
+            }
         }
         return returnDataSuccess([], [
             'success' => $data,
@@ -222,10 +228,10 @@ class OtpController extends Controller
             $data = false;
         } else {
             $data = $this->otpService->createAndSendOtpPatientRelativePhoneTreatmentFee($patientCode);
-            if($data) {
+            if ($data) {
                 $this->deleteCacheLimitTotalRequestVerifyOtp($patientCode); // Nếu gửi mã OTP mới thì xóa cache limitRequestVerifyOtp
                 $this->addTotalRequestSendOtp($patientCode); // Nếu gửi mã OTP thì tăng tổng lên 1
-            } 
+            }
         }
         return returnDataSuccess([], [
             'success' => $data,
@@ -246,10 +252,10 @@ class OtpController extends Controller
             $data = false;
         } else {
             $data = $this->otpService->createAndSendOtpPatientRelativeMobileTreatmentFee($patientCode);
-            if($data) {
+            if ($data) {
                 $this->deleteCacheLimitTotalRequestVerifyOtp($patientCode); // Nếu gửi mã OTP mới thì xóa cache limitRequestVerifyOtp
                 $this->addTotalRequestSendOtp($patientCode); // Nếu gửi mã OTP thì tăng tổng lên 1
-            } 
+            }
         }
         return returnDataSuccess([], [
             'success' => $data,
@@ -270,10 +276,10 @@ class OtpController extends Controller
             $data = false;
         } else {
             $data = $this->otpService->createAndSendOtpMailTreatmentFee($patientCode);
-            if($data) {
+            if ($data) {
                 $this->deleteCacheLimitTotalRequestVerifyOtp($patientCode); // Nếu gửi mã OTP mới thì xóa cache limitRequestVerifyOtp
                 $this->addTotalRequestSendOtp($patientCode); // Nếu gửi mã OTP thì tăng tổng lên 1
-            } 
+            }
         }
         return returnDataSuccess([], [
             'success' => $data,
@@ -283,4 +289,48 @@ class OtpController extends Controller
             'otpTTL' => $this->otpTTL,
         ]);
     }
+    public function sendOtpZaloPhoneTreatmentFee(Request $request)
+    {
+        $patientCode = $request->input('patientCode');
+        $checkTotalRequest = $this->checkLimitTotalRequestSendOtp($this->getTotalRequestSendOtp($patientCode));
+        $limitRequest = false;
+        // Đạt giới hạn thì k gửi otp
+        if ($checkTotalRequest) {
+            $limitRequest = true;
+            $data = false;
+        } else {
+            $data = $this->otpService->createAndSendOtpZaloPhoneTreatmentFee($patientCode);
+            if ($data) {
+                $this->deleteCacheLimitTotalRequestVerifyOtp($patientCode); // Nếu gửi mã OTP mới thì xóa cache limitRequestVerifyOtp
+                $this->addTotalRequestSendOtp($patientCode); // Nếu gửi mã OTP thì tăng tổng lên 1
+            }
+        }
+        return returnDataSuccess([], [
+            'success' => $data,
+            'limitRequest' => $limitRequest,
+            'otpMaxRequestsPerDay' => $this->otpMaxRequestsPerDay,
+            'otpMaxRequestsVerifyPerOtp' => $this->otpMaxRequestsVerifyPerOtp,
+            'otpTTL' => $this->otpTTL,
+        ]);
+    }
+
+    public function refreshAccessTokenOtpZalo(){
+        $data = $this->zaloSerivce->refreshAccessToken();
+        return returnDataSuccess([], $data);
+    }
+
+    // public function getAccessAndRefreshToken(){
+    //     $data = $this->zaloSerivce->getAccessAndRefreshToken();
+    //     return returnDataSuccess([], $data);
+    // }
+    public function setTokenOtpZalo(Request $request){
+        $accessToken = $request->input('access_token');
+        $refreshToken = $request->input('refresh_token');
+        $this->zaloSerivce->setTokenOtpZalo([
+            'access_token' => $accessToken,
+            'refresh_token' => $refreshToken,
+        ]);
+        // Xóa cache
+        Cache::forget('zalo_config');
+    }   
 }

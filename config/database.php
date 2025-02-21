@@ -205,7 +205,14 @@ return [
             'otp_max_requests_verify_per_otp' => env('OTP_MAX_REQUESTS_VERIFY_PER_OTP',5),
             'otp_ttl' => intval(env('OTP_TTL',5)),
         ],
-
+        'telegram' => [
+            'bot_token' => env('TELEGRAM_BOT_TOKEN',''),
+            'chanel_log_id' => env('TELEGRAM_CHANNEL_ID',''),
+        ],
+        'zalo' => [
+            'zalo_app_id' => env('ZALO_APP_ID',''),
+            'zalo_app_secret_key' => env('ZALO_APP_SECRET_KEY',''),
+        ],
     ],
 
     /*
