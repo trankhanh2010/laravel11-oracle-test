@@ -197,6 +197,7 @@ use App\Http\Controllers\Api\NoCacheControllers\TransactionListVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TreatmentBedRoomListVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TreatmentFeeDetailVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TreatmentFeeListVViewController;
+use App\Http\Controllers\Api\NoCacheControllers\TreatmentRoomGroupVViewController;
 // Base Api
 use App\Http\Controllers\BaseControllers\CacheController;
 use App\Http\Controllers\BaseControllers\ElasticSearchController;
@@ -1101,5 +1102,7 @@ Route::group([
     Route::apiResource('v1/room-v-view', RoomVViewController::class)->only(['index', 'show']);
     /// Icd List
     Route::apiResource('v1/icd-list-v-view', IcdListVViewController::class)->only(['index', 'show']);
+    /// Treatment Room Group
+    Route::apiResource('v1/treatment-bed-room-group-v-view', TreatmentRoomGroupVViewController::class)->only(['index', 'show']);
 
 });
