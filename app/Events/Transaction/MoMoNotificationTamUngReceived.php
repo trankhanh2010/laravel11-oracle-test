@@ -40,6 +40,7 @@ class MoMoNotificationTamUngReceived implements ShouldBroadcast
      // Gửi dữ liệu lên WebSocket
      public function broadcastWith()
      {
+
          return [
              'data' => $this->data
          ];

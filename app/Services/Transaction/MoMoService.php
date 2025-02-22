@@ -103,6 +103,7 @@ class MoMoService
     // Nhận ipn tạm ứng
     public function handleNotificationTamUng()
     {
+        // Log::error(1);
         // dd(1);
         // Lấy param từ request12
         $data = $this->getParamRequest();

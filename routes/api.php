@@ -1,5 +1,6 @@
 <?php
 
+use App\Events\Transaction\MoMoNotificationTamUngReceived;
 use App\Http\Controllers\Api\AuthControllers\CheckTokenController;
 use App\Http\Controllers\Api\NoCacheControllers\SereServExtController;
 use Illuminate\Http\Request;
@@ -262,6 +263,10 @@ Route::get("v1/test-db", function () {
     $executionTime = ($end - $start) * 1000;
     return $executionTime;
 })->name('.get_test_db');
+// Websocket
+Route::get("v1/test-wss", function () {
+    broadcast(new MoMoNotificationTamUngReceived('test'));
+})->name('.test_wss');
 
 Route::get('v1/check-token', [CheckTokenController::class, 'index']);
 Route::get('v1/log-out', [CheckTokenController::class, 'logOut']);
