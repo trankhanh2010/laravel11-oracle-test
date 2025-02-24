@@ -63,6 +63,8 @@ class BaseApiCacheController extends Controller
     protected $orderByRequest;
     protected $orderByElastic;
     protected $orderByJoin;
+    protected $groupBy;
+    protected $groupByName = 'group_by';
     protected $onlyActive;
     protected $onlyActiveName = 'OnlyActive';
     protected $id;
@@ -1457,6 +1459,13 @@ class BaseApiCacheController extends Controller
             if (!is_string ($this->patientCode)) {
                 $this->errors[$this->patientCodeName] = $this->messFormat;
                 $this->patientCode = null;
+            }
+        }
+        $this->groupBy = $this->paramRequest['ApiData']['GroupBy'] ?? null;
+        if($this->groupBy !== null){
+            if (!is_string ($this->groupBy)) {
+                $this->errors[$this->groupByName] = $this->messFormat;
+                $this->groupBy = null;
             }
         }
         $this->debateId = $this->paramRequest['ApiData']['DebateId'] ?? null;

@@ -43,6 +43,8 @@ class TreatmentBedRoomListVViewService
             $count = $data->count();
             $data = $this->treatmentBedRoomListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
             $data = $this->treatmentBedRoomListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+             // Group theo field
+            $data = $this->treatmentBedRoomListVViewRepository->applyGroupByField($data, $this->params->groupBy);
             return ['data' => $data, 'count' => $count];
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['treatment_bed_room_list_v_view'], $e);
@@ -68,6 +70,8 @@ class TreatmentBedRoomListVViewService
             $count = $data->count();
             $data = $this->treatmentBedRoomListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
             $data = $this->treatmentBedRoomListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+            // Group theo field
+            $data = $this->treatmentBedRoomListVViewRepository->applyGroupByField($data, $this->params->groupBy);
             return ['data' => $data, 'count' => $count];
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['treatment_bed_room_list_v_view'], $e);

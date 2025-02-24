@@ -55,6 +55,7 @@ class TreatmentBedRoomListVViewController extends BaseApiCacheController
             $this->addLoginname,
             $this->addTimeFrom,
             $this->addTimeTo,
+            $this->groupBy,
         );
         $this->treatmentBedRoomListVViewService->withParams($this->treatmentBedRoomListVViewDTO);
     }
