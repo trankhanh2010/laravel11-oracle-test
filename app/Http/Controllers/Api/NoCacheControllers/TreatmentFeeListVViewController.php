@@ -160,10 +160,10 @@ class TreatmentFeeListVViewController extends BaseApiCacheController
             }else{
                 // Hàm để giữ 2 ký tự đầu và cuối, còn lại thay bằng dấu *
                 function maskPhone($value) {
-                    if (strlen($value) > 4) {
-                        return substr($value, 0, 2) . str_repeat('*', strlen($value) - 4) . substr($value, -2);
+                    if (strlen($value) > 6) {
+                        return substr($value, 0, 3) . str_repeat('*', strlen($value) - 6) . substr($value, -3);
                     }
-                    return $value; // Nếu độ dài < 4, không thay đổi
+                    return "******"; // Nếu độ dài < 6, 
                 }
                 // Lọc các trường cần thiết từ mỗi item trong data
                 $filteredData = $data['data']->map(function ($item) {

@@ -151,6 +151,14 @@ class TreatmentFeeListVViewRepository
         }
         return $query;
     }
+    public function applyChuaRaVienChuaKhoaVienPhiFilter($query)
+    {
+            $query->where(function ($query) {
+                $query->whereNull('fee_lock_time')
+                ->whereNull('treatment_end_type_id');
+            });
+        return $query;
+    }
     public function applyOrdering($query, $orderBy, $orderByJoin)
     {
         if ($orderBy != null) {

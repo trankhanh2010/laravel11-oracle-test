@@ -101,6 +101,7 @@ class TreatmentFeeListVViewService
                 $data = $this->treatmentFeeListVViewRepository->applyJoins();
                 if ($this->params->treatmentCode) {
                     $data = $this->treatmentFeeListVViewRepository->applyTreatmentCodeFilter($data, $this->params->treatmentCode);
+                    $data = $this->treatmentFeeListVViewRepository->applyChuaRaVienChuaKhoaVienPhiFilter($data);
                     $data = $this->treatmentFeeListVViewRepository->applyOrdering($data, ['create_time'=>'desc'], []);
                     $data = $this->treatmentFeeListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit, $this->params->cursorPaginate, $this->params->lastId);
                     $count = $data->count();
@@ -108,6 +109,7 @@ class TreatmentFeeListVViewService
                 }
                 if ($this->params->patientCode) {
                     $data = $this->treatmentFeeListVViewRepository->applyPatientCodeFilter($data, $this->params->patientCode);
+                    $data = $this->treatmentFeeListVViewRepository->applyChuaRaVienChuaKhoaVienPhiFilter($data);
                     $data = $this->treatmentFeeListVViewRepository->applyOrdering($data, ['create_time'=>'desc'], []);
                     $data = $this->treatmentFeeListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit, $this->params->cursorPaginate, $this->params->lastId);
                     $count = $data->count();
