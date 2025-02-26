@@ -79,6 +79,30 @@ class OtpService
         } else return false;
         return true;
     }
+    // Gửi qua mobile bệnh nhân
+    public function createAndSendOtpMobileTreatmentFee($patientCode)
+    {
+        $phoneNumber = $this->patientRepository->getByPatientCode($patientCode)->mobile ?? null;
+        if (!$phoneNumber) {
+            return false;
+        }
+        $otpCode = rand(100000, 999999);
+        $cacheTTL = $this->otpTTL;
+        $cacheKey = 'OTP_treatment_fee_' . $patientCode;
+
+        if (!Cache::has($cacheKey)) {
+            try {
+                // Test ở local khi bị hạn chế số lượng tin
+                // Cache::put($cacheKey, $otpCode, $cacheTTL);
+                $this->smsSerivce->sendOtp($phoneNumber, $otpCode);
+            } catch (\Throwable $e) {
+                return false;
+            }
+            // Gửi thành công thì mới tạo cache
+            Cache::put($cacheKey, $otpCode, now()->addMinutes($cacheTTL));
+        } else return false;
+        return true;
+    }
     // Gửi qua phone người thân
     public function createAndSendOtpPatientRelativePhoneTreatmentFee($patientCode)
     {
@@ -153,6 +177,78 @@ class OtpService
     public function createAndSendOtpZaloPhoneTreatmentFee($patientCode)
     {
         $phoneNumber = $this->patientRepository->getByPatientCode($patientCode)->phone ?? null;
+        if (!$phoneNumber) {
+            return false;
+        }
+        $otpCode = rand(100000, 999999);
+        $cacheTTL = $this->otpTTL;
+        $cacheKey = 'OTP_treatment_fee_' . $patientCode;
+
+        if (!Cache::has($cacheKey)) {
+            try {
+                // Test ở local khi bị hạn chế số lượng tin
+                // Cache::put($cacheKey, $otpCode, $cacheTTL);
+                $this->zaloSerivce->sendOtp($phoneNumber, $otpCode);
+            } catch (\Throwable $e) {
+                return false;
+            }
+            // Gửi thành công thì mới tạo cache
+            Cache::put($cacheKey, $otpCode, now()->addMinutes($cacheTTL));
+        } else return false;
+        return true;
+    }
+    // Gửi qua zalo mobile bệnh nhân
+    public function createAndSendOtpZaloMobileTreatmentFee($patientCode)
+    {
+        $phoneNumber = $this->patientRepository->getByPatientCode($patientCode)->mobile ?? null;
+        if (!$phoneNumber) {
+            return false;
+        }
+        $otpCode = rand(100000, 999999);
+        $cacheTTL = $this->otpTTL;
+        $cacheKey = 'OTP_treatment_fee_' . $patientCode;
+
+        if (!Cache::has($cacheKey)) {
+            try {
+                // Test ở local khi bị hạn chế số lượng tin
+                // Cache::put($cacheKey, $otpCode, $cacheTTL);
+                $this->zaloSerivce->sendOtp($phoneNumber, $otpCode);
+            } catch (\Throwable $e) {
+                return false;
+            }
+            // Gửi thành công thì mới tạo cache
+            Cache::put($cacheKey, $otpCode, now()->addMinutes($cacheTTL));
+        } else return false;
+        return true;
+    }
+    // Gửi qua zalo phone người thân bệnh nhân
+    public function createAndSendOtpZaloPatientRelativePhoneTreatmentFee($patientCode)
+    {
+        $phoneNumber = $this->patientRepository->getByPatientCode($patientCode)->relative_phone ?? null;
+        if (!$phoneNumber) {
+            return false;
+        }
+        $otpCode = rand(100000, 999999);
+        $cacheTTL = $this->otpTTL;
+        $cacheKey = 'OTP_treatment_fee_' . $patientCode;
+
+        if (!Cache::has($cacheKey)) {
+            try {
+                // Test ở local khi bị hạn chế số lượng tin
+                // Cache::put($cacheKey, $otpCode, $cacheTTL);
+                $this->zaloSerivce->sendOtp($phoneNumber, $otpCode);
+            } catch (\Throwable $e) {
+                return false;
+            }
+            // Gửi thành công thì mới tạo cache
+            Cache::put($cacheKey, $otpCode, now()->addMinutes($cacheTTL));
+        } else return false;
+        return true;
+    }
+    // Gửi qua zalo mobile người thân bệnh nhân
+    public function createAndSendOtpZaloPatientRelativeMobileTreatmentFee($patientCode)
+    {
+        $phoneNumber = $this->patientRepository->getByPatientCode($patientCode)->relative_mobile ?? null;
         if (!$phoneNumber) {
             return false;
         }

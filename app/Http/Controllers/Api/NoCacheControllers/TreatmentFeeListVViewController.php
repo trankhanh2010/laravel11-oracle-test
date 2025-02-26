@@ -154,8 +154,29 @@ class TreatmentFeeListVViewController extends BaseApiCacheController
             // Gọi OtpService để xác thực OTP
             $otpVerified = $this->otpService->isOtpTreatmentFeeVerified( $patientCode, $deviceInfo, $ipAddress);
     
+           
             if ($otpVerified) {
                 $paramReturn[$this->authOtpName] = true;
+            }else{
+                // Hàm để giữ 2 ký tự đầu và cuối, còn lại thay bằng dấu *
+                function maskPhone($value) {
+                    if (strlen($value) > 4) {
+                        return substr($value, 0, 2) . str_repeat('*', strlen($value) - 4) . substr($value, -2);
+                    }
+                    return $value; // Nếu độ dài < 4, không thay đổi
+                }
+                // Lọc các trường cần thiết từ mỗi item trong data
+                $filteredData = $data['data']->map(function ($item) {
+                    return [
+                        'patientCode' => $item->patient_code,
+                        'patientPhone' => maskPhone($item->patient_phone),
+                        'patientMobile' => maskPhone($item->patient_mobile),
+                        'patientEmail' => maskPhone($item->patient_email),
+                        'patientRelativePhone' => maskPhone($item->patient_relative_phone),
+                        'patientRelativeMobile' => maskPhone($item->patient_relative_mobile),
+                    ];
+                });
+                $data['data'] = $filteredData;
             }
         }
 

@@ -19,8 +19,7 @@ class OtpController extends Controller
     public function __construct(
         OtpService $otpService,
         ZaloService $zaloSerivce,
-        )
-    {
+    ) {
         $this->otpService = $otpService;
         $this->zaloSerivce = $zaloSerivce;
         $this->maxRequestSendOtpOnday = config('database')['connections']['otp']['otp_max_requests_per_day'];
@@ -29,6 +28,36 @@ class OtpController extends Controller
         $this->otpMaxRequestsVerifyPerOtp = config('database')['connections']['otp']['otp_max_requests_verify_per_otp'];
         $this->otpMaxRequestsPerDay = config('database')['connections']['otp']['otp_max_requests_per_day'];
     }
+    public function sendOtpTreatmentFee(Request $request)
+    {
+        $method = $request->query('method'); // Nhận phương thức gửi OTP từ tham số
+
+        switch ($method) {
+            case 'patient-phone-sms':
+                return $this->sendOtpPhoneTreatmentFee($request);
+            case 'patient-mobile-sms':
+                return $this->sendOtpMobileTreatmentFee($request);
+            case 'patient-mail':
+                return $this->sendOtpMailTreatmentFee($request);
+            case 'patient-phone-zalo':
+                return $this->sendOtpZaloPhoneTreatmentFee($request);
+            case 'patient-mobile-zalo':
+                return $this->sendOtpZaloMobileTreatmentFee($request);
+            case 'patient-relative-phone-sms':
+                return $this->sendOtpPatientRelativePhoneTreatmentFee($request);
+            case 'patient-relative-mobile-sms':
+                return $this->sendOtpPatientRelativeMobileTreatmentFee($request);
+            case 'patient-relative-phone-zalo':
+                return $this->sendOtpZaloPatientRelativePhoneTreatmentFee($request);
+            case 'patient-relative-mobile-zalo':
+                return $this->sendOtpZaloPatientRelativeMobileTreatmentFee($request);
+            default:
+                return returnDataSuccess([], [
+                    'success' => false,
+                ]);
+        }
+    }
+
     public function getTotalRequestVerifyOtp($patientCode)
     {
         $cacheKey = 'total_verify_OTP_treatment_fee_' . $patientCode; // Tránh key quá dài
@@ -217,6 +246,30 @@ class OtpController extends Controller
             'otpTTL' => $this->otpTTL,
         ]);
     }
+    public function sendOtpMobileTreatmentFee(Request $request)
+    {
+        $patientCode = $request->input('patientCode');
+        $checkTotalRequest = $this->checkLimitTotalRequestSendOtp($this->getTotalRequestSendOtp($patientCode));
+        $limitRequest = false;
+        // Đạt giới hạn thì k gửi otp
+        if ($checkTotalRequest) {
+            $limitRequest = true;
+            $data = false;
+        } else {
+            $data = $this->otpService->createAndSendOtpMobileTreatmentFee($patientCode);
+            if ($data) {
+                $this->deleteCacheLimitTotalRequestVerifyOtp($patientCode); // Nếu gửi mã OTP mới thì xóa cache limitRequestVerifyOtp
+                $this->addTotalRequestSendOtp($patientCode); // Nếu gửi mã OTP thì tăng tổng lên 1
+            }
+        }
+        return returnDataSuccess([], [
+            'success' => $data,
+            'limitRequest' => $limitRequest,
+            'otpMaxRequestsPerDay' => $this->otpMaxRequestsPerDay,
+            'otpMaxRequestsVerifyPerOtp' => $this->otpMaxRequestsVerifyPerOtp,
+            'otpTTL' => $this->otpTTL,
+        ]);
+    }
     public function sendOtpPatientRelativePhoneTreatmentFee(Request $request)
     {
         $patientCode = $request->input('patientCode');
@@ -314,7 +367,80 @@ class OtpController extends Controller
         ]);
     }
 
-    public function refreshAccessTokenOtpZalo(){
+    public function sendOtpZaloMobileTreatmentFee(Request $request)
+    {
+        $patientCode = $request->input('patientCode');
+        $checkTotalRequest = $this->checkLimitTotalRequestSendOtp($this->getTotalRequestSendOtp($patientCode));
+        $limitRequest = false;
+        // Đạt giới hạn thì k gửi otp
+        if ($checkTotalRequest) {
+            $limitRequest = true;
+            $data = false;
+        } else {
+            $data = $this->otpService->createAndSendOtpZaloMobileTreatmentFee($patientCode);
+            if ($data) {
+                $this->deleteCacheLimitTotalRequestVerifyOtp($patientCode); // Nếu gửi mã OTP mới thì xóa cache limitRequestVerifyOtp
+                $this->addTotalRequestSendOtp($patientCode); // Nếu gửi mã OTP thì tăng tổng lên 1
+            }
+        }
+        return returnDataSuccess([], [
+            'success' => $data,
+            'limitRequest' => $limitRequest,
+            'otpMaxRequestsPerDay' => $this->otpMaxRequestsPerDay,
+            'otpMaxRequestsVerifyPerOtp' => $this->otpMaxRequestsVerifyPerOtp,
+            'otpTTL' => $this->otpTTL,
+        ]);
+    }
+    public function sendOtpZaloPatientRelativeMobileTreatmentFee(Request $request)
+    {
+        $patientCode = $request->input('patientCode');
+        $checkTotalRequest = $this->checkLimitTotalRequestSendOtp($this->getTotalRequestSendOtp($patientCode));
+        $limitRequest = false;
+        // Đạt giới hạn thì k gửi otp
+        if ($checkTotalRequest) {
+            $limitRequest = true;
+            $data = false;
+        } else {
+            $data = $this->otpService->createAndSendOtpZaloPatientRelativeMobileTreatmentFee($patientCode);
+            if ($data) {
+                $this->deleteCacheLimitTotalRequestVerifyOtp($patientCode); // Nếu gửi mã OTP mới thì xóa cache limitRequestVerifyOtp
+                $this->addTotalRequestSendOtp($patientCode); // Nếu gửi mã OTP thì tăng tổng lên 1
+            }
+        }
+        return returnDataSuccess([], [
+            'success' => $data,
+            'limitRequest' => $limitRequest,
+            'otpMaxRequestsPerDay' => $this->otpMaxRequestsPerDay,
+            'otpMaxRequestsVerifyPerOtp' => $this->otpMaxRequestsVerifyPerOtp,
+            'otpTTL' => $this->otpTTL,
+        ]);
+    }
+    public function sendOtpZaloPatientRelativePhoneTreatmentFee(Request $request)
+    {
+        $patientCode = $request->input('patientCode');
+        $checkTotalRequest = $this->checkLimitTotalRequestSendOtp($this->getTotalRequestSendOtp($patientCode));
+        $limitRequest = false;
+        // Đạt giới hạn thì k gửi otp
+        if ($checkTotalRequest) {
+            $limitRequest = true;
+            $data = false;
+        } else {
+            $data = $this->otpService->createAndSendOtpZaloPatientRelativePhoneTreatmentFee($patientCode);
+            if ($data) {
+                $this->deleteCacheLimitTotalRequestVerifyOtp($patientCode); // Nếu gửi mã OTP mới thì xóa cache limitRequestVerifyOtp
+                $this->addTotalRequestSendOtp($patientCode); // Nếu gửi mã OTP thì tăng tổng lên 1
+            }
+        }
+        return returnDataSuccess([], [
+            'success' => $data,
+            'limitRequest' => $limitRequest,
+            'otpMaxRequestsPerDay' => $this->otpMaxRequestsPerDay,
+            'otpMaxRequestsVerifyPerOtp' => $this->otpMaxRequestsVerifyPerOtp,
+            'otpTTL' => $this->otpTTL,
+        ]);
+    }
+    public function refreshAccessTokenOtpZalo()
+    {
         $data = $this->zaloSerivce->refreshAccessToken();
         return returnDataSuccess([], $data);
     }
@@ -323,7 +449,8 @@ class OtpController extends Controller
     //     $data = $this->zaloSerivce->getAccessAndRefreshToken();
     //     return returnDataSuccess([], $data);
     // }
-    public function setTokenOtpZalo(Request $request){
+    public function setTokenOtpZalo(Request $request)
+    {
         $accessToken = $request->input('access_token');
         $refreshToken = $request->input('refresh_token');
         $this->zaloSerivce->setTokenOtpZalo([
@@ -332,5 +459,5 @@ class OtpController extends Controller
         ]);
         // Xóa cache
         Cache::forget('zalo_config');
-    }   
+    }
 }

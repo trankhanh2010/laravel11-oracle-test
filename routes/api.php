@@ -279,20 +279,8 @@ Route::fallback(function () {
 /// Verify mã OTP
 Route::get('v1/check-otp-treatment-fee', [OtpController::class, 'verifyOtpTreatmentFee'])
     ->withoutMiddleware('check_token');
-// Gửi qua SMS
-Route::get('v1/send-otp-phone-treatment-fee', [OtpController::class, 'sendOtpPhoneTreatmentFee'])
-    ->withoutMiddleware('check_token');
-// Gửi qua SMS phone người thân
-Route::get('v1/send-otp-patient-relative-phone-treatment-fee', [OtpController::class, 'sendOtpPatientRelativePhoneTreatmentFee'])
-    ->withoutMiddleware('check_token');
-// Gửi qua SMS mobile người thân
-Route::get('v1/send-otp-patient-relative-mobile-treatment-fee', [OtpController::class, 'sendOtpPatientRelativeMobileTreatmentFee'])
-    ->withoutMiddleware('check_token');
-// Gửi qua Mail
-Route::get('v1/send-otp-mail-treatment-fee', [OtpController::class, 'sendOtpMailTreatmentFee'])
-    ->withoutMiddleware('check_token');
-// Gửi qua Zalo Phone
-Route::get('v1/send-otp-zalo-phone-treatment-fee', [OtpController::class, 'sendOtpZaloPhoneTreatmentFee'])
+/// Gửi OTP    
+Route::get('v1/send-otp-treatment-fee', [OtpController::class, 'sendOtpTreatmentFee'])
     ->withoutMiddleware('check_token');
 
 // refresh AccessToken OA zalo
