@@ -15,11 +15,11 @@ class PatientType extends Model
         'id',
     ];
     public $timestamps = false;
-    protected $appends = [
-        'treatment_types',
-        'other_pay_sources',
-        'inherit_patient_types'
-    ];
+    // protected $appends = [
+    //     'treatment_types',
+    //     'other_pay_sources',
+    //     'inherit_patient_types'
+    // ];
     public function getTreatmentTypesAttribute()
     {
         $data = TreatmentType::select(['treatment_type_code', 'treatment_type_name'])->whereIn('id', explode(',', $this->treatment_type_ids))->get();

@@ -99,4 +99,8 @@ class SereServ extends Model
     {
         return $this->belongsTo(ServiceUnit::class, 'service_id');
     }
+    public function patient_type()
+    {
+        return $this->belongsTo(PatientType::class, 'patient_type_id');
+    }
 }
