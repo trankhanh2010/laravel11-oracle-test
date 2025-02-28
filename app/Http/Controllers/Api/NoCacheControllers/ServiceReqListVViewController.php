@@ -2,36 +2,36 @@
 
 namespace App\Http\Controllers\Api\NoCacheControllers;
 
-use App\DTOs\TrackingDTO;
+use App\DTOs\ServiceReqListVViewDTO;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
-use App\Http\Requests\Tracking\CreateTrackingRequest;
-use App\Http\Requests\Tracking\UpdateTrackingRequest;
-use App\Models\HIS\Tracking;
+use App\Http\Requests\ServiceReqListVView\CreateServiceReqListVViewRequest;
+use App\Http\Requests\ServiceReqListVView\UpdateServiceReqListVViewRequest;
+use App\Models\View\ServiceReqListVView;
 use App\Services\Elastic\ElasticsearchService;
-use App\Services\Model\TrackingService;
+use App\Services\Model\ServiceReqListVViewService;
 use Illuminate\Http\Request;
 
 
-class TrackingController extends BaseApiCacheController
+class ServiceReqListVViewController extends BaseApiCacheController
 {
-    protected $trackingService;
-    protected $trackingDTO;
-    public function __construct(Request $request, ElasticsearchService $elasticSearchService, TrackingService $trackingService, Tracking $tracking)
+    protected $serviceReqListVViewService;
+    protected $serviceReqListVViewDTO;
+    public function __construct(Request $request, ElasticsearchService $elasticSearchService, ServiceReqListVViewService $serviceReqListVViewService, ServiceReqListVView $serviceReqListVView)
     {
         parent::__construct($request); // Gọi constructor của BaseController
         $this->elasticSearchService = $elasticSearchService;
-        $this->trackingService = $trackingService;
-        $this->tracking = $tracking;
+        $this->serviceReqListVViewService = $serviceReqListVViewService;
+        $this->serviceReqListVView = $serviceReqListVView;
         // Kiểm tra tên trường trong bảng
         if ($this->orderBy != null) {
             $this->orderByJoin = [
             ];
-            $columns = $this->getColumnsTable($this->tracking);
+            $columns = $this->getColumnsTable($this->serviceReqListVView, true);
             $this->orderBy = $this->checkOrderBy($this->orderBy, $columns, $this->orderByJoin ?? []);
         }
         // Thêm tham số vào service
-        $this->trackingDTO = new TrackingDTO(
-            $this->trackingName,
+        $this->serviceReqListVViewDTO = new ServiceReqListVViewDTO(
+            $this->serviceReqListVViewName,
             $this->keyword,
             $this->isActive,
             $this->isDelete,
@@ -45,10 +45,11 @@ class TrackingController extends BaseApiCacheController
             $this->appCreator, 
             $this->appModifier, 
             $this->time,
-            $this->treatmentId,
             $this->groupBy,
+            $this->trackingId,
+            $this->treatmentId,
         );
-        $this->trackingService->withParams($this->trackingDTO);
+        $this->serviceReqListVViewService->withParams($this->serviceReqListVViewDTO);
     }
     public function index()
     {
@@ -58,15 +59,15 @@ class TrackingController extends BaseApiCacheController
         $keyword = $this->keyword;
         if (($keyword != null || $this->elasticSearchType != null) && !$this->cache) {
             if ($this->elasticSearchType != null) {
-                $data = $this->elasticSearchService->handleElasticSearchSearch($this->trackingName);
+                $data = $this->elasticSearchService->handleElasticSearchSearch($this->serviceReqListVViewName);
             } else {
-                $data = $this->trackingService->handleDataBaseSearch();
+                $data = $this->serviceReqListVViewService->handleDataBaseSearch();
             }
         } else {
             if ($this->elastic) {
-                $data = $this->elasticSearchService->handleElasticSearchGetAll($this->trackingName);
+                $data = $this->elasticSearchService->handleElasticSearchGetAll($this->serviceReqListVViewName);
             } else {
-                $data = $this->trackingService->handleDataBaseGetAll();
+                $data = $this->serviceReqListVViewService->handleDataBaseGetAll();
             }
         }
         $paramReturn = [
@@ -87,16 +88,12 @@ class TrackingController extends BaseApiCacheController
             return $this->checkParam();
         }
         if ($id !== null) {
-            $validationError = $this->validateAndCheckId($id, $this->tracking, $this->trackingName);
+            $validationError = $this->validateAndCheckId($id, $this->serviceReqListVView, $this->serviceReqListVViewName);
             if ($validationError) {
                 return $validationError;
             }
         }
-        if ($this->elastic) {
-            $data = $this->elasticSearchService->handleElasticSearchGetWithId($this->trackingName, $id);
-        } else {
-            $data = $this->trackingService->handleDataBaseGetWithId($id);
-        }
+        $data = $this->serviceReqListVViewService->handleDataBaseGetWithId($id);
         $paramReturn = [
             $this->idName => $id,
             $this->isActiveName => $this->isActive,

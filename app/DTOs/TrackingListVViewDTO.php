@@ -2,9 +2,9 @@
 
 namespace App\DTOs;
 
-class TrackingDTO
+class TrackingListVViewDTO
 {
-    public $trackingName;
+    public $trackingListVViewName;
     public $keyword;
     public $isActive;
     public $isDelete;
@@ -21,7 +21,7 @@ class TrackingDTO
     public $treatmentId;
     public $groupBy;
     public function __construct(
-        $trackingName,
+        $trackingListVViewName,
         $keyword, 
         $isActive, 
         $isDelete,
@@ -39,7 +39,7 @@ class TrackingDTO
         $groupBy,
         )
     {
-        $this->trackingName = $trackingName;
+        $this->trackingListVViewName = $trackingListVViewName;
         $this->keyword = $keyword;
         $this->isActive = $isActive;
         $this->isDelete = $isDelete;

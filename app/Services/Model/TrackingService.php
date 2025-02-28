@@ -32,6 +32,8 @@ class TrackingService
             $count = $data->count();
             $data = $this->trackingRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
             $data = $this->trackingRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+            // Group theo field
+            $data = $this->trackingRepository->applyGroupByField($data, $this->params->groupBy);
             return ['data' => $data, 'count' => $count];
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['tracking'], $e);
@@ -46,6 +48,8 @@ class TrackingService
             $count = $data->count();
             $data = $this->trackingRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
             $data = $this->trackingRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+            // Group theo field
+            $data = $this->trackingRepository->applyGroupByField($data, $this->params->groupBy);
             return ['data' => $data, 'count' => $count];
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['tracking'], $e);

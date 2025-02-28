@@ -180,6 +180,7 @@ use App\Http\Controllers\Api\NoCacheControllers\SereServDepositVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\SereServTeinController;
 use App\Http\Controllers\Api\NoCacheControllers\SereServTeinVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\SereServVView4Controller;
+use App\Http\Controllers\Api\NoCacheControllers\ServiceReqListVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\ServiceReqLViewController;
 use App\Http\Controllers\Api\NoCacheControllers\SeseDepoRepayVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TestServiceReqListVView2Controller;
@@ -192,6 +193,7 @@ use App\Http\Controllers\Api\NoCacheControllers\TreatmentLViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TreatmentWithPatientTypeInfoSdoController;
 use App\Http\Controllers\Api\NoCacheControllers\UserRoomVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TestServiceTypeListVViewController;
+use App\Http\Controllers\Api\NoCacheControllers\TrackingListVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TransactionTTDetailVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TransactionListVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TreatmentBedRoomListVViewController;
@@ -1092,5 +1094,8 @@ Route::group([
     Route::apiResource('v1/icd-list-v-view', IcdListVViewController::class)->only(['index', 'show']);
     /// Treatment Room Group
     Route::apiResource('v1/treatment-bed-room-group-v-view', TreatmentRoomGroupVViewController::class)->only(['index', 'show']);
-
+    /// ServiceReqList danh sách y lệnh
+    Route::apiResource('v1/service-req-list-v-view', ServiceReqListVViewController::class)->only(['index', 'show']);
+    /// Tracking List
+    Route::apiResource('v1/tracking-list-v-view', TrackingListVViewController::class)->only(['index', 'show']);
 });

@@ -163,7 +163,7 @@ class TreatmentFeeListVViewController extends BaseApiCacheController
                     if (strlen($value) > 6) {
                         return substr($value, 0, 3) . str_repeat('*', strlen($value) - 6) . substr($value, -3);
                     }
-                    return "******"; // Nếu độ dài < 6, 
+                    return $value; // Nếu độ dài < 6, không thay đổi
                 }
                 // Lọc các trường cần thiết từ mỗi item trong data
                 $filteredData = $data['data']->map(function ($item) {

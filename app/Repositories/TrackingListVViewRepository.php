@@ -2,42 +2,50 @@
 namespace App\Repositories;
 
 use App\Jobs\ElasticSearch\Index\ProcessElasticIndexingJob;
-use App\Models\HIS\Tracking;
-use Illuminate\Support\Carbon;
+use App\Models\View\TrackingListVView;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
-class TrackingRepository
+class TrackingListVViewRepository
 {
-    protected $tracking;
-    public function __construct(Tracking $tracking)
+    protected $trackingListVView;
+    public function __construct(TrackingListVView $trackingListVView)
     {
-        $this->tracking = $tracking;
+        $this->trackingListVView = $trackingListVView;
     }
 
     public function applyJoins()
     {
-        return $this->tracking
-            ->select();
+        return $this->trackingListVView
+            ->select(
+                'v_his_tracking_list.*'
+            );
     }
     public function applyKeywordFilter($query, $keyword)
     {
         return $query->where(function ($query) use ($keyword) {
-            $query->where(DB::connection('oracle_his')->raw('his_tracking.icd_code'), 'like', $keyword . '%')
-                ->orWhere(DB::connection('oracle_his')->raw('his_tracking.icd_name'), 'like', $keyword . '%');
+            $query->where(DB::connection('oracle_his')->raw('v_his_tracking_list.tracking_list_code'), 'like', '%'. $keyword . '%')
+            ->orWhere(DB::connection('oracle_his')->raw('lower(v_his_tracking_list.tracking_list_name)'), 'like', '%'. strtolower($keyword) . '%');
         });
     }
     public function applyIsActiveFilter($query, $isActive)
     {
         if ($isActive !== null) {
-            $query->where(DB::connection('oracle_his')->raw('his_tracking.is_active'), $isActive);
+            $query->where(DB::connection('oracle_his')->raw('v_his_tracking_list.is_active'), $isActive);
+        }
+        return $query;
+    }
+    public function applyIsDeleteFilter($query, $isDelete)
+    {
+        if ($isDelete !== null) {
+            $query->where(DB::connection('oracle_his')->raw('v_his_tracking_list.is_delete'), $isDelete);
         }
         return $query;
     }
     public function applyTreatmentIdFilter($query, $param)
     {
         if ($param !== null) {
-            $query->where(DB::connection('oracle_his')->raw('his_tracking.treatment_id'), $param);
+            $query->where(DB::connection('oracle_his')->raw('v_his_tracking_list.treatment_id'), $param);
         }
         return $query;
     }
@@ -93,7 +101,7 @@ class TrackingRepository
             foreach ($orderBy as $key => $item) {
                 if (in_array($key, $orderByJoin)) {
                 } else {
-                    $query->orderBy('his_tracking.' . $key, $item);
+                    $query->orderBy('v_his_tracking_list.' . $key, $item);
                 }
             }
         }
@@ -102,6 +110,7 @@ class TrackingRepository
     }
     public function fetchData($query, $getAll, $start, $limit)
     {
+        // dd($query->toSql());
         if ($getAll) {
             // Lấy tất cả dữ liệu
             return $query->get();
@@ -115,53 +124,52 @@ class TrackingRepository
     }
     public function getById($id)
     {
-        return $this->tracking->find($id);
+        return $this->trackingListVView->find($id);
     }
-    public function create($request, $time, $appCreator, $appModifier){
-        $data = $this->tracking::create([
-            'create_time' => now()->format('Ymdhis'),
-            'modify_time' => now()->format('Ymdhis'),
-            'creator' => get_loginname_with_token($request->bearerToken(), $time),
-            'modifier' => get_loginname_with_token($request->bearerToken(), $time),
-            'app_creator' => $appCreator,
-            'app_modifier' => $appModifier,
-            'is_active' => 1,
-            'is_delete' => 0,
-            'tracking_code' => $request->tracking_code,
-            'tracking_name' => $request->tracking_name,
-        ]);
-        return $data;
-    }
-    public function update($request, $data, $time, $appModifier){
-        $data->update([
-            'modify_time' => now()->format('Ymdhis'),
-            'modifier' => get_loginname_with_token($request->bearerToken(), $time),
-            'app_modifier' => $appModifier,
-            'tracking_code' => $request->tracking_code,
-            'tracking_name' => $request->tracking_name,
-            'is_active' => $request->is_active
-        ]);
-        return $data;
-    }
-    public function delete($data){
-        $data->delete();
-        return $data;
-    }
+    // public function create($request, $time, $appCreator, $appModifier){
+    //     $data = $this->trackingListVView::create([
+    //         'create_time' => now()->format('Ymdhis'),
+    //         'modify_time' => now()->format('Ymdhis'),
+    //         'creator' => get_loginname_with_token($request->bearerToken(), $time),
+    //         'modifier' => get_loginname_with_token($request->bearerToken(), $time),
+    //         'app_creator' => $appCreator,
+    //         'app_modifier' => $appModifier,
+    //         'is_active' => 1,
+    //         'is_delete' => 0,
+    //         'tracking_list_v_view_code' => $request->tracking_list_v_view_code,
+    //         'tracking_list_v_view_name' => $request->tracking_list_v_view_name,
+    //     ]);
+    //     return $data;
+    // }
+    // public function update($request, $data, $time, $appModifier){
+    //     $data->update([
+    //         'modify_time' => now()->format('Ymdhis'),
+    //         'modifier' => get_loginname_with_token($request->bearerToken(), $time),
+    //         'app_modifier' => $appModifier,
+    //         'tracking_list_v_view_code' => $request->tracking_list_v_view_code,
+    //         'tracking_list_v_view_name' => $request->tracking_list_v_view_name,
+    //         'is_active' => $request->is_active
+    //     ]);
+    //     return $data;
+    // }
+    // public function delete($data){
+    //     $data->delete();
+    //     return $data;
+    // }
     public function getDataFromDbToElastic($batchSize = 5000, $id = null)
     {
         $numJobs = config('queue')['num_queue_worker']; // Số lượng job song song
         if ($id != null) {
-            $data = $this->applyJoins()->where('his_tracking.id', '=', $id)->first();
+            $data = $this->applyJoins()->where('v_his_tracking_list.id', '=', $id)->first();
             if ($data) {
                 $data = $data->getAttributes();
                 return $data;
             }
         } else {
             // Xác định min và max id
-            $minId = $this->applyJoins()->min('his_tracking.id');
-            $maxId = $this->applyJoins()->max('his_tracking.id');
+            $minId = $this->applyJoins()->min('v_his_tracking_list.id');
+            $maxId = $this->applyJoins()->max('v_his_tracking_list.id');
             $chunkSize = ceil(($maxId - $minId + 1) / $numJobs);
-    
             for ($i = 0; $i < $numJobs; $i++) {
                 $startId = $minId + ($i * $chunkSize);
                 $endId = $startId + $chunkSize - 1;
@@ -170,7 +178,7 @@ class TrackingRepository
                     $endId = $maxId;
                 }
                 // Dispatch job cho mỗi phạm vi id
-                ProcessElasticIndexingJob::dispatch('tracking', 'his_tracking', $startId, $endId, $batchSize);
+                ProcessElasticIndexingJob::dispatch('tracking_list_v_view', 'v_his_tracking_list', $startId, $endId, $batchSize);
             }
         }
     }

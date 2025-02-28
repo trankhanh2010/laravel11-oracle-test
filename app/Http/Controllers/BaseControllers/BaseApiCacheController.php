@@ -32,6 +32,7 @@ use App\Models\HIS\ServiceReqType;
 use Illuminate\Http\Request;
 use App\Models\HIS\ServiceType;
 use App\Models\HIS\TestIndex;
+use App\Models\HIS\Tracking;
 use App\Models\HIS\Transaction;
 use App\Models\HIS\TransactionType;
 use App\Models\HIS\Treatment;
@@ -211,6 +212,8 @@ class BaseApiCacheController extends Controller
     protected $testServiceTypeIdName = 'TestServiceTypeId';
     protected $treatmentId;
     protected $treatmentIdName = 'TreatmentId';
+    protected $trackingId;
+    protected $trackingIdName = 'TrackingIdId';
     protected $treatmentCode;
     protected $treatmentCodeName = 'TreatmentCode';
     protected $departmentIds;
@@ -278,6 +281,10 @@ class BaseApiCacheController extends Controller
     protected $branchName = "branch";
     protected $treatmentBedRoomLView;
     protected $treatmentBedRoomLViewName = 'treatment_bed_room_l_view';
+    protected $serviceReqListVView;
+    protected $serviceReqListVViewName = 'service_req_list_v_view';
+    protected $trackingListVView;
+    protected $trackingListVViewName = 'tracking_list_v_view';
     protected $district;
     protected $districtName = "district";
     protected $mediStock;
@@ -1462,12 +1469,12 @@ class BaseApiCacheController extends Controller
             }
         }
         $this->groupBy = $this->paramRequest['ApiData']['GroupBy'] ?? null;
-        if($this->groupBy !== null){
-            if (!is_string ($this->groupBy)) {
-                $this->errors[$this->groupByName] = $this->messFormat;
-                $this->groupBy = null;
-            }
+
+        if ($this->groupBy !== null && !is_array($this->groupBy)) {
+            $this->errors[$this->groupByName] = $this->messFormat;
+            $this->groupBy = null;
         }
+        
         $this->debateId = $this->paramRequest['ApiData']['DebateId'] ?? null;
         if ($this->debateId != null) {
             // Kiểm tra xem ID có tồn tại trong bảng  hay không
@@ -1866,6 +1873,19 @@ class BaseApiCacheController extends Controller
                 if (!Treatment::where('id', $this->treatmentId)->exists()) {
                     $this->errors[$this->treatmentIdName] = $this->messRecordId;
                     $this->treatmentId = null;
+                }
+            }
+        }
+        $this->trackingId = $this->paramRequest['ApiData']['TrackingId'] ?? null;
+        if ($this->trackingId !== null) {
+            // Kiểm tra xem ID có tồn tại trong bảng  hay không
+            if (!is_numeric($this->trackingId)) {
+                $this->errors[$this->trackingIdName] = $this->messFormat;
+                $this->trackingId = null;
+            } else {
+                if (!Tracking::where('id', $this->trackingId)->exists()) {
+                    $this->errors[$this->trackingIdName] = $this->messRecordId;
+                    $this->trackingId = null;
                 }
             }
         }
