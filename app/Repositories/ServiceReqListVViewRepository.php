@@ -25,7 +25,10 @@ class ServiceReqListVViewRepository
     public function applyWithParam($query)
     {
         return $query->with([
-            'sere_serv:id,service_req_id,service_id,tdl_service_code,tdl_service_name',
+            'sere_serv:id,service_req_id,service_id,tdl_service_code,tdl_service_name,amount',
+            'sere_serv.services:id,service_code,service_name,service_unit_id,default_patient_type_id',
+            'sere_serv.services.service_unit:id,service_unit_code,service_unit_name',
+            'sere_serv.services.default_patient_type:id,patient_type_code,patient_type_name',
         ]);
     }
 

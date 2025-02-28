@@ -95,8 +95,8 @@ class SereServ extends Model
     {
         return $this->hasMany(ExpMestMedicine::class, 'tdl_service_req_id', 'service_req_id');
     }
-    // public function service_unit()
-    // {
-    //     return $this->belongsTo(ServiceUnit::class, 'service_id');
-    // }
+    public function service_unit()
+    {
+        return $this->belongsTo(ServiceUnit::class, 'service_id');
+    }
 }

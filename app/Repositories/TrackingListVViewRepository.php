@@ -48,7 +48,7 @@ class TrackingListVViewRepository
             $query->where(DB::connection('oracle_his')->raw('v_his_tracking_list.treatment_id'), $param);
         }
         return $query;
-    }
+    }  
     public function applyGroupByField($data, $groupByFields = [])
     {
         if (empty($groupByFields)) {
@@ -76,10 +76,10 @@ class TrackingListVViewRepository
             return $items->groupBy(function ($item) use ($currentField) {
                 if ($currentField === 'tracking_time' && !empty($item[$currentField])) {
                     $value = $item[$currentField];
-    
-                    // Nếu là chuỗi, cắt bỏ phần giây (chỉ lấy đến phút)
-                    if (is_string($value) && strlen($value) >= 12) {
-                        return substr($value, 0, 12) . '00';
+                
+                    // Nếu là chuỗi và có đủ 8 ký tự trở lên (YYYYMMDDhhmmss)
+                    if (is_string($value) && strlen($value) >= 8) {
+                        return substr($value, 0, 8) . '000000'; // Chỉ giữ lại YYYYMMDD và thay hhmmss thành 000000
                     }
                 }
                 return $item[$currentField] ?? null;
