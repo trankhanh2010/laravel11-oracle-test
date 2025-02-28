@@ -2,9 +2,9 @@
 
 namespace App\DTOs;
 
-class SereServListVViewDTO
+class SereServDetailVViewDTO
 {
-    public $sereServListVViewName;
+    public $sereServDetailVViewName;
     public $keyword;
     public $isActive;
     public $isDelete;
@@ -18,14 +18,8 @@ class SereServListVViewDTO
     public $appCreator;
     public $appModifier;
     public $time;
-    public $treatmentId;
-    public $trackingId;
-    public $serviceReqId;
-    public $groupBy;
-    public $notInTracking;
-
     public function __construct(
-        $sereServListVViewName,
+        $sereServDetailVViewName,
         $keyword, 
         $isActive, 
         $isDelete,
@@ -39,14 +33,9 @@ class SereServListVViewDTO
         $appCreator,
         $appModifier,
         $time,
-        $treatmentId,
-        $trackingId,
-        $serviceReqId,
-        $groupBy,
-        $notInTracking,
         )
     {
-        $this->sereServListVViewName = $sereServListVViewName;
+        $this->sereServDetailVViewName = $sereServDetailVViewName;
         $this->keyword = $keyword;
         $this->isActive = $isActive;
         $this->isDelete = $isDelete;
@@ -60,10 +49,5 @@ class SereServListVViewDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
-        $this->treatmentId = $treatmentId;
-        $this->trackingId = $trackingId;
-        $this->serviceReqId = $serviceReqId;
-        $this->groupBy = $groupBy;
-        $this->notInTracking = $notInTracking;
     }
 }

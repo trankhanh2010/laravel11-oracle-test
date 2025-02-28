@@ -154,6 +154,17 @@ return [
             'charset' => 'AL32UTF8',
             'prefix' => '',
         ],
+        'oracle_sar' => [
+            'driver' => 'oracle',
+            'host' => env('DB_SAR_HOST', '192.168.101.251'),
+            'port' => env('DB_SAR_PORT', '1521'),
+            'database' => env('DB_SAR_DATABASE', 'oracletest'),
+            'username' => env('DB_SAR_USERNAME', 'SAR_RS'),
+            'password' => env('DB_SAR_PASSWORD', 'SAR_RS'),
+            'service_name' => env('DB_SAR_SERVICE_NAME', 'orcl'),
+            'charset' => 'AL32UTF8',
+            'prefix' => '',
+        ],
         'elasticsearch' => [
             'bulk' => [
                 'max_batch_size_mb' => env('ELASTICSEARCH_MAX_BATCH_SIZE_MB'),

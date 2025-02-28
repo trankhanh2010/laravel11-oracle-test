@@ -25,10 +25,11 @@ class ServiceReqListVViewRepository
     public function applyWithParam($query)
     {
         return $query->with([
-            'sere_serv:id,service_req_id,service_id,tdl_service_code,tdl_service_name,amount,patient_type_id',
+            'sere_serv:id,service_req_id,service_id,tdl_service_code,tdl_service_name,amount,patient_type_id,exp_mest_medicine_id',
             'sere_serv.services:id,service_code,service_name,service_unit_id',
             'sere_serv.services.service_unit:id,service_unit_code,service_unit_name',
             'sere_serv.patient_type:id,patient_type_code,patient_type_name',
+            'sere_serv.exp_mest_medicine:id,tutorial',
         ]);
     }
 
@@ -95,7 +96,7 @@ class ServiceReqListVViewRepository
                 return $item[$currentField] ?? null;
             })->map(function ($group, $key) use ($fields, $groupData, $originalField) {
                 return [
-                    $originalField => $key, // Hiển thị tên gốc
+                    $originalField => (string)$key, // Hiển thị tên gốc
                     'total' => $group->count(),
                     'data' => $groupData($group, $fields),
                 ];

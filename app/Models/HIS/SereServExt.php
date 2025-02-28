@@ -2,6 +2,7 @@
 
 namespace App\Models\HIS;
 
+use App\Models\SAR\SarPrint;
 use App\Traits\dinh_dang_ten_truong;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -14,4 +15,8 @@ class SereServExt extends Model
     protected $fillable = [
 
     ];
+    public function sar_print()
+    {
+        return $this->belongsTo(SarPrint::class, 'description_sar_print_id');
+    }
 }

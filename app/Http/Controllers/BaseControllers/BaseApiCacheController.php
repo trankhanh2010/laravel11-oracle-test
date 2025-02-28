@@ -226,6 +226,8 @@ class BaseApiCacheController extends Controller
     protected $statusName = 'Status';
     protected $patientPhone;
     protected $patientPhoneName = 'PatientPhone';
+    protected $notInTracking;
+    protected $notInTrackingName = 'NotInTracking';
     protected $hasExecute;
     protected $hasExecuteName = 'HasExecute';
     protected $intructionTimeTo;
@@ -319,6 +321,8 @@ class BaseApiCacheController extends Controller
     protected $serviceName = "service";
     protected $sereServVView4;
     protected $sereServVView4Name = 'sere_serv_v_view_4';
+    protected $sereServDetailVView;
+    protected $sereServDetailVViewName = 'sere_serv_detail_v_view';
     protected $servicePaty;
     protected $servicePatyName = 'service_paty';
     protected $serviceMachine;
@@ -1300,6 +1304,13 @@ class BaseApiCacheController extends Controller
             if (!is_bool($this->isInRoom)) {
                 $this->errors[$this->isInRoomName] = $this->messFormat;
                 $this->isInRoom = null;
+            }
+        }
+        $this->notInTracking = $this->paramRequest['ApiData']['NotInTracking'] ?? null;
+        if($this->notInTracking !== null){
+            if (!is_bool($this->notInTracking)) {
+                $this->errors[$this->notInTrackingName] = $this->messFormat;
+                $this->notInTracking = null;
             }
         }
         $this->isInBed = $this->paramRequest['ApiData']['IsInBed'] ?? null;

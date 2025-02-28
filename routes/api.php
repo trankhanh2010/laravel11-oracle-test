@@ -177,6 +177,7 @@ use App\Http\Controllers\Api\NoCacheControllers\RoomVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\SereServBillController;
 use App\Http\Controllers\Api\NoCacheControllers\SereServController;
 use App\Http\Controllers\Api\NoCacheControllers\SereServDepositVViewController;
+use App\Http\Controllers\Api\NoCacheControllers\SereServDetailVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\SereServListVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\SereServTeinController;
 use App\Http\Controllers\Api\NoCacheControllers\SereServTeinVViewController;
@@ -1101,4 +1102,6 @@ Route::group([
     Route::apiResource('v1/tracking-list-v-view', TrackingListVViewController::class)->only(['index', 'show']);
     /// SereServ List
     Route::apiResource('v1/sere-serv-list-v-view', SereServListVViewController::class)->only(['index', 'show']);
+    /// SereServ Detail
+    Route::apiResource('v1/sere-serv-detail-v-view', SereServDetailVViewController::class)->only(['show']);
 });

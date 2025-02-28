@@ -56,6 +56,13 @@ class SereServListVViewRepository
         }
         return $query;
     }
+    public function applyNotInTrackingFilter($query, $param)
+    {
+        if ($param == true) {
+            $query->whereNull(DB::connection('oracle_his')->raw('v_his_sere_serv_list.tracking_id'));
+        }
+        return $query;
+    }
     public function applyServiceReqIdFilter($query, $param)
     {
         if ($param !== null) {
@@ -82,7 +89,7 @@ class SereServListVViewRepository
         if (empty($groupByFields)) {
             return $data;
         }
-    
+
         // Chuyển các field thành snake_case trước khi nhóm
         $fieldMappings = [];
         foreach ($groupByFields as $field) {
@@ -105,7 +112,7 @@ class SereServListVViewRepository
                 return $item[$currentField] ?? null;
             })->map(function ($group, $key) use ($fields, $groupData, $originalField) {
                 return [
-                    $originalField => $key, // Hiển thị tên gốc
+                    $originalField => (string)$key, // Hiển thị tên gốc
                     'total' => $group->count(),
                     'data' => $groupData($group, $fields),
                 ];

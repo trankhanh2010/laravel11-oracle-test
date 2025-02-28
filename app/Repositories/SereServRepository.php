@@ -83,21 +83,21 @@ class SereServRepository
     }
     public function paramWith(){
         return [
-            'exp_mest_bloods:id,tdl_service_req_id',
-            'exp_mest_materials:id,tdl_service_req_id',
-            'exp_mest_medicines:id,tdl_service_req_id',
-            'sereServBills:id,tdl_service_req_id',
-            'sere_serv_debts:id,sere_serv_id',
-            'sereServDeposits:id,sere_serv_id',
-            'sere_serv_files:id,sere_serv_id',
-            'sere_serv_matys:id,sere_serv_id',
-            'sere_serv_pttts:id,sere_serv_id',
-            'sere_serv_rehas:id,sere_serv_id',
-            'sere_serv_suins:id,sere_serv_id',
-            'sere_serv_teins:id,sere_serv_id',
-            'service_change_reqs:id,sere_serv_id',
-            'sese_depo_repays:id,tdl_service_req_id',
-            'sese_trans_reqs:id,sere_serv_id',
+            'exp_mest_bloods',
+            'exp_mest_materials',
+            'exp_mest_medicine',
+            'sereServBills',
+            'sere_serv_debts',
+            'sereServDeposits',
+            'sere_serv_files',
+            'sere_serv_matys',
+            'sere_serv_pttts',
+            'sere_serv_rehas',
+            'sere_serv_suins',
+            'sere_serv_teins',
+            'service_change_reqs',
+            'sese_depo_repays',
+            'sese_trans_reqs',
         ];
     }
     public function view()

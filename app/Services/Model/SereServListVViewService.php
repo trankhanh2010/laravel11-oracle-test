@@ -32,6 +32,7 @@ class SereServListVViewService
             $data = $this->sereServListVViewRepository->applyTrackingIdFilter($data, $this->params->trackingId);
             $data = $this->sereServListVViewRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
             $data = $this->sereServListVViewRepository->applyServiceReqIdFilter($data, $this->params->serviceReqId);
+            $data = $this->sereServListVViewRepository->applyNotInTrackingFilter($data, $this->params->notInTracking);
 
             $count = $data->count();
             $data = $this->sereServListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
@@ -52,6 +53,8 @@ class SereServListVViewService
             $data = $this->sereServListVViewRepository->applyTrackingIdFilter($data, $this->params->trackingId);
             $data = $this->sereServListVViewRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
             $data = $this->sereServListVViewRepository->applyServiceReqIdFilter($data, $this->params->serviceReqId);
+            $data = $this->sereServListVViewRepository->applyNotInTrackingFilter($data, $this->params->notInTracking);
+            
             $count = $data->count();
             $data = $this->sereServListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
             $data = $this->sereServListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);

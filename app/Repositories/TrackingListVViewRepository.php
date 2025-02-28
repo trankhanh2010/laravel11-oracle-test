@@ -85,7 +85,7 @@ class TrackingListVViewRepository
                 return $item[$currentField] ?? null;
             })->map(function ($group, $key) use ($fields, $groupData, $originalField) {
                 return [
-                    $originalField => $key, // Hiển thị tên gốc
+                    $originalField => (string)$key, // Hiển thị tên gốc
                     'total' => $group->count(),
                     'data' => $groupData($group, $fields),
                 ];
