@@ -389,6 +389,8 @@ class BaseApiCacheController extends Controller
     protected $mestPatientTypeName = 'mest_patient_type';
     protected $patientTypeAlterVView;
     protected $patientTypeAlterVViewName = 'patient_type_alter_v_view';
+    protected $sereServListVView;
+    protected $sereServListVViewName = 'sere_serv_list_v_view';
     protected $mediStockMetyList;
     protected $mediStockMetyListName = 'medi_stock_mety';
     protected $user;
