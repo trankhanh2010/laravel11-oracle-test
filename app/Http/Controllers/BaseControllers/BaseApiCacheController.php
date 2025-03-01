@@ -433,6 +433,8 @@ class BaseApiCacheController extends Controller
     protected $bhytParamName = 'bhyt_param';
     protected $serviceReqLView;
     protected $serviceReqLViewName = 'service_req_l_view';
+    protected $sereServTeinListVView;
+    protected $sereServTeinListVViewName = 'sere_serv_tein_list_v_view';
     protected $groupType;
     protected $groupTypeName = 'group_type';
     protected $bhytBlacklist;

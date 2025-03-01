@@ -24,7 +24,13 @@ class SereServDetailVViewRepository
     {
         return $query->with([
             'exp_mest_medicine', // TH thuốc
-            'sere_serv_teins', // XN Xét nghiệm
+
+            'service_req:id,conclusion_clinical,conclusion_subclinical,conclusion', // XN Xét nghiệm
+            'service_req.sere_serv_details:id,service_req_id,tdl_service_code,tdl_service_name,is_no_execute',
+            'service_req.sere_serv_details.sere_serv_teins:id,sere_serv_id,test_index_id,value,result_code,description,result_description', 
+            'service_req.sere_serv_details.sere_serv_teins.test_index:id,test_index_code,test_index_name,test_index_unit_id',
+            'service_req.sere_serv_details.sere_serv_teins.test_index.test_index_unit:id,test_index_unit_code,test_index_unit_name,test_index_unit_symbol',
+            
             'sere_serv_exts', // TT thủ thuật, PT phẫu thuật
             'sere_serv_exts.sar_print', // HA hình ảnh, SA siêu âm, CN thăm dò chức năng, NS nội soi
             'sere_serv_pttts', // PT phẫu thuật

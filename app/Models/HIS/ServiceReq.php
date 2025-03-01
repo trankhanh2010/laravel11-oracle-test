@@ -2,6 +2,7 @@
 
 namespace App\Models\HIS;
 
+use App\Models\View\SereServDetailVView;
 use App\Traits\dinh_dang_ten_truong;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -69,6 +70,10 @@ class ServiceReq extends Model
     public function sere_servs()
     {
         return $this->hasMany(SereServ::class);
+    }
+    public function sere_serv_details()
+    {
+        return $this->hasMany(SereServDetailVView::class,'service_req_id','id');
     }
     public function sere_serv_exts()
     {

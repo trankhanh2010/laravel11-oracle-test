@@ -428,6 +428,7 @@ return [
             'tracking_list_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm TrackingList!',
             'sere_serv_list_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm SereServList!',
             'sere_serv_detail_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm SereServDetail!',
+            'sere_serv_tein_list_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm SereServTeinList!',
 
         ],
         'table' => [

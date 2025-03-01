@@ -8,6 +8,7 @@ use App\Models\HIS\SereServFile;
 use App\Models\HIS\SereServMaty;
 use App\Models\HIS\SereServPttt;
 use App\Models\HIS\SereServTein;
+use App\Models\HIS\ServiceReq;
 use App\Traits\dinh_dang_ten_truong;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -43,6 +44,10 @@ class SereServDetailVView extends Model
     }
     public function sere_serv_teins()
     {
-        return $this->hasMany(SereServTein::class,'tdl_service_req_id','service_req_id', );
+        return $this->hasMany(SereServTein::class,'sere_serv_id');
+    }
+    public function service_req()
+    {
+        return $this->belongsTo(ServiceReq::class);
     }
 }
