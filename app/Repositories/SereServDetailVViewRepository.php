@@ -23,13 +23,18 @@ class SereServDetailVViewRepository
     public function applyWithParam($query)
     {
         return $query->with([
-            'exp_mest_medicine',
-            'sere_serv_teins',
-            'sere_serv_exts',
-            'sere_serv_exts.sar_print',
-            'sere_serv_files',
-            'sere_serv_matys',
-            'sere_serv_pttts',
+            'exp_mest_medicine', // TH thuốc
+            'sere_serv_teins', // XN Xét nghiệm
+            'sere_serv_exts', // TT thủ thuật, PT phẫu thuật
+            'sere_serv_exts.sar_print', // HA hình ảnh, SA siêu âm, CN thăm dò chức năng, NS nội soi
+            'sere_serv_pttts', // PT phẫu thuật
+            'sere_serv_pttts.pttt_group',
+            'sere_serv_pttts.pttt_method',
+            'sere_serv_pttts.pttt_condition',
+            'sere_serv_pttts.pttt_catastrophe',
+            'sere_serv_pttts.pttt_high_tech',
+            'sere_serv_pttts.pttt_priority',
+            'sere_serv_pttts.pttt_table',
         ]);
     }
     public function applyKeywordFilter($query, $keyword)

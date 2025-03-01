@@ -21,6 +21,30 @@ class SereServPttt extends Model
 
     public function pttt_group()
     {
-        return $this->belongsTo(ServSegr::class, 'pttt_group_id');
+        return $this->belongsTo(PtttGroup::class, 'pttt_group_id');
+    }
+    public function pttt_method()
+    {
+        return $this->belongsTo(PtttMethod::class, 'pttt_method_id');
+    }
+    public function pttt_condition()
+    {
+        return $this->belongsTo(PtttCondition::class, 'pttt_condition_id');
+    }
+    public function pttt_catastrophe()
+    {
+        return $this->belongsTo(PtttCatastrophe::class, 'pttt_catastrophe_id');
+    }
+    public function pttt_high_tech()
+    {
+        return $this->belongsTo(PtttHighTech::class, 'pttt_high_tech_id');
+    }
+    public function pttt_priority()
+    {
+        return $this->belongsTo(PtttPriority::class, 'pttt_priority_id');
+    }
+    public function pttt_table()
+    {
+        return $this->belongsTo(PtttTable::class, 'pttt_table_id');
     }
 }
