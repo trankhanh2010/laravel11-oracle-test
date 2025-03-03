@@ -26,7 +26,7 @@ class SereServ extends Model
     {
         return $this->hasMany(SereServDeposit::class);
     }
-    public function services()
+    public function service()
     {
         return $this->belongsTo(Service::class, 'service_id');
     }

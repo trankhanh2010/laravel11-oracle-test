@@ -15,4 +15,9 @@ class SarPrint extends Model
     protected $guarded = [
         'id',
     ];
+    // Mã hóa Base64 trước khi trả về frontend
+    public function getContentAttribute($value)
+    {
+        return base64_encode($value);
+    }
 }

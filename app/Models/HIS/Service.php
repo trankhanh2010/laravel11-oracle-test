@@ -44,14 +44,14 @@ class Service extends Model
     //     'total_time_except_paty_ids',
     //     'service_code',
     // ];
-    protected $appends = [
-        'body_parts',
-        'applied_patient_types',
-        'applied_patient_classifys',
-        'min_proc_time_except_patys',
-        'max_proc_time_except_patys',
-        'total_time_except_patys',
-    ];
+    // protected $appends = [
+    //     'body_parts',
+    //     'applied_patient_types',
+    //     'applied_patient_classifys',
+    //     'min_proc_time_except_patys',
+    //     'max_proc_time_except_patys',
+    //     'total_time_except_patys',
+    // ];
     public function getBodyPartsAttribute()
     {
         if($this->body_part_ids != null){

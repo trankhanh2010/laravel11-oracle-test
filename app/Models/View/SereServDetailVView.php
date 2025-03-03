@@ -2,13 +2,17 @@
 
 namespace App\Models\View;
 
+use App\Models\HIS\EkipUser;
 use App\Models\HIS\ExpMestMedicine;
+use App\Models\HIS\SereServ;
 use App\Models\HIS\SereServExt;
 use App\Models\HIS\SereServFile;
 use App\Models\HIS\SereServMaty;
 use App\Models\HIS\SereServPttt;
 use App\Models\HIS\SereServTein;
+use App\Models\HIS\Service;
 use App\Models\HIS\ServiceReq;
+use App\Models\HIS\ServiceReqMaty;
 use App\Traits\dinh_dang_ten_truong;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -34,6 +38,10 @@ class SereServDetailVView extends Model
     {
         return $this->hasMany(SereServMaty::class,'sere_serv_id');
     }
+    public function service_req_matys()
+    {
+        return $this->hasMany(ServiceReqMaty::class,'service_req_id');
+    }
     public function sere_serv_pttts()
     {
         return $this->hasMany(SereServPttt::class,'sere_serv_id');
@@ -49,5 +57,17 @@ class SereServDetailVView extends Model
     public function service_req()
     {
         return $this->belongsTo(ServiceReq::class);
+    }
+    public function ekip_user()
+    {
+        return $this->hasMany(EkipUser::class, 'ekip_id', 'ekip_id');
+    }
+    public function service()
+    {
+        return $this->belongsTo(Service::class);
+    }
+    public function sere_serv_childrens()
+    {
+        return $this->hasMany(SereServ::class, 'parent_id', 'id');
     }
 }

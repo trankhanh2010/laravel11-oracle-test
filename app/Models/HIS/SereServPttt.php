@@ -47,4 +47,32 @@ class SereServPttt extends Model
     {
         return $this->belongsTo(PtttTable::class, 'pttt_table_id');
     }
+    public function emotionless_method()
+    {
+        return $this->belongsTo(EmotionlessMethod::class, 'emotionless_method_id');
+    }
+    public function emotionless_method_second()
+    {
+        return $this->belongsTo(EmotionlessMethod::class, 'emotionless_method_second_id');
+    }
+    public function real_pttt_method()
+    {
+        return $this->belongsTo(PtttMethod::class, 'real_pttt_method_id');
+    }
+    public function emotionless_result()
+    {
+        return $this->belongsTo(EmotionlessResult::class, 'emotionless_result_id');
+    }
+    public function death_within()
+    {
+        return $this->belongsTo(DeathWithin::class, 'DEATH_WITHIN_id');
+    }
+    public function blood_rh()
+    {
+        return $this->belongsTo(BloodRh::class, 'blood_rh_id');
+    }
+    public function blood_abo()
+    {
+        return $this->belongsTo(BloodAbo::class, 'blood_abo_id');
+    }
 }

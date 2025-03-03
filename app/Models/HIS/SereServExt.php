@@ -19,4 +19,12 @@ class SereServExt extends Model
     {
         return $this->belongsTo(SarPrint::class, 'description_sar_print_id');
     }
+    public function machine()
+    {
+        return $this->belongsTo(Machine::class, 'machine_id');
+    }
+    public function film_size()
+    {
+        return $this->belongsTo(FilmSize::class, 'film_size_id');
+    }
 }
