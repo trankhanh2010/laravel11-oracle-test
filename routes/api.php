@@ -244,6 +244,7 @@ use App\Http\Controllers\Api\TransactionControllers\TreatmentFeePayMentControlle
 use App\Http\Controllers\Api\TransactionControllers\MoMoController;
 use App\Http\Controllers\Api\ValidateControllers\DeviceGetOtpController;
 use App\Http\Controllers\Api\ValidateControllers\OtpController;
+use App\Http\Controllers\BaseControllers\ConvertController;
 
 /*
 |--------------------------------------------------------------------------
@@ -320,6 +321,8 @@ Route::group([
 ], function () {
     /// Redis
     Route::get('v1/redis-ping', [RedisController::class, "ping"])->name('.redis_ping');
+    Route::get('v1/convert-sar-print-to-word/{id}', [ConvertController::class, "convertSarPrintToWord"])->name('.convert_sar_print_to_word');
+
     /// Telegram
     Route::get('v1/updated-activity', [TelegramController::class, "updated_activity"])->name('.updated_activity');
     Route::get('v1/test-send-mess-to-chanel-telegram', [TelegramController::class, "testSendMessToChanelTelegram"])->name('.test_send_mess_to_chanel_telegram');

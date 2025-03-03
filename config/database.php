@@ -224,6 +224,9 @@ return [
             'zalo_app_id' => env('ZALO_APP_ID',''),
             'zalo_app_secret_key' => env('ZALO_APP_SECRET_KEY',''),
         ],
+        'libre_office' => [
+            'libre_office_path' => env('LIBRE_OFFICE_PATH',''),
+        ],
     ],
 
     /*
