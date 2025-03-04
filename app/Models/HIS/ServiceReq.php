@@ -93,6 +93,6 @@ class ServiceReq extends Model
     }
     public function machine()
     {
-        return $this->belongsTo(machine::class);
+        return $this->belongsTo(Machine::class);
     }
 }
