@@ -13,6 +13,7 @@ use App\Events\Elastic\Area\CreateAreaIndex;
 use App\Events\Elastic\Atc\CreateAtcIndex;
 use App\Events\Elastic\AtcGroup\CreateAtcGroupIndex;
 use App\Events\Elastic\Awareness\CreateAwarenessIndex;
+use App\Repositories\DocumentTypeRepository;
 use Illuminate\Console\Command;
 use App\Events\Elastic\Bed\CreateBedIndex;
 use App\Events\Elastic\BedBsty\CreateBedBstyIndex;
@@ -47,6 +48,7 @@ use App\Events\Elastic\Department\CreateDepartmentIndex;
 use App\Events\Elastic\Dhst\CreateDhstIndex;
 use App\Events\Elastic\DiimType\CreateDiimTypeIndex;
 use App\Events\Elastic\District\CreateDistrictIndex;
+use App\Events\Elastic\DocumentType\CreateDocumentTypeIndex;
 use App\Events\Elastic\DosageForm\CreateDosageFormIndex;
 use App\Events\Elastic\EmotionlessMethod\CreateEmotionlessMethodIndex;
 use App\Events\Elastic\Employee\CreateEmployeeIndex;
@@ -1011,6 +1013,10 @@ class IndexRecordsToElasticsearch extends Command
             case 'tran_pati_form':
                 event(new CreateTranPatiFormIndex($name_table));
                 app(TranPatiFormRepository::class)->getDataFromDbToElastic($batchSize, null);
+                break;
+            case 'document_type':
+                event(new CreateDocumentTypeIndex($name_table));
+                app(DocumentTypeRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
                 // No Cache
             case 'service_req_l_view':

@@ -90,6 +90,8 @@ use App\Events\Elastic\DiimType\CreateDiimTypeIndex;
 use App\Events\Elastic\DiimType\InsertDiimTypeIndex;
 use App\Events\Elastic\District\CreateDistrictIndex;
 use App\Events\Elastic\District\InsertDistrictIndex;
+use App\Events\Elastic\DocumentType\CreateDocumentTypeIndex;
+use App\Events\Elastic\DocumentType\InsertDocumentTypeIndex;
 use App\Events\Elastic\DosageForm\CreateDosageFormIndex;
 use App\Events\Elastic\DosageForm\InsertDosageFormIndex;
 use App\Events\Elastic\EmotionlessMethod\CreateEmotionlessMethodIndex;
@@ -444,6 +446,8 @@ use App\Listeners\Elastic\DiimType\ElasticCreateDiimTypeIndex;
 use App\Listeners\Elastic\DiimType\ElasticInsertDiimTypeIndex;
 use App\Listeners\Elastic\District\ElasticCreateDistrictIndex;
 use App\Listeners\Elastic\District\ElasticInsertDistrictIndex;
+use App\Listeners\Elastic\DocumentType\ElasticCreateDocumentTypeIndex;
+use App\Listeners\Elastic\DocumentType\ElasticInsertDocumentTypeIndex;
 use App\Listeners\Elastic\DosageForm\ElasticCreateDosageFormIndex;
 use App\Listeners\Elastic\DosageForm\ElasticInsertDosageFormIndex;
 use App\Listeners\Elastic\ElasticDeleteIndex;
@@ -1960,6 +1964,13 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertTranPatiFormIndex::class => [
             ElasticInsertTranPatiFormIndex::class,
+        ],
+
+        CreateDocumentTypeIndex::class => [
+            ElasticCreateDocumentTypeIndex::class,
+        ],
+        InsertDocumentTypeIndex::class => [
+            ElasticInsertDocumentTypeIndex::class,
         ],
     ];
 

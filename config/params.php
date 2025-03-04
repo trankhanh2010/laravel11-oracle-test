@@ -155,6 +155,7 @@ return [
             'death_cause',
             'treatment_result',
             'tran_pati_form',
+            'document_type',
             // 'service_req_l_view',
             // 'debate',
             // 'debate_v_view',
@@ -389,6 +390,7 @@ return [
             'emr_form' => 'Có lỗi khi thực hiện thao tác với bảng Loại phiếu!',
             'death_cause' => 'Có lỗi khi thực hiện thao tác với bảng Nguyên nhân tử vong!',
             'treatment_result' => 'Có lỗi khi thực hiện thao tác với bảng Kết quả điều trị!',
+            'document_type' => 'Có lỗi khi thực hiện thao tác với bảng tạm DocumentType!',
 
             'room_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm Phòng!',
             'service_req_l_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm Y lệnh!',
@@ -429,6 +431,7 @@ return [
             'sere_serv_list_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm SereServList!',
             'sere_serv_detail_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm SereServDetail!',
             'sere_serv_tein_list_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm SereServTeinList!',
+            'document_list_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm DocumentList!',
 
         ],
         'table' => [

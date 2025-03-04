@@ -138,6 +138,7 @@ use App\Http\Controllers\Api\CacheControllers\AgeTypeController;
 use App\Http\Controllers\Api\CacheControllers\AtcController;
 use App\Http\Controllers\Api\CacheControllers\BidController;
 use App\Http\Controllers\Api\CacheControllers\DeathCauseController;
+use App\Http\Controllers\Api\CacheControllers\DocumentTypeController;
 use App\Http\Controllers\Api\CacheControllers\EmrCoverTypeController;
 use App\Http\Controllers\Api\CacheControllers\EmrFormController;
 use App\Http\Controllers\Api\CacheControllers\GroupTypeController;
@@ -171,6 +172,7 @@ use App\Http\Controllers\Api\NoCacheControllers\DebateUserController;
 use App\Http\Controllers\Api\NoCacheControllers\DebateVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\DepositReqListVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\DhstController;
+use App\Http\Controllers\Api\NoCacheControllers\DocumentListVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\MedicalCaseCoverListVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\PatientTypeAlterVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\RoomVViewController;
@@ -1110,4 +1112,8 @@ Route::group([
     Route::apiResource('v1/sere-serv-detail-v-view', SereServDetailVViewController::class)->only(['show']);
     /// SereServTein List
     Route::apiResource('v1/sere-serv-tein-list-v-view', SereServTeinListVViewController::class)->only(['index']);
+    /// Loại văn bản
+    Route::apiResource('v1/document-type', DocumentTypeController::class);
+    /// Danh sách văn bản
+    Route::apiResource('v1/document-list-v-view', DocumentListVViewController::class);
 });

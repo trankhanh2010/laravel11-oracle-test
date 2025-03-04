@@ -45,6 +45,7 @@ use App\Repositories\DepartmentRepository;
 use App\Repositories\DhstRepository;
 use App\Repositories\DiimTypeRepository;
 use App\Repositories\DistrictRepository;
+use App\Repositories\DocumentTypeRepository;
 use App\Repositories\DosageFormRepository;
 use App\Repositories\EmotionlessMethodRepository;
 use App\Repositories\EmployeeRepository;
@@ -738,6 +739,9 @@ class ProcessElasticIndexingJob implements ShouldQueue
                 break;
             case 'tran_pati_form':
                 $repository = app(TranPatiFormRepository::class);
+                break;
+            case 'document_type':
+                $repository = app(DocumentTypeRepository::class);
                 break;
             /// No Cache
             case 'tracking':

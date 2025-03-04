@@ -26,8 +26,9 @@ class SereServDetailVViewRepository
         return $query->with([
             'exp_mest_medicine', // TH thuốc
 
-            'service_req:id,conclusion_clinical,conclusion_subclinical,conclusion,execute_username,execute_loginname', // XN Xét nghiệm (nếu có ekip thì lấy dựa theo role, nếu k có thì execute_username là người đọc và kỹ thuật viên luôn)
-            'service_req.sere_serv_details:id,service_req_id,tdl_service_code,tdl_service_name,is_no_execute', // Dịch vụ gần nhất - dịch vụ trong cùng 1 y lệnh
+            'service_req', // XN Xét nghiệm (nếu có ekip thì lấy dựa theo role, nếu k có thì execute_username là người đọc và kỹ thuật viên luôn)
+            'service_req.machine:id,machine_name,machine_code',
+            'service_req.sere_serv_details:id,service_req_id,tdl_service_code,tdl_service_name,is_no_execute,tdl_intruction_date,tdl_intruction_time', // Dịch vụ gần nhất - dịch vụ trong cùng 1 y lệnh
             'service_req.sere_serv_details.sere_serv_teins:id,sere_serv_id,test_index_id,value,result_code,description,result_description',
             'service_req.sere_serv_details.sere_serv_teins.test_index:id,test_index_code,test_index_name,test_index_unit_id',
             'service_req.sere_serv_details.sere_serv_teins.test_index.test_index_unit:id,test_index_unit_code,test_index_unit_name,test_index_unit_symbol',
@@ -50,7 +51,9 @@ class SereServDetailVViewRepository
             'service_req_matys',
             'sere_serv_exts.sar_print', // HA hình ảnh, SA siêu âm, CN thăm dò chức năng, NS nội soi
 
-            'sere_serv_pttts', // PT phẫu thuật
+            'sere_serv_pttts'=> function ($query) {
+                $query->where('is_delete', 0);
+            }, // PT phẫu thuật
             'sere_serv_pttts.pttt_group:id,pttt_group_code,pttt_group_name', // Phân loại
             'sere_serv_pttts.pttt_method:id,pttt_method_code,pttt_method_name', // Phương pháp pttt
             'sere_serv_pttts.real_pttt_method:id,pttt_method_code,pttt_method_name', // Phương pháp pttt thực tế

@@ -451,6 +451,8 @@ class BaseApiCacheController extends Controller
     protected $treatmentResultName = 'treatment_result';
     protected $icdListVView;
     protected $icdListVViewName = 'icd_list_v_view';
+    protected $documentType;
+    protected $documentTypeName = 'document_type';
     protected $memaGroup;
     protected $memaGroupName = 'mema_group';
     protected $preparationsBlood;
@@ -653,6 +655,8 @@ class BaseApiCacheController extends Controller
     protected $sereServDepositVViewName = 'sere_serv_deposit_v_view';
     protected $seseDepoRepayVView;
     protected $seseDepoRepayVViewName = 'sese_depo_repay_v_view';
+    protected $documentListVView;
+    protected $documentListVViewName = 'document_list_v_view';
     protected $accountBookVView;
     protected $accountBookVViewName = 'account_book_v_view';
     protected $treatmentRoomGroupVView;

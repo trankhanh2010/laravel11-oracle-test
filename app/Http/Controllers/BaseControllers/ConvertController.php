@@ -36,17 +36,31 @@ class ConvertController extends Controller
             return response()->json(['error' => 'Chuyển đổi thất bại'], 500);
         }
 
+        //  // 🔹 Chuyển DOCX → PDF
+        //  $pdfPath = storage_path("temp.pdf");
+        //  shell_exec("$libreOfficePath --headless --convert-to pdf --outdir " . storage_path() . " " . escapeshellarg($docxPath));
+ 
+        //  // 🔹 Kiểm tra file PDF
+        // if (!file_exists($pdfPath)) {
+        //     unlink($rtfPath);
+        //     unlink($docxPath);
+        //     return response()->json(['error' => 'Chuyển đổi PDF thất bại'], 500);
+        // }
+
         // Đọc file .docx và chuyển thành Base64
         $docxContent = file_get_contents($docxPath);
         $base64Docx = base64_encode($docxContent);
+        // $base64Pdf  = base64_encode(file_get_contents($pdfPath));
 
         // Xóa file tạm
         unlink($rtfPath);
         unlink($docxPath);
+        // unlink($pdfPath);
 
         // Trả về Base64
         return returnDataSuccess([],[
             'fileBase64' => $base64Docx,
+            // 'fileBase64Pdf' => $base64Pdf,
         ]);
     }
 }

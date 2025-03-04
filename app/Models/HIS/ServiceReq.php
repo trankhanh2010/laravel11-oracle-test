@@ -91,4 +91,8 @@ class ServiceReq extends Model
     {
         return $this->hasMany(ServiceReqMety::class);
     }
+    public function machine()
+    {
+        return $this->belongsTo(machine::class);
+    }
 }
