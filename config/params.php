@@ -432,6 +432,7 @@ return [
             'sere_serv_detail_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm SereServDetail!',
             'sere_serv_tein_list_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm SereServTeinList!',
             'document_list_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm DocumentList!',
+            'debate_list_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm DebateList!',
 
         ],
         'table' => [

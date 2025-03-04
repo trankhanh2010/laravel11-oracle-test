@@ -31,6 +31,7 @@ class DocumentListVViewService
             $data = $this->documentListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
             $data = $this->documentListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
             $data = $this->documentListVViewRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
+            $data = $this->documentListVViewRepository->applyDocumentTypeIdFilter($data, $this->params->documentTypeId);
             $count = $data->count();
             $data = $this->documentListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
             $data = $this->documentListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
@@ -47,6 +48,7 @@ class DocumentListVViewService
             $data = $this->documentListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
             $data = $this->documentListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
             $data = $this->documentListVViewRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
+            $data = $this->documentListVViewRepository->applyDocumentTypeIdFilter($data, $this->params->documentTypeId);
             $count = $data->count();
             $data = $this->documentListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
             $data = $this->documentListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);

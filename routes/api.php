@@ -168,6 +168,7 @@ use App\Http\Controllers\Api\NoCacheControllers\CareController;
 // No cache Controller
 use App\Http\Controllers\Api\NoCacheControllers\DebateController;
 use App\Http\Controllers\Api\NoCacheControllers\DebateEkipUserController;
+use App\Http\Controllers\Api\NoCacheControllers\DebateListVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\DebateUserController;
 use App\Http\Controllers\Api\NoCacheControllers\DebateVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\DepositReqListVViewController;
@@ -1116,4 +1117,6 @@ Route::group([
     Route::apiResource('v1/document-type', DocumentTypeController::class);
     /// Danh sách văn bản
     Route::apiResource('v1/document-list-v-view', DocumentListVViewController::class);
+    /// Danh sách biên bản hội chẩn
+    Route::apiResource('v1/debate-list-v-view', DebateListVViewController::class);
 });

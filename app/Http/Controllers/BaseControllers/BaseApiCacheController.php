@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Elastic\ElasticResource;
 use App\Models\ACS\Module;
 use App\Models\ACS\Role;
+use App\Models\EMR\DocumentType;
 use App\Models\HIS\ActiveIngredient;
 use App\Models\HIS\Bed;
 use App\Models\HIS\BedRoom;
@@ -74,6 +75,8 @@ class BaseApiCacheController extends Controller
     protected $testIndexIdsName = 'TestIndexIds';
     protected $tdlTreatmentId;
     protected $tdlTreatmentIdName = 'TdlTreatmentId';
+    protected $documentTypeId;
+    protected $documentTypeIdName = 'DocumentTypeId';
     protected $serviceTypeIds;
     protected $serviceTypeIdsName = 'ServiceTypeIds';
     protected $patientTypeIds;
@@ -232,6 +235,10 @@ class BaseApiCacheController extends Controller
     protected $hasExecuteName = 'HasExecute';
     protected $intructionTimeTo;
     protected $intructionTimeToName = 'IntructionTimeTo';
+    protected $debateTimeTo;
+    protected $debateTimeToName = 'DebateTimeTo';
+    protected $debateTimeFrom;
+    protected $debateTimeFromName = 'DebateTimeFrom';
     protected $intructionTimeFrom;
     protected $intructionTimeFromName = 'IntructionTimeFrom';
     protected $tdlPatientTypeIds;
@@ -323,6 +330,8 @@ class BaseApiCacheController extends Controller
     protected $sereServVView4Name = 'sere_serv_v_view_4';
     protected $sereServDetailVView;
     protected $sereServDetailVViewName = 'sere_serv_detail_v_view';
+    protected $debateListVView;
+    protected $debateListVViewName = 'debate_list_v_view';
     protected $servicePaty;
     protected $servicePatyName = 'service_paty';
     protected $serviceMachine;
@@ -1433,6 +1442,19 @@ class BaseApiCacheController extends Controller
                 }
             }
         }
+        $this->documentTypeId = $this->paramRequest['ApiData']['DocumentTypeId'] ?? null;
+        if ($this->documentTypeId !== null) {
+            // Kiểm tra xem ID có tồn tại trong bảng  hay không
+            if (!is_numeric($this->documentTypeId)) {
+                $this->errors[$this->documentTypeIdName] = $this->messFormat;
+                $this->documentTypeId = null;
+            } else {
+                if (!DocumentType::where('id', $this->documentTypeId)->exists()) {
+                    $this->errors[$this->documentTypeIdName] = $this->messRecordId;
+                    $this->documentTypeId = null;
+                }
+            }
+        }
         $this->isActive = $this->paramRequest['ApiData']['IsActive'] ?? null;
         if ($this->isActive !== null) {
             if (!in_array($this->isActive, [0, 1])) {
@@ -1581,6 +1603,20 @@ class BaseApiCacheController extends Controller
             if(!preg_match('/^\d{14}$/',  $this->intructionTimeFrom)){
                 $this->errors[$this->intructionTimeFromName] = $this->messFormat;
                 $this->intructionTimeFrom = null;
+            }
+        }
+        $this->debateTimeTo = $this->paramRequest['ApiData']['DebateTimeTo'] ?? null;
+        if($this->debateTimeTo != null){
+            if(!preg_match('/^\d{14}$/',  $this->debateTimeTo)){
+                $this->errors[$this->debateTimeToName] = $this->messFormat;
+                $this->debateTimeTo = null;
+            }
+        }
+        $this->debateTimeFrom = $this->paramRequest['ApiData']['DebateTimeFrom'] ?? null;
+        if($this->debateTimeFrom != null){
+            if(!preg_match('/^\d{14}$/',  $this->debateTimeFrom)){
+                $this->errors[$this->debateTimeFromName] = $this->messFormat;
+                $this->debateTimeFrom = null;
             }
         }
         $this->inDateFrom = $this->paramRequest['ApiData']['InDateFrom'] ?? null;
