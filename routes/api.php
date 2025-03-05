@@ -167,6 +167,7 @@ use App\Http\Controllers\Api\NoCacheControllers\AccountBookVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\CareController;
 // No cache Controller
 use App\Http\Controllers\Api\NoCacheControllers\DebateController;
+use App\Http\Controllers\Api\NoCacheControllers\DebateDetailVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\DebateEkipUserController;
 use App\Http\Controllers\Api\NoCacheControllers\DebateListVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\DebateUserController;
@@ -1114,9 +1115,11 @@ Route::group([
     /// SereServTein List
     Route::apiResource('v1/sere-serv-tein-list-v-view', SereServTeinListVViewController::class)->only(['index']);
     /// Loại văn bản
-    Route::apiResource('v1/document-type', DocumentTypeController::class);
+    Route::apiResource('v1/document-type', DocumentTypeController::class)->only(['index', 'show']);
     /// Danh sách văn bản
-    Route::apiResource('v1/document-list-v-view', DocumentListVViewController::class);
+    Route::apiResource('v1/document-list-v-view', DocumentListVViewController::class)->only(['index', 'show']);
     /// Danh sách biên bản hội chẩn
-    Route::apiResource('v1/debate-list-v-view', DebateListVViewController::class);
+    Route::apiResource('v1/debate-list-v-view', DebateListVViewController::class)->only(['index', 'show']);
+    /// Biên bản hội chẩn
+    Route::apiResource('v1/debate-detail-v-view', DebateDetailVViewController::class)->only(['show']);
 });

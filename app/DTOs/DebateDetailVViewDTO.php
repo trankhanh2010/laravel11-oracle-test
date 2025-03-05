@@ -2,9 +2,9 @@
 
 namespace App\DTOs;
 
-class DocumentListVViewDTO
+class DebateDetailVViewDTO
 {
-    public $documentListVViewName;
+    public $debateDetailVViewName;
     public $keyword;
     public $isActive;
     public $isDelete;
@@ -18,11 +18,8 @@ class DocumentListVViewDTO
     public $appCreator;
     public $appModifier;
     public $time;
-    public $treatmentId;
-    public $documentTypeId;
-    public $treatmentCode;
     public function __construct(
-        $documentListVViewName,
+        $debateDetailVViewName,
         $keyword, 
         $isActive, 
         $isDelete,
@@ -36,12 +33,9 @@ class DocumentListVViewDTO
         $appCreator,
         $appModifier,
         $time,
-        $treatmentId,
-        $documentTypeId,
-        $treatmentCode,
         )
     {
-        $this->documentListVViewName = $documentListVViewName;
+        $this->debateDetailVViewName = $debateDetailVViewName;
         $this->keyword = $keyword;
         $this->isActive = $isActive;
         $this->isDelete = $isDelete;
@@ -55,8 +49,5 @@ class DocumentListVViewDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
-        $this->treatmentId = $treatmentId;
-        $this->documentTypeId = $documentTypeId;
-        $this->treatmentCode = $treatmentCode;
     }
 }

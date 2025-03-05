@@ -2,69 +2,53 @@
 namespace App\Repositories;
 
 use App\Jobs\ElasticSearch\Index\ProcessElasticIndexingJob;
-use App\Models\View\DocumentListVView;
+use App\Models\View\DebateDetailVView;
 use Illuminate\Support\Facades\DB;
 
-class DocumentListVViewRepository
+class DebateDetailVViewRepository
 {
-    protected $documentListVView;
-    public function __construct(DocumentListVView $documentListVView)
+    protected $debateDetailVView;
+    public function __construct(DebateDetailVView $debateDetailVView)
     {
-        $this->documentListVView = $documentListVView;
+        $this->debateDetailVView = $debateDetailVView;
     }
 
     public function applyJoins()
     {
-        return $this->documentListVView
+        return $this->debateDetailVView
             ->select(
-                'v_emr_document_list.*'
+                'v_his_debate_detail.*'
             );
     }
     public function applyWithParam($query)
     {
         return $query->with([
-            'signs', 
+            'debate_invite_users:id,debate_id,loginname,username,execute_role_id,description,comment_doctor,is_participation,is_secretary,is_president', 
+            'debate_invite_users.execute_role:id,execute_role_code,execute_role_name,is_surgry,is_subclinical,is_subclinical_result',
+
+            'debate_ekip_users:id,debate_id,loginname,username,execute_role_id,description,department_id',
+            'debate_ekip_users.department:id,department_code,department_name',
+            'debate_ekip_users.execute_role:id,execute_role_code,execute_role_name,is_surgry,is_subclinical,is_subclinical_result',
         ]);
     }
     public function applyKeywordFilter($query, $keyword)
     {
         return $query->where(function ($query) use ($keyword) {
-            $query->where(DB::connection('oracle_emr')->raw('v_emr_document_list.document_list_code'), 'like', '%'. $keyword . '%')
-            ->orWhere(DB::connection('oracle_emr')->raw('lower(v_emr_document_list.document_list_name)'), 'like', '%'. strtolower($keyword) . '%');
+            $query->where(DB::connection('oracle_his')->raw('v_his_debate_detail.debate_detail_code'), 'like', '%'. $keyword . '%')
+            ->orWhere(DB::connection('oracle_his')->raw('lower(v_his_debate_detail.debate_detail_name)'), 'like', '%'. strtolower($keyword) . '%');
         });
     }
     public function applyIsActiveFilter($query, $isActive)
     {
         if ($isActive !== null) {
-            $query->where(DB::connection('oracle_emr')->raw('v_emr_document_list.is_active'), $isActive);
+            $query->where(DB::connection('oracle_his')->raw('v_his_debate_detail.is_active'), $isActive);
         }
         return $query;
     }
     public function applyIsDeleteFilter($query, $isDelete)
     {
         if ($isDelete !== null) {
-            $query->where(DB::connection('oracle_emr')->raw('v_emr_document_list.is_delete'), $isDelete);
-        }
-        return $query;
-    }
-    public function applyTreatmentIdFilter($query, $param)
-    {
-        if ($param !== null) {
-            $query->where(DB::connection('oracle_emr')->raw('v_emr_document_list.treatment_id'), $param);
-        }
-        return $query;
-    }
-    public function applyDocumentTypeIdFilter($query, $param)
-    {
-        if ($param !== null) {
-            $query->where(DB::connection('oracle_emr')->raw('v_emr_document_list.document_type_id'), $param);
-        }
-        return $query;
-    }
-    public function applyTreatmentCodeFilter($query, $param)
-    {
-        if ($param !== null) {
-            $query->where(DB::connection('oracle_emr')->raw('v_emr_document_list.treatment_code'), $param);
+            $query->where(DB::connection('oracle_his')->raw('v_his_debate_detail.is_delete'), $isDelete);
         }
         return $query;
     }
@@ -74,7 +58,7 @@ class DocumentListVViewRepository
             foreach ($orderBy as $key => $item) {
                 if (in_array($key, $orderByJoin)) {
                 } else {
-                    $query->orderBy('v_emr_document_list.' . $key, $item);
+                    $query->orderBy('v_his_debate_detail.' . $key, $item);
                 }
             }
         }
@@ -96,10 +80,10 @@ class DocumentListVViewRepository
     }
     public function getById($id)
     {
-        return $this->documentListVView->find($id);
+        return $this->debateDetailVView->find($id);
     }
     // public function create($request, $time, $appCreator, $appModifier){
-    //     $data = $this->documentListVView::create([
+    //     $data = $this->debateDetailVView::create([
     //         'create_time' => now()->format('Ymdhis'),
     //         'modify_time' => now()->format('Ymdhis'),
     //         'creator' => get_loginname_with_token($request->bearerToken(), $time),
@@ -108,8 +92,8 @@ class DocumentListVViewRepository
     //         'app_modifier' => $appModifier,
     //         'is_active' => 1,
     //         'is_delete' => 0,
-    //         'document_list_v_view_code' => $request->document_list_v_view_code,
-    //         'document_list_v_view_name' => $request->document_list_v_view_name,
+    //         'debate_detail_v_view_code' => $request->debate_detail_v_view_code,
+    //         'debate_detail_v_view_name' => $request->debate_detail_v_view_name,
     //     ]);
     //     return $data;
     // }
@@ -118,8 +102,8 @@ class DocumentListVViewRepository
     //         'modify_time' => now()->format('Ymdhis'),
     //         'modifier' => get_loginname_with_token($request->bearerToken(), $time),
     //         'app_modifier' => $appModifier,
-    //         'document_list_v_view_code' => $request->document_list_v_view_code,
-    //         'document_list_v_view_name' => $request->document_list_v_view_name,
+    //         'debate_detail_v_view_code' => $request->debate_detail_v_view_code,
+    //         'debate_detail_v_view_name' => $request->debate_detail_v_view_name,
     //         'is_active' => $request->is_active
     //     ]);
     //     return $data;
@@ -132,15 +116,15 @@ class DocumentListVViewRepository
     {
         $numJobs = config('queue')['num_queue_worker']; // Số lượng job song song
         if ($id != null) {
-            $data = $this->applyJoins()->where('v_emr_document_list.id', '=', $id)->first();
+            $data = $this->applyJoins()->where('v_his_debate_detail.id', '=', $id)->first();
             if ($data) {
                 $data = $data->getAttributes();
                 return $data;
             }
         } else {
             // Xác định min và max id
-            $minId = $this->applyJoins()->min('v_emr_document_list.id');
-            $maxId = $this->applyJoins()->max('v_emr_document_list.id');
+            $minId = $this->applyJoins()->min('v_his_debate_detail.id');
+            $maxId = $this->applyJoins()->max('v_his_debate_detail.id');
             $chunkSize = ceil(($maxId - $minId + 1) / $numJobs);
             for ($i = 0; $i < $numJobs; $i++) {
                 $startId = $minId + ($i * $chunkSize);
@@ -150,7 +134,7 @@ class DocumentListVViewRepository
                     $endId = $maxId;
                 }
                 // Dispatch job cho mỗi phạm vi id
-                ProcessElasticIndexingJob::dispatch('document_list_v_view', 'v_emr_document_list', $startId, $endId, $batchSize);
+                ProcessElasticIndexingJob::dispatch('debate_detail_v_view', 'v_his_debate_detail', $startId, $endId, $batchSize);
             }
         }
     }

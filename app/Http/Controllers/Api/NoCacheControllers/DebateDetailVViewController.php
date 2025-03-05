@@ -2,36 +2,36 @@
 
 namespace App\Http\Controllers\Api\NoCacheControllers;
 
-use App\DTOs\DocumentListVViewDTO;
+use App\DTOs\DebateDetailVViewDTO;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
-use App\Http\Requests\DocumentListVView\CreateDocumentListVViewRequest;
-use App\Http\Requests\DocumentListVView\UpdateDocumentListVViewRequest;
-use App\Models\View\DocumentListVView;
+use App\Http\Requests\DebateDetailVView\CreateDebateDetailVViewRequest;
+use App\Http\Requests\DebateDetailVView\UpdateDebateDetailVViewRequest;
+use App\Models\View\DebateDetailVView;
 use App\Services\Elastic\ElasticsearchService;
-use App\Services\Model\DocumentListVViewService;
+use App\Services\Model\DebateDetailVViewService;
 use Illuminate\Http\Request;
 
 
-class DocumentListVViewController extends BaseApiCacheController
+class DebateDetailVViewController extends BaseApiCacheController
 {
-    protected $documentListVViewService;
-    protected $documentListVViewDTO;
-    public function __construct(Request $request, ElasticsearchService $elasticSearchService, DocumentListVViewService $documentListVViewService, DocumentListVView $documentListVView)
+    protected $debateDetailVViewService;
+    protected $debateDetailVViewDTO;
+    public function __construct(Request $request, ElasticsearchService $elasticSearchService, DebateDetailVViewService $debateDetailVViewService, DebateDetailVView $debateDetailVView)
     {
         parent::__construct($request); // Gọi constructor của BaseController
         $this->elasticSearchService = $elasticSearchService;
-        $this->documentListVViewService = $documentListVViewService;
-        $this->documentListVView = $documentListVView;
+        $this->debateDetailVViewService = $debateDetailVViewService;
+        $this->debateDetailVView = $debateDetailVView;
         // Kiểm tra tên trường trong bảng
         if ($this->orderBy != null) {
             $this->orderByJoin = [
             ];
-            $columns = $this->getColumnsTable($this->documentListVView, true);
+            $columns = $this->getColumnsTable($this->debateDetailVView, true);
             $this->orderBy = $this->checkOrderBy($this->orderBy, $columns, $this->orderByJoin ?? []);
         }
         // Thêm tham số vào service
-        $this->documentListVViewDTO = new DocumentListVViewDTO(
-            $this->documentListVViewName,
+        $this->debateDetailVViewDTO = new DebateDetailVViewDTO(
+            $this->debateDetailVViewName,
             $this->keyword,
             $this->isActive,
             $this->isDelete,
@@ -45,11 +45,8 @@ class DocumentListVViewController extends BaseApiCacheController
             $this->appCreator, 
             $this->appModifier, 
             $this->time,
-            $this->treatmentId,
-            $this->documentTypeId,
-            $this->treatmentCode,
         );
-        $this->documentListVViewService->withParams($this->documentListVViewDTO);
+        $this->debateDetailVViewService->withParams($this->debateDetailVViewDTO);
     }
     public function index()
     {
@@ -59,15 +56,15 @@ class DocumentListVViewController extends BaseApiCacheController
         $keyword = $this->keyword;
         if (($keyword != null || $this->elasticSearchType != null) && !$this->cache) {
             if ($this->elasticSearchType != null) {
-                $data = $this->elasticSearchService->handleElasticSearchSearch($this->documentListVViewName);
+                $data = $this->elasticSearchService->handleElasticSearchSearch($this->debateDetailVViewName);
             } else {
-                $data = $this->documentListVViewService->handleDataBaseSearch();
+                $data = $this->debateDetailVViewService->handleDataBaseSearch();
             }
         } else {
             if ($this->elastic) {
-                $data = $this->elasticSearchService->handleElasticSearchGetAll($this->documentListVViewName);
+                $data = $this->elasticSearchService->handleElasticSearchGetAll($this->debateDetailVViewName);
             } else {
-                $data = $this->documentListVViewService->handleDataBaseGetAll();
+                $data = $this->debateDetailVViewService->handleDataBaseGetAll();
             }
         }
         $paramReturn = [
@@ -88,15 +85,15 @@ class DocumentListVViewController extends BaseApiCacheController
             return $this->checkParam();
         }
         if ($id !== null) {
-            $validationError = $this->validateAndCheckId($id, $this->documentListVView, $this->documentListVViewName);
+            $validationError = $this->validateAndCheckId($id, $this->debateDetailVView, $this->debateDetailVViewName);
             if ($validationError) {
                 return $validationError;
             }
         }
         if ($this->elastic) {
-            $data = $this->elasticSearchService->handleElasticSearchGetWithId($this->documentListVViewName, $id);
+            $data = $this->elasticSearchService->handleElasticSearchGetWithId($this->debateDetailVViewName, $id);
         } else {
-            $data = $this->documentListVViewService->handleDataBaseGetWithId($id);
+            $data = $this->debateDetailVViewService->handleDataBaseGetWithId($id);
         }
         $paramReturn = [
             $this->idName => $id,
