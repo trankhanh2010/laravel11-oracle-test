@@ -54,9 +54,11 @@ class TreatmentFeeListVViewRepository
     public function paramWith()
     {
         return [
-            // 'testServiceTypeList:service_req_id,is_specimen,is_no_execute,tdl_service_code,tdl_service_name',
-            // 'testServiceTypeList.sereServBills:id,sere_serv_id,is_delete,bill_id,is_cancel',
-            // 'testServiceTypeList.sereServDeposits:id,sere_serv_id,is_delete,deposit_id,is_cancel',
+            'services',
+            'deposit_req_list_is_deposit',
+            'deposit_req_list_is_not_deposit',
+            // 'services.sereServBills:id,sere_serv_id,is_delete,bill_id,is_cancel',
+            // 'services.sereServDeposits:id,sere_serv_id,is_delete,deposit_id,is_cancel',
         ];
     }
     public function applyKeywordFilter($query, $keyword)
