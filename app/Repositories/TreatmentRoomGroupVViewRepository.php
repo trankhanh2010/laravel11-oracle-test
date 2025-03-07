@@ -16,14 +16,12 @@ class TreatmentRoomGroupVViewRepository
     public function applyJoins()
     {
         return $this->treatmentRoomGroupVView
-            ->select(
-                'v_his_treatment_room_group.*'
-            );
+            ->select();
     }
     public function applyDepartmentCodeFilter($query, $param)
     {
         if ($param !== null) {
-            $query->where(DB::connection('oracle_his')->raw('v_his_treatment_room_group.department_code'), $param);
+            $query->where(('department_code'), $param);
         }
         return $query;
     }
@@ -33,7 +31,7 @@ class TreatmentRoomGroupVViewRepository
             foreach ($orderBy as $key => $item) {
                 if (in_array($key, $orderByJoin)) {
                 } else {
-                    $query->orderBy('v_his_treatment_room_group.' . $key, $item);
+                    $query->orderBy('' . $key, $item);
                 }
             }
         }

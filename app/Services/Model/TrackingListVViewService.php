@@ -61,7 +61,7 @@ class TrackingListVViewService
     {
         try {
             $data = $this->trackingListVViewRepository->applyJoins()
-                ->where('v_his_tracking_list.id', $id);
+                ->where('id', $id);
             $data = $this->trackingListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
             $data = $this->trackingListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
             $data = $this->trackingListVViewRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);

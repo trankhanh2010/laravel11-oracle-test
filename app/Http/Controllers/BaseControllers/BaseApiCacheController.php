@@ -66,7 +66,7 @@ class BaseApiCacheController extends Controller
     protected $orderByElastic;
     protected $orderByJoin;
     protected $groupBy;
-    protected $groupByName = 'group_by';
+    protected $groupByName = 'GroupBy';
     protected $onlyActive;
     protected $onlyActiveName = 'OnlyActive';
     protected $id;
@@ -189,8 +189,8 @@ class BaseApiCacheController extends Controller
     protected $isForDepositName = 'IsForDeposit';
     protected $isForRepay;
     protected $isForRepayName = 'IsForRepay';
-    protected $isForBill;   
-    protected $isForBillName = 'isForBill';   
+    protected $isForBill;
+    protected $isForBillName = 'isForBill';
     protected $serviceReqIds;
     protected $serviceReqIdsName = 'ServiceReqIds';
     protected $atc;
@@ -765,7 +765,7 @@ class BaseApiCacheController extends Controller
     protected function checkId($id, $model, $name)
     {
         if ($this->isActive !== null) {
-            $data = Cache::remember($name . '_check_id_' . $id , $this->time, function () use ($id, $model) {
+            $data = Cache::remember($name . '_check_id_' . $id, $this->time, function () use ($id, $model) {
                 return $model->where('id', $id)->exists();
             });
         } else {
@@ -779,32 +779,36 @@ class BaseApiCacheController extends Controller
         return null;
     }
     protected function validateAndCheckId($id, $model, $modelName)
-{
-    if (!is_numeric($id)) {
-        return returnIdError($id);
-    }
+    {
+        if (!is_numeric($id)) {
+            return returnIdError($id);
+        }
 
-    $checkId = $this->checkId($id, $model, $modelName);
-    if ($checkId) {
-        return $checkId;
-    }
+        $checkId = $this->checkId($id, $model, $modelName);
+        if ($checkId) {
+            return $checkId;
+        }
 
-    return null; // Trả về null nếu không có lỗi
-}
+        return null; // Trả về null nếu không có lỗi
+    }
 
     protected function getColumnsTable($table, $isView = false)
     {
         $parts = explode('_', $table->getTable());
-        if($isView){
-            $conn = strtolower($parts[1]);
-        }else{
-            $conn = strtolower($parts[0]);
+
+        if ($parts[0] === 'xa') {
+            $conn = strtolower($parts[2] ?? ''); // Tránh lỗi nếu không có phần tử thứ 2
+        } else {
+            $conn = $isView ? strtolower($parts[1] ?? '') : strtolower($parts[0] ?? '');
         }
+
         $columnsTable = Cache::remember('columns_' . $table->getTable(), $this->columnsTime, function () use ($table, $conn) {
-            return  Schema::connection('oracle_' . $conn)->getColumnListing($table->getTable()) ?? [];
+            return Schema::connection('oracle_' . $conn)->getColumnListing($table->getTable()) ?? [];
         });
+
         return $columnsTable;
     }
+
     protected function checkOrderBy($orderBy, $columns, $orderByJoin)
     {
         foreach ($orderBy as $key => $item) {
@@ -822,7 +826,7 @@ class BaseApiCacheController extends Controller
     public function __construct(Request $request)
     {
         // Khai báo các biến
-        try{
+        try {
             $this->client = app('Elasticsearch');
         } catch (\Throwable $e) {
             writeAndThrowError(config('params')['elastic']['error']['connection'], $e);
@@ -842,7 +846,7 @@ class BaseApiCacheController extends Controller
         if ($request->input('param') !== null) {
             // Thay thế dấu + và / nếu bị thay đổi thành khoảng trắng hoặc các ký tự khác
             $encodedParam  = str_replace([' ', '+', '/'], ['+', '+', '/'], $request->input('param'));
-            $this->paramRequest = json_decode(base64_decode($encodedParam ), true) ?? null;
+            $this->paramRequest = json_decode(base64_decode($encodedParam), true) ?? null;
             if ($this->paramRequest === null) {
                 $this->errors['param'] = $this->messDecodeParam;
             }
@@ -861,8 +865,8 @@ class BaseApiCacheController extends Controller
             $this->errors[$this->limitName] = $this->messFormat . ' Chỉ nhận giá trị thuộc mảng sau ' . implode(', ', $this->arrLimit);
             $this->limit = 10;
         }
-        if($this->start === null){
-            $this->start = ($this->page-1) * $this->limit;
+        if ($this->start === null) {
+            $this->start = ($this->page - 1) * $this->limit;
         }
         if ($this->start != null) {
             if ((!is_numeric($this->start)) || (!is_int($this->start)) || ($this->start < 0)) {
@@ -871,7 +875,7 @@ class BaseApiCacheController extends Controller
             }
         }
         $this->lastId = $this->paramRequest['CommonParam']['LastId'] ?? 0;
-        if($this->lastId !== null){
+        if ($this->lastId !== null) {
             if (!is_int($this->lastId)) {
                 $this->errors[$this->lastIdName] = $this->messFormat;
             }
@@ -892,18 +896,18 @@ class BaseApiCacheController extends Controller
             }
         }
         $this->line = $this->paramRequest['ApiData']['Line'] ?? null;
-        if($this->line !== null){
+        if ($this->line !== null) {
             if (!is_int($this->line)) {
                 $this->errors[$this->lineName] = $this->messFormat;
             }
         }
         $this->date = $this->paramRequest['ApiData']['Date'] ?? null;
-        if($this->date !== null){
+        if ($this->date !== null) {
             if (!is_string($this->date)) {
                 $this->errors[$this->dateName] = $this->messFormat;
             }
         }
-        
+
         $this->getAll = $this->paramRequest['CommonParam']['GetAll'] ?? false;
         if (!is_bool($this->getAll)) {
             $this->errors[$this->getAllName] = $this->messFormat;
@@ -923,19 +927,19 @@ class BaseApiCacheController extends Controller
         $this->orderByElastic = $this->orderBy;
         /// Thanh toán
         $this->paymentMethod = $this->paramRequest['ApiData']['PaymentMethod'] ?? null;
-        if($this->paymentMethod !== null){
+        if ($this->paymentMethod !== null) {
             if (!is_string($this->paymentMethod)) {
                 $this->errors[$this->paymentMethodName] = $this->messFormat;
             }
         }
         $this->paymentOption = $this->paramRequest['ApiData']['PaymentOption'] ?? null;
-        if($this->paymentOption !== null){
+        if ($this->paymentOption !== null) {
             if (!is_string($this->paymentOption)) {
                 $this->errors[$this->paymentOptionName] = $this->messFormat;
             }
         }
         $this->transactionTypeCode = $this->paramRequest['ApiData']['TransactionTypeCode'] ?? null;
-        if($this->transactionTypeCode !== null){
+        if ($this->transactionTypeCode !== null) {
             if (!is_string($this->transactionTypeCode)) {
                 $this->errors[$this->transactionTypeCodeName] = $this->messFormat;
             }
@@ -956,7 +960,7 @@ class BaseApiCacheController extends Controller
             }
         }
 
-        $this->status = $this->paramRequest['ApiData']['Status']?? null;
+        $this->status = $this->paramRequest['ApiData']['Status'] ?? null;
         if ($this->status !== null) {
             if (!is_string($this->status)) {
                 $this->errors[$this->statusName] = $this->messFormat;
@@ -973,7 +977,7 @@ class BaseApiCacheController extends Controller
         }
 
 
-        $this->transactionCode = $this->paramRequest['ApiData']['TransactionCode']?? null;
+        $this->transactionCode = $this->paramRequest['ApiData']['TransactionCode'] ?? null;
         if ($this->transactionCode !== null) {
             if (!is_string($this->transactionCode)) {
                 $this->errors[$this->transactionCodeName] = $this->messFormat;
@@ -981,7 +985,7 @@ class BaseApiCacheController extends Controller
             }
         }
 
-        $this->departmentCode = $this->paramRequest['ApiData']['DepartmentCode']?? null;
+        $this->departmentCode = $this->paramRequest['ApiData']['DepartmentCode'] ?? null;
         if ($this->departmentCode !== null) {
             if (!is_string($this->departmentCode)) {
                 $this->errors[$this->departmentCodeName] = $this->messFormat;
@@ -989,7 +993,7 @@ class BaseApiCacheController extends Controller
             }
         }
 
-        $this->addLoginname = $this->paramRequest['ApiData']['AddLoginname']?? null;
+        $this->addLoginname = $this->paramRequest['ApiData']['AddLoginname'] ?? null;
         if ($this->addLoginname !== null) {
             if (!is_string($this->addLoginname)) {
                 $this->errors[$this->addLoginnameName] = $this->messFormat;
@@ -997,7 +1001,7 @@ class BaseApiCacheController extends Controller
             }
         }
 
-        $this->patientPhone = $this->paramRequest['ApiData']['PatientPhone']?? null;
+        $this->patientPhone = $this->paramRequest['ApiData']['PatientPhone'] ?? null;
         if ($this->patientPhone !== null) {
             if (!is_string($this->patientPhone)) {
                 $this->errors[$this->patientPhoneName] = $this->messFormat;
@@ -1005,7 +1009,7 @@ class BaseApiCacheController extends Controller
             }
         }
 
-        $this->serviceReqCode = $this->paramRequest['ApiData']['ServiceReqCode']?? null;
+        $this->serviceReqCode = $this->paramRequest['ApiData']['ServiceReqCode'] ?? null;
         if ($this->serviceReqCode !== null) {
             if (!is_string($this->serviceReqCode)) {
                 $this->errors[$this->serviceReqCodeName] = $this->messFormat;
@@ -1013,7 +1017,7 @@ class BaseApiCacheController extends Controller
             }
         }
 
-        $this->billCode = $this->paramRequest['ApiData']['BillCode']?? null;
+        $this->billCode = $this->paramRequest['ApiData']['BillCode'] ?? null;
         if ($this->billCode !== null) {
             if (!is_string($this->billCode)) {
                 $this->errors[$this->billCodeName] = $this->messFormat;
@@ -1021,7 +1025,7 @@ class BaseApiCacheController extends Controller
             }
         }
 
-        $this->depositReqCode = $this->paramRequest['ApiData']['DepositReqCode']?? null;
+        $this->depositReqCode = $this->paramRequest['ApiData']['DepositReqCode'] ?? null;
         if ($this->depositReqCode !== null) {
             if (!is_string($this->depositReqCode)) {
                 $this->errors[$this->depositReqCodeName] = $this->messFormat;
@@ -1083,15 +1087,15 @@ class BaseApiCacheController extends Controller
                     if (!in_array($key1, $this->elasticSearchTypeMustShouldMustNot)) {
                         $this->errors[$this->elasticMustName] = $this->messFormat . ' Chỉ nhận giá trị thuộc mảng sau ' . implode(', ', $this->elasticSearchTypeMustShouldMustNot);
                     }
-                    foreach($this->elasticMust[$key][$key1] as $oldKey => $oldValue){
-                        if($key1 == 'range'){
-                            foreach($oldValue as $key2 => $item2){
+                    foreach ($this->elasticMust[$key][$key1] as $oldKey => $oldValue) {
+                        if ($key1 == 'range') {
+                            foreach ($oldValue as $key2 => $item2) {
                                 if (!in_array($key2, $this->elasticRangeArr)) {
                                     $this->errors[$this->elasticMustName] = $this->messFormat . ' Chỉ nhận giá trị thuộc mảng sau ' . implode(', ', $this->elasticRangeArr);
                                 }
                             }
                         }
-                        unset( $this->elasticMust[$key][$key1][$oldKey]);
+                        unset($this->elasticMust[$key][$key1][$oldKey]);
                         $this->elasticMust[$key][$key1][camelToSnake($oldKey)] = $oldValue;
                     }
                 }
@@ -1105,15 +1109,15 @@ class BaseApiCacheController extends Controller
                     if (!in_array($key1, $this->elasticSearchTypeMustShouldMustNot)) {
                         $this->errors[$this->elasticShouldName] = $this->messFormat . ' Chỉ nhận giá trị thuộc mảng sau ' . implode(', ', $this->elasticSearchTypeMustShouldMustNot);
                     }
-                    foreach($this->elasticShould[$key][$key1] as $oldKey => $oldValue){
-                        if($key1 == 'range'){
-                            foreach($oldValue as $key2 => $item2){
+                    foreach ($this->elasticShould[$key][$key1] as $oldKey => $oldValue) {
+                        if ($key1 == 'range') {
+                            foreach ($oldValue as $key2 => $item2) {
                                 if (!in_array($key2, $this->elasticRangeArr)) {
                                     $this->errors[$this->elasticShouldName] = $this->messFormat . ' Chỉ nhận giá trị thuộc mảng sau ' . implode(', ', $this->elasticRangeArr);
                                 }
                             }
                         }
-                        unset( $this->elasticShould[$key][$key1][$oldKey]);
+                        unset($this->elasticShould[$key][$key1][$oldKey]);
                         $this->elasticShould[$key][$key1][camelToSnake($oldKey)] = $oldValue;
                     }
                 }
@@ -1127,23 +1131,23 @@ class BaseApiCacheController extends Controller
                     if (!in_array($key1, $this->elasticSearchTypeMustShouldMustNot)) {
                         $this->errors[$this->elasticMustNotName] = $this->messFormat . ' Chỉ nhận giá trị thuộc mảng sau ' . implode(', ', $this->elasticSearchTypeMustShouldMustNot);
                     }
-                    foreach($this->elasticMustNot[$key][$key1] as $oldKey => $oldValue){
-                        if($key1 == 'range'){
-                            foreach($oldValue as $key2 => $item2){
+                    foreach ($this->elasticMustNot[$key][$key1] as $oldKey => $oldValue) {
+                        if ($key1 == 'range') {
+                            foreach ($oldValue as $key2 => $item2) {
                                 if (!in_array($key2, $this->elasticRangeArr)) {
                                     $this->errors[$this->elasticMustNotName] = $this->messFormat . ' Chỉ nhận giá trị thuộc mảng sau ' . implode(', ', $this->elasticRangeArr);
                                 }
                             }
                         }
-                        unset( $this->elasticMustNot[$key][$key1][$oldKey]);
+                        unset($this->elasticMustNot[$key][$key1][$oldKey]);
                         $this->elasticMustNot[$key][$key1][camelToSnake($oldKey)] = $oldValue;
                     }
                 }
             }
         }
-        if(isset($this->elasticMust) && isset($this->elasticMust[0]['term']['is_active'])){
+        if (isset($this->elasticMust) && isset($this->elasticMust[0]['term']['is_active'])) {
             $this->elasticIsActive = $this->elasticMust[0]['term']['is_active'];
-        }else{
+        } else {
             $this->elasticIsActive = $this->isActive;
         }
         $this->serviceTypeIds = $this->paramRequest['ApiData']['ServiceTypeIds'] ?? null;
@@ -1303,49 +1307,49 @@ class BaseApiCacheController extends Controller
             }
         }
         $this->addTimeTo = $this->paramRequest['ApiData']['AddTimeTo'] ?? null;
-        if($this->addTimeTo != null){
-            if(!preg_match('/^\d{14}$/',  $this->addTimeTo)){
+        if ($this->addTimeTo != null) {
+            if (!preg_match('/^\d{14}$/',  $this->addTimeTo)) {
                 $this->errors[$this->addTimeToName] = $this->messFormat;
                 $this->addTimeTo = null;
             }
         }
         $this->addTimeFrom = $this->paramRequest['ApiData']['AddTimeFrom'] ?? null;
-        if($this->addTimeFrom != null){
-            if(!preg_match('/^\d{14}$/',  $this->addTimeFrom)){
+        if ($this->addTimeFrom != null) {
+            if (!preg_match('/^\d{14}$/',  $this->addTimeFrom)) {
                 $this->errors[$this->addTimeFromName] = $this->messFormat;
                 $this->addTimeFrom = null;
             }
         }
         $this->isInRoom = $this->paramRequest['ApiData']['IsInRoom'] ?? null;
-        if($this->isInRoom !== null){
+        if ($this->isInRoom !== null) {
             if (!is_bool($this->isInRoom)) {
                 $this->errors[$this->isInRoomName] = $this->messFormat;
                 $this->isInRoom = null;
             }
         }
         $this->notInTracking = $this->paramRequest['ApiData']['NotInTracking'] ?? null;
-        if($this->notInTracking !== null){
+        if ($this->notInTracking !== null) {
             if (!is_bool($this->notInTracking)) {
                 $this->errors[$this->notInTrackingName] = $this->messFormat;
                 $this->notInTracking = null;
             }
         }
         $this->isInBed = $this->paramRequest['ApiData']['IsInBed'] ?? null;
-        if($this->isInBed !== null){
+        if ($this->isInBed !== null) {
             if (!is_bool($this->isInBed)) {
                 $this->errors[$this->isInBedName] = $this->messFormat;
                 $this->isInBed = null;
             }
         }
         $this->isCoTreatDepartment = $this->paramRequest['ApiData']['IsCoTreatDepartment'] ?? null;
-        if($this->isCoTreatDepartment !== null){
+        if ($this->isCoTreatDepartment !== null) {
             if (!is_bool($this->isCoTreatDepartment)) {
                 $this->errors[$this->isCoTreatDepartmentName] = $this->messFormat;
                 $this->isCoTreatDepartment = null;
             }
         }
         $this->isOut = $this->paramRequest['ApiData']['IsOut'] ?? null;
-        if($this->isOut !== null){
+        if ($this->isOut !== null) {
             if (!is_bool($this->isOut)) {
                 $this->errors[$this->isOutName] = $this->messFormat;
                 $this->isOut = null;
@@ -1498,15 +1502,15 @@ class BaseApiCacheController extends Controller
             }
         }
         $this->treatmentCode = $this->paramRequest['ApiData']['TreatmentCode'] ?? null;
-        if($this->treatmentCode !== null){
-            if (!is_string ($this->treatmentCode)) {
+        if ($this->treatmentCode !== null) {
+            if (!is_string($this->treatmentCode)) {
                 $this->errors[$this->treatmentCodeName] = $this->messFormat;
                 $this->treatmentCode = null;
             }
         }
         $this->patientCode = $this->paramRequest['ApiData']['PatientCode'] ?? null;
-        if($this->patientCode !== null){
-            if (!is_string ($this->patientCode)) {
+        if ($this->patientCode !== null) {
+            if (!is_string($this->patientCode)) {
                 $this->errors[$this->patientCodeName] = $this->messFormat;
                 $this->patientCode = null;
             }
@@ -1517,7 +1521,7 @@ class BaseApiCacheController extends Controller
             $this->errors[$this->groupByName] = $this->messFormat;
             $this->groupBy = null;
         }
-        
+
         $this->debateId = $this->paramRequest['ApiData']['DebateId'] ?? null;
         if ($this->debateId != null) {
             // Kiểm tra xem ID có tồn tại trong bảng  hay không
@@ -1547,90 +1551,90 @@ class BaseApiCacheController extends Controller
             }
         }
         $this->hasExecute = $this->paramRequest['ApiData']['HasExecute'] ?? true;
-        if (!is_bool ($this->hasExecute)) {
+        if (!is_bool($this->hasExecute)) {
             $this->errors[$this->hasExecuteName] = $this->messFormat;
             $this->hasExecute = true;
         }
         $this->fromTime = $this->paramRequest['ApiData']['FromTime'] ?? null;
-        if($this->fromTime != null){
-            if(!preg_match('/^\d{14}$/',  $this->fromTime)){
+        if ($this->fromTime != null) {
+            if (!preg_match('/^\d{14}$/',  $this->fromTime)) {
                 $this->errors[$this->fromTimeName] = $this->messFormat;
                 $this->fromTime = null;
             }
         }
         $this->toTime = $this->paramRequest['ApiData']['ToTime'] ?? null;
-        if($this->toTime != null){
-            if(!preg_match('/^\d{14}$/',  $this->toTime)){
+        if ($this->toTime != null) {
+            if (!preg_match('/^\d{14}$/',  $this->toTime)) {
                 $this->errors[$this->toTimeName] = $this->messFormat;
                 $this->toTime = null;
             }
         }
         $this->logTimeTo = $this->paramRequest['ApiData']['LogTimeTo'] ?? null;
-        if($this->logTimeTo != null){
-            if(!preg_match('/^\d{14}$/',  $this->logTimeTo)){
+        if ($this->logTimeTo != null) {
+            if (!preg_match('/^\d{14}$/',  $this->logTimeTo)) {
                 $this->errors[$this->logTimeToName] = $this->messFormat;
                 $this->logTimeTo = null;
             }
         }
         $this->executeDepartmentCode = $this->paramRequest['ApiData']['ExecuteDepartmentCode'] ?? null;
-        if($this->executeDepartmentCode != null){
-            if(!preg_match('/^.{0,20}$/',  $this->executeDepartmentCode)){
+        if ($this->executeDepartmentCode != null) {
+            if (!preg_match('/^.{0,20}$/',  $this->executeDepartmentCode)) {
                 $this->errors[$this->executeDepartmentCodeName] = $this->messFormat;
                 $this->executeDepartmentCode = null;
             }
         }
         $this->isNoExcute = $this->paramRequest['ApiData']['IsNoExcute'] ?? null;
-        if($this->isNoExcute !== null){
+        if ($this->isNoExcute !== null) {
             if (!is_bool($this->isNoExcute)) {
                 $this->errors[$this->isNoExcuteName] = $this->messFormat;
                 $this->isNoExcute = null;
             }
         }
         $this->isSpecimen = $this->paramRequest['ApiData']['IsSpecimen'] ?? null;
-        if($this->isSpecimen !== null){
+        if ($this->isSpecimen !== null) {
             if (!is_bool($this->isSpecimen)) {
                 $this->errors[$this->isSpecimenName] = $this->messFormat;
                 $this->isSpecimen = null;
             }
         }
         $this->intructionTimeTo = $this->paramRequest['ApiData']['IntructionTimeTo'] ?? null;
-        if($this->intructionTimeTo != null){
-            if(!preg_match('/^\d{14}$/',  $this->intructionTimeTo)){
+        if ($this->intructionTimeTo != null) {
+            if (!preg_match('/^\d{14}$/',  $this->intructionTimeTo)) {
                 $this->errors[$this->intructionTimeToName] = $this->messFormat;
                 $this->intructionTimeTo = null;
             }
         }
         $this->intructionTimeFrom = $this->paramRequest['ApiData']['IntructionTimeFrom'] ?? null;
-        if($this->intructionTimeFrom != null){
-            if(!preg_match('/^\d{14}$/',  $this->intructionTimeFrom)){
+        if ($this->intructionTimeFrom != null) {
+            if (!preg_match('/^\d{14}$/',  $this->intructionTimeFrom)) {
                 $this->errors[$this->intructionTimeFromName] = $this->messFormat;
                 $this->intructionTimeFrom = null;
             }
         }
         $this->debateTimeTo = $this->paramRequest['ApiData']['DebateTimeTo'] ?? null;
-        if($this->debateTimeTo != null){
-            if(!preg_match('/^\d{14}$/',  $this->debateTimeTo)){
+        if ($this->debateTimeTo != null) {
+            if (!preg_match('/^\d{14}$/',  $this->debateTimeTo)) {
                 $this->errors[$this->debateTimeToName] = $this->messFormat;
                 $this->debateTimeTo = null;
             }
         }
         $this->debateTimeFrom = $this->paramRequest['ApiData']['DebateTimeFrom'] ?? null;
-        if($this->debateTimeFrom != null){
-            if(!preg_match('/^\d{14}$/',  $this->debateTimeFrom)){
+        if ($this->debateTimeFrom != null) {
+            if (!preg_match('/^\d{14}$/',  $this->debateTimeFrom)) {
                 $this->errors[$this->debateTimeFromName] = $this->messFormat;
                 $this->debateTimeFrom = null;
             }
         }
         $this->inDateFrom = $this->paramRequest['ApiData']['InDateFrom'] ?? null;
-        if($this->inDateFrom != null){
-            if(!preg_match('/^\d{14}$/',  $this->inDateFrom)){
+        if ($this->inDateFrom != null) {
+            if (!preg_match('/^\d{14}$/',  $this->inDateFrom)) {
                 $this->errors[$this->inDateFromName] = $this->messFormat;
                 $this->inDateFrom = null;
             }
         }
         $this->inDateTo = $this->paramRequest['ApiData']['InDateTo'] ?? null;
-        if($this->inDateTo != null){
-            if(!preg_match('/^\d{14}$/',  $this->inDateTo)){
+        if ($this->inDateTo != null) {
+            if (!preg_match('/^\d{14}$/',  $this->inDateTo)) {
                 $this->errors[$this->inDateToName] = $this->messFormat;
                 $this->inDateTo = null;
             }
@@ -1681,7 +1685,7 @@ class BaseApiCacheController extends Controller
             }
         }
         $this->isNotKskRequriedAprovalOrIsKskApprove = $this->paramRequest['ApiData']['IsNotKskRequriedAproval_Or_IsKskApprove'] ?? true;
-        if (!is_bool ($this->isNotKskRequriedAprovalOrIsKskApprove)) {
+        if (!is_bool($this->isNotKskRequriedAprovalOrIsKskApprove)) {
             $this->errors[$this->isNotKskRequriedAprovalOrIsKskApproveName] = $this->messFormat;
             $this->isNotKskRequriedAprovalOrIsKskApprove = true;
         }
@@ -1732,7 +1736,7 @@ class BaseApiCacheController extends Controller
             }
         }
         $this->isApproveStore = $this->paramRequest['ApiData']['IsApproveStore'] ?? null;
-        if($this->isApproveStore !== null){
+        if ($this->isApproveStore !== null) {
             if (!is_bool($this->isApproveStore)) {
                 $this->errors[$this->isApproveStoreName] = $this->messFormat;
                 $this->isApproveStore = null;
@@ -1825,7 +1829,7 @@ class BaseApiCacheController extends Controller
             if (!is_string($this->loginname)) {
                 $this->errors[$this->loginnameName] = $this->messFormat;
                 $this->loginname = null;
-            } 
+            }
         }
         $this->executeRoleId = $this->paramRequest['ApiData']['ExecuteRoleId'] ?? null;
         if ($this->executeRoleId !== null) {

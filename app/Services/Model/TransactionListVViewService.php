@@ -53,7 +53,7 @@ class TransactionListVViewService
     {
         try {
             $data = $this->transactionListVViewRepository->applyJoins()
-                ->where('v_his_transaction_list.id', $id);
+                ->where('id', $id);
             $data = $this->transactionListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
             $data = $this->transactionListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
             $data = $data->first();

@@ -55,7 +55,7 @@ class DebateDetailVViewService
     {
         try {
             $data = $this->debateDetailVViewRepository->applyJoins()
-                ->where('v_his_debate_detail.id', $id);
+                ->where('id', $id);
             $data = $this->debateDetailVViewRepository->applyWithParam($data);
             $data = $this->debateDetailVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
             $data = $this->debateDetailVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);

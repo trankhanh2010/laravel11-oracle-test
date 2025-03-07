@@ -52,7 +52,7 @@ class TreatmentRoomGroupVViewService
     {
         try {
             $data = $this->treatmentRoomGroupVViewRepository->applyJoins()
-                ->where('v_his_treatment_room_group.id', $id);
+                ->where('id', $id);
             $data = $data->first();
             return $data;
         } catch (\Throwable $e) {

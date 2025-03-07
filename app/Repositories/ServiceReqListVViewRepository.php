@@ -18,16 +18,14 @@ class ServiceReqListVViewRepository
     public function applyJoins()
     {
         return $this->serviceReqListVView
-            ->select(
-                'v_his_service_req_list.*'
-            );
+            ->select();
     }
     public function applyWithParam($query)
     {
         return $query->with([
             'sere_serv:id,service_req_id,service_id,tdl_service_code,tdl_service_name,amount,patient_type_id,exp_mest_medicine_id',
-            'sere_serv.services:id,service_code,service_name,service_unit_id',
-            'sere_serv.services.service_unit:id,service_unit_code,service_unit_name',
+            'sere_serv.service:id,service_code,service_name,service_unit_id',
+            'sere_serv.service.service_unit:id,service_unit_code,service_unit_name',
             'sere_serv.patient_type:id,patient_type_code,patient_type_name',
             'sere_serv.exp_mest_medicine:id,tutorial',
         ]);
@@ -36,35 +34,35 @@ class ServiceReqListVViewRepository
     public function applyKeywordFilter($query, $keyword)
     {
         return $query->where(function ($query) use ($keyword) {
-            $query->where(DB::connection('oracle_his')->raw('v_his_service_req_list.service_req_list_code'), 'like', '%'. $keyword . '%')
-            ->orWhere(DB::connection('oracle_his')->raw('lower(v_his_service_req_list.service_req_list_name)'), 'like', '%'. strtolower($keyword) . '%');
+            $query->where(('service_req_list_code'), 'like', '%'. $keyword . '%')
+            ->orWhere(('lower(service_req_list_name)'), 'like', '%'. strtolower($keyword) . '%');
         });
     }
     public function applyIsActiveFilter($query, $isActive)
     {
         if ($isActive !== null) {
-            $query->where(DB::connection('oracle_his')->raw('v_his_service_req_list.is_active'), $isActive);
+            $query->where(('is_active'), $isActive);
         }
         return $query;
     }
     public function applyIsDeleteFilter($query, $isDelete)
     {
         if ($isDelete !== null) {
-            $query->where(DB::connection('oracle_his')->raw('v_his_service_req_list.is_delete'), $isDelete);
+            $query->where(('is_delete'), $isDelete);
         }
         return $query;
     }
     public function applyTrackingIdFilter($query, $param)
     {
         if ($param !== null) {
-            $query->where(DB::connection('oracle_his')->raw('v_his_service_req_list.tracking_id'), $param);
+            $query->where(('tracking_id'), $param);
         }
         return $query;
     }
     public function applyTreatmentIdFilter($query, $param)
     {
         if ($param !== null) {
-            $query->where(DB::connection('oracle_his')->raw('v_his_service_req_list.treatment_id'), $param);
+            $query->where(('treatment_id'), $param);
         }
         return $query;
     }
@@ -113,7 +111,7 @@ class ServiceReqListVViewRepository
             foreach ($orderBy as $key => $item) {
                 if (in_array($key, $orderByJoin)) {
                 } else {
-                    $query->orderBy('v_his_service_req_list.' . $key, $item);
+                    $query->orderBy('' . $key, $item);
                 }
             }
         }
@@ -171,15 +169,15 @@ class ServiceReqListVViewRepository
     {
         $numJobs = config('queue')['num_queue_worker']; // Số lượng job song song
         if ($id != null) {
-            $data = $this->applyJoins()->where('v_his_service_req_list.id', '=', $id)->first();
+            $data = $this->applyJoins()->where('id', '=', $id)->first();
             if ($data) {
                 $data = $data->getAttributes();
                 return $data;
             }
         } else {
             // Xác định min và max id
-            $minId = $this->applyJoins()->min('v_his_service_req_list.id');
-            $maxId = $this->applyJoins()->max('v_his_service_req_list.id');
+            $minId = $this->applyJoins()->min('id');
+            $maxId = $this->applyJoins()->max('id');
             $chunkSize = ceil(($maxId - $minId + 1) / $numJobs);
             for ($i = 0; $i < $numJobs; $i++) {
                 $startId = $minId + ($i * $chunkSize);

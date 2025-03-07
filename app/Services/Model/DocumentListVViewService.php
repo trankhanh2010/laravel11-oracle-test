@@ -63,7 +63,7 @@ class DocumentListVViewService
     {
         try {
             $data = $this->documentListVViewRepository->applyJoins()
-                ->where('v_emr_document_list.id', $id);
+                ->where('id', $id);
             $data = $this->documentListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
             $data = $this->documentListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
             $data = $data->first();

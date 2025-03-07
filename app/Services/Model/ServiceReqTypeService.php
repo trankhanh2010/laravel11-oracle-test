@@ -57,7 +57,7 @@ class ServiceReqTypeService
         try {
             $data = Cache::remember($this->params->serviceReqTypeName . '_' . $id . '_is_active_' . $this->params->isActive, $this->params->time, function () use ($id){
                 $data = $this->serviceReqTypeRepository->applyJoins()
-                    ->where('his_service_req_type.id', $id);
+                    ->where('id', $id);
                 $data = $this->serviceReqTypeRepository->applyIsActiveFilter($data, $this->params->isActive);
                 $data = $data->first();
                 return $data;

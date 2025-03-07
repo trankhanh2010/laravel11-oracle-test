@@ -16,35 +16,33 @@ class DepositReqListVViewRepository
     public function applyJoins()
     {
         return $this->DepositReqListVView
-            ->select(
-                'v_his_deposit_req_list.*'
-            );
+            ->select();
     }
     public function applyIsActiveFilter($query, $isActive)
     {
         if ($isActive !== null) {
-            $query->where(DB::connection('oracle_his')->raw('v_his_deposit_req_list.is_active'), $isActive);
+            $query->where(('is_active'), $isActive);
         }
         return $query;
     }
     public function applyIsDeleteFilter($query, $isDelete)
     {
         if ($isDelete !== null) {
-            $query->where(DB::connection('oracle_his')->raw('v_his_deposit_req_list.is_delete'), $isDelete);
+            $query->where(('is_delete'), $isDelete);
         }
         return $query;
     }
     public function applyTreatmentIdFilter($query, $id)
     {
         if ($id !== null) {
-            $query->where(DB::connection('oracle_his')->raw('v_his_deposit_req_list.treatment_id'), $id);
+            $query->where(('treatment_id'), $id);
         }
         return $query;
     }
     public function applyDepositReqCodeFilter($query, $code)
     {
         if ($code !== null) {
-            $query->where(DB::connection('oracle_his')->raw('v_his_deposit_req_list.deposit_req_code'), $code);
+            $query->where(('deposit_req_code'), $code);
         }
         return $query;
     }
@@ -52,7 +50,7 @@ class DepositReqListVViewRepository
     {
         if ($param) {
             // có transaction và transaction đó chưa bị hủy/ hoặc bị hủy mà đã được khôi phục
-            $query->whereNotNull(DB::connection('oracle_his')->raw('v_his_deposit_req_list.deposit_id'))
+            $query->whereNotNull(('deposit_id'))
             ->where(function ($subQuery) {
                 $subQuery->orWhere('transaction_is_cancel', 0)
                          ->orWhereNull('transaction_is_cancel');
@@ -60,7 +58,7 @@ class DepositReqListVViewRepository
         }else{
             // không có transaction hoặc transaction đã bị hủy
             $query->where(function ($subQuery) {
-                $subQuery->whereNull(DB::connection('oracle_his')->raw('v_his_deposit_req_list.deposit_id'))
+                $subQuery->whereNull(('deposit_id'))
                          ->orWhere('transaction_is_cancel', 1);
             });
             
@@ -73,7 +71,7 @@ class DepositReqListVViewRepository
             foreach ($orderBy as $key => $item) {
                 if (in_array($key, $orderByJoin)) {
                 } else {
-                    $query->orderBy('v_his_deposit_req_list.' . $key, $item);
+                    $query->orderBy('' . $key, $item);
                 }
             }
         }
@@ -131,15 +129,15 @@ class DepositReqListVViewRepository
     {
         $numJobs = config('queue')['num_queue_worker']; // Số lượng job song song
         if ($id != null) {
-            $data = $this->applyJoins()->where('v_his_deposit_req_list.id', '=', $id)->first();
+            $data = $this->applyJoins()->where('id', '=', $id)->first();
             if ($data) {
                 $data = $data->getAttributes();
                 return $data;
             }
         } else {
             // Xác định min và max id
-            $minId = $this->applyJoins()->min('v_his_deposit_req_list.id');
-            $maxId = $this->applyJoins()->max('v_his_deposit_req_list.id');
+            $minId = $this->applyJoins()->min('id');
+            $maxId = $this->applyJoins()->max('id');
             $chunkSize = ceil(($maxId - $minId + 1) / $numJobs);
             for ($i = 0; $i < $numJobs; $i++) {
                 $startId = $minId + ($i * $chunkSize);

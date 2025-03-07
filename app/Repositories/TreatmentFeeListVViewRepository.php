@@ -45,7 +45,7 @@ class TreatmentFeeListVViewRepository
 
         $query = $this->treatmentFeeListVView;
         return $query
-            ->select('v_his_treatment_fee_list.*');
+            ->select();
     }
     public function applyWith($query)
     {
@@ -64,7 +64,7 @@ class TreatmentFeeListVViewRepository
     public function applyKeywordFilter($query, $keyword)
     {
         return $query->where(function ($query) use ($keyword) {
-            $query->where(DB::connection('oracle_his')->raw('v_his_treatment_fee_list.service_req_code'), 'like', $keyword . '%');
+            $query->where(('service_req_code'), 'like', $keyword . '%');
         });
     }
     public function applyIsActiveFilter($query, $isActive)
@@ -134,7 +134,7 @@ class TreatmentFeeListVViewRepository
         if ($param !== null) {
             // $param = $param - ($param % 1000000);
             return $query->where(function ($query) use ($param) {
-                // $query->where(DB::connection('oracle_his')->raw('CREATE_TIME-MOD(CREATE_TIME,1000000)'), '>=', $param);
+                // $query->where(('CREATE_TIME-MOD(CREATE_TIME,1000000)'), '>=', $param);
                 // $query->where('vir_create_date', '>=', $param);
                 $query->where('IN_TIME', '>=', $param);
             });
@@ -146,7 +146,7 @@ class TreatmentFeeListVViewRepository
         if ($param !== null) {
             // $param = $param - ($param % 1000000);
             return $query->where(function ($query) use ($param) {
-                // $query->where(DB::connection('oracle_his')->raw('CREATE_TIME-MOD(CREATE_TIME,1000000)'), '<=', $param);
+                // $query->where(('CREATE_TIME-MOD(CREATE_TIME,1000000)'), '<=', $param);
                 // $query->where('vir_create_date', '<=', $param);
                 $query->where('IN_TIME', '<=', $param);
             });
@@ -167,7 +167,7 @@ class TreatmentFeeListVViewRepository
             foreach ($orderBy as $key => $item) {
                 if (in_array($key, $orderByJoin)) {
                 } else {
-                    $query->orderBy('v_his_treatment_fee_list.' . $key, $item);
+                    $query->orderBy('' . $key, $item);
                 }
             }
         }

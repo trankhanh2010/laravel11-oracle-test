@@ -10,7 +10,7 @@ class SereServTeinListVView extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'v_his_sere_serv_tein_list';
+    protected $table = 'xa_v_his_sere_serv_tein_list';
     public $timestamps = false;
     protected $guarded = [
         'id',

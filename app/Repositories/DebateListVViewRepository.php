@@ -16,51 +16,49 @@ class DebateListVViewRepository
     public function applyJoins()
     {
         return $this->debateListVView
-            ->select(
-                'v_his_debate_list.*'
-            );
+            ->select();
     }
     public function applyKeywordFilter($query, $keyword)
     {
         return $query->where(function ($query) use ($keyword) {
-            $query->where(DB::connection('oracle_his')->raw('v_his_debate_list.treatment_code'), $keyword)
-            ->orWhere(DB::connection('oracle_his')->raw('lower(v_his_debate_list.patient_code)'), $keyword)
-            ->orWhere(DB::connection('oracle_his')->raw('lower(v_his_debate_list.tdl_patient_name)'), 'like', '%'. strtolower($keyword) . '%');
+            $query->where(DB::connection('oracle_his')->raw('treatment_code'), $keyword)
+            ->orWhere(DB::connection('oracle_his')->raw('lower(patient_code)'), $keyword)
+            ->orWhere(DB::connection('oracle_his')->raw('lower(tdl_patient_name)'), 'like', '%'. strtolower($keyword) . '%');
         });
     }
     public function applyIsActiveFilter($query, $isActive)
     {
         if ($isActive !== null) {
-            $query->where(DB::connection('oracle_his')->raw('v_his_debate_list.is_active'), $isActive);
+            $query->where(('is_active'), $isActive);
         }
         return $query;
     }
     public function applyIsDeleteFilter($query, $isDelete)
     {
         if ($isDelete !== null) {
-            $query->where(DB::connection('oracle_his')->raw('v_his_debate_list.is_delete'), $isDelete);
+            $query->where(('is_delete'), $isDelete);
         }
         return $query;
     }
     public function applyTreatmentIdFilter($query, $param)
     {
         if ($param !== null) {
-            $query->where(DB::connection('oracle_his')->raw('v_his_debate_list.treatment_id'), $param);
+            $query->where(('treatment_id'), $param);
         }
         return $query;
     }
     public function applyDepartmentIdsFilter($query, $param)
     {
         if ($param !== null) {
-            $query->whereIn(DB::connection('oracle_his')->raw('v_his_debate_list.department_id'), $param);
+            $query->whereIn(('department_id'), $param);
         }
         return $query;
     }
     public function applyDebateTimeFilter($query, $from, $to)
     {
         if ($from !== null && $to!== null) {
-            $query->where(DB::connection('oracle_his')->raw('v_his_debate_list.debate_time'), '>=',$from)
-            ->where(DB::connection('oracle_his')->raw('v_his_debate_list.debate_time'), '<=',$to);
+            $query->where(('debate_time'), '>=',$from)
+            ->where(('debate_time'), '<=',$to);
         }
         return $query;
     }
@@ -71,7 +69,7 @@ class DebateListVViewRepository
             foreach ($orderBy as $key => $item) {
                 if (in_array($key, $orderByJoin)) {
                 } else {
-                    $query->orderBy('v_his_debate_list.' . $key, $item);
+                    $query->orderBy('' . $key, $item);
                 }
             }
         }
@@ -129,15 +127,15 @@ class DebateListVViewRepository
     {
         $numJobs = config('queue')['num_queue_worker']; // Số lượng job song song
         if ($id != null) {
-            $data = $this->applyJoins()->where('v_his_debate_list.id', '=', $id)->first();
+            $data = $this->applyJoins()->where('id', '=', $id)->first();
             if ($data) {
                 $data = $data->getAttributes();
                 return $data;
             }
         } else {
             // Xác định min và max id
-            $minId = $this->applyJoins()->min('v_his_debate_list.id');
-            $maxId = $this->applyJoins()->max('v_his_debate_list.id');
+            $minId = $this->applyJoins()->min('id');
+            $maxId = $this->applyJoins()->max('id');
             $chunkSize = ceil(($maxId - $minId + 1) / $numJobs);
             for ($i = 0; $i < $numJobs; $i++) {
                 $startId = $minId + ($i * $chunkSize);

@@ -17,9 +17,7 @@ class SereServDetailVViewRepository
     public function applyJoins()
     {
         return $this->sereServDetailVView
-            ->select(
-                'v_his_sere_serv_detail.*'
-            );
+            ->select();
     }
     public function applyWithParam($query)
     {
@@ -74,21 +72,21 @@ class SereServDetailVViewRepository
     public function applyKeywordFilter($query, $keyword)
     {
         return $query->where(function ($query) use ($keyword) {
-            $query->where(DB::connection('oracle_his')->raw('v_his_sere_serv_detail.sere_serv_detail_code'), 'like', '%' . $keyword . '%')
-                ->orWhere(DB::connection('oracle_his')->raw('lower(v_his_sere_serv_detail.sere_serv_detail_name)'), 'like', '%' . strtolower($keyword) . '%');
+            $query->where(('sere_serv_detail_code'), 'like', '%' . $keyword . '%')
+                ->orWhere(('lower(sere_serv_detail_name)'), 'like', '%' . strtolower($keyword) . '%');
         });
     }
     public function applyIsActiveFilter($query, $isActive)
     {
         if ($isActive !== null) {
-            $query->where(DB::connection('oracle_his')->raw('v_his_sere_serv_detail.is_active'), $isActive);
+            $query->where(('is_active'), $isActive);
         }
         return $query;
     }
     public function applyIsDeleteFilter($query, $isDelete)
     {
         if ($isDelete !== null) {
-            $query->where(DB::connection('oracle_his')->raw('v_his_sere_serv_detail.is_delete'), $isDelete);
+            $query->where(('is_delete'), $isDelete);
         }
         return $query;
     }
@@ -98,7 +96,7 @@ class SereServDetailVViewRepository
             foreach ($orderBy as $key => $item) {
                 if (in_array($key, $orderByJoin)) {
                 } else {
-                    $query->orderBy('v_his_sere_serv_detail.' . $key, $item);
+                    $query->orderBy('' . $key, $item);
                 }
             }
         }
@@ -156,15 +154,15 @@ class SereServDetailVViewRepository
     {
         $numJobs = config('queue')['num_queue_worker']; // Số lượng job song song
         if ($id != null) {
-            $data = $this->applyJoins()->where('v_his_sere_serv_detail.id', '=', $id)->first();
+            $data = $this->applyJoins()->where('id', '=', $id)->first();
             if ($data) {
                 $data = $data->getAttributes();
                 return $data;
             }
         } else {
             // Xác định min và max id
-            $minId = $this->applyJoins()->min('v_his_sere_serv_detail.id');
-            $maxId = $this->applyJoins()->max('v_his_sere_serv_detail.id');
+            $minId = $this->applyJoins()->min('id');
+            $maxId = $this->applyJoins()->max('id');
             $chunkSize = ceil(($maxId - $minId + 1) / $numJobs);
             for ($i = 0; $i < $numJobs; $i++) {
                 $startId = $minId + ($i * $chunkSize);

@@ -120,7 +120,7 @@ class TestServiceReqListVViewService
     {
         try {
             $data = $this->testServiceReqListVViewRepository->applyJoins()
-                ->where('v_his_test_service_req_list.id', $id);
+                ->where('id', $id);
             $data = $this->testServiceReqListVViewRepository->applyWith($data);
             $data = $this->testServiceReqListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
             $data = $this->testServiceReqListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);

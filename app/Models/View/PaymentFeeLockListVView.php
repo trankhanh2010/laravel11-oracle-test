@@ -10,7 +10,7 @@ class PaymentFeeLockListVView extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'v_his_payment_fee_lock_list';
+    protected $table = 'xa_v_his_payment_fee_lock_list';
     public $timestamps = false;
     protected $guarded = [
         'id',

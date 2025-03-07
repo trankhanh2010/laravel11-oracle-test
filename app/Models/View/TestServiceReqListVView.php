@@ -14,7 +14,7 @@ class TestServiceReqListVView extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his';
-    protected $table = 'v_his_test_service_req_list';
+    protected $table = 'xa_v_his_test_service_req_list';
     public $timestamps = false;
     protected $guarded = [
         'id',

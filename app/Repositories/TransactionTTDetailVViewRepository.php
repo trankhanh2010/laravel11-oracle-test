@@ -16,41 +16,39 @@ class TransactionTTDetailVViewRepository
     public function applyJoins()
     {
         return $this->transactionTTDetailVView
-            ->select(
-                'v_his_transaction_tt_detail.*'
-            );
+            ->select();
     }
     public function applyKeywordFilter($query, $keyword)
     {
         return $query->where(function ($query) use ($keyword) {
-            $query->where(DB::connection('oracle_his')->raw('v_his_transaction_tt_detail.loginname'), 'like', $keyword . '%');
+            $query->where(('loginname'), 'like', $keyword . '%');
         });
     }
     public function applyIsActiveFilter($query, $isActive)
     {
         if ($isActive !== null) {
-            $query->where(DB::connection('oracle_his')->raw('v_his_transaction_tt_detail.is_active'), $isActive);
+            $query->where(('is_active'), $isActive);
         }
         return $query;
     }
     public function applyIsDeleteFilter($query, $isDelete)
     {
         if ($isDelete !== null) {
-            $query->where(DB::connection('oracle_his')->raw('v_his_transaction_tt_detail.is_delete'), $isDelete);
+            $query->where(('is_delete'), $isDelete);
         }
         return $query;
     }
     public function applyBillIdFilter($query, $id)
     {
         if ($id !== null) {
-            $query->where(DB::connection('oracle_his')->raw('v_his_transaction_tt_detail.bill_id'), $id);
+            $query->where(('bill_id'), $id);
         }
         return $query;
     }
     public function applyBillCodeFilter($query, $code)
     {
         if ($code !== null) {
-            $query->where(DB::connection('oracle_his')->raw('v_his_transaction_tt_detail.bill_code'), $code);
+            $query->where(('bill_code'), $code);
         }
         return $query;
     }
@@ -60,7 +58,7 @@ class TransactionTTDetailVViewRepository
             foreach ($orderBy as $key => $item) {
                 if (in_array($key, $orderByJoin)) {
                 } else {
-                    $query->orderBy('v_his_transaction_tt_detail.' . $key, $item);
+                    $query->orderBy('' . $key, $item);
                 }
             }
         }

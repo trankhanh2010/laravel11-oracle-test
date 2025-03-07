@@ -17,7 +17,7 @@ class TreatmentFeeDetailVViewRepository
     {
         return $this->treatmentFeeDetailVView
             ->select(
-                'v_his_treatment_fee_detail.*'
+                'xa_v_his_treatment_fee_detail.*'
             )
             ->addSelect(DB::connection('oracle_his')->raw('(total_deposit_amount - total_repay_amount - total_bill_transfer_amount + total_bill_amount) as da_thu'))
             ->addSelect(DB::connection('oracle_his')->raw('(total_deposit_amount - total_service_deposit_amount) as tam_ung'))
@@ -27,34 +27,34 @@ class TreatmentFeeDetailVViewRepository
     public function applyKeywordFilter($query, $keyword)
     {
         return $query->where(function ($query) use ($keyword) {
-            $query->where(DB::connection('oracle_his')->raw('v_his_treatment_fee_detail.loginname'), 'like', $keyword . '%');
+            $query->where(('loginname'), 'like', $keyword . '%');
         });
     }
     public function applyIsActiveFilter($query, $isActive)
     {
         if ($isActive !== null) {
-            $query->where(DB::connection('oracle_his')->raw('v_his_treatment_fee_detail.is_active'), $isActive);
+            $query->where(('is_active'), $isActive);
         }
         return $query;
     }
     public function applyIsDeleteFilter($query, $isDelete)
     {
         if ($isDelete !== null) {
-            $query->where(DB::connection('oracle_his')->raw('v_his_treatment_fee_detail.is_delete'), $isDelete);
+            $query->where(('is_delete'), $isDelete);
         }
         return $query;
     }
     public function applyTreatmentIdFilter($query, $id)
     {
         if ($id !== null) {
-            $query->where(DB::connection('oracle_his')->raw('v_his_treatment_fee_detail.id'), $id);
+            $query->where(('id'), $id);
         }
         return $query;
     }
     public function applyTreatmentCodeFilter($query, $code)
     {
         if ($code !== null) {
-            $query->where(DB::connection('oracle_his')->raw('v_his_treatment_fee_detail.treatment_code'), $code);
+            $query->where(('treatment_code'), $code);
         }
         return $query;
     }
@@ -64,7 +64,7 @@ class TreatmentFeeDetailVViewRepository
             foreach ($orderBy as $key => $item) {
                 if (in_array($key, $orderByJoin)) {
                 } else {
-                    $query->orderBy('v_his_treatment_fee_detail.' . $key, $item);
+                    $query->orderBy('' . $key, $item);
                 }
             }
         }

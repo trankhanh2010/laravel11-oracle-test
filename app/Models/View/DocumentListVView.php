@@ -11,7 +11,7 @@ class DocumentListVView extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_emr'; 
-    protected $table = 'v_emr_document_list';
+    protected $table = 'xa_v_emr_document_list';
     public $timestamps = false;
     protected $guarded = [
         'id',

@@ -48,7 +48,7 @@ class TestServiceReqListVViewRepository
         $query = $this->testServiceReqListVView;
         return $query
             // ->where('service_req_type_id', $this->serviceReqTypeXNId)
-            ->select('v_his_test_service_req_list.*');
+            ->select();
     }
     public function applyWith($query)
     {
@@ -65,7 +65,7 @@ class TestServiceReqListVViewRepository
     public function applyKeywordFilter($query, $keyword)
     {
         return $query->where(function ($query) use ($keyword) {
-            $query->where(DB::connection('oracle_his')->raw('v_his_test_service_req_list.service_req_code'), 'like', $keyword . '%');
+            $query->where(('service_req_code'), 'like', $keyword . '%');
         });
     }
     public function applyIsActiveFilter($query, $isActive)
@@ -135,7 +135,7 @@ class TestServiceReqListVViewRepository
         if ($param !== null) {
             // $param = $param - ($param % 1000000);
             return $query->where(function ($query) use ($param) {
-                // $query->where(DB::connection('oracle_his')->raw('CREATE_TIME-MOD(CREATE_TIME,1000000)'), '>=', $param);
+                // $query->where(('CREATE_TIME-MOD(CREATE_TIME,1000000)'), '>=', $param);
                 // $query->where('vir_create_date', '>=', $param);
                 $query->where('INTRUCTION_TIME', '>=', $param);
             });
@@ -147,7 +147,7 @@ class TestServiceReqListVViewRepository
         if ($param !== null) {
             // $param = $param - ($param % 1000000);
             return $query->where(function ($query) use ($param) {
-                // $query->where(DB::connection('oracle_his')->raw('CREATE_TIME-MOD(CREATE_TIME,1000000)'), '<=', $param);
+                // $query->where(('CREATE_TIME-MOD(CREATE_TIME,1000000)'), '<=', $param);
                 // $query->where('vir_create_date', '<=', $param);
                 $query->where('INTRUCTION_TIME', '<=', $param);
             });
@@ -168,7 +168,7 @@ class TestServiceReqListVViewRepository
         //         return $data;
         //     });
         //     return $query->where(function ($query) use ($id) {
-        //         $query->where("v_his_test_service_req_list.execute_department_id", $id);
+        //         $query->where("execute_department_id", $id);
         //     });
         // }
         return $query;
@@ -180,7 +180,7 @@ class TestServiceReqListVViewRepository
         //     return $data->value('id');
         // });
         // $query = $query->where(function ($query) {
-        //     $query->where("v_his_test_service_req_list.treatment_type_id", $this->treatmentType01Id);
+        //     $query->where("treatment_type_id", $this->treatmentType01Id);
         // });
 
 
@@ -249,7 +249,7 @@ class TestServiceReqListVViewRepository
     // Kiểm tra xem tổng tiền bệnh nhân thanh toán - tổng tiền cần thanh toán có lớn hơn = 0 không
     public function applyCheckSufficientPaymentFilter($query)
     {
-        $query = $query->where(DB::connection('oracle_his')->raw('total_treatment_bill_amount - total_vir_total_patient_price'), '>=', 0);
+        $query = $query->where(('total_treatment_bill_amount - total_vir_total_patient_price'), '>=', 0);
         return $query;
     }
     public function applyIsSpecimenFilter($query, $param)
@@ -320,7 +320,7 @@ class TestServiceReqListVViewRepository
             foreach ($orderBy as $key => $item) {
                 if (in_array($key, $orderByJoin)) {
                 } else {
-                    $query->orderBy('v_his_test_service_req_list.' . $key, $item);
+                    $query->orderBy('' . $key, $item);
                 }
             }
         }
@@ -377,15 +377,15 @@ class TestServiceReqListVViewRepository
     {
         $numJobs = config('queue')['num_queue_worker']; // Số lượng job song song
         if ($id != null) {
-            $data = $this->applyJoins()->where('v_his_test_service_req_list.id', '=', $id)->first();
+            $data = $this->applyJoins()->where('id', '=', $id)->first();
             if ($data) {
                 $data = $data->toArray();
                 return $data;
             }
         } else {
             // Xác định min và max id
-            $minId = $this->applyJoins()->min('v_his_test_service_req_list.id');
-            $maxId = $this->applyJoins()->max('v_his_test_service_req_list.id');
+            $minId = $this->applyJoins()->min('id');
+            $maxId = $this->applyJoins()->max('id');
             $chunkSize = ceil(($maxId - $minId + 1) / $numJobs);
             for ($i = 0; $i < $numJobs; $i++) {
                 $startId = $minId + ($i * $chunkSize);

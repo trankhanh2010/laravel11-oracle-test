@@ -81,7 +81,7 @@ class TreatmentFeeListVViewService
     {
         try {
             $data = $this->treatmentFeeListVViewRepository->applyJoins()
-                ->where('v_his_treatment_fee_list.id', $id);
+                ->where('id', $id);
             $data = $this->treatmentFeeListVViewRepository->applyWith($data);
             $data = $this->treatmentFeeListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
             $data = $this->treatmentFeeListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);

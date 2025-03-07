@@ -10,7 +10,7 @@ class TreatmentFeeDetailVView extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'v_his_treatment_fee_detail';
+    protected $table = 'xa_v_his_treatment_fee_detail';
     public $timestamps = false;
     protected $guarded = [
         'id',

@@ -18,26 +18,24 @@ class TreatmentBedRoomListVViewRepository
     public function applyJoins()
     {
         return $this->treatmentBedRoomListVView
-            ->select(
-                'v_his_treatment_bed_room_list.*'
-            );
+            ->select();
     }
     public function applyKeywordFilter($query, $keyword)
     {
         return $query->where(function ($query) use ($keyword) {
             $query->whereRaw("
             REGEXP_LIKE(
-                NLSSORT(v_his_treatment_bed_room_list.tdl_patient_name, 'NLS_SORT=GENERIC_M_AI'),
+                NLSSORT(tdl_patient_name, 'NLS_SORT=GENERIC_M_AI'),
                 NLSSORT(?, 'NLS_SORT=GENERIC_M_AI'),
                 'i'
             )
         ", [$keyword])
-                ->orWhere(DB::connection('oracle_his')->raw('v_his_treatment_bed_room_list.tdl_patient_code'), 'like', '%' . $keyword . '%')
-                ->orWhere(DB::connection('oracle_his')->raw('v_his_treatment_bed_room_list.treatment_code'), 'like', '%' . $keyword . '%')
-                ->orWhere(DB::connection('oracle_his')->raw('v_his_treatment_bed_room_list.bed_room_code'), 'like', '%' . $keyword . '%')
+                ->orWhere(('tdl_patient_code'), 'like', '%' . $keyword . '%')
+                ->orWhere(('treatment_code'), 'like', '%' . $keyword . '%')
+                ->orWhere(('bed_room_code'), 'like', '%' . $keyword . '%')
                 ->orWhereRaw("
             REGEXP_LIKE(
-                NLSSORT(v_his_treatment_bed_room_list.bed_room_name, 'NLS_SORT=GENERIC_M_AI'),
+                NLSSORT(bed_room_name, 'NLS_SORT=GENERIC_M_AI'),
                 NLSSORT(?, 'NLS_SORT=GENERIC_M_AI'),
                 'i'
             )
@@ -47,49 +45,49 @@ class TreatmentBedRoomListVViewRepository
     public function applyIsActiveFilter($query, $isActive)
     {
         if ($isActive !== null) {
-            $query->where(DB::connection('oracle_his')->raw('v_his_treatment_bed_room_list.is_active'), $isActive);
+            $query->where(('is_active'), $isActive);
         }
         return $query;
     }
     public function applyIsDeleteFilter($query, $isDelete)
     {
         if ($isDelete !== null) {
-            $query->where(DB::connection('oracle_his')->raw('v_his_treatment_bed_room_list.is_delete'), $isDelete);
+            $query->where(('is_delete'), $isDelete);
         }
         return $query;
     }
     public function applyDepartmentCodeFilter($query, $code)
     {
         if ($code !== null) {
-            $query->where(DB::connection('oracle_his')->raw('v_his_treatment_bed_room_list.department_code'), $code);
+            $query->where(('department_code'), $code);
         }
         return $query;
     }
     public function applyAddLoginnameFilter($query, $param)
     {
         if ($param !== null) {
-            $query->where(DB::connection('oracle_his')->raw('v_his_treatment_bed_room_list.add_loginname'), $param);
+            $query->where(('add_loginname'), $param);
         }
         return $query;
     }
     public function applyBedRoomIdsFilter($query, $ids)
     {
         if ($ids != null) {
-            $query->whereIn(DB::connection('oracle_his')->raw('v_his_treatment_bed_room_list.bed_room_id'), $ids);
+            $query->whereIn(('bed_room_id'), $ids);
         }
         return $query;
     }
     public function applyTreatmentTypeIdsFilter($query, $ids)
     {
         if ($ids != null) {
-            $query->whereIn(DB::connection('oracle_his')->raw('v_his_treatment_bed_room_list.in_treatment_type_id'), $ids);
+            $query->whereIn(('in_treatment_type_id'), $ids);
         }
         return $query;
     }
     public function applyPatientClassifyIdsFilter($query, $ids)
     {
         if ($ids != null) {
-            $query->whereIn(DB::connection('oracle_his')->raw('v_his_treatment_bed_room_list.tdl_patient_classify_id'), $ids);
+            $query->whereIn(('tdl_patient_classify_id'), $ids);
         }
         return $query;
     }
@@ -97,10 +95,10 @@ class TreatmentBedRoomListVViewRepository
     {
         if ($param !== null) {
             if ($param) {
-                $query->whereNotNull(DB::connection('oracle_his')->raw('v_his_treatment_bed_room_list.bed_id'))
-                    ->whereNull(DB::connection('oracle_his')->raw('v_his_treatment_bed_room_list.remove_time'));
+                $query->whereNotNull(('bed_id'))
+                    ->whereNull(('remove_time'));
             } else {
-                $query->whereNull(DB::connection('oracle_his')->raw('v_his_treatment_bed_room_list.bed_id'));
+                $query->whereNull(('bed_id'));
             }
         }
         return $query;
@@ -109,10 +107,10 @@ class TreatmentBedRoomListVViewRepository
     {
         if ($param !== null) {
             if ($param) {
-                $query->whereNotNull(DB::connection('oracle_his')->raw('v_his_treatment_bed_room_list.out_time'))
-                    ->whereNotNull(DB::connection('oracle_his')->raw('v_his_treatment_bed_room_list.remove_time'));
+                $query->whereNotNull(('out_time'))
+                    ->whereNotNull(('remove_time'));
             } else {
-                $query->whereNull(DB::connection('oracle_his')->raw('v_his_treatment_bed_room_list.out_time'));
+                $query->whereNull(('out_time'));
             }
         }
         return $query;
@@ -121,9 +119,9 @@ class TreatmentBedRoomListVViewRepository
     {
         if ($param !== null) {
             if ($param) {
-                $query->whereNotNull(DB::connection('oracle_his')->raw('v_his_treatment_bed_room_list.co_department_ids'));
+                $query->whereNotNull(('co_department_ids'));
             } else {
-                $query->whereNull(DB::connection('oracle_his')->raw('v_his_treatment_bed_room_list.co_department_ids'));
+                $query->whereNull(('co_department_ids'));
             }
         }
         return $query;
@@ -152,7 +150,7 @@ class TreatmentBedRoomListVViewRepository
             foreach ($orderBy as $key => $item) {
                 if (in_array($key, $orderByJoin)) {
                 } else {
-                    $query->orderBy('v_his_treatment_bed_room_list.' . $key, $item);
+                    $query->orderBy('' . $key, $item);
                 }
             }
         }
@@ -172,20 +170,42 @@ class TreatmentBedRoomListVViewRepository
                 ->get();
         }
     }
-    public function applyGroupByField($data, $groupByField = null)
+    public function applyGroupByField($data, $groupByFields = [])
     {
-        if (!$groupByField) {
+        if (empty($groupByFields)) {
             return $data;
         }
-        // Chuyển camelCase thành snake_case
-        $groupByFieldFormat = Str::snake($groupByField);
-        return collect($data)->groupBy($groupByFieldFormat)->map(function ($items, $key) use ($groupByField) {
-            return [
-                $groupByField => $key,
-                'total' => $items->count(), 
-                'data' => $items->toArray(),
-            ];
-        })->values();
+
+        // Chuyển các field thành snake_case trước khi nhóm
+        $fieldMappings = [];
+        foreach ($groupByFields as $field) {
+            $snakeField = Str::snake($field);
+            $fieldMappings[$snakeField] = $field;
+        }
+    
+        $snakeFields = array_keys($fieldMappings);
+    
+        // Đệ quy nhóm dữ liệu theo thứ tự fields đã convert
+        $groupData = function ($items, $fields) use (&$groupData, $fieldMappings) {
+            if (empty($fields)) {
+                return $items->values(); // Hết field nhóm -> Trả về danh sách gốc
+            }
+    
+            $currentField = array_shift($fields);
+            $originalField = $fieldMappings[$currentField];
+    
+            return $items->groupBy(function ($item) use ($currentField) {
+                return $item[$currentField] ?? null;
+            })->map(function ($group, $key) use ($fields, $groupData, $originalField) {
+                return [
+                    $originalField => (string)$key, // Hiển thị tên gốc
+                    'total' => $group->count(),
+                    'data' => $groupData($group, $fields),
+                ];
+            })->values();
+        };
+    
+        return $groupData(collect($data), $snakeFields);
     }
     
     public function getById($id)

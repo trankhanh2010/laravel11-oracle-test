@@ -77,7 +77,7 @@ class MedicalCaseCoverListVViewService
     {
         try {
             $data = $this->medicalCaseCoverListVViewRepository->applyJoins()
-                ->where('v_his_medical_case_cover_list.id', $id);
+                ->where('id', $id);
             $data = $this->medicalCaseCoverListVViewRepository->applyWithParam($data);
             $data = $this->medicalCaseCoverListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
             $data = $this->medicalCaseCoverListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);

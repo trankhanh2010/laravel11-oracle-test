@@ -57,7 +57,7 @@ class IcdListVViewService
         try {
             $data = Cache::remember($this->params->icdListVViewName . '_' . $id . '_is_active_' . $this->params->isActive, $this->params->time, function () use ($id){
                 $data = $this->icdListVViewRepository->applyJoins()
-                    ->where('his_icd_list_v_view.id', $id);
+                    ->where('id', $id);
                 $data = $this->icdListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
                 $data = $data->first();
                 return $data;

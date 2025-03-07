@@ -100,7 +100,7 @@ class TreatmentFeeDetailVViewService
     {
         try {
             $data = $this->treatmentFeeDetailVViewRepository->applyJoins()
-                ->where('v_his_account_book.id', $id);
+                ->where('id', $id);
             $data = $this->treatmentFeeDetailVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
             $data = $data->first();
             return $data;

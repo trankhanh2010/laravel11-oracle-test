@@ -17,7 +17,6 @@ class DocumentListVViewRepository
     {
         return $this->documentListVView
             ->select(
-                'v_emr_document_list.*'
             );
     }
     public function applyWithParam($query)
@@ -29,42 +28,42 @@ class DocumentListVViewRepository
     public function applyKeywordFilter($query, $keyword)
     {
         return $query->where(function ($query) use ($keyword) {
-            $query->where(DB::connection('oracle_emr')->raw('v_emr_document_list.document_list_code'), 'like', '%'. $keyword . '%')
-            ->orWhere(DB::connection('oracle_emr')->raw('lower(v_emr_document_list.document_list_name)'), 'like', '%'. strtolower($keyword) . '%');
+            $query->where(('document_list_code'), 'like', '%'. $keyword . '%')
+            ->orWhere(('lower(document_list_name)'), 'like', '%'. strtolower($keyword) . '%');
         });
     }
     public function applyIsActiveFilter($query, $isActive)
     {
         if ($isActive !== null) {
-            $query->where(DB::connection('oracle_emr')->raw('v_emr_document_list.is_active'), $isActive);
+            $query->where(('is_active'), $isActive);
         }
         return $query;
     }
     public function applyIsDeleteFilter($query, $isDelete)
     {
         if ($isDelete !== null) {
-            $query->where(DB::connection('oracle_emr')->raw('v_emr_document_list.is_delete'), $isDelete);
+            $query->where(('is_delete'), $isDelete);
         }
         return $query;
     }
     public function applyTreatmentIdFilter($query, $param)
     {
         if ($param !== null) {
-            $query->where(DB::connection('oracle_emr')->raw('v_emr_document_list.treatment_id'), $param);
+            $query->where(('treatment_id'), $param);
         }
         return $query;
     }
     public function applyDocumentTypeIdFilter($query, $param)
     {
         if ($param !== null) {
-            $query->where(DB::connection('oracle_emr')->raw('v_emr_document_list.document_type_id'), $param);
+            $query->where(('document_type_id'), $param);
         }
         return $query;
     }
     public function applyTreatmentCodeFilter($query, $param)
     {
         if ($param !== null) {
-            $query->where(DB::connection('oracle_emr')->raw('v_emr_document_list.treatment_code'), $param);
+            $query->where(('treatment_code'), $param);
         }
         return $query;
     }
@@ -74,7 +73,7 @@ class DocumentListVViewRepository
             foreach ($orderBy as $key => $item) {
                 if (in_array($key, $orderByJoin)) {
                 } else {
-                    $query->orderBy('v_emr_document_list.' . $key, $item);
+                    $query->orderBy('' . $key, $item);
                 }
             }
         }
@@ -132,15 +131,15 @@ class DocumentListVViewRepository
     {
         $numJobs = config('queue')['num_queue_worker']; // Số lượng job song song
         if ($id != null) {
-            $data = $this->applyJoins()->where('v_emr_document_list.id', '=', $id)->first();
+            $data = $this->applyJoins()->where('id', '=', $id)->first();
             if ($data) {
                 $data = $data->getAttributes();
                 return $data;
             }
         } else {
             // Xác định min và max id
-            $minId = $this->applyJoins()->min('v_emr_document_list.id');
-            $maxId = $this->applyJoins()->max('v_emr_document_list.id');
+            $minId = $this->applyJoins()->min('id');
+            $maxId = $this->applyJoins()->max('id');
             $chunkSize = ceil(($maxId - $minId + 1) / $numJobs);
             for ($i = 0; $i < $numJobs; $i++) {
                 $startId = $minId + ($i * $chunkSize);

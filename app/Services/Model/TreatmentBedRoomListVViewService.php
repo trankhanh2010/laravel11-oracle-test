@@ -81,7 +81,7 @@ class TreatmentBedRoomListVViewService
     {
         try {
             $data = $this->treatmentBedRoomListVViewRepository->applyJoins()
-                ->where('v_his_treatment_bed_room_list.id', $id);
+                ->where('id', $id);
             $data = $this->treatmentBedRoomListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
             $data = $this->treatmentBedRoomListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
             $data = $data->first();

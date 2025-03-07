@@ -422,7 +422,7 @@ return [
             'transaction_tt_detail_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm Chi tiết giao dịch!',
             'deposit_req_list_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm Danh sách yêu cầu tạm ứng!',
             'medical_case_cover_list_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm Vỏ bệnh án!',
-            'treatment_bed_room_list_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm TreatmentBedRoomList!',
+            'treatment_bed_room_list_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm TreatBedRoomList!',
             'icd_list_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm IcdList!',
             'tran_pati_form' => 'Có lỗi khi thực hiện thao tác với bảng tạm Hình thức chuyển viện!',
             'treatment_room_group_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm TreatmentRoomGroup!',
@@ -434,6 +434,7 @@ return [
             'document_list_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm DocumentList!',
             'debate_list_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm DebateList!',
             'debate_detail_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm DebateDetail!',
+            'test_service_type_list_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm TestServTypeList!',
 
         ],
         'table' => [

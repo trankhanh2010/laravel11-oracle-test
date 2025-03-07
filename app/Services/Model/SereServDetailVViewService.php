@@ -57,7 +57,7 @@ class SereServDetailVViewService
     {
         try {
             $data = $this->sereServDetailVViewRepository->applyJoins()
-                ->where('v_his_sere_serv_detail.id', $id);
+                ->where('id', $id);
                 $data = $this->sereServDetailVViewRepository->applyWithParam($data);
             $data = $this->sereServDetailVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
             $data = $this->sereServDetailVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);

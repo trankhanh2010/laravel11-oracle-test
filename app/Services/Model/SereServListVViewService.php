@@ -69,7 +69,7 @@ class SereServListVViewService
     {
         try {
             $data = $this->sereServListVViewRepository->applyJoins()
-                ->where('v_his_sere_serv_list.id', $id);
+                ->where('id', $id);
             $data = $this->sereServListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
             $data = $this->sereServListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
             $data = $data->first();

@@ -16,9 +16,7 @@ class MedicalCaseCoverListVViewRepository
     public function applyJoins()
     {
         return $this->medicalCaseCoverListVView
-            ->select(
-                'v_his_medical_case_cover_list.*'
-            );
+            ->select();
     }
     public function applyWithParam($query)
     {
@@ -32,55 +30,55 @@ class MedicalCaseCoverListVViewRepository
     public function applyKeywordFilter($query, $keyword)
     {
         return $query->where(function ($query) use ($keyword) {
-            $query->where(DB::connection('oracle_his')->raw('v_his_medical_case_cover_list.tdl_patient_name'), 'like', '%'. $keyword . '%');
+            $query->where(('tdl_patient_name'), 'like', '%'. $keyword . '%');
         });
     }
     public function applyIsActiveFilter($query, $isActive)
     {
         if ($isActive !== null) {
-            $query->where(DB::connection('oracle_his')->raw('v_his_medical_case_cover_list.is_active'), $isActive);
+            $query->where(('is_active'), $isActive);
         }
         return $query;
     }
     public function applyIsDeleteFilter($query, $isDelete)
     {
         if ($isDelete !== null) {
-            $query->where(DB::connection('oracle_his')->raw('v_his_medical_case_cover_list.is_delete'), $isDelete);
+            $query->where(('is_delete'), $isDelete);
         }
         return $query;
     }
     public function applyDepartmentCodeFilter($query, $code)
     {
         if ($code !== null) {
-            $query->where(DB::connection('oracle_his')->raw('v_his_medical_case_cover_list.department_code'), $code);
+            $query->where(('department_code'), $code);
         }
         return $query;
     }
     public function applyAddLoginnameFilter($query, $param)
     {
         if ($param !== null) {
-            $query->where(DB::connection('oracle_his')->raw('v_his_medical_case_cover_list.add_loginname'), $param);
+            $query->where(('add_loginname'), $param);
         }
         return $query;
     }
     public function applyBedRoomIdsFilter($query, $ids)
     {
         if ($ids != null) {
-            $query->whereIn(DB::connection('oracle_his')->raw('v_his_medical_case_cover_list.bed_room_id'), $ids);
+            $query->whereIn(('bed_room_id'), $ids);
         }
         return $query;
     }
     public function applyTreatmentTypeIdsFilter($query, $ids)
     {
         if ($ids != null) {
-            $query->whereIn(DB::connection('oracle_his')->raw('v_his_medical_case_cover_list.in_treatment_type_id'), $ids);
+            $query->whereIn(('in_treatment_type_id'), $ids);
         }
         return $query;
     }
     public function applyPatientClassifyIdsFilter($query, $ids)
     {
         if ($ids != null) {
-            $query->whereIn(DB::connection('oracle_his')->raw('v_his_medical_case_cover_list.tdl_patient_classify_id'), $ids);
+            $query->whereIn(('tdl_patient_classify_id'), $ids);
         }
         return $query;
     }
@@ -88,10 +86,10 @@ class MedicalCaseCoverListVViewRepository
     {
         if ($param !== null) {
             if($param){
-                $query->whereNotNull(DB::connection('oracle_his')->raw('v_his_medical_case_cover_list.bed_id'))
-                ->whereNull(DB::connection('oracle_his')->raw('v_his_medical_case_cover_list.remove_time'));
+                $query->whereNotNull(('bed_id'))
+                ->whereNull(('remove_time'));
             }else{
-                $query->whereNull(DB::connection('oracle_his')->raw('v_his_medical_case_cover_list.bed_id'));
+                $query->whereNull(('bed_id'));
             }
         }
         return $query;
@@ -100,10 +98,10 @@ class MedicalCaseCoverListVViewRepository
     {
         if ($param !== null) {
             if($param){
-                $query->whereNotNull(DB::connection('oracle_his')->raw('v_his_medical_case_cover_list.out_time'))
-                ->whereNotNull(DB::connection('oracle_his')->raw('v_his_medical_case_cover_list.remove_time'));
+                $query->whereNotNull(('out_time'))
+                ->whereNotNull(('remove_time'));
             }else{
-                $query->whereNull(DB::connection('oracle_his')->raw('v_his_medical_case_cover_list.out_time'));
+                $query->whereNull(('out_time'));
             }
         }
         return $query;
@@ -112,9 +110,9 @@ class MedicalCaseCoverListVViewRepository
     {
         if ($param !== null) {
             if($param){
-                $query->whereNotNull(DB::connection('oracle_his')->raw('v_his_medical_case_cover_list.co_department_ids'));
+                $query->whereNotNull(('co_department_ids'));
             }else{
-                $query->whereNull(DB::connection('oracle_his')->raw('v_his_medical_case_cover_list.co_department_ids'));
+                $query->whereNull(('co_department_ids'));
             }
         }
         return $query;
@@ -143,7 +141,7 @@ class MedicalCaseCoverListVViewRepository
             foreach ($orderBy as $key => $item) {
                 if (in_array($key, $orderByJoin)) {
                 } else {
-                    $query->orderBy('v_his_medical_case_cover_list.' . $key, $item);
+                    $query->orderBy('' . $key, $item);
                 }
             }
         }

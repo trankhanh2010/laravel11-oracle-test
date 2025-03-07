@@ -16,9 +16,7 @@ class DebateDetailVViewRepository
     public function applyJoins()
     {
         return $this->debateDetailVView
-            ->select(
-                'v_his_debate_detail.*'
-            );
+            ->select();
     }
     public function applyWithParam($query)
     {
@@ -34,21 +32,21 @@ class DebateDetailVViewRepository
     public function applyKeywordFilter($query, $keyword)
     {
         return $query->where(function ($query) use ($keyword) {
-            $query->where(DB::connection('oracle_his')->raw('v_his_debate_detail.debate_detail_code'), 'like', '%'. $keyword . '%')
-            ->orWhere(DB::connection('oracle_his')->raw('lower(v_his_debate_detail.debate_detail_name)'), 'like', '%'. strtolower($keyword) . '%');
+            $query->where(('debate_detail_code'), 'like', '%'. $keyword . '%')
+            ->orWhere(('lower(debate_detail_name)'), 'like', '%'. strtolower($keyword) . '%');
         });
     }
     public function applyIsActiveFilter($query, $isActive)
     {
         if ($isActive !== null) {
-            $query->where(DB::connection('oracle_his')->raw('v_his_debate_detail.is_active'), $isActive);
+            $query->where(('is_active'), $isActive);
         }
         return $query;
     }
     public function applyIsDeleteFilter($query, $isDelete)
     {
         if ($isDelete !== null) {
-            $query->where(DB::connection('oracle_his')->raw('v_his_debate_detail.is_delete'), $isDelete);
+            $query->where(('is_delete'), $isDelete);
         }
         return $query;
     }
@@ -58,7 +56,7 @@ class DebateDetailVViewRepository
             foreach ($orderBy as $key => $item) {
                 if (in_array($key, $orderByJoin)) {
                 } else {
-                    $query->orderBy('v_his_debate_detail.' . $key, $item);
+                    $query->orderBy('' . $key, $item);
                 }
             }
         }
@@ -116,15 +114,15 @@ class DebateDetailVViewRepository
     {
         $numJobs = config('queue')['num_queue_worker']; // Số lượng job song song
         if ($id != null) {
-            $data = $this->applyJoins()->where('v_his_debate_detail.id', '=', $id)->first();
+            $data = $this->applyJoins()->where('id', '=', $id)->first();
             if ($data) {
                 $data = $data->getAttributes();
                 return $data;
             }
         } else {
             // Xác định min và max id
-            $minId = $this->applyJoins()->min('v_his_debate_detail.id');
-            $maxId = $this->applyJoins()->max('v_his_debate_detail.id');
+            $minId = $this->applyJoins()->min('id');
+            $maxId = $this->applyJoins()->max('id');
             $chunkSize = ceil(($maxId - $minId + 1) / $numJobs);
             for ($i = 0; $i < $numJobs; $i++) {
                 $startId = $minId + ($i * $chunkSize);

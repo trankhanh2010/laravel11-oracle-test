@@ -16,38 +16,36 @@ class TestServiceTypeListVViewRepository
     public function applyJoins()
     {
         return $this->testServiceTypeListVView
-            ->select(
-                'v_his_test_service_type_list.*'
-            );
+            ->select();
     }
     public function applyKeywordFilter($query, $keyword)
     {
         return $query->where(function ($query) use ($keyword) {
-            $query->where(DB::connection('oracle_his')->raw('v_his_test_service_type_list.test_service_type_list_v_view_code'), 'like', $keyword . '%')
-                ->orWhere(DB::connection('oracle_his')->raw('v_his_test_service_type_list.test_service_type_list_v_view_name'), 'like', $keyword . '%');
+            $query->where(('test_service_type_list_v_view_code'), 'like', $keyword . '%')
+                ->orWhere(('test_service_type_list_v_view_name'), 'like', $keyword . '%');
         });
     }
     public function applyIsActiveFilter($query, $isActive)
     {
         if ($isActive !== null) {
-            $query->where(DB::connection('oracle_his')->raw('v_his_test_service_type_list.is_active'), $isActive);
+            $query->where(('is_active'), $isActive);
         }
         return $query;
     }
     public function applyChuaThanhToanFilter($query)
     {
-        $query->where(DB::connection('oracle_his')->raw('v_his_test_service_type_list.da_thanh_toan'), 0);
+        $query->where(('da_thanh_toan'), 0);
         return $query;
     }
     public function applyCoPhiFilter($query)
     {
-        $query->where(DB::connection('oracle_his')->raw('v_his_test_service_type_list.vir_total_patient_price'), '>', 0);
+        $query->where(('vir_total_patient_price'), '>', 0);
         return $query;
     }
     public function applyTreatmentIdFilter($query, $id)
     {
         if ($id !== null) {
-            $query->where(DB::connection('oracle_his')->raw('v_his_test_service_type_list.tdl_treatment_id'), $id);
+            $query->where(('tdl_treatment_id'), $id);
         }
         return $query;
     }
@@ -57,7 +55,7 @@ class TestServiceTypeListVViewRepository
             foreach ($orderBy as $key => $item) {
                 if (in_array($key, $orderByJoin)) {
                 } else {
-                    $query->orderBy('v_his_test_service_type_list.' . $key, $item);
+                    $query->orderBy('' . $key, $item);
                 }
             }
         }

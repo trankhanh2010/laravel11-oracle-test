@@ -10,7 +10,7 @@ class TransactionListVView extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'v_his_transaction_list';
+    protected $table = 'xa_v_his_transaction_list';
     public $timestamps = false;
     protected $guarded = [
         'id',

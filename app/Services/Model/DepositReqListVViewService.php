@@ -58,7 +58,7 @@ class DepositReqListVViewService
     {
         try {
             $data = $this->depositReqListVViewRepository->applyJoins()
-                ->where('v_his_deposit_req_list.id', $id);
+                ->where('id', $id);
             $data = $this->depositReqListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
             $data = $this->depositReqListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
             $data = $this->depositReqListVViewRepository->applyIsDepositFilter($data, $this->params->isDeposit);
