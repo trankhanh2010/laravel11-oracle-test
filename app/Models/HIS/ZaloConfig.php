@@ -10,7 +10,7 @@ class ZaloConfig extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'his_zalo_config';
+    protected $table = 'xa_his_zalo_config';
     public $timestamps = false;
     protected $guarded = [
         'id',

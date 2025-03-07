@@ -10,7 +10,7 @@ class TreatmentMoMoPayments extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'his_treatment_momo_payments';
+    protected $table = 'xa_his_treatment_momo_payment';
     public $timestamps = false;
     protected $guarded = [
         'id',
