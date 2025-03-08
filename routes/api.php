@@ -246,6 +246,7 @@ use Illuminate\Support\Facades\DB;
 // Transaction
 use App\Http\Controllers\Api\TransactionControllers\TreatmentFeePayMentController;
 use App\Http\Controllers\Api\TransactionControllers\MoMoController;
+use App\Http\Controllers\Api\TransactionControllers\VietinbankController;
 use App\Http\Controllers\Api\ValidateControllers\DeviceGetOtpController;
 use App\Http\Controllers\Api\ValidateControllers\OtpController;
 use App\Http\Controllers\BaseControllers\ConvertController;
@@ -314,8 +315,10 @@ Route::post('v1/momo-notify-tam-ung', [MoMoController::class, 'handleNotificatio
 Route::get('v1/check-transaction', [TreatmentFeePayMentController::class, 'checkTransactionStatus'])
     ->withoutMiddleware('check_token');
 
-
-
+/// ViettinBank
+// Xác nhận giao dịch
+Route::post('v1/vietinbank-confirm-transaction', [VietinbankController::class, 'handleConfirmTransaction'])
+    ->withoutMiddleware('check_token');
 
 /// Request
 Route::get("v1/get-column-name", [BaseApiRequestController::class, "getColumnname"])->name('.get_column_name')
@@ -1056,6 +1059,7 @@ Route::group([
             'check_admin:api',
             'check_module:api',
     ]);
+
     // Transaction
     // k cần token
     Route::apiResource('v1/treatment-fee-payment', TreatmentFeePayMentController::class)->only(['index'])

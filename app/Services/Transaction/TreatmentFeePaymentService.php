@@ -16,6 +16,7 @@ use App\Repositories\TreatmentFeeDetailVViewRepository;
 use App\Repositories\TreatmentMoMoPaymentsRepository;
 use Illuminate\Support\Str;
 use GuzzleHttp\Client;
+use App\Services\Transaction\VietinbankService;
 
 class TreatmentFeePaymentService
 {
@@ -37,6 +38,8 @@ class TreatmentFeePaymentService
     protected $endpointRefundPayment;
     protected $returnUrl;
     protected $notifyUrl;
+
+    protected $vietinbankService;
     public function __construct(
         TreatmentFeeListVViewRepository $treatmentFeeListVViewRepository,
         TestServiceTypeListVViewRepository $testServiceTypeListVViewRepository,
@@ -46,6 +49,7 @@ class TreatmentFeePaymentService
         DepositReqListVViewRepository $depositReqListVViewRepository,
         TransactionRepository $transactionRepository,
         DepositReqRepository $depositReqRepository,
+        VietinbankService $vietinbankService,
     ) {
         $this->treatmentFeeListVViewRepository = $treatmentFeeListVViewRepository;
         $this->testServiceTypeListVViewRepository = $testServiceTypeListVViewRepository;
@@ -55,6 +59,7 @@ class TreatmentFeePaymentService
         $this->depositReqListVViewRepository = $depositReqListVViewRepository;
         $this->transactionRepository = $transactionRepository;
         $this->depositReqRepository = $depositReqRepository;
+        $this->vietinbankService = $vietinbankService;
 
         $this->partnerCode = config('database')['connections']['momo']['momo_partner_code'];
         $this->accessKey = config('database')['connections']['momo']['momo_access_key'];
@@ -463,9 +468,11 @@ class TreatmentFeePaymentService
             }
 
             $costs = null;
-            $transactionInfo = $this->generateTransactionInfo($data, $costs);
 
+            // Giao dịch Momo
             if ($this->params->paymentMethod == 'MoMo') {
+                $transactionInfo = $this->generateTransactionInfo($data, $costs);
+
                 $checkOtherLink = false;
                 [$requestType, $signature] = $this->generateSignature($this->params->paymentOption, $transactionInfo);
 
@@ -547,6 +554,17 @@ class TreatmentFeePaymentService
                 }
                 return ['data' => $dataReturn];
             }
+            // Giao dịch VietTinBank
+            // if ($this->params->paymentMethod == 'VietTinBank') {
+            //     $transactionInfo = $this->generateTransactionInfo($data, $costs);
+            //     dd($transactionInfo);
+            //     $result = $this->vietinbankService->createTransactionQrCode(
+            //         '10000',
+            //         'aaaaaaaaaaaaaaaaa',
+            //         '$request->callback_url'
+            //     );
+            //     dd($result);
+            // }
 
             return ['data' => ['success' => false]];
         } catch (\Throwable $e) {

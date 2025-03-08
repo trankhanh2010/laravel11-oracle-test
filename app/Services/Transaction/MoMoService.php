@@ -165,7 +165,6 @@ class MoMoService
 
         // Bước 3: Tạo chữ ký bằng HMAC-SHA256
         $generatedSignature = hash_hmac('sha256', $rawData, $this->secretKey);
-
         // Bước 4: So sánh chữ ký
         return hash_equals($generatedSignature, $data['signature']);
     }
