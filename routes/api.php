@@ -247,6 +247,7 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Api\TransactionControllers\TreatmentFeePayMentController;
 use App\Http\Controllers\Api\TransactionControllers\MoMoController;
 use App\Http\Controllers\Api\TransactionControllers\VietinbankController;
+use App\Http\Controllers\Api\TransactionControllers\VietinbankQrBillingController;
 use App\Http\Controllers\Api\ValidateControllers\DeviceGetOtpController;
 use App\Http\Controllers\Api\ValidateControllers\OtpController;
 use App\Http\Controllers\BaseControllers\ConvertController;

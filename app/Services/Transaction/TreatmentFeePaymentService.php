@@ -2,6 +2,7 @@
 
 namespace App\Services\Transaction;
 
+use App\Classes\Vietinbank\RequestCreateQrcode;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use Exception;
@@ -555,16 +556,20 @@ class TreatmentFeePaymentService
                 return ['data' => $dataReturn];
             }
             // Giao dịch VietTinBank
-            // if ($this->params->paymentMethod == 'VietTinBank') {
-            //     $transactionInfo = $this->generateTransactionInfo($data, $costs);
-            //     dd($transactionInfo);
-            //     $result = $this->vietinbankService->createTransactionQrCode(
-            //         '10000',
-            //         'aaaaaaaaaaaaaaaaa',
-            //         '$request->callback_url'
-            //     );
-            //     dd($result);
-            // }
+            if ($this->params->paymentMethod == 'VietTinBank') {
+                $transactionInfo = $this->generateTransactionInfo($data, $costs);
+                if($this->params->paymentOption == 'ThanhToanQRCode'){
+              
+                $data = [];  
+                $data['amount'] = (int)$transactionInfo['amount'];
+                $data['order_info'] = $transactionInfo['orderInfo'];
+                $data['order_id'] = 121212;
+
+                // Gọi service và truyền đối tượng RequestCreateQrcode
+                $qrImageUrl = $this->vietinbankService->createTransactionQrCode($data);
+                dd($qrImageUrl);
+                }
+            }
 
             return ['data' => ['success' => false]];
         } catch (\Throwable $e) {
