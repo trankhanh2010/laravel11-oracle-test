@@ -30,6 +30,7 @@ class DebateListVViewService
             $data = $this->debateListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
             $data = $this->debateListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
             $data = $this->debateListVViewRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
+            $data = $this->debateListVViewRepository->applyTreatmentCodeFilter($data, $this->params->treatmentCode);
             $data = $this->debateListVViewRepository->applyDepartmentIdsFilter($data, $this->params->departmentIds);
             $data = $this->debateListVViewRepository->applyDebateTimeFilter($data, $this->params->debateTimeFrom, $this->params->debateTimeTo);
             $count = $data->count();
@@ -47,6 +48,7 @@ class DebateListVViewService
             $data = $this->debateListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
             $data = $this->debateListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
             $data = $this->debateListVViewRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
+            $data = $this->debateListVViewRepository->applyTreatmentCodeFilter($data, $this->params->treatmentCode);
             $data = $this->debateListVViewRepository->applyDepartmentIdsFilter($data, $this->params->departmentIds);
             $data = $this->debateListVViewRepository->applyDebateTimeFilter($data, $this->params->debateTimeFrom, $this->params->debateTimeTo);
             $count = $data->count();

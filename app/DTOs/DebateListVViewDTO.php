@@ -19,6 +19,7 @@ class DebateListVViewDTO
     public $appModifier;
     public $time;
     public $treatmentId;
+    public $treatmentCode;
     public $departmentIds;
     public $debateTimeFrom;
     public $debateTimeTo;
@@ -38,6 +39,7 @@ class DebateListVViewDTO
         $appModifier,
         $time,
         $treatmentId,
+        $treatmentCode,
         $departmentIds,
         $debateTimeFrom,
         $debateTimeTo,
@@ -58,6 +60,7 @@ class DebateListVViewDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->treatmentId = $treatmentId;
+        $this->treatmentCode = $treatmentCode;
         $this->departmentIds = $departmentIds;
         $this->debateTimeFrom = $debateTimeFrom;
         $this->debateTimeTo = $debateTimeTo;

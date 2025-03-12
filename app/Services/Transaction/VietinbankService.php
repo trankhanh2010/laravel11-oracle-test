@@ -51,8 +51,8 @@ class VietinbankService
         $data->merchantName = "Benh vien Xuyen A";
         $data->terminalId = "0001"; // Mã này cố định
         $data->ccy = "704"; // Mã này cố định
-        $data->desc = $dataTreatment['order_info'];
-        $data->txnId = $dataTreatment['order_id'];
+        $data->desc = $dataTreatment['orderInfo'];
+        $data->txnId = $dataTreatment['orderId'];
         $data->amount = $dataTreatment['amount'];
         $data->payType = QRCode::PAY_TYPE_01;
         $data->countryCode = "VN";
@@ -72,11 +72,11 @@ class VietinbankService
         $qrData = $pk->pack($req->qrBean, "")->qrData;
         // dd($qrData);
         // $qrImageUrl = "http://chart.apis.google.com/chart?chs=500x500&cht=qr&chl=" . $qrData . "&choe=UTF-8";
-        $apiURL = "https://api.qrserver.com/v1/create-qr-code/";
-        $size = "300x300"; // Kích thước mã QR code
+        // $apiURL = "https://api.qrserver.com/v1/create-qr-code/";
+        // $size = "300x300"; // Kích thước mã QR code
     
-        $qrImageUrl = $apiURL . "?size=" . $size . "&data=" . $qrData;        
-        return $qrImageUrl;
+        // $qrImageUrl = $apiURL . "?size=" . $size . "&data=" . $qrData;        
+        return base64_encode($qrData);
     }
 
     private function makeRequestToSystem(RequestCreateQrcode $req, bool $isInsert, string $tokenKey)
@@ -119,8 +119,8 @@ class VietinbankService
                 if ($this->VND === $request->ccy) {
                     $request->ccy = ServiceConfig::CCY;
                 }
-                if (!empty($request->desc) && strlen($request->desc) > 44) {
-                    $purpose = substr($request->desc, 0, 44);
+                if (!empty($request->desc) && strlen($request->desc) > 19) {
+                    $purpose = substr($request->desc, 0, length: 19);
                 }
                 $referenceID = QRCode::PAY_TYPE_01 . $request->txnId;
                 $pointOfMethod = ServiceConfig::POINT_OF_METHOD_DONG;

@@ -46,6 +46,7 @@ class DebateListVViewController extends BaseApiCacheController
             $this->appModifier, 
             $this->time,
             $this->treatmentId,
+            $this->treatmentCode,
             $this->departmentIds,
             $this->debateTimeFrom,
             $this->debateTimeTo,

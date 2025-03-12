@@ -19,6 +19,7 @@ class TransactionRepository
     protected $transactionTypeTTId;
     protected $transactionTypeTUId;
     protected $payFormMoMoId;
+    protected $payFormQrVietinBankId;
     protected $payForm03Id;
     protected $payForm06Id;
 
@@ -44,6 +45,10 @@ class TransactionRepository
         });
         $this->payFormMoMoId = Cache::remember('pay_form_momo_id', now()->addMinutes(10080), function () {
             $data =  $this->payForm->where('pay_form_code', '09')->get();
+            return $data->value('id');
+        });
+        $this->payFormQrVietinBankId = Cache::remember('pay_form_qr_vietin_bank_id', now()->addMinutes(10080), function () {
+            $data =  $this->payForm->where('pay_form_code', '10')->get();
             return $data->value('id');
         });
         $this->payForm06Id = Cache::remember('pay_form_06_id', now()->addMinutes(10080), function () {
@@ -336,5 +341,68 @@ class TransactionRepository
     public function delete($data){
         $data->delete();
         return $data;
+    }
+    public function getOrCreateTransactionVietinBank($data)
+    {
+        $dataReturn =  $this->transaction->where('treatment_id', $data['treatment_id'])
+        ->where('amount', $data['amount'])
+        ->where('is_cancel', 1)
+        ->where('cancel_reason', 'Khoi tao data QR Code thanh toan VietinBank')
+        ->first();
+        if(!$dataReturn){
+            $treatmentData = $this->treatment->where('id', $data['treatment_id'])->first();
+            // if(!$treatmentData) return;
+            $dataReturn = $this->transaction::create([
+                'create_time' => now()->format('Ymdhis'),
+                'modify_time' => now()->format('Ymdhis'),
+                'creator' => 'MOS_v2',
+                'modifier' => 'MOS_v2',
+                'app_creator' => 'MOS_v2',
+                'app_modifier' => 'MOS_v2',
+                'transaction_type_id' =>  $this->transactionTypeTUId,
+                // 'transaction_time' => $request->transaction_time,
+                'amount' => $data['amount'],  
+                'account_book_id' => 32,      
+                'pay_form_id' => $this->payFormQrVietinBankId,
+                'cashier_room_id' => 1,
+                'treatment_id' => $data['treatment_id'],
+                'transaction_time' => now()->format('Ymdhis'),
+                'description' => "Khoi tao data QR Code thanh toan VietinBank",
+                'cancel_reason' => "Khoi tao data QR Code thanh toan VietinBank",
+                'is_cancel' => 1,
+                // Dữ liệu dư thừa
+    
+                'tdl_treatment_code' => $treatmentData->treatment_code,
+                'tdl_patient_id' => $treatmentData->patient_id,
+                'tdl_patient_code' => $treatmentData->tdl_patient_code,
+                'tdl_patient_name' => $treatmentData->tdl_patient_name,
+                'tdl_patient_first_name' => $treatmentData->tdl_patient_first_name,
+                'tdl_patient_last_name' => $treatmentData->tdl_patient_last_name,
+                'tdl_patient_dob' => $treatmentData->tdl_patient_dob,
+                'tdl_patient_is_has_not_day_dob' => $treatmentData->tdl_patient_is_has_not_day_dob,
+                'tdl_patient_address' => $treatmentData->tdl_patient_address,
+                'tdl_patient_gender_id'  => $treatmentData->tdl_patient_gender_id,        
+                'tdl_patient_gender_name'  => $treatmentData->tdl_patient_gender_name,  
+                'tdl_patient_career_name'  => $treatmentData->tdl_patient_career_name,  
+                'tdl_patient_work_place'  => $treatmentData->tdl_patient_work_place,  
+                'tdl_patient_work_place_name'  => $treatmentData->tdl_patient_work_place_name,     
+                'tdl_patient_district_code'  => $treatmentData->tdl_patient_district_code,      
+                'tdl_patient_province_code' => $treatmentData->tdl_patient_province_code,  
+                'tdl_patient_commune_code'  => $treatmentData->tdl_patient_commune_code,  
+                'tdl_patient_military_rank_name'  => $treatmentData->tdl_patient_military_rank_name,   
+                'tdl_patient_national_name'  => $treatmentData->tdl_patient_national_name,  
+                'tdl_patient_relative_type' => $treatmentData->tdl_patient_relative_type,  
+                'tdl_patient_relative_name'  => $treatmentData->tdl_patient_relative_name,  
+                'tdl_patient_account_number'  => $treatmentData->tdl_patient_account_number,  
+                'tdl_patient_tax_code'  => $treatmentData->tdl_patient_tax_code,  
+            ]);
+        }
+        
+        $dataReturn =  $this->transaction->where('treatment_id', $data['treatment_id'])
+        ->where('amount', $data['amount'])
+        ->where('is_cancel', 1)
+        ->where('cancel_reason', 'Khoi tao data QR Code thanh toan VietinBank')
+        ->first();
+        return $dataReturn;
     }
 }

@@ -236,6 +236,20 @@ class TreatmentFeePaymentService
         }
         return $dataReturn;
     }
+    protected function formatResponseFromVietinbank(array $transactionInfo, $checkOtherLink = false)
+    {
+        $dataReturn = [
+            'success' => true,
+            // 'checkOtherLink' => $checkOtherLink,
+            // 'orderId' => $transactionInfo['orderId'],
+            // 'amount' => $transactionInfo['amount'],
+            // 'orderInfo' => $transactionInfo['orderInfo'],
+            // 'requestId' => $transactionInfo['requestId'],
+            'qrData' => $transactionInfo['qrData'],
+        ];
+
+        return $dataReturn;
+    }
     public function updateDBTransactionTamUng($dataMoMo, $params)
     {
         if ($dataMoMo['resultCode'] == 0 || $dataMoMo['resultCode'] == 9000) {
@@ -265,7 +279,7 @@ class TreatmentFeePaymentService
                     $transaction = $this->transactionRepository->createTransactionRefundSuccess($payment, $dataMoMo, $params->appCreator, $params->appModifier);
                     // Ngắt luôn để không tạo các transaction trong db và cập nhật trạng thái
                     return true;
-                } 
+                }
             }
             DB::connection('oracle_his')->transaction(function () use ($payment, $dataMoMo, $params) {
                 // Tạo transaction
@@ -293,7 +307,7 @@ class TreatmentFeePaymentService
                 }
             });
             return true;
-        }else{
+        } else {
             return true;
         }
     }
@@ -307,7 +321,7 @@ class TreatmentFeePaymentService
         $requestId = Str::uuid();
         $transId = $dataMoMo['transId'];
         $treatmentMoMoPaymentData = $this->treatmentMoMoPaymentsRepository->getByOrderId($dataMoMo['orderId']);
-        $description = 'Hoan tien ' . $treatmentMoMoPaymentData['order_info'] . '; Ma GD MOMO: '.$transId;
+        $description = 'Hoan tien ' . $treatmentMoMoPaymentData['order_info'] . '; Ma GD MOMO: ' . $transId;
         // Log::error($description);
         // Thử lỗi số tiền hoàn lớn
         // $transId = 1000000;
@@ -555,19 +569,36 @@ class TreatmentFeePaymentService
                 }
                 return ['data' => $dataReturn];
             }
-            // Giao dịch VietTinBank
-            if ($this->params->paymentMethod == 'VietTinBank') {
+            // Giao dịch VietinBank
+            if ($this->params->paymentMethod == 'VietinBank') {
                 $transactionInfo = $this->generateTransactionInfo($data, $costs);
-                if($this->params->paymentOption == 'ThanhToanQRCode'){
-              
-                $data = [];  
-                $data['amount'] = (int)$transactionInfo['amount'];
-                $data['order_info'] = $transactionInfo['orderInfo'];
-                $data['order_id'] = 121212;
+                if ($this->params->paymentOption == 'ThanhToanQRCode') {
+                    // Kiểm tra xem có transactino is_cancel nào trong his của bệnh nhân này đúng với số tiền không
+                    // Nếu có => Lấy data đó
+                    // Nếu không => Tạo transaction is_cancel trong HIS
+                    $dataQuery = [
+                        'amount' => $transactionInfo['amount'],
+                        'treatment_id' => $data['id'],
+                    ];
+                    $dataTransHis = $this->transactionRepository->getOrCreateTransactionVietinBank($dataQuery);
+                    // Tạo data qr với bill_number(order_id) là code của transaction trong his bỏ đi 2 số đầu
 
-                // Gọi service và truyền đối tượng RequestCreateQrcode
-                $qrImageUrl = $this->vietinbankService->createTransactionQrCode($data);
-                dd($qrImageUrl);
+                    $dataGenQr = [
+                        'amount' => $dataTransHis['amount'],
+                        'orderInfo' => 'HisTran'.$dataTransHis['transaction_code'],
+                        'orderId' => substr($dataTransHis['transaction_code'], 2), // Chỉ lấy 10 kí tự phía sau, bỏ 00
+                    ];
+                    // Gọi service và truyền đối tượng RequestCreateQrcode
+                    $qrData = $this->vietinbankService->createTransactionQrCode($dataGenQr);
+                    // $dataReturn = $this->formatResponseFromVietinbank($transactionInfo);
+                    $dataReturn = array_merge(
+                        [
+                            'success' => true,
+                            'qrDataBase64' => $qrData,
+                        ],
+                        $dataGenQr
+                    );
+                    return ['data' => $dataReturn];
                 }
             }
 
@@ -660,6 +691,39 @@ class TreatmentFeePaymentService
                     // hành động cho giao dịch tạm ứng
                 }
                 return ['data' => $dataReturn];
+            }
+            // Giao dịch VietinBank
+            if ($this->params->paymentMethod == 'VietinBank') {
+                $transactionInfo = $this->generateTransactionInfo($data, $costs);
+                if ($this->params->paymentOption == 'ThanhToanQRCode') {
+                    // Kiểm tra xem có transactino deposit is_cancel nào trong his của bệnh nhân này đúng với số tiền không
+                    // Nếu có => Lấy data đó
+                    // Nếu không => Tạo transaction deposit is_cancel trong HIS
+                    $dataQuery = [
+                        'amount' => $data['amount'],
+                        'treatment_id' => $data['treatment_id'],
+                    ];
+                    $dataTransHis = $this->transactionRepository->getOrCreateTransactionVietinBank($dataQuery);
+                    
+                    // Tạo data qr với bill_number(order_id) là code của transaction trong his bỏ đi 2 số đầu
+
+                    $dataGenQr = [
+                        'amount' => $dataTransHis['amount'],
+                        'orderInfo' => 'HisTran'.$dataTransHis['transaction_code'],
+                        'orderId' => substr($dataTransHis['transaction_code'], 2), // Chỉ lấy 10 kí tự phía sau, bỏ 00
+                    ];
+                    // Gọi service và truyền đối tượng RequestCreateQrcode
+                    $qrData = $this->vietinbankService->createTransactionQrCode($dataGenQr);
+                    // $dataReturn = $this->formatResponseFromVietinbank($transactionInfo);
+                    $dataReturn = array_merge(
+                        [
+                            'success' => true,
+                            'qrDataBase64' => $qrData,
+                        ],
+                        $dataGenQr
+                    );
+                    return ['data' => $dataReturn];
+                }
             }
 
             return ['data' => ['success' => false]];

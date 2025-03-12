@@ -34,4 +34,8 @@ class TreatmentFeeListVView extends Model
             ->whereNull('deposit_id')
             ->orWhere('transaction_is_cancel', 1);
     }
+    public function treatment_fee_detail()
+    {
+        return $this->belongsTo(TreatmentFeeDetailVView::class, 'id', 'id');
+    }
 }

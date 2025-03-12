@@ -62,7 +62,13 @@ class DebateListVViewRepository
         }
         return $query;
     }
-
+    public function applyTreatmentCodeFilter($query, $param)
+    {
+        if ($param !== null) {
+            $query->where(('treatment_code'), $param);
+        }
+        return $query;
+    }
     public function applyOrdering($query, $orderBy, $orderByJoin)
     {
         if ($orderBy != null) {

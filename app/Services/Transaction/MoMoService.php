@@ -59,47 +59,47 @@ class MoMoService
         return $this;
     }
     // Nhận ipn thanh toán
-    public function handleNotificationThanhToan()
-    {
-        // Lấy param từ request
-        $data = $this->getParamRequest();
-        //Xác minh chữ ký từ MoMo
-        $isVefify = $this->verifyMoMoSignature($data);
-        if (!$isVefify) {
-            // Nếu dữ liệu không khớp thì bỏ qua
-            return response()->json([], 204);
-        }
-        // Check trong DB xem có tạo giao dịch cho payment này chưa
-        $isValid = $this->isValid($data);
-        if (!$isValid) {
-            // Nếu dữ liệu không khớp hoặc đã có rồi thì bỏ qua
-            return response()->json([], 204);
-        }
-        // Nếu khớp thì cập nhật bên DB
-        // Lấy resultCode từ MoMo
-        $dataMoMo = $this->treatmentFeePaymentService->checkTransactionStatus($data['orderId'])['data'];
-        // Cập nhật payment 
-        $this->treatmentMoMoPaymentsRepository->update($dataMoMo);
-        // Nếu resultCode là 0 hoặc 9000 thì tạo transaction trong DB
-        if ($dataMoMo['resultCode'] == 0 || $dataMoMo['resultCode'] == 9000) {
-            // và lấy treatmentId, treatmentCode
-            $payment = $this->treatmentMoMoPaymentsRepository->getTreatmentByOrderId($dataMoMo['orderId']);
-            // Tạo transaction
-            $transaction = $this->transactionRepository->createTransactionPaymentMoMoThanhToan($payment, $dataMoMo, $this->params->appCreator, $this->params->appModifier);
-            // Cập nhật bill cho treatmentMomoPayments
-            $this->treatmentMoMoPaymentsRepository->updateBill($payment, $transaction->id);
-            // sere_serv_bill
-            $listSereServ = $this->sereServMomoPaymentsRepository->getByTreatmentMomoPaymentsId($payment->id);
-            // Lặp qua từng sere_serv để tạo mới
-            foreach ($listSereServ as $key => $item) {
-                $this->sereServBill->create($item->sere_serv_id, $transaction,  $this->params->appCreator, $this->params->appModifier);
-            }
-            // Vô hiệu hóa các link thanh toán đã có trước khi thanh toán
-            $this->treatmentMoMoPaymentsRepository->setResultCode1005($payment->treatment_code);
-        }
-        // Gửi dữ liệu lên WebSocket
-        broadcast(new MoMoNotificationThanhToanReceived($data));
-    }
+    // public function handleNotificationThanhToan()
+    // {
+    //     // Lấy param từ request
+    //     $data = $this->getParamRequest();
+    //     //Xác minh chữ ký từ MoMo
+    //     $isVefify = $this->verifyMoMoSignature($data);
+    //     if (!$isVefify) {
+    //         // Nếu dữ liệu không khớp thì bỏ qua
+    //         return response()->json([], 204);
+    //     }
+    //     // Check trong DB xem có tạo giao dịch cho payment này chưa
+    //     $isValid = $this->isValid($data);
+    //     if (!$isValid) {
+    //         // Nếu dữ liệu không khớp hoặc đã có rồi thì bỏ qua
+    //         return response()->json([], 204);
+    //     }
+    //     // Nếu khớp thì cập nhật bên DB
+    //     // Lấy resultCode từ MoMo
+    //     $dataMoMo = $this->treatmentFeePaymentService->checkTransactionStatus($data['orderId'])['data'];
+    //     // Cập nhật payment 
+    //     $this->treatmentMoMoPaymentsRepository->update($dataMoMo);
+    //     // Nếu resultCode là 0 hoặc 9000 thì tạo transaction trong DB
+    //     if ($dataMoMo['resultCode'] == 0 || $dataMoMo['resultCode'] == 9000) {
+    //         // và lấy treatmentId, treatmentCode
+    //         $payment = $this->treatmentMoMoPaymentsRepository->getTreatmentByOrderId($dataMoMo['orderId']);
+    //         // Tạo transaction
+    //         $transaction = $this->transactionRepository->createTransactionPaymentMoMoThanhToan($payment, $dataMoMo, $this->params->appCreator, $this->params->appModifier);
+    //         // Cập nhật bill cho treatmentMomoPayments
+    //         $this->treatmentMoMoPaymentsRepository->updateBill($payment, $transaction->id);
+    //         // sere_serv_bill
+    //         $listSereServ = $this->sereServMomoPaymentsRepository->getByTreatmentMomoPaymentsId($payment->id);
+    //         // Lặp qua từng sere_serv để tạo mới
+    //         foreach ($listSereServ as $key => $item) {
+    //             $this->sereServBill->create($item->sere_serv_id, $transaction,  $this->params->appCreator, $this->params->appModifier);
+    //         }
+    //         // Vô hiệu hóa các link thanh toán đã có trước khi thanh toán
+    //         $this->treatmentMoMoPaymentsRepository->setResultCode1005($payment->treatment_code);
+    //     }
+    //     // Gửi dữ liệu lên WebSocket
+    //     broadcast(new MoMoNotificationThanhToanReceived($data));
+    // }
     // Nhận ipn tạm ứng
     public function handleNotificationTamUng()
     {
