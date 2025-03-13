@@ -550,23 +550,6 @@ class TreatmentFeePaymentService
                 // Tạo payment momo
                 $treatmentMomoPayments = $this->treatmentMoMoPaymentsRepository->create($dataCreate, $this->params->appCreator, $this->params->appModifier);
 
-                // Nếu là giao dịch thanh toán
-                if ($this->params->transactionTypeCode == 'TT') {
-                    // Tạo danh sách dịch vụ cho payment
-                    $listSereServ = $this->getListSereServ($data->id);
-                    foreach ($listSereServ as $key => $item) {
-                        $dataSereServCreate = [
-                            'sere_serv_id' => $item->id,
-                            'treatment_momo_payments_id' => $treatmentMomoPayments->id,
-                            'transaction_type_code' => $this->params->transactionTypeCode,
-                        ];
-                        $this->sereServMomoPayments->create($dataSereServCreate, $this->params->appCreator, $this->params->appModifier);
-                    }
-                }
-                // Nếu là giao dịch tạm ứng
-                if ($this->params->transactionTypeCode == 'TU') {
-                    // hành động cho giao dịch tạm ứng
-                }
                 return ['data' => $dataReturn];
             }
             // Giao dịch VietinBank
@@ -686,10 +669,7 @@ class TreatmentFeePaymentService
                     ];
                 // Tạo payment momo
                 $treatmentMomoPayments = $this->treatmentMoMoPaymentsRepository->createDepositReq($dataCreate, $this->params->appCreator, $this->params->appModifier);
-                // Nếu là giao dịch tạm ứng
-                if ($this->params->transactionTypeCode == 'TU') {
-                    // hành động cho giao dịch tạm ứng
-                }
+
                 return ['data' => $dataReturn];
             }
             // Giao dịch VietinBank

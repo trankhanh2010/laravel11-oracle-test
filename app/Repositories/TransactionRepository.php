@@ -405,4 +405,23 @@ class TransactionRepository
         ->first();
         return $dataReturn;
     }
+    public function getTransactionVietinBank($data)
+    {
+        $dataReturn =  $this->transaction->where('transaction_code', '00'.$data['orderId']) // Nối thêm chuỗi 00
+        ->where('amount', $data['amount'])
+        ->where('is_cancel', 1)
+        ->where('cancel_reason', 'Khoi tao data QR Code thanh toan VietinBank')
+        ->first();
+        return $dataReturn;
+    }
+    public function updateTransactionVietinBank($data){
+        $data->update([
+            'modify_time' => now()->format('Ymdhis'),
+            'modifier' => 'MOS_v2',
+            'app_modifier' => 'MOS_v2',
+            'is_cancel' => 0,
+            
+        ]);
+        return $data;
+    }
 }

@@ -11,6 +11,7 @@ use App\Classes\Vietinbank\QRBean;
 use App\Classes\Vietinbank\QRAddtionalBean;
 use App\Classes\Vietinbank\ServiceConfig;
 use App\Classes\Vietinbank\QRCode;
+use App\Repositories\TransactionRepository;
 use IntlChar;
 use Normalizer;
 
@@ -21,17 +22,19 @@ class VietinbankService
     protected string $secretKey;
     protected $publicKeyVietinbankPath;
     protected $privateKeyPath;
+    protected $transactionRepository;
     protected $params;
     private $VND = "VND";
     private $EMPTY = "";
 
-    public function __construct()
+    public function __construct(TransactionRepository $transactionRepository)
     {
         $this->apiUrl = config('database')['connections']['vietinbank']['vietinbank_api_url'];
         $this->merchantId = config('database')['connections']['vietinbank']['vietinbank_merchant_id'];
         $this->secretKey = config('database')['connections']['vietinbank']['vietinbank_secret_key'];
         $this->publicKeyVietinbankPath = config('database')['connections']['vietinbank']['public_key_vietinbank_path'];
         $this->privateKeyPath = config('database')['connections']['vietinbank']['private_key_bvxa_path'];
+        $this->transactionRepository = $transactionRepository;
     }
     public function withParams(VietinbankDTO $params)
     {
@@ -201,21 +204,41 @@ class VietinbankService
         $data = $this->getParamRequest();
         // Xác minh chữ ký 
         $isVerify = $this->verifyVietinbankSignature($data);
-        // Nếu đúng thì tạo transaction trong DB
+        $paramSuccess = [
+            'requestId' => $data['requestId'],
+            'paymentStatus' => '00',
+            'signature' => $this->SignData(['requestId' => $data['requestId'], 'paymentStatus' => '00',])
+        ];
+        $paramFail = [
+            'requestId' => $data['requestId'],
+            'paymentStatus' => 'ZZ',
+            'signature' => $this->SignData(['requestId' => $data['requestId'], 'paymentStatus' => 'ZZ',])
+        ];
+        // Nếu đúng chữ ký 
         if($isVerify){
-            $param = [
-                'requestId' => $data['requestId'],
-                'paymentStatus' => '00',
-                'signature' => $this->SignData(['requestId' => $data['requestId'], 'paymentStatus' => '00',])
-            ];
+            // Nếu đúng và mã khác 00
+            if($data['statusCode'] !== '00'){
+                return $paramFail;
+            }
+            // Nếu đúng và mã = 00 và có transVietinbank(có is_cancel =1) thì cập nhật is_cancel = 0 cho transaction trong DB
+            $dataTransactionVietinbank = $this->transactionRepository->getTransactionVietinBank($data);
+            if($dataTransactionVietinbank){
+                $sttUpdate = $this->transactionRepository->updateTransactionVietinBank($dataTransactionVietinbank);
+                if($sttUpdate){
+                    // Nếu cập nhật thành công
+                    return $paramSuccess;
+                }else{
+                    // Nếu không thành công
+                    return $paramFail;
+                }
+            }else{
+                // Nếu đúng và mã khác 00 
+                return $paramFail;
+            }
         } else {
-            $param = [
-                'requestId' => $data['requestId'],
-                'paymentStatus' => 'ZZ',
-                'signature' => $this->SignData(['requestId' => $data['requestId'], 'paymentStatus' => 'ZZ',])
-            ];
+            // Nếu không đúng chữ ký
+            return $paramFail;
         }
-        return $param;
     }
 
     private function verifyVietinbankSignature($data)
@@ -236,7 +259,7 @@ class VietinbankService
         // // Tạo chữ ký test
         // $privateKeyVietinbankPath = "D:/vietinbank/vtb_private_key.pem";
         // $privateKeyVietinbank = openssl_pkey_get_private(file_get_contents($privateKeyVietinbankPath));
-        // $rawData = '000002235MERCHANTĐỐI TÁC KẾT NỐI QR20330123';
+        // $rawData = '0000022351234560000289449123';
         // $signature = '';
         // $success = openssl_sign($rawData,$signature, $privateKeyVietinbank, OPENSSL_ALGO_SHA256);
         // $signatureBase64 = base64_encode($signature);
