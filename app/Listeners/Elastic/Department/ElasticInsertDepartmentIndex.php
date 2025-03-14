@@ -41,9 +41,9 @@ class ElasticInsertDepartmentIndex
             ];
             $this->client->index($params);
             // Cập nhật các index liên quan
-            UpdateEmployeeIndexJob::dispatch($record, 'department');
-            UpdateMachineIndexJob::dispatch($record, 'department');
-            UpdateServiceIndexJob::dispatch($record, 'revenue_department');
+            // UpdateEmployeeIndexJob::dispatch($record, 'department');
+            // UpdateMachineIndexJob::dispatch($record, 'department');
+            // UpdateServiceIndexJob::dispatch($record, 'revenue_department');
             $this->client->indices()->refresh([
                 'index' => $event->modelName, // Chỉ mục cần refresh
             ]); // Gọi lệnh refresh

@@ -58,7 +58,7 @@ class ElasticDeleteIndex
         switch ($event->modelName) {
             case 'module_role':
                 // Cập nhật các index liên quan
-                UpdateRoleIndexJob::dispatch($record, 'delete_module_role');
+                // UpdateRoleIndexJob::dispatch($record, 'delete_module_role');
                 break;
             default:
                 break;

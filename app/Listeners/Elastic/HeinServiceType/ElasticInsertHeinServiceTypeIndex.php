@@ -39,7 +39,7 @@ class ElasticInsertHeinServiceTypeIndex
             ];
             $this->client->index($params);
             // Cập nhật các index liên quan
-            UpdateServiceIndexJob::dispatch($record, 'hein_service_type');
+            // UpdateServiceIndexJob::dispatch($record, 'hein_service_type');
             $this->client->indices()->refresh([
                 'index' => $event->modelName, // Chỉ mục cần refresh
             ]); // Gọi lệnh refresh

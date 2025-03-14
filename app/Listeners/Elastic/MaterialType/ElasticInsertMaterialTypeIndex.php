@@ -40,8 +40,8 @@ class ElasticInsertMaterialTypeIndex
             ];
             $this->client->index($params);
             // Cập nhật các index liên quan
-            UpdateMediStockMatyIndexJob::dispatch($record, 'material_type');
-            UpdateTestIndexIndexJob::dispatch($record, 'material_type');
+            // UpdateMediStockMatyIndexJob::dispatch($record, 'material_type');
+            // UpdateTestIndexIndexJob::dispatch($record, 'material_type');
             $this->client->indices()->refresh([
                 'index' => $event->modelName, // Chỉ mục cần refresh
             ]); // Gọi lệnh refresh

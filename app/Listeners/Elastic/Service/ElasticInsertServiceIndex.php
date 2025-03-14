@@ -48,16 +48,16 @@ class ElasticInsertServiceIndex
             ];
             $this->client->index($params);
             // Cập nhật các index liên quan
-            UpdateBedBstyIndexJob::dispatch($record, 'service');
-            UpdatePtttGroupIndexJob::dispatch($record, 'bed_services');
-            UpdateServiceFollowIndexJob::dispatch($record, 'service');
-            UpdateServiceFollowIndexJob::dispatch($record, 'service_follow');
-            UpdateServiceMachineIndexJob::dispatch($record, 'service');
-            UpdateServicePatyIndexJob::dispatch($record, 'service');
-            UpdateServiceIndexJob::dispatch($record, 'parent');
-            UpdateServiceRoomIndexJob::dispatch($record, 'service');
-            UpdateServSegrIndexJob::dispatch($record, 'service');
-            UpdateTestIndexIndexJob::dispatch($record, 'service');
+            // UpdateBedBstyIndexJob::dispatch($record, 'service');
+            // UpdatePtttGroupIndexJob::dispatch($record, 'bed_services');
+            // UpdateServiceFollowIndexJob::dispatch($record, 'service');
+            // UpdateServiceFollowIndexJob::dispatch($record, 'service_follow');
+            // UpdateServiceMachineIndexJob::dispatch($record, 'service');
+            // UpdateServicePatyIndexJob::dispatch($record, 'service');
+            // UpdateServiceIndexJob::dispatch($record, 'parent');
+            // UpdateServiceRoomIndexJob::dispatch($record, 'service');
+            // UpdateServSegrIndexJob::dispatch($record, 'service');
+            // UpdateTestIndexIndexJob::dispatch($record, 'service');
             $this->client->indices()->refresh([
                 'index' => $event->modelName, // Chỉ mục cần refresh
             ]); // Gọi lệnh refresh

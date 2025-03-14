@@ -39,7 +39,7 @@ class ElasticInsertTreatmentTypeIndex
             ];
             $this->client->index($params);
             // Cập nhật các index liên quan
-            UpdateDepartmentIndexJob::dispatch($record, 'req_surg_treatment_type');
+            // UpdateDepartmentIndexJob::dispatch($record, 'req_surg_treatment_type');
             $this->client->indices()->refresh([
                 'index' => $event->modelName, // Chỉ mục cần refresh
             ]); // Gọi lệnh refresh

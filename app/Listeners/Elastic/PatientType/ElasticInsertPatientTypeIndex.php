@@ -48,15 +48,15 @@ class ElasticInsertPatientTypeIndex
             ];
             $this->client->index($params);
             // Cập nhật các index liên quan
-            UpdateDepartmentIndexJob::dispatch($record, 'default_instr_patient_type');
-            UpdateMedicinePatyIndexJob::dispatch($record, 'patient_type');
-            UpdateMestPatientTypeIndexJob::dispatch($record, 'patient_type');
-            UpdatePatientClassifyIndexJob::dispatch($record, 'patient_type');
-            UpdatePatientTypeAllowIndexJob::dispatch($record, 'patient_type');
-            UpdatePatientTypeRoomIndexJob::dispatch($record, 'patient_type');
-            UpdateServicePatyIndexJob::dispatch($record, 'patient_type');
-            UpdateServiceIndexJob::dispatch($record, 'default_patient_type');
-            UpdateServiceIndexJob::dispatch($record, 'bill_patient_type');
+            // UpdateDepartmentIndexJob::dispatch($record, 'default_instr_patient_type');
+            // UpdateMedicinePatyIndexJob::dispatch($record, 'patient_type');
+            // UpdateMestPatientTypeIndexJob::dispatch($record, 'patient_type');
+            // UpdatePatientClassifyIndexJob::dispatch($record, 'patient_type');
+            // UpdatePatientTypeAllowIndexJob::dispatch($record, 'patient_type');
+            // UpdatePatientTypeRoomIndexJob::dispatch($record, 'patient_type');
+            // UpdateServicePatyIndexJob::dispatch($record, 'patient_type');
+            // UpdateServiceIndexJob::dispatch($record, 'default_patient_type');
+            // UpdateServiceIndexJob::dispatch($record, 'bill_patient_type');
             $this->client->indices()->refresh([
                 'index' => $event->modelName, // Chỉ mục cần refresh
             ]); // Gọi lệnh refresh

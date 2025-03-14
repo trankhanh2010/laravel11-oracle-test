@@ -50,18 +50,18 @@ class ElasticInsertRoomIndex
 
             $this->client->index($params);
             // Cập nhật các index liên quan
-            UpdateBedIndexJob::dispatch($record, 'room');
-            UpdateDataStoreIndexJob::dispatch($record, 'room');
-            UpdateDataStoreIndexJob::dispatch($record, 'stored_room');
-            UpdateMediStockIndexJob::dispatch($record, 'room');
-            UpdateMestRoomIndexJob::dispatch($record, 'room');
-            UpdatePatientTypeRoomIndexJob::dispatch($record, 'room');
-            UpdateBedRoomIndexJob::dispatch($record, 'room');
-            UpdateCashierRoomIndexJob::dispatch($record, 'room');
-            UpdateExecuteRoomIndexJob::dispatch($record, 'room');
-            UpdateReceptionRoomIndexJob::dispatch($record, 'room');
-            UpdateRefectoryIndexJob::dispatch($record, 'room');
-            UpdateServiceRoomIndexJob::dispatch($record, 'room');
+            // UpdateBedIndexJob::dispatch($record, 'room');
+            // UpdateDataStoreIndexJob::dispatch($record, 'room');
+            // UpdateDataStoreIndexJob::dispatch($record, 'stored_room');
+            // UpdateMediStockIndexJob::dispatch($record, 'room');
+            // UpdateMestRoomIndexJob::dispatch($record, 'room');
+            // UpdatePatientTypeRoomIndexJob::dispatch($record, 'room');
+            // UpdateBedRoomIndexJob::dispatch($record, 'room');
+            // UpdateCashierRoomIndexJob::dispatch($record, 'room');
+            // UpdateExecuteRoomIndexJob::dispatch($record, 'room');
+            // UpdateReceptionRoomIndexJob::dispatch($record, 'room');
+            // UpdateRefectoryIndexJob::dispatch($record, 'room');
+            // UpdateServiceRoomIndexJob::dispatch($record, 'room');
             $this->client->indices()->refresh([
                 'index' => $event->modelName, // Chỉ mục cần refresh
             ]); // Gọi lệnh refresh

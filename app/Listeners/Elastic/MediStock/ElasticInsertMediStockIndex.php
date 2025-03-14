@@ -46,12 +46,12 @@ class ElasticInsertMediStockIndex
             ];
             $this->client->index($params);
             // Cập nhật các index liên quan
-            UpdateMediStockMatyIndexJob::dispatch($record, 'medi_stock');
-            UpdateMediStockMetyIndexJob::dispatch($record, 'medi_stock');
-            UpdateMediStockIndexJob::dispatch($record, 'parent');
-            UpdateMestPatientTypeIndexJob::dispatch($record, 'medi_stock');
-            UpdateMestRoomIndexJob::dispatch($record, 'medi_stock');
-            UpdateRoomIndexJob::dispatch($record, 'medi_stock');
+            // UpdateMediStockMatyIndexJob::dispatch($record, 'medi_stock');
+            // UpdateMediStockMetyIndexJob::dispatch($record, 'medi_stock');
+            // UpdateMediStockIndexJob::dispatch($record, 'parent');
+            // UpdateMestPatientTypeIndexJob::dispatch($record, 'medi_stock');
+            // UpdateMestRoomIndexJob::dispatch($record, 'medi_stock');
+            // UpdateRoomIndexJob::dispatch($record, 'medi_stock');
             $this->client->indices()->refresh([
                 'index' => $event->modelName, // Chỉ mục cần refresh
             ]); // Gọi lệnh refresh

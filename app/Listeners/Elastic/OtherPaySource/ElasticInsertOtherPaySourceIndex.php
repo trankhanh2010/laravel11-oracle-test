@@ -40,8 +40,8 @@ class ElasticInsertOtherPaySourceIndex
             ];
             $this->client->index($params);
             // Cập nhật các index liên quan
-            UpdatePatientClassifyIndexJob::dispatch($record, 'other_pay_source');
-            UpdateServiceIndexJob::dispatch($record, 'other_pay_source');
+            // UpdatePatientClassifyIndexJob::dispatch($record, 'other_pay_source');
+            // UpdateServiceIndexJob::dispatch($record, 'other_pay_source');
             $this->client->indices()->refresh([
                 'index' => $event->modelName, // Chỉ mục cần refresh
             ]); // Gọi lệnh refresh

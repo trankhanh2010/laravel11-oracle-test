@@ -41,9 +41,9 @@ class ElasticInsertExecuteRoomIndex
             ];
             $this->client->index($params);
             // Cập nhật các index liên quan
-            UpdateExroRoomIndexJob::dispatch($record, 'execute_room');
-            UpdatePtttTableIndexJob::dispatch($record, 'pttt_table');
-            UpdateRoomIndexJob::dispatch($record, 'execute_room');
+            // UpdateExroRoomIndexJob::dispatch($record, 'execute_room');
+            // UpdatePtttTableIndexJob::dispatch($record, 'pttt_table');
+            // UpdateRoomIndexJob::dispatch($record, 'execute_room');
             $this->client->indices()->refresh([
                 'index' => $event->modelName, // Chỉ mục cần refresh
             ]); // Gọi lệnh refresh

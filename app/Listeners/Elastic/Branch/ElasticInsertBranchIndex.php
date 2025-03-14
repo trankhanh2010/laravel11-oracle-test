@@ -40,8 +40,8 @@ class ElasticInsertBranchIndex
             ];
             $this->client->index($params);
             // Cập nhật các index liên quan
-            UpdateDepartmentIndexJob::dispatch($record, 'branch');
-            UpdateServicePatyIndexJob::dispatch($record, 'branch');
+            // UpdateDepartmentIndexJob::dispatch($record, 'branch');
+            // UpdateServicePatyIndexJob::dispatch($record, 'branch');
             $this->client->indices()->refresh([
                 'index' => $event->modelName, // Chỉ mục cần refresh
             ]); // Gọi lệnh refresh

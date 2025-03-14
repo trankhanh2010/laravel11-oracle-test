@@ -41,9 +41,9 @@ class ElasticInsertDataStoreIndex
             ];
             $this->client->index($params);
             // Cập nhật các index liên quan
-            UpdateDataStoreIndexJob::dispatch($record, 'parent');
-            UpdateLocationStoreIndexJob::dispatch($record, 'data_store');
-            UpdateRoomIndexJob::dispatch($record, 'data_store');
+            // UpdateDataStoreIndexJob::dispatch($record, 'parent');
+            // UpdateLocationStoreIndexJob::dispatch($record, 'data_store');
+            // UpdateRoomIndexJob::dispatch($record, 'data_store');
             $this->client->indices()->refresh([
                 'index' => $event->modelName, // Chỉ mục cần refresh
             ]); // Gọi lệnh refresh

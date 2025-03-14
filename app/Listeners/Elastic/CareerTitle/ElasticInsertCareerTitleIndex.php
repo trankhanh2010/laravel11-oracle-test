@@ -39,7 +39,7 @@ class ElasticInsertCareerTitleIndex
             ];
             $this->client->index($params);
             // Cập nhật các index liên quan
-            UpdateEmployeeIndexJob::dispatch($record, 'career_title');
+            // UpdateEmployeeIndexJob::dispatch($record, 'career_title');
             $this->client->indices()->refresh([
                 'index' => $event->modelName, // Chỉ mục cần refresh
             ]); // Gọi lệnh refresh

@@ -39,7 +39,7 @@ class ElasticInsertRefectoryIndex
             ];
             $this->client->index($params);
             // Cập nhật các index liên quan
-            UpdateRoomIndexJob::dispatch($record, 'refectory');
+            // UpdateRoomIndexJob::dispatch($record, 'refectory');
             $this->client->indices()->refresh([
                 'index' => $event->modelName, // Chỉ mục cần refresh
             ]); // Gọi lệnh refresh

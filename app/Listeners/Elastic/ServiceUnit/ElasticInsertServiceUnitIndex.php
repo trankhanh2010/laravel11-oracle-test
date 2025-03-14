@@ -40,8 +40,8 @@ class ElasticInsertServiceUnitIndex
             ];
             $this->client->index($params);
             // Cập nhật các index liên quan
-            UpdateServiceIndexJob::dispatch($record, 'service_unit');
-            UpdateServiceUnitIndexJob::dispatch($record, 'convert');
+            // UpdateServiceIndexJob::dispatch($record, 'service_unit');
+            // UpdateServiceUnitIndexJob::dispatch($record, 'convert');
             $this->client->indices()->refresh([
                 'index' => $event->modelName, // Chỉ mục cần refresh
             ]); // Gọi lệnh refresh

@@ -39,7 +39,7 @@ class ElasticInsertModuleRoleIndex
             ];
             $this->client->index($params);
             // Cập nhật các index liên quan
-            UpdateRoleIndexJob::dispatch($record, 'module_role');
+            // UpdateRoleIndexJob::dispatch($record, 'module_role');
             $this->client->indices()->refresh([
                 'index' => $event->modelName, // Chỉ mục cần refresh
             ]); // Gọi lệnh refresh
