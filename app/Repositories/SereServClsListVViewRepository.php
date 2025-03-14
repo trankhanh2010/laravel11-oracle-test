@@ -2,28 +2,28 @@
 namespace App\Repositories;
 
 use App\Jobs\ElasticSearch\Index\ProcessElasticIndexingJob;
-use App\Models\View\SereServListVView;
+use App\Models\View\SereServClsListVView;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
-class SereServListVViewRepository
+class SereServClsListVViewRepository
 {
-    protected $sereServListVView;
-    public function __construct(SereServListVView $sereServListVView)
+    protected $sereServClsListVView;
+    public function __construct(SereServClsListVView $sereServClsListVView)
     {
-        $this->sereServListVView = $sereServListVView;
+        $this->sereServClsListVView = $sereServClsListVView;
     }
 
     public function applyJoins()
     {
-        return $this->sereServListVView
+        return $this->sereServClsListVView
             ->select();
     }
     public function applyKeywordFilter($query, $keyword)
     {
         return $query->where(function ($query) use ($keyword) {
-            $query->where(('sere_serv_list_code'), 'like', '%'. $keyword . '%')
-            ->orWhere(('lower(sere_serv_list_name)'), 'like', '%'. strtolower($keyword) . '%');
+            $query->where(('service_code'), 'like', '%'. $keyword . '%')
+            ->orWhere(('lower(service_name)'), 'like', '%'. strtolower($keyword) . '%');
         });
     }
     public function applyIsActiveFilter($query, $isActive)
@@ -37,13 +37,6 @@ class SereServListVViewRepository
     {
         if ($isDelete !== null) {
             $query->where(('is_delete'), $isDelete);
-        }
-        return $query;
-    }
-    public function applyTreatmentIdFilter($query, $param)
-    {
-        if ($param !== null) {
-            $query->where(('treatment_id'), $param);
         }
         return $query;
     }
@@ -61,28 +54,32 @@ class SereServListVViewRepository
         }
         return $query;
     }
-    public function applyTrackingIdFilter($query, $param)
+    public function applyIntructionTimeFilter($query, $from, $to)
+    {
+        if (isset($to) && isset($from)) {
+            $query->whereBetween('intruction_time', [$from, $to]);
+        }
+        return $query;
+    }
+    public function applyTabFilter($query, $param)
     {
         if ($param !== null) {
-            $query->where(('tracking_id'), $param);
+            if($param == 'CongKham'){
+                $query->where(('service_req_type_code'), 'KH');
+            }
+            if($param == 'CLS'){
+                $query->whereNot(('service_req_type_code'), 'KH');
+            }
         }
         return $query;
     }
-    public function applyNotInTrackingFilter($query, $param)
-    {
-        if ($param == true) {
-            $query->whereNull(('tracking_id'));
-        }
-        return $query;
-    }
-    public function applyServiceReqIdFilter($query, $param)
+    public function applyReportTypeCodeFilter($query, $param)
     {
         if ($param !== null) {
-            $query->where(('service_req_id'), $param);
+            $query->where(('report_type_code'), $param);
         }
         return $query;
     }
-
     public function applyOrdering($query, $orderBy, $orderByJoin)
     {
         if ($orderBy != null) {
@@ -148,10 +145,10 @@ class SereServListVViewRepository
     }
     public function getById($id)
     {
-        return $this->sereServListVView->find($id);
+        return $this->sereServClsListVView->find($id);
     }
     // public function create($request, $time, $appCreator, $appModifier){
-    //     $data = $this->sereServListVView::create([
+    //     $data = $this->sereServClsListVView::create([
     //         'create_time' => now()->format('Ymdhis'),
     //         'modify_time' => now()->format('Ymdhis'),
     //         'creator' => get_loginname_with_token($request->bearerToken(), $time),
@@ -160,8 +157,8 @@ class SereServListVViewRepository
     //         'app_modifier' => $appModifier,
     //         'is_active' => 1,
     //         'is_delete' => 0,
-    //         'sere_serv_list_v_view_code' => $request->sere_serv_list_v_view_code,
-    //         'sere_serv_list_v_view_name' => $request->sere_serv_list_v_view_name,
+    //         'sere_serv_cls_list_v_view_code' => $request->sere_serv_cls_list_v_view_code,
+    //         'sere_serv_cls_list_v_view_name' => $request->sere_serv_cls_list_v_view_name,
     //     ]);
     //     return $data;
     // }
@@ -170,8 +167,8 @@ class SereServListVViewRepository
     //         'modify_time' => now()->format('Ymdhis'),
     //         'modifier' => get_loginname_with_token($request->bearerToken(), $time),
     //         'app_modifier' => $appModifier,
-    //         'sere_serv_list_v_view_code' => $request->sere_serv_list_v_view_code,
-    //         'sere_serv_list_v_view_name' => $request->sere_serv_list_v_view_name,
+    //         'sere_serv_cls_list_v_view_code' => $request->sere_serv_cls_list_v_view_code,
+    //         'sere_serv_cls_list_v_view_name' => $request->sere_serv_cls_list_v_view_name,
     //         'is_active' => $request->is_active
     //     ]);
     //     return $data;
@@ -202,7 +199,7 @@ class SereServListVViewRepository
                     $endId = $maxId;
                 }
                 // Dispatch job cho mỗi phạm vi id
-                ProcessElasticIndexingJob::dispatch('sere_serv_list_v_view', 'v_his_sere_serv_list', $startId, $endId, $batchSize);
+                ProcessElasticIndexingJob::dispatch('sere_serv_cls_list_v_view', 'v_his_sere_serv_cls_list', $startId, $endId, $batchSize);
             }
         }
     }

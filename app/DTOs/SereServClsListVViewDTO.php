@@ -2,9 +2,9 @@
 
 namespace App\DTOs;
 
-class SereServListVViewDTO
+class SereServClsListVViewDTO
 {
-    public $sereServListVViewName;
+    public $sereServClsListVViewName;
     public $keyword;
     public $isActive;
     public $isDelete;
@@ -25,9 +25,16 @@ class SereServListVViewDTO
     public $notInTracking;
     public $patientCode;
     public $serviceTypeCodes;
+    public $serviceTypeCodesString;
+    public $groupByString;
+    public $tab;
+    public $param;
+    public $intructionTimeTo;
+    public $intructionTimeFrom;
+    public $reportTypeCode;
 
     public function __construct(
-        $sereServListVViewName,
+        $sereServClsListVViewName,
         $keyword, 
         $isActive, 
         $isDelete,
@@ -48,9 +55,16 @@ class SereServListVViewDTO
         $notInTracking,
         $patientCode,
         $serviceTypeCodes,
+        $serviceTypeCodesString,
+        $groupByString,
+        $tab,
+        $param,
+        $intructionTimeTo,
+        $intructionTimeFrom,
+        $reportTypeCode,
         )
     {
-        $this->sereServListVViewName = $sereServListVViewName;
+        $this->sereServClsListVViewName = $sereServClsListVViewName;
         $this->keyword = $keyword;
         $this->isActive = $isActive;
         $this->isDelete = $isDelete;
@@ -71,5 +85,12 @@ class SereServListVViewDTO
         $this->notInTracking = $notInTracking;
         $this->patientCode = $patientCode;
         $this->serviceTypeCodes = $serviceTypeCodes;
+        $this->serviceTypeCodesString = $serviceTypeCodesString;
+        $this->groupByString = $groupByString;
+        $this->tab = $tab;
+        $this->param = $param;
+        $this->intructionTimeTo = $intructionTimeTo;
+        $this->intructionTimeFrom = $intructionTimeFrom;
+        $this->reportTypeCode = $reportTypeCode;
     }
 }

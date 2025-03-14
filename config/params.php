@@ -435,6 +435,8 @@ return [
             'debate_list_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm DebateList!',
             'debate_detail_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm DebateDetail!',
             'test_service_type_list_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm TestServTypeList!',
+            'sere_serv_cls_list_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm SereServClsList!',
+            'treatment_list_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm TreatmentClsList!',
 
         ],
         'table' => [

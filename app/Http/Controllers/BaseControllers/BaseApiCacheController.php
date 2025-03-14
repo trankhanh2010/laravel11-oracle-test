@@ -46,6 +46,7 @@ class BaseApiCacheController extends Controller
 {
     protected $errors = [];
     protected $data = [];
+    protected $param;
     protected $lastId;
     protected $lastIdName = 'LastId';
     protected $cursorPaginate;
@@ -67,12 +68,15 @@ class BaseApiCacheController extends Controller
     protected $orderByJoin;
     protected $groupBy;
     protected $groupByName = 'GroupBy';
+    protected $groupByString;
     protected $onlyActive;
     protected $onlyActiveName = 'OnlyActive';
     protected $id;
     protected $idName = 'Id';
     protected $testIndexIds;
     protected $testIndexIdsName = 'TestIndexIds';
+    protected $serviceTypeCodes;
+    protected $serviceTypeCodesName = 'ServiceTypeCodes';
     protected $tdlTreatmentId;
     protected $tdlTreatmentIdName = 'TdlTreatmentId';
     protected $documentTypeId;
@@ -171,6 +175,10 @@ class BaseApiCacheController extends Controller
     protected $isSpecimenName = 'IsSpecimen';
     protected $isNoExcute;
     protected $isNoExcuteName = 'IsNoExcute';
+    protected $tab;
+    protected $tabName = 'Tab';
+    protected $reportTypeCode;
+    protected $reportTypeCodeName = 'ReportTypeCode';
     protected $patientTypeId;
     protected $serviceReqCode;
     protected $serviceReqCodeName = 'ServiceReqCode';
@@ -258,6 +266,13 @@ class BaseApiCacheController extends Controller
     protected $isInRoom;
     protected $isInRoomName = 'IsInRoom';
     protected $patientTypeIdsString;
+    protected $serviceTypeCodesString;
+    protected $treatmentTypeCode;
+    protected $treatmentTypeCodeName = 'TreatmentTypeCode';
+    protected $inTimeFrom;
+    protected $inTimeFromName = 'InTimeFrom';
+    protected $inTimeTo;
+    protected $inTimeToName = 'InTimeTo';
     protected $serviceTypeIdsString;
     protected $relations;
     protected $relationsName = 'realtions';
@@ -294,6 +309,8 @@ class BaseApiCacheController extends Controller
     protected $serviceReqListVViewName = 'service_req_list_v_view';
     protected $trackingListVView;
     protected $trackingListVViewName = 'tracking_list_v_view';
+    protected $sereServClsListVView;
+    protected $sereServClsListVViewName = 'sere_serv_cls_list_v_view';
     protected $district;
     protected $districtName = "district";
     protected $mediStock;
@@ -666,6 +683,8 @@ class BaseApiCacheController extends Controller
     protected $sereServDepositVViewName = 'sere_serv_deposit_v_view';
     protected $seseDepoRepayVView;
     protected $seseDepoRepayVViewName = 'sese_depo_repay_v_view';
+    protected $treatmentListVView;
+    protected $treatmentListVViewName = 'treatment_list_v_view';
     protected $documentListVView;
     protected $documentListVViewName = 'document_list_v_view';
     protected $accountBookVView;
@@ -822,9 +841,9 @@ class BaseApiCacheController extends Controller
         }
         return $orderBy;
     }
-
     public function __construct(Request $request)
     {
+        $this->param = $request->input('param');
         // Khai báo các biến
         try {
             $this->client = app('Elasticsearch');
@@ -1224,6 +1243,20 @@ class BaseApiCacheController extends Controller
         if ($this->patientTypeIds !=  null) {
             $this->patientTypeIdsString = arrayToCustomStringNotKey($this->patientTypeIds);
         }
+
+        $this->serviceTypeCodes = $this->paramRequest['ApiData']['ServiceTypeCodes'] ?? null;
+        if ($this->serviceTypeCodes != null) {
+            foreach ($this->serviceTypeCodes as $key => $item) {
+                if (!is_string($item)) {
+                    $this->errors[$this->serviceTypeCodesName] = $this->messFormat;
+                    unset($this->serviceTypeCodes[$key]);
+                } 
+            }
+        }
+        if ($this->serviceTypeCodes !=  null) {
+            $this->serviceTypeCodesString = arrayToCustomStringNotKey($this->serviceTypeCodes);
+        }
+
         $this->testIndexIds = $this->paramRequest['ApiData']['TestIndexIds'] ?? null;
         if ($this->testIndexIds != null) {
             foreach ($this->testIndexIds as $key => $item) {
@@ -1268,6 +1301,20 @@ class BaseApiCacheController extends Controller
                         unset($this->sereServIds[$key]);
                     }
                 }
+            }
+        }
+        $this->tab = $this->paramRequest['ApiData']['Tab']  ?? null;
+        if ($this->tab !== null) {
+            if (!is_string($this->tab)) {
+                $this->errors[$this->tabName] = $this->messFormat;
+                $this->tab = null;
+            }
+        }
+        $this->reportTypeCode = $this->paramRequest['ApiData']['ReportTypeCode'] ?? null;
+        if ($this->reportTypeCode !== null) {
+            if (!is_string($this->reportTypeCode)) {
+                $this->errors[$this->reportTypeCodeName] = $this->messFormat;
+                $this->reportTypeCode = null;
             }
         }
         $this->bedRoomIds = $this->paramRequest['ApiData']['BedRoomIds'] ?? null;
@@ -1318,6 +1365,20 @@ class BaseApiCacheController extends Controller
             if (!preg_match('/^\d{14}$/',  $this->addTimeFrom)) {
                 $this->errors[$this->addTimeFromName] = $this->messFormat;
                 $this->addTimeFrom = null;
+            }
+        }
+        $this->inTimeTo = $this->paramRequest['ApiData']['InTimeTo'] ?? null;
+        if ($this->inTimeTo != null) {
+            if (!preg_match('/^\d{14}$/',  $this->inTimeTo)) {
+                $this->errors[$this->inTimeToName] = $this->messFormat;
+                $this->inTimeTo = null;
+            }
+        }
+        $this->inTimeFrom = $this->paramRequest['ApiData']['InTimeFrom'] ?? null;
+        if ($this->inTimeFrom != null) {
+            if (!preg_match('/^\d{14}$/',  $this->inTimeFrom)) {
+                $this->errors[$this->inTimeFromName] = $this->messFormat;
+                $this->inTimeFrom = null;
             }
         }
         $this->isInRoom = $this->paramRequest['ApiData']['IsInRoom'] ?? null;
@@ -1508,6 +1569,13 @@ class BaseApiCacheController extends Controller
                 $this->treatmentCode = null;
             }
         }
+        $this->treatmentTypeCode = $this->paramRequest['ApiData']['TreatmentTypeCode'] ?? null;
+        if ($this->treatmentTypeCode !== null) {
+            if (!is_string($this->treatmentTypeCode)) {
+                $this->errors[$this->treatmentTypeCodeName] = $this->messFormat;
+                $this->treatmentTypeCode = null;
+            }
+        }
         $this->patientCode = $this->paramRequest['ApiData']['PatientCode'] ?? null;
         if ($this->patientCode !== null) {
             if (!is_string($this->patientCode)) {
@@ -1521,7 +1589,9 @@ class BaseApiCacheController extends Controller
             $this->errors[$this->groupByName] = $this->messFormat;
             $this->groupBy = null;
         }
-
+        if ($this->groupBy != null) {
+            $this->groupByString = arrayToCustomStringNotKey($this->groupBy);
+        }
         $this->debateId = $this->paramRequest['ApiData']['DebateId'] ?? null;
         if ($this->debateId != null) {
             // Kiểm tra xem ID có tồn tại trong bảng  hay không

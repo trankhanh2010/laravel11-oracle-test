@@ -12,6 +12,7 @@ use App\Classes\Vietinbank\QRAddtionalBean;
 use App\Classes\Vietinbank\ServiceConfig;
 use App\Classes\Vietinbank\QRCode;
 use App\Repositories\TransactionRepository;
+use Illuminate\Support\Carbon;
 use IntlChar;
 use Normalizer;
 
@@ -117,6 +118,9 @@ class VietinbankService
             $consumerAddress = "";
             $consumerMobile = "";
             $consumerEmail = "";
+            // Thời gian hết hạn giao dịch +10 phút
+            $timeTransaction = Carbon::now();
+            $expDate = $timeTransaction->addMinutes(10)->format('ymdHi'); 
 
             if (QRCode::PAY_TYPE_01 === $request->payType) {
                 if ($this->VND === $request->ccy) {
@@ -137,7 +141,7 @@ class VietinbankService
             $addinalBean->referenceID = $referenceID;
             $addinalBean->customerID = $consumerID;
             $addinalBean->purpose = $this->removeDiacritics($purpose);
-            $addinalBean->expDate = $request->expDate;
+            $addinalBean->expDate = $expDate;
             $addinalBean->terminalID = $request->terminalId;
             $addinalBean->consumerMobile = $consumerMobile;
             $addinalBean->consumerAddress = $consumerAddress;

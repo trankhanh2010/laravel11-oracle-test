@@ -2,9 +2,9 @@
 
 namespace App\DTOs;
 
-class SereServListVViewDTO
+class TreatmentListVViewDTO
 {
-    public $sereServListVViewName;
+    public $treatmentListVViewName;
     public $keyword;
     public $isActive;
     public $isDelete;
@@ -18,16 +18,15 @@ class SereServListVViewDTO
     public $appCreator;
     public $appModifier;
     public $time;
-    public $treatmentId;
-    public $trackingId;
-    public $serviceReqId;
-    public $groupBy;
-    public $notInTracking;
+     public $groupBy;
     public $patientCode;
-    public $serviceTypeCodes;
+    public $param;
+    public $treatmentTypeCode;
+    public $inTimeFrom;
+    public $inTimeTo;
 
     public function __construct(
-        $sereServListVViewName,
+        $treatmentListVViewName,
         $keyword, 
         $isActive, 
         $isDelete,
@@ -41,16 +40,15 @@ class SereServListVViewDTO
         $appCreator,
         $appModifier,
         $time,
-        $treatmentId,
-        $trackingId,
-        $serviceReqId,
         $groupBy,
-        $notInTracking,
         $patientCode,
-        $serviceTypeCodes,
+        $param,
+        $treatmentTypeCode,
+        $inTimeFrom,
+        $inTimeTo,
         )
     {
-        $this->sereServListVViewName = $sereServListVViewName;
+        $this->treatmentListVViewName = $treatmentListVViewName;
         $this->keyword = $keyword;
         $this->isActive = $isActive;
         $this->isDelete = $isDelete;
@@ -64,12 +62,11 @@ class SereServListVViewDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
-        $this->treatmentId = $treatmentId;
-        $this->trackingId = $trackingId;
-        $this->serviceReqId = $serviceReqId;
         $this->groupBy = $groupBy;
-        $this->notInTracking = $notInTracking;
         $this->patientCode = $patientCode;
-        $this->serviceTypeCodes = $serviceTypeCodes;
+        $this->param = $param;
+        $this->treatmentTypeCode = $treatmentTypeCode;
+        $this->inTimeFrom = $inTimeFrom;
+        $this->inTimeTo = $inTimeTo;
     }
 }

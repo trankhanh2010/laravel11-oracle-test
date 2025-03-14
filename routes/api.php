@@ -179,6 +179,7 @@ use App\Http\Controllers\Api\NoCacheControllers\MedicalCaseCoverListVViewControl
 use App\Http\Controllers\Api\NoCacheControllers\PatientTypeAlterVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\RoomVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\SereServBillController;
+use App\Http\Controllers\Api\NoCacheControllers\SereServClsListVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\SereServController;
 use App\Http\Controllers\Api\NoCacheControllers\SereServDepositVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\SereServDetailVViewController;
@@ -206,6 +207,7 @@ use App\Http\Controllers\Api\NoCacheControllers\TransactionListVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TreatmentBedRoomListVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TreatmentFeeDetailVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TreatmentFeeListVViewController;
+use App\Http\Controllers\Api\NoCacheControllers\TreatmentListVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TreatmentRoomGroupVViewController;
 // Base Api
 use App\Http\Controllers\BaseControllers\CacheController;
@@ -1127,4 +1129,8 @@ Route::group([
     Route::apiResource('v1/debate-list-v-view', DebateListVViewController::class)->only(['index', 'show']);
     /// Biên bản hội chẩn
     Route::apiResource('v1/debate-detail-v-view', DebateDetailVViewController::class)->only(['show']);
+    /// SereServ Cls List
+    Route::apiResource('v1/sere-serv-cls-list-v-view', SereServClsListVViewController::class)->only(['index', 'show']);
+    /// SereServ Cls List
+    Route::apiResource('v1/treatment-list-v-view', TreatmentListVViewController::class)->only(['index', 'show']);
 });

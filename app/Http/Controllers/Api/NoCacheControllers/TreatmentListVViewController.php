@@ -2,36 +2,36 @@
 
 namespace App\Http\Controllers\Api\NoCacheControllers;
 
-use App\DTOs\SereServListVViewDTO;
+use App\DTOs\TreatmentListVViewDTO;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
-use App\Http\Requests\SereServListVView\CreateSereServListVViewRequest;
-use App\Http\Requests\SereServListVView\UpdateSereServListVViewRequest;
-use App\Models\View\SereServListVView;
+use App\Http\Requests\TreatmentListVView\CreateTreatmentListVViewRequest;
+use App\Http\Requests\TreatmentListVView\UpdateTreatmentListVViewRequest;
+use App\Models\View\TreatmentListVView;
 use App\Services\Elastic\ElasticsearchService;
-use App\Services\Model\SereServListVViewService;
+use App\Services\Model\TreatmentListVViewService;
 use Illuminate\Http\Request;
 
 
-class SereServListVViewController extends BaseApiCacheController
+class TreatmentListVViewController extends BaseApiCacheController
 {
-    protected $sereServListVViewService;
-    protected $sereServListVViewDTO;
-    public function __construct(Request $request, ElasticsearchService $elasticSearchService, SereServListVViewService $sereServListVViewService, SereServListVView $sereServListVView)
+    protected $treatmentListVViewService;
+    protected $treatmentListVViewDTO;
+    public function __construct(Request $request, ElasticsearchService $elasticSearchService, TreatmentListVViewService $treatmentListVViewService, TreatmentListVView $treatmentListVView)
     {
         parent::__construct($request); // Gọi constructor của BaseController
         $this->elasticSearchService = $elasticSearchService;
-        $this->sereServListVViewService = $sereServListVViewService;
-        $this->sereServListVView = $sereServListVView;
+        $this->treatmentListVViewService = $treatmentListVViewService;
+        $this->treatmentListVView = $treatmentListVView;
         // Kiểm tra tên trường trong bảng
         if ($this->orderBy != null) {
             $this->orderByJoin = [
             ];
-            $columns = $this->getColumnsTable($this->sereServListVView, true);
+            $columns = $this->getColumnsTable($this->treatmentListVView, true);
             $this->orderBy = $this->checkOrderBy($this->orderBy, $columns, $this->orderByJoin ?? []);
         }
         // Thêm tham số vào service
-        $this->sereServListVViewDTO = new SereServListVViewDTO(
-            $this->sereServListVViewName,
+        $this->treatmentListVViewDTO = new TreatmentListVViewDTO(
+            $this->treatmentListVViewName,
             $this->keyword,
             $this->isActive,
             $this->isDelete,
@@ -45,35 +45,22 @@ class SereServListVViewController extends BaseApiCacheController
             $this->appCreator, 
             $this->appModifier, 
             $this->time,
-            $this->treatmentId,
-            $this->trackingId,
-            $this->serviceReqId,
             $this->groupBy,
-            $this->notInTracking,
             $this->patientCode,
-            $this->serviceTypeCodes,
+            $this->param,
+            $this->treatmentTypeCode,
+            $this->inTimeFrom,
+            $this->inTimeTo,
+
         );
-        $this->sereServListVViewService->withParams($this->sereServListVViewDTO);
+        $this->treatmentListVViewService->withParams($this->treatmentListVViewDTO);
     }
     public function index()
     {
         if ($this->checkParam()) {
             return $this->checkParam();
         }
-        $keyword = $this->keyword;
-        if (($keyword != null || $this->elasticSearchType != null) && !$this->cache) {
-            if ($this->elasticSearchType != null) {
-                $data = $this->elasticSearchService->handleElasticSearchSearch($this->sereServListVViewName);
-            } else {
-                $data = $this->sereServListVViewService->handleDataBaseSearch();
-            }
-        } else {
-            if ($this->elastic) {
-                $data = $this->elasticSearchService->handleElasticSearchGetAll($this->sereServListVViewName);
-            } else {
-                $data = $this->sereServListVViewService->handleDataBaseGetAll();
-            }
-        }
+        $data = $this->treatmentListVViewService->handleDataBaseGetAll();
         $paramReturn = [
             $this->getAllName => $this->getAll,
             $this->startName => $this->getAll ? null : $this->start,
@@ -92,15 +79,15 @@ class SereServListVViewController extends BaseApiCacheController
             return $this->checkParam();
         }
         if ($id !== null) {
-            $validationError = $this->validateAndCheckId($id, $this->sereServListVView, $this->sereServListVViewName);
+            $validationError = $this->validateAndCheckId($id, $this->treatmentListVView, $this->treatmentListVViewName);
             if ($validationError) {
                 return $validationError;
             }
         }
         if ($this->elastic) {
-            $data = $this->elasticSearchService->handleElasticSearchGetWithId($this->sereServListVViewName, $id);
+            $data = $this->elasticSearchService->handleElasticSearchGetWithId($this->treatmentListVViewName, $id);
         } else {
-            $data = $this->sereServListVViewService->handleDataBaseGetWithId($id);
+            $data = $this->treatmentListVViewService->handleDataBaseGetWithId($id);
         }
         $paramReturn = [
             $this->idName => $id,

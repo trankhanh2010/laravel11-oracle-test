@@ -204,6 +204,9 @@ class TreatmentFeePaymentService
     {
         return [
             'success' => true,
+            'transactionTypeCode' => $this->params->transactionTypeCode,
+            'paymentMethod' => $this->params->paymentMethod,
+            'paymentOption' => $this->params->paymentOption,
             'checkOtherLink' => $checkOtherLink,
             'deeplink' => $link->deep_link ?? '',
             'qrCodeUrl' => $link->qr_code_url ?? '',
