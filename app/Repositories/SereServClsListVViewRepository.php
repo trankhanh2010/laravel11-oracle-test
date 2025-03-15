@@ -1,17 +1,22 @@
-<?php 
+<?php
+
 namespace App\Repositories;
 
 use App\Jobs\ElasticSearch\Index\ProcessElasticIndexingJob;
+use App\Models\HIS\ReportTypeCat;
 use App\Models\View\SereServClsListVView;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class SereServClsListVViewRepository
 {
     protected $sereServClsListVView;
-    public function __construct(SereServClsListVView $sereServClsListVView)
+    protected $reportTypeCat;
+    public function __construct(SereServClsListVView $sereServClsListVView, ReportTypeCat $reportTypeCat)
     {
         $this->sereServClsListVView = $sereServClsListVView;
+        $this->reportTypeCat = $reportTypeCat;
     }
 
     public function applyJoins()
@@ -22,8 +27,8 @@ class SereServClsListVViewRepository
     public function applyKeywordFilter($query, $keyword)
     {
         return $query->where(function ($query) use ($keyword) {
-            $query->where(('service_code'), 'like', '%'. $keyword . '%')
-            ->orWhere(('lower(service_name)'), 'like', '%'. strtolower($keyword) . '%');
+            $query->where(('service_code'), 'like', '%' . $keyword . '%')
+                ->orWhere(('lower(service_name)'), 'like', '%' . strtolower($keyword) . '%');
         });
     }
     public function applyIsActiveFilter($query, $isActive)
@@ -64,10 +69,10 @@ class SereServClsListVViewRepository
     public function applyTabFilter($query, $param)
     {
         if ($param !== null) {
-            if($param == 'CongKham'){
+            if ($param == 'CongKham') {
                 $query->where(('service_req_type_code'), 'KH');
             }
-            if($param == 'CLS'){
+            if ($param == 'CLS') {
                 $query->whereNot(('service_req_type_code'), 'KH');
             }
         }
@@ -76,7 +81,10 @@ class SereServClsListVViewRepository
     public function applyReportTypeCodeFilter($query, $param)
     {
         if ($param !== null) {
-            $query->where(('report_type_code'), $param);
+            $query->where(function ($q) use ($param) {
+                $q->where('report_type_code', $param)
+                  ->orWhereNull('report_type_code');
+            });
         }
         return $query;
     }
@@ -93,8 +101,20 @@ class SereServClsListVViewRepository
 
         return $query;
     }
-    public function applyGroupByField($data, $groupByFields = [])
+    public function applyGroupByField($data, $groupByFields = [], $from, $to, $reportTypeCode)
     {
+        $monthList = [];
+        if (isset($from) && isset($to)) {
+            $monthList = $this->generateMonthList($from, $to);
+        }
+
+        // Lấy danh sách tất cả category từ DB
+        $categoryList = [];
+        if (isset($reportTypeCode)) {
+            $categoryList = Cache::remember('category_list_' . $reportTypeCode, 14400, function () use ($reportTypeCode) {
+                return $this->reportTypeCat->where('report_type_code', $reportTypeCode)->pluck('category_name', 'num_order')->toArray();
+            });
+        }
         if (empty($groupByFields)) {
             return $data;
         }
@@ -105,30 +125,87 @@ class SereServClsListVViewRepository
             $snakeField = Str::snake($field);
             $fieldMappings[$snakeField] = $field;
         }
-    
+
         $snakeFields = array_keys($fieldMappings);
-    
-        // Đệ quy nhóm dữ liệu theo thứ tự fields đã convert
-        $groupData = function ($items, $fields) use (&$groupData, $fieldMappings) {
+
+        // Hàm đệ quy nhóm dữ liệu
+        $groupData = function ($items, $fields) use (&$groupData, $fieldMappings, $monthList, $categoryList) {
             if (empty($fields)) {
                 return $items->values(); // Hết field nhóm -> Trả về danh sách gốc
             }
-    
+
             $currentField = array_shift($fields);
             $originalField = $fieldMappings[$currentField];
-    
-            return $items->groupBy(function ($item) use ($currentField) {
+
+            $grouped = $items->groupBy(function ($item) use ($currentField) {
                 return $item[$currentField] ?? null;
             })->map(function ($group, $key) use ($fields, $groupData, $originalField) {
                 return [
                     $originalField => (string)$key, // Hiển thị tên gốc
+                    'totalAmount' => $group->sum('amount'),
                     'total' => $group->count(),
                     'data' => $groupData($group, $fields),
                 ];
-            })->values();
+            });
+
+            // Nếu nhóm theo virIntructionMonth, đảm bảo đủ các tháng
+            if ($originalField === 'virIntructionMonth') {
+                foreach ($monthList as $month) {
+                    if (!$grouped->has($month)) {
+                        $grouped[$month] = [
+                            $originalField => $month,
+                            'totalAmount' => 0,
+                            'total' => 0,
+                            'data' => collect([]),
+                        ];
+                    }
+                }
+                // **Sắp xếp theo thứ tự tăng dần**
+                $grouped = collect($grouped)->sortBy(function ($item) {
+                    return $item['virIntructionMonth'];
+                });
+            }
+
+            // Nếu nhóm theo categoryName, đảm bảo đủ tất cả các category
+            if ($originalField === 'categoryName') {
+                foreach ($categoryList as $numOrder => $category) {
+                    if (!$grouped->has($category)) {
+                        $grouped[$category] = [
+                            $originalField => $category,
+                            'totalAmount' => 0,
+                            'total' => 0,
+                            'numOrder' => $numOrder,
+                            'data' => collect([]),
+                        ];
+                    }                        
+                    $grouped[$category] = $grouped[$category] + ['numOrder' => $numOrder];
+                }
+                if(isset($grouped[""])){
+                    $grouped[""] = $grouped[""] + ['numOrder' => 0];
+                }
+                // **Sắp xếp theo thứ tự tăng dần theo numOrder category**
+                $grouped = collect($grouped)->sortBy(fn($item) => $item['numOrder']);
+            }
+            return $grouped->values();
         };
-    
+
         return $groupData(collect($data), $snakeFields);
+    }
+
+
+    public function generateMonthList($from, $to)
+    {
+        $fromMonth = substr($from, 0, 6); // Lấy năm và tháng từ from
+        $toMonth = substr($to, 0, 6); // Lấy năm và tháng từ to
+
+        $currentMonth = $fromMonth;
+        $monthList = [];
+
+        while ($currentMonth <= $toMonth) {
+            $monthList[] = $currentMonth . '00000000'; // Thêm ngày 00 để phù hợp với định dạng virIntructionMonth
+            $currentMonth = date('Ym', strtotime($currentMonth . '01 +1 month')); // Tăng tháng
+        }
+        return $monthList;
     }
     public function fetchData($query, $getAll, $start, $limit)
     {
@@ -147,36 +224,8 @@ class SereServClsListVViewRepository
     {
         return $this->sereServClsListVView->find($id);
     }
-    // public function create($request, $time, $appCreator, $appModifier){
-    //     $data = $this->sereServClsListVView::create([
-    //         'create_time' => now()->format('Ymdhis'),
-    //         'modify_time' => now()->format('Ymdhis'),
-    //         'creator' => get_loginname_with_token($request->bearerToken(), $time),
-    //         'modifier' => get_loginname_with_token($request->bearerToken(), $time),
-    //         'app_creator' => $appCreator,
-    //         'app_modifier' => $appModifier,
-    //         'is_active' => 1,
-    //         'is_delete' => 0,
-    //         'sere_serv_cls_list_v_view_code' => $request->sere_serv_cls_list_v_view_code,
-    //         'sere_serv_cls_list_v_view_name' => $request->sere_serv_cls_list_v_view_name,
-    //     ]);
-    //     return $data;
-    // }
-    // public function update($request, $data, $time, $appModifier){
-    //     $data->update([
-    //         'modify_time' => now()->format('Ymdhis'),
-    //         'modifier' => get_loginname_with_token($request->bearerToken(), $time),
-    //         'app_modifier' => $appModifier,
-    //         'sere_serv_cls_list_v_view_code' => $request->sere_serv_cls_list_v_view_code,
-    //         'sere_serv_cls_list_v_view_name' => $request->sere_serv_cls_list_v_view_name,
-    //         'is_active' => $request->is_active
-    //     ]);
-    //     return $data;
-    // }
-    // public function delete($data){
-    //     $data->delete();
-    //     return $data;
-    // }
+
+
     public function getDataFromDbToElastic($batchSize = 5000, $id = null)
     {
         $numJobs = config('queue')['num_queue_worker']; // Số lượng job song song

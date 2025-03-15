@@ -39,7 +39,7 @@ class SereServClsListVViewService
                 $data = $this->sereServClsListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
                 $data = $this->sereServClsListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
                 // Group theo field
-                $data = $this->sereServClsListVViewRepository->applyGroupByField($data, $this->params->groupBy);
+                $data = $this->sereServClsListVViewRepository->applyGroupByField($data, $this->params->groupBy, $this->params->intructionTimeFrom, $this->params->intructionTimeTo, $this->params->reportTypeCode);
                 return ['data' => $data, 'count' => $count];
             });
 
