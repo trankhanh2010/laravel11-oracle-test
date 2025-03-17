@@ -39,9 +39,10 @@ class ServiceTypeService
     public function handleDataBaseGetAll()
     {
         try {
-            $data = Cache::remember($this->params->serviceTypeName . '_start_' . $this->params->start . '_limit_' . $this->params->limit . $this->params->orderByString . '_is_active_' . $this->params->isActive . '_get_all_' . $this->params->getAll, $this->params->time, function (){
+            $data = Cache::remember($this->params->serviceTypeName .$this->params->param, $this->params->time, function (){
                 $data = $this->serviceTypeRepository->applyJoins();
                 $data = $this->serviceTypeRepository->applyIsActiveFilter($data, $this->params->isActive);
+                $data = $this->serviceTypeRepository->applyTabFilter($data, $this->params->tab);
                 $count = $data->count();
                 $data = $this->serviceTypeRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
                 $data = $this->serviceTypeRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);

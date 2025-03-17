@@ -24,6 +24,28 @@ class SereServClsListVViewRepository
         return $this->sereServClsListVView
             ->select();
     }
+    public function applyWithParam($query, $tab, $serviceCodes, $groupBy)
+    {
+        if($tab != null){
+            if($serviceCodes != null){
+                if($tab == 'CDHA' && $groupBy == [ "intructionDate", "intructionTime", "serviceTypeName"]){
+                    return $query->with([
+                        'sere_serv_exts' => function ($query) {
+                            $query->select('sere_serv_id', 'conclude')->where('is_delete', 0)->where('is_active', 1);
+                        },
+                    ]);
+                }
+                if($tab == 'XN' && $groupBy == null){
+                    return $query->with([
+                        'test_results' => function ($query) {
+                            $query->select('sere_serv_id','intruction_time', 'value', 'test_index_name', 'test_index_unit_name')->where('is_delete', 0)->where('is_active', 1);
+                        },
+                    ]);
+                }
+            }
+        }
+        return $query;
+    }
     public function applyKeywordFilter($query, $keyword)
     {
         return $query->where(function ($query) use ($keyword) {
@@ -59,6 +81,13 @@ class SereServClsListVViewRepository
         }
         return $query;
     }
+    public function applyServiceCodesFilter($query, $param)
+    {
+        if ($param !== null) {
+            $query->whereIn(('service_code'), $param);
+        }
+        return $query;
+    }
     public function applyIntructionTimeFilter($query, $from, $to)
     {
         if (isset($to) && isset($from)) {
@@ -74,6 +103,12 @@ class SereServClsListVViewRepository
             }
             if ($param == 'CLS') {
                 $query->whereNot(('service_req_type_code'), 'KH');
+            }
+            if ($param == 'CDHA') {
+                $query->whereIn(('service_type_code'), ['HA','NS','SA','CN']);
+            }
+            if ($param == 'XN') {
+                $query->whereIn(('service_type_code'), ['XN']);
             }
         }
         return $query;
@@ -101,7 +136,7 @@ class SereServClsListVViewRepository
 
         return $query;
     }
-    public function applyGroupByField($data, $groupByFields = [], $from, $to, $reportTypeCode)
+    public function applyGroupByField($data, $groupByFields = [], $from, $to, $reportTypeCode,  $tab = null, $serviceCodes = [])
     {
         $monthList = [];
         if (isset($from) && isset($to)) {
@@ -129,7 +164,7 @@ class SereServClsListVViewRepository
         $snakeFields = array_keys($fieldMappings);
 
         // Hàm đệ quy nhóm dữ liệu
-        $groupData = function ($items, $fields) use (&$groupData, $fieldMappings, $monthList, $categoryList) {
+        $groupData = function ($items, $fields) use (&$groupData, $fieldMappings, $monthList, $categoryList, $tab, $serviceCodes) {
             if (empty($fields)) {
                 return $items->values(); // Hết field nhóm -> Trả về danh sách gốc
             }
@@ -139,13 +174,28 @@ class SereServClsListVViewRepository
 
             $grouped = $items->groupBy(function ($item) use ($currentField) {
                 return $item[$currentField] ?? null;
-            })->map(function ($group, $key) use ($fields, $groupData, $originalField) {
-                return [
+            })->map(function ($group, $key) use ($fields, $groupData, $originalField, $tab, $serviceCodes) {
+                $result = [
                     $originalField => (string)$key, // Hiển thị tên gốc
+                    'serviceCode' => $originalField === 'serviceName' ? ($group->first()['service_code'] ?? null) : null, // serviceCode
                     'totalAmount' => $group->sum('amount'),
                     'total' => $group->count(),
                     'data' => $groupData($group, $fields),
                 ];
+            
+                // Xóa 'serviceCode' nếu không nhóm theo 'serviceName'
+                if ($originalField !== 'serviceName') {
+                    unset($result['serviceCode']);
+                }
+                // Nếu tab là 'CDHA' và serviceCode rỗng, thì xóa phần data khi nhóm theo serviceName
+                // Nếu tab là 'XN' và serviceCode rỗng, thì xóa phần data khi nhóm theo serviceName
+                if ($originalField === 'serviceName' && (
+                    ($tab === 'CDHA' && empty($serviceCodes))
+                    || ($tab === 'XN' && empty($serviceCodes))
+                )) {
+                    unset($result['data']);
+                }
+                return $result;
             });
 
             // Nếu nhóm theo virIntructionMonth, đảm bảo đủ các tháng
@@ -163,6 +213,21 @@ class SereServClsListVViewRepository
                 // **Sắp xếp theo thứ tự tăng dần**
                 $grouped = collect($grouped)->sortBy(function ($item) {
                     return $item['virIntructionMonth'];
+                });
+            }
+
+            // Nếu nhóm theo intructionDate
+            if ($originalField === 'intructionDate') {
+                // **Sắp xếp theo thứ tự giảm dần**
+                $grouped = collect($grouped)->sortByDesc(function ($item) {
+                    return $item['intructionDate'];
+                });
+            }
+            // Nếu nhóm theo intructionTime
+            if ($originalField === 'intructionTime') {
+                // **Sắp xếp theo thứ tự giảm dần**
+                $grouped = collect($grouped)->sortByDesc(function ($item) {
+                    return $item['intructionTime'];
                 });
             }
 

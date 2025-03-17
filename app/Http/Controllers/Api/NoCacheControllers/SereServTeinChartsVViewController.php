@@ -2,36 +2,36 @@
 
 namespace App\Http\Controllers\Api\NoCacheControllers;
 
-use App\DTOs\SereServClsListVViewDTO;
+use App\DTOs\SereServTeinChartsVViewDTO;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
-use App\Http\Requests\SereServClsListVView\CreateSereServClsListVViewRequest;
-use App\Http\Requests\SereServClsListVView\UpdateSereServClsListVViewRequest;
-use App\Models\View\SereServClsListVView;
+use App\Http\Requests\SereServTeinChartsVView\CreateSereServTeinChartsVViewRequest;
+use App\Http\Requests\SereServTeinChartsVView\UpdateSereServTeinChartsVViewRequest;
+use App\Models\View\SereServTeinChartsVView;
 use App\Services\Elastic\ElasticsearchService;
-use App\Services\Model\SereServClsListVViewService;
+use App\Services\Model\SereServTeinChartsVViewService;
 use Illuminate\Http\Request;
 
 
-class SereServClsListVViewController extends BaseApiCacheController
+class SereServTeinChartsVViewController extends BaseApiCacheController
 {
-    protected $sereServClsListVViewService;
-    protected $sereServClsListVViewDTO;
-    public function __construct(Request $request, ElasticsearchService $elasticSearchService, SereServClsListVViewService $sereServClsListVViewService, SereServClsListVView $sereServClsListVView)
+    protected $sereServTeinChartsVViewService;
+    protected $sereServTeinChartsVViewDTO;
+    public function __construct(Request $request, ElasticsearchService $elasticSearchService, SereServTeinChartsVViewService $sereServTeinChartsVViewService, SereServTeinChartsVView $sereServTeinChartsVView)
     {
         parent::__construct($request); // Gọi constructor của BaseController
         $this->elasticSearchService = $elasticSearchService;
-        $this->sereServClsListVViewService = $sereServClsListVViewService;
-        $this->sereServClsListVView = $sereServClsListVView;
+        $this->sereServTeinChartsVViewService = $sereServTeinChartsVViewService;
+        $this->sereServTeinChartsVView = $sereServTeinChartsVView;
         // Kiểm tra tên trường trong bảng
         if ($this->orderBy != null) {
             $this->orderByJoin = [
             ];
-            $columns = $this->getColumnsTable($this->sereServClsListVView, true);
+            $columns = $this->getColumnsTable($this->sereServTeinChartsVView, true);
             $this->orderBy = $this->checkOrderBy($this->orderBy, $columns, $this->orderByJoin ?? []);
         }
         // Thêm tham số vào service
-        $this->sereServClsListVViewDTO = new SereServClsListVViewDTO(
-            $this->sereServClsListVViewName,
+        $this->sereServTeinChartsVViewDTO = new SereServTeinChartsVViewDTO(
+            $this->sereServTeinChartsVViewName,
             $this->keyword,
             $this->isActive,
             $this->isDelete,
@@ -61,14 +61,14 @@ class SereServClsListVViewController extends BaseApiCacheController
             $this->reportTypeCode,
             $this->serviceCodes,
         );
-        $this->sereServClsListVViewService->withParams($this->sereServClsListVViewDTO);
+        $this->sereServTeinChartsVViewService->withParams($this->sereServTeinChartsVViewDTO);
     }
     public function index()
     {
         if ($this->checkParam()) {
             return $this->checkParam();
         }
-        $data = $this->sereServClsListVViewService->handleDataBaseGetAll();
+        $data = $this->sereServTeinChartsVViewService->handleDataBaseGetAll();
         $paramReturn = [
             $this->getAllName => $this->getAll,
             $this->startName => $this->getAll ? null : $this->start,
@@ -87,15 +87,15 @@ class SereServClsListVViewController extends BaseApiCacheController
             return $this->checkParam();
         }
         if ($id !== null) {
-            $validationError = $this->validateAndCheckId($id, $this->sereServClsListVView, $this->sereServClsListVViewName);
+            $validationError = $this->validateAndCheckId($id, $this->sereServTeinChartsVView, $this->sereServTeinChartsVViewName);
             if ($validationError) {
                 return $validationError;
             }
         }
         if ($this->elastic) {
-            $data = $this->elasticSearchService->handleElasticSearchGetWithId($this->sereServClsListVViewName, $id);
+            $data = $this->elasticSearchService->handleElasticSearchGetWithId($this->sereServTeinChartsVViewName, $id);
         } else {
-            $data = $this->sereServClsListVViewService->handleDataBaseGetWithId($id);
+            $data = $this->sereServTeinChartsVViewService->handleDataBaseGetWithId($id);
         }
         $paramReturn = [
             $this->idName => $id,

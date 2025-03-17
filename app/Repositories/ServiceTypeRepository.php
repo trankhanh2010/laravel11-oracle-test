@@ -38,6 +38,15 @@ class ServiceTypeRepository
         }
         return $query;
     }
+    public function applyTabFilter($query, $param)
+    {
+        if ($param !== null) {
+            if ($param == 'CDHA') {
+                $query->whereIn(('service_type_code'), ['HA','NS','SA','CN']);
+            }
+        }
+        return $query;
+    }
     public function applyOrdering($query, $orderBy, $orderByJoin)
     {
         if ($orderBy != null) {

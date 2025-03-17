@@ -77,6 +77,8 @@ class BaseApiCacheController extends Controller
     protected $testIndexIdsName = 'TestIndexIds';
     protected $serviceTypeCodes;
     protected $serviceTypeCodesName = 'ServiceTypeCodes';
+    protected $serviceCodes;
+    protected $serviceCodesName = 'ServiceCodes';
     protected $tdlTreatmentId;
     protected $tdlTreatmentIdName = 'TdlTreatmentId';
     protected $documentTypeId;
@@ -459,6 +461,8 @@ class BaseApiCacheController extends Controller
     protected $bhytParamName = 'bhyt_param';
     protected $serviceReqLView;
     protected $serviceReqLViewName = 'service_req_l_view';
+    protected $sereServTeinChartsVView;
+    protected $sereServTeinChartsVViewName = 'sere_serv_tein_charts_v_view';
     protected $sereServTeinListVView;
     protected $sereServTeinListVViewName = 'sere_serv_tein_list_v_view';
     protected $groupType;
@@ -1255,6 +1259,16 @@ class BaseApiCacheController extends Controller
         }
         if ($this->serviceTypeCodes !=  null) {
             $this->serviceTypeCodesString = arrayToCustomStringNotKey($this->serviceTypeCodes);
+        }
+
+        $this->serviceCodes = $this->paramRequest['ApiData']['ServiceCodes'] ?? null;
+        if ($this->serviceCodes != null) {
+            foreach ($this->serviceCodes as $key => $item) {
+                if (!is_string($item)) {
+                    $this->errors[$this->serviceCodesName] = $this->messFormat;
+                    unset($this->serviceCodes[$key]);
+                } 
+            }
         }
 
         $this->testIndexIds = $this->paramRequest['ApiData']['TestIndexIds'] ?? null;

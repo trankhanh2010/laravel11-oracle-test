@@ -2,9 +2,9 @@
 
 namespace App\DTOs;
 
-class SereServClsListVViewDTO
+class SereServTeinChartsVViewDTO
 {
-    public $sereServClsListVViewName;
+    public $sereServTeinChartsVViewName;
     public $keyword;
     public $isActive;
     public $isDelete;
@@ -34,7 +34,7 @@ class SereServClsListVViewDTO
     public $reportTypeCode;
     public $serviceCodes;
     public function __construct(
-        $sereServClsListVViewName,
+        $sereServTeinChartsVViewName,
         $keyword, 
         $isActive, 
         $isDelete,
@@ -65,7 +65,7 @@ class SereServClsListVViewDTO
         $serviceCodes,
         )
     {
-        $this->sereServClsListVViewName = $sereServClsListVViewName;
+        $this->sereServTeinChartsVViewName = $sereServTeinChartsVViewName;
         $this->keyword = $keyword;
         $this->isActive = $isActive;
         $this->isDelete = $isDelete;

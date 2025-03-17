@@ -184,6 +184,7 @@ use App\Http\Controllers\Api\NoCacheControllers\SereServController;
 use App\Http\Controllers\Api\NoCacheControllers\SereServDepositVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\SereServDetailVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\SereServListVViewController;
+use App\Http\Controllers\Api\NoCacheControllers\SereServTeinChartsVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\SereServTeinController;
 use App\Http\Controllers\Api\NoCacheControllers\SereServTeinListVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\SereServTeinVViewController;
@@ -1133,4 +1134,6 @@ Route::group([
     Route::apiResource('v1/sere-serv-cls-list-v-view', SereServClsListVViewController::class)->only(['index', 'show']);
     /// SereServ Cls List
     Route::apiResource('v1/treatment-list-v-view', TreatmentListVViewController::class)->only(['index', 'show']);
+    /// SereServ Tein Charts
+    Route::apiResource('v1/sere-serv-tein-charts-v-view', SereServTeinChartsVViewController::class)->only(['index', 'show']);
 });

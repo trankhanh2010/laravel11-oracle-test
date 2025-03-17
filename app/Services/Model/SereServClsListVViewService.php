@@ -25,12 +25,14 @@ class SereServClsListVViewService
     public function handleDataBaseGetAll()
     {
         try {
-            $data = Cache::remember($this->params->sereServClsListVViewName .$this->params->param, 3600, function () {
+            $data = Cache::remember($this->params->sereServClsListVViewName . $this->params->param, 3600, function () {
                 $data = $this->sereServClsListVViewRepository->applyJoins();
+                $data = $this->sereServClsListVViewRepository->applyWithParam($data, $this->params->tab, $this->params->serviceCodes, $this->params->groupBy);
                 $data = $this->sereServClsListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
                 $data = $this->sereServClsListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
                 $data = $this->sereServClsListVViewRepository->applyPatientCodeFilter($data, $this->params->patientCode);
                 $data = $this->sereServClsListVViewRepository->applyServiceTypeCodesFilter($data, $this->params->serviceTypeCodes);
+                $data = $this->sereServClsListVViewRepository->applyServiceCodesFilter($data, $this->params->serviceCodes);
                 $data = $this->sereServClsListVViewRepository->applyReportTypeCodeFilter($data, $this->params->reportTypeCode);
                 $data = $this->sereServClsListVViewRepository->applyIntructionTimeFilter($data, $this->params->intructionTimeFrom, $this->params->intructionTimeTo);
                 $data = $this->sereServClsListVViewRepository->applyTabFilter($data, $this->params->tab);
@@ -39,7 +41,15 @@ class SereServClsListVViewService
                 $data = $this->sereServClsListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
                 $data = $this->sereServClsListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
                 // Group theo field
-                $data = $this->sereServClsListVViewRepository->applyGroupByField($data, $this->params->groupBy, $this->params->intructionTimeFrom, $this->params->intructionTimeTo, $this->params->reportTypeCode);
+                $data = $this->sereServClsListVViewRepository->applyGroupByField(
+                    $data,
+                    $this->params->groupBy,
+                    $this->params->intructionTimeFrom,
+                    $this->params->intructionTimeTo,
+                    $this->params->reportTypeCode,
+                    $this->params->tab,
+                    $this->params->serviceCodes,
+                );
                 return ['data' => $data, 'count' => $count];
             });
 

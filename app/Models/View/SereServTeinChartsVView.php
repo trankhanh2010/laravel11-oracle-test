@@ -8,21 +8,13 @@ use App\Traits\dinh_dang_ten_truong;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class SereServClsListVView extends Model
+class SereServTeinChartsVView extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'xa_v_his_sere_serv_cls_list';
+    protected $table = 'xa_v_his_sere_serv_tein_charts';
     public $timestamps = false;
     protected $guarded = [
         'id',
     ];
-    public function sere_serv_exts()
-    {
-        return $this->hasMany(SereServExt::class,'sere_serv_id');
-    }
-    public function test_results()
-    {
-        return $this->hasMany(SereServTeinChartsVView::class,'sere_serv_id');
-    }
 }
