@@ -47,6 +47,13 @@ class SereServTeinListVViewRepository
         }
         return $query;
     }
+    public function applySereServIdsFilter($query, $param)
+    {
+        if ($param !== null) {
+            $query->whereIn(('sere_serv_id'), $param);
+        }
+        return $query;
+    }
     public function applyGroupByField($data, $groupByFields = [])
     {
         if (empty($groupByFields)) {

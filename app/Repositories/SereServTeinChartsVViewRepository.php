@@ -27,6 +27,7 @@ class SereServTeinChartsVViewRepository
                 'value',
                 'test_index_unit_name',
                 'test_index_name',
+                'num_order',
             ]);
     }
     public function applyWithParam($query)

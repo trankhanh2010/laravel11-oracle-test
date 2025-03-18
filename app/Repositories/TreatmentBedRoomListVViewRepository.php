@@ -84,6 +84,20 @@ class TreatmentBedRoomListVViewRepository
         }
         return $query;
     }
+    public function applyExecuteRoomCodeFilter($query, $param)
+    {
+        if ($param != null) {
+            $query->where(('execute_room_code'), $param);
+        }
+        return $query;
+    }
+    public function applyExecuteRoomIdsFilter($query, $param)
+    {
+        if ($param != null) {
+            $query->whereIn(('execute_room_id'), $param);
+        }
+        return $query;
+    }
     public function applyPatientClassifyIdsFilter($query, $ids)
     {
         if ($ids != null) {

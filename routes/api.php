@@ -1121,7 +1121,7 @@ Route::group([
     /// SereServ Detail
     Route::apiResource('v1/sere-serv-detail-v-view', SereServDetailVViewController::class)->only(['show']);
     /// SereServTein List
-    Route::apiResource('v1/sere-serv-tein-list-v-view', SereServTeinListVViewController::class)->only(['index']);
+    Route::apiResource('v1/sere-serv-tein-list-v-view', SereServTeinListVViewController::class)->only(['index','show']);
     /// Loại văn bản
     Route::apiResource('v1/document-type', DocumentTypeController::class)->only(['index', 'show']);
     /// Danh sách văn bản

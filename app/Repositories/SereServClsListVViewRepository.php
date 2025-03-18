@@ -35,10 +35,13 @@ class SereServClsListVViewRepository
                         },
                     ]);
                 }
-                if($tab == 'XN' && $groupBy == null){
+                if($tab == 'XN' && $groupBy == [ "intructionDate", "intructionTime", "testTypeName"]){
                     return $query->with([
                         'test_results' => function ($query) {
-                            $query->select('sere_serv_id','intruction_time', 'value', 'test_index_name', 'test_index_unit_name')->where('is_delete', 0)->where('is_active', 1);
+                            $query->select('sere_serv_id', 'value', 'test_index_name', 'test_index_unit_name', 'num_order','result_code')
+                            ->where('is_delete', 0)
+                            ->where('is_active', 1)
+                            ->orderByDesc('num_order');
                         },
                     ]);
                 }

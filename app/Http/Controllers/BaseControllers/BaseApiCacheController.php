@@ -75,6 +75,8 @@ class BaseApiCacheController extends Controller
     protected $idName = 'Id';
     protected $testIndexIds;
     protected $testIndexIdsName = 'TestIndexIds';
+    protected $executeRoomIds;
+    protected $executeRoomIdsName = 'ExecuteRoomIds';
     protected $serviceTypeCodes;
     protected $serviceTypeCodesName = 'ServiceTypeCodes';
     protected $serviceCodes;
@@ -91,6 +93,8 @@ class BaseApiCacheController extends Controller
     protected $serviceIdsName = 'ServiceIds';
     protected $patientCode;
     protected $patientCodeName = 'PatientCode';
+    protected $executeRoomCode;
+    protected $executeRoomCodeName = 'ExecuteRoomCode';
     protected $departmentCode;
     protected $departmentCodeName = 'DepartmentCode';
     protected $treatmentTypeIds;
@@ -1484,6 +1488,16 @@ class BaseApiCacheController extends Controller
                 }
             }
         }
+        $this->executeRoomIds = $this->paramRequest['ApiData']['ExecuteRoomIds'] ?? null;
+        if ($this->executeRoomIds != null) {
+            foreach ($this->executeRoomIds as $key => $item) {
+                //
+                if (!is_numeric($item)) {
+                    $this->errors[$this->executeRoomIdsName] = $this->messFormat;
+                    unset($this->executeRoomIds[$key]);
+                } 
+            }
+        }
         $this->packageId = $this->paramRequest['ApiData']['PackageId'] ?? null;
         if ($this->packageId !== null) {
             // Kiểm tra xem ID có tồn tại trong bảng  hay không
@@ -1595,6 +1609,13 @@ class BaseApiCacheController extends Controller
             if (!is_string($this->patientCode)) {
                 $this->errors[$this->patientCodeName] = $this->messFormat;
                 $this->patientCode = null;
+            }
+        }
+        $this->executeRoomCode = $this->paramRequest['ApiData']['ExecuteRoomCode'] ?? null;
+        if ($this->executeRoomCode !== null) {
+            if (!is_string($this->executeRoomCode)) {
+                $this->errors[$this->executeRoomCodeName] = $this->messFormat;
+                $this->executeRoomCode = null;
             }
         }
         $this->groupBy = $this->paramRequest['ApiData']['GroupBy'] ?? null;

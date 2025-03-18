@@ -47,6 +47,7 @@ class SereServTeinListVViewController extends BaseApiCacheController
             $this->time,
             $this->serviceReqId,
             $this->groupBy,
+            $this->sereServIds,
         );
         $this->sereServTeinListVViewService->withParams($this->sereServTeinListVViewDTO);
     }
@@ -55,20 +56,9 @@ class SereServTeinListVViewController extends BaseApiCacheController
         if ($this->checkParam()) {
             return $this->checkParam();
         }
-        $keyword = $this->keyword;
-        if (($keyword != null || $this->elasticSearchType != null) && !$this->cache) {
-            if ($this->elasticSearchType != null) {
-                $data = $this->elasticSearchService->handleElasticSearchSearch($this->sereServTeinListVViewName);
-            } else {
-                $data = $this->sereServTeinListVViewService->handleDataBaseSearch();
-            }
-        } else {
-            if ($this->elastic) {
-                $data = $this->elasticSearchService->handleElasticSearchGetAll($this->sereServTeinListVViewName);
-            } else {
-                $data = $this->sereServTeinListVViewService->handleDataBaseGetAll();
-            }
-        }
+
+        $data = $this->sereServTeinListVViewService->handleDataBaseGetAll();
+
         $paramReturn = [
             $this->getAllName => $this->getAll,
             $this->startName => $this->getAll ? null : $this->start,

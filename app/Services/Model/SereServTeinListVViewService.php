@@ -30,6 +30,7 @@ class SereServTeinListVViewService
             $data = $this->sereServTeinListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
             $data = $this->sereServTeinListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
             $data = $this->sereServTeinListVViewRepository->applyServiceReqIdFilter($data, $this->params->serviceReqId);
+            $data = $this->sereServTeinListVViewRepository->applySereServIdsFilter($data, $this->params->sereServIds);
 
             $count = $data->count();
             $data = $this->sereServTeinListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
@@ -48,6 +49,7 @@ class SereServTeinListVViewService
             $data = $this->sereServTeinListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
             $data = $this->sereServTeinListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
             $data = $this->sereServTeinListVViewRepository->applyServiceReqIdFilter($data, $this->params->serviceReqId);
+            $data = $this->sereServTeinListVViewRepository->applySereServIdsFilter($data, $this->params->sereServIds);
 
             $count = $data->count();
             $data = $this->sereServTeinListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);

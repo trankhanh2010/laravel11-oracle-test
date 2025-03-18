@@ -20,6 +20,7 @@ class SereServTeinListVViewDTO
     public $time;
     public $serviceReqId;
     public $groupBy;
+    public $sereServIds;
     public function __construct(
         $sereServTeinListVViewName,
         $keyword, 
@@ -37,6 +38,7 @@ class SereServTeinListVViewDTO
         $time,
         $serviceReqId,
         $groupBy,
+        $sereServIds,
         )
     {
         $this->sereServTeinListVViewName = $sereServTeinListVViewName;
@@ -55,5 +57,6 @@ class SereServTeinListVViewDTO
         $this->time = $time;
         $this->serviceReqId = $serviceReqId;
         $this->groupBy = $groupBy;
+        $this->sereServIds = $sereServIds;
     }
 }
