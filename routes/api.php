@@ -206,6 +206,7 @@ use App\Http\Controllers\Api\NoCacheControllers\TrackingListVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TransactionTTDetailVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TransactionListVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TreatmentBedRoomListVViewController;
+use App\Http\Controllers\Api\NoCacheControllers\TreatmentExecuteRoomListVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TreatmentFeeDetailVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TreatmentFeeListVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TreatmentListVViewController;
@@ -1102,6 +1103,8 @@ Route::group([
     Route::apiResource('v1/medical-case-cover-list-v-view', MedicalCaseCoverListVViewController::class)->only(['index', 'show']);
     /// TreatmentBedRoomList
     Route::apiResource('v1/treatment-bed-room-list-v-view', TreatmentBedRoomListVViewController::class)->only(['index', 'show']);
+    /// TreatmentExecuteRoomList
+    Route::apiResource('v1/treatment-exe-room-list-v-view', TreatmentExecuteRoomListVViewController::class)->only(['index', 'show']);
     /// Loại vỏ bệnh án
     Route::apiResource('v1/emr-cover-type', EmrCoverTypeController::class);
     /// Loại phiếu

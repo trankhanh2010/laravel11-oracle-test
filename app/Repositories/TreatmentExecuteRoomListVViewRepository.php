@@ -4,20 +4,20 @@ namespace App\Repositories;
 use Illuminate\Support\Str;
 
 use App\Jobs\ElasticSearch\Index\ProcessElasticIndexingJob;
-use App\Models\View\TreatmentBedRoomListVView;
+use App\Models\View\TreatmentExecuteRoomListVView;
 use Illuminate\Support\Facades\DB;
 
-class TreatmentBedRoomListVViewRepository
+class TreatmentExecuteRoomListVViewRepository
 {
-    protected $treatmentBedRoomListVView;
-    public function __construct(TreatmentBedRoomListVView $treatmentBedRoomListVView)
+    protected $treatmentExecuteRoomListVView;
+    public function __construct(TreatmentExecuteRoomListVView $treatmentExecuteRoomListVView)
     {
-        $this->treatmentBedRoomListVView = $treatmentBedRoomListVView;
+        $this->treatmentExecuteRoomListVView = $treatmentExecuteRoomListVView;
     }
 
     public function applyJoins()
     {
-        return $this->treatmentBedRoomListVView
+        return $this->treatmentExecuteRoomListVView
             ->select();
     }
     public function applyKeywordFilter($query, $keyword)
@@ -33,10 +33,10 @@ class TreatmentBedRoomListVViewRepository
             ", [$keyword])
                     ->orWhere(('tdl_patient_code'), 'like', '%' . $keyword . '%')
                     ->orWhere(('treatment_code'), 'like', '%' . $keyword . '%')
-                    ->orWhere(('bed_room_code'), 'like', '%' . $keyword . '%')
+                    ->orWhere(('execute_room_code'), 'like', '%' . $keyword . '%')
                     ->orWhereRaw("
                 REGEXP_LIKE(
-                    NLSSORT(bed_room_name, 'NLS_SORT=GENERIC_M_AI'),
+                    NLSSORT(execute_room_name, 'NLS_SORT=GENERIC_M_AI'),
                     NLSSORT(?, 'NLS_SORT=GENERIC_M_AI'),
                     'i'
                 )
@@ -73,13 +73,7 @@ class TreatmentBedRoomListVViewRepository
         }
         return $query;
     }
-    public function applyBedRoomIdsFilter($query, $ids)
-    {
-        if ($ids != null) {
-            $query->whereIn(('bed_room_id'), $ids);
-        }
-        return $query;
-    }
+
     public function applyTreatmentTypeIdsFilter($query, $ids)
     {
         if ($ids != null) {
@@ -108,24 +102,12 @@ class TreatmentBedRoomListVViewRepository
         }
         return $query;
     }
-    public function applyIsInBedFilter($query, $param)
-    {
-        if ($param !== null) {
-            if ($param) {
-                $query->whereNotNull(('bed_id'))
-                    ->whereNull(('remove_time'));
-            } else {
-                $query->whereNull(('bed_id'));
-            }
-        }
-        return $query;
-    }
+
     public function applyIsOutFilter($query, $param)
     {
         if ($param !== null) {
             if ($param) {
-                $query->whereNotNull(('out_time'))
-                    ->whereNotNull(('remove_time'));
+                $query->whereNotNull(('out_time'));
             } else {
                 $query->whereNull(('out_time'));
             }
@@ -143,20 +125,20 @@ class TreatmentBedRoomListVViewRepository
         }
         return $query;
     }
-    public function applyAddTimeFromFilter($query, $param)
+    public function applyIntructionTimeFromFilter($query, $param)
     {
         if ($param !== null) {
             return $query->where(function ($query) use ($param) {
-                $query->where('add_time', '>=', $param);
+                $query->where('intruction_time', '>=', $param);
             });
         }
         return $query;
     }
-    public function applyAddTimeToFilter($query, $param)
+    public function applyIntructionTimeToFilter($query, $param)
     {
         if ($param !== null) {
             return $query->where(function ($query) use ($param) {
-                $query->where('add_time', '<=', $param);
+                $query->where('intruction_time', '<=', $param);
             });
         }
         return $query;
@@ -227,6 +209,6 @@ class TreatmentBedRoomListVViewRepository
     
     public function getById($id)
     {
-        return $this->treatmentBedRoomListVView->find($id);
+        return $this->treatmentExecuteRoomListVView->find($id);
     }
 }

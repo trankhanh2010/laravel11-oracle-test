@@ -438,6 +438,7 @@ return [
             'sere_serv_cls_list_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm SereServClsList!',
             'treatment_list_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm TreatmentClsList!',
             'sere_serv_tein_charts_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm SereServTeinCharts!',
+            'treatment_execute_room_list_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm TreatmentExeRoomList!',
 
         ],
         'table' => [

@@ -719,6 +719,8 @@ class BaseApiCacheController extends Controller
     protected $testServiceTypeListVViewName = 'test_service_type_list_v_view';
     protected $treatmentFeeListVView;
     protected $treatmentFeeListVViewName = 'treatment_fee_list_v_view';
+    protected $treatmentExecuteRoomListVView;
+    protected $treatmentExecuteRoomListVViewName = 'treatment_execute_room_list_v_view';
     protected $transactionListVView;
     protected $transactionListVViewName = 'transaction_list_v_view';
     protected $depositReqListVView;

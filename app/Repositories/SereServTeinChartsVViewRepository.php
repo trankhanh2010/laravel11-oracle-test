@@ -24,6 +24,7 @@ class SereServTeinChartsVViewRepository
         return $this->sereServTeinChartsVView
             ->select([
                 'intruction_date',
+                'intruction_time',
                 'value',
                 'test_index_unit_name',
                 'test_index_name',

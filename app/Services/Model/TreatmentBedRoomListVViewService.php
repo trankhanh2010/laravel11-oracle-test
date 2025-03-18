@@ -30,8 +30,6 @@ class TreatmentBedRoomListVViewService
             $data = $this->treatmentBedRoomListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
             $data = $this->treatmentBedRoomListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
             $data = $this->treatmentBedRoomListVViewRepository->applyDepartmentCodeFilter($data, $this->params->departmentCode);
-            $data = $this->treatmentBedRoomListVViewRepository->applyExecuteRoomCodeFilter($data, $this->params->executeRoomCode);
-            $data = $this->treatmentBedRoomListVViewRepository->applyExecuteRoomIdsFilter($data, $this->params->executeRoomIds);
             $data = $this->treatmentBedRoomListVViewRepository->applyIsInBedFilter($data, $this->params->isInBed);
             $data = $this->treatmentBedRoomListVViewRepository->applyBedRoomIdsFilter($data, $this->params->bedRoomIds);
             $data = $this->treatmentBedRoomListVViewRepository->applyTreatmentTypeIdsFilter($data, $this->params->treatmentTypeIds);
@@ -59,8 +57,6 @@ class TreatmentBedRoomListVViewService
             $data = $this->treatmentBedRoomListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
             $data = $this->treatmentBedRoomListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
             $data = $this->treatmentBedRoomListVViewRepository->applyDepartmentCodeFilter($data, $this->params->departmentCode);
-            $data = $this->treatmentBedRoomListVViewRepository->applyExecuteRoomCodeFilter($data, $this->params->executeRoomCode);
-            $data = $this->treatmentBedRoomListVViewRepository->applyExecuteRoomIdsFilter($data, $this->params->executeRoomIds);
             $data = $this->treatmentBedRoomListVViewRepository->applyIsInBedFilter($data, $this->params->isInBed);
             $data = $this->treatmentBedRoomListVViewRepository->applyBedRoomIdsFilter($data, $this->params->bedRoomIds);
             $data = $this->treatmentBedRoomListVViewRepository->applyTreatmentTypeIdsFilter($data, $this->params->treatmentTypeIds);
