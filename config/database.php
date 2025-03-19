@@ -117,9 +117,9 @@ return [
             'service_name' => env('DB_HIS_SERVICE_NAME', 'orcl'),
             'charset' => 'AL32UTF8',
             'prefix' => '',
-            // 'options' => [
-            //     PDO::ATTR_PERSISTENT => true, // Kết nối liên tục
-            // ],
+            'options' => [
+                PDO::ATTR_PERSISTENT => true, // Kết nối liên tục
+            ],
         ],
         'oracle_acs' => [
             'driver' => 'oracle',
@@ -131,6 +131,9 @@ return [
             'service_name' => env('DB_ACS_SERVICE_NAME', 'orcl'),
             'charset' => 'AL32UTF8',
             'prefix' => '',
+            'options' => [
+                PDO::ATTR_PERSISTENT => true, // Kết nối liên tục
+            ],
         ],
         'oracle_sda' => [
             'driver' => 'oracle',
@@ -142,6 +145,9 @@ return [
             'service_name' => env('DB_SDA_SERVICE_NAME', 'orcl'),
             'charset' => 'AL32UTF8',
             'prefix' => '',
+            'options' => [
+                PDO::ATTR_PERSISTENT => true, // Kết nối liên tục
+            ],
         ],
         'oracle_emr' => [
             'driver' => 'oracle',
@@ -153,6 +159,9 @@ return [
             'service_name' => env('DB_EMR_SERVICE_NAME', 'orcl'),
             'charset' => 'AL32UTF8',
             'prefix' => '',
+            'options' => [
+                PDO::ATTR_PERSISTENT => true, // Kết nối liên tục
+            ],
         ],
         'oracle_sar' => [
             'driver' => 'oracle',
@@ -164,6 +173,9 @@ return [
             'service_name' => env('DB_SAR_SERVICE_NAME', 'orcl'),
             'charset' => 'AL32UTF8',
             'prefix' => '',
+            'options' => [
+                PDO::ATTR_PERSISTENT => true, // Kết nối liên tục
+            ],
         ],
         'elasticsearch' => [
             'bulk' => [
@@ -178,9 +190,9 @@ return [
                 'pass' => env('ELASTICSEARCH_PASS'),
                 'ca' => env('ELASTICSEARCH_CA'),
             ],
-            'client' => [
-                'persistent' => true,  // Sử dụng persistent connections (Giữ kết nối liên tục)
-            ]
+            // 'client' => [
+            //     'persistent' => true,  // Sử dụng persistent connections (Giữ kết nối liên tục)
+            // ]
         ],
         'momo' => [
             'momo_partner_code' => env('MOMO_PARTNER_CODE'),
