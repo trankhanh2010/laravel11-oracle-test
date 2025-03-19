@@ -114,17 +114,17 @@ class TreatmentExecuteRoomListVViewRepository
         }
         return $query;
     }
-    public function applyIsCoTreatDepartmentFilter($query, $param)
-    {
-        if ($param !== null) {
-            if ($param) {
-                $query->whereNotNull(('co_department_ids'));
-            } else {
-                $query->whereNull(('co_department_ids'));
-            }
-        }
-        return $query;
-    }
+    // public function applyIsCoTreatDepartmentFilter($query, $param)
+    // {
+    //     if ($param !== null) {
+    //         if ($param) {
+    //             $query->whereNotNull(('co_treatment_id'));
+    //         } else {
+    //             $query->whereNull(('co_treatment_id'));
+    //         }
+    //     }
+    //     return $query;
+    // }
     public function applyIntructionTimeFromFilter($query, $param)
     {
         if ($param !== null) {

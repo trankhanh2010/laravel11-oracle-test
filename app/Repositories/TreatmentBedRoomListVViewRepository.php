@@ -136,9 +136,9 @@ class TreatmentBedRoomListVViewRepository
     {
         if ($param !== null) {
             if ($param) {
-                $query->whereNotNull(('co_department_ids'));
+                $query->whereNotNull(('co_treatment_id'));
             } else {
-                $query->whereNull(('co_department_ids'));
+                $query->whereNull(('co_treatment_id'));
             }
         }
         return $query;

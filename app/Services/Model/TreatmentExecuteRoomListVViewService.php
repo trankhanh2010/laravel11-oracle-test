@@ -32,7 +32,7 @@ class TreatmentExecuteRoomListVViewService
             $data = $this->treatmentExecuteRoomListVViewRepository->applyDepartmentCodeFilter($data, $this->params->departmentCode);
             $data = $this->treatmentExecuteRoomListVViewRepository->applyExecuteRoomIdsFilter($data, $this->params->executeRoomIds);
             $data = $this->treatmentExecuteRoomListVViewRepository->applyTreatmentTypeIdsFilter($data, $this->params->treatmentTypeIds);
-            $data = $this->treatmentExecuteRoomListVViewRepository->applyIsCoTreatDepartmentFilter($data, $this->params->isCoTreatDepartment);
+            // $data = $this->treatmentExecuteRoomListVViewRepository->applyIsCoTreatDepartmentFilter($data, $this->params->isCoTreatDepartment);
             $data = $this->treatmentExecuteRoomListVViewRepository->applyPatientClassifyIdsFilter($data, $this->params->patientClassifyIds);
             $data = $this->treatmentExecuteRoomListVViewRepository->applyIsOutFilter($data, $this->params->isOut);
             $data = $this->treatmentExecuteRoomListVViewRepository->applyAddLoginnameFilter($data, $this->params->addLoginname);
@@ -58,7 +58,7 @@ class TreatmentExecuteRoomListVViewService
             $data = $this->treatmentExecuteRoomListVViewRepository->applyDepartmentCodeFilter($data, $this->params->departmentCode);
             $data = $this->treatmentExecuteRoomListVViewRepository->applyExecuteRoomIdsFilter($data, $this->params->executeRoomIds);
             $data = $this->treatmentExecuteRoomListVViewRepository->applyTreatmentTypeIdsFilter($data, $this->params->treatmentTypeIds);
-            $data = $this->treatmentExecuteRoomListVViewRepository->applyIsCoTreatDepartmentFilter($data, $this->params->isCoTreatDepartment);
+            // $data = $this->treatmentExecuteRoomListVViewRepository->applyIsCoTreatDepartmentFilter($data, $this->params->isCoTreatDepartment);
             $data = $this->treatmentExecuteRoomListVViewRepository->applyPatientClassifyIdsFilter($data, $this->params->patientClassifyIds);
             $data = $this->treatmentExecuteRoomListVViewRepository->applyIsOutFilter($data, $this->params->isOut);
             $data = $this->treatmentExecuteRoomListVViewRepository->applyAddLoginnameFilter($data, $this->params->addLoginname);
