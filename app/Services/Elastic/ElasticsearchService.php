@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
 use App\Http\Resources\Elastic\ElasticResource;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class ElasticsearchService extends BaseApiCacheController
 {
@@ -19,10 +20,10 @@ class ElasticsearchService extends BaseApiCacheController
         $this->request = $request;
     }
 
-    public function buildSearchBody($tableName)
+    public function buildSearchBody($tableName, $paramCustom = null)
     {
         try {
-            $query = $this->buildSearchQuery($this->elasticSearchType, $this->elasticField, $this->keyword, $tableName);
+            $query = $this->buildSearchQuery($this->elasticSearchType, $this->elasticField, $this->keyword, $tableName, $paramCustom);
             $highlight = $this->buildHighlight($this->elasticSearchType);
             $paginate = $this->buildPaginateElastic();
             $body = $this->buildArrSearchBody($query, $highlight, $paginate, $tableName);
@@ -40,7 +41,7 @@ class ElasticsearchService extends BaseApiCacheController
         }
     }
 
-    public function buildSearchQuery($searchType, $field, $value, $nameTable)
+    public function buildSearchQuery($searchType, $field, $value, $nameTable, $paramCustom = null)
     {
         try {
             $query = [];
@@ -258,7 +259,7 @@ class ElasticsearchService extends BaseApiCacheController
                         ];
                         break;
                     case 'custom':
-                        $query = $this->elasticCustom;
+                        $query = $paramCustom ?? $this->elasticCustom ;
                         break;
                 }
             }
@@ -515,30 +516,31 @@ class ElasticsearchService extends BaseApiCacheController
         }
     }
 
-    public function handleElasticSearchSearch($tableName)
+    public function handleElasticSearchSearch($tableName, $paramCustom = null)
     {
         try {
-            $body = $this->buildSearchBody($tableName);
+            $body = $this->buildSearchBody($tableName, $paramCustom);
             $data = $this->executeSearch($tableName, $body, null);
             $count = $this->counting($data);
             $data = $this->applyResource($data);
+            $data = $this->applyGroupByField($data, $this->groupBy);
             return ['data' => $data, 'count' => $count];
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['elastic']['error']['handle_elastic_search_search'], $e);
         }
     }
-    public function handleElasticSearchGetAll($tableName)
+    public function handleElasticSearchGetAll($tableName, $paramCustom = null)
     {
         try {
             if ($this->isNoCache()) {
-                $body = $this->buildSearchBody($tableName);
+                $body = $this->buildSearchBody($tableName, $paramCustom);
                 $data = $this->executeSearch($tableName, $body, null);
                 $count = $this->counting($data);
                 $data = $this->applyResource($data);
                 return ['data' => $data, 'count' => $count];
             } else {
-                $data = Cache::remember('elastic_' . $tableName . '_start_' . $this->start . '_limit_' . $this->limit . $this->orderByString . '_is_active_' . $this->elasticIsActive . '_get_all_' . $this->getAll, $this->time, function () use ($tableName) {
-                    $body = $this->buildSearchBody($tableName);
+                $data = Cache::remember('elastic_' . $tableName . '_start_' . $this->start . '_limit_' . $this->limit . $this->orderByString . '_is_active_' . $this->elasticIsActive . '_get_all_' . $this->getAll, $this->time, function () use ($tableName, $paramCustom) {
+                    $body = $this->buildSearchBody($tableName, $paramCustom);
                     $data = $this->executeSearch($tableName, $body, null);
                     $count = $this->counting($data);
                     $data = $this->applyResource($data);
@@ -552,17 +554,17 @@ class ElasticsearchService extends BaseApiCacheController
     }
 
 
-    public function handleElasticSearchGetWithId($tableName, $id)
+    public function handleElasticSearchGetWithId($tableName, $id, $paramCustom = null)
     {
         try {
             if ($this->isNoCache()) {
-                $body = $this->buildSearchBody($tableName);
+                $body = $this->buildSearchBody($tableName, $paramCustom);
                 $data = $this->executeSearch($tableName, $body, $id);
                 $data = $this->applyResource($data);
                 return $data;
             } else {
-                $data = Cache::remember('elastic_' . $tableName . '_' . $id . '_is_active_' . $this->elasticIsActive, $this->time, function () use ($tableName, $id) {
-                    $body = $this->buildSearchBody($tableName);
+                $data = Cache::remember('elastic_' . $tableName . '_' . $id . '_is_active_' . $this->elasticIsActive, $this->time, function () use ($tableName, $id, $paramCustom) {
+                    $body = $this->buildSearchBody($tableName, $paramCustom);
                     $data = $this->executeSearch($tableName, $body, $id);
                     $data = $this->applyResource($data);
                     return $data;
@@ -589,4 +591,43 @@ class ElasticsearchService extends BaseApiCacheController
         }
         return false;
     }
+    public function applyGroupByField($data, $groupByFields = [])
+    {
+        if (empty($groupByFields)) {
+            return $data;
+        }
+    
+        // Chuyển các field thành snake_case trước khi nhóm
+        $fieldMappings = [];
+        foreach ($groupByFields as $field) {
+            $snakeField = Str::snake($field);
+            $fieldMappings[$snakeField] = $field;
+        }
+    
+        $snakeFields = array_keys($fieldMappings);
+    
+        // Đệ quy nhóm dữ liệu theo thứ tự fields đã convert
+        $groupData = function ($items, $fields) use (&$groupData, $fieldMappings) {
+            if (empty($fields)) {
+                return $items->values(); // Hết field nhóm -> Trả về danh sách bản ghi gốc
+            }
+    
+            $currentField = array_shift($fields);
+            $originalField = $fieldMappings[$currentField];
+    
+            return $items->groupBy(function ($item) use ($currentField) {
+                return data_get($item, "_source.$currentField", 'N/A'); // Nhóm theo field trong `_source`
+            })->map(function ($group, $key) use ($fields, $groupData, $originalField) {
+                return [
+                    $originalField => (string) $key, // Hiển thị tên gốc
+                    'total' => $group->count(),
+                    'data' => $groupData($group, $fields), // Giữ nguyên cấu trúc bản ghi
+                ];
+            })->values();
+        };
+    
+        return $groupData(collect($data), $snakeFields);
+    }
+    
+
 }

@@ -1035,7 +1035,7 @@ class IndexRecordsToElasticsearch extends Command
                 app(DebateVViewRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'user_room_v_view':
-                $batchSize = 25000;
+                $batchSize = 300;
                 event(new CreateUserRoomVViewIndex($name_table));
                 app(UserRoomVViewRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;

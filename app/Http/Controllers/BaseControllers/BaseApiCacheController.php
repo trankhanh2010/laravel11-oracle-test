@@ -922,6 +922,8 @@ class BaseApiCacheController extends Controller
             if (!is_string($this->keyword)) {
                 $this->errors[$this->keywordName] = $this->messFormat;
                 $this->keyword = null;
+            } else {
+                $this->keyword = trim($this->keyword); // Loại bỏ khoảng trắng thừa
             }
         }
         $this->line = $this->paramRequest['ApiData']['Line'] ?? null;

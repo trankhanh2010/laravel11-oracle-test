@@ -190,9 +190,9 @@ return [
                 'pass' => env('ELASTICSEARCH_PASS'),
                 'ca' => env('ELASTICSEARCH_CA'),
             ],
-            // 'client' => [
-            //     'persistent' => true,  // Sử dụng persistent connections (Giữ kết nối liên tục)
-            // ]
+            'client' => [
+                'persistent' => true,  // Sử dụng persistent connections (Giữ kết nối liên tục)
+            ]
         ],
         'momo' => [
             'momo_partner_code' => env('MOMO_PARTNER_CODE'),

@@ -159,7 +159,7 @@ return [
             // 'service_req_l_view',
             // 'debate',
             // 'debate_v_view',
-            // 'user_room_v_view',
+            'user_room_v_view',
             // 'debate_user',
             // 'debate_ekip_user',
             // 'tracking',

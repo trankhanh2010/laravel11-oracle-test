@@ -18,6 +18,8 @@ class UserRoomVViewDTO
     public $appCreator;
     public $appModifier;
     public $time;
+    public $departmentCode;
+    public $tab;
     public function __construct(
         $userRoomVViewName,
         $keyword, 
@@ -33,6 +35,8 @@ class UserRoomVViewDTO
         $appCreator,
         $appModifier,
         $time,
+        $departmentCode,
+        $tab,
         )
     {
         $this->userRoomVViewName = $userRoomVViewName;
@@ -49,5 +53,7 @@ class UserRoomVViewDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
+        $this->departmentCode = $departmentCode;
+        $this->tab = $tab;
     }
 }

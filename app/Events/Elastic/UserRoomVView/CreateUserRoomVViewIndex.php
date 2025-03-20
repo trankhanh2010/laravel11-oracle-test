@@ -199,6 +199,9 @@ class CreateUserRoomVViewIndex
                                 ]
                             ]
                         ],
+                        'is_exam' => [
+                            'type' => 'byte'
+                        ],
                     ]
                 ]
             ]

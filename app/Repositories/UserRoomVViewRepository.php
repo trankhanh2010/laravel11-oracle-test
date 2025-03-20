@@ -17,20 +17,20 @@ class UserRoomVViewRepository
     {
         return $this->userRoomVView
             ->select(
-                'v_his_user_room.*'
+                '*'
             );
     }
     public function applyKeywordFilter($query, $keyword)
     {
         return $query->where(function ($query) use ($keyword) {
-            $query->where(DB::connection('oracle_his')->raw('v_his_user_room.loginname'), 'like', $keyword . '%')
-                ->orWhere(DB::connection('oracle_his')->raw('v_his_user_room.room_name'), 'like', $keyword . '%');
+            $query->where(('loginname'), 'like', $keyword . '%')
+                ->orWhere(('room_name'), 'like', $keyword . '%');
         });
     }
     public function applyIsActiveFilter($query, $isActive)
     {
         if ($isActive !== null) {
-            $query->where(DB::connection('oracle_his')->raw('v_his_user_room.is_active'), $isActive);
+            $query->where(('is_active'), $isActive);
         }
         return $query;
     }
@@ -40,7 +40,7 @@ class UserRoomVViewRepository
             foreach ($orderBy as $key => $item) {
                 if (in_array($key, $orderByJoin)) {
                 } else {
-                    $query->orderBy('v_his_user_room.' . $key, $item);
+                    $query->orderBy('' . $key, $item);
                 }
             }
         }
@@ -98,15 +98,15 @@ class UserRoomVViewRepository
     {
         $numJobs = config('queue')['num_queue_worker']; // Số lượng job song song
         if ($id != null) {
-            $data = $this->applyJoins()->where('v_his_user_room.id', '=', $id)->first();
+            $data = $this->applyJoins()->where('id', '=', $id)->first();
             if ($data) {
                 $data = $data->getAttributes();
                 return $data;
             }
         } else {
             // Xác định min và max id
-            $minId = $this->applyJoins()->min('v_his_user_room.id');
-            $maxId = $this->applyJoins()->max('v_his_user_room.id');
+            $minId = $this->applyJoins()->min('id');
+            $maxId = $this->applyJoins()->max('id');
             $chunkSize = ceil(($maxId - $minId + 1) / $numJobs);
             for ($i = 0; $i < $numJobs; $i++) {
                 $startId = $minId + ($i * $chunkSize);
@@ -116,7 +116,7 @@ class UserRoomVViewRepository
                     $endId = $maxId;
                 }
                 // Dispatch job cho mỗi phạm vi id
-                ProcessElasticIndexingJob::dispatch('user_room_v_view', 'v_his_user_room', $startId, $endId, $batchSize);
+                ProcessElasticIndexingJob::dispatch('user_room_v_view', 'xa_v_his_user_room', $startId, $endId, $batchSize);
             }
         }
     }

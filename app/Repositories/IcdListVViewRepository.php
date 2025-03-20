@@ -121,7 +121,7 @@ class IcdListVViewRepository
                     $endId = $maxId;
                 }
                 // Dispatch job cho mỗi phạm vi id
-                ProcessElasticIndexingJob::dispatch('icd_list_v_view', 'v_his_icd_list', $startId, $endId, $batchSize);
+                ProcessElasticIndexingJob::dispatch('icd_list_v_view', 'xa_v_his_icd_list', $startId, $endId, $batchSize);
             }
         }
     }

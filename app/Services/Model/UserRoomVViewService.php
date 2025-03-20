@@ -22,6 +22,74 @@ class UserRoomVViewService
         $this->params = $params;
         return $this;
     }
+    public function handleCustomParamElasticSearch()
+    {
+        $data = null;
+        if ($this->params->tab == 'executeRoomBedRoom') {
+            $data =  [
+                "bool" => [
+                    "filter" => [
+                        ["term" => ["loginname.keyword" => get_loginname_with_token($this->params->request->bearerToken(), $this->params->time)]],
+                        $this->params->departmentCode ? ["term" => ["department_code.keyword" => $this->params->departmentCode]] : "",
+                        ["term" => ["is_active" => 1]],
+                        ["term" => ["is_delete" => 0]],
+                        [
+                            "bool" => [
+                                "should" => [
+                                    ["term" => ["room_type_code.keyword" => "GI"]],
+                                    ["term" => ["room_type_code.keyword" => "XL"]]
+                                ],
+                                "minimum_should_match" => 1
+                            ]
+                        ],
+                        [
+                            "bool" => [
+                                "should" => [
+                                    ["term" => ["is_pause" => 0]],
+                                    ["bool" => ["must_not" => ["exists" => ["field" => "is_pause"]]]]
+                                ],
+                                "minimum_should_match" => 1
+                            ]
+                        ],
+                        [
+                            "bool" => [
+                                "should" => [
+                                    ["bool" => [
+                                        "must" => [
+                                            ["term" => ["room_type_code.keyword" => "XL"]],
+                                            ["term" => ["is_exam" => 1]]
+                                        ]
+                                    ]],
+                                    ["bool" => [
+                                        "must_not" => [
+                                            ["term" => ["room_type_code.keyword" => "XL"]]
+                                        ]
+                                    ]]
+                                ],
+                                "minimum_should_match" => 1
+                            ]
+                        ]
+                    ],
+                    "must" => [
+                        [
+                            "bool" => [
+                                "should" => [
+                                    ["wildcard" => ["room_name.keyword" => "*" . $this->params->keyword . "*"]],
+                                    ["match_phrase" => ["room_name" => $this->params->keyword]],
+                                    ["match_phrase_prefix" => ["room_name" => $this->params->keyword]],
+
+                                    ["match_phrase_prefix" => ["room_code" => $this->params->keyword]]
+                                ],
+                                "minimum_should_match" => 1
+                            ]
+                        ]
+                    ]
+                ]
+            ];
+        }
+
+        return $data;
+    }
     public function handleDataBaseSearch()
     {
         try {
@@ -53,7 +121,7 @@ class UserRoomVViewService
     {
         try {
             $data = $this->userRoomVViewRepository->applyJoins()
-                ->where('v_his_user_room.id', $id);
+                ->where('id', $id);
             $data = $this->userRoomVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
             $data = $data->first();
             return $data;
@@ -66,7 +134,7 @@ class UserRoomVViewService
     {
         try {
             $data = $this->userRoomVViewRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
-            
+
             // Gọi event để thêm index vào elastic
             event(new InsertUserRoomVViewIndex($data, $this->params->userRoomVViewName));
             // Gọi event để xóa cache
@@ -88,7 +156,7 @@ class UserRoomVViewService
         }
         try {
             $data = $this->userRoomVViewRepository->update($request, $data, $this->params->time, $this->params->appModifier);
-            
+
             // Gọi event để thêm index vào elastic
             event(new InsertUserRoomVViewIndex($data, $this->params->userRoomVViewName));
             // Gọi event để xóa cache
@@ -110,7 +178,7 @@ class UserRoomVViewService
         }
         try {
             $data = $this->userRoomVViewRepository->delete($data);
-            
+
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->userRoomVViewName));
             // Gọi event để xóa cache
