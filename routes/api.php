@@ -155,6 +155,7 @@ use App\Http\Controllers\Api\CacheControllers\ModuleController;
 use App\Http\Controllers\Api\CacheControllers\PackingTypeController;
 use App\Http\Controllers\Api\CacheControllers\PayFormController;
 use App\Http\Controllers\Api\CacheControllers\ProcessingMethodController;
+use App\Http\Controllers\Api\CacheControllers\ServiceReqSttController;
 use App\Http\Controllers\Api\CacheControllers\StorageConditionController;
 use App\Http\Controllers\Api\CacheControllers\SuimIndexUnitController;
 use App\Http\Controllers\Api\CacheControllers\TestIndexGroupController;
@@ -1140,4 +1141,6 @@ Route::group([
     Route::apiResource('v1/sere-serv-cls-list-v-view', SereServClsListVViewController::class)->only(['index', 'show']);
     /// SereServ Cls List
     Route::apiResource('v1/treatment-list-v-view', TreatmentListVViewController::class)->only(['index', 'show']);
+    /// ServiceReqStt
+    Route::apiResource('v1/service-req-stt', ServiceReqSttController::class)->only(['index', 'show']);
 });

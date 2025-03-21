@@ -149,6 +149,7 @@ use App\Events\Elastic\ServiceGroup\CreateServiceGroupIndex;
 use App\Events\Elastic\ServiceMachine\CreateServiceMachineIndex;
 use App\Events\Elastic\ServicePaty\CreateServicePatyIndex;
 use App\Events\Elastic\ServiceReqLView\CreateServiceReqLViewIndex;
+use App\Events\Elastic\ServiceReqStt\CreateServiceReqSttIndex;
 use App\Events\Elastic\ServiceReqType\CreateServiceReqTypeIndex;
 use App\Events\Elastic\ServiceRoom\CreateServiceRoomIndex;
 use App\Events\Elastic\ServiceType\CreateServiceTypeIndex;
@@ -324,6 +325,7 @@ use App\Repositories\ServiceMachineRepository;
 use App\Repositories\ServicePatyRepository;
 use App\Repositories\ServiceRepository;
 use App\Repositories\ServiceReqLViewRepository;
+use App\Repositories\ServiceReqSttRepository;
 use App\Repositories\ServiceReqTypeRepository;
 use App\Repositories\ServiceRoomRepository;
 use App\Repositories\ServiceTypeRepository;
@@ -909,6 +911,10 @@ class IndexRecordsToElasticsearch extends Command
             case 'service_req_type':
                 event(new CreateServiceReqTypeIndex($name_table));
                 app(ServiceReqTypeRepository::class)->getDataFromDbToElastic($batchSize, null);
+                break;
+            case 'service_req_stt':
+                event(new CreateServiceReqSttIndex($name_table));
+                app(ServiceReqSttRepository::class)->getDataFromDbToElastic($batchSize, null);
                 break;
             case 'service_room':
                 event(new CreateServiceRoomIndex($name_table));

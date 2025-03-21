@@ -33,7 +33,7 @@ class TreatmentBedRoomListVViewRepository
             ", [$keyword])
                     ->orWhere(('tdl_patient_code'), 'like', '%' . $keyword . '%')
                     ->orWhere(('treatment_code'), 'like', '%' . $keyword . '%')
-                    ->orWhere(('broom_code'), 'like', '%' . $keyword . '%')
+                    ->orWhere(('room_code'), 'like', '%' . $keyword . '%')
                     ->orWhereRaw("
                 REGEXP_LIKE(
                     NLSSORT(room_name, 'NLS_SORT=GENERIC_M_AI'),

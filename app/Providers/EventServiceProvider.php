@@ -294,6 +294,8 @@ use App\Events\Elastic\ServiceReq\CreateServiceReqIndex;
 use App\Events\Elastic\ServiceReq\InsertServiceReqIndex;
 use App\Events\Elastic\ServiceReqLView\CreateServiceReqLViewIndex;
 use App\Events\Elastic\ServiceReqLView\InsertServiceReqLViewIndex;
+use App\Events\Elastic\ServiceReqStt\CreateServiceReqSttIndex;
+use App\Events\Elastic\ServiceReqStt\InsertServiceReqSttIndex;
 use App\Events\Elastic\ServiceReqType\CreateServiceReqTypeIndex;
 use App\Events\Elastic\ServiceReqType\InsertServiceReqTypeIndex;
 use App\Events\Elastic\ServiceRoom\CreateServiceRoomIndex;
@@ -651,6 +653,8 @@ use App\Listeners\Elastic\ServiceReq\ElasticCreateServiceReqIndex;
 use App\Listeners\Elastic\ServiceReq\ElasticInsertServiceReqIndex;
 use App\Listeners\Elastic\ServiceReqLView\ElasticCreateServiceReqLViewIndex;
 use App\Listeners\Elastic\ServiceReqLView\ElasticInsertServiceReqLViewIndex;
+use App\Listeners\Elastic\ServiceReqStt\ElasticCreateServiceReqSttIndex;
+use App\Listeners\Elastic\ServiceReqStt\ElasticInsertServiceReqSttIndex;
 use App\Listeners\Elastic\ServiceReqType\ElasticCreateServiceReqTypeIndex;
 use App\Listeners\Elastic\ServiceReqType\ElasticInsertServiceReqTypeIndex;
 use App\Listeners\Elastic\ServiceRoom\ElasticCreateServiceRoomIndex;
@@ -1971,6 +1975,13 @@ class EventServiceProvider extends ServiceProvider
         ],
         InsertDocumentTypeIndex::class => [
             ElasticInsertDocumentTypeIndex::class,
+        ],
+
+        CreateServiceReqSttIndex::class => [
+            ElasticCreateServiceReqSttIndex::class,
+        ],
+        InsertServiceReqSttIndex::class => [
+            ElasticInsertServiceReqSttIndex::class,
         ],
     ];
 

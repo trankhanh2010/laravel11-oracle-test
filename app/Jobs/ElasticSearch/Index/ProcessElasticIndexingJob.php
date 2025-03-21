@@ -149,6 +149,7 @@ use App\Repositories\ServiceGroupRepository;
 use App\Repositories\ServiceMachineRepository;
 use App\Repositories\ServicePatyRepository;
 use App\Repositories\ServiceRepository;
+use App\Repositories\ServiceReqSttRepository;
 use App\Repositories\ServiceReqTypeRepository;
 use App\Repositories\ServiceRoomRepository;
 use App\Repositories\ServiceTypeRepository;
@@ -661,6 +662,9 @@ class ProcessElasticIndexingJob implements ShouldQueue
                 break;
             case 'service_req_type':
                 $repository = app(ServiceReqTypeRepository::class);
+                break;
+            case 'service_req_stt':
+                $repository = app(ServiceReqSttRepository::class);
                 break;
             case 'service_room':
                 $repository = app(ServiceRoomRepository::class);

@@ -562,6 +562,8 @@ class BaseApiCacheController extends Controller
     protected $awarenessName = 'awareness';
     protected $medicineLine;
     protected $medicineLineName = 'medicine_line';
+    protected $serviceReqStt;
+    protected $serviceReqSttName = 'service_req_stt';
     protected $bloodVolume;
     protected $bloodVolumeName = 'blood_volume';
     protected $medicineUseForm;
