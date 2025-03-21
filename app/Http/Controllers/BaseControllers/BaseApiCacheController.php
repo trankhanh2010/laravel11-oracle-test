@@ -45,7 +45,8 @@ use Illuminate\Support\Str;
 
 class BaseApiCacheController extends Controller
 {
-    protected $userLoginRoomIds;
+    protected $currentUserLoginRoomIds;
+    protected $currentLoginname;
     protected $errors = [];
     protected $data = [];
     protected $param;
@@ -788,8 +789,22 @@ class BaseApiCacheController extends Controller
         return $this->errors;
     }
     protected function userRoom403($roomIds){
-        return "Tài khoản không có quyền lấy tài nguyên với RoomId: ". implode(', ', $roomIds);
+        if(is_array($roomIds)){
+            return "Tài khoản không có quyền lấy tài nguyên với RoomId: ". implode(', ', $roomIds);
+        }else{
+            return "Tài khoản không có quyền lấy tài nguyên với RoomId: ".$roomIds;
+        }
     } 
+    protected function  checkUserRoomCurrent($roomIds){
+        if(is_array($roomIds)){
+            $result = array_diff($roomIds, $this->currentUserLoginRoomIds);
+        }else{
+            $check = in_array( $roomIds, $this->currentUserLoginRoomIds);
+            $result = $check ? null : $roomIds;
+        }
+        return $result;
+    }
+
     protected function checkParam()
     {
         if ($this->hasErrors()) {
@@ -859,11 +874,19 @@ class BaseApiCacheController extends Controller
     }
     public function __construct(Request $request)
     {
+        // Thời gian tồn tại của cache
+        $this->time = now()->addMinutes(10080);
+        $this->columnsTime = now()->addMinutes(20000);
+
+        // Lấy loginname hiện tại
+        $this->currentLoginname = get_loginname_with_token($request->bearerToken(), $this->time);
+
         // Lấy ra danh sách room id được quyền lấy tài nguyên của tài khoản đang đăng nhập
-       $this->userLoginRoomIds = Cache::remember('user_login_room_ids_'.get_loginname_with_token($request->bearerToken(), $this->time), $this->time, function () use($request)  {
-            $data = UserRoom::getRoomIdsByLoginname(get_loginname_with_token($request->bearerToken(), $this->time));
+       $this->currentUserLoginRoomIds = Cache::remember('user_login_room_ids_'.$this->currentLoginname, $this->time, function () use($request)  {
+            $data = UserRoom::getRoomIdsByLoginname($this->currentLoginname);
             return $data;
         });
+
         $this->param = $request->input('param');
         // Khai báo các biến
         try {
@@ -871,9 +894,6 @@ class BaseApiCacheController extends Controller
         } catch (\Throwable $e) {
             writeAndThrowError(config('params')['elastic']['error']['connection'], $e);
         }
-        // Thời gian tồn tại của cache
-        $this->time = now()->addMinutes(10080);
-        $this->columnsTime = now()->addMinutes(20000);
 
         // Thông báo lỗi 
         $this->messFormat = config('keywords')['error']['format'];
@@ -1369,8 +1389,7 @@ class BaseApiCacheController extends Controller
                     unset($this->bedRoomIds[$key]);
                 } 
             }
-            $this->userLoginRoomIds = UserRoom::getRoomIdsByLoginname(get_loginname_with_token($request->bearerToken(), $this->time));
-            $resultCheckUserRoom = array_diff($this->bedRoomIds, $this->userLoginRoomIds);
+            $resultCheckUserRoom = $this->checkUserRoomCurrent($this->bedRoomIds);
             if($resultCheckUserRoom){
                 $this->errors[$this->bedRoomIdsName] = $this->userRoom403($resultCheckUserRoom);
             }
@@ -1522,8 +1541,7 @@ class BaseApiCacheController extends Controller
                     unset($this->executeRoomIds[$key]);
                 } 
             }
-            $this->userLoginRoomIds = UserRoom::getRoomIdsByLoginname(get_loginname_with_token($request->bearerToken(), $this->time));
-            $resultCheckUserRoom = array_diff($this->executeRoomIds, $this->userLoginRoomIds);
+            $resultCheckUserRoom = $this->checkUserRoomCurrent($this->executeRoomIds);
             if($resultCheckUserRoom){
                 $this->errors[$this->executeRoomIdsName] = $this->userRoom403($resultCheckUserRoom);
             }
