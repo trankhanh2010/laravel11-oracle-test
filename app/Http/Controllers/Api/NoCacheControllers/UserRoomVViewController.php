@@ -47,6 +47,7 @@ class UserRoomVViewController extends BaseApiCacheController
             $this->time,
             $this->departmentCode,
             $this->tab,
+            $this->currentLoginname,
         );
         $this->userRoomVViewService->withParams($this->userRoomVViewDTO);
     }
@@ -59,7 +60,7 @@ class UserRoomVViewController extends BaseApiCacheController
         $this->elasticCustom = $this->userRoomVViewService->handleCustomParamElasticSearch();
         if ($this->elasticSearchType || $this->elastic) {
             if(!$keyword){
-                $data = Cache::remember($this->userRoomVViewName . $this->param, $this->time, function () {
+                $data = Cache::remember($this->userRoomVViewName.'_'.$this->currentLoginname.'_' . $this->param, $this->time, function () {
                     $data = $this->elasticSearchService->handleElasticSearchSearch($this->userRoomVViewName, $this->elasticCustom);
                     return $data;
                 });
