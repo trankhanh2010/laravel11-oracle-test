@@ -125,6 +125,15 @@ class TreatmentExecuteRoomListVViewRepository
     //     }
     //     return $query;
     // }
+    public function applyServiceReqSttCodesFilter($query, $param)
+    {
+        if ($param !== null) {
+            return $query->where(function ($query) use ($param) {
+                $query->whereIn('service_req_stt_code', $param);
+            });
+        }
+        return $query;
+    }
     public function applyIntructionTimeFromFilter($query, $param)
     {
         if ($param !== null) {

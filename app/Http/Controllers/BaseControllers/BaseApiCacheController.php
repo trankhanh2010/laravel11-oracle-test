@@ -79,6 +79,8 @@ class BaseApiCacheController extends Controller
     protected $executeRoomIdsName = 'ExecuteRoomIds';
     protected $serviceTypeCodes;
     protected $serviceTypeCodesName = 'ServiceTypeCodes';
+    protected $serviceReqSttCodes;
+    protected $serviceReqSttCodesName = 'ServiceReqSttCodes';
     protected $serviceCodes;
     protected $serviceCodesName = 'ServiceCodes';
     protected $tdlTreatmentId;
@@ -1269,6 +1271,16 @@ class BaseApiCacheController extends Controller
             $this->serviceTypeCodesString = arrayToCustomStringNotKey($this->serviceTypeCodes);
         }
 
+        $this->serviceReqSttCodes = $this->paramRequest['ApiData']['ServiceReqSttCodes'] ?? null;
+        if ($this->serviceReqSttCodes != null) {
+            foreach ($this->serviceReqSttCodes as $key => $item) {
+                if (!is_string($item)) {
+                    $this->errors[$this->serviceReqSttCodesName] = $this->messFormat;
+                    unset($this->serviceReqSttCodes[$key]);
+                } 
+            }
+        }
+
         $this->serviceCodes = $this->paramRequest['ApiData']['ServiceCodes'] ?? null;
         if ($this->serviceCodes != null) {
             foreach ($this->serviceCodes as $key => $item) {
@@ -1346,12 +1358,7 @@ class BaseApiCacheController extends Controller
                 if (!is_numeric($item)) {
                     $this->errors[$this->bedRoomIdsName] = $this->messFormat;
                     unset($this->bedRoomIds[$key]);
-                } else {
-                    if (!BedRoom::where('id', $item)->exists()) {
-                        $this->errors[$this->bedRoomIdsName] = $this->messRecordId;
-                        unset($this->bedRoomIds[$key]);
-                    }
-                }
+                } 
             }
         }
         $this->isForBill = $this->paramRequest['ApiData']['IsForBill'] ?? null;

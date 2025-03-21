@@ -20,7 +20,7 @@ class CheckModule
     public function handle(Request $request, Closure $next)
     {
         $time = now()->addMinutes(1440);
-        $currentRouteName = substr(Route::currentRouteName(), 0, strrpos(Route::currentRouteName(), '.'));
+        $currentRouteName = substr(Route::currentRouteName(), 0, strrpos(Route::currentRouteName(), '->'));
         $token_header = $request->bearerToken();
         if (!$token_header) {
             return response()->json(['mess' => 'Thiếu token'], 401);
