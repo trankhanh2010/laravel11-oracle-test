@@ -63,7 +63,10 @@ class TreatmentExecuteRoomListVViewController extends BaseApiCacheController
         if ($this->checkParam()) {
             return $this->checkParam();
         }
-
+        // Nếu k có danh sách id phòng thì k trả kết quả
+        if($this->executeRoomIds == null){
+            return returnDataSuccess(null, []);
+        }
         $data = $this->treatmentExecuteRoomListVViewService->handleDataBaseSearch();
            
         $paramReturn = [

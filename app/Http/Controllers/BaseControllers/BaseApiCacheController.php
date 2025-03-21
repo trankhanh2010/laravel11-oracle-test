@@ -38,12 +38,14 @@ use App\Models\HIS\Transaction;
 use App\Models\HIS\TransactionType;
 use App\Models\HIS\Treatment;
 use App\Models\HIS\TreatmentType;
+use App\Models\HIS\UserRoom;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
 class BaseApiCacheController extends Controller
 {
+    protected $userLoginRoomIds;
     protected $errors = [];
     protected $data = [];
     protected $param;
@@ -785,7 +787,9 @@ class BaseApiCacheController extends Controller
     {
         return $this->errors;
     }
-
+    protected function userRoom403($roomIds){
+        return "Tài khoản không có quyền lấy tài nguyên với RoomId: ". implode(', ', $roomIds);
+    } 
     protected function checkParam()
     {
         if ($this->hasErrors()) {
@@ -855,6 +859,11 @@ class BaseApiCacheController extends Controller
     }
     public function __construct(Request $request)
     {
+        // Lấy ra danh sách room id được quyền lấy tài nguyên của tài khoản đang đăng nhập
+       $this->userLoginRoomIds = Cache::remember('user_login_room_ids_'.get_loginname_with_token($request->bearerToken(), $this->time), $this->time, function () use($request)  {
+            $data = UserRoom::getRoomIdsByLoginname(get_loginname_with_token($request->bearerToken(), $this->time));
+            return $data;
+        });
         $this->param = $request->input('param');
         // Khai báo các biến
         try {
@@ -1360,6 +1369,11 @@ class BaseApiCacheController extends Controller
                     unset($this->bedRoomIds[$key]);
                 } 
             }
+            $this->userLoginRoomIds = UserRoom::getRoomIdsByLoginname(get_loginname_with_token($request->bearerToken(), $this->time));
+            $resultCheckUserRoom = array_diff($this->bedRoomIds, $this->userLoginRoomIds);
+            if($resultCheckUserRoom){
+                $this->errors[$this->bedRoomIdsName] = $this->userRoom403($resultCheckUserRoom);
+            }
         }
         $this->isForBill = $this->paramRequest['ApiData']['IsForBill'] ?? null;
         if ($this->isForBill !== null) {
@@ -1507,6 +1521,11 @@ class BaseApiCacheController extends Controller
                     $this->errors[$this->executeRoomIdsName] = $this->messFormat;
                     unset($this->executeRoomIds[$key]);
                 } 
+            }
+            $this->userLoginRoomIds = UserRoom::getRoomIdsByLoginname(get_loginname_with_token($request->bearerToken(), $this->time));
+            $resultCheckUserRoom = array_diff($this->executeRoomIds, $this->userLoginRoomIds);
+            if($resultCheckUserRoom){
+                $this->errors[$this->executeRoomIdsName] = $this->userRoom403($resultCheckUserRoom);
             }
         }
         $this->packageId = $this->paramRequest['ApiData']['PackageId'] ?? null;

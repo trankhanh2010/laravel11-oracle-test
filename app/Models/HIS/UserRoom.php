@@ -19,4 +19,8 @@ class UserRoom extends Model
     {
         return $this->belongsTo(Room::class, 'room_id');
     }
+    public static function getRoomIdsByLoginname(string $loginname): array
+    {
+        return self::where('loginname', $loginname)->pluck('room_id')->toArray();
+    }
 }
