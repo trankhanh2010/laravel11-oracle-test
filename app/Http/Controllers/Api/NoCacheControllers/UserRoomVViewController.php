@@ -10,7 +10,7 @@ use App\Models\View\UserRoomVView;
 use App\Services\Elastic\ElasticsearchService;
 use App\Services\Model\UserRoomVViewService;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Cache;
 
 class UserRoomVViewController extends BaseApiCacheController
 {
@@ -57,15 +57,18 @@ class UserRoomVViewController extends BaseApiCacheController
         }
         $keyword = $this->keyword;
         $this->elasticCustom = $this->userRoomVViewService->handleCustomParamElasticSearch();
-        if (($keyword != null || $this->elasticSearchType != null) && !$this->cache) {
-            if ($this->elasticSearchType != null) {
+        if ($this->elasticSearchType || $this->elastic) {
+            if(!$keyword){
+                $data = Cache::remember($this->userRoomVViewName . $this->param, $this->time, function () {
+                    $data = $this->elasticSearchService->handleElasticSearchSearch($this->userRoomVViewName, $this->elasticCustom);
+                    return $data;
+                });
+            }else{
                 $data = $this->elasticSearchService->handleElasticSearchSearch($this->userRoomVViewName, $this->elasticCustom);
-            } else {
-                $data = $this->userRoomVViewService->handleDataBaseSearch();
             }
         } else {
-            if ($this->elastic) {
-                $data = $this->elasticSearchService->handleElasticSearchGetAll($this->userRoomVViewName, $this->elasticCustom);
+            if ($keyword) {
+                $data = $this->userRoomVViewService->handleDataBaseSearch();
             } else {
                 $data = $this->userRoomVViewService->handleDataBaseGetAll();
             }

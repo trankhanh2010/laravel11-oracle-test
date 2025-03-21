@@ -946,6 +946,10 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.Debate->'], function () {
         Route::apiResource('v1/debate', DebateController::class)->only(['index', 'show']);
         Route::apiResource('v1/debate-v-view', DebateVViewController::class)->only(['index', 'show']);
+        /// Danh sách biên bản hội chẩn
+        Route::apiResource('v1/debate-list-v-view', DebateListVViewController::class)->only(['index', 'show']);
+        /// Biên bản hội chẩn
+        Route::apiResource('v1/debate-detail-v-view', DebateDetailVViewController::class)->only(['show']);
     });
     /// Y lệnh
     Route::group(['as' => 'HIS.Desktop.Plugins.ServiceReqList->'], function () {
@@ -987,7 +991,7 @@ Route::group([
     Route::apiResource('v1/sere-serv', SereServController::class)->only(['index', 'show']);
     Route::apiResource('v1/sere-serv-v-view-4', SereServVView4Controller::class)->only(['index', 'show']);
     /// Đối tượng điều trị
-    
+
     Route::group(['as' => 'HIS.Desktop.Plugins.CallPatientTypeAlter->'], function () {
         Route::apiResource('v1/patient-type-alter-v-view', PatientTypeAlterVViewController::class)->only(['index', 'show']);
     });
@@ -1011,6 +1015,10 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.SereServTein->'], function () {
         Route::apiResource('v1/sere-serv-tein', SereServTeinController::class)->only(['index', 'show']);
         Route::apiResource('v1/sere-serv-tein-v-view', SereServTeinVViewController::class)->only(['index', 'show']);
+        /// SereServ Tein Charts
+        Route::apiResource('v1/sere-serv-tein-charts-v-view', SereServTeinChartsVViewController::class)->only(['index', 'show']);
+        /// SereServTein List
+        Route::apiResource('v1/sere-serv-tein-list-v-view', SereServTeinListVViewController::class)->only(['index', 'show']);
     });
     /// Sere Serv Bill
     Route::apiResource('v1/sere-serv-bill', SereServBillController::class)->only(['index', 'show']);
@@ -1124,20 +1132,12 @@ Route::group([
     Route::apiResource('v1/sere-serv-list-v-view', SereServListVViewController::class)->only(['index', 'show']);
     /// SereServ Detail
     Route::apiResource('v1/sere-serv-detail-v-view', SereServDetailVViewController::class)->only(['show']);
-    /// SereServTein List
-    Route::apiResource('v1/sere-serv-tein-list-v-view', SereServTeinListVViewController::class)->only(['index', 'show']);
     /// Loại văn bản
     Route::apiResource('v1/document-type', DocumentTypeController::class)->only(['index', 'show']);
     /// Danh sách văn bản
     Route::apiResource('v1/document-list-v-view', DocumentListVViewController::class)->only(['index', 'show']);
-    /// Danh sách biên bản hội chẩn
-    Route::apiResource('v1/debate-list-v-view', DebateListVViewController::class)->only(['index', 'show']);
-    /// Biên bản hội chẩn
-    Route::apiResource('v1/debate-detail-v-view', DebateDetailVViewController::class)->only(['show']);
     /// SereServ Cls List
     Route::apiResource('v1/sere-serv-cls-list-v-view', SereServClsListVViewController::class)->only(['index', 'show']);
     /// SereServ Cls List
     Route::apiResource('v1/treatment-list-v-view', TreatmentListVViewController::class)->only(['index', 'show']);
-    /// SereServ Tein Charts
-    Route::apiResource('v1/sere-serv-tein-charts-v-view', SereServTeinChartsVViewController::class)->only(['index', 'show']);
 });

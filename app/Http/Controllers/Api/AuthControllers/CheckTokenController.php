@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\AuthControllers;
 
+use App\Events\Cache\DeleteCache;
 use App\Http\Controllers\Controller;
 use App\Models\ACS\Token;
 use Illuminate\Http\Request;
@@ -41,6 +42,8 @@ class CheckTokenController extends Controller
             $cacheToken = Cache::get($cacheKey);
             if($cacheToken){
                 $deleteToken = Cache::forget($cacheKey);
+                // Xóa hết mọi cache liên quan đến user này
+                event(new DeleteCache($user->login_name));
                 if($deleteToken){
                     return $this->deleteTokenDB($bearerToken);
                 }else{
