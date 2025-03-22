@@ -57,15 +57,25 @@ class UserRoomVViewController extends BaseApiCacheController
             return $this->checkParam();
         }
         $keyword = $this->keyword;
+        $source = [
+            'id',
+            'room_id',
+            'room_code',
+            'room_name',
+            'room_type_code',
+            'room_type_name',
+            'department_code',
+            'department_name',
+        ];
         $this->elasticCustom = $this->userRoomVViewService->handleCustomParamElasticSearch();
         if ($this->elasticSearchType || $this->elastic) {
             if(!$keyword){
-                $data = Cache::remember($this->userRoomVViewName.'_'.$this->currentLoginname.'_' . $this->param, $this->time, function () {
-                    $data = $this->elasticSearchService->handleElasticSearchSearch($this->userRoomVViewName, $this->elasticCustom);
+                $data = Cache::remember($this->userRoomVViewName.'_'.$this->currentLoginname.'_' . $this->param, $this->time, function () use($source) {
+                    $data = $this->elasticSearchService->handleElasticSearchSearch($this->userRoomVViewName, $this->elasticCustom, $source);
                     return $data;
                 });
             }else{
-                $data = $this->elasticSearchService->handleElasticSearchSearch($this->userRoomVViewName, $this->elasticCustom);
+                $data = $this->elasticSearchService->handleElasticSearchSearch($this->userRoomVViewName, $this->elasticCustom, $source);
             }
         } else {
             if ($keyword) {

@@ -516,10 +516,13 @@ class ElasticsearchService extends BaseApiCacheController
         }
     }
 
-    public function handleElasticSearchSearch($tableName, $paramCustom = null)
+    public function handleElasticSearchSearch($tableName, $paramCustom = null, $source = [])
     {
         try {
             $body = $this->buildSearchBody($tableName, $paramCustom);
+            if (!empty($source)) {
+                $body['_source'] = $source;
+            }
             $data = $this->executeSearch($tableName, $body, null);
             // $count = $this->counting($data);
             $count = null;
