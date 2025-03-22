@@ -61,28 +61,28 @@ class TreatmentBedRoomListVViewRepository
     }
     public function applyDepartmentCodeFilter($query, $code)
     {
-        if ($code !== null) {
+        if ($code != null) {
             $query->where(('department_code'), $code);
         }
         return $query;
     }
     public function applyTreatmentCodeFilter($query, $code)
     {
-        if ($code !== null) {
+        if ($code != null) {
             $query->where(('treatment_code'), $code);
         }
         return $query;
     }
     public function applyPatientCodeFilter($query, $code)
     {
-        if ($code !== null) {
+        if ($code != null) {
             $query->where(('tdl_patient_code'), $code);
         }
         return $query;
     }
     public function applyAddLoginnameFilter($query, $param)
     {
-        if ($param !== null) {
+        if ($param != null) {
             $query->where(('add_loginname'), $param);
         }
         return $query;
