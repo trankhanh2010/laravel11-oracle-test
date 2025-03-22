@@ -141,6 +141,9 @@ class SereServClsListVViewRepository
     }
     public function applyGroupByField($data, $groupByFields = [], $from, $to, $reportTypeCode,  $tab = null, $serviceCodes = [])
     {
+        if($data->isEmpty()){
+            return $data;
+        }
         $monthList = [];
         if (isset($from) && isset($to)) {
             $monthList = $this->generateMonthList($from, $to);

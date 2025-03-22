@@ -521,7 +521,8 @@ class ElasticsearchService extends BaseApiCacheController
         try {
             $body = $this->buildSearchBody($tableName, $paramCustom);
             $data = $this->executeSearch($tableName, $body, null);
-            $count = $this->counting($data);
+            // $count = $this->counting($data);
+            $count = null;
             $data = $this->applyResource($data);
             $data = $this->applyGroupByField($data, $this->groupBy);
             return ['data' => $data, 'count' => $count];

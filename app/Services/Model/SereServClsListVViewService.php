@@ -39,7 +39,11 @@ class SereServClsListVViewService
                 $data = $this->sereServClsListVViewRepository->applyIntructionTimeFilter($data, $this->params->intructionTimeFrom, $this->params->intructionTimeTo);
                 $data = $this->sereServClsListVViewRepository->applyTabFilter($data, $this->params->tab);
             
-                $count = $data->count();
+                if($this->params->tab == 'CLS'){
+                    $count = null;
+                }else{
+                    $count = $data->count();
+                }
                 $data = $this->sereServClsListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
                 $data = $this->sereServClsListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
                 
