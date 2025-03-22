@@ -67,7 +67,7 @@ class TreatmentBedRoomListVViewController extends BaseApiCacheController
     {
         // Nếu không có ngày
         if (
-            $this->isInBed == null &&
+            $this->isInBed === null &&
             $this->treatmentCode == null &&
             $this->patientCode == null &&
             ($this->addTimeFrom == null || $this->addTimeTo == null)
