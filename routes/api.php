@@ -489,9 +489,8 @@ Route::group([
         Route::get('v1/data-store-check', [CheckDataStoreController::class, "checkCode"])->name('.data_store_check_code');
     });
     /// Thời gian tử vong
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisDeathWithin->'], function () {
-        Route::apiResource('v1/death-within', DeathWithinController::class);
-    });
+    Route::apiResource('v1/death-within', DeathWithinController::class);
+    
     /// Nguyên nhân tử vong
     Route::apiResource('v1/death-cause', DeathCauseController::class)->only(['index', 'show']);
     /// Kết quả điều trị
@@ -766,9 +765,8 @@ Route::group([
         Route::get('v1/province-check', [CheckProvinceController::class, "checkCode"])->name('.province_check_code');
     });
     /// Tai biến PTTT
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisPtttCatastrophe->'], function () {
-        Route::apiResource('v1/pttt-catastrophe', PtttCatastropheController::class);
-    });
+    Route::apiResource('v1/pttt-catastrophe', PtttCatastropheController::class);
+
     /// Tình trạng PTTT
     Route::group(['as' => 'HIS.Desktop.Plugins.HisPtttCondition->'], function () {
         Route::apiResource('v1/pttt-condition', PtttConditionController::class);
@@ -920,9 +918,8 @@ Route::group([
         'check_module:api',
     ]);
     /// Loại ra viện
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisTreatmentEndType->'], function () {
-        Route::apiResource('v1/treatment-end-type', TreatmentEndTypeController::class);
-    });
+    Route::apiResource('v1/treatment-end-type', TreatmentEndTypeController::class);
+
     /// Diện điều trị
     Route::group(['as' => 'HIS.Desktop.Plugins.TreatmentType->'], function () {
         Route::apiResource('v1/treatment-type', TreatmentTypeController::class);
