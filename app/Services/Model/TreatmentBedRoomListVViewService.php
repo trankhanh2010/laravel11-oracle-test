@@ -45,7 +45,8 @@ class TreatmentBedRoomListVViewService
                 $data = $this->treatmentBedRoomListVViewRepository->applyAddTimeToFilter($data, $this->params->addTimeTo);
             }
 
-            $count = $data->count();
+            // $count = $data->count();
+            $count = null;
             $data = $this->treatmentBedRoomListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
             $data = $this->treatmentBedRoomListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
             // Group theo field
@@ -76,7 +77,8 @@ class TreatmentBedRoomListVViewService
                 $data = $this->treatmentBedRoomListVViewRepository->applyAddTimeFromFilter($data, $this->params->addTimeFrom);
                 $data = $this->treatmentBedRoomListVViewRepository->applyAddTimeToFilter($data, $this->params->addTimeTo);
             }
-            $count = $data->count();
+            // $count = $data->count();
+            $count = null;
             $data = $this->treatmentBedRoomListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
             $data = $this->treatmentBedRoomListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
             // Group theo field

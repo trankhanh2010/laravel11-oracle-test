@@ -37,7 +37,8 @@ class SereServTeinChartsVViewService
                 $data = $this->sereServTeinChartsVViewRepository->applyIntructionTimeFilter($data, $this->params->intructionTimeFrom, $this->params->intructionTimeTo);
                 $data = $this->sereServTeinChartsVViewRepository->applyTabFilter($data, $this->params->tab);
 
-                $count = $data->count();
+                // $count = $data->count();
+                $count = null;
                 $data = $this->sereServTeinChartsVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
                 $data = $this->sereServTeinChartsVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
                 // Group theo field

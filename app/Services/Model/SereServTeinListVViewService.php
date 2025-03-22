@@ -32,7 +32,8 @@ class SereServTeinListVViewService
             $data = $this->sereServTeinListVViewRepository->applyServiceReqIdFilter($data, $this->params->serviceReqId);
             $data = $this->sereServTeinListVViewRepository->applySereServIdsFilter($data, $this->params->sereServIds);
 
-            $count = $data->count();
+            // $count = $data->count();
+            $count = null;
             $data = $this->sereServTeinListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
             $data = $this->sereServTeinListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
             // Group theo field
@@ -51,7 +52,8 @@ class SereServTeinListVViewService
             $data = $this->sereServTeinListVViewRepository->applyServiceReqIdFilter($data, $this->params->serviceReqId);
             $data = $this->sereServTeinListVViewRepository->applySereServIdsFilter($data, $this->params->sereServIds);
 
-            $count = $data->count();
+            // $count = $data->count();
+            $count = null;
             $data = $this->sereServTeinListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
             $data = $this->sereServTeinListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
             // Group theo field

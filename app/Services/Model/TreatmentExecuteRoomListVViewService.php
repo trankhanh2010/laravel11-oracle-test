@@ -44,7 +44,8 @@ class TreatmentExecuteRoomListVViewService
                 $data = $this->treatmentExecuteRoomListVViewRepository->applyIntructionTimeFromFilter($data, $this->params->intructionTimeFrom);
                 $data = $this->treatmentExecuteRoomListVViewRepository->applyIntructionTimeToFilter($data, $this->params->intructionTimeTo);
             }
-            $count = $data->count();
+            // $count = $data->count();
+            $count = null;
             $data = $this->treatmentExecuteRoomListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
             $data = $this->treatmentExecuteRoomListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
             // Group theo field
@@ -75,7 +76,8 @@ class TreatmentExecuteRoomListVViewService
                 $data = $this->treatmentExecuteRoomListVViewRepository->applyIntructionTimeFromFilter($data, $this->params->intructionTimeFrom);
                 $data = $this->treatmentExecuteRoomListVViewRepository->applyIntructionTimeToFilter($data, $this->params->intructionTimeTo);
             }
-            $count = $data->count();
+            // $count = $data->count();
+            $count = null;
             $data = $this->treatmentExecuteRoomListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
             $data = $this->treatmentExecuteRoomListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
             // Group theo field
