@@ -884,10 +884,20 @@ class BaseApiCacheController extends Controller
         $this->currentLoginname = get_loginname_with_token($request->bearerToken(), $this->time);
 
         // Lấy ra danh sách room id được quyền lấy tài nguyên của tài khoản đang đăng nhập
-       $this->currentUserLoginRoomIds = Cache::remember('user_login_room_ids_'.$this->currentLoginname, $this->time, function () use($request)  {
-            $data = UserRoom::getRoomIdsByLoginname($this->currentLoginname);
-            return $data;
-        });
+        $this->currentUserLoginRoomIds = Cache::remember(
+            'user_login_room_ids_'.$this->currentLoginname, 
+            $this->time, 
+            function () {
+                $data = UserRoom::getRoomIdsByLoginname($this->currentLoginname);
+                return base64_encode(gzcompress(serialize($data))); // Nén và mã hóa trước khi lưu
+            }
+        );
+        
+        // Giải nén dữ liệu khi lấy từ cache
+        if ($this->currentUserLoginRoomIds && is_string($this->currentUserLoginRoomIds)) {
+            $decompressedData = @gzuncompress(base64_decode($this->currentUserLoginRoomIds));
+            $this->currentUserLoginRoomIds = $decompressedData !== false ? unserialize($decompressedData) : [];
+        }
 
         $this->param = $request->input('param');
         // Khai báo các biến

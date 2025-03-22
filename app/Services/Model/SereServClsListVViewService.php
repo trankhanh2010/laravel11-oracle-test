@@ -25,7 +25,9 @@ class SereServClsListVViewService
     public function handleDataBaseGetAll()
     {
         try {
-            $data = Cache::remember($this->params->sereServClsListVViewName . $this->params->param, 3600, function () {
+            $cacheKey = $this->params->sereServClsListVViewName . $this->params->param;
+
+            $data = Cache::remember($cacheKey, 3600, function () {
                 $data = $this->sereServClsListVViewRepository->applyJoins();
                 $data = $this->sereServClsListVViewRepository->applyWithParam($data, $this->params->tab, $this->params->serviceCodes, $this->params->groupBy);
                 $data = $this->sereServClsListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
@@ -36,10 +38,11 @@ class SereServClsListVViewService
                 $data = $this->sereServClsListVViewRepository->applyReportTypeCodeFilter($data, $this->params->reportTypeCode);
                 $data = $this->sereServClsListVViewRepository->applyIntructionTimeFilter($data, $this->params->intructionTimeFrom, $this->params->intructionTimeTo);
                 $data = $this->sereServClsListVViewRepository->applyTabFilter($data, $this->params->tab);
-
+            
                 $count = $data->count();
                 $data = $this->sereServClsListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
                 $data = $this->sereServClsListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+                
                 // Group theo field
                 $data = $this->sereServClsListVViewRepository->applyGroupByField(
                     $data,
@@ -50,9 +53,17 @@ class SereServClsListVViewService
                     $this->params->tab,
                     $this->params->serviceCodes,
                 );
-                return ['data' => $data, 'count' => $count];
+            
+                // **Nén dữ liệu trước khi lưu cache**
+                return base64_encode(gzcompress(serialize(['data' => $data, 'count' => $count])));
             });
-
+            
+            // **Giải nén khi lấy dữ liệu từ cache**
+            if ($data && is_string($data)) {
+                $decompressedData = @gzuncompress(base64_decode($data));
+                $data = $decompressedData !== false ? unserialize($decompressedData) : ['data' => [], 'count' => 0];
+            }
+        
             return $data;
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['sere_serv_cls_list_v_view'], $e);
