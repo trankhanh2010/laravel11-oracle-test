@@ -141,7 +141,7 @@ class TreatmentExecuteRoomListVViewRepository
     // }
     public function applyServiceReqSttCodesFilter($query, $param)
     {
-        if ($param !== null) {
+        if ($param != null) {
             return $query->where(function ($query) use ($param) {
                 $query->whereIn('service_req_stt_code', $param);
             });
