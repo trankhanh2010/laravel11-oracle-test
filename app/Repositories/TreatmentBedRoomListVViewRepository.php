@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Repositories;
+
 use Illuminate\Support\Str;
 
 use App\Jobs\ElasticSearch\Index\ProcessElasticIndexingJob;
@@ -18,11 +19,32 @@ class TreatmentBedRoomListVViewRepository
     public function applyJoins()
     {
         return $this->treatmentBedRoomListVView
-            ->select();
+            ->select(
+                [
+                    'id',
+                    'treatment_id',
+                    'in_time',
+                    'add_time',
+                    'add_loginname',
+                    'add_username',
+                    'treatment_code',
+                    'tdl_patient_code',
+                    'out_time',
+                    'room_code',
+                    'room_name',
+                    'tdl_patient_name',
+                    'tdl_patient_dob',
+                    'tdl_patient_gender_name',
+                    'tdl_patient_ethnic_name',
+                    'tdl_patient_address',
+                    'room_type_code',
+                    'room_type_name',
+                ]
+            );
     }
     public function applyKeywordFilter($query, $keyword)
     {
-        if($keyword != null){
+        if ($keyword != null) {
             return $query->where(function ($query) use ($keyword) {
                 $query->whereRaw("
                 REGEXP_LIKE(
@@ -213,18 +235,18 @@ class TreatmentBedRoomListVViewRepository
             $snakeField = Str::snake($field);
             $fieldMappings[$snakeField] = $field;
         }
-    
+
         $snakeFields = array_keys($fieldMappings);
-    
+
         // Đệ quy nhóm dữ liệu theo thứ tự fields đã convert
         $groupData = function ($items, $fields) use (&$groupData, $fieldMappings) {
             if (empty($fields)) {
                 return $items->values(); // Hết field nhóm -> Trả về danh sách gốc
             }
-    
+
             $currentField = array_shift($fields);
             $originalField = $fieldMappings[$currentField];
-    
+
             return $items->groupBy(function ($item) use ($currentField) {
                 return $item[$currentField] ?? null;
             })->map(function ($group, $key) use ($fields, $groupData, $originalField) {
@@ -235,10 +257,10 @@ class TreatmentBedRoomListVViewRepository
                 ];
             })->values();
         };
-    
+
         return $groupData(collect($data), $snakeFields);
     }
-    
+
     public function getById($id)
     {
         return $this->treatmentBedRoomListVView->find($id);

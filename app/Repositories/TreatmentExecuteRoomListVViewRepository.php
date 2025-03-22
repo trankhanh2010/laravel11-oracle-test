@@ -18,7 +18,27 @@ class TreatmentExecuteRoomListVViewRepository
     public function applyJoins()
     {
         return $this->treatmentExecuteRoomListVView
-            ->select();
+            ->select([
+                'id',
+                'treatment_id',
+                'in_time',
+                'intruction_time',
+                'intruction_date',
+                'service_req_stt_code',
+                'service_req_stt_name',
+                'treatment_code',
+                'tdl_patient_code',
+                'out_time',
+                'room_code',
+                'room_name',
+                'tdl_patient_name',
+                'tdl_patient_dob',
+                'tdl_patient_gender_name',
+                'tdl_patient_ethnic_name',
+                'tdl_patient_address',
+                'room_type_code',
+                'room_type_name',
+            ]);
     }
     public function applyKeywordFilter($query, $keyword)
     {
