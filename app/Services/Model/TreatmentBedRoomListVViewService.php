@@ -29,21 +29,26 @@ class TreatmentBedRoomListVViewService
             $data = $this->treatmentBedRoomListVViewRepository->applyKeywordFilter($data, $this->params->keyword);
             $data = $this->treatmentBedRoomListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
             $data = $this->treatmentBedRoomListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
-            $data = $this->treatmentBedRoomListVViewRepository->applyDepartmentCodeFilter($data, $this->params->departmentCode);
-            $data = $this->treatmentBedRoomListVViewRepository->applyIsInBedFilter($data, $this->params->isInBed);
+            $data = $this->treatmentBedRoomListVViewRepository->applyTreatmentCodeFilter($data, $this->params->treatmentCode);
+            $data = $this->treatmentBedRoomListVViewRepository->applyPatientCodeFilter($data, $this->params->patientCode);
             $data = $this->treatmentBedRoomListVViewRepository->applyBedRoomIdsFilter($data, $this->params->bedRoomIds);
-            $data = $this->treatmentBedRoomListVViewRepository->applyTreatmentTypeIdsFilter($data, $this->params->treatmentTypeIds);
-            $data = $this->treatmentBedRoomListVViewRepository->applyIsCoTreatDepartmentFilter($data, $this->params->isCoTreatDepartment);
-            $data = $this->treatmentBedRoomListVViewRepository->applyPatientClassifyIdsFilter($data, $this->params->patientClassifyIds);
-            $data = $this->treatmentBedRoomListVViewRepository->applyIsOutFilter($data, $this->params->isOut);
-            $data = $this->treatmentBedRoomListVViewRepository->applyAddLoginnameFilter($data, $this->params->addLoginname);
-            $data = $this->treatmentBedRoomListVViewRepository->applyAddTimeFromFilter($data, $this->params->addTimeFrom);
-            $data = $this->treatmentBedRoomListVViewRepository->applyAddTimeToFilter($data, $this->params->addTimeTo);
+
+            if ($this->params->treatmentCode == null && $this->params->patientCode == null) {
+                $data = $this->treatmentBedRoomListVViewRepository->applyDepartmentCodeFilter($data, $this->params->departmentCode);
+                $data = $this->treatmentBedRoomListVViewRepository->applyIsInBedFilter($data, $this->params->isInBed);
+                $data = $this->treatmentBedRoomListVViewRepository->applyTreatmentTypeIdsFilter($data, $this->params->treatmentTypeIds);
+                $data = $this->treatmentBedRoomListVViewRepository->applyIsCoTreatDepartmentFilter($data, $this->params->isCoTreatDepartment);
+                $data = $this->treatmentBedRoomListVViewRepository->applyPatientClassifyIdsFilter($data, $this->params->patientClassifyIds);
+                $data = $this->treatmentBedRoomListVViewRepository->applyIsOutFilter($data, $this->params->isOut);
+                $data = $this->treatmentBedRoomListVViewRepository->applyAddLoginnameFilter($data, $this->params->addLoginname);
+                $data = $this->treatmentBedRoomListVViewRepository->applyAddTimeFromFilter($data, $this->params->addTimeFrom);
+                $data = $this->treatmentBedRoomListVViewRepository->applyAddTimeToFilter($data, $this->params->addTimeTo);
+            }
 
             $count = $data->count();
             $data = $this->treatmentBedRoomListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
             $data = $this->treatmentBedRoomListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
-             // Group theo field
+            // Group theo field
             $data = $this->treatmentBedRoomListVViewRepository->applyGroupByField($data, $this->params->groupBy);
             return ['data' => $data, 'count' => $count];
         } catch (\Throwable $e) {
@@ -56,17 +61,21 @@ class TreatmentBedRoomListVViewService
             $data = $this->treatmentBedRoomListVViewRepository->applyJoins();
             $data = $this->treatmentBedRoomListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
             $data = $this->treatmentBedRoomListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
-            $data = $this->treatmentBedRoomListVViewRepository->applyDepartmentCodeFilter($data, $this->params->departmentCode);
-            $data = $this->treatmentBedRoomListVViewRepository->applyIsInBedFilter($data, $this->params->isInBed);
+            $data = $this->treatmentBedRoomListVViewRepository->applyTreatmentCodeFilter($data, $this->params->treatmentCode);
+            $data = $this->treatmentBedRoomListVViewRepository->applyPatientCodeFilter($data, $this->params->patientCode);
             $data = $this->treatmentBedRoomListVViewRepository->applyBedRoomIdsFilter($data, $this->params->bedRoomIds);
-            $data = $this->treatmentBedRoomListVViewRepository->applyTreatmentTypeIdsFilter($data, $this->params->treatmentTypeIds);
-            $data = $this->treatmentBedRoomListVViewRepository->applyIsCoTreatDepartmentFilter($data, $this->params->isCoTreatDepartment);
-            $data = $this->treatmentBedRoomListVViewRepository->applyPatientClassifyIdsFilter($data, $this->params->patientClassifyIds);
-            $data = $this->treatmentBedRoomListVViewRepository->applyIsOutFilter($data, $this->params->isOut);
-            $data = $this->treatmentBedRoomListVViewRepository->applyAddLoginnameFilter($data, $this->params->addLoginname);
-            $data = $this->treatmentBedRoomListVViewRepository->applyAddTimeFromFilter($data, $this->params->addTimeFrom);
-            $data = $this->treatmentBedRoomListVViewRepository->applyAddTimeToFilter($data, $this->params->addTimeTo);
 
+            if ($this->params->treatmentCode == null && $this->params->patientCode == null) {
+                $data = $this->treatmentBedRoomListVViewRepository->applyDepartmentCodeFilter($data, $this->params->departmentCode);
+                $data = $this->treatmentBedRoomListVViewRepository->applyIsInBedFilter($data, $this->params->isInBed);
+                $data = $this->treatmentBedRoomListVViewRepository->applyTreatmentTypeIdsFilter($data, $this->params->treatmentTypeIds);
+                $data = $this->treatmentBedRoomListVViewRepository->applyIsCoTreatDepartmentFilter($data, $this->params->isCoTreatDepartment);
+                $data = $this->treatmentBedRoomListVViewRepository->applyPatientClassifyIdsFilter($data, $this->params->patientClassifyIds);
+                $data = $this->treatmentBedRoomListVViewRepository->applyIsOutFilter($data, $this->params->isOut);
+                $data = $this->treatmentBedRoomListVViewRepository->applyAddLoginnameFilter($data, $this->params->addLoginname);
+                $data = $this->treatmentBedRoomListVViewRepository->applyAddTimeFromFilter($data, $this->params->addTimeFrom);
+                $data = $this->treatmentBedRoomListVViewRepository->applyAddTimeToFilter($data, $this->params->addTimeTo);
+            }
             $count = $data->count();
             $data = $this->treatmentBedRoomListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
             $data = $this->treatmentBedRoomListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);

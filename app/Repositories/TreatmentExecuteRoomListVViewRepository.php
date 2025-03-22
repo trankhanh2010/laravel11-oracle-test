@@ -66,6 +66,20 @@ class TreatmentExecuteRoomListVViewRepository
         }
         return $query;
     }
+    public function applyTreatmentCodeFilter($query, $code)
+    {
+        if ($code !== null) {
+            $query->where(('treatment_code'), $code);
+        }
+        return $query;
+    }
+    public function applyPatientCodeFilter($query, $code)
+    {
+        if ($code !== null) {
+            $query->where(('tdl_patient_code'), $code);
+        }
+        return $query;
+    }
     public function applyAddLoginnameFilter($query, $param)
     {
         if ($param !== null) {

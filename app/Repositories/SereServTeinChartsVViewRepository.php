@@ -25,6 +25,8 @@ class SereServTeinChartsVViewRepository
             ->select([
                 'intruction_date',
                 'intruction_time',
+                "service_name",
+                "service_code",
                 'value',
                 'test_index_unit_name',
                 'test_index_name',

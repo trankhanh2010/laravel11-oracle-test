@@ -31,7 +31,8 @@ class TreatmentBedRoomListVViewDTO
     public $groupBy;
     public $executeRoomCode;
     public $executeRoomIds;
-
+    public $treatmentCode;
+    public $patientCode;
     public function __construct(
         $treatmentBedRoomListVViewName,
         $keyword, 
@@ -60,6 +61,8 @@ class TreatmentBedRoomListVViewDTO
         $groupBy,
         $executeRoomCode,
         $executeRoomIds,
+        $treatmentCode,
+        $patientCode,
         )
     {
         $this->treatmentBedRoomListVViewName = $treatmentBedRoomListVViewName;
@@ -89,5 +92,7 @@ class TreatmentBedRoomListVViewDTO
         $this->groupBy = $groupBy;
         $this->executeRoomCode = $executeRoomCode;
         $this->executeRoomIds = $executeRoomIds;
+        $this->treatmentCode = $treatmentCode;
+        $this->patientCode = $patientCode;
     }
 }

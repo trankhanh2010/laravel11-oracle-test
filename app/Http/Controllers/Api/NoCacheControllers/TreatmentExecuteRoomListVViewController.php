@@ -7,6 +7,7 @@ use App\Http\Controllers\BaseControllers\BaseApiCacheController;
 use App\Models\View\TreatmentExecuteRoomListVView;
 use App\Services\Elastic\ElasticsearchService;
 use App\Services\Model\TreatmentExecuteRoomListVViewService;
+use DateTime;
 use Illuminate\Http\Request;
 
 
@@ -22,8 +23,7 @@ class TreatmentExecuteRoomListVViewController extends BaseApiCacheController
         $this->treatmentExecuteRoomListVView = $treatmentExecuteRoomListVView;
         // Kiểm tra tên trường trong bảng
         if ($this->orderBy != null) {
-            $this->orderByJoin = [
-            ];
+            $this->orderByJoin = [];
             $columns = $this->getColumnsTable($this->treatmentExecuteRoomListVView, true);
             $this->orderBy = $this->checkOrderBy($this->orderBy, $columns, $this->orderByJoin ?? []);
         }
@@ -40,8 +40,8 @@ class TreatmentExecuteRoomListVViewController extends BaseApiCacheController
             $this->start,
             $this->limit,
             $request,
-            $this->appCreator, 
-            $this->appModifier, 
+            $this->appCreator,
+            $this->appModifier,
             $this->time,
             $this->departmentCode,
             $this->treatmentTypeIds,
@@ -55,20 +55,44 @@ class TreatmentExecuteRoomListVViewController extends BaseApiCacheController
             $this->executeRoomCode,
             $this->executeRoomIds,
             $this->serviceReqSttCodes,
+            $this->treatmentCode,
+            $this->patientCode,
         );
         $this->treatmentExecuteRoomListVViewService->withParams($this->treatmentExecuteRoomListVViewDTO);
     }
     public function index()
     {
+        // Nếu không có ngày
+        if (
+            $this->treatmentCode == null &&
+            $this->patientCode == null &&
+            ($this->intructionTimeFrom == null || $this->intructionTimeTo == null)
+        ) {
+            $this->errors[$this->intructionTimeFromName] = "Thiếu thời gian";
+            $this->errors[$this->intructionTimeToName] = "Thiếu thời gian";
+        } else {
+            // Nếu quá 30 ngày
+            $from = DateTime::createFromFormat('YmdHis', $this->intructionTimeFrom ?? "");
+            $to = DateTime::createFromFormat('YmdHis', $this->intructionTimeTo ?? "");
+            if ($from && $to) {
+                $diff = $from->diff($to)->days;
+                if ($diff > 30) {
+                    $this->errors[$this->intructionTimeFromName] = "Thời gian lọc quá 30 ngày";
+                    $this->errors[$this->intructionTimeToName] = "Thời gian lọc quá 30 ngày";
+                }
+            }
+        }
+
         if ($this->checkParam()) {
             return $this->checkParam();
         }
         // Nếu k có danh sách id phòng thì k trả kết quả
-        if($this->executeRoomIds == null){
+        if ($this->executeRoomIds == null) {
             return returnDataSuccess(null, []);
         }
+
         $data = $this->treatmentExecuteRoomListVViewService->handleDataBaseSearch();
-           
+
         $paramReturn = [
             $this->getAllName => $this->getAll,
             $this->startName => $this->getAll ? null : $this->start,
