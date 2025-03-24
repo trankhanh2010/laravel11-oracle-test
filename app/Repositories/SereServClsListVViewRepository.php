@@ -19,8 +19,37 @@ class SereServClsListVViewRepository
         $this->reportTypeCat = $reportTypeCat;
     }
 
-    public function applyJoins()
+    public function applyJoins($reportTypeCode = null)
     {
+        if($reportTypeCode){
+            return $this->sereServClsListVView
+            ->select([
+                'id',
+                'amount',
+                'execute_time',
+                'service_code',
+                'service_name',
+                'service_req_code',
+                'intruction_time',
+                'intruction_date',
+                'vir_intruction_month',
+                'request_username',
+                'execute_loginname',
+                'execute_username',
+                'request_department_code',
+                'request_department_name',
+                'request_room_code',
+                'request_room_name',
+                'service_type_code',
+                'service_type_name',
+                'service_req_stt_code',
+                'service_req_stt_name',
+                'report_type_code',
+                'category_code',
+                'category_name',
+                'num_order',
+            ]);
+        }
         return $this->sereServClsListVView
             ->select();
     }

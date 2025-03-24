@@ -28,7 +28,7 @@ class SereServClsListVViewService
             $cacheKey = $this->params->sereServClsListVViewName . $this->params->param;
 
             $data = Cache::remember($cacheKey, 3600, function () {
-                $data = $this->sereServClsListVViewRepository->applyJoins();
+                $data = $this->sereServClsListVViewRepository->applyJoins($this->params->reportTypeCode);
                 $data = $this->sereServClsListVViewRepository->applyWithParam($data, $this->params->tab, $this->params->serviceCodes, $this->params->groupBy);
                 $data = $this->sereServClsListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
                 $data = $this->sereServClsListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
@@ -76,7 +76,7 @@ class SereServClsListVViewService
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $data = $this->sereServClsListVViewRepository->applyJoins()
+            $data = $this->sereServClsListVViewRepository->applyJoins($this->params->reportTypeCode)
                 ->where('id', $id);
             $data = $this->sereServClsListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
             $data = $this->sereServClsListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);

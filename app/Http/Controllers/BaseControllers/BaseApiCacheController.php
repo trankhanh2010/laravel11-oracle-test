@@ -59,6 +59,8 @@ class BaseApiCacheController extends Controller
     protected $dateName = 'Date';
     protected $columnsTime;
     protected $arrLimit;
+    protected $totalPage;
+    protected $totalPageName = 'TotalPage';
     protected $start;
     protected $startName = 'Start';
     protected $limit;

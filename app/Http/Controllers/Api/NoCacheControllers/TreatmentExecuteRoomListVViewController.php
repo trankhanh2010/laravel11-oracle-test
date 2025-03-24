@@ -71,14 +71,14 @@ class TreatmentExecuteRoomListVViewController extends BaseApiCacheController
             $this->errors[$this->intructionTimeFromName] = "Thiếu thời gian";
             $this->errors[$this->intructionTimeToName] = "Thiếu thời gian";
         } else {
-            // Nếu quá 30 ngày
+            // Nếu quá 180 ngày
             $from = DateTime::createFromFormat('YmdHis', $this->intructionTimeFrom ?? "");
             $to = DateTime::createFromFormat('YmdHis', $this->intructionTimeTo ?? "");
             if ($from && $to) {
                 $diff = $from->diff($to)->days;
-                if ($diff > 30) {
-                    $this->errors[$this->intructionTimeFromName] = "Thời gian lọc quá 30 ngày";
-                    $this->errors[$this->intructionTimeToName] = "Thời gian lọc quá 30 ngày";
+                if ($diff > 180) {
+                    $this->errors[$this->intructionTimeFromName] = "Thời gian lọc quá 180 ngày";
+                    $this->errors[$this->intructionTimeToName] = "Thời gian lọc quá 180 ngày";
                 }
             }
         }
@@ -98,6 +98,7 @@ class TreatmentExecuteRoomListVViewController extends BaseApiCacheController
             $this->startName => $this->getAll ? null : $this->start,
             $this->limitName => $this->getAll ? null : $this->limit,
             $this->countName => $data['count'],
+            $this->totalPageName => $data['count'] ? ceil($data['count'] / $this->limit) : null,
             $this->isActiveName => $this->isActive,
             $this->keywordName => $this->keyword,
             $this->orderByName => $this->orderByRequest
