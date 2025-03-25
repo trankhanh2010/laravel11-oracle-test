@@ -75,9 +75,6 @@ return [
         'redis' => [
             'driver' => 'redis',
             'connection' => 'cache',
-            // 'options' => [
-            //     'persistent' => 'cache_persistent', // Persistent ID riêng cho cache
-            // ],
         ],
 
         'dynamodb' => [
