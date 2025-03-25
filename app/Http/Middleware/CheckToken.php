@@ -27,6 +27,7 @@ class CheckToken
                 'message' => 'Thiếu token'], 401);
         }
 
+        
         $token = get_token_header($request, $token_header);
         if(!$token){
             Cache::forget('token_'.$token_header);
