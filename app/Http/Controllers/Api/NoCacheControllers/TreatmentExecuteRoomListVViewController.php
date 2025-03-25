@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api\NoCacheControllers;
 use App\DTOs\TreatmentExecuteRoomListVViewDTO;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
 use App\Models\View\TreatmentExecuteRoomListVView;
-use App\Services\Elastic\ElasticsearchService;
 use App\Services\Model\TreatmentExecuteRoomListVViewService;
 use DateTime;
 use Illuminate\Http\Request;
@@ -15,10 +14,9 @@ class TreatmentExecuteRoomListVViewController extends BaseApiCacheController
 {
     protected $treatmentExecuteRoomListVViewService;
     protected $treatmentExecuteRoomListVViewDTO;
-    public function __construct(Request $request, ElasticsearchService $elasticSearchService, TreatmentExecuteRoomListVViewService $treatmentExecuteRoomListVViewService, TreatmentExecuteRoomListVView $treatmentExecuteRoomListVView)
+    public function __construct(Request $request, TreatmentExecuteRoomListVViewService $treatmentExecuteRoomListVViewService, TreatmentExecuteRoomListVView $treatmentExecuteRoomListVView)
     {
         parent::__construct($request); // Gọi constructor của BaseController
-        $this->elasticSearchService = $elasticSearchService;
         $this->treatmentExecuteRoomListVViewService = $treatmentExecuteRoomListVViewService;
         $this->treatmentExecuteRoomListVView = $treatmentExecuteRoomListVView;
         // Kiểm tra tên trường trong bảng
@@ -57,6 +55,7 @@ class TreatmentExecuteRoomListVViewController extends BaseApiCacheController
             $this->serviceReqSttCodes,
             $this->treatmentCode,
             $this->patientCode,
+            $this->serviceReqSttIds,
         );
         $this->treatmentExecuteRoomListVViewService->withParams($this->treatmentExecuteRoomListVViewDTO);
     }

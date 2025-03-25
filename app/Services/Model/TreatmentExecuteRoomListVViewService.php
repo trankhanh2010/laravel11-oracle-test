@@ -35,6 +35,7 @@ class TreatmentExecuteRoomListVViewService
 
             if ($this->params->treatmentCode == null && $this->params->patientCode == null) {
                 $data = $this->treatmentExecuteRoomListVViewRepository->applyServiceReqSttCodesFilter($data, $this->params->serviceReqSttCodes);
+                $data = $this->treatmentExecuteRoomListVViewRepository->applyServiceReqSttIdsFilter($data, $this->params->serviceReqSttIds);
                 $data = $this->treatmentExecuteRoomListVViewRepository->applyDepartmentCodeFilter($data, $this->params->departmentCode);
                 $data = $this->treatmentExecuteRoomListVViewRepository->applyTreatmentTypeIdsFilter($data, $this->params->treatmentTypeIds);
                 // $data = $this->treatmentExecuteRoomListVViewRepository->applyIsCoTreatDepartmentFilter($data, $this->params->isCoTreatDepartment);
@@ -44,7 +45,7 @@ class TreatmentExecuteRoomListVViewService
                 $data = $this->treatmentExecuteRoomListVViewRepository->applyIntructionTimeFromFilter($data, $this->params->intructionTimeFrom);
                 $data = $this->treatmentExecuteRoomListVViewRepository->applyIntructionTimeToFilter($data, $this->params->intructionTimeTo);
             }
-            $count = $data->count();
+            $count = null;
             
             $data = $this->treatmentExecuteRoomListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
             $data = $this->treatmentExecuteRoomListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
@@ -67,6 +68,7 @@ class TreatmentExecuteRoomListVViewService
 
             if ($this->params->treatmentCode == null && $this->params->patientCode == null) {
                 $data = $this->treatmentExecuteRoomListVViewRepository->applyServiceReqSttCodesFilter($data, $this->params->serviceReqSttCodes);
+                $data = $this->treatmentExecuteRoomListVViewRepository->applyServiceReqSttIdsFilter($data, $this->params->serviceReqSttIds);
                 $data = $this->treatmentExecuteRoomListVViewRepository->applyDepartmentCodeFilter($data, $this->params->departmentCode);
                 $data = $this->treatmentExecuteRoomListVViewRepository->applyTreatmentTypeIdsFilter($data, $this->params->treatmentTypeIds);
                 // $data = $this->treatmentExecuteRoomListVViewRepository->applyIsCoTreatDepartmentFilter($data, $this->params->isCoTreatDepartment);
@@ -76,7 +78,7 @@ class TreatmentExecuteRoomListVViewService
                 $data = $this->treatmentExecuteRoomListVViewRepository->applyIntructionTimeFromFilter($data, $this->params->intructionTimeFrom);
                 $data = $this->treatmentExecuteRoomListVViewRepository->applyIntructionTimeToFilter($data, $this->params->intructionTimeTo);
             }
-            $count = $data->count();
+            $count = null;
 
             $data = $this->treatmentExecuteRoomListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
             $data = $this->treatmentExecuteRoomListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);

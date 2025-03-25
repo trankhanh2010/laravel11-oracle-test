@@ -168,11 +168,20 @@ class TreatmentExecuteRoomListVViewRepository
         }
         return $query;
     }
+    public function applyServiceReqSttIdsFilter($query, $param)
+    {
+        if ($param != null) {
+            return $query->where(function ($query) use ($param) {
+                $query->whereIn('service_req_stt_id', $param);
+            });
+        }
+        return $query;
+    }
     public function applyIntructionTimeFromFilter($query, $param)
     {
         if ($param !== null) {
             return $query->where(function ($query) use ($param) {
-                $query->where('intruction_time', '>=', $param);
+                $query->where('intruction_date', '>=', $param);
             });
         }
         return $query;
@@ -181,7 +190,7 @@ class TreatmentExecuteRoomListVViewRepository
     {
         if ($param !== null) {
             return $query->where(function ($query) use ($param) {
-                $query->where('intruction_time', '<=', $param);
+                $query->where('intruction_date', '<=', $param);
             });
         }
         return $query;
