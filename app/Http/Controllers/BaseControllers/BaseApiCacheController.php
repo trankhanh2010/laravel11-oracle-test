@@ -1356,11 +1356,6 @@ class BaseApiCacheController extends Controller
                 if (!is_numeric($item)) {
                     $this->errors[$this->serviceReqIdsName] = $this->messFormat;
                     unset($this->serviceReqIds[$key]);
-                } else {
-                    if (!ServiceReq::where('id', $item)->exists()) {
-                        $this->errors[$this->serviceReqIdsName] = $this->messRecordId;
-                        unset($this->serviceReqIds[$key]);
-                    }
                 }
             }
         }
@@ -1709,12 +1704,7 @@ class BaseApiCacheController extends Controller
                 if (!is_numeric($item)) {
                     $this->errors[$this->serviceReqSttIdsName] = $this->messFormat;
                     unset($this->serviceReqSttIds[$key]);
-                } else {
-                    if (!ServiceReqStt::where('id', $item)->exists()) {
-                        $this->errors[$this->serviceReqSttIdsName] = $this->messRecordId;
-                        unset($this->serviceReqSttIds[$key]);
-                    }
-                }
+                } 
             }
         }
         $this->hasExecute = $this->paramRequest['ApiData']['HasExecute'] ?? true;
