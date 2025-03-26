@@ -16,10 +16,9 @@ class MedicalCaseCoverListVViewController extends BaseApiCacheController
 {
     protected $medicalCaseCoverListVViewService;
     protected $medicalCaseCoverListVViewDTO;
-    public function __construct(Request $request, ElasticsearchService $elasticSearchService, MedicalCaseCoverListVViewService $medicalCaseCoverListVViewService, MedicalCaseCoverListVView $medicalCaseCoverListVView)
+    public function __construct(Request $request, MedicalCaseCoverListVViewService $medicalCaseCoverListVViewService, MedicalCaseCoverListVView $medicalCaseCoverListVView)
     {
         parent::__construct($request); // Gọi constructor của BaseController
-        $this->elasticSearchService = $elasticSearchService;
         $this->medicalCaseCoverListVViewService = $medicalCaseCoverListVViewService;
         $this->medicalCaseCoverListVView = $medicalCaseCoverListVView;
         // Kiểm tra tên trường trong bảng

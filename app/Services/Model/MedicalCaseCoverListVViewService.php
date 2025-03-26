@@ -27,8 +27,8 @@ class MedicalCaseCoverListVViewService
         try {
             $data = $this->medicalCaseCoverListVViewRepository->applyJoins();
             $data = $this->medicalCaseCoverListVViewRepository->applyKeywordFilter($data, $this->params->keyword);
-            $data = $this->medicalCaseCoverListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-            $data = $this->medicalCaseCoverListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+            $data = $this->medicalCaseCoverListVViewRepository->applyIsActiveFilter($data, 1);
+            $data = $this->medicalCaseCoverListVViewRepository->applyIsDeleteFilter($data, 0);
             $data = $this->medicalCaseCoverListVViewRepository->applyDepartmentCodeFilter($data, $this->params->departmentCode);
             $data = $this->medicalCaseCoverListVViewRepository->applyIsInBedFilter($data, $this->params->isInBed);
             $data = $this->medicalCaseCoverListVViewRepository->applyBedRoomIdsFilter($data, $this->params->bedRoomIds);
@@ -40,7 +40,8 @@ class MedicalCaseCoverListVViewService
             $data = $this->medicalCaseCoverListVViewRepository->applyAddTimeFromFilter($data, $this->params->addTimeFrom);
             $data = $this->medicalCaseCoverListVViewRepository->applyAddTimeToFilter($data, $this->params->addTimeTo);
 
-            $count = $data->count();
+            // $count = $data->count();
+            $count = null;
             $data = $this->medicalCaseCoverListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
             $data = $this->medicalCaseCoverListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
             return ['data' => $data, 'count' => $count];
@@ -52,8 +53,8 @@ class MedicalCaseCoverListVViewService
     {
         try {
             $data = $this->medicalCaseCoverListVViewRepository->applyJoins();
-            $data = $this->medicalCaseCoverListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-            $data = $this->medicalCaseCoverListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+            $data = $this->medicalCaseCoverListVViewRepository->applyIsActiveFilter($data, 1);
+            $data = $this->medicalCaseCoverListVViewRepository->applyIsDeleteFilter($data, 0);
             $data = $this->medicalCaseCoverListVViewRepository->applyDepartmentCodeFilter($data, $this->params->departmentCode);
             $data = $this->medicalCaseCoverListVViewRepository->applyIsInBedFilter($data, $this->params->isInBed);
             $data = $this->medicalCaseCoverListVViewRepository->applyBedRoomIdsFilter($data, $this->params->bedRoomIds);
@@ -65,7 +66,8 @@ class MedicalCaseCoverListVViewService
             $data = $this->medicalCaseCoverListVViewRepository->applyAddTimeFromFilter($data, $this->params->addTimeFrom);
             $data = $this->medicalCaseCoverListVViewRepository->applyAddTimeToFilter($data, $this->params->addTimeTo);
 
-            $count = $data->count();
+            // $count = $data->count();
+            $count = null;
             $data = $this->medicalCaseCoverListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
             $data = $this->medicalCaseCoverListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
             return ['data' => $data, 'count' => $count];
@@ -79,8 +81,8 @@ class MedicalCaseCoverListVViewService
             $data = $this->medicalCaseCoverListVViewRepository->applyJoins()
                 ->where('id', $id);
             $data = $this->medicalCaseCoverListVViewRepository->applyWithParam($data);
-            $data = $this->medicalCaseCoverListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-            $data = $this->medicalCaseCoverListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+            $data = $this->medicalCaseCoverListVViewRepository->applyIsActiveFilter($data, 1);
+            $data = $this->medicalCaseCoverListVViewRepository->applyIsDeleteFilter($data, 0);
             $data = $data->first();
             return $data;
         } catch (\Throwable $e) {

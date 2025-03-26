@@ -59,6 +59,8 @@ class BaseApiCacheController extends Controller
     protected $dateName = 'Date';
     protected $columnsTime;
     protected $arrLimit;
+    protected $isCount;
+    protected $isCountName;
     protected $totalPage;
     protected $totalPageName = 'TotalPage';
     protected $start;
@@ -989,6 +991,13 @@ class BaseApiCacheController extends Controller
             $this->errors[$this->getAllName] = $this->messFormat;
             $this->getAll = false;
         }
+
+        $this->isCount = $this->paramRequest['CommonParam']['IsCount'] ?? false;
+        if (!is_bool($this->isCount)) {
+            $this->errors[$this->isCountName] = $this->messFormat;
+            $this->isCount = false;
+        }
+
         $this->orderBy = $this->paramRequest['ApiData']['OrderBy'] ?? null;
         $this->orderByRequest = $this->paramRequest['ApiData']['OrderBy'] ?? null;
         if ($this->orderBy != null) {

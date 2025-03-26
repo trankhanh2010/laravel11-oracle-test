@@ -45,7 +45,7 @@ class TreatmentExecuteRoomListVViewService
                 $data = $this->treatmentExecuteRoomListVViewRepository->applyIntructionTimeFromFilter($data, $this->params->intructionTimeFrom);
                 $data = $this->treatmentExecuteRoomListVViewRepository->applyIntructionTimeToFilter($data, $this->params->intructionTimeTo);
             }
-            if($this->params->start == 0 && !$this->params->getAll){
+            if(($this->params->start == 0 && !$this->params->getAll) || $this->params->isCount){
                 $count = $data->count();
             }else{
                 $count = null;
@@ -82,7 +82,7 @@ class TreatmentExecuteRoomListVViewService
                 $data = $this->treatmentExecuteRoomListVViewRepository->applyIntructionTimeFromFilter($data, $this->params->intructionTimeFrom);
                 $data = $this->treatmentExecuteRoomListVViewRepository->applyIntructionTimeToFilter($data, $this->params->intructionTimeTo);
             }
-            if($this->params->start == 0 && !$this->params->getAll){
+            if(($this->params->start == 0 && !$this->params->getAll) || $this->params->isCount){
                 $count = $data->count();
             }else{
                 $count = null;
