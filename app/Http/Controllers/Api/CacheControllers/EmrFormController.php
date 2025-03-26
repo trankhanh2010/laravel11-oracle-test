@@ -10,7 +10,7 @@ use App\Models\HIS\EmrForm;
 use App\Services\Elastic\ElasticsearchService;
 use App\Services\Model\EmrFormService;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Cache;
 
 class EmrFormController extends BaseApiCacheController
 {
@@ -44,6 +44,7 @@ class EmrFormController extends BaseApiCacheController
             $this->appCreator, 
             $this->appModifier, 
             $this->time,
+            $this->tab,
         );
         $this->emrFormService->withParams($this->emrFormDTO);
     }
@@ -53,15 +54,24 @@ class EmrFormController extends BaseApiCacheController
             return $this->checkParam();
         }
         $keyword = $this->keyword;
-        if (($keyword != null || $this->elasticSearchType != null) && !$this->cache) {
-            if ($this->elasticSearchType != null) {
-                $data = $this->elasticSearchService->handleElasticSearchSearch($this->emrFormName);
-            } else {
-                $data = $this->emrFormService->handleDataBaseSearch();
+        $source = [
+            'id',
+            'emr_form_code',
+            'emr_form_name',
+        ];
+        $this->elasticCustom = $this->emrFormService->handleCustomParamElasticSearch();
+        if ($this->elasticSearchType || $this->elastic) {
+            if(!$keyword){
+                $data = Cache::remember($this->emrFormName.'_' . $this->param, $this->time, function () use($source) {
+                    $data = $this->elasticSearchService->handleElasticSearchSearch($this->emrFormName, $this->elasticCustom, $source);
+                    return $data;
+                });
+            }else{
+                $data = $this->elasticSearchService->handleElasticSearchSearch($this->emrFormName, $this->elasticCustom, $source);
             }
         } else {
-            if ($this->elastic) {
-                $data = $this->elasticSearchService->handleElasticSearchGetAll($this->emrFormName);
+            if ($keyword) {
+                $data = $this->emrFormService->handleDataBaseSearch();
             } else {
                 $data = $this->emrFormService->handleDataBaseGetAll();
             }

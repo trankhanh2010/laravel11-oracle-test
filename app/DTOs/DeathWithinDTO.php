@@ -17,6 +17,7 @@ class DeathWithinDTO
     public $appCreator;
     public $appModifier;
     public $time;
+    public $tab;
     public function __construct(
         $deathWithinName,
         $keyword, 
@@ -31,6 +32,7 @@ class DeathWithinDTO
         $appCreator,
         $appModifier,
         $time,
+        $tab,
         )
     {
         $this->deathWithinName = $deathWithinName;
@@ -46,5 +48,6 @@ class DeathWithinDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
+        $this->tab = $tab;
     }
 }

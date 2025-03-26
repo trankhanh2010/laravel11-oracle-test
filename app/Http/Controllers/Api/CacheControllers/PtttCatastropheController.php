@@ -10,7 +10,7 @@ use App\Models\HIS\PtttCatastrophe;
 use App\Services\Elastic\ElasticsearchService;
 use App\Services\Model\PtttCatastropheService;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Cache;
 
 class PtttCatastropheController extends BaseApiCacheController
 {
@@ -44,6 +44,7 @@ class PtttCatastropheController extends BaseApiCacheController
             $this->appCreator, 
             $this->appModifier, 
             $this->time,
+            $this->tab,
         );
         $this->ptttCatastropheService->withParams($this->ptttCatastropheDTO);
     }
@@ -53,15 +54,25 @@ class PtttCatastropheController extends BaseApiCacheController
             return $this->checkParam();
         }
         $keyword = $this->keyword;
-        if (($keyword != null || $this->elasticSearchType != null) && !$this->cache) {
-            if ($this->elasticSearchType != null) {
-                $data = $this->elasticSearchService->handleElasticSearchSearch($this->ptttCatastropheName);
+        $source = [
+            'id',
+            'pttt_catastrophe_code',
+            'pttt_catastrophe_name',
+        ];
+        $this->elasticCustom = $this->ptttCatastropheService->handleCustomParamElasticSearch();
+        if ($this->elasticSearchType || $this->elastic) {
+            if (!$keyword) {
+                $data = Cache::remember($this->ptttCatastropheName . '_' . $this->param, $this->time, function () use ($source) {
+                    $data = $this->elasticSearchService->handleElasticSearchSearch($this->ptttCatastropheName, $this->elasticCustom, $source);
+                    return $data;
+                });
+
             } else {
-                $data = $this->ptttCatastropheService->handleDataBaseSearch();
+                $data = $this->elasticSearchService->handleElasticSearchSearch($this->ptttCatastropheName, $this->elasticCustom, $source);
             }
         } else {
-            if ($this->elastic) {
-                $data = $this->elasticSearchService->handleElasticSearchGetAll($this->ptttCatastropheName);
+            if ($keyword) {
+                $data = $this->ptttCatastropheService->handleDataBaseSearch();
             } else {
                 $data = $this->ptttCatastropheService->handleDataBaseGetAll();
             }

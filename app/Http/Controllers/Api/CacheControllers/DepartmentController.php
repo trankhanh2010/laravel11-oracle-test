@@ -10,7 +10,7 @@ use App\Models\HIS\Department;
 use App\Services\Elastic\ElasticsearchService;
 use App\Services\Model\DepartmentService;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Cache;
 
 class DepartmentController extends BaseApiCacheController
 {
@@ -50,6 +50,7 @@ class DepartmentController extends BaseApiCacheController
             $this->appCreator, 
             $this->appModifier, 
             $this->time,
+            $this->tab,
         );
         $this->departmentService->withParams($this->departmentDTO);
     }
@@ -59,15 +60,24 @@ class DepartmentController extends BaseApiCacheController
             return $this->checkParam();
         }
         $keyword = $this->keyword;
-        if (($keyword != null || $this->elasticSearchType != null) && !$this->cache) {
-            if ($this->elasticSearchType != null) {
-                $data = $this->elasticSearchService->handleElasticSearchSearch($this->departmentName);
-            } else {
-                $data = $this->departmentService->handleDataBaseSearch();
+        $source = [
+            'id',
+            'department_code',
+            'department_name',
+        ];
+        $this->elasticCustom = $this->departmentService->handleCustomParamElasticSearch();
+        if ($this->elasticSearchType || $this->elastic) {
+            if(!$keyword){
+                $data = Cache::remember($this->departmentName.'_' . $this->param, $this->time, function () use($source) {
+                    $data = $this->elasticSearchService->handleElasticSearchSearch($this->departmentName, $this->elasticCustom, $source);
+                    return $data;
+                });
+            }else{
+                $data = $this->elasticSearchService->handleElasticSearchSearch($this->departmentName, $this->elasticCustom, $source);
             }
         } else {
-            if ($this->elastic) {
-                $data = $this->elasticSearchService->handleElasticSearchGetAll($this->departmentName);
+            if ($keyword) {
+                $data = $this->departmentService->handleDataBaseSearch();
             } else {
                 $data = $this->departmentService->handleDataBaseGetAll();
             }

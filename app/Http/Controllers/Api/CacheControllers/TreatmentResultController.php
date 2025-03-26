@@ -10,7 +10,7 @@ use App\Models\HIS\TreatmentResult;
 use App\Services\Elastic\ElasticsearchService;
 use App\Services\Model\TreatmentResultService;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Cache;
 
 class TreatmentResultController extends BaseApiCacheController
 {
@@ -44,6 +44,7 @@ class TreatmentResultController extends BaseApiCacheController
             $this->appCreator, 
             $this->appModifier, 
             $this->time,
+            $this->tab,
         );
         $this->treatmentResultService->withParams($this->treatmentResultDTO);
     }
@@ -53,15 +54,25 @@ class TreatmentResultController extends BaseApiCacheController
             return $this->checkParam();
         }
         $keyword = $this->keyword;
-        if (($keyword != null || $this->elasticSearchType != null) && !$this->cache) {
-            if ($this->elasticSearchType != null) {
-                $data = $this->elasticSearchService->handleElasticSearchSearch($this->treatmentResultName);
+        $source = [
+            'id',
+            'treatment_result_code',
+            'treatment_result_name',
+        ];
+        $this->elasticCustom = $this->treatmentResultService->handleCustomParamElasticSearch();
+        if ($this->elasticSearchType || $this->elastic) {
+            if (!$keyword) {
+                $data = Cache::remember($this->treatmentResultName . '_' . $this->param, $this->time, function () use ($source) {
+                    $data = $this->elasticSearchService->handleElasticSearchSearch($this->treatmentResultName, $this->elasticCustom, $source);
+                    return $data;
+                });
+
             } else {
-                $data = $this->treatmentResultService->handleDataBaseSearch();
+                $data = $this->elasticSearchService->handleElasticSearchSearch($this->treatmentResultName, $this->elasticCustom, $source);
             }
         } else {
-            if ($this->elastic) {
-                $data = $this->elasticSearchService->handleElasticSearchGetAll($this->treatmentResultName);
+            if ($keyword) {
+                $data = $this->treatmentResultService->handleDataBaseSearch();
             } else {
                 $data = $this->treatmentResultService->handleDataBaseGetAll();
             }

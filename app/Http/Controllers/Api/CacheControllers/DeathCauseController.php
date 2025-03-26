@@ -10,7 +10,7 @@ use App\Models\HIS\DeathCause;
 use App\Services\Elastic\ElasticsearchService;
 use App\Services\Model\DeathCauseService;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Cache;
 
 class DeathCauseController extends BaseApiCacheController
 {
@@ -44,6 +44,7 @@ class DeathCauseController extends BaseApiCacheController
             $this->appCreator, 
             $this->appModifier, 
             $this->time,
+            $this->tab,
         );
         $this->deathCauseService->withParams($this->deathCauseDTO);
     }
@@ -53,15 +54,24 @@ class DeathCauseController extends BaseApiCacheController
             return $this->checkParam();
         }
         $keyword = $this->keyword;
-        if (($keyword != null || $this->elasticSearchType != null) && !$this->cache) {
-            if ($this->elasticSearchType != null) {
-                $data = $this->elasticSearchService->handleElasticSearchSearch($this->deathCauseName);
-            } else {
-                $data = $this->deathCauseService->handleDataBaseSearch();
+        $source = [
+            'id',
+            'death_cause_code',
+            'death_cause_name',
+        ];
+        $this->elasticCustom = $this->deathCauseService->handleCustomParamElasticSearch();
+        if ($this->elasticSearchType || $this->elastic) {
+            if(!$keyword){
+                $data = Cache::remember($this->deathCauseName.'_' . $this->param, $this->time, function () use($source) {
+                    $data = $this->elasticSearchService->handleElasticSearchSearch($this->deathCauseName, $this->elasticCustom, $source);
+                    return $data;
+                });
+            }else{
+                $data = $this->elasticSearchService->handleElasticSearchSearch($this->deathCauseName, $this->elasticCustom, $source);
             }
         } else {
-            if ($this->elastic) {
-                $data = $this->elasticSearchService->handleElasticSearchGetAll($this->deathCauseName);
+            if ($keyword) {
+                $data = $this->deathCauseService->handleDataBaseSearch();
             } else {
                 $data = $this->deathCauseService->handleDataBaseGetAll();
             }

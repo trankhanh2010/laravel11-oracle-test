@@ -17,6 +17,7 @@ class PtttCatastropheDTO
     public $appCreator;
     public $appModifier;
     public $time;
+    public $tab;
     public function __construct(
         $ptttCatastropheName,
         $keyword, 
@@ -31,6 +32,7 @@ class PtttCatastropheDTO
         $appCreator,
         $appModifier,
         $time,
+        $tab,
         )
     {
         $this->ptttCatastropheName = $ptttCatastropheName;
@@ -46,5 +48,6 @@ class PtttCatastropheDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
+        $this->tab = $tab;
     }
 }

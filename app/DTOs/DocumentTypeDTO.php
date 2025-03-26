@@ -17,6 +17,7 @@ class documentTypeDTO
     public $appCreator;
     public $appModifier;
     public $time;
+    public $tab;
     public function __construct(
         $documentTypeName,
         $keyword, 
@@ -31,6 +32,7 @@ class documentTypeDTO
         $appCreator,
         $appModifier,
         $time,
+        $tab,
         )
     {
         $this->documentTypeName = $documentTypeName;
@@ -46,5 +48,6 @@ class documentTypeDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
+        $this->tab = $tab;
     }
 }

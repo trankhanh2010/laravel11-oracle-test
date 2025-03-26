@@ -17,6 +17,7 @@ class IcdDTO
     public $appCreator;
     public $appModifier;
     public $time;
+    public $tab;
     public function __construct(
         $icdName,
         $keyword, 
@@ -31,6 +32,7 @@ class IcdDTO
         $appCreator,
         $appModifier,
         $time,
+        $tab,
         )
     {
         $this->icdName = $icdName;
@@ -46,5 +48,6 @@ class IcdDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
+        $this->tab = $tab;
     }
 }

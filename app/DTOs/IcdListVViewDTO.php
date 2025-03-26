@@ -17,6 +17,7 @@ class IcdListVViewDTO
     public $appCreator;
     public $appModifier;
     public $time;
+    public $tab;
     public function __construct(
         $icdListVViewName,
         $keyword, 
@@ -31,6 +32,7 @@ class IcdListVViewDTO
         $appCreator,
         $appModifier,
         $time,
+        $tab,
         )
     {
         $this->icdListVViewName = $icdListVViewName;
@@ -46,5 +48,6 @@ class IcdListVViewDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
+        $this->tab = $tab;
     }
 }

@@ -85,7 +85,7 @@ class CreateDocumentTypeIndex
                         'group_code' => [
                             'type' => 'keyword'  // Chuỗi không phân tích, lưu trữ giá trị chính xác, có thể là null
                         ],
-                        'accident_body_part_code' => [
+                        'document_type_code' => [
                             'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
                             'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
                             'fields' => [
@@ -94,7 +94,7 @@ class CreateDocumentTypeIndex
                                 ]
                             ]
                         ],
-                        'accident_body_part_name' => [
+                        'document_type_name' => [
                             'type' => 'text',  // Văn bản phân tích, hỗ trợ tìm kiếm full-text
                             'analyzer' => 'my_custom_analyzer', // Sử dụng analyzer tùy chỉnh
                             'fields' => [

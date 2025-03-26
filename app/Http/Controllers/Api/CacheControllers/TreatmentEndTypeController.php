@@ -10,7 +10,7 @@ use App\Models\HIS\TreatmentEndType;
 use App\Services\Elastic\ElasticsearchService;
 use App\Services\Model\TreatmentEndTypeService;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Cache;
 
 class TreatmentEndTypeController extends BaseApiCacheController
 {
@@ -44,6 +44,7 @@ class TreatmentEndTypeController extends BaseApiCacheController
             $this->appCreator, 
             $this->appModifier, 
             $this->time,
+            $this->tab,
         );
         $this->treatmentEndTypeService->withParams($this->treatmentEndTypeDTO);
     }
@@ -53,15 +54,25 @@ class TreatmentEndTypeController extends BaseApiCacheController
             return $this->checkParam();
         }
         $keyword = $this->keyword;
-        if (($keyword != null || $this->elasticSearchType != null) && !$this->cache) {
-            if ($this->elasticSearchType != null) {
-                $data = $this->elasticSearchService->handleElasticSearchSearch($this->treatmentEndTypeName);
+        $source = [
+            'id',
+            'treatment_end_type_code',
+            'treatment_end_type_name',
+        ];
+        $this->elasticCustom = $this->treatmentEndTypeService->handleCustomParamElasticSearch();
+        if ($this->elasticSearchType || $this->elastic) {
+            if (!$keyword) {
+                $data = Cache::remember($this->treatmentEndTypeName . '_' . $this->param, $this->time, function () use ($source) {
+                    $data = $this->elasticSearchService->handleElasticSearchSearch($this->treatmentEndTypeName, $this->elasticCustom, $source);
+                    return $data;
+                });
+
             } else {
-                $data = $this->treatmentEndTypeService->handleDataBaseSearch();
+                $data = $this->elasticSearchService->handleElasticSearchSearch($this->treatmentEndTypeName, $this->elasticCustom, $source);
             }
         } else {
-            if ($this->elastic) {
-                $data = $this->elasticSearchService->handleElasticSearchGetAll($this->treatmentEndTypeName);
+            if ($keyword) {
+                $data = $this->treatmentEndTypeService->handleDataBaseSearch();
             } else {
                 $data = $this->treatmentEndTypeService->handleDataBaseGetAll();
             }

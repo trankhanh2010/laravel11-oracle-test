@@ -10,7 +10,7 @@ use App\Models\HIS\EmrCoverType;
 use App\Services\Elastic\ElasticsearchService;
 use App\Services\Model\EmrCoverTypeService;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Cache;
 
 class EmrCoverTypeController extends BaseApiCacheController
 {
@@ -44,6 +44,7 @@ class EmrCoverTypeController extends BaseApiCacheController
             $this->appCreator, 
             $this->appModifier, 
             $this->time,
+            $this->tab,
         );
         $this->emrCoverTypeService->withParams($this->emrCoverTypeDTO);
     }
@@ -53,15 +54,24 @@ class EmrCoverTypeController extends BaseApiCacheController
             return $this->checkParam();
         }
         $keyword = $this->keyword;
-        if (($keyword != null || $this->elasticSearchType != null) && !$this->cache) {
-            if ($this->elasticSearchType != null) {
-                $data = $this->elasticSearchService->handleElasticSearchSearch($this->emrCoverTypeName);
-            } else {
-                $data = $this->emrCoverTypeService->handleDataBaseSearch();
+        $source = [
+            'id',
+            'emr_cover_type_code',
+            'emr_cover_type_name',
+        ];
+        $this->elasticCustom = $this->emrCoverTypeService->handleCustomParamElasticSearch();
+        if ($this->elasticSearchType || $this->elastic) {
+            if(!$keyword){
+                $data = Cache::remember($this->emrCoverTypeName.'_' . $this->param, $this->time, function () use($source) {
+                    $data = $this->elasticSearchService->handleElasticSearchSearch($this->emrCoverTypeName, $this->elasticCustom, $source);
+                    return $data;
+                });
+            }else{
+                $data = $this->elasticSearchService->handleElasticSearchSearch($this->emrCoverTypeName, $this->elasticCustom, $source);
             }
         } else {
-            if ($this->elastic) {
-                $data = $this->elasticSearchService->handleElasticSearchGetAll($this->emrCoverTypeName);
+            if ($keyword) {
+                $data = $this->emrCoverTypeService->handleDataBaseSearch();
             } else {
                 $data = $this->emrCoverTypeService->handleDataBaseGetAll();
             }

@@ -16,10 +16,9 @@ class SereServDetailVViewController extends BaseApiCacheController
 {
     protected $sereServDetailVViewService;
     protected $sereServDetailVViewDTO;
-    public function __construct(Request $request, ElasticsearchService $elasticSearchService, SereServDetailVViewService $sereServDetailVViewService, SereServDetailVView $sereServDetailVView)
+    public function __construct(Request $request, SereServDetailVViewService $sereServDetailVViewService, SereServDetailVView $sereServDetailVView)
     {
         parent::__construct($request); // Gọi constructor của BaseController
-        $this->elasticSearchService = $elasticSearchService;
         $this->sereServDetailVViewService = $sereServDetailVViewService;
         $this->sereServDetailVView = $sereServDetailVView;
         // Kiểm tra tên trường trong bảng
@@ -54,19 +53,9 @@ class SereServDetailVViewController extends BaseApiCacheController
             return $this->checkParam();
         }
         $keyword = $this->keyword;
-        if (($keyword != null || $this->elasticSearchType != null) && !$this->cache) {
-            if ($this->elasticSearchType != null) {
-                $data = $this->elasticSearchService->handleElasticSearchSearch($this->sereServDetailVViewName);
-            } else {
-                $data = $this->sereServDetailVViewService->handleDataBaseSearch();
-            }
-        } else {
-            if ($this->elastic) {
-                $data = $this->elasticSearchService->handleElasticSearchGetAll($this->sereServDetailVViewName);
-            } else {
-                $data = $this->sereServDetailVViewService->handleDataBaseGetAll();
-            }
-        }
+
+        $data = $this->sereServDetailVViewService->handleDataBaseSearch();
+           
         $paramReturn = [
             $this->getAllName => $this->getAll,
             $this->startName => $this->getAll ? null : $this->start,

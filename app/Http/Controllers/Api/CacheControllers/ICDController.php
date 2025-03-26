@@ -10,7 +10,7 @@ use App\Models\HIS\Icd;
 use App\Services\Elastic\ElasticsearchService;
 use App\Services\Model\IcdService;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Cache;
 
 class IcdController extends BaseApiCacheController
 {
@@ -24,8 +24,7 @@ class IcdController extends BaseApiCacheController
         $this->icd = $icd;
         // Kiểm tra tên trường trong bảng
         if ($this->orderBy != null) {
-            $this->orderByJoin = [
-            ];
+            $this->orderByJoin = [];
             $columns = $this->getColumnsTable($this->icd);
             $this->orderBy = $this->checkOrderBy($this->orderBy, $columns, $this->orderByJoin ?? []);
         }
@@ -41,9 +40,10 @@ class IcdController extends BaseApiCacheController
             $this->start,
             $this->limit,
             $request,
-            $this->appCreator, 
-            $this->appModifier, 
+            $this->appCreator,
+            $this->appModifier,
             $this->time,
+            $this->tab,
         );
         $this->icdService->withParams($this->icdDTO);
     }
@@ -53,15 +53,28 @@ class IcdController extends BaseApiCacheController
             return $this->checkParam();
         }
         $keyword = $this->keyword;
-        if (($keyword != null || $this->elasticSearchType != null) && !$this->cache) {
-            if ($this->elasticSearchType != null) {
-                $data = $this->elasticSearchService->handleElasticSearchSearch($this->icdName);
+        $source = [
+            'id',
+            'icd_code',
+            'icd_name',
+        ];
+        $this->elasticCustom = $this->icdService->handleCustomParamElasticSearch();
+        if ($this->elasticSearchType || $this->elastic) {
+            if (!$keyword) {
+                $data = Cache::remember($this->icdName . '_' . $this->param, $this->time, function () use ($source) {
+                    $data = $this->elasticSearchService->handleElasticSearchSearch($this->icdName, $this->elasticCustom, $source);
+                    return base64_encode(gzcompress(serialize($data))); // Nén và mã hóa trước khi lưu
+                });
+                // **Giải nén khi lấy dữ liệu từ cache**
+                if ($data && is_string($data)) {
+                    $data = unserialize(gzuncompress(base64_decode($data)));
+                }
             } else {
-                $data = $this->icdService->handleDataBaseSearch();
+                $data = $this->elasticSearchService->handleElasticSearchSearch($this->icdName, $this->elasticCustom, $source);
             }
         } else {
-            if ($this->elastic) {
-                $data = $this->elasticSearchService->handleElasticSearchGetAll($this->icdName);
+            if ($keyword) {
+                $data = $this->icdService->handleDataBaseSearch();
             } else {
                 $data = $this->icdService->handleDataBaseGetAll();
             }

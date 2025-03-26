@@ -17,6 +17,7 @@ class EmrFormDTO
     public $appCreator;
     public $appModifier;
     public $time;
+    public $tab;
     public function __construct(
         $emrFormName,
         $keyword, 
@@ -31,6 +32,7 @@ class EmrFormDTO
         $appCreator,
         $appModifier,
         $time,
+        $tab,
         )
     {
         $this->emrFormName = $emrFormName;
@@ -46,5 +48,6 @@ class EmrFormDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
+        $this->tab = $tab;
     }
 }

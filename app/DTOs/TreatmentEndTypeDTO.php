@@ -17,6 +17,7 @@ class TreatmentEndTypeDTO
     public $appCreator;
     public $appModifier;
     public $time;
+    public $tab;
     public function __construct(
         $treatmentEndTypeName,
         $keyword, 
@@ -31,6 +32,7 @@ class TreatmentEndTypeDTO
         $appCreator,
         $appModifier,
         $time,
+        $tab,
         )
     {
         $this->treatmentEndTypeName = $treatmentEndTypeName;
@@ -46,5 +48,6 @@ class TreatmentEndTypeDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
+        $this->tab = $tab;
     }
 }

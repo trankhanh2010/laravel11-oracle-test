@@ -10,7 +10,7 @@ use App\Models\EMR\DocumentType;
 use App\Services\Elastic\ElasticsearchService;
 use App\Services\Model\DocumentTypeService;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Cache;
 
 class DocumentTypeController extends BaseApiCacheController
 {
@@ -44,6 +44,7 @@ class DocumentTypeController extends BaseApiCacheController
             $this->appCreator, 
             $this->appModifier, 
             $this->time,
+            $this->tab,
         );
         $this->documentTypeService->withParams($this->documentTypeDTO);
     }
@@ -53,15 +54,24 @@ class DocumentTypeController extends BaseApiCacheController
             return $this->checkParam();
         }
         $keyword = $this->keyword;
-        if (($keyword != null || $this->elasticSearchType != null) && !$this->cache) {
-            if ($this->elasticSearchType != null) {
-                $data = $this->elasticSearchService->handleElasticSearchSearch($this->documentTypeName);
-            } else {
-                $data = $this->documentTypeService->handleDataBaseSearch();
+        $source = [
+            'id',
+            'document_type_code',
+            'document_type_name',
+        ];
+        $this->elasticCustom = $this->documentTypeService->handleCustomParamElasticSearch();
+        if ($this->elasticSearchType || $this->elastic) {
+            if(!$keyword){
+                $data = Cache::remember($this->documentTypeName.'_' . $this->param, $this->time, function () use($source) {
+                    $data = $this->elasticSearchService->handleElasticSearchSearch($this->documentTypeName, $this->elasticCustom, $source);
+                    return $data;
+                });
+            }else{
+                $data = $this->elasticSearchService->handleElasticSearchSearch($this->documentTypeName, $this->elasticCustom, $source);
             }
         } else {
-            if ($this->elastic) {
-                $data = $this->elasticSearchService->handleElasticSearchGetAll($this->documentTypeName);
+            if ($keyword) {
+                $data = $this->documentTypeService->handleDataBaseSearch();
             } else {
                 $data = $this->documentTypeService->handleDataBaseGetAll();
             }

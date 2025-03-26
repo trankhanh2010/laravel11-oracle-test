@@ -22,6 +22,36 @@ class PtttConditionService
         $this->params = $params;
         return $this;
     }
+    public function handleCustomParamElasticSearch()
+    {
+        $data = null;
+        if ($this->params->tab == 'select') {
+            $data =  [
+                "bool" => [
+                    "filter" => [
+                        ["term" => ["is_active" => 1]],
+                        ["term" => ["is_delete" => 0]],
+                    ],
+                    "must" => [
+                        [
+                            "bool" => [
+                                "should" => [
+                                    ["wildcard" => ["pttt_condition_name.keyword" => "*" . $this->params->keyword . "*"]],
+                                    ["match_phrase" => ["pttt_condition_name" => $this->params->keyword]],
+                                    ["match_phrase_prefix" => ["pttt_condition_name" => $this->params->keyword]],
+
+                                    ["match_phrase_prefix" => ["pttt_condition_code" => $this->params->keyword]]
+                                ],
+                                "minimum_should_match" => 1
+                            ]
+                        ]
+                    ]
+                ]
+            ];
+        }
+
+        return $data;
+    }
     public function handleDataBaseSearch()
     {
         try {

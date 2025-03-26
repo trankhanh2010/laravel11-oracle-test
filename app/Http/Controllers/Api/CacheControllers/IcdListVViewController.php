@@ -8,7 +8,7 @@ use App\Models\View\IcdListVView;
 use App\Services\Elastic\ElasticsearchService;
 use App\Services\Model\IcdListVViewService;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Cache;
 
 class IcdListVViewController extends BaseApiCacheController
 {
@@ -42,6 +42,7 @@ class IcdListVViewController extends BaseApiCacheController
             $this->appCreator, 
             $this->appModifier, 
             $this->time,
+            $this->tab,
         );
         $this->icdListVViewService->withParams($this->icdListVViewDTO);
     }
@@ -51,15 +52,28 @@ class IcdListVViewController extends BaseApiCacheController
             return $this->checkParam();
         }
         $keyword = $this->keyword;
-        if (($keyword != null || $this->elasticSearchType != null) && !$this->cache) {
-            if ($this->elasticSearchType != null) {
-                $data = $this->elasticSearchService->handleElasticSearchSearch($this->icdListVViewName);
+        $source = [
+            'id',
+            'icd_code',
+            'icd_name',
+        ];
+        $this->elasticCustom = $this->icdListVViewService->handleCustomParamElasticSearch();
+        if ($this->elasticSearchType || $this->elastic) {
+            if (!$keyword) {
+                $data = Cache::remember($this->icdListVViewName . '_' . $this->param, $this->time, function () use ($source) {
+                    $data = $this->elasticSearchService->handleElasticSearchSearch($this->icdListVViewName, $this->elasticCustom, $source);
+                    return base64_encode(gzcompress(serialize($data))); // Nén và mã hóa trước khi lưu
+                });
+                // **Giải nén khi lấy dữ liệu từ cache**
+                if ($data && is_string($data)) {
+                    $data = unserialize(gzuncompress(base64_decode($data)));
+                }
             } else {
-                $data = $this->icdListVViewService->handleDataBaseSearch();
+                $data = $this->elasticSearchService->handleElasticSearchSearch($this->icdListVViewName, $this->elasticCustom, $source);
             }
         } else {
-            if ($this->elastic) {
-                $data = $this->elasticSearchService->handleElasticSearchGetAll($this->icdListVViewName);
+            if ($keyword) {
+                $data = $this->icdListVViewService->handleDataBaseSearch();
             } else {
                 $data = $this->icdListVViewService->handleDataBaseGetAll();
             }

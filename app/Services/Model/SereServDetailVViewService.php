@@ -59,8 +59,8 @@ class SereServDetailVViewService
             $data = $this->sereServDetailVViewRepository->applyJoins()
                 ->where('id', $id);
                 $data = $this->sereServDetailVViewRepository->applyWithParam($data);
-            $data = $this->sereServDetailVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-            $data = $this->sereServDetailVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+            $data = $this->sereServDetailVViewRepository->applyIsActiveFilter($data, 1);
+            $data = $this->sereServDetailVViewRepository->applyIsDeleteFilter($data, 0);
             $data = $data->first();
             return $data;
         } catch (\Throwable $e) {
