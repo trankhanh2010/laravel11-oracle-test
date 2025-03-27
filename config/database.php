@@ -273,34 +273,32 @@ return [
     */
 
     'redis' => [
-        'expire' => 86400, // Thời gian hết hạn mặc định cho cache (đơn vị: giây)
         'client' => env('REDIS_CLIENT', 'phpredis'),
-
         'options' => [
             'name' => env('APP_NAME', 'laravel'),  // Đặt tên cho kết nối
             'cluster' => env('REDIS_CLUSTER', 'redis'),
             // 'prefix' => env('REDIS_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_').'_database_'),
             'prefix' => "",
-            'read_timeout' => 2.5
+            'read_timeout' => 2.5,
         ],
+        // 'default' => [
+        //     'url' => env('REDIS_URL'),
+        //     'host' => env('REDIS_HOST', '127.0.0.1'),
+        //     'password' => env('REDIS_PASSWORD', null),
+        //     'username' => env('REDIS_USERNAME', null),
+        //     'port' => env('REDIS_PORT', '6379'),
+        //     'database' => env('REDIS_DB', '0'),
+        // ],
 
-        'default' => [
-            'url' => env('REDIS_URL'),
-            'host' => env('REDIS_HOST', '127.0.0.1'),
-            'password' => env('REDIS_PASSWORD', null),
-            'username' => env('REDIS_USERNAME', null),
-            'port' => env('REDIS_PORT', '6379'),
-            'database' => env('REDIS_DB', '0'),
-        ],
+        // 'cache' => [
+        //     'url' => env('REDIS_URL'),
+        //     'host' => env('REDIS_HOST', '127.0.0.1'),
+        //     'password' => env('REDIS_PASSWORD', null),
+        //     'username' => env('REDIS_USERNAME', null),
+        //     'port' => env('REDIS_PORT', '6379'),
+        //     'database' => env('REDIS_CACHE_DB', '1'),
+        // ],
 
-        'cache' => [
-            'url' => env('REDIS_URL'),
-            'host' => env('REDIS_HOST', '127.0.0.1'),
-            'password' => env('REDIS_PASSWORD', null),
-            'username' => env('REDIS_USERNAME', null),
-            'port' => env('REDIS_PORT', '6379'),
-            'database' => env('REDIS_CACHE_DB', '1'),
-        ],
         // 'options' => [
         //     'name' => env('APP_NAME', 'laravel'),
         //     'cluster' => false,
@@ -325,6 +323,26 @@ return [
         //     'database' => 1,
         // ],
 
+        'clusters' => [
+            'default' => [
+                [
+                    'host' => env('REDIS_HOST', '127.0.0.1'),
+                    'password' => env('REDIS_PASSWORD', null),
+                    'username' => env('REDIS_USERNAME', null),
+                    'port' => env('REDIS_PORT', '6385'),
+                    'database' => env('REDIS_DB', '0'),
+                ],
+            ],
+            'cache' => [
+                [
+                    'host' => env('REDIS_HOST', '127.0.0.1'),
+                    'password' => env('REDIS_PASSWORD', null),
+                    'username' => env('REDIS_USERNAME', null),
+                    'port' => env('REDIS_PORT', '6385'),
+                    'database' => env('REDIS_CACHE_DB', '1'), 
+                ],
+            ],
+        ],
     ],
 
 ];
