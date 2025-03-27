@@ -310,15 +310,35 @@ return [
         ],
 
         'default' => [
-            'url' => env('REDIS_URL'),
-            'host' => env('REDIS_SENTINEL_HOST', 'my-redis-sentinel'),
+            'sentinel_host' => env('REDIS_SENTINEL_HOST', '127.0.0.1'),
+            'sentinel_port' => (int) env('REDIS_SENTINEL_PORT', 26379),
+            'sentinel_service' => env('REDIS_SENTINEL_SERVICE', 'my-master-sentinel'),
+            'sentinel_timeout' => (float) env('REDIS_SENTINEL_TIMEOUT', 0),
+            'sentinel_persistent' => env('REDIS_SENTINEL_PERSISTENT'),
+            'sentinel_retry_interval' => (int) env('REDIS_SENTINEL_RETRY_INTERVAL', 0),
+            'sentinel_read_timeout' => (float) env('REDIS_SENTINEL_READ_TIMEOUT', 0),
+            'sentinel_username' => env('REDIS_USERNAME'),
+            'sentinel_password' => env('REDIS_PASSWORD'),
+
+            // 'url' => env('REDIS_URL'),
+            // 'host' => env('REDIS_SENTINEL_HOST', 'my-redis-sentinel'),
             'password' => env('REDIS_PASSWORD', null),
             'port' => env('REDIS_SENTINEL_PORT', 26379),
             'database' => 0,
         ],
 
         'cache' => [
-            'url' => env('REDIS_URL'),
+            'sentinel_host' => env('REDIS_SENTINEL_HOST', '127.0.0.1'),
+            'sentinel_port' => (int) env('REDIS_SENTINEL_PORT', 26379),
+            'sentinel_service' => env('REDIS_SENTINEL_SERVICE', 'my-master-sentinel'),
+            'sentinel_timeout' => (float) env('REDIS_SENTINEL_TIMEOUT', 0),
+            'sentinel_persistent' => env('REDIS_SENTINEL_PERSISTENT'),
+            'sentinel_retry_interval' => (int) env('REDIS_SENTINEL_RETRY_INTERVAL', 0),
+            'sentinel_read_timeout' => (float) env('REDIS_SENTINEL_READ_TIMEOUT', 0),
+            'sentinel_username' => env('REDIS_USERNAME'),
+            'sentinel_password' => env('REDIS_PASSWORD'),
+
+            // 'url' => env('REDIS_URL'),
             'host' => env('REDIS_SENTINEL_HOST', 'my-redis-sentinel'),
             'password' => env('REDIS_PASSWORD', null),
             'port' => env('REDIS_SENTINEL_PORT', 26379),

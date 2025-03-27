@@ -15,6 +15,7 @@
         "laravel/framework": "^11.0",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.0",
+        "namoshek/laravel-redis-sentinel": "^0.8.0",
         "pusher/pusher-php-server": "^7.2",
         "symfony/psr-http-message-bridge": "^7.1",
         "twilio/sdk": "^8.3",
