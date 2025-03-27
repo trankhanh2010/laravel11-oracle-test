@@ -77,9 +77,9 @@ class TreatmentBedRoomListVViewController extends BaseApiCacheController
             $to = DateTime::createFromFormat('YmdHis', $this->addTimeTo ?? "");
             if ($from && $to) {
                 $diff = $from->diff($to)->days;
-                if ($diff > 180) {
-                    $this->errors[$this->addTimeFromName] = "Thời gian lọc quá 180 ngày";
-                    $this->errors[$this->addTimeToName] = "Thời gian lọc quá 180 ngày";
+                if ($diff > 365) {
+                    $this->errors[$this->addTimeFromName] = "Thời gian lọc quá 365 ngày";
+                    $this->errors[$this->addTimeToName] = "Thời gian lọc quá 365 ngày";
                 }
             }
         }

@@ -27,8 +27,8 @@ class TreatmentExecuteRoomListVViewService
         try {
             $data = $this->treatmentExecuteRoomListVViewRepository->applyJoins();
             $data = $this->treatmentExecuteRoomListVViewRepository->applyKeywordFilter($data, $this->params->keyword);
-            $data = $this->treatmentExecuteRoomListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-            $data = $this->treatmentExecuteRoomListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+            $data = $this->treatmentExecuteRoomListVViewRepository->applyIsActiveFilter($data, 1);
+            $data = $this->treatmentExecuteRoomListVViewRepository->applyIsDeleteFilter($data, 0);
             $data = $this->treatmentExecuteRoomListVViewRepository->applyTreatmentCodeFilter($data, $this->params->treatmentCode);
             $data = $this->treatmentExecuteRoomListVViewRepository->applyPatientCodeFilter($data, $this->params->patientCode);
             $data = $this->treatmentExecuteRoomListVViewRepository->applyExecuteRoomIdsFilter($data, $this->params->executeRoomIds);
@@ -64,8 +64,8 @@ class TreatmentExecuteRoomListVViewService
     {
         try {
             $data = $this->treatmentExecuteRoomListVViewRepository->applyJoins();
-            $data = $this->treatmentExecuteRoomListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-            $data = $this->treatmentExecuteRoomListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+            $data = $this->treatmentExecuteRoomListVViewRepository->applyIsActiveFilter($data, 1);
+            $data = $this->treatmentExecuteRoomListVViewRepository->applyIsDeleteFilter($data, 0);
             $data = $this->treatmentExecuteRoomListVViewRepository->applyTreatmentCodeFilter($data, $this->params->treatmentCode);
             $data = $this->treatmentExecuteRoomListVViewRepository->applyPatientCodeFilter($data, $this->params->patientCode);
             $data = $this->treatmentExecuteRoomListVViewRepository->applyExecuteRoomIdsFilter($data, $this->params->executeRoomIds);
@@ -101,8 +101,8 @@ class TreatmentExecuteRoomListVViewService
         try {
             $data = $this->treatmentExecuteRoomListVViewRepository->applyJoins()
                 ->where('id', $id);
-            $data = $this->treatmentExecuteRoomListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-            $data = $this->treatmentExecuteRoomListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+            $data = $this->treatmentExecuteRoomListVViewRepository->applyIsActiveFilter($data, 1);
+            $data = $this->treatmentExecuteRoomListVViewRepository->applyIsDeleteFilter($data, 0);
             $data = $data->first();
             return $data;
         } catch (\Throwable $e) {

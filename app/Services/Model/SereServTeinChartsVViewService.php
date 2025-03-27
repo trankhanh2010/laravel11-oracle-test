@@ -28,8 +28,8 @@ class SereServTeinChartsVViewService
             $data = Cache::remember($this->params->sereServTeinChartsVViewName . $this->params->param, 3600, function () {
                 $data = $this->sereServTeinChartsVViewRepository->applyJoins();
                 $data = $this->sereServTeinChartsVViewRepository->applyWithParam($data);
-                $data = $this->sereServTeinChartsVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-                $data = $this->sereServTeinChartsVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+                $data = $this->sereServTeinChartsVViewRepository->applyIsActiveFilter($data, 1);
+                $data = $this->sereServTeinChartsVViewRepository->applyIsDeleteFilter($data, 0);
                 $data = $this->sereServTeinChartsVViewRepository->applyPatientCodeFilter($data, $this->params->patientCode);
                 $data = $this->sereServTeinChartsVViewRepository->applyServiceTypeCodesFilter($data, $this->params->serviceTypeCodes);
                 $data = $this->sereServTeinChartsVViewRepository->applyServiceCodesFilter($data, $this->params->serviceCodes);
@@ -56,8 +56,8 @@ class SereServTeinChartsVViewService
         try {
             $data = $this->sereServTeinChartsVViewRepository->applyJoins()
                 ->where('id', $id);
-            $data = $this->sereServTeinChartsVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-            $data = $this->sereServTeinChartsVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+            $data = $this->sereServTeinChartsVViewRepository->applyIsActiveFilter($data, 1);
+            $data = $this->sereServTeinChartsVViewRepository->applyIsDeleteFilter($data, 0);
             $data = $data->first();
             return $data;
         } catch (\Throwable $e) {

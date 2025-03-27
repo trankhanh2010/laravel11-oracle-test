@@ -199,9 +199,9 @@ return [
             'momo_access_key' => env('MOMO_ACCESS_KEY'),
             'momo_secret_key' => env('MOMO_SECRET_KEY'),
             'momo_endpoint' => env('MOMO_ENDPOINT'),
-            'momo_endpoint_create_payment' => env('MOMO_ENDPOINT'). '/v2/gateway/api/create',
-            'momo_endpoint_check_transaction' => env('MOMO_ENDPOINT'). '/v2/gateway/api/query',
-            'momo_endpoint_refund_payment' => env('MOMO_ENDPOINT'). '/v2/gateway/api/refund',
+            'momo_endpoint_create_payment' => env('MOMO_ENDPOINT') . '/v2/gateway/api/create',
+            'momo_endpoint_check_transaction' => env('MOMO_ENDPOINT') . '/v2/gateway/api/query',
+            'momo_endpoint_refund_payment' => env('MOMO_ENDPOINT') . '/v2/gateway/api/refund',
 
             'momo_return_url_thanh_toan' => env('MOMO_RETURN_URL_THANH_TOAN'),
             'momo_notify_url_thanh_toan' => env('MOMO_NOTIFY_URL_THANH_TOAN'),
@@ -228,23 +228,23 @@ return [
         ],
         'speed_sms' => [
             'api_key' => env('SPEED_SMS_API_KEY'),
-            'sender' => env('SPEED_SMS_SENDER',""),
+            'sender' => env('SPEED_SMS_SENDER', ""),
         ],
         'otp' => [
-            'otp_max_requests_per_day' => env('OTP_MAX_REQUESTS_PER_DAY',20),
-            'otp_max_requests_verify_per_otp' => env('OTP_MAX_REQUESTS_VERIFY_PER_OTP',5),
-            'otp_ttl' => intval(env('OTP_TTL',5)),
+            'otp_max_requests_per_day' => env('OTP_MAX_REQUESTS_PER_DAY', 20),
+            'otp_max_requests_verify_per_otp' => env('OTP_MAX_REQUESTS_VERIFY_PER_OTP', 5),
+            'otp_ttl' => intval(env('OTP_TTL', 5)),
         ],
         'telegram' => [
-            'bot_token' => env('TELEGRAM_BOT_TOKEN',''),
-            'chanel_log_id' => env('TELEGRAM_CHANNEL_ID',''),
+            'bot_token' => env('TELEGRAM_BOT_TOKEN', ''),
+            'chanel_log_id' => env('TELEGRAM_CHANNEL_ID', ''),
         ],
         'zalo' => [
-            'zalo_app_id' => env('ZALO_APP_ID',''),
-            'zalo_app_secret_key' => env('ZALO_APP_SECRET_KEY',''),
+            'zalo_app_id' => env('ZALO_APP_ID', ''),
+            'zalo_app_secret_key' => env('ZALO_APP_SECRET_KEY', ''),
         ],
         'libre_office' => [
-            'libre_office_path' => env('LIBRE_OFFICE_PATH',''),
+            'libre_office_path' => env('LIBRE_OFFICE_PATH', ''),
         ],
     ],
 
@@ -276,30 +276,53 @@ return [
         'expire' => 86400, // Thời gian hết hạn mặc định cho cache (đơn vị: giây)
         'client' => env('REDIS_CLIENT', 'phpredis'),
 
+        // 'options' => [
+        //     'name' => env('APP_NAME', 'laravel'),  // Đặt tên cho kết nối
+        //     'cluster' => env('REDIS_CLUSTER', 'redis'),
+        //     // 'prefix' => env('REDIS_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_').'_database_'),
+        //     'prefix' => "",
+        //     'read_timeout' => 2.5
+        // ],
+
+        // 'default' => [
+        //     'url' => env('REDIS_URL'),
+        //     'host' => env('REDIS_HOST', '127.0.0.1'),
+        //     'password' => env('REDIS_PASSWORD', null),
+        //     'username' => env('REDIS_USERNAME', null),
+        //     'port' => env('REDIS_PORT', '6379'),
+        //     'database' => env('REDIS_DB', '0'),
+        // ],
+
+        // 'cache' => [
+        //     'url' => env('REDIS_URL'),
+        //     'host' => env('REDIS_HOST', '127.0.0.1'),
+        //     'password' => env('REDIS_PASSWORD', null),
+        //     'username' => env('REDIS_USERNAME', null),
+        //     'port' => env('REDIS_PORT', '6379'),
+        //     'database' => env('REDIS_CACHE_DB', '1'),
+        // ],
         'options' => [
-            'name' => env('APP_NAME', 'laravel'),  // Đặt tên cho kết nối
-            'cluster' => env('REDIS_CLUSTER', 'redis'),
-            // 'prefix' => env('REDIS_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_').'_database_'),
+            'name' => env('APP_NAME', 'laravel'),
+            'cluster' => false,
+            'replication' => 'sentinel',
+            'service' => env('REDIS_SENTINEL_SERVICE', 'my-master-sentine'),
             'prefix' => "",
-            'read_timeout' => 2.5
         ],
 
         'default' => [
             'url' => env('REDIS_URL'),
-            'host' => env('REDIS_HOST', '127.0.0.1'),
+            'host' => env('REDIS_SENTINEL_HOST', 'my-redis-sentinel'),
             'password' => env('REDIS_PASSWORD', null),
-            'username' => env('REDIS_USERNAME', null),
-            'port' => env('REDIS_PORT', '6379'),
-            'database' => env('REDIS_DB', '0'),
+            'port' => env('REDIS_SENTINEL_PORT', 26379),
+            'database' => 0,
         ],
 
         'cache' => [
             'url' => env('REDIS_URL'),
-            'host' => env('REDIS_HOST', '127.0.0.1'),
+            'host' => env('REDIS_SENTINEL_HOST', 'my-redis-sentinel'),
             'password' => env('REDIS_PASSWORD', null),
-            'username' => env('REDIS_USERNAME', null),
-            'port' => env('REDIS_PORT', '6379'),
-            'database' => env('REDIS_CACHE_DB', '1'),
+            'port' => env('REDIS_SENTINEL_PORT', 26379),
+            'database' => 1,
         ],
 
     ],

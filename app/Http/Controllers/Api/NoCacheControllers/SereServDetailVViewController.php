@@ -44,6 +44,7 @@ class SereServDetailVViewController extends BaseApiCacheController
             $this->appCreator, 
             $this->appModifier, 
             $this->time,
+            $this->serviceTypeCode,
         );
         $this->sereServDetailVViewService->withParams($this->sereServDetailVViewDTO);
     }

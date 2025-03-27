@@ -27,8 +27,8 @@ class DebateListVViewService
         try {
             $data = $this->debateListVViewRepository->applyJoins();
             $data = $this->debateListVViewRepository->applyKeywordFilter($data, $this->params->keyword);
-            $data = $this->debateListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-            $data = $this->debateListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+            $data = $this->debateListVViewRepository->applyIsActiveFilter($data, 1);
+            $data = $this->debateListVViewRepository->applyIsDeleteFilter($data, 0);
             $data = $this->debateListVViewRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
             $data = $this->debateListVViewRepository->applyTreatmentCodeFilter($data, $this->params->treatmentCode);
             $data = $this->debateListVViewRepository->applyDepartmentIdsFilter($data, $this->params->departmentIds);
@@ -45,8 +45,8 @@ class DebateListVViewService
     {
         try {
             $data = $this->debateListVViewRepository->applyJoins();
-            $data = $this->debateListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-            $data = $this->debateListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+            $data = $this->debateListVViewRepository->applyIsActiveFilter($data, 1);
+            $data = $this->debateListVViewRepository->applyIsDeleteFilter($data, 0);
             $data = $this->debateListVViewRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
             $data = $this->debateListVViewRepository->applyTreatmentCodeFilter($data, $this->params->treatmentCode);
             $data = $this->debateListVViewRepository->applyDepartmentIdsFilter($data, $this->params->departmentIds);
@@ -64,8 +64,8 @@ class DebateListVViewService
         try {
             $data = $this->debateListVViewRepository->applyJoins()
                 ->where('v_his_debate_list.id', $id);
-            $data = $this->debateListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-            $data = $this->debateListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+            $data = $this->debateListVViewRepository->applyIsActiveFilter($data, 1);
+            $data = $this->debateListVViewRepository->applyIsDeleteFilter($data, 0);
             $data = $data->first();
             return $data;
         } catch (\Throwable $e) {

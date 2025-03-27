@@ -27,8 +27,8 @@ class SereServTeinVViewService
         try {
             $data = $this->sereServTeinVViewRepository->applyJoins();
             $data = $this->sereServTeinVViewRepository->applyKeywordFilter($data, $this->params->keyword);
-            $data = $this->sereServTeinVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-            $data = $this->sereServTeinVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+            $data = $this->sereServTeinVViewRepository->applyIsActiveFilter($data, 1);
+            $data = $this->sereServTeinVViewRepository->applyIsDeleteFilter($data, 0);
             $data = $this->sereServTeinVViewRepository->applySereServIdsFilter($data, $this->params->sereServIds);
             $count = $data->count();
             $data = $this->sereServTeinVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
@@ -42,8 +42,8 @@ class SereServTeinVViewService
     {
         try {
             $data = $this->sereServTeinVViewRepository->applyJoins();
-            $data = $this->sereServTeinVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-            $data = $this->sereServTeinVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+            $data = $this->sereServTeinVViewRepository->applyIsActiveFilter($data, 1);
+            $data = $this->sereServTeinVViewRepository->applyIsDeleteFilter($data, 0);
             $data = $this->sereServTeinVViewRepository->applySereServIdsFilter($data, $this->params->sereServIds);
             $count = $data->count();
             $data = $this->sereServTeinVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
@@ -58,8 +58,8 @@ class SereServTeinVViewService
         try {
             $data = $this->sereServTeinVViewRepository->applyJoins()
                 ->where('v_his_sere_serv_tein.id', $id);
-            $data = $this->sereServTeinVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-            $data = $this->sereServTeinVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+            $data = $this->sereServTeinVViewRepository->applyIsActiveFilter($data, 1);
+            $data = $this->sereServTeinVViewRepository->applyIsDeleteFilter($data, 0);
             $data = $data->first();
             return $data;
         } catch (\Throwable $e) {

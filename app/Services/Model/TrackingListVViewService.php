@@ -27,8 +27,8 @@ class TrackingListVViewService
         try {
             $data = $this->trackingListVViewRepository->applyJoins();
             $data = $this->trackingListVViewRepository->applyKeywordFilter($data, $this->params->keyword);
-            $data = $this->trackingListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-            $data = $this->trackingListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+            $data = $this->trackingListVViewRepository->applyIsActiveFilter($data, 1);
+            $data = $this->trackingListVViewRepository->applyIsDeleteFilter($data, 0);
             $data = $this->trackingListVViewRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
             $count = $data->count();
             $data = $this->trackingListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
@@ -44,8 +44,8 @@ class TrackingListVViewService
     {
         try {
             $data = $this->trackingListVViewRepository->applyJoins();
-            $data = $this->trackingListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-            $data = $this->trackingListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+            $data = $this->trackingListVViewRepository->applyIsActiveFilter($data, 1);
+            $data = $this->trackingListVViewRepository->applyIsDeleteFilter($data, 0);
             $data = $this->trackingListVViewRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
             $count = $data->count();
             $data = $this->trackingListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
@@ -62,8 +62,8 @@ class TrackingListVViewService
         try {
             $data = $this->trackingListVViewRepository->applyJoins()
                 ->where('id', $id);
-            $data = $this->trackingListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-            $data = $this->trackingListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+            $data = $this->trackingListVViewRepository->applyIsActiveFilter($data, 1);
+            $data = $this->trackingListVViewRepository->applyIsDeleteFilter($data, 0);
             $data = $this->trackingListVViewRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
             $data = $data->first();
             return $data;

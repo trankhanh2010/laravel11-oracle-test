@@ -25,8 +25,8 @@ class SereServDetailVViewService
     public function handleDataBaseSearch()
     {
         try {
-            $data = $this->sereServDetailVViewRepository->applyJoins();
-            $data = $this->sereServDetailVViewRepository->applyWithParam($data);
+            $data = $this->sereServDetailVViewRepository->applyJoins($this->params->serviceTypeCode);
+            $data = $this->sereServDetailVViewRepository->applyWithParam($data, $this->params->serviceTypeCode);
             $data = $this->sereServDetailVViewRepository->applyKeywordFilter($data, $this->params->keyword);
             $data = $this->sereServDetailVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
             $data = $this->sereServDetailVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
@@ -41,8 +41,8 @@ class SereServDetailVViewService
     public function handleDataBaseGetAll()
     {
         try {
-            $data = $this->sereServDetailVViewRepository->applyJoins();
-            $data = $this->sereServDetailVViewRepository->applyWithParam($data);
+            $data = $this->sereServDetailVViewRepository->applyJoins($this->params->serviceTypeCode);
+            $data = $this->sereServDetailVViewRepository->applyWithParam($data, $this->params->serviceTypeCode);
             $data = $this->sereServDetailVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
             $data = $this->sereServDetailVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
             $count = $data->count();
@@ -56,9 +56,9 @@ class SereServDetailVViewService
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $data = $this->sereServDetailVViewRepository->applyJoins()
+            $data = $this->sereServDetailVViewRepository->applyJoins($this->params->serviceTypeCode)
                 ->where('id', $id);
-                $data = $this->sereServDetailVViewRepository->applyWithParam($data);
+                $data = $this->sereServDetailVViewRepository->applyWithParam($data, $this->params->serviceTypeCode);
             $data = $this->sereServDetailVViewRepository->applyIsActiveFilter($data, 1);
             $data = $this->sereServDetailVViewRepository->applyIsDeleteFilter($data, 0);
             $data = $data->first();

@@ -14,7 +14,10 @@ class ServiceReq extends Model
     protected $table = 'his_service_req';
     protected $fillable = [
     ];
-
+    public function dhst()
+    {
+        return $this->belongsTo(Dhst::class);
+    }
     public function treatment()
     {
         return $this->belongsTo(Treatment::class, 'treatment_id');

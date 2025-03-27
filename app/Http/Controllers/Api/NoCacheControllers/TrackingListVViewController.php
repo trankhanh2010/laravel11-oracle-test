@@ -16,10 +16,9 @@ class TrackingListVViewController extends BaseApiCacheController
 {
     protected $trackingListVViewService;
     protected $trackingListVViewDTO;
-    public function __construct(Request $request, ElasticsearchService $elasticSearchService, TrackingListVViewService $trackingListVViewService, TrackingListVView $trackingListVView)
+    public function __construct(Request $request, TrackingListVViewService $trackingListVViewService, TrackingListVView $trackingListVView)
     {
         parent::__construct($request); // Gọi constructor của BaseController
-        $this->elasticSearchService = $elasticSearchService;
         $this->trackingListVViewService = $trackingListVViewService;
         $this->trackingListVView = $trackingListVView;
         // Kiểm tra tên trường trong bảng

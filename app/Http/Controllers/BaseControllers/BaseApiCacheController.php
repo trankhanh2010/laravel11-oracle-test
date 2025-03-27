@@ -104,6 +104,8 @@ class BaseApiCacheController extends Controller
     protected $patientCodeName = 'PatientCode';
     protected $executeRoomCode;
     protected $executeRoomCodeName = 'ExecuteRoomCode';
+    protected $serviceTypeCode;
+    protected $serviceTypeCodeName = 'ServiceTypeCode';
     protected $departmentCode;
     protected $departmentCodeName = 'DepartmentCode';
     protected $treatmentTypeIds;
@@ -1067,6 +1069,14 @@ class BaseApiCacheController extends Controller
             if (!is_string($this->transactionCode)) {
                 $this->errors[$this->transactionCodeName] = $this->messFormat;
                 $this->transactionCode = null;
+            }
+        }
+
+        $this->serviceTypeCode = $this->paramRequest['ApiData']['ServiceTypeCode'] ?? null;
+        if ($this->serviceTypeCode !== null) {
+            if (!is_string($this->serviceTypeCode)) {
+                $this->errors[$this->serviceTypeCodeName] = $this->messFormat;
+                $this->serviceTypeCode = null;
             }
         }
 
