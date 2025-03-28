@@ -8,6 +8,7 @@ use App\Events\Elastic\ServicePaty\InsertServicePatyIndex;
 use App\Events\Elastic\DeleteIndex;
 use Illuminate\Support\Facades\Cache;
 use App\Repositories\ServicePatyRepository;
+use Illuminate\Support\Facades\Redis;
 
 class ServicePatyService
 {
@@ -44,7 +45,9 @@ class ServicePatyService
     public function handleDataBaseGetAll()
     {
         try {
-            $data = Cache::remember($this->params->servicePatyName . '_start_' . $this->params->start . '_limit_' . $this->params->limit . $this->params->orderByString . '_is_active_' . $this->params->isActive . '_effective_' . $this->params->effective . '_package_id_' . $this->params->packageId . '_service_id_' . $this->params->serviceId . '_patient_type_ids_' . arrayToCustomStringNotKey($this->params->patientTypeIds ?? []) . '_service_type_ids_' . arrayToCustomStringNotKey($this->params->serviceTypeIds ?? []) . '_get_all_' . $this->params->getAll, $this->params->time, function () {
+            $cacheKey = $this->params->servicePatyName .'_'. $this->params->param;
+            $cacheKeySet = "cache_keys:" . $this->params->servicePatyName; // Set để lưu danh sách key
+            $data = Cache::remember($cacheKey, $this->params->time, function () {
                 $data = $this->servicePatyRepository->applyJoins();
                 $data = $this->servicePatyRepository->applyIsActiveFilter($data, $this->params->isActive);
                 $data = $this->servicePatyRepository->applyServiceTypeIdsFilter($data, $this->params->serviceTypeIds);
@@ -57,6 +60,8 @@ class ServicePatyService
                 $data = $this->servicePatyRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
                 return ['data' => $data, 'count' => $count];
             });
+            // Lưu key vào Redis Set để dễ xóa sau này
+            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
             return $data;
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['service_paty'], $e);

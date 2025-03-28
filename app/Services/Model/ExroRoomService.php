@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Cache;
 use App\Repositories\ExroRoomRepository;
 use App\Repositories\RoomRepository;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Redis;
 
 class ExroRoomService
 {
@@ -48,7 +49,9 @@ class ExroRoomService
     public function handleDataBaseGetAll()
     {
         try {
-            $data = Cache::remember($this->params->exroRoomName . '_start_' . $this->params->start . '_limit_' . $this->params->limit . $this->params->orderByString . '_is_active_' . $this->params->isActive . '_room_id_' . $this->params->roomId . '_execute_room_id_' . $this->params->executeRoomId . '_get_all_' . $this->params->getAll, $this->params->time, function () {
+            $cacheKey = $this->params->exroRoomName .'_'. $this->params->param;
+            $cacheKeySet = "cache_keys:" . $this->params->exroRoomName; // Set để lưu danh sách key
+            $data = Cache::remember($cacheKey, $this->params->time, function () {
                 $data = $this->exroRoomRepository->applyJoins();
                 $data = $this->exroRoomRepository->applyIsActiveFilter($data, $this->params->isActive);
                 $data = $this->exroRoomRepository->applyExecuteRoomIdFilter($data, $this->params->executeRoomId);
@@ -58,6 +61,8 @@ class ExroRoomService
                 $data = $this->exroRoomRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
                 return ['data' => $data, 'count' => $count];
             });
+            // Lưu key vào Redis Set để dễ xóa sau này
+            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
             return $data;
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['exro_room'], $e);

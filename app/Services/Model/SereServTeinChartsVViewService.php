@@ -8,6 +8,7 @@ use App\Events\Elastic\SereServTeinChartsVView\InsertSereServTeinChartsVViewInde
 use App\Events\Elastic\DeleteIndex;
 use Illuminate\Support\Facades\Cache;
 use App\Repositories\SereServTeinChartsVViewRepository;
+use Illuminate\Support\Facades\Redis;
 
 class SereServTeinChartsVViewService
 {
@@ -25,7 +26,9 @@ class SereServTeinChartsVViewService
     public function handleDataBaseGetAll()
     {
         try {
-            $data = Cache::remember($this->params->sereServTeinChartsVViewName . $this->params->param, 3600, function () {
+            $cacheKey = $this->params->sereServTeinChartsVViewName .'_'. $this->params->param;
+            $cacheKeySet = "cache_keys:" . $this->params->sereServTeinChartsVViewName; // Set để lưu danh sách key
+            $data = Cache::remember($cacheKey, 3600, function () {
                 $data = $this->sereServTeinChartsVViewRepository->applyJoins();
                 $data = $this->sereServTeinChartsVViewRepository->applyWithParam($data);
                 $data = $this->sereServTeinChartsVViewRepository->applyIsActiveFilter($data, 1);
@@ -45,6 +48,8 @@ class SereServTeinChartsVViewService
                 $data = $this->sereServTeinChartsVViewRepository->applyGroupByField($data,$this->params->groupBy);
                 return ['data' => $data, 'count' => $count];
             });
+            // Lưu key vào Redis Set để dễ xóa sau này
+            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
 
             return $data;
         } catch (\Throwable $e) {

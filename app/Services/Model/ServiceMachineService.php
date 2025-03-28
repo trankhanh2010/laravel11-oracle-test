@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Cache;
 use App\Repositories\ServiceMachineRepository;
 use App\Repositories\ServiceRepository;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Redis;
 
 class ServiceMachineService
 {
@@ -48,7 +49,9 @@ class ServiceMachineService
     public function handleDataBaseGetAll()
     {
         try {
-            $data = Cache::remember($this->params->serviceMachineName . '_start_' . $this->params->start . '_limit_' . $this->params->limit . $this->params->orderByString . '_is_active_' . $this->params->isActive . '_service_id_' . $this->params->serviceId . '_machine_id_' . $this->params->machineId . '_get_all_' . $this->params->getAll, $this->params->time, function () {
+            $cacheKey = $this->params->serviceMachineName .'_'. $this->params->param;
+            $cacheKeySet = "cache_keys:" . $this->params->serviceMachineName; // Set để lưu danh sách key
+            $data = Cache::remember($cacheKey, $this->params->time, function () {
                 $data = $this->serviceMachineRepository->applyJoins();
                 $data = $this->serviceMachineRepository->applyIsActiveFilter($data, $this->params->isActive);
                 $data = $this->serviceMachineRepository->applyMachineIdFilter($data, $this->params->machineId);
@@ -58,6 +61,8 @@ class ServiceMachineService
                 $data = $this->serviceMachineRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
                 return ['data' => $data, 'count' => $count];
             });
+            // Lưu key vào Redis Set để dễ xóa sau này
+            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
             return $data;
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['service_machine'], $e);

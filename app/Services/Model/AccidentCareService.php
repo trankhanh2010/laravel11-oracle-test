@@ -61,13 +61,17 @@ class AccidentCareService
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $data = Cache::remember($this->params->accidentCareName . '_' . $id . '_is_active_' . $this->params->isActive, $this->params->time, function () use ($id) {
+            $cacheKey = $this->params->accidentCareName .'_'.$id.'_'. $this->params->param;
+            $cacheKeySet = "cache_keys:" . $this->params->accidentCareName; // Set để lưu danh sách key
+            $data = Cache::remember($cacheKey, $this->params->time, function () use($id){
                 $data = $this->accidentCareRepository->applyJoins()
                     ->where('his_accident_care.id', $id);
                 $data = $this->accidentCareRepository->applyIsActiveFilter($data, $this->params->isActive);
                 $data = $data->first();
                 return $data;
             });
+            // Lưu key vào Redis Set để dễ xóa sau này
+            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
             return $data;
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['accident_care'], $e);

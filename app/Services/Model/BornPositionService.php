@@ -8,6 +8,7 @@ use App\Events\Elastic\BornPosition\InsertBornPositionIndex;
 use App\Events\Elastic\DeleteIndex;
 use Illuminate\Support\Facades\Cache;
 use App\Repositories\BornPositionRepository;
+use Illuminate\Support\Facades\Redis;
 
 class BornPositionService 
 {
@@ -39,7 +40,9 @@ class BornPositionService
     public function handleDataBaseGetAll()
     {
         try {
-            $data = Cache::remember($this->params->bornPositionName . '_start_' . $this->params->start . '_limit_' . $this->params->limit . $this->params->orderByString . '_is_active_' . $this->params->isActive . '_get_all_' . $this->params->getAll, $this->params->time, function (){
+            $cacheKey = $this->params->bornPositionName .'_'. $this->params->param;
+            $cacheKeySet = "cache_keys:" . $this->params->bornPositionName; // Set để lưu danh sách key
+            $data = Cache::remember($cacheKey, $this->params->time, function () {
                 $data = $this->bornPositionRepository->applyJoins();
                 $data = $this->bornPositionRepository->applyIsActiveFilter($data, $this->params->isActive);
                 $count = $data->count();
@@ -47,6 +50,8 @@ class BornPositionService
                 $data = $this->bornPositionRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
                 return ['data' => $data, 'count' => $count];
             });
+            // Lưu key vào Redis Set để dễ xóa sau này
+            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
             return $data;
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['born_position'], $e);
@@ -55,13 +60,17 @@ class BornPositionService
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $data = Cache::remember($this->params->bornPositionName . '_' . $id . '_is_active_' . $this->params->isActive, $this->params->time, function () use ($id){
+            $cacheKey = $this->params->bornPositionName .'_'.$id.'_'. $this->params->param;
+            $cacheKeySet = "cache_keys:" . $this->params->bornPositionName; // Set để lưu danh sách key
+            $data = Cache::remember($cacheKey, $this->params->time, function () use($id){
                 $data = $this->bornPositionRepository->applyJoins()
                     ->where('his_born_position.id', $id);
                 $data = $this->bornPositionRepository->applyIsActiveFilter($data, $this->params->isActive);
                 $data = $data->first();
                 return $data;
             });
+            // Lưu key vào Redis Set để dễ xóa sau này
+            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
             return $data;
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['born_position'], $e);

@@ -8,6 +8,7 @@ use App\Events\Elastic\BodyPart\InsertBodyPartIndex;
 use App\Events\Elastic\DeleteIndex;
 use Illuminate\Support\Facades\Cache;
 use App\Repositories\BodyPartRepository;
+use Illuminate\Support\Facades\Redis;
 
 class BodyPartService 
 {
@@ -39,7 +40,9 @@ class BodyPartService
     public function handleDataBaseGetAll()
     {
         try {
-            $data = Cache::remember($this->params->bodyPartName . '_start_' . $this->params->start . '_limit_' . $this->params->limit . $this->params->orderByString . '_is_active_' . $this->params->isActive . '_get_all_' . $this->params->getAll, $this->params->time, function (){
+            $cacheKey = $this->params->bodyPartName .'_'. $this->params->param;
+            $cacheKeySet = "cache_keys:" . $this->params->bodyPartName; // Set để lưu danh sách key
+            $data = Cache::remember($cacheKey, $this->params->time, function () {
                 $data = $this->bodyPartRepository->applyJoins();
                 $data = $this->bodyPartRepository->applyIsActiveFilter($data, $this->params->isActive);
                 $count = $data->count();
@@ -47,6 +50,8 @@ class BodyPartService
                 $data = $this->bodyPartRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
                 return ['data' => $data, 'count' => $count];
             });
+            // Lưu key vào Redis Set để dễ xóa sau này
+            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
             return $data;
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['body_part'], $e);
@@ -55,13 +60,17 @@ class BodyPartService
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $data = Cache::remember($this->params->bodyPartName . '_' . $id . '_is_active_' . $this->params->isActive, $this->params->time, function () use ($id){
+            $cacheKey = $this->params->bodyPartName .'_'.$id.'_'. $this->params->param;
+            $cacheKeySet = "cache_keys:" . $this->params->bodyPartName; // Set để lưu danh sách key
+            $data = Cache::remember($cacheKey, $this->params->time, function () use($id){
                 $data = $this->bodyPartRepository->applyJoins()
                     ->where('his_body_part.id', $id);
                 $data = $this->bodyPartRepository->applyIsActiveFilter($data, $this->params->isActive);
                 $data = $data->first();
                 return $data;
             });
+            // Lưu key vào Redis Set để dễ xóa sau này
+            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
             return $data;
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['body_part'], $e);

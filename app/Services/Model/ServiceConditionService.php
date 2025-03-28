@@ -8,6 +8,7 @@ use App\Events\Elastic\ServiceCondition\InsertServiceConditionIndex;
 use App\Events\Elastic\DeleteIndex;
 use Illuminate\Support\Facades\Cache;
 use App\Repositories\ServiceConditionRepository;
+use Illuminate\Support\Facades\Redis;
 
 class ServiceConditionService 
 {
@@ -40,7 +41,9 @@ class ServiceConditionService
     public function handleDataBaseGetAll()
     {
         try {
-            $data = Cache::remember($this->params->serviceConditionName . '_start_' . $this->params->start . '_limit_' . $this->params->limit . $this->params->orderByString . '_is_active_' . $this->params->isActive . '_service_id_' .$this->params->serviceId. '_get_all_' . $this->params->getAll, $this->params->time, function (){
+            $cacheKey = $this->params->serviceConditionName .'_'. $this->params->param;
+            $cacheKeySet = "cache_keys:" . $this->params->serviceConditionName; // Set để lưu danh sách key
+            $data = Cache::remember($cacheKey, $this->params->time, function () {
                 $data = $this->serviceConditionRepository->applyJoins();
                 $data = $this->serviceConditionRepository->applyIsActiveFilter($data, $this->params->isActive);
                 $data = $this->serviceConditionRepository->applyServiceIdFilter($data, $this->params->serviceId);
@@ -49,6 +52,8 @@ class ServiceConditionService
                 $data = $this->serviceConditionRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
                 return ['data' => $data, 'count' => $count];
             });
+            // Lưu key vào Redis Set để dễ xóa sau này
+            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
             return $data;
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['service_condition'], $e);

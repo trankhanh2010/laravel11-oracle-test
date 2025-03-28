@@ -75,6 +75,7 @@ class TreatmentFeeDetailVViewService
                                 $data->treatment_code,
                                 $item->transaction_type_code,
                                 $item->deposit_req_code,
+                                $this->params->param,
                             );
                             $this->treatmentFeePaymentService->withParams($this->treatmentFeePaymentDTO);
     

@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Cache;
 use App\Repositories\MestPatientTypeRepository;
 use App\Repositories\MediStockRepository;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Redis;
 
 class MestPatientTypeService
 {
@@ -48,7 +49,9 @@ class MestPatientTypeService
     public function handleDataBaseGetAll()
     {
         try {
-            $data = Cache::remember($this->params->mestPatientTypeName . '_start_' . $this->params->start . '_limit_' . $this->params->limit . $this->params->orderByString . '_is_active_' . $this->params->isActive . '_medi_stock_id_' . $this->params->mediStockId . '_patient_type_id_' . $this->params->patientTypeId . '_get_all_' . $this->params->getAll, $this->params->time, function () {
+            $cacheKey = $this->params->mestPatientTypeName .'_'. $this->params->param;
+            $cacheKeySet = "cache_keys:" . $this->params->mestPatientTypeName; // Set để lưu danh sách key
+            $data = Cache::remember($cacheKey, $this->params->time, function () {
                 $data = $this->mestPatientTypeRepository->applyJoins();
                 $data = $this->mestPatientTypeRepository->applyIsActiveFilter($data, $this->params->isActive);
                 $data = $this->mestPatientTypeRepository->applyPatientTypeIdFilter($data, $this->params->patientTypeId);
@@ -58,6 +61,8 @@ class MestPatientTypeService
                 $data = $this->mestPatientTypeRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
                 return ['data' => $data, 'count' => $count];
             });
+            // Lưu key vào Redis Set để dễ xóa sau này
+            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
             return $data;
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['mest_patient_type'], $e);

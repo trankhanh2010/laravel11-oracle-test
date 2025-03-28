@@ -8,6 +8,7 @@ use App\Events\Elastic\TransactionType\InsertTransactionTypeIndex;
 use App\Events\Elastic\DeleteIndex;
 use Illuminate\Support\Facades\Cache;
 use App\Repositories\TransactionTypeRepository;
+use Illuminate\Support\Facades\Redis;
 
 class TransactionTypeService 
 {
@@ -39,7 +40,9 @@ class TransactionTypeService
     public function handleDataBaseGetAll()
     {
         try {
-            $data = Cache::remember($this->params->transactionTypeName . '_start_' . $this->params->start . '_limit_' . $this->params->limit . $this->params->orderByString . '_is_active_' . $this->params->isActive . '_get_all_' . $this->params->getAll, $this->params->time, function (){
+            $cacheKey = $this->params->transactionTypeName .'_'. $this->params->param;
+            $cacheKeySet = "cache_keys:" . $this->params->transactionTypeName; // Set để lưu danh sách key
+            $data = Cache::remember($cacheKey, $this->params->time, function () {
                 $data = $this->transactionTypeRepository->applyJoins();
                 $data = $this->transactionTypeRepository->applyIsActiveFilter($data, $this->params->isActive);
                 $count = $data->count();
@@ -47,6 +50,8 @@ class TransactionTypeService
                 $data = $this->transactionTypeRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
                 return ['data' => $data, 'count' => $count];
             });
+            // Lưu key vào Redis Set để dễ xóa sau này
+            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
             return $data;
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['transaction_type'], $e);

@@ -8,6 +8,7 @@ use App\Events\Elastic\ServiceType\InsertServiceTypeIndex;
 use App\Events\Elastic\DeleteIndex;
 use Illuminate\Support\Facades\Cache;
 use App\Repositories\ServiceTypeRepository;
+use Illuminate\Support\Facades\Redis;
 
 class ServiceTypeService 
 {
@@ -39,7 +40,9 @@ class ServiceTypeService
     public function handleDataBaseGetAll()
     {
         try {
-            $data = Cache::remember($this->params->serviceTypeName .$this->params->param, $this->params->time, function (){
+            $cacheKey = $this->params->serviceTypeName .'_'. $this->params->param;
+            $cacheKeySet = "cache_keys:" . $this->params->serviceTypeName; // Set để lưu danh sách key
+            $data = Cache::remember($cacheKey, $this->params->time, function () {
                 $data = $this->serviceTypeRepository->applyJoins();
                 $data = $this->serviceTypeRepository->applyIsActiveFilter($data, $this->params->isActive);
                 $data = $this->serviceTypeRepository->applyTabFilter($data, $this->params->tab);
@@ -48,6 +51,8 @@ class ServiceTypeService
                 $data = $this->serviceTypeRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
                 return ['data' => $data, 'count' => $count];
             });
+            // Lưu key vào Redis Set để dễ xóa sau này
+            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
             return $data;
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['service_type'], $e);

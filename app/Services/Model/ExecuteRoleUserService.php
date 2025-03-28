@@ -11,6 +11,7 @@ use App\Repositories\ExecuteRoleRepository;
 use Illuminate\Support\Facades\Cache;
 use App\Repositories\ExecuteRoleUserRepository;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Redis;
 
 class ExecuteRoleUserService
 {
@@ -48,7 +49,9 @@ class ExecuteRoleUserService
     public function handleDataBaseGetAll()
     {
         try {
-            $data = Cache::remember($this->params->executeRoleUserName . '_start_' . $this->params->start . '_limit_' . $this->params->limit . $this->params->orderByString . '_is_active_' . $this->params->isActive . '_loginname_' . $this->params->loginname . '_execute_role_id_' . $this->params->executeRoleId . '_get_all_' . $this->params->getAll, $this->params->time, function () {
+            $cacheKey = $this->params->executeRoleUserName .'_'. $this->params->param;
+            $cacheKeySet = "cache_keys:" . $this->params->executeRoleUserName; // Set để lưu danh sách key
+            $data = Cache::remember($cacheKey, $this->params->time, function () {
                 $data = $this->executeRoleUserRepository->applyJoins();
                 $data = $this->executeRoleUserRepository->applyIsActiveFilter($data, $this->params->isActive);
                 $data = $this->executeRoleUserRepository->applyLoginnameFilter($data, $this->params->loginname);
@@ -58,6 +61,8 @@ class ExecuteRoleUserService
                 $data = $this->executeRoleUserRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
                 return ['data' => $data, 'count' => $count];
             });
+            // Lưu key vào Redis Set để dễ xóa sau này
+            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
             return $data;
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['execute_role_user'], $e);

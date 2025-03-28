@@ -8,6 +8,7 @@ use App\Events\Elastic\PtttCondition\InsertPtttConditionIndex;
 use App\Events\Elastic\DeleteIndex;
 use Illuminate\Support\Facades\Cache;
 use App\Repositories\PtttConditionRepository;
+use Illuminate\Support\Facades\Redis;
 
 class PtttConditionService 
 {
@@ -69,7 +70,9 @@ class PtttConditionService
     public function handleDataBaseGetAll()
     {
         try {
-            $data = Cache::remember($this->params->ptttConditionName . '_start_' . $this->params->start . '_limit_' . $this->params->limit . $this->params->orderByString . '_is_active_' . $this->params->isActive . '_get_all_' . $this->params->getAll, $this->params->time, function (){
+            $cacheKey = $this->params->ptttConditionName .'_'. $this->params->param;
+            $cacheKeySet = "cache_keys:" . $this->params->ptttConditionName; // Set để lưu danh sách key
+            $data = Cache::remember($cacheKey, $this->params->time, function () {
                 $data = $this->ptttConditionRepository->applyJoins();
                 $data = $this->ptttConditionRepository->applyIsActiveFilter($data, $this->params->isActive);
                 $count = $data->count();
@@ -77,6 +80,8 @@ class PtttConditionService
                 $data = $this->ptttConditionRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
                 return ['data' => $data, 'count' => $count];
             });
+            // Lưu key vào Redis Set để dễ xóa sau này
+            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
             return $data;
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['pttt_condition'], $e);

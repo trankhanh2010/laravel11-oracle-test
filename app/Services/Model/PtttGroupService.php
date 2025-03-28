@@ -8,6 +8,7 @@ use App\Events\Elastic\PtttGroup\InsertPtttGroupIndex;
 use App\Events\Elastic\DeleteIndex;
 use Illuminate\Support\Facades\Cache;
 use App\Repositories\PtttGroupRepository;
+use Illuminate\Support\Facades\Redis;
 
 class PtttGroupService 
 {
@@ -40,7 +41,9 @@ class PtttGroupService
     public function handleDataBaseGetAll()
     {
         try {
-            $data = Cache::remember($this->params->ptttGroupName . '_start_' . $this->params->start . '_limit_' . $this->params->limit . $this->params->orderByString . '_is_active_' . $this->params->isActive . '_get_all_' . $this->params->getAll, $this->params->time, function (){
+            $cacheKey = $this->params->ptttGroupName .'_'. $this->params->param;
+            $cacheKeySet = "cache_keys:" . $this->params->ptttGroupName; // Set để lưu danh sách key
+            $data = Cache::remember($cacheKey, $this->params->time, function () {
                 $data = $this->ptttGroupRepository->applyJoins();
                 $data = $this->ptttGroupRepository->applyWith($data);
                 $data = $this->ptttGroupRepository->applyIsActiveFilter($data, $this->params->isActive);
@@ -49,6 +52,8 @@ class PtttGroupService
                 $data = $this->ptttGroupRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
                 return ['data' => $data, 'count' => $count];
             });
+            // Lưu key vào Redis Set để dễ xóa sau này
+            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
             return $data;
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['pttt_group'], $e);

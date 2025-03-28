@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Cache;
 use App\Repositories\MedicineTypeAcinRepository;
 use App\Repositories\MedicineTypeRepository;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Redis;
 
 class MedicineTypeAcinService
 {
@@ -48,7 +49,9 @@ class MedicineTypeAcinService
     public function handleDataBaseGetAll()
     {
         try {
-            $data = Cache::remember($this->params->medicineTypeAcinName . '_start_' . $this->params->start . '_limit_' . $this->params->limit . $this->params->orderByString . '_is_active_' . $this->params->isActive . '_medicine_type_id_' . $this->params->medicineTypeId . '_active_ingredient_id_' . $this->params->activeIngredientId . '_get_all_' . $this->params->getAll, $this->params->time, function () {
+            $cacheKey = $this->params->medicineTypeAcinName .'_'. $this->params->param;
+            $cacheKeySet = "cache_keys:" . $this->params->medicineTypeAcinName; // Set để lưu danh sách key
+            $data = Cache::remember($cacheKey, $this->params->time, function () {
                 $data = $this->medicineTypeAcinRepository->applyJoins();
                 $data = $this->medicineTypeAcinRepository->applyIsActiveFilter($data, $this->params->isActive);
                 $data = $this->medicineTypeAcinRepository->applyActiveIngredientIdFilter($data, $this->params->activeIngredientId);
@@ -58,6 +61,8 @@ class MedicineTypeAcinService
                 $data = $this->medicineTypeAcinRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
                 return ['data' => $data, 'count' => $count];
             });
+            // Lưu key vào Redis Set để dễ xóa sau này
+            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
             return $data;
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['medicine_type_acin'], $e);

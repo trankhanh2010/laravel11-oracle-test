@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Cache;
 use App\Repositories\MediStockMetyRepository;
 use App\Repositories\MediStockRepository;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Redis;
 
 class MediStockMetyService
 {
@@ -48,7 +49,9 @@ class MediStockMetyService
     public function handleDataBaseGetAll()
     {
         try {
-            $data = Cache::remember($this->params->mediStockMetyName . '_start_' . $this->params->start . '_limit_' . $this->params->limit . $this->params->orderByString . '_is_active_' . $this->params->isActive . '_medi_stock_id_' . $this->params->mediStockId . '_medicine_type_id_' . $this->params->medicineTypeId . '_get_all_' . $this->params->getAll, $this->params->time, function () {
+            $cacheKey = $this->params->mediStockMetyName .'_'. $this->params->param;
+            $cacheKeySet = "cache_keys:" . $this->params->mediStockMetyName; // Set để lưu danh sách key
+            $data = Cache::remember($cacheKey, $this->params->time, function () {
                 $data = $this->mediStockMetyRepository->applyJoins();
                 $data = $this->mediStockMetyRepository->applyIsActiveFilter($data, $this->params->isActive);
                 $data = $this->mediStockMetyRepository->applyMedicineTypeIdFilter($data, $this->params->medicineTypeId);
@@ -58,6 +61,8 @@ class MediStockMetyService
                 $data = $this->mediStockMetyRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
                 return ['data' => $data, 'count' => $count];
             });
+            // Lưu key vào Redis Set để dễ xóa sau này
+            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
             return $data;
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['medi_stock_mety'], $e);
