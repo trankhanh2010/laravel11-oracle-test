@@ -17,6 +17,7 @@ class AwarenessDTO
     public $appCreator;
     public $appModifier;
     public $time;
+    public $param;
     public function __construct(
         $awarenessName,
         $keyword, 
@@ -31,6 +32,7 @@ class AwarenessDTO
         $appCreator,
         $appModifier,
         $time,
+        $param,
         )
     {
         $this->awarenessName = $awarenessName;
@@ -46,5 +48,6 @@ class AwarenessDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
+        $this->param = $param;
     }
 }

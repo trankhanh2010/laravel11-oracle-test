@@ -19,6 +19,7 @@ class MedicineTypeAcinDTO
     public $time;
     public $medicineTypeId;
     public $activeIngredientId;
+    public $param;
     public function __construct(
         $medicineTypeAcinName,
         $keyword, 
@@ -34,7 +35,8 @@ class MedicineTypeAcinDTO
         $appModifier,
         $time,
         $medicineTypeId,
-        $activeIngredientId
+        $activeIngredientId,
+        $param,
         )
     {
         $this->medicineTypeAcinName = $medicineTypeAcinName;
@@ -52,5 +54,6 @@ class MedicineTypeAcinDTO
         $this->time = $time;
         $this->medicineTypeId = $medicineTypeId;
         $this->activeIngredientId = $activeIngredientId;
+        $this->param = $param;
     }
 }

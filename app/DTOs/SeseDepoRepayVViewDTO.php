@@ -19,6 +19,7 @@ class SeseDepoRepayVViewDTO
     public $appModifier;
     public $time;
     public $tdlTreatmentId;
+    public $param;
     public function __construct(
         $seseDepoRepayVViewName,
         $keyword, 
@@ -35,6 +36,7 @@ class SeseDepoRepayVViewDTO
         $appModifier,
         $time,
         $tdlTreatmentId,
+        $param,
         )
     {
         $this->seseDepoRepayVViewName = $seseDepoRepayVViewName;
@@ -52,5 +54,6 @@ class SeseDepoRepayVViewDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->tdlTreatmentId = $tdlTreatmentId;
+        $this->param = $param;
     }
 }

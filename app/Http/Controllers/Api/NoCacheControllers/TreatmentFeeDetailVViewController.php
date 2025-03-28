@@ -57,6 +57,7 @@ class TreatmentFeeDetailVViewController extends BaseApiCacheController
             $this->time,
             $this->treatmentId,
             $this->treatmentCode,
+            $this->param,
         );
         $this->treatmentFeeDetailVViewService->withParams($this->treatmentFeeDetailVViewDTO);
     }

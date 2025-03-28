@@ -48,6 +48,7 @@ class DocumentListVViewController extends BaseApiCacheController
             $this->treatmentId,
             $this->documentTypeId,
             $this->treatmentCode,
+            $this->param,
         );
         $this->documentListVViewService->withParams($this->documentListVViewDTO);
     }

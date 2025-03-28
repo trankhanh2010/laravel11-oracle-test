@@ -17,6 +17,7 @@ class BloodVolumeDTO
     public $appCreator;
     public $appModifier;
     public $time;
+    public $param;
     public function __construct(
         $bloodVolumeName,
         $keyword, 
@@ -31,6 +32,7 @@ class BloodVolumeDTO
         $appCreator,
         $appModifier,
         $time,
+        $param,
         )
     {
         $this->bloodVolumeName = $bloodVolumeName;
@@ -46,5 +48,6 @@ class BloodVolumeDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
+        $this->param = $param;
     }
 }

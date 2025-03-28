@@ -44,6 +44,7 @@ class DebateTypeController extends BaseApiCacheController
             $this->appCreator, 
             $this->appModifier, 
             $this->time,
+            $this->param,
         );
         $this->debateTypeService->withParams($this->debateTypeDTO);
     }

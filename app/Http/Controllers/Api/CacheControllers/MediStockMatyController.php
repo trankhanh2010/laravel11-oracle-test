@@ -53,7 +53,8 @@ class MediStockMatyController extends BaseApiCacheController
             $this->appModifier, 
             $this->time,
             $this->mediStockId,
-            $this->materialTypeId
+            $this->materialTypeId,
+            $this->param,
         );
         $this->mediStockMatyService->withParams($this->mediStockMatyDTO);
     }

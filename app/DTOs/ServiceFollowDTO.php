@@ -17,6 +17,7 @@ class ServiceFollowDTO
     public $appCreator;
     public $appModifier;
     public $time;
+    public $param;
     public function __construct(
         $serviceFollowName,
         $keyword, 
@@ -31,6 +32,7 @@ class ServiceFollowDTO
         $appCreator,
         $appModifier,
         $time,
+        $param,
         )
     {
         $this->serviceFollowName = $serviceFollowName;
@@ -46,5 +48,6 @@ class ServiceFollowDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
+        $this->param = $param;
     }
 }

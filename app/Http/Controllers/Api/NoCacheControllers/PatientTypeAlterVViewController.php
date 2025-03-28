@@ -47,6 +47,7 @@ class PatientTypeAlterVViewController extends BaseApiCacheController
             $this->time,
             $this->treatmentId,
             $this->logTimeTo,
+            $this->param,
         );
         $this->patientTypeAlterVViewService->withParams($this->patientTypeAlterVViewDTO);
     }

@@ -17,6 +17,7 @@ class LocationStoreDTO
     public $appCreator;
     public $appModifier;
     public $time;
+    public $param;
     public function __construct(
         $locationStoreName,
         $keyword, 
@@ -31,6 +32,7 @@ class LocationStoreDTO
         $appCreator,
         $appModifier,
         $time,
+        $param,
         )
     {
         $this->locationStoreName = $locationStoreName;
@@ -46,5 +48,6 @@ class LocationStoreDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
+        $this->param = $param;
     }
 }

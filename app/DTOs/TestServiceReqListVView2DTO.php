@@ -23,6 +23,7 @@ class TestServiceReqListVView2DTO
     public $executeDepartmentCode;
     public $isNoExcute;
     public $isSpecimen;
+    public $param;
     public function __construct(
         $testServiceReqListVView2Name,
         $keyword, 
@@ -43,6 +44,7 @@ class TestServiceReqListVView2DTO
         $executeDepartmentCode,
         $isNoExcute,
         $isSpecimen,
+        $param,
         )
     {
         $this->testServiceReqListVView2Name = $testServiceReqListVView2Name;
@@ -64,5 +66,6 @@ class TestServiceReqListVView2DTO
         $this->executeDepartmentCode = $executeDepartmentCode;
         $this->isNoExcute = $isNoExcute;
         $this->isSpecimen = $isSpecimen;
+        $this->param = $param;
     }
 }

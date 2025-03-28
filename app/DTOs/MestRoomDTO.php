@@ -19,6 +19,7 @@ class MestRoomDTO
     public $time;
     public $mediStockId;
     public $roomId;
+    public $param;
     public function __construct(
         $mestRoomName,
         $keyword, 
@@ -34,7 +35,8 @@ class MestRoomDTO
         $appModifier,
         $time,
         $mediStockId,
-        $roomId
+        $roomId,
+        $param,
         )
     {
         $this->mestRoomName = $mestRoomName;
@@ -52,5 +54,6 @@ class MestRoomDTO
         $this->time = $time;
         $this->mediStockId = $mediStockId;
         $this->roomId = $roomId;
+        $this->param = $param;
     }
 }

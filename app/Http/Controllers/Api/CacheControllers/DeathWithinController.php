@@ -45,6 +45,7 @@ class DeathWithinController extends BaseApiCacheController
             $this->appModifier, 
             $this->time,
             $this->tab,
+            $this->param,
         );
         $this->deathWithinService->withParams($this->deathWithinDTO);
     }

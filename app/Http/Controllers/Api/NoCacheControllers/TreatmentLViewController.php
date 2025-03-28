@@ -46,6 +46,7 @@ class TreatmentLViewController extends BaseApiCacheController
             $this->appModifier, 
             $this->time,
             $this->patientCode,
+            $this->param,
         );
         $this->treatmentLViewService->withParams($this->treatmentLViewDTO);
     }

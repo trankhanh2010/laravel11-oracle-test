@@ -18,6 +18,7 @@ class EmrCoverTypeDTO
     public $appModifier;
     public $time;
     public $tab;
+    public $param;
     public function __construct(
         $emrCoverTypeName,
         $keyword, 
@@ -33,6 +34,7 @@ class EmrCoverTypeDTO
         $appModifier,
         $time,
         $tab,
+        $param,
         )
     {
         $this->emrCoverTypeName = $emrCoverTypeName;
@@ -49,5 +51,6 @@ class EmrCoverTypeDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->tab = $tab;
+        $this->param = $param;
     }
 }

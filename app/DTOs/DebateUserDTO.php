@@ -18,6 +18,7 @@ class DebateUserDTO
     public $appCreator;
     public $appModifier;
     public $time;
+    public $param;
     public function __construct(
         $debateUserName,
         $keyword, 
@@ -33,6 +34,7 @@ class DebateUserDTO
         $appCreator,
         $appModifier,
         $time,
+        $param,
         )
     {
         $this->debateUserName = $debateUserName;
@@ -49,5 +51,6 @@ class DebateUserDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
+        $this->param = $param;
     }
 }

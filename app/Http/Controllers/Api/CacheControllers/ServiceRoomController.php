@@ -56,6 +56,7 @@ class ServiceRoomController extends BaseApiCacheController
             $this->time,
             $this->serviceId,
             $this->roomId,
+            $this->param,
         );
         $this->serviceRoomService->withParams($this->serviceRoomDTO);
     }

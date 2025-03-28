@@ -17,6 +17,7 @@ class ServSegrDTO
     public $appCreator;
     public $appModifier;
     public $time;
+    public $param;
     public function __construct(
         $servSegrName,
         $keyword, 
@@ -31,6 +32,7 @@ class ServSegrDTO
         $appCreator,
         $appModifier,
         $time,
+        $param,
         )
     {
         $this->servSegrName = $servSegrName;
@@ -46,5 +48,6 @@ class ServSegrDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
+        $this->param = $param;
     }
 }

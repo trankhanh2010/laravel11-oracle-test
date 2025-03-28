@@ -34,6 +34,7 @@ class TreatmentBedRoomListVViewDTO
     public $treatmentCode;
     public $patientCode;
     public $isCount;
+    public $param;
     public function __construct(
         $treatmentBedRoomListVViewName,
         $keyword, 
@@ -65,6 +66,7 @@ class TreatmentBedRoomListVViewDTO
         $treatmentCode,
         $patientCode,
         $isCount,
+        $param,
         )
     {
         $this->treatmentBedRoomListVViewName = $treatmentBedRoomListVViewName;
@@ -97,5 +99,6 @@ class TreatmentBedRoomListVViewDTO
         $this->treatmentCode = $treatmentCode;
         $this->patientCode = $patientCode;
         $this->isCount = $isCount;
+        $this->param = $param;
     }
 }

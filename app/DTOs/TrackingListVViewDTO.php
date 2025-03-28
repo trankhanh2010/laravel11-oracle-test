@@ -20,6 +20,7 @@ class TrackingListVViewDTO
     public $time;
     public $treatmentId;
     public $groupBy;
+    public $param;
     public function __construct(
         $trackingListVViewName,
         $keyword, 
@@ -37,6 +38,7 @@ class TrackingListVViewDTO
         $time,
         $treatmentId,
         $groupBy,
+        $param,
         )
     {
         $this->trackingListVViewName = $trackingListVViewName;
@@ -55,5 +57,6 @@ class TrackingListVViewDTO
         $this->time = $time;
         $this->treatmentId = $treatmentId;
         $this->groupBy = $groupBy;
+        $this->param = $param;
     }
 }

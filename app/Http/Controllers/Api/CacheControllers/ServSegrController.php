@@ -50,6 +50,7 @@ class ServSegrController extends BaseApiCacheController
             $this->appCreator, 
             $this->appModifier, 
             $this->time,
+            $this->param,
         );
         $this->servSegrService->withParams($this->servSegrDTO);
     }

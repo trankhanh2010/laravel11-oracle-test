@@ -44,6 +44,7 @@ class BodyPartController extends BaseApiCacheController
             $this->appCreator, 
             $this->appModifier, 
             $this->time,
+            $this->param,
         );
         $this->bodyPartService->withParams($this->bodyPartDTO);
     }

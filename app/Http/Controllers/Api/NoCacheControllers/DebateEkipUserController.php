@@ -50,6 +50,7 @@ class DebateEkipUserController extends BaseApiCacheController
             $this->appModifier, 
             $this->time,
             $this->debateId,
+            $this->param,
         );
         $this->debateEkipUserService->withParams($this->debateEkipUserDTO);
     }

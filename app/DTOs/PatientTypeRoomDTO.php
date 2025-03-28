@@ -19,6 +19,7 @@ class PatientTypeRoomDTO
     public $time;
     public $patientTypeId;
     public $roomId;
+    public $param;
     public function __construct(
         $patientTypeRoomName,
         $keyword, 
@@ -35,6 +36,7 @@ class PatientTypeRoomDTO
         $time,
         $patientTypeId,
         $roomId,
+        $param,
         )
     {
         $this->patientTypeRoomName = $patientTypeRoomName;
@@ -52,5 +54,6 @@ class PatientTypeRoomDTO
         $this->time = $time;
         $this->patientTypeId = $patientTypeId;
         $this->roomId = $roomId;
+        $this->param = $param;
     }
 }

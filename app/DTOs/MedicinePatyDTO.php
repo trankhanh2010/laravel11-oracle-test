@@ -17,6 +17,7 @@ class MedicinePatyDTO
     public $appCreator;
     public $appModifier;
     public $time;
+    public $param;
     public function __construct(
         $medicinePatyName,
         $keyword, 
@@ -31,6 +32,7 @@ class MedicinePatyDTO
         $appCreator,
         $appModifier,
         $time,
+        $param,
         )
     {
         $this->medicinePatyName = $medicinePatyName;
@@ -46,5 +48,6 @@ class MedicinePatyDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
+        $this->param = $param;
     }
 }

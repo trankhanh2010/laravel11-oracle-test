@@ -44,6 +44,7 @@ class InteractionReasonController extends BaseApiCacheController
             $this->appCreator, 
             $this->appModifier, 
             $this->time,
+            $this->param,
         );
         $this->interactionReasonService->withParams($this->interactionReasonDTO);
     }

@@ -53,6 +53,7 @@ class EmployeeController extends BaseApiCacheController
             $this->appCreator, 
             $this->appModifier, 
             $this->time,
+            $this->param,
         );
         $this->employeeService->withParams($this->employeeDTO);
     }

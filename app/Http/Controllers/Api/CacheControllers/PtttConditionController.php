@@ -45,6 +45,7 @@ class PtttConditionController extends BaseApiCacheController
             $this->appModifier, 
             $this->time,
             $this->tab,
+            $this->param,
         );
         $this->ptttConditionService->withParams($this->ptttConditionDTO);
     }

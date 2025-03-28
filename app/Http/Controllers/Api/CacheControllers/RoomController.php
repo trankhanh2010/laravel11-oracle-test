@@ -48,6 +48,7 @@ class RoomController extends BaseApiCacheController
             $this->time,
             $this->departmentId,
             $this->roomTypeId,
+            $this->param,
         );
         $this->roomService->withParams($this->roomDTO);
     }

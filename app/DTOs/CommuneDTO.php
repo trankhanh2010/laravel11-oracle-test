@@ -17,6 +17,7 @@ class CommuneDTO
     public $appCreator;
     public $appModifier;
     public $time;
+    public $param;
     public function __construct(
         $communeName,
         $keyword, 
@@ -31,6 +32,7 @@ class CommuneDTO
         $appCreator,
         $appModifier,
         $time,
+        $param,
         )
     {
         $this->communeName = $communeName;
@@ -46,5 +48,6 @@ class CommuneDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
+        $this->param = $param;
     }
 }

@@ -19,6 +19,7 @@ class TreatmentRoomGroupVViewDTO
     public $appModifier;
     public $time;
     public $departmentCode;
+    public $param;
     public function __construct(
         $treatmentRoomGroupVViewName,
         $keyword, 
@@ -35,6 +36,7 @@ class TreatmentRoomGroupVViewDTO
         $appModifier,
         $time,
         $departmentCode,
+        $param,
         )
     {
         $this->treatmentRoomGroupVViewName = $treatmentRoomGroupVViewName;
@@ -52,5 +54,6 @@ class TreatmentRoomGroupVViewDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->departmentCode = $departmentCode;
+        $this->param = $param;
     }
 }

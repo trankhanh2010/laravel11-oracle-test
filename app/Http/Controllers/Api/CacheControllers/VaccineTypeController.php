@@ -44,6 +44,7 @@ class VaccineTypeController extends BaseApiCacheController
             $this->appCreator, 
             $this->appModifier, 
             $this->time,
+            $this->param,
         );
         $this->vaccineTypeService->withParams($this->vaccineTypeDTO);
     }

@@ -19,6 +19,7 @@ class SereServDetailVViewDTO
     public $appModifier;
     public $time;
     public $serviceTypeCode;
+    public $param;
     public function __construct(
         $sereServDetailVViewName,
         $keyword, 
@@ -35,6 +36,7 @@ class SereServDetailVViewDTO
         $appModifier,
         $time,
         $serviceTypeCode,
+        $param,
         )
     {
         $this->sereServDetailVViewName = $sereServDetailVViewName;
@@ -52,5 +54,6 @@ class SereServDetailVViewDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->serviceTypeCode = $serviceTypeCode;
+        $this->param = $param;
     }
 }

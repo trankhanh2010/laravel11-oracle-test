@@ -46,6 +46,7 @@ class TrackingListVViewController extends BaseApiCacheController
             $this->time,
             $this->treatmentId,
             $this->groupBy,
+            $this->param,
         );
         $this->trackingListVViewService->withParams($this->trackingListVViewDTO);
     }

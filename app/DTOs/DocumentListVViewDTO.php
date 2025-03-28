@@ -21,6 +21,7 @@ class DocumentListVViewDTO
     public $treatmentId;
     public $documentTypeId;
     public $treatmentCode;
+    public $param;
     public function __construct(
         $documentListVViewName,
         $keyword, 
@@ -39,6 +40,7 @@ class DocumentListVViewDTO
         $treatmentId,
         $documentTypeId,
         $treatmentCode,
+        $param,
         )
     {
         $this->documentListVViewName = $documentListVViewName;
@@ -58,5 +60,6 @@ class DocumentListVViewDTO
         $this->treatmentId = $treatmentId;
         $this->documentTypeId = $documentTypeId;
         $this->treatmentCode = $treatmentCode;
+        $this->param = $param;
     }
 }

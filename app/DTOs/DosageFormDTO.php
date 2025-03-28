@@ -17,6 +17,7 @@ class DosageFormDTO
     public $appCreator;
     public $appModifier;
     public $time;
+    public $param;
     public function __construct(
         $dosageFormName,
         $keyword, 
@@ -31,6 +32,7 @@ class DosageFormDTO
         $appCreator,
         $appModifier,
         $time,
+        $param,
         )
     {
         $this->dosageFormName = $dosageFormName;
@@ -46,5 +48,6 @@ class DosageFormDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
+        $this->param = $param;
     }
 }

@@ -45,6 +45,7 @@ class TreatmentEndTypeController extends BaseApiCacheController
             $this->appModifier, 
             $this->time,
             $this->tab,
+            $this->param,
         );
         $this->treatmentEndTypeService->withParams($this->treatmentEndTypeDTO);
     }

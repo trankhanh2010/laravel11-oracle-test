@@ -17,6 +17,7 @@ class AtcGroupDTO
     public $appCreator;
     public $appModifier;
     public $time;
+    public $param;
     public function __construct(
         $atcGroupName,
         $keyword, 
@@ -31,6 +32,7 @@ class AtcGroupDTO
         $appCreator,
         $appModifier,
         $time,
+        $param,
         )
     {
         $this->atcGroupName = $atcGroupName;
@@ -46,5 +48,6 @@ class AtcGroupDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
+        $this->param = $param;
     }
 }

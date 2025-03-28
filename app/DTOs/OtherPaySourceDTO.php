@@ -17,6 +17,7 @@ class OtherPaySourceDTO
     public $appCreator;
     public $appModifier;
     public $time;
+    public $param;
     public function __construct(
         $otherPaySourceName,
         $keyword, 
@@ -31,6 +32,7 @@ class OtherPaySourceDTO
         $appCreator,
         $appModifier,
         $time,
+        $param,
         )
     {
         $this->otherPaySourceName = $otherPaySourceName;
@@ -46,5 +48,6 @@ class OtherPaySourceDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
+        $this->param = $param;
     }
 }

@@ -19,6 +19,7 @@ class ExecuteRoleUserDTO
     public $time;
     public $loginname;
     public $executeRoleId;
+    public $param;
     public function __construct(
         $executeRoleUserName,
         $keyword, 
@@ -35,6 +36,7 @@ class ExecuteRoleUserDTO
         $time,
         $loginname,
         $executeRoleId,
+        $param,
         )
     {
         $this->executeRoleUserName = $executeRoleUserName;
@@ -52,5 +54,6 @@ class ExecuteRoleUserDTO
         $this->time = $time;
         $this->loginname = $loginname;
         $this->executeRoleId = $executeRoleId;
+        $this->param = $param;
     }
 }

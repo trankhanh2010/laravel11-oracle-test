@@ -25,6 +25,7 @@ class SereServListVViewDTO
     public $notInTracking;
     public $patientCode;
     public $serviceTypeCodes;
+    public $param;
 
     public function __construct(
         $sereServListVViewName,
@@ -48,6 +49,7 @@ class SereServListVViewDTO
         $notInTracking,
         $patientCode,
         $serviceTypeCodes,
+        $param,
         )
     {
         $this->sereServListVViewName = $sereServListVViewName;
@@ -71,5 +73,6 @@ class SereServListVViewDTO
         $this->notInTracking = $notInTracking;
         $this->patientCode = $patientCode;
         $this->serviceTypeCodes = $serviceTypeCodes;
+        $this->param = $param;
     }
 }

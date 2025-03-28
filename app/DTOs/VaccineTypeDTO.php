@@ -17,6 +17,7 @@ class VaccineTypeDTO
     public $appCreator;
     public $appModifier;
     public $time;
+    public $param;
     public function __construct(
         $vaccineTypeName,
         $keyword, 
@@ -31,6 +32,7 @@ class VaccineTypeDTO
         $appCreator,
         $appModifier,
         $time,
+        $param,
         )
     {
         $this->vaccineTypeName = $vaccineTypeName;
@@ -46,5 +48,6 @@ class VaccineTypeDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
+        $this->param = $param;
     }
 }

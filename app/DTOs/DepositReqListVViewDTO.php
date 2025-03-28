@@ -20,6 +20,7 @@ class DepositReqListVViewDTO
     public $time;
     public $isDeposit;
     public $treatmentId;
+    public $param;
     public function __construct(
         $depositReqListVViewName,
         $keyword, 
@@ -37,6 +38,7 @@ class DepositReqListVViewDTO
         $time,
         $isDeposit,
         $treatmentId,
+        $param,
         )
     {
         $this->depositReqListVViewName = $depositReqListVViewName;
@@ -55,5 +57,6 @@ class DepositReqListVViewDTO
         $this->time = $time;
         $this->isDeposit = $isDeposit;
         $this->treatmentId = $treatmentId;
+        $this->param = $param;
     }
 }

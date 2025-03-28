@@ -17,6 +17,7 @@ class ReligionDTO
     public $appCreator;
     public $appModifier;
     public $time;
+    public $param;
     public function __construct(
         $religionName,
         $keyword, 
@@ -31,6 +32,7 @@ class ReligionDTO
         $appCreator,
         $appModifier,
         $time,
+        $param,
         )
     {
         $this->religionName = $religionName;
@@ -46,5 +48,6 @@ class ReligionDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
+        $this->param = $param;
     }
 }

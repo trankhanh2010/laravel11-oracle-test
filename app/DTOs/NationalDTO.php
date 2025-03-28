@@ -17,6 +17,7 @@ class NationalDTO
     public $appCreator;
     public $appModifier;
     public $time;
+    public $param;
     public function __construct(
         $nationalName,
         $keyword, 
@@ -31,6 +32,7 @@ class NationalDTO
         $appCreator,
         $appModifier,
         $time,
+        $param,
         )
     {
         $this->nationalName = $nationalName;
@@ -46,5 +48,6 @@ class NationalDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
+        $this->param = $param;
     }
 }

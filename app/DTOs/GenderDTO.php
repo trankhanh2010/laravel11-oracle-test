@@ -17,6 +17,7 @@ class GenderDTO
     public $appCreator;
     public $appModifier;
     public $time;
+    public $param;
     public function __construct(
         $genderName,
         $keyword, 
@@ -31,6 +32,7 @@ class GenderDTO
         $appCreator,
         $appModifier,
         $time,
+        $param,
         )
     {
         $this->genderName = $genderName;
@@ -46,5 +48,6 @@ class GenderDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
+        $this->param = $param;
     }
 }

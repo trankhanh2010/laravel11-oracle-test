@@ -17,6 +17,7 @@ class PackageDTO
     public $appCreator;
     public $appModifier;
     public $time;
+    public $param;
     public function __construct(
         $packageName,
         $keyword, 
@@ -31,6 +32,7 @@ class PackageDTO
         $appCreator,
         $appModifier,
         $time,
+        $param,
         )
     {
         $this->packageName = $packageName;
@@ -46,5 +48,6 @@ class PackageDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
+        $this->param = $param;
     }
 }

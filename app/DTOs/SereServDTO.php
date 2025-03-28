@@ -21,6 +21,7 @@ class SereServDTO
     public $serviceReqIds;
     public $serviceTypeId;
     public $treatmentId;
+    public $param;
     public function __construct(
         $sereServName,
         $keyword, 
@@ -39,6 +40,7 @@ class SereServDTO
         $serviceReqIds,
         $serviceTypeId,
         $treatmentId,
+        $param,
         )
     {
         $this->sereServName = $sereServName;
@@ -58,5 +60,6 @@ class SereServDTO
         $this->serviceReqIds = $serviceReqIds;
         $this->serviceTypeId = $serviceTypeId;
         $this->treatmentId = $treatmentId;
+        $this->param = $param;
     }
 }

@@ -18,6 +18,7 @@ class ServiceConditionDTO
     public $appModifier;
     public $time;
     public $serviceId;
+    public $param;
     public function __construct(
         $serviceConditionName,
         $keyword, 
@@ -33,6 +34,7 @@ class ServiceConditionDTO
         $appModifier,
         $time,
         $serviceId,
+        $param,
         )
     {
         $this->serviceConditionName = $serviceConditionName;
@@ -49,5 +51,6 @@ class ServiceConditionDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->serviceId = $serviceId;
+        $this->param = $param;
     }
 }

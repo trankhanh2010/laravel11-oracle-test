@@ -43,6 +43,7 @@ class TestServiceTypeListVViewController extends BaseApiCacheController
             $this->appModifier, 
             $this->time,
             $this->treatmentId,
+            $this->param,
         );
         $this->testServiceTypeListVViewService->withParams($this->testServiceTypeListVViewDTO);
     }

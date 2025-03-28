@@ -33,6 +33,7 @@ class TransactionTamUngController extends BaseApiCacheController
             $this->appCreator, 
             $this->appModifier, 
             $this->time,
+            $this->param,
         );
         $this->transactionTamUngService->withParams($this->transactionTamUngDTO);
     }

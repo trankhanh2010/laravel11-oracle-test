@@ -44,6 +44,7 @@ class RoomTypeController extends BaseApiCacheController
             $this->appCreator, 
             $this->appModifier, 
             $this->time,
+            $this->param,
         );
         $this->roomTypeService->withParams($this->roomTypeDTO);
     }

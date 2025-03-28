@@ -11,6 +11,7 @@ use App\Repositories\BedBstyRepository;
 use App\Repositories\BedRepository;
 use App\Repositories\ServiceRepository;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Redis;
 
 class BedBstyService 
 {
@@ -48,8 +49,10 @@ class BedBstyService
     public function handleDataBaseGetAll()
     {
         try {
-            $data = Cache::remember($this->params->bedBstyName . '_start_' . $this->params->start . '_limit_' . $this->params->limit . $this->params->orderByString . '_is_active_' . $this->params->isActive . '_service_ids_' . arrayToCustomStringNotKey($this->params->serviceIds ?? []) . '_bed_ids_' .arrayToCustomStringNotKey($this->params->bedIds ?? []) . '_get_all_' . $this->params->getAll, $this->params->time, function () {
-                $data = $this->bedBstyRepository->applyJoins();
+            $cacheKey = $this->params->bedBstyName .'_'. $this->params->param;
+            $cacheKeySet = "cache_keys:" . $this->params->bedBstyName; // Set để lưu danh sách key
+            $data = Cache::remember($cacheKey, $this->params->time, function () {
+                 $data = $this->bedBstyRepository->applyJoins();
                 $data = $this->bedBstyRepository->applyIsActiveFilter($data, $this->params->isActive);
                 $data = $this->bedBstyRepository->applyServiceIdsFilter($data, $this->params->serviceIds);
                 $data = $this->bedBstyRepository->applyBedIdsFilter($data, $this->params->bedIds);
@@ -58,6 +61,8 @@ class BedBstyService
                 $data = $this->bedBstyRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
                 return ['data' => $data, 'count' => $count];
             });
+            // Lưu key vào Redis Set để dễ xóa sau này
+            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
             return $data;
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['bed_bsty'], $e);

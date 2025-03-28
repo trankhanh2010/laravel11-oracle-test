@@ -17,6 +17,7 @@ class HeinServiceTypeDTO
     public $appCreator;
     public $appModifier;
     public $time;
+    public $param;
     public function __construct(
         $heinServiceTypeName,
         $keyword, 
@@ -31,6 +32,7 @@ class HeinServiceTypeDTO
         $appCreator,
         $appModifier,
         $time,
+        $param,
         )
     {
         $this->heinServiceTypeName = $heinServiceTypeName;
@@ -46,5 +48,6 @@ class HeinServiceTypeDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
+        $this->param = $param;
     }
 }

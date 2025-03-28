@@ -44,6 +44,7 @@ class BidController extends BaseApiCacheController
             $this->appCreator, 
             $this->appModifier, 
             $this->time,
+            $this->param,
         );
         $this->bidService->withParams($this->bidDTO);
     }

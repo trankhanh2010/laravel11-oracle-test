@@ -44,6 +44,7 @@ class UnlimitReasonController extends BaseApiCacheController
             $this->appCreator, 
             $this->appModifier, 
             $this->time,
+            $this->param,
         );
         $this->unlimitReasonService->withParams($this->unlimitReasonDTO);
     }

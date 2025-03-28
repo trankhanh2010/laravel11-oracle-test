@@ -44,6 +44,7 @@ class ReligionController extends BaseApiCacheController
             $this->appCreator, 
             $this->appModifier, 
             $this->time,
+            $this->param,
         );
         $this->religionService->withParams($this->religionDTO);
     }

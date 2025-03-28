@@ -17,6 +17,7 @@ class BornPositionDTO
     public $appCreator;
     public $appModifier;
     public $time;
+    public $param;
     public function __construct(
         $bornPositionName,
         $keyword, 
@@ -31,6 +32,7 @@ class BornPositionDTO
         $appCreator,
         $appModifier,
         $time,
+        $param,
         )
     {
         $this->bornPositionName = $bornPositionName;
@@ -46,5 +48,6 @@ class BornPositionDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
+        $this->param = $param;
     }
 }

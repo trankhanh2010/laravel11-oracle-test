@@ -44,6 +44,7 @@ class PatientTypeController extends BaseApiCacheController
             $this->appCreator, 
             $this->appModifier, 
             $this->time,
+            $this->param,
         );
         $this->patientTypeService->withParams($this->patientTypeDTO);
     }

@@ -19,6 +19,7 @@ class SereServExtDTO
     public $appModifier;
     public $time;
     public $sereServIds;
+    public $param;
     public function __construct(
         $sereServExtName,
         $keyword, 
@@ -35,6 +36,7 @@ class SereServExtDTO
         $appModifier,
         $time,
         $sereServIds,
+        $param,
         )
     {
         $this->sereServExtName = $sereServExtName;
@@ -52,5 +54,6 @@ class SereServExtDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->sereServIds = $sereServIds;
+        $this->param = $param;
     }
 }

@@ -19,6 +19,7 @@ class SereServDepositVViewDTO
     public $appModifier;
     public $time;
     public $tdlTreatmentId;
+    public $param;
     public function __construct(
         $sereServDepositVViewName,
         $keyword, 
@@ -35,6 +36,7 @@ class SereServDepositVViewDTO
         $appModifier,
         $time,
         $tdlTreatmentId,
+        $param,
         )
     {
         $this->sereServDepositVViewName = $sereServDepositVViewName;
@@ -52,5 +54,6 @@ class SereServDepositVViewDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->tdlTreatmentId = $tdlTreatmentId;
+        $this->param = $param;
     }
 }

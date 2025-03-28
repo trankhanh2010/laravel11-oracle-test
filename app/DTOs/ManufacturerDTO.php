@@ -17,6 +17,7 @@ class ManufacturerDTO
     public $appCreator;
     public $appModifier;
     public $time;
+    public $param;
     public function __construct(
         $manufacturerName,
         $keyword, 
@@ -31,6 +32,7 @@ class ManufacturerDTO
         $appCreator,
         $appModifier,
         $time,
+        $param,
         )
     {
         $this->manufacturerName = $manufacturerName;
@@ -46,5 +48,6 @@ class ManufacturerDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
+        $this->param = $param;
     }
 }

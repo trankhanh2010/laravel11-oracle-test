@@ -17,6 +17,7 @@ class PtttGroupDTO
     public $appCreator;
     public $appModifier;
     public $time;
+    public $param;
     public function __construct(
         $ptttGroupName,
         $keyword, 
@@ -31,6 +32,7 @@ class PtttGroupDTO
         $appCreator,
         $appModifier,
         $time,
+        $param,
         )
     {
         $this->ptttGroupName = $ptttGroupName;
@@ -46,5 +48,6 @@ class PtttGroupDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
+        $this->param = $param;
     }
 }

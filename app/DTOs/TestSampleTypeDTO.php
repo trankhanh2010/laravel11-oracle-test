@@ -17,6 +17,7 @@ class TestSampleTypeDTO
     public $appCreator;
     public $appModifier;
     public $time;
+    public $param;
     public function __construct(
         $testSampleTypeName,
         $keyword, 
@@ -31,6 +32,7 @@ class TestSampleTypeDTO
         $appCreator,
         $appModifier,
         $time,
+        $param,
         )
     {
         $this->testSampleTypeName = $testSampleTypeName;
@@ -46,5 +48,6 @@ class TestSampleTypeDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
+        $this->param = $param;
     }
 }

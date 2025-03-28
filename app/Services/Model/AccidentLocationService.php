@@ -8,8 +8,9 @@ use App\Events\Elastic\AccidentLocation\InsertAccidentLocationIndex;
 use App\Events\Elastic\DeleteIndex;
 use Illuminate\Support\Facades\Cache;
 use App\Repositories\AccidentLocationRepository;
+use Illuminate\Support\Facades\Redis;
 
-class AccidentLocationService 
+class AccidentLocationService
 {
     protected $accidentLocationRepository;
     protected $params;
@@ -39,7 +40,9 @@ class AccidentLocationService
     public function handleDataBaseGetAll()
     {
         try {
-            $data = Cache::remember($this->params->accidentLocationName . '_start_' . $this->params->start . '_limit_' . $this->params->limit . $this->params->orderByString . '_is_active_' . $this->params->isActive . '_get_all_' . $this->params->getAll, $this->params->time, function () {
+            $cacheKey = $this->params->accidentLocationName . '_' . $this->params->param;
+            $cacheKeySet = "cache_keys:" . $this->params->accidentLocationName; // Set để lưu danh sách key
+            $data = Cache::remember($cacheKey, $this->params->time, function () {
                 $data = $this->accidentLocationRepository->applyJoins();
                 $data = $this->accidentLocationRepository->applyIsActiveFilter($data, $this->params->isActive);
                 $count = $data->count();
@@ -47,6 +50,8 @@ class AccidentLocationService
                 $data = $this->accidentLocationRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
                 return ['data' => $data, 'count' => $count];
             });
+            // Lưu key vào Redis Set để dễ xóa sau này
+            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
             return $data;
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['accident_location'], $e);
@@ -72,7 +77,7 @@ class AccidentLocationService
     {
         try {
             $data = $this->accidentLocationRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
-            
+
             // Gọi event để thêm index vào elastic
             event(new InsertAccidentLocationIndex($data, $this->params->accidentLocationName));
             // Gọi event để xóa cache
@@ -94,7 +99,7 @@ class AccidentLocationService
         }
         try {
             $data = $this->accidentLocationRepository->update($request, $data, $this->params->time, $this->params->appModifier);
-            
+
             // Gọi event để thêm index vào elastic
             event(new InsertAccidentLocationIndex($data, $this->params->accidentLocationName));
             // Gọi event để xóa cache
@@ -116,7 +121,7 @@ class AccidentLocationService
         }
         try {
             $data = $this->accidentLocationRepository->delete($data);
-            
+
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->accidentLocationName));
             // Gọi event để xóa cache

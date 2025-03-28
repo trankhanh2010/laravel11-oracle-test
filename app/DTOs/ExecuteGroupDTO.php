@@ -17,6 +17,7 @@ class ExecuteGroupDTO
     public $appCreator;
     public $appModifier;
     public $time;
+    public $param;
     public function __construct(
         $executeGroupName,
         $keyword, 
@@ -31,6 +32,7 @@ class ExecuteGroupDTO
         $appCreator,
         $appModifier,
         $time,
+        $param,
         )
     {
         $this->executeGroupName = $executeGroupName;
@@ -46,5 +48,6 @@ class ExecuteGroupDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
+        $this->param = $param;
     }
 }

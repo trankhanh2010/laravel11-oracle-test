@@ -17,6 +17,7 @@ class FuexTypeDTO
     public $appCreator;
     public $appModifier;
     public $time;
+    public $param;
     public function __construct(
         $fuexTypeName,
         $keyword, 
@@ -31,6 +32,7 @@ class FuexTypeDTO
         $appCreator,
         $appModifier,
         $time,
+        $param,
         )
     {
         $this->fuexTypeName = $fuexTypeName;
@@ -46,5 +48,6 @@ class FuexTypeDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
+        $this->param = $param;
     }
 }

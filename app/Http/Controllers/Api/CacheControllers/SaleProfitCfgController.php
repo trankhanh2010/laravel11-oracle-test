@@ -44,6 +44,7 @@ class SaleProfitCfgController extends BaseApiCacheController
             $this->appCreator, 
             $this->appModifier, 
             $this->time,
+            $this->param,
         );
         $this->saleProfitCfgService->withParams($this->saleProfitCfgDTO);
     }

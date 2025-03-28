@@ -44,6 +44,7 @@ class ExeServiceModuleController extends BaseApiCacheController
             $this->appCreator, 
             $this->appModifier, 
             $this->time,
+            $this->param,
         );
         $this->exeServiceModuleService->withParams($this->exeServiceModuleDTO);
     }

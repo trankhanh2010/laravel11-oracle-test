@@ -28,6 +28,7 @@ class MedicalCaseCoverListVViewDTO
     public $addLoginname;
     public $addTimeFrom;
     public $addTimeTo;
+    public $param;
 
     public function __construct(
         $medicalCaseCoverListVViewName,
@@ -54,6 +55,7 @@ class MedicalCaseCoverListVViewDTO
         $addLoginname,
         $addTimeFrom,
         $addTimeTo,
+        $param,
         )
     {
         $this->medicalCaseCoverListVViewName = $medicalCaseCoverListVViewName;
@@ -80,5 +82,6 @@ class MedicalCaseCoverListVViewDTO
         $this->addLoginname = $addLoginname;
         $this->addTimeFrom = $addTimeFrom;
         $this->addTimeTo = $addTimeTo;
+        $this->param = $param;
     }
 }

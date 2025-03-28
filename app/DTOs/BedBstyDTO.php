@@ -19,6 +19,7 @@ class BedBstyDTO
     public $time;
     public $serviceIds;
     public $bedIds;
+    public $param;
     public function __construct(
         $bedBstyName,
         $keyword, 
@@ -35,6 +36,7 @@ class BedBstyDTO
         $time,
         $serviceIds,
         $bedIds,
+        $param,
         )
     {
         $this->bedBstyName = $bedBstyName;
@@ -52,5 +54,6 @@ class BedBstyDTO
         $this->time = $time;
         $this->serviceIds = $serviceIds;
         $this->bedIds = $bedIds;
+        $this->param = $param;
     }
 }

@@ -25,6 +25,7 @@ class TransactionListVViewDTO
     public $cursorPaginate;
     public $treatmentCode;
     public $transactionCode;
+    public $param;
     public function __construct(
         $transactionListVViewName,
         $keyword, 
@@ -47,6 +48,7 @@ class TransactionListVViewDTO
         $cursorPaginate,
         $treatmentCode,
         $transactionCode,
+        $param,
         )
     {
         $this->transactionListVViewName = $transactionListVViewName;
@@ -70,5 +72,6 @@ class TransactionListVViewDTO
         $this->cursorPaginate = $cursorPaginate;
         $this->treatmentCode = $treatmentCode;
         $this->transactionCode = $transactionCode;
+        $this->param = $param;
     }
 }

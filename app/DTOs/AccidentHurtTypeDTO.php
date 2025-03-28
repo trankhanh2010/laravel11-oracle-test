@@ -17,6 +17,7 @@ class AccidentHurtTypeDTO
     public $appCreator;
     public $appModifier;
     public $time;
+    public $param;
     public function __construct(
         $accidentHurtTypeName,
         $keyword, 
@@ -31,6 +32,7 @@ class AccidentHurtTypeDTO
         $appCreator,
         $appModifier,
         $time,
+        $param,
         )
     {
         $this->accidentHurtTypeName = $accidentHurtTypeName;
@@ -46,5 +48,6 @@ class AccidentHurtTypeDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
+        $this->param = $param;
     }
 }

@@ -46,6 +46,7 @@ class DistrictController extends BaseApiCacheController
             $this->appCreator, 
             $this->appModifier, 
             $this->time,
+            $this->param,
         );
         $this->districtService->withParams($this->districtDTO);
     }

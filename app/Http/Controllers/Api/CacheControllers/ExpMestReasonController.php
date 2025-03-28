@@ -44,6 +44,7 @@ class ExpMestReasonController extends BaseApiCacheController
             $this->appCreator, 
             $this->appModifier, 
             $this->time,
+            $this->param,
         );
         $this->expMestReasonService->withParams($this->expMestReasonDTO);
     }

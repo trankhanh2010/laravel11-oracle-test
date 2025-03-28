@@ -22,6 +22,7 @@ class TreatmentBedRoomLViewDTO
     public $addTimeTo;
     public $addTimeFrom;
     public $isInRoom;
+    public $param;
     public function __construct(
         $treatmentBedRoomLViewName,
         $keyword, 
@@ -41,6 +42,7 @@ class TreatmentBedRoomLViewDTO
         $addTimeTo,
         $addTimeFrom,
         $isInRoom,
+        $param,
         )
     {
         $this->treatmentBedRoomLViewName = $treatmentBedRoomLViewName;
@@ -61,5 +63,6 @@ class TreatmentBedRoomLViewDTO
         $this->addTimeTo = $addTimeTo;
         $this->addTimeFrom = $addTimeFrom;
         $this->isInRoom = $isInRoom;
+        $this->param = $param;
     }
 }

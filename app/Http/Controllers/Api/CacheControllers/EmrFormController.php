@@ -45,6 +45,7 @@ class EmrFormController extends BaseApiCacheController
             $this->appModifier, 
             $this->time,
             $this->tab,
+            $this->param,
         );
         $this->emrFormService->withParams($this->emrFormDTO);
     }

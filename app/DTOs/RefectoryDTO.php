@@ -17,6 +17,7 @@ class RefectoryDTO
     public $appCreator;
     public $appModifier;
     public $time;
+    public $param;
     public function __construct(
         $refectoryName,
         $keyword, 
@@ -31,6 +32,7 @@ class RefectoryDTO
         $appCreator,
         $appModifier,
         $time,
+        $param,
         )
     {
         $this->refectoryName = $refectoryName;
@@ -46,5 +48,6 @@ class RefectoryDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
+        $this->param = $param;
     }
 }

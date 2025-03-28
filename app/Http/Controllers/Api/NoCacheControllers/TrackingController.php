@@ -47,6 +47,7 @@ class TrackingController extends BaseApiCacheController
             $this->time,
             $this->treatmentId,
             $this->groupBy,
+            $this->param,
         );
         $this->trackingService->withParams($this->trackingDTO);
     }

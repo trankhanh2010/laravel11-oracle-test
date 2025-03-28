@@ -44,6 +44,7 @@ class MedicineController extends BaseApiCacheController
             $this->appCreator, 
             $this->appModifier, 
             $this->time,
+            $this->param,
         );
         $this->medicineService->withParams($this->medicineDTO);
     }

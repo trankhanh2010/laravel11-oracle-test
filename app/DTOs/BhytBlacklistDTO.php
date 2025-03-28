@@ -17,6 +17,7 @@ class BhytBlacklistDTO
     public $appCreator;
     public $appModifier;
     public $time;
+    public $param;
     public function __construct(
         $bhytBlacklistName,
         $keyword, 
@@ -31,6 +32,7 @@ class BhytBlacklistDTO
         $appCreator,
         $appModifier,
         $time,
+        $param,
         )
     {
         $this->bhytBlacklistName = $bhytBlacklistName;
@@ -46,5 +48,6 @@ class BhytBlacklistDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
+        $this->param = $param;
     }
 }

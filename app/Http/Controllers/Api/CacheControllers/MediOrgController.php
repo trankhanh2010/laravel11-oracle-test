@@ -44,6 +44,7 @@ class MediOrgController extends BaseApiCacheController
             $this->appCreator, 
             $this->appModifier, 
             $this->time,
+            $this->param,
         );
         $this->mediOrgService->withParams($this->mediOrgDTO);
     }

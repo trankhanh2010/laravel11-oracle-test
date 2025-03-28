@@ -20,6 +20,7 @@ class SereServBillDTO
     public $time;
     public $billId;
     public $billCode;
+    public $param;
     public function __construct(
         $sereServBillName,
         $keyword, 
@@ -37,6 +38,7 @@ class SereServBillDTO
         $time,
         $billId,
         $billCode,
+        $param,
         )
     {
         $this->sereServBillName = $sereServBillName;
@@ -55,5 +57,6 @@ class SereServBillDTO
         $this->time = $time;
         $this->billId = $billId;
         $this->billCode = $billCode;
+        $this->param = $param;
     }
 }

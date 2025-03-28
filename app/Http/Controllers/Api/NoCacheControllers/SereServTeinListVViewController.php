@@ -48,6 +48,7 @@ class SereServTeinListVViewController extends BaseApiCacheController
             $this->serviceReqId,
             $this->groupBy,
             $this->sereServIds,
+            $this->param,
         );
         $this->sereServTeinListVViewService->withParams($this->sereServTeinListVViewDTO);
     }

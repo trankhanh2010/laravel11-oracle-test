@@ -22,6 +22,7 @@ class ServicePatyDTO
     public $serviceId;
     public $packageId;
     public $effective;
+    public $param;
     public function __construct(
         $servicePatyName,
         $keyword, 
@@ -41,6 +42,7 @@ class ServicePatyDTO
         $serviceId,
         $packageId,
         $effective,
+        $param,
         )
     {
         $this->servicePatyName = $servicePatyName;
@@ -61,5 +63,6 @@ class ServicePatyDTO
         $this->serviceId = $serviceId;
         $this->packageId = $packageId;
         $this->effective= $effective;
+        $this->param = $param;
     }
 }

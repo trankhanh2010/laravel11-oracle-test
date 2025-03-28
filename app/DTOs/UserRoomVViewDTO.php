@@ -21,6 +21,7 @@ class UserRoomVViewDTO
     public $departmentCode;
     public $tab;
     public $currentLoginname;
+    public $param;
     public function __construct(
         $userRoomVViewName,
         $keyword, 
@@ -39,6 +40,7 @@ class UserRoomVViewDTO
         $departmentCode,
         $tab,
         $currentLoginname,
+        $param,
         )
     {
         $this->userRoomVViewName = $userRoomVViewName;
@@ -58,5 +60,6 @@ class UserRoomVViewDTO
         $this->departmentCode = $departmentCode;
         $this->tab = $tab;
         $this->currentLoginname = $currentLoginname;
+        $this->param = $param;
     }
 }

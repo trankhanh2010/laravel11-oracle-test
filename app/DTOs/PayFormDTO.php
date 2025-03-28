@@ -17,6 +17,7 @@ class PayFormDTO
     public $appCreator;
     public $appModifier;
     public $time;
+    public $param;
     public function __construct(
         $payFormName,
         $keyword, 
@@ -31,6 +32,7 @@ class PayFormDTO
         $appCreator,
         $appModifier,
         $time,
+        $param,
         )
     {
         $this->payFormName = $payFormName;
@@ -46,5 +48,6 @@ class PayFormDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
+        $this->param = $param;
     }
 }

@@ -18,6 +18,7 @@ class DebateVViewDTO
     public $appCreator;
     public $appModifier;
     public $time;
+    public $param;
     public function __construct(
         $debateVViewName,
         $keyword, 
@@ -33,6 +34,7 @@ class DebateVViewDTO
         $appCreator,
         $appModifier,
         $time,
+        $param,
         )
     {
         $this->debateVViewName = $debateVViewName;
@@ -49,5 +51,6 @@ class DebateVViewDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
+        $this->param = $param;
     }
 }

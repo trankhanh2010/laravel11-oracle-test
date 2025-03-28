@@ -19,6 +19,7 @@ class TreatmentLViewDTO
     public $appModifier;
     public $time;
     public $patientCode;
+    public $param;
     public function __construct(
         $treatmentLViewName,
         $keyword, 
@@ -35,6 +36,7 @@ class TreatmentLViewDTO
         $appModifier,
         $time,
         $patientCode,
+        $param,
         )
     {
         $this->treatmentLViewName = $treatmentLViewName;
@@ -52,5 +54,6 @@ class TreatmentLViewDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->patientCode = $patientCode;
+        $this->param = $param;
     }
 }

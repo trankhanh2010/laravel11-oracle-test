@@ -44,6 +44,7 @@ class ProvinceController extends BaseApiCacheController
             $this->appCreator, 
             $this->appModifier, 
             $this->time,
+            $this->param,
         );
         $this->provinceService->withParams($this->provinceDTO);
     }

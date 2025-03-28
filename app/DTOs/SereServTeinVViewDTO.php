@@ -19,6 +19,7 @@ class SereServTeinVViewDTO
     public $appModifier;
     public $time;
     public $sereServIds;
+    public $param;
     public function __construct(
         $sereServTeinVViewName,
         $keyword, 
@@ -35,6 +36,7 @@ class SereServTeinVViewDTO
         $appModifier,
         $time,
         $sereServIds,
+        $param,
         )
     {
         $this->sereServTeinVViewName = $sereServTeinVViewName;
@@ -52,5 +54,6 @@ class SereServTeinVViewDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->sereServIds = $sereServIds;
+        $this->param = $param;
     }
 }

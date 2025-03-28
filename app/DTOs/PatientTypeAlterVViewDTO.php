@@ -20,6 +20,7 @@ class PatientTypeAlterVViewDTO
     public $time;
     public $treatmentId;
     public $logTimeTo;
+    public $param;
     public function __construct(
         $patientTypeAlterVViewName,
         $keyword, 
@@ -37,6 +38,7 @@ class PatientTypeAlterVViewDTO
         $time,
         $treatmentId,
         $logTimeTo,
+        $param,
         )
     {
         $this->patientTypeAlterVViewName = $patientTypeAlterVViewName;
@@ -55,5 +57,6 @@ class PatientTypeAlterVViewDTO
         $this->time = $time;
         $this->treatmentId = $treatmentId;
         $this->logTimeTo = $logTimeTo;
+        $this->param = $param;
     }
 }

@@ -18,6 +18,7 @@ class TestServiceTypeListVViewDTO
     public $appModifier;
     public $time;
     public $treatmentId;
+    public $param;
 
     public function __construct(
         $testServiceTypeListVViewName,
@@ -34,6 +35,7 @@ class TestServiceTypeListVViewDTO
         $appModifier,
         $time,
         $treatmentId,
+        $param,
         )
     {
         $this->testServiceTypeListVViewName = $testServiceTypeListVViewName;
@@ -50,5 +52,6 @@ class TestServiceTypeListVViewDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->treatmentId = $treatmentId;
+        $this->param = $param;
     }
 }

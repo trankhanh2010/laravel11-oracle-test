@@ -23,6 +23,7 @@ class DebateListVViewDTO
     public $departmentIds;
     public $debateTimeFrom;
     public $debateTimeTo;
+    public $param;
     public function __construct(
         $debateListVViewName,
         $keyword, 
@@ -43,6 +44,7 @@ class DebateListVViewDTO
         $departmentIds,
         $debateTimeFrom,
         $debateTimeTo,
+        $param,
         )
     {
         $this->debateListVViewName = $debateListVViewName;
@@ -64,5 +66,6 @@ class DebateListVViewDTO
         $this->departmentIds = $departmentIds;
         $this->debateTimeFrom = $debateTimeFrom;
         $this->debateTimeTo = $debateTimeTo;
+        $this->param = $param;
     }
 }

@@ -17,6 +17,7 @@ class BidTypeDTO
     public $appCreator;
     public $appModifier;
     public $time;
+    public $param;
     public function __construct(
         $bidTypeName,
         $keyword, 
@@ -31,6 +32,7 @@ class BidTypeDTO
         $appCreator,
         $appModifier,
         $time,
+        $param,
         )
     {
         $this->bidTypeName = $bidTypeName;
@@ -46,5 +48,6 @@ class BidTypeDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
+        $this->param = $param;
     }
 }

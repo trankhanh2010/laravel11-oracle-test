@@ -17,6 +17,7 @@ class AreaDTO
     public $appCreator;
     public $appModifier;
     public $time;
+    public $param;
     public function __construct(
         $areaName,
         $keyword, 
@@ -31,6 +32,7 @@ class AreaDTO
         $appCreator,
         $appModifier,
         $time,
+        $param,
         )
     {
         $this->areaName = $areaName;
@@ -46,5 +48,6 @@ class AreaDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
+        $this->param = $param;
     }
 }

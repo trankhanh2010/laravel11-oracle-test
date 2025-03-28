@@ -56,7 +56,8 @@ class BedBstyController extends BaseApiCacheController
             $this->appModifier, 
             $this->time,
             $this->serviceIds,
-            $this->bedIds
+            $this->bedIds,
+            $this->param,
         );
         $this->bedBstyService->withParams($this->bedBstyDTO);
 

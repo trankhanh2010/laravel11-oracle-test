@@ -50,6 +50,7 @@ class DebateListVViewController extends BaseApiCacheController
             $this->departmentIds,
             $this->debateTimeFrom,
             $this->debateTimeTo,
+            $this->param,
         );
         $this->debateListVViewService->withParams($this->debateListVViewDTO);
     }

@@ -19,6 +19,7 @@ class ServiceRoomDTO
     public $time;
     public $serviceId;
     public $roomId;
+    public $param;
     public function __construct(
         $serviceRoomName,
         $keyword, 
@@ -35,6 +36,7 @@ class ServiceRoomDTO
         $time,
         $serviceId,
         $roomId,
+        $param,
         )
     {
         $this->serviceRoomName = $serviceRoomName;
@@ -52,5 +54,6 @@ class ServiceRoomDTO
         $this->time = $time;
         $this->serviceId = $serviceId;
         $this->roomId = $roomId;
+        $this->param = $param;
     }
 }

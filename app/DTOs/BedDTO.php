@@ -17,6 +17,7 @@ class BedDTO
     public $appCreator;
     public $appModifier;
     public $time;
+    public $param;
     public function __construct(
         $bedName,
         $keyword, 
@@ -31,6 +32,7 @@ class BedDTO
         $appCreator,
         $appModifier,
         $time,
+        $param,
         )
     {
         $this->bedName = $bedName;
@@ -46,5 +48,6 @@ class BedDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
+        $this->param = $param;
     }
 }

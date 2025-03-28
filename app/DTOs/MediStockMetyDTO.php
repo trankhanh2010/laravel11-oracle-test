@@ -19,6 +19,7 @@ class MediStockMetyDTO
     public $time;
     public $mediStockId;
     public $medicineTypeId;
+    public $param;
     public function __construct(
         $mediStockMetyName,
         $keyword, 
@@ -34,7 +35,8 @@ class MediStockMetyDTO
         $appModifier,
         $time,
         $mediStockId,
-        $medicineTypeId
+        $medicineTypeId,
+        $param,
         )
     {
         $this->mediStockMetyName = $mediStockMetyName;
@@ -52,5 +54,6 @@ class MediStockMetyDTO
         $this->time = $time;
         $this->mediStockId = $mediStockId;
         $this->medicineTypeId = $medicineTypeId;
+        $this->param = $param;
     }
 }

@@ -21,6 +21,7 @@ class ServiceReqListVViewDTO
     public $groupBy;
     public $trackingId;
     public $treatmentId;
+    public $param;
     public function __construct(
         $serviceReqLisyVViewName,
         $keyword, 
@@ -39,6 +40,7 @@ class ServiceReqListVViewDTO
         $groupBy,
         $trackingId,
         $treatmentId,
+        $param,
         )
     {
         $this->serviceReqLisyVViewName = $serviceReqLisyVViewName;
@@ -58,5 +60,6 @@ class ServiceReqListVViewDTO
         $this->groupBy = $groupBy;
         $this->trackingId = $trackingId;
         $this->treatmentId = $treatmentId;
+        $this->param = $param;
     }
 }

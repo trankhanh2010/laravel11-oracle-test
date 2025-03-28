@@ -44,6 +44,7 @@ class TransactionTypeController extends BaseApiCacheController
             $this->appCreator, 
             $this->appModifier, 
             $this->time,
+            $this->param,
         );
         $this->transactionTypeService->withParams($this->transactionTypeDTO);
     }

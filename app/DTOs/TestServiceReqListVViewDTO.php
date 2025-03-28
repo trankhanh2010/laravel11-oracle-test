@@ -29,6 +29,7 @@ class TestServiceReqListVViewDTO
     public $patientCode;
     public $status;
     public $patientPhone;
+    public $param;
     public function __construct(
         $testServiceReqListVViewName,
         $keyword, 
@@ -55,6 +56,7 @@ class TestServiceReqListVViewDTO
         $patientCode,
         $status,
         $patientPhone,
+        $param,
         )
     {
         $this->testServiceReqListVViewName = $testServiceReqListVViewName;
@@ -82,5 +84,6 @@ class TestServiceReqListVViewDTO
         $this->patientCode = $patientCode;
         $this->status = $status;
         $this->patientPhone = $patientPhone;
+        $this->param = $param;
     }
 }

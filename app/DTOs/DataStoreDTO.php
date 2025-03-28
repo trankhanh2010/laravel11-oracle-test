@@ -17,6 +17,7 @@ class DataStoreDTO
     public $appCreator;
     public $appModifier;
     public $time;
+    public $param;
     public function __construct(
         $dataStoreName,
         $keyword, 
@@ -31,6 +32,7 @@ class DataStoreDTO
         $appCreator,
         $appModifier,
         $time,
+        $param,
         )
     {
         $this->dataStoreName = $dataStoreName;
@@ -46,5 +48,6 @@ class DataStoreDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
+        $this->param = $param;
     }
 }

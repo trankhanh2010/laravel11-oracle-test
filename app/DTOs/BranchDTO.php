@@ -17,6 +17,7 @@ class BranchDTO
     public $appCreator;
     public $appModifier;
     public $time;
+    public $param;
     public function __construct(
         $branchName,
         $keyword, 
@@ -31,6 +32,7 @@ class BranchDTO
         $appCreator,
         $appModifier,
         $time,
+        $param,
         )
     {
         $this->branchName = $branchName;
@@ -46,5 +48,6 @@ class BranchDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
+        $this->param = $param;
     }
 }

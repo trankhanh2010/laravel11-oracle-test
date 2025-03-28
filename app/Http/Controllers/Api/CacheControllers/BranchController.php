@@ -44,6 +44,7 @@ class BranchController extends BaseApiCacheController
             $this->appCreator, 
             $this->appModifier, 
             $this->time,
+            $this->param,
         );
         $this->branchService->withParams($this->branchDTO);
     }

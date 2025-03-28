@@ -44,6 +44,7 @@ class AccidentBodyPartController extends BaseApiCacheController
             $this->appCreator, 
             $this->appModifier, 
             $this->time,
+            $this->param,
         );
         $this->accidentBodyPartService->withParams($this->accidentBodyPartDTO);
     }

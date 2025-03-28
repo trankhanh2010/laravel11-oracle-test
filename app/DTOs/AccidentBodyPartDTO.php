@@ -17,6 +17,7 @@ class AccidentBodyPartDTO
     public $appCreator;
     public $appModifier;
     public $time;
+    public $param;
     public function __construct(
         $accidentBodyPartName,
         $keyword, 
@@ -31,6 +32,7 @@ class AccidentBodyPartDTO
         $appCreator,
         $appModifier,
         $time,
+        $param,
         )
     {
         $this->accidentBodyPartName = $accidentBodyPartName;
@@ -46,5 +48,6 @@ class AccidentBodyPartDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
+        $this->param = $param;
     }
 }

@@ -46,6 +46,7 @@ class SereServTeinVViewController extends BaseApiCacheController
             $this->appModifier, 
             $this->time,
             $this->sereServIds,
+            $this->param,
         );
         $this->sereServTeinVViewService->withParams($this->sereServTeinVViewDTO);
     }

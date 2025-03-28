@@ -20,6 +20,7 @@ class TransactionTTDetailVViewDTO
     public $time;
     public $billId;
     public $billCode;
+    public $param;
     public function __construct(
         $transactionTTDetailVViewName,
         $keyword, 
@@ -37,6 +38,7 @@ class TransactionTTDetailVViewDTO
         $time,
         $billId,
         $billCode,
+        $param,
         )
     {
         $this->transactionTTDetailVViewName = $transactionTTDetailVViewName;
@@ -55,5 +57,6 @@ class TransactionTTDetailVViewDTO
         $this->time = $time;
         $this->billId = $billId;
         $this->billCode = $billCode;
+        $this->param = $param;
     }
 }

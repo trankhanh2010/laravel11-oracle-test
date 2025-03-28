@@ -44,6 +44,7 @@ class LicenseClassController extends BaseApiCacheController
             $this->appCreator, 
             $this->appModifier, 
             $this->time,
+            $this->param,
         );
         $this->licenseClassService->withParams($this->licenseClassDTO);
     }

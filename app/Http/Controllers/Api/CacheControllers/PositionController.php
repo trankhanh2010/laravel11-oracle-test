@@ -44,6 +44,7 @@ class PositionController extends BaseApiCacheController
             $this->appCreator, 
             $this->appModifier, 
             $this->time,
+            $this->param,
         );
         $this->positionService->withParams($this->positionDTO);
     }

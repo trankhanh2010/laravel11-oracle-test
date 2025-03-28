@@ -12,6 +12,7 @@ class TreatmentFeePaymentDTO
     public $treatmentCode;
     public $transactionTypeCode;
     public $depositReqCode;
+    public $param;
     public function __construct(
         $appCreator,
         $appModifier,
@@ -21,6 +22,7 @@ class TreatmentFeePaymentDTO
         $treatmentCode,
         $transactionTypeCode, 
         $depositReqCode,
+        $param,
         )
     {
         $this->appCreator = $appCreator;
@@ -31,5 +33,6 @@ class TreatmentFeePaymentDTO
         $this->treatmentCode = $treatmentCode;
         $this->transactionTypeCode = $transactionTypeCode;
         $this->depositReqCode = $depositReqCode;
+        $this->param = $param;
     }
 }

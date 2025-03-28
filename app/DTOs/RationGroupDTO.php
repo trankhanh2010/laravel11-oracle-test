@@ -17,6 +17,7 @@ class RationGroupDTO
     public $appCreator;
     public $appModifier;
     public $time;
+    public $param;
     public function __construct(
         $rationGroupName,
         $keyword, 
@@ -31,6 +32,7 @@ class RationGroupDTO
         $appCreator,
         $appModifier,
         $time,
+        $param,
         )
     {
         $this->rationGroupName = $rationGroupName;
@@ -46,5 +48,6 @@ class RationGroupDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
+        $this->param = $param;
     }
 }

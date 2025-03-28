@@ -26,6 +26,7 @@ class ServiceReqDTO
     public $intructionTimeTo;
     public $hasExecute;
     public $isNotKskRequriedAprovalOrIsKskApprove;
+    public $param;
     public function __construct(
         $serviceReqName,
         $keyword, 
@@ -49,6 +50,7 @@ class ServiceReqDTO
         $intructionTimeTo,
         $hasExecute,
         $isNotKskRequriedAprovalOrIsKskApprove,
+        $param,
         )
     {
         $this->serviceReqName = $serviceReqName;
@@ -73,5 +75,6 @@ class ServiceReqDTO
         $this->intructionTimeTo = $intructionTimeTo;
         $this->hasExecute = $hasExecute;
         $this->isNotKskRequriedAprovalOrIsKskApprove = $isNotKskRequriedAprovalOrIsKskApprove;
+        $this->param = $param;
     }
 }

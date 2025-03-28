@@ -17,6 +17,7 @@ class MemaGroupDTO
     public $appCreator;
     public $appModifier;
     public $time;
+    public $param;
     public function __construct(
         $memaGroupName,
         $keyword, 
@@ -31,6 +32,7 @@ class MemaGroupDTO
         $appCreator,
         $appModifier,
         $time,
+        $param,
         )
     {
         $this->memaGroupName = $memaGroupName;
@@ -46,5 +48,6 @@ class MemaGroupDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
+        $this->param = $param;
     }
 }

@@ -17,6 +17,7 @@ class MilitaryRankDTO
     public $appCreator;
     public $appModifier;
     public $time;
+    public $param;
     public function __construct(
         $militaryRankName,
         $keyword, 
@@ -31,6 +32,7 @@ class MilitaryRankDTO
         $appCreator,
         $appModifier,
         $time,
+        $param,
         )
     {
         $this->militaryRankName = $militaryRankName;
@@ -46,5 +48,6 @@ class MilitaryRankDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
+        $this->param = $param;
     }
 }

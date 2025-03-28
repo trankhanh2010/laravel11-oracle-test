@@ -44,6 +44,7 @@ class EthnicController extends BaseApiCacheController
             $this->appCreator, 
             $this->appModifier, 
             $this->time,
+            $this->param,
         );
         $this->ethnicService->withParams($this->ethnicDTO);
     }

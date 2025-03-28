@@ -8,6 +8,7 @@ use App\Events\Elastic\SereServClsListVView\InsertSereServClsListVViewIndex;
 use App\Events\Elastic\DeleteIndex;
 use Illuminate\Support\Facades\Cache;
 use App\Repositories\SereServClsListVViewRepository;
+use Illuminate\Support\Facades\Redis;
 
 class SereServClsListVViewService
 {
@@ -25,8 +26,9 @@ class SereServClsListVViewService
     public function handleDataBaseGetAll()
     {
         try {
-            $cacheKey = $this->params->sereServClsListVViewName . $this->params->param;
-
+            $cacheKey = $this->params->sereServClsListVViewName .'_'. $this->params->param;
+            $cacheKeySet = "cache_keys:" . $this->params->sereServClsListVViewName; // Set để lưu danh sách key
+            
             $data = Cache::remember($cacheKey, 3600, function () {
                 $data = $this->sereServClsListVViewRepository->applyJoins($this->params->reportTypeCode);
                 $data = $this->sereServClsListVViewRepository->applyWithParam($data, $this->params->tab, $this->params->serviceCodes, $this->params->groupBy);
@@ -61,7 +63,8 @@ class SereServClsListVViewService
                 // **Nén dữ liệu trước khi lưu cache**
                 return base64_encode(gzcompress(serialize(['data' => $data, 'count' => $count])));
             });
-            
+            // Lưu key vào Redis Set để dễ xóa sau này
+            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
             // **Giải nén khi lấy dữ liệu từ cache**
             if ($data && is_string($data)) {
                 $decompressedData = @gzuncompress(base64_decode($data));

@@ -17,6 +17,7 @@ class MediRecordTypeDTO
     public $appCreator;
     public $appModifier;
     public $time;
+    public $param;
     public function __construct(
         $mediRecordTypeName,
         $keyword, 
@@ -31,6 +32,7 @@ class MediRecordTypeDTO
         $appCreator,
         $appModifier,
         $time,
+        $param,
         )
     {
         $this->mediRecordTypeName = $mediRecordTypeName;
@@ -46,5 +48,6 @@ class MediRecordTypeDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
+        $this->param = $param;
     }
 }

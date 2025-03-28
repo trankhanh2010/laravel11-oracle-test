@@ -17,6 +17,7 @@ class ExecuteRoleDTO
     public $appCreator;
     public $appModifier;
     public $time;
+    public $param;
     public function __construct(
         $executeRoleName,
         $keyword, 
@@ -31,6 +32,7 @@ class ExecuteRoleDTO
         $appCreator,
         $appModifier,
         $time,
+        $param,
         )
     {
         $this->executeRoleName = $executeRoleName;
@@ -46,5 +48,6 @@ class ExecuteRoleDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
+        $this->param = $param;
     }
 }

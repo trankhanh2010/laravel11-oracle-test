@@ -27,14 +27,16 @@ class DeleteCache
      */
     public function handle(CacheDeleteCache $event)
     {
-
-    // Lấy tất cả các khóa chứa từ khóa
-        $keys = Redis::connection('cache')->keys('*'.$event->modelName.'*');
-        // Xóa từng khóa
-        Redis::connection('cache')->pipeline(function ($pipe) use ($keys) {
-            foreach ($keys as $key) {
-                $pipe->del($key);
-            }
-        });
+        // Lấy danh sách key từ Redis Set thay vì dùng KEYS
+        $cacheKeySet = "cache_keys:" . $event->modelName;
+        $keys = Redis::connection('cache')->smembers($cacheKeySet);
+    
+        foreach ($keys as $key) {
+            Redis::connection('cache')->del($key);
+        }
+    
+        // Xóa luôn danh sách key trong Set
+        Redis::connection('cache')->del($cacheKeySet);
     }
+    
 }

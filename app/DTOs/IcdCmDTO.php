@@ -17,6 +17,7 @@ class IcdCmDTO
     public $appCreator;
     public $appModifier;
     public $time;
+    public $param;
     public function __construct(
         $icdCmName,
         $keyword, 
@@ -31,6 +32,7 @@ class IcdCmDTO
         $appCreator,
         $appModifier,
         $time,
+        $param,
         )
     {
         $this->icdCmName = $icdCmName;
@@ -46,5 +48,6 @@ class IcdCmDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
+        $this->param = $param;
     }
 }

@@ -50,6 +50,7 @@ class DataStoreController extends BaseApiCacheController
             $this->appCreator, 
             $this->appModifier, 
             $this->time,
+            $this->param,
         );
         $this->dataStoreService->withParams($this->dataStoreDTO);
     }

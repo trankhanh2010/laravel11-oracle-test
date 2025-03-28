@@ -17,6 +17,7 @@ class MachineDTO
     public $appCreator;
     public $appModifier;
     public $time;
+    public $param;
     public function __construct(
         $machineName,
         $keyword, 
@@ -31,6 +32,7 @@ class MachineDTO
         $appCreator,
         $appModifier,
         $time,
+        $param,
         )
     {
         $this->machineName = $machineName;
@@ -46,5 +48,6 @@ class MachineDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
+        $this->param = $param;
     }
 }

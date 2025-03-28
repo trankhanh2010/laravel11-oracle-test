@@ -27,6 +27,7 @@ class TreatmentFeeListVViewDTO
     public $patientCode;
     public $status;
     public $patientPhone;
+    public $param;
     public function __construct(
         $treatmentFeeListVViewName,
         $keyword, 
@@ -51,6 +52,7 @@ class TreatmentFeeListVViewDTO
         $patientCode,
         $status,
         $patientPhone,
+        $param,
         )
     {
         $this->treatmentFeeListVViewName = $treatmentFeeListVViewName;
@@ -76,5 +78,6 @@ class TreatmentFeeListVViewDTO
         $this->patientCode = $patientCode;
         $this->status = $status;
         $this->patientPhone = $patientPhone;
+        $this->param = $param;
     }
 }

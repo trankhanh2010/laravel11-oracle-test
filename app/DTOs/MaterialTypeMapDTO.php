@@ -17,6 +17,7 @@ class MaterialTypeMapDTO
     public $appCreator;
     public $appModifier;
     public $time;
+    public $param;
     public function __construct(
         $materialTypeMapName,
         $keyword, 
@@ -31,6 +32,7 @@ class MaterialTypeMapDTO
         $appCreator,
         $appModifier,
         $time,
+        $param,
         )
     {
         $this->materialTypeMapName = $materialTypeMapName;
@@ -46,5 +48,6 @@ class MaterialTypeMapDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
+        $this->param = $param;
     }
 }

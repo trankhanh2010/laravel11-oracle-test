@@ -19,6 +19,7 @@ class ModuleRoleDTO
     public $time;
     public $moduleId;
     public $roleId;
+    public $param;
     public function __construct(
         $moduleRoleName,
         $keyword, 
@@ -34,7 +35,8 @@ class ModuleRoleDTO
         $appModifier,
         $time,
         $moduleId,
-        $roleId
+        $roleId,
+        $param,
         )
     {
         $this->moduleRoleName = $moduleRoleName;
@@ -52,5 +54,6 @@ class ModuleRoleDTO
         $this->time = $time;
         $this->moduleId = $moduleId;
         $this->roleId = $roleId;
+        $this->param = $param;
     }
 }

@@ -18,6 +18,7 @@ class DhstDTO
     public $appCreator;
     public $appModifier;
     public $time;
+    public $param;
     public function __construct(
         $dhstName,
         $keyword, 
@@ -33,6 +34,7 @@ class DhstDTO
         $appCreator,
         $appModifier,
         $time,
+        $param,
         )
     {
         $this->dhstName = $dhstName;
@@ -49,5 +51,6 @@ class DhstDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
+        $this->param = $param;
     }
 }

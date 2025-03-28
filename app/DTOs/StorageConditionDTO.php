@@ -17,6 +17,7 @@ class StorageConditionDTO
     public $appCreator;
     public $appModifier;
     public $time;
+    public $param;
     public function __construct(
         $storageConditionName,
         $keyword, 
@@ -31,6 +32,7 @@ class StorageConditionDTO
         $appCreator,
         $appModifier,
         $time,
+        $param,
         )
     {
         $this->storageConditionName = $storageConditionName;
@@ -46,5 +48,6 @@ class StorageConditionDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
+        $this->param = $param;
     }
 }

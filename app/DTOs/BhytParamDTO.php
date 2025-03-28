@@ -17,6 +17,7 @@ class BhytParamDTO
     public $appCreator;
     public $appModifier;
     public $time;
+    public $param;
     public function __construct(
         $bhytParamName,
         $keyword, 
@@ -31,6 +32,7 @@ class BhytParamDTO
         $appCreator,
         $appModifier,
         $time,
+        $param,
         )
     {
         $this->bhytParamName = $bhytParamName;
@@ -46,5 +48,6 @@ class BhytParamDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
+        $this->param = $param;
     }
 }

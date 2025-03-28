@@ -17,6 +17,7 @@ class SuimIndexDTO
     public $appCreator;
     public $appModifier;
     public $time;
+    public $param;
     public function __construct(
         $suimIndexName,
         $keyword, 
@@ -31,6 +32,7 @@ class SuimIndexDTO
         $appCreator,
         $appModifier,
         $time,
+        $param,
         )
     {
         $this->suimIndexName = $suimIndexName;
@@ -46,5 +48,6 @@ class SuimIndexDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
+        $this->param = $param;
     }
 }

@@ -47,6 +47,7 @@ class SereServTeinController extends BaseApiCacheController
             $this->time,
             $this->testIndexIds,
             $this->tdlTreatmentId,
+            $this->param,
         );
         $this->sereServTeinService->withParams($this->sereServTeinDTO);
     }

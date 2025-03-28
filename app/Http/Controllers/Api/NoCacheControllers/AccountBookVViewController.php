@@ -48,6 +48,7 @@ class AccountBookVViewController extends BaseApiCacheController
             $this->isForDeposit,
     $this->isForRepay,
     $this->isForBill,
+    $this->param,
         );
         $this->accountBookVViewService->withParams($this->accountBookVViewDTO);
     }

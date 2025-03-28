@@ -46,6 +46,7 @@ class ServiceUnitController extends BaseApiCacheController
             $this->appCreator, 
             $this->appModifier, 
             $this->time,
+            $this->param,
         );
         $this->serviceUnitService->withParams($this->serviceUnitDTO);
     }

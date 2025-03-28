@@ -19,6 +19,7 @@ class MestPatientTypeDTO
     public $time;
     public $mediStockId;
     public $patientTypeId;
+    public $param;
     public function __construct(
         $mestPatientTypeName,
         $keyword, 
@@ -34,7 +35,8 @@ class MestPatientTypeDTO
         $appModifier,
         $time,
         $mediStockId,
-        $patientTypeId
+        $patientTypeId,
+        $param,
         )
     {
         $this->mestPatientTypeName = $mestPatientTypeName;
@@ -52,5 +54,6 @@ class MestPatientTypeDTO
         $this->time = $time;
         $this->mediStockId = $mediStockId;
         $this->patientTypeId = $patientTypeId;
+        $this->param = $param;
     }
 }

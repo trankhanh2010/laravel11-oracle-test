@@ -55,6 +55,7 @@ class ExecuteRoleUserController extends BaseApiCacheController
             $this->time,
             $this->loginname,
             $this->executeRoleId,
+            $this->param,
         );
         $this->executeRoleUserService->withParams($this->executeRoleUserDTO);
     }

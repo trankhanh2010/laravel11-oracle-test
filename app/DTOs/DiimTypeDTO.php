@@ -17,6 +17,7 @@ class DiimTypeDTO
     public $appCreator;
     public $appModifier;
     public $time;
+    public $param;
     public function __construct(
         $diimTypeName,
         $keyword, 
@@ -31,6 +32,7 @@ class DiimTypeDTO
         $appCreator,
         $appModifier,
         $time,
+        $param,
         )
     {
         $this->diimTypeName = $diimTypeName;
@@ -46,5 +48,6 @@ class DiimTypeDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
+        $this->param = $param;
     }
 }

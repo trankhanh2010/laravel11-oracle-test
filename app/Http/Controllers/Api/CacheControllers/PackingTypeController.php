@@ -44,6 +44,7 @@ class PackingTypeController extends BaseApiCacheController
             $this->appCreator, 
             $this->appModifier, 
             $this->time,
+            $this->param,
         );
         $this->packingTypeService->withParams($this->packingTypeDTO);
     }

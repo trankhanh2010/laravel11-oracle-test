@@ -20,6 +20,7 @@ class TrackingDTO
     public $time;
     public $treatmentId;
     public $groupBy;
+    public $param;
     public function __construct(
         $trackingName,
         $keyword, 
@@ -37,6 +38,7 @@ class TrackingDTO
         $time,
         $treatmentId,
         $groupBy,
+        $param,
         )
     {
         $this->trackingName = $trackingName;
@@ -55,5 +57,6 @@ class TrackingDTO
         $this->time = $time;
         $this->treatmentId = $treatmentId;
         $this->groupBy = $groupBy;
+        $this->param = $param;
     }
 }

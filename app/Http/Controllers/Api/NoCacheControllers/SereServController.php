@@ -47,7 +47,8 @@ class SereServController extends BaseApiCacheController
             $this->time,
             $this->serviceReqIds,
     $this->serviceTypeId,
-    $this->treatmentId
+    $this->treatmentId,
+    $this->param,
         );
         $this->sereServService->withParams($this->sereServDTO);
     }

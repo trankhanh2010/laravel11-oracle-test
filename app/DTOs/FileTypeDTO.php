@@ -17,6 +17,7 @@ class FileTypeDTO
     public $appCreator;
     public $appModifier;
     public $time;
+    public $param;
     public function __construct(
         $fileTypeName,
         $keyword, 
@@ -31,6 +32,7 @@ class FileTypeDTO
         $appCreator,
         $appModifier,
         $time,
+        $param,
         )
     {
         $this->fileTypeName = $fileTypeName;
@@ -46,5 +48,6 @@ class FileTypeDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
+        $this->param = $param;
     }
 }

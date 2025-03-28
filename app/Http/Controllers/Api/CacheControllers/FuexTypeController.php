@@ -44,6 +44,7 @@ class FuexTypeController extends BaseApiCacheController
             $this->appCreator, 
             $this->appModifier, 
             $this->time,
+            $this->param,
         );
         $this->fuexTypeService->withParams($this->fuexTypeDTO);
     }

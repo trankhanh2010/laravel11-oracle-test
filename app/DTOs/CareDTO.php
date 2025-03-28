@@ -18,6 +18,7 @@ class CareDTO
     public $appCreator;
     public $appModifier;
     public $time;
+    public $param;
     public function __construct(
         $careName,
         $keyword, 
@@ -33,6 +34,7 @@ class CareDTO
         $appCreator,
         $appModifier,
         $time,
+        $param,
         )
     {
         $this->careName = $careName;
@@ -49,5 +51,6 @@ class CareDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
+        $this->param = $param;
     }
 }

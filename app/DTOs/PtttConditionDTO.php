@@ -18,6 +18,7 @@ class PtttConditionDTO
     public $appModifier;
     public $time;
     public $tab;
+    public $param;
     public function __construct(
         $ptttConditionName,
         $keyword, 
@@ -33,6 +34,7 @@ class PtttConditionDTO
         $appModifier,
         $time,
         $tab,
+        $param,
         )
     {
         $this->ptttConditionName = $ptttConditionName;
@@ -49,5 +51,6 @@ class PtttConditionDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->tab = $tab;
+        $this->param = $param;
     }
 }

@@ -17,6 +17,7 @@ class MedicalContractDTO
     public $appCreator;
     public $appModifier;
     public $time;
+    public $param;
     public function __construct(
         $medicalContractName,
         $keyword, 
@@ -31,6 +32,7 @@ class MedicalContractDTO
         $appCreator,
         $appModifier,
         $time,
+        $param,
         )
     {
         $this->medicalContractName = $medicalContractName;
@@ -46,5 +48,6 @@ class MedicalContractDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
+        $this->param = $param;
     }
 }

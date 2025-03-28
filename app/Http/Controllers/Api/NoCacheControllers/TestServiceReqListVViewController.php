@@ -55,6 +55,7 @@ class TestServiceReqListVViewController extends BaseApiCacheController
             $this->patientCode,
             $this->status,
             $this->patientPhone,
+            $this->param,
         );
         $this->testServiceReqListVViewService->withParams($this->testServiceReqListVViewDTO);
     }

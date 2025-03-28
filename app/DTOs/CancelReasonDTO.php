@@ -17,6 +17,7 @@ class CancelReasonDTO
     public $appCreator;
     public $appModifier;
     public $time;
+    public $param;
     public function __construct(
         $cancelReasonName,
         $keyword, 
@@ -31,6 +32,7 @@ class CancelReasonDTO
         $appCreator,
         $appModifier,
         $time,
+        $param,
         )
     {
         $this->cancelReasonName = $cancelReasonName;
@@ -46,5 +48,6 @@ class CancelReasonDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
+        $this->param = $param;
     }
 }

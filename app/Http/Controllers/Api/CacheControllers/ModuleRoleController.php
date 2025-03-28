@@ -49,7 +49,8 @@ class ModuleRoleController extends BaseApiCacheController
             $this->appModifier, 
             $this->time,
             $this->moduleId,
-            $this->roleId
+            $this->roleId,
+            $this->param,
         );
         $this->moduleRoleService->withParams($this->moduleRoleDTO);
     }

@@ -19,6 +19,7 @@ class UserRoomDTO
     public $appModifier;
     public $time;
     public $loginname;
+    public $param;
     public function __construct(
         $userRoomName,
         $keyword, 
@@ -35,6 +36,7 @@ class UserRoomDTO
         $appModifier,
         $time,
         $loginname,
+        $param,
         )
     {
         $this->userRoomName = $userRoomName;
@@ -52,5 +54,6 @@ class UserRoomDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->loginname = $loginname;
+        $this->param = $param;
     }
 }

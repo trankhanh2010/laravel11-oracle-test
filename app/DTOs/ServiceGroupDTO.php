@@ -17,6 +17,7 @@ class ServiceGroupDTO
     public $appCreator;
     public $appModifier;
     public $time;
+    public $param;
     public function __construct(
         $serviceGroupName,
         $keyword, 
@@ -31,6 +32,7 @@ class ServiceGroupDTO
         $appCreator,
         $appModifier,
         $time,
+        $param,
         )
     {
         $this->serviceGroupName = $serviceGroupName;
@@ -46,5 +48,6 @@ class ServiceGroupDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
+        $this->param = $param;
     }
 }

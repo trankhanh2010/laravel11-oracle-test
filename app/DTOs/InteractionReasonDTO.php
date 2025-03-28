@@ -17,6 +17,7 @@ class InteractionReasonDTO
     public $appCreator;
     public $appModifier;
     public $time;
+    public $param;
     public function __construct(
         $interactionReasonName,
         $keyword, 
@@ -31,6 +32,7 @@ class InteractionReasonDTO
         $appCreator,
         $appModifier,
         $time,
+        $param,
         )
     {
         $this->interactionReasonName = $interactionReasonName;
@@ -46,5 +48,6 @@ class InteractionReasonDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
+        $this->param = $param;
     }
 }

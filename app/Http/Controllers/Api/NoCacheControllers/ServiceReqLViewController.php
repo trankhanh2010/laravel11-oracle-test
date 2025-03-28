@@ -52,6 +52,7 @@ class ServiceReqLViewController extends BaseApiCacheController
             $this->intructionTimeTo,
             $this->hasExecute,
             $this->isNotKskRequriedAprovalOrIsKskApprove,
+            $this->param,
         );
         $this->serviceReqLViewService->withParams($this->serviceReqLViewDTO);
     }

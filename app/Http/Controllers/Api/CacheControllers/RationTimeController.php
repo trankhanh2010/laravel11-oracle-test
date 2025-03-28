@@ -44,6 +44,7 @@ class RationTimeController extends BaseApiCacheController
             $this->appCreator, 
             $this->appModifier, 
             $this->time,
+            $this->param,
         );
         $this->rationTimeService->withParams($this->rationTimeDTO);
     }

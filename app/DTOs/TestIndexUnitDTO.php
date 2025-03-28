@@ -17,6 +17,7 @@ class TestIndexUnitDTO
     public $appCreator;
     public $appModifier;
     public $time;
+    public $param;
     public function __construct(
         $testIndexUnitName,
         $keyword, 
@@ -31,6 +32,7 @@ class TestIndexUnitDTO
         $appCreator,
         $appModifier,
         $time,
+        $param,
         )
     {
         $this->testIndexUnitName = $testIndexUnitName;
@@ -46,5 +48,6 @@ class TestIndexUnitDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
+        $this->param = $param;
     }
 }

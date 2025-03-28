@@ -17,6 +17,7 @@ class CashierRoomDTO
     public $appCreator;
     public $appModifier;
     public $time;
+    public $param;
     public function __construct(
         $cashierRoomName,
         $keyword, 
@@ -31,6 +32,7 @@ class CashierRoomDTO
         $appCreator,
         $appModifier,
         $time,
+        $param,
         )
     {
         $this->cashierRoomName = $cashierRoomName;
@@ -46,5 +48,6 @@ class CashierRoomDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
+        $this->param = $param;
     }
 }

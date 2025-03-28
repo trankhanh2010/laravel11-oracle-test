@@ -17,6 +17,7 @@ class TransactionTypeDTO
     public $appCreator;
     public $appModifier;
     public $time;
+    public $param;
     public function __construct(
         $transactionTypeName,
         $keyword, 
@@ -31,6 +32,7 @@ class TransactionTypeDTO
         $appCreator,
         $appModifier,
         $time,
+        $param,
         )
     {
         $this->transactionTypeName = $transactionTypeName;
@@ -46,5 +48,6 @@ class TransactionTypeDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
+        $this->param = $param;
     }
 }

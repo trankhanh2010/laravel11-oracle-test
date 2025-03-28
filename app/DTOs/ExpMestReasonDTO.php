@@ -17,6 +17,7 @@ class ExpMestReasonDTO
     public $appCreator;
     public $appModifier;
     public $time;
+    public $param;
     public function __construct(
         $expMestReasonName,
         $keyword, 
@@ -31,6 +32,7 @@ class ExpMestReasonDTO
         $appCreator,
         $appModifier,
         $time,
+        $param,
         )
     {
         $this->expMestReasonName = $expMestReasonName;
@@ -46,5 +48,6 @@ class ExpMestReasonDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
+        $this->param = $param;
     }
 }

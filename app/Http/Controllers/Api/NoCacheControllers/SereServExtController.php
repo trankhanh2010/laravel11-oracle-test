@@ -46,6 +46,7 @@ class SereServExtController extends BaseApiCacheController
             $this->appModifier, 
             $this->time,
             $this->sereServIds,
+            $this->param,
         );
         $this->sereServExtService->withParams($this->sereServExtDTO);
     }

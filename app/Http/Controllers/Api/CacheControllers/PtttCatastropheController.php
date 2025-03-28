@@ -45,6 +45,7 @@ class PtttCatastropheController extends BaseApiCacheController
             $this->appModifier, 
             $this->time,
             $this->tab,
+            $this->param,
         );
         $this->ptttCatastropheService->withParams($this->ptttCatastropheDTO);
     }

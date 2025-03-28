@@ -19,6 +19,7 @@ class ExroRoomDTO
     public $time;
     public $roomId;
     public $executeRoomId;
+    public $param;
     public function __construct(
         $exroRoomName,
         $keyword, 
@@ -35,6 +36,7 @@ class ExroRoomDTO
         $time,
         $roomId,
         $executeRoomId,
+        $param,
         )
     {
         $this->exroRoomName = $exroRoomName;
@@ -52,5 +54,6 @@ class ExroRoomDTO
         $this->time = $time;
         $this->roomId = $roomId;
         $this->executeRoomId = $executeRoomId;
+        $this->param = $param;
     }
 }

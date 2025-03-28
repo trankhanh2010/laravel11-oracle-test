@@ -44,6 +44,7 @@ class PtttGroupController extends BaseApiCacheController
             $this->appCreator, 
             $this->appModifier, 
             $this->time,
+            $this->param,
         );
         $this->ptttGroupService->withParams($this->ptttGroupDTO);
     }

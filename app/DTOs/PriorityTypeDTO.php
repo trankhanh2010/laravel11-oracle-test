@@ -17,6 +17,7 @@ class PriorityTypeDTO
     public $appCreator;
     public $appModifier;
     public $time;
+    public $param;
     public function __construct(
         $priorityTypeName,
         $keyword, 
@@ -31,6 +32,7 @@ class PriorityTypeDTO
         $appCreator,
         $appModifier,
         $time,
+        $param,
         )
     {
         $this->priorityTypeName = $priorityTypeName;
@@ -46,5 +48,6 @@ class PriorityTypeDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
+        $this->param = $param;
     }
 }

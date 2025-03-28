@@ -20,6 +20,7 @@ class SereServTeinDTO
     public $time;
     public $testIndexIds;
     public $tdlTreatmentId;
+    public $param;
     public function __construct(
         $sereServTeinName,
         $keyword, 
@@ -37,6 +38,7 @@ class SereServTeinDTO
         $time,
         $testIndexIds,
         $tdlTreatmentId,
+        $param,
         )
     {
         $this->sereServTeinName = $sereServTeinName;
@@ -55,5 +57,6 @@ class SereServTeinDTO
         $this->time = $time;
         $this->testIndexIds = $testIndexIds;
         $this->tdlTreatmentId = $tdlTreatmentId;
+        $this->param = $param;
     }
 }

@@ -25,6 +25,7 @@ class AccountBookVViewDTO
     // public $forDeposit;
     // public $loginname;
     // public $cashierroomId;
+    public $param;
     public function __construct(
         $accountBookVViewName,
         $keyword, 
@@ -47,6 +48,7 @@ class AccountBookVViewDTO
         // $forDeposit,
         // $loginname,
         // $cashierroomId,
+        $param,
         )
     {
         $this->accountBookVViewName = $accountBookVViewName;
@@ -70,5 +72,6 @@ class AccountBookVViewDTO
         // $this->forDeposit = $forDeposit;
         // $this->loginname = $loginname;
         // $this->cashierroomId = $cashierroomId;
+        $this->param = $param;
     }
 }
