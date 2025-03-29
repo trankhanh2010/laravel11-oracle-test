@@ -2,7 +2,7 @@
 namespace App\Repositories;
 
 use App\Jobs\ElasticSearch\Index\ProcessElasticIndexingJob;
-use App\Models\HIS\BhytBlacklist;
+use App\Models\HIS\BHYTBlacklist;
 use Illuminate\Support\Facades\DB;
 
 class BhytBlacklistRepository

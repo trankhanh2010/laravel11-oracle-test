@@ -3,7 +3,7 @@
 namespace App\Listeners\Elastic\BhytParam;
 
 use App\Events\Elastic\BhytParam\InsertBhytParamIndex;
-use App\Models\HIS\BhytParam;
+use App\Models\HIS\BHYTParam;
 use App\Repositories\BhytParamRepository;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
