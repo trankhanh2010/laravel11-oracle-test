@@ -90,13 +90,17 @@ class TreatmentEndTypeService
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $data = Cache::remember($this->params->treatmentEndTypeName . '_' . $id . '_is_active_' . $this->params->isActive, $this->params->time, function () use ($id){
+            $cacheKey = $this->params->treatmentEndTypeName .'_'.$id.'_'. $this->params->param;
+            $cacheKeySet = "cache_keys:" . $this->params->treatmentEndTypeName; // Set để lưu danh sách key
+            $data = Cache::remember($cacheKey, $this->params->time, function () use($id){
                 $data = $this->treatmentEndTypeRepository->applyJoins()
                     ->where('his_treatment_end_type.id', $id);
                 $data = $this->treatmentEndTypeRepository->applyIsActiveFilter($data, $this->params->isActive);
                 $data = $data->first();
                 return $data;
             });
+            // Lưu key vào Redis Set để dễ xóa sau này
+            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
             return $data;
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['treatment_end_type'], $e);

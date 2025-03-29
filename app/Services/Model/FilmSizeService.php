@@ -60,13 +60,17 @@ class FilmSizeService
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $data = Cache::remember($this->params->filmSizeName . '_' . $id . '_is_active_' . $this->params->isActive, $this->params->time, function () use ($id){
+            $cacheKey = $this->params->filmSizeName .'_'.$id.'_'. $this->params->param;
+            $cacheKeySet = "cache_keys:" . $this->params->filmSizeName; // Set để lưu danh sách key
+            $data = Cache::remember($cacheKey, $this->params->time, function () use($id){
                 $data = $this->filmSizeRepository->applyJoins()
                     ->where('his_film_size.id', $id);
                 $data = $this->filmSizeRepository->applyIsActiveFilter($data, $this->params->isActive);
                 $data = $data->first();
                 return $data;
             });
+            // Lưu key vào Redis Set để dễ xóa sau này
+            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
             return $data;
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['film_size'], $e);

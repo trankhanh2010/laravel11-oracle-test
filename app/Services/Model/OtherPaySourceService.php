@@ -60,13 +60,17 @@ class OtherPaySourceService
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $data = Cache::remember($this->params->otherPaySourceName . '_' . $id . '_is_active_' . $this->params->isActive, $this->params->time, function () use ($id){
+            $cacheKey = $this->params->otherPaySourceName .'_'.$id.'_'. $this->params->param;
+            $cacheKeySet = "cache_keys:" . $this->params->otherPaySourceName; // Set để lưu danh sách key
+            $data = Cache::remember($cacheKey, $this->params->time, function () use($id){
                 $data = $this->otherPaySourceRepository->applyJoins()
                     ->where('his_other_pay_source.id', $id);
                 $data = $this->otherPaySourceRepository->applyIsActiveFilter($data, $this->params->isActive);
                 $data = $data->first();
                 return $data;
             });
+            // Lưu key vào Redis Set để dễ xóa sau này
+            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
             return $data;
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['other_pay_source'], $e);

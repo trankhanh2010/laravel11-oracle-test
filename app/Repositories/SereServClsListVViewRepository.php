@@ -7,6 +7,7 @@ use App\Models\HIS\ReportTypeCat;
 use App\Models\View\SereServClsListVView;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Str;
 
 class SereServClsListVViewRepository
@@ -181,9 +182,13 @@ class SereServClsListVViewRepository
         // Lấy danh sách tất cả category từ DB
         $categoryList = [];
         if (isset($reportTypeCode)) {
-            $categoryList = Cache::remember('category_list_' . $reportTypeCode, 14400, function () use ($reportTypeCode) {
+            $cacheKey = 'category_list_' . $reportTypeCode;
+            $cacheKeySet = "cache_keys:" . "sere_serv_cls_list_v_view"; // Set để lưu danh sách key
+            $categoryList = Cache::remember($cacheKey, 14400, function () use ($reportTypeCode) {
                 return $this->reportTypeCat->where('report_type_code', $reportTypeCode)->pluck('category_name', 'num_order')->toArray();
             });
+            // Lưu key vào Redis Set để dễ xóa sau này
+            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
         }
         if (empty($groupByFields)) {
             return $data;

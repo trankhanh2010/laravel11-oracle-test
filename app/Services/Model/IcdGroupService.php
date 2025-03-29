@@ -60,13 +60,17 @@ class IcdGroupService
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $data = Cache::remember($this->params->icdGroupName . '_' . $id . '_is_active_' . $this->params->isActive, $this->params->time, function () use ($id){
+            $cacheKey = $this->params->icdGroupName .'_'.$id.'_'. $this->params->param;
+            $cacheKeySet = "cache_keys:" . $this->params->icdGroupName; // Set để lưu danh sách key
+            $data = Cache::remember($cacheKey, $this->params->time, function () use($id){
                 $data = $this->icdGroupRepository->applyJoins()
                     ->where('his_icd_group.id', $id);
                 $data = $this->icdGroupRepository->applyIsActiveFilter($data, $this->params->isActive);
                 $data = $data->first();
                 return $data;
             });
+            // Lưu key vào Redis Set để dễ xóa sau này
+            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
             return $data;
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['icd_group'], $e);

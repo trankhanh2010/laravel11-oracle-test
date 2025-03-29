@@ -11,6 +11,7 @@ use App\Services\Elastic\ElasticsearchService;
 use App\Services\Model\DepartmentService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Redis;
 
 class DepartmentController extends BaseApiCacheController
 {
@@ -69,10 +70,14 @@ class DepartmentController extends BaseApiCacheController
         $this->elasticCustom = $this->departmentService->handleCustomParamElasticSearch();
         if ($this->elasticSearchType || $this->elastic) {
             if(!$keyword){
-                $data = Cache::remember($this->departmentName.'_' . $this->param, $this->time, function () use($source) {
+                $cacheKey = $this->departmentName .'_'. 'elastic' . '_' . $this->param;
+                $cacheKeySet = "cache_keys:" . $this->departmentName; // Set để lưu danh sách key
+                $data = Cache::remember($cacheKey, $this->time, function () use ($source) {
                     $data = $this->elasticSearchService->handleElasticSearchSearch($this->departmentName, $this->elasticCustom, $source);
                     return $data;
                 });
+                // Lưu key vào Redis Set để dễ xóa sau này
+                Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
             }else{
                 $data = $this->elasticSearchService->handleElasticSearchSearch($this->departmentName, $this->elasticCustom, $source);
             }

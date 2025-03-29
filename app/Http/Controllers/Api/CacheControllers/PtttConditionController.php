@@ -11,6 +11,7 @@ use App\Services\Elastic\ElasticsearchService;
 use App\Services\Model\PtttConditionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Redis;
 
 class PtttConditionController extends BaseApiCacheController
 {
@@ -63,10 +64,14 @@ class PtttConditionController extends BaseApiCacheController
         $this->elasticCustom = $this->ptttConditionService->handleCustomParamElasticSearch();
         if ($this->elasticSearchType || $this->elastic) {
             if (!$keyword) {
-                $data = Cache::remember($this->ptttConditionName . '_' . $this->param, $this->time, function () use ($source) {
+                $cacheKey = $this->ptttConditionName .'_'. 'elastic' . '_' . $this->param;
+                $cacheKeySet = "cache_keys:" . $this->ptttConditionName; // Set để lưu danh sách key
+                $data = Cache::remember($cacheKey, $this->time, function () use ($source) {
                     $data = $this->elasticSearchService->handleElasticSearchSearch($this->ptttConditionName, $this->elasticCustom, $source);
                     return $data;
                 });
+                // Lưu key vào Redis Set để dễ xóa sau này
+                Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
 
             } else {
                 $data = $this->elasticSearchService->handleElasticSearchSearch($this->ptttConditionName, $this->elasticCustom, $source);

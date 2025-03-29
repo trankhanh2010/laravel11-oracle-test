@@ -60,13 +60,17 @@ class ExeServiceModuleService
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $data = Cache::remember($this->params->exeServiceModuleName . '_' . $id . '_is_active_' . $this->params->isActive, $this->params->time, function () use ($id){
+            $cacheKey = $this->params->exeServiceModuleName .'_'.$id.'_'. $this->params->param;
+            $cacheKeySet = "cache_keys:" . $this->params->exeServiceModuleName; // Set để lưu danh sách key
+            $data = Cache::remember($cacheKey, $this->params->time, function () use($id){
                 $data = $this->exeServiceModuleRepository->applyJoins()
                     ->where('his_exe_service_module.id', $id);
                 $data = $this->exeServiceModuleRepository->applyIsActiveFilter($data, $this->params->isActive);
                 $data = $data->first();
                 return $data;
             });
+            // Lưu key vào Redis Set để dễ xóa sau này
+            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
             return $data;
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['exe_service_module'], $e);

@@ -90,13 +90,17 @@ class DeathWithinService
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $data = Cache::remember($this->params->deathWithinName . '_' . $id . '_is_active_' . $this->params->isActive, $this->params->time, function () use ($id){
+            $cacheKey = $this->params->deathWithinName .'_'.$id.'_'. $this->params->param;
+            $cacheKeySet = "cache_keys:" . $this->params->deathWithinName; // Set để lưu danh sách key
+            $data = Cache::remember($cacheKey, $this->params->time, function () use($id){
                 $data = $this->deathWithinRepository->applyJoins()
                     ->where('his_death_within.id', $id);
                 $data = $this->deathWithinRepository->applyIsActiveFilter($data, $this->params->isActive);
                 $data = $data->first();
                 return $data;
             });
+            // Lưu key vào Redis Set để dễ xóa sau này
+            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
             return $data;
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['death_within'], $e);

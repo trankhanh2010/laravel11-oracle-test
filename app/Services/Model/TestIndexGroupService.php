@@ -60,13 +60,17 @@ class TestIndexGroupService
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $data = Cache::remember($this->params->testIndexGroupName . '_' . $id . '_is_active_' . $this->params->isActive, $this->params->time, function () use ($id){
+            $cacheKey = $this->params->testIndexGroupName .'_'.$id.'_'. $this->params->param;
+            $cacheKeySet = "cache_keys:" . $this->params->testIndexGroupName; // Set để lưu danh sách key
+            $data = Cache::remember($cacheKey, $this->params->time, function () use($id){
                 $data = $this->testIndexGroupRepository->applyJoins()
                     ->where('his_test_index_group.id', $id);
                 $data = $this->testIndexGroupRepository->applyIsActiveFilter($data, $this->params->isActive);
                 $data = $data->first();
                 return $data;
             });
+            // Lưu key vào Redis Set để dễ xóa sau này
+            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
             return $data;
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['test_index_group'], $e);

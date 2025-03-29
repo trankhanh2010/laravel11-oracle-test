@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Route;
 use App\Models\ACS\User;
 use App\Models\ACS\Module;
+use Illuminate\Support\Facades\Redis;
+
 class CheckModule
 {
     /**
@@ -42,16 +44,25 @@ class CheckModule
             return $next($request);
         }
         // Nếu có full quyền thì đi tiếp
+        $cacheKey = 'check_super_admin_'.$user->loginname;
+        $cacheKeySet = "cache_keys:" . $user->loginname; // Set để lưu danh sách key
         $check_super_admin =  Cache::remember('check_super_admin_'.$user->loginname, now()->addMinutes(1440) , function () use ($user) {
             return $user->checkSuperAdmin();
         });
+        // Lưu key vào Redis Set để dễ xóa sau này
+        Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
         if($check_super_admin){
             return $next($request);
         }
         // Kiểm tra quyền module
+        $cacheKey = 'has_module_'.$currentRouteName.'_'.$user->loginname;
+        $cacheKeySet = "cache_keys:" . $user->loginname; // Set để lưu danh sách key
         $has_module =  Cache::remember('has_module_'.$currentRouteName.'_'.$user->loginname, now()->addMinutes(1440) , function () use ($user, $currentRouteName) {
             return $user->hasModule($currentRouteName);
         });
+        // Lưu key vào Redis Set để dễ xóa sau này
+        Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+        
         if ($has_module) {
             return $next($request);
         }

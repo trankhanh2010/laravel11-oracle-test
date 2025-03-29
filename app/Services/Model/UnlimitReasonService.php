@@ -60,13 +60,17 @@ class UnlimitReasonService
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $data = Cache::remember($this->params->unlimitReasonName . '_' . $id . '_is_active_' . $this->params->isActive, $this->params->time, function () use ($id){
+            $cacheKey = $this->params->unlimitReasonName .'_'.$id.'_'. $this->params->param;
+            $cacheKeySet = "cache_keys:" . $this->params->unlimitReasonName; // Set để lưu danh sách key
+            $data = Cache::remember($cacheKey, $this->params->time, function () use($id){
                 $data = $this->unlimitReasonRepository->applyJoins()
                     ->where('his_unlimit_reason.id', $id);
                 $data = $this->unlimitReasonRepository->applyIsActiveFilter($data, $this->params->isActive);
                 $data = $data->first();
                 return $data;
             });
+            // Lưu key vào Redis Set để dễ xóa sau này
+            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
             return $data;
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['unlimit_reason'], $e);

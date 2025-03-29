@@ -60,13 +60,17 @@ class PackingTypeService
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $data = Cache::remember($this->params->packingTypeName . '_' . $id . '_is_active_' . $this->params->isActive, $this->params->time, function () use ($id){
+            $cacheKey = $this->params->packingTypeName .'_'.$id.'_'. $this->params->param;
+            $cacheKeySet = "cache_keys:" . $this->params->packingTypeName; // Set để lưu danh sách key
+            $data = Cache::remember($cacheKey, $this->params->time, function () use($id){
                 $data = $this->packingTypeRepository->applyJoins()
                     ->where('his_packing_type.id', $id);
                 $data = $this->packingTypeRepository->applyIsActiveFilter($data, $this->params->isActive);
                 $data = $data->first();
                 return $data;
             });
+            // Lưu key vào Redis Set để dễ xóa sau này
+            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
             return $data;
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['packing_type'], $e);

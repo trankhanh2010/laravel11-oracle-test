@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
 use App\Http\Resources\Elastic\ElasticResource;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Str;
 
 class ElasticsearchService extends BaseApiCacheController
@@ -543,13 +544,17 @@ class ElasticsearchService extends BaseApiCacheController
                 $data = $this->applyResource($data);
                 return ['data' => $data, 'count' => $count];
             } else {
-                $data = Cache::remember('elastic_' . $tableName . '_start_' . $this->start . '_limit_' . $this->limit . $this->orderByString . '_is_active_' . $this->elasticIsActive . '_get_all_' . $this->getAll, $this->time, function () use ($tableName, $paramCustom) {
+                $cacheKey = $tableName .'_'. 'elastic' . '_' . $this->param;
+                $cacheKeySet = "cache_keys:" . $tableName; // Set để lưu danh sách key
+                $data = Cache::remember($cacheKey, $this->time, function () use ($tableName, $paramCustom) {
                     $body = $this->buildSearchBody($tableName, $paramCustom);
                     $data = $this->executeSearch($tableName, $body, null);
                     $count = $this->counting($data);
                     $data = $this->applyResource($data);
                     return ['data' => $data, 'count' => $count];
                 });
+                // Lưu key vào Redis Set để dễ xóa sau này
+                Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
             }
             return $data;
         } catch (\Throwable $e) {
@@ -567,12 +572,16 @@ class ElasticsearchService extends BaseApiCacheController
                 $data = $this->applyResource($data);
                 return $data;
             } else {
-                $data = Cache::remember('elastic_' . $tableName . '_' . $id . '_is_active_' . $this->elasticIsActive, $this->time, function () use ($tableName, $id, $paramCustom) {
+                $cacheKey = $tableName .'_'. 'elastic' . '_' . $this->param;
+                $cacheKeySet = "cache_keys:" . $tableName; // Set để lưu danh sách key
+                $data = Cache::remember($cacheKey, $this->time, function () use ($tableName, $id, $paramCustom) {
                     $body = $this->buildSearchBody($tableName, $paramCustom);
                     $data = $this->executeSearch($tableName, $body, $id);
                     $data = $this->applyResource($data);
                     return $data;
                 });
+                // Lưu key vào Redis Set để dễ xóa sau này
+                Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
             }
             return $data;
         } catch (\Throwable $e) {

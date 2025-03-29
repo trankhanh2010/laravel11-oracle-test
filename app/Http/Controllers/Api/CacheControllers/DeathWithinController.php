@@ -11,6 +11,7 @@ use App\Services\Elastic\ElasticsearchService;
 use App\Services\Model\DeathWithinService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Redis;
 
 class DeathWithinController extends BaseApiCacheController
 {
@@ -63,10 +64,14 @@ class DeathWithinController extends BaseApiCacheController
         $this->elasticCustom = $this->deathWithinService->handleCustomParamElasticSearch();
         if ($this->elasticSearchType || $this->elastic) {
             if(!$keyword){
-                $data = Cache::remember($this->deathWithinName.'_' . $this->param, $this->time, function () use($source) {
+                $cacheKey = $this->deathWithinName .'_'. 'elastic' . '_' . $this->param;
+                $cacheKeySet = "cache_keys:" . $this->deathWithinName; // Set để lưu danh sách key
+                $data = Cache::remember($cacheKey, $this->time, function () use ($source) {
                     $data = $this->elasticSearchService->handleElasticSearchSearch($this->deathWithinName, $this->elasticCustom, $source);
                     return $data;
                 });
+                // Lưu key vào Redis Set để dễ xóa sau này
+                Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
             }else{
                 $data = $this->elasticSearchService->handleElasticSearchSearch($this->deathWithinName, $this->elasticCustom, $source);
             }

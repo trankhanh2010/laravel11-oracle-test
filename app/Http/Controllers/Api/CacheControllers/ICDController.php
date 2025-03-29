@@ -11,6 +11,7 @@ use App\Services\Elastic\ElasticsearchService;
 use App\Services\Model\IcdService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Redis;
 
 class IcdController extends BaseApiCacheController
 {
@@ -62,10 +63,14 @@ class IcdController extends BaseApiCacheController
         $this->elasticCustom = $this->icdService->handleCustomParamElasticSearch();
         if ($this->elasticSearchType || $this->elastic) {
             if (!$keyword) {
-                $data = Cache::remember($this->icdName . '_' . $this->param, $this->time, function () use ($source) {
+                $cacheKey = $this->icdName .'_'. 'elastic' . '_' . $this->param;
+                $cacheKeySet = "cache_keys:" . $this->icdName; // Set để lưu danh sách key
+                $data = Cache::remember($cacheKey, $this->time, function () use ($source) {
                     $data = $this->elasticSearchService->handleElasticSearchSearch($this->icdName, $this->elasticCustom, $source);
                     return base64_encode(gzcompress(serialize($data))); // Nén và mã hóa trước khi lưu
                 });
+                // Lưu key vào Redis Set để dễ xóa sau này
+                Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
                 // **Giải nén khi lấy dữ liệu từ cache**
                 if ($data && is_string($data)) {
                     $data = unserialize(gzuncompress(base64_decode($data)));

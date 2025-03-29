@@ -11,6 +11,7 @@ use App\Services\Elastic\ElasticsearchService;
 use App\Services\Model\EmrFormService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Redis;
 
 class EmrFormController extends BaseApiCacheController
 {
@@ -63,10 +64,14 @@ class EmrFormController extends BaseApiCacheController
         $this->elasticCustom = $this->emrFormService->handleCustomParamElasticSearch();
         if ($this->elasticSearchType || $this->elastic) {
             if(!$keyword){
-                $data = Cache::remember($this->emrFormName.'_' . $this->param, $this->time, function () use($source) {
+                $cacheKey = $this->emrFormName .'_'. 'elastic' . '_' . $this->param;
+                $cacheKeySet = "cache_keys:" . $this->emrFormName; // Set để lưu danh sách key
+                $data = Cache::remember($cacheKey, $this->time, function () use ($source) {
                     $data = $this->elasticSearchService->handleElasticSearchSearch($this->emrFormName, $this->elasticCustom, $source);
                     return $data;
                 });
+                // Lưu key vào Redis Set để dễ xóa sau này
+                Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
             }else{
                 $data = $this->elasticSearchService->handleElasticSearchSearch($this->emrFormName, $this->elasticCustom, $source);
             }

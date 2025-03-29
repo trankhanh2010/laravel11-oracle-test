@@ -60,13 +60,17 @@ class ExecuteGroupService
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $data = Cache::remember($this->params->executeGroupName . '_' . $id . '_is_active_' . $this->params->isActive, $this->params->time, function () use ($id){
+            $cacheKey = $this->params->executeGroupName .'_'.$id.'_'. $this->params->param;
+            $cacheKeySet = "cache_keys:" . $this->params->executeGroupName; // Set để lưu danh sách key
+            $data = Cache::remember($cacheKey, $this->params->time, function () use($id){
                 $data = $this->executeGroupRepository->applyJoins()
                     ->where('his_execute_group.id', $id);
                 $data = $this->executeGroupRepository->applyIsActiveFilter($data, $this->params->isActive);
                 $data = $data->first();
                 return $data;
             });
+            // Lưu key vào Redis Set để dễ xóa sau này
+            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
             return $data;
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['execute_group'], $e);

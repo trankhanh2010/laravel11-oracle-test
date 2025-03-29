@@ -8,6 +8,7 @@ use App\Events\Elastic\TreatmentListVView\InsertTreatmentListVViewIndex;
 use App\Events\Elastic\DeleteIndex;
 use Illuminate\Support\Facades\Cache;
 use App\Repositories\TreatmentListVViewRepository;
+use Illuminate\Support\Facades\Redis;
 
 class TreatmentListVViewService
 {
@@ -25,7 +26,10 @@ class TreatmentListVViewService
     public function handleDataBaseGetAll()
     {
         try {
-            $data = Cache::remember($this->params->treatmentListVViewName .$this->params->param, 3600, function () {
+            $cacheKey = $this->params->treatmentListVViewName .'_'. $this->params->param;
+            $cacheKeySet = "cache_keys:" . $this->params->treatmentListVViewName; // Set để lưu danh sách key
+            
+            $data = Cache::remember($cacheKey, 3600, function () {                
                 $data = $this->treatmentListVViewRepository->applyJoins();
                 $data = $this->treatmentListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
                 $data = $this->treatmentListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
@@ -40,6 +44,8 @@ class TreatmentListVViewService
                 $data = $this->treatmentListVViewRepository->applyGroupByField($data, $this->params->groupBy);
                 return ['data' => $data, 'count' => $count];
             });
+            // Lưu key vào Redis Set để dễ xóa sau này
+            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
 
             return $data;
         } catch (\Throwable $e) {

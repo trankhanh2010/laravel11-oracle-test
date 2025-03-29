@@ -6,6 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Redis;
 
 class CheckAdmin
 {
@@ -23,9 +24,14 @@ class CheckAdmin
         $token = get_token_header($request, $token_header);
         $user = get_user_with_loginname($token->login_name);
         // Nếu có full quyền thì đi tiếp
-        $check_super_admin =  Cache::remember('check_super_admin_'.$user->loginname, now()->addMinutes(1440) , function () use ($user) {
+
+        $cacheKey = 'check_super_admin_'.$user->loginname;
+        $cacheKeySet = "cache_keys:" . $user->loginname; // Set để lưu danh sách key
+        $check_super_admin =  Cache::remember($cacheKey, now()->addMinutes(1440) , function () use ($user) {
             return $user->checkSuperAdmin();
         });
+        // Lưu key vào Redis Set để dễ xóa sau này
+        Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
         if($check_super_admin){
             return $next($request);
         }

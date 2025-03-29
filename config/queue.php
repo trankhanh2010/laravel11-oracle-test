@@ -63,7 +63,7 @@ return [
         'redis' => [
             'driver' => 'redis',
             'connection' => 'cache',
-            'queue' => env('REDIS_QUEUE', 'cache'),
+            'queue' => env('REDIS_QUEUE', '{default}'), // thêm khe băm nếu dùng Redis làm hàng đợi
             'retry_after' => 90,
             'block_for' => 3,
         ],

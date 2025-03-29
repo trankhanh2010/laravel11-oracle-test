@@ -40,6 +40,7 @@ use App\Models\HIS\Treatment;
 use App\Models\HIS\TreatmentType;
 use App\Models\HIS\UserRoom;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
@@ -852,7 +853,8 @@ class BaseApiCacheController extends Controller
 
     protected function getColumnsTable($table, $isView = false)
     {
-        $parts = explode('_', $table->getTable());
+        $tableName = strtolower($table->getTable());
+        $parts = explode('_', $tableName);
 
         if ($parts[0] === 'xa') {
             $conn = strtolower($parts[2] ?? ''); // Tránh lỗi nếu không có phần tử thứ 2
@@ -860,11 +862,15 @@ class BaseApiCacheController extends Controller
             $conn = $isView ? strtolower($parts[1] ?? '') : strtolower($parts[0] ?? '');
         }
 
-        $columnsTable = Cache::remember('columns_' . $table->getTable(), $this->columnsTime, function () use ($table, $conn) {
-            return Schema::connection('oracle_' . $conn)->getColumnListing($table->getTable()) ?? [];
+        $cacheKey = 'columns_' . $tableName;
+        $cacheKeySet = "cache_keys:" . "columns"; // Set để lưu danh sách key
+        $data = Cache::remember($cacheKey, $this->columnsTime, function () use ($tableName, $conn) {
+            return Schema::connection('oracle_' . $conn)->getColumnListing($tableName) ?? [];
         });
+        // Lưu key vào Redis Set để dễ xóa sau này
+        Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
 
-        return $columnsTable;
+        return $data;
     }
 
     protected function checkOrderBy($orderBy, $columns, $orderByJoin)
@@ -890,15 +896,20 @@ class BaseApiCacheController extends Controller
         $this->currentLoginname = get_loginname_with_token($request->bearerToken(), $this->time);
 
         // Lấy ra danh sách room id được quyền lấy tài nguyên của tài khoản đang đăng nhập
-        $this->currentUserLoginRoomIds = Cache::remember(
-            'user_login_room_ids_'.$this->currentLoginname, 
-            $this->time, 
-            function () {
-                $data = UserRoom::getRoomIdsByLoginname($this->currentLoginname);
-                return base64_encode(gzcompress(serialize($data))); // Nén và mã hóa trước khi lưu
-            }
-        );
-        
+        if($this->currentLoginname){
+            $cacheKey = 'user_login_room_ids_'.$this->currentLoginname;
+            $cacheKeySet = "cache_keys:" . $this->currentLoginname; // Set để lưu danh sách key
+            $this->currentUserLoginRoomIds = Cache::remember(
+                $cacheKey, 
+                $this->time, 
+                function () {
+                    $data = UserRoom::getRoomIdsByLoginname($this->currentLoginname);
+                    return base64_encode(gzcompress(serialize($data))); // Nén và mã hóa trước khi lưu
+                }
+            );
+            // Lưu key vào Redis Set để dễ xóa sau này
+            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+       }
         // Giải nén dữ liệu khi lấy từ cache
         if ($this->currentUserLoginRoomIds && is_string($this->currentUserLoginRoomIds)) {
             $decompressedData = @gzuncompress(base64_decode($this->currentUserLoginRoomIds));
@@ -1252,12 +1263,7 @@ class BaseApiCacheController extends Controller
                 if (!is_numeric($item)) {
                     $this->errors[$this->serviceTypeIdsName] = $this->messFormat;
                     unset($this->serviceTypeIds[$key]);
-                } else {
-                    if (!ServiceType::where('id', $item)->exists()) {
-                        $this->errors[$this->serviceTypeIdsName] = $this->messRecordId;
-                        unset($this->serviceTypeIds[$key]);
-                    }
-                }
+                } 
             }
         }
         if ($this->serviceTypeIds != null) {
@@ -1270,12 +1276,7 @@ class BaseApiCacheController extends Controller
                 if (!is_numeric($item)) {
                     $this->errors[$this->treatmentTypeIdsName] = $this->messFormat;
                     unset($this->treatmentTypeIds[$key]);
-                } else {
-                    if (!TreatmentType::where('id', $item)->exists()) {
-                        $this->errors[$this->treatmentTypeIdsName] = $this->messRecordId;
-                        unset($this->treatmentTypeIds[$key]);
-                    }
-                }
+                } 
             }
         }
         if ($this->treatmentTypeIds != null) {
@@ -1289,11 +1290,6 @@ class BaseApiCacheController extends Controller
                 if (!is_numeric($item)) {
                     $this->errors[$this->patientClassifyIdsName] = $this->messFormat;
                     unset($this->patientClassifyIds[$key]);
-                } else {
-                    if (!PatientClassify::where('id', $item)->exists()) {
-                        $this->errors[$this->patientClassifyIdsName] = $this->messRecordId;
-                        unset($this->patientClassifyIds[$key]);
-                    }
                 }
             }
         }
@@ -1308,11 +1304,6 @@ class BaseApiCacheController extends Controller
                 if (!is_numeric($item)) {
                     $this->errors[$this->patientTypeIdsName] = $this->messFormat;
                     unset($this->patientTypeIds[$key]);
-                } else {
-                    if (!PatientType::where('id', $item)->exists()) {
-                        $this->errors[$this->patientTypeIdsName] = $this->messRecordId;
-                        unset($this->patientTypeIds[$key]);
-                    }
                 }
             }
         }
@@ -1360,12 +1351,7 @@ class BaseApiCacheController extends Controller
                 if (!is_numeric($item)) {
                     $this->errors[$this->testIndexIdsName] = $this->messFormat;
                     unset($this->testIndexIds[$key]);
-                } else {
-                    if (!TestIndex::where('id', $item)->exists()) {
-                        $this->errors[$this->testIndexIdsName] = $this->messRecordId;
-                        unset($this->testIndexIds[$key]);
-                    }
-                }
+                } 
             }
         }
         $this->serviceReqIds = $this->paramRequest['ApiData']['ServiceReqIds'] ?? null;
@@ -1386,12 +1372,7 @@ class BaseApiCacheController extends Controller
                 if (!is_numeric($item)) {
                     $this->errors[$this->sereServIdsName] = $this->messFormat;
                     unset($this->sereServIds[$key]);
-                } else {
-                    if (!SereServ::where('id', $item)->exists()) {
-                        $this->errors[$this->sereServIdsName] = $this->messRecordId;
-                        unset($this->sereServIds[$key]);
-                    }
-                }
+                } 
             }
         }
         $this->tab = $this->paramRequest['ApiData']['Tab']  ?? null;
@@ -1512,12 +1493,7 @@ class BaseApiCacheController extends Controller
             if (!is_numeric($this->serviceId)) {
                 $this->errors[$this->serviceIdName] = $this->messFormat;
                 $this->serviceId = null;
-            } else {
-                if (!Service::where('id', $this->serviceId)->exists()) {
-                    $this->errors[$this->serviceIdName] = $this->messRecordId;
-                    $this->serviceId = null;
-                }
-            }
+            } 
         }
         $this->billId = $this->paramRequest['ApiData']['BillId'] ?? null;
         if ($this->billId !== null) {
@@ -1525,12 +1501,7 @@ class BaseApiCacheController extends Controller
             if (!is_numeric($this->billId)) {
                 $this->errors[$this->billIdName] = $this->messFormat;
                 $this->billId = null;
-            } else {
-                if (!Transaction::where('id', $this->billId)->exists()) {
-                    $this->errors[$this->billIdName] = $this->messRecordId;
-                    $this->billId = null;
-                }
-            }
+            } 
         }
         $this->machineId = $this->paramRequest['ApiData']['MachineId'] ?? null;
         if ($this->machineId !== null) {
@@ -1538,12 +1509,7 @@ class BaseApiCacheController extends Controller
             if (!is_numeric($this->machineId)) {
                 $this->errors[$this->machineIdName] = $this->messFormat;
                 $this->machineId = null;
-            } else {
-                if (!Machine::where('id', $this->machineId)->exists()) {
-                    $this->errors[$this->machineIdName] = $this->messRecordId;
-                    $this->machineId = null;
-                }
-            }
+            } 
         }
         $this->transactionTypeIds = $this->paramRequest['ApiData']['TransactionTypeIds'] ?? null;
         if ($this->transactionTypeIds != null) {
@@ -1552,12 +1518,7 @@ class BaseApiCacheController extends Controller
                 if (!is_numeric($item)) {
                     $this->errors[$this->transactionTypeIdsName] = $this->messFormat;
                     unset($this->transactionTypeIds[$key]);
-                } else {
-                    if (!TransactionType::where('id', $item)->exists()) {
-                        $this->errors[$this->transactionTypeIdsName] = $this->messRecordId;
-                        unset($this->transactionTypeIds[$key]);
-                    }
-                }
+                } 
             }
         }
         $this->executeRoomIds = $this->paramRequest['ApiData']['ExecuteRoomIds'] ?? null;
@@ -1580,12 +1541,7 @@ class BaseApiCacheController extends Controller
             if (!is_numeric($this->packageId)) {
                 $this->errors[$this->packageIdName] = $this->messFormat;
                 $this->packageId = null;
-            } else {
-                if (!Package::where('id', $this->packageId)->exists()) {
-                    $this->errors[$this->packageIdName] = $this->messRecordId;
-                    $this->packageId = null;
-                }
-            }
+            } 
         }
         $this->departmentId = $this->paramRequest['ApiData']['DepartmentId'] ?? null;
         if ($this->departmentId !== null) {
@@ -1593,12 +1549,7 @@ class BaseApiCacheController extends Controller
             if (!is_numeric($this->departmentId)) {
                 $this->errors[$this->departmentIdName] = $this->messFormat;
                 $this->departmentId = null;
-            } else {
-                if (!Department::where('id', $this->departmentId)->exists()) {
-                    $this->errors[$this->departmentIdName] = $this->messRecordId;
-                    $this->departmentId = null;
-                }
-            }
+            } 
         }
         $this->tdlTreatmentId = $this->paramRequest['ApiData']['TdlTreatmentId'] ?? null;
         if ($this->tdlTreatmentId !== null) {
@@ -1606,12 +1557,7 @@ class BaseApiCacheController extends Controller
             if (!is_numeric($this->tdlTreatmentId)) {
                 $this->errors[$this->tdlTreatmentIdName] = $this->messFormat;
                 $this->tdlTreatmentId = null;
-            } else {
-                if (!Treatment::where('id', $this->tdlTreatmentId)->exists()) {
-                    $this->errors[$this->tdlTreatmentIdName] = $this->messRecordId;
-                    $this->tdlTreatmentId = null;
-                }
-            }
+            } 
         }
         $this->documentTypeId = $this->paramRequest['ApiData']['DocumentTypeId'] ?? null;
         if ($this->documentTypeId !== null) {
@@ -1619,12 +1565,7 @@ class BaseApiCacheController extends Controller
             if (!is_numeric($this->documentTypeId)) {
                 $this->errors[$this->documentTypeIdName] = $this->messFormat;
                 $this->documentTypeId = null;
-            } else {
-                if (!DocumentType::where('id', $this->documentTypeId)->exists()) {
-                    $this->errors[$this->documentTypeIdName] = $this->messRecordId;
-                    $this->documentTypeId = null;
-                }
-            }
+            } 
         }
         $this->isActive = $this->paramRequest['ApiData']['IsActive'] ?? null;
         if ($this->isActive !== null) {
@@ -1644,12 +1585,7 @@ class BaseApiCacheController extends Controller
             if (!is_numeric($this->roomTypeId)) {
                 $this->errors[$this->roomTypeIdName] = $this->messFormat;
                 $this->roomTypeId = null;
-            } else {
-                if (!RoomType::where('id', $this->roomTypeId)->exists()) {
-                    $this->errors[$this->roomTypeIdName] = $this->messRecordId;
-                    $this->roomTypeId = null;
-                }
-            }
+            } 
         }
         $this->departmentIds = $this->paramRequest['ApiData']['DepartmentIds'] ?? null;
         if ($this->departmentIds != null) {
@@ -1658,12 +1594,7 @@ class BaseApiCacheController extends Controller
                 if (!is_numeric($item)) {
                     $this->errors[$this->departmentIdsName] = $this->messFormat;
                     unset($this->departmentIds[$key]);
-                } else {
-                    if (!Department::where('id', $item)->exists()) {
-                        $this->errors[$this->departmentIdsName] = $this->messRecordId;
-                        unset($this->departmentIds[$key]);
-                    }
-                }
+                } 
             }
         }
         $this->treatmentCode = $this->paramRequest['ApiData']['TreatmentCode'] ?? null;
@@ -1709,12 +1640,7 @@ class BaseApiCacheController extends Controller
             if (!is_numeric($this->debateId)) {
                 $this->errors[$this->debateIdName] = $this->messFormat;
                 $this->debateId = null;
-            } else {
-                if (!Debate::where('id', $this->debateId)->exists()) {
-                    $this->errors[$this->debateIdName] = $this->messRecordId;
-                    $this->debateId = null;
-                }
-            }
+            } 
         }
         $this->serviceReqSttIds = $this->paramRequest['ApiData']['ServiceReqSttIds'] ?? null;
         if ($this->serviceReqSttIds != null) {
@@ -1822,12 +1748,7 @@ class BaseApiCacheController extends Controller
                 if (!is_numeric($item)) {
                     $this->errors[$this->tdlPatientTypeIdsName] = $this->messFormat;
                     unset($this->tdlPatientTypeIds[$key]);
-                } else {
-                    if (!PatientType::where('id', $item)->exists()) {
-                        $this->errors[$this->tdlPatientTypeIdsName] = $this->messRecordId;
-                        unset($this->tdlPatientTypeIds[$key]);
-                    }
-                }
+                } 
             }
         }
         $this->tdlTreatmentTypeIds = $this->paramRequest['ApiData']['TdlTreatmentTypeIds'] ?? null;
@@ -1837,11 +1758,6 @@ class BaseApiCacheController extends Controller
                 if (!is_numeric($item)) {
                     $this->errors[$this->tdlTreatmentTypeIdsName] = $this->messFormat;
                     unset($this->tdlTreatmentTypeIds[$key]);
-                } else {
-                    if (!TreatmentType::where('id', $item)->exists()) {
-                        $this->errors[$this->tdlTreatmentTypeIdsName] = $this->messRecordId;
-                        unset($this->tdlTreatmentTypeIds[$key]);
-                    }
                 }
             }
         }
@@ -1852,12 +1768,7 @@ class BaseApiCacheController extends Controller
                 if (!is_numeric($item)) {
                     $this->errors[$this->notInServiceReqTypeIdsName] = $this->messFormat;
                     unset($this->notInServiceReqTypeIds[$key]);
-                } else {
-                    if (!ServiceReqType::where('id', $item)->exists()) {
-                        $this->errors[$this->notInServiceReqTypeIdsName] = $this->messRecordId;
-                        unset($this->notInServiceReqTypeIds[$key]);
-                    }
-                }
+                } 
             }
         }
         $this->isNotKskRequriedAprovalOrIsKskApprove = $this->paramRequest['ApiData']['IsNotKskRequriedAproval_Or_IsKskApprove'] ?? true;
@@ -1871,12 +1782,7 @@ class BaseApiCacheController extends Controller
             if (!is_numeric($this->serviceReqId)) {
                 $this->errors[$this->serviceReqIdName] = $this->messFormat;
                 $this->serviceReqId = null;
-            } else {
-                if (!ServiceReq::where('id', $this->serviceReqId)->exists()) {
-                    $this->errors[$this->serviceReqIdName] = $this->messRecordId;
-                    $this->serviceReqId = null;
-                }
-            }
+            } 
         }
         $this->isAddition = $this->paramRequest['ApiData']['IsAddition'] ?? null;
         if ($this->isAddition !== null) {
@@ -1891,12 +1797,7 @@ class BaseApiCacheController extends Controller
             if (!is_numeric($this->serviceTypeId)) {
                 $this->errors[$this->serviceTypeIdName] = $this->messFormat;
                 $this->serviceTypeId = null;
-            } else {
-                if (!ServiceType::where('id', $this->serviceTypeId)->exists()) {
-                    $this->errors[$this->serviceTypeIdName] = $this->messRecordId;
-                    $this->serviceTypeId = null;
-                }
-            }
+            } 
         }
         $this->branchId = $this->paramRequest['ApiData']['BranchId'] ?? null;
         if ($this->branchId !== null) {
@@ -1904,12 +1805,7 @@ class BaseApiCacheController extends Controller
             if (!is_numeric($this->branchId)) {
                 $this->errors[$this->branchIdName] = $this->messFormat;
                 $this->branchId = null;
-            } else {
-                if (!Branch::where('id', $this->branchId)->exists()) {
-                    $this->errors[$this->branchIdName] = $this->messRecordId;
-                    $this->branchId = null;
-                }
-            }
+            } 
         }
         $this->isApproveStore = $this->paramRequest['ApiData']['IsApproveStore'] ?? null;
         if ($this->isApproveStore !== null) {
@@ -1925,11 +1821,6 @@ class BaseApiCacheController extends Controller
                 if (!is_numeric($item)) {
                     $this->errors[$this->serviceIdsName] = $this->messFormat;
                     unset($this->serviceIds[$key]);
-                } else {
-                    if (!Service::where('id', $item)->exists()) {
-                        $this->errors[$this->serviceIdsName] = $this->messRecordId;
-                        unset($this->serviceIds[$key]);
-                    }
                 }
             }
         }
@@ -1943,12 +1834,7 @@ class BaseApiCacheController extends Controller
                 if (!is_numeric($item)) {
                     $this->errors[$this->machineIdsName] = $this->messFormat;
                     unset($this->machineIds[$key]);
-                } else {
-                    if (!Machine::where('id', $item)->exists()) {
-                        $this->errors[$this->machineIdsName] = $this->messRecordId;
-                        unset($this->machineIds[$key]);
-                    }
-                }
+                } 
             }
         }
         if ($this->machineIds != null) {
@@ -1961,12 +1847,7 @@ class BaseApiCacheController extends Controller
                 if (!is_numeric($item)) {
                     $this->errors[$this->roomIdsName] = $this->messFormat;
                     unset($this->roomIds[$key]);
-                } else {
-                    if (!Room::where('id', $item)->exists()) {
-                        $this->errors[$this->roomIdsName] = $this->messRecordId;
-                        unset($this->roomIds[$key]);
-                    }
-                }
+                } 
             }
         }
         $this->serviceFollowIds = $this->paramRequest['ApiData']['ServiceFollowIds'] ?? null;
@@ -1976,12 +1857,7 @@ class BaseApiCacheController extends Controller
                 if (!is_numeric($item)) {
                     $this->errors[$this->serviceFollowIdsName] = $this->messFormat;
                     unset($this->serviceFollowIds[$key]);
-                } else {
-                    if (!Service::where('id', $item)->exists()) {
-                        $this->errors[$this->serviceFollowIdsName] = $this->messRecordId;
-                        unset($this->serviceFollowIds[$key]);
-                    }
-                }
+                } 
             }
         }
         $this->bedIds = $this->paramRequest['ApiData']['BedIds'] ?? null;
@@ -1991,12 +1867,7 @@ class BaseApiCacheController extends Controller
                 if (!is_numeric($item)) {
                     $this->errors[$this->bedIdsName] = $this->messFormat;
                     unset($this->bedIds[$key]);
-                } else {
-                    if (!Bed::where('id', $item)->exists()) {
-                        $this->errors[$this->bedIdsName] = $this->messRecordId;
-                        unset($this->bedIds[$key]);
-                    }
-                }
+                } 
             }
         }
         $this->loginname = $this->paramRequest['ApiData']['Loginname'] ?? null;
@@ -2013,12 +1884,7 @@ class BaseApiCacheController extends Controller
             if (!is_numeric($this->executeRoleId)) {
                 $this->errors[$this->executeRoleIdName] = $this->messFormat;
                 $this->executeRoleId = null;
-            } else {
-                if (!ExecuteRole::where('id', $this->executeRoleId)->exists()) {
-                    $this->errors[$this->executeRoleIdName] = $this->messRecordId;
-                    $this->executeRoleId = null;
-                }
-            }
+            } 
         }
         $this->moduleId = $this->paramRequest['ApiData']['ModuleId'] ?? null;
         if ($this->moduleId !== null) {
@@ -2026,12 +1892,7 @@ class BaseApiCacheController extends Controller
             if (!is_numeric($this->moduleId)) {
                 $this->errors[$this->moduleIdName] = $this->messFormat;
                 $this->moduleId = null;
-            } else {
-                if (!Module::where('id', $this->moduleId)->exists()) {
-                    $this->errors[$this->moduleIdName] = $this->messRecordId;
-                    $this->moduleId = null;
-                }
-            }
+            } 
         }
         $this->roleId = $this->paramRequest['ApiData']['RoleId'] ?? null;
         if ($this->roleId !== null) {
@@ -2039,12 +1900,7 @@ class BaseApiCacheController extends Controller
             if (!is_numeric($this->roleId)) {
                 $this->errors[$this->roleIdName] = $this->messFormat;
                 $this->roleId = null;
-            } else {
-                if (!Role::where('id', $this->roleId)->exists()) {
-                    $this->errors[$this->roleIdName] = $this->messRecordId;
-                    $this->roleId = null;
-                }
-            }
+            } 
         }
         $this->mediStockId = $this->paramRequest['ApiData']['MediStockId'] ?? null;
         if ($this->mediStockId !== null) {
@@ -2052,12 +1908,7 @@ class BaseApiCacheController extends Controller
             if (!is_numeric($this->mediStockId)) {
                 $this->errors[$this->mediStockIdName] = $this->messFormat;
                 $this->mediStockId = null;
-            } else {
-                if (!MediStock::where('id', $this->mediStockId)->exists()) {
-                    $this->errors[$this->mediStockIdName] = $this->messRecordId;
-                    $this->mediStockId = null;
-                }
-            }
+            } 
         }
         $this->patientId = $this->paramRequest['ApiData']['PatientId'] ?? 0;
 
@@ -2067,12 +1918,7 @@ class BaseApiCacheController extends Controller
             if (!is_numeric($this->patientTypeId)) {
                 $this->errors[$this->patientTypeIdName] = $this->messFormat;
                 $this->patientTypeId = null;
-            } else {
-                if (!PatientType::where('id', $this->patientTypeId)->exists()) {
-                    $this->errors[$this->patientTypeIdName] = $this->messRecordId;
-                    $this->patientTypeId = null;
-                }
-            }
+            } 
         }
         $this->medicineTypeId = $this->paramRequest['ApiData']['MedicineTypeId'] ?? null;
         if ($this->medicineTypeId !== null) {
@@ -2080,11 +1926,6 @@ class BaseApiCacheController extends Controller
             if (!is_numeric($this->medicineTypeId)) {
                 $this->errors[$this->medicineTypeIdName] = $this->messFormat;
                 $this->medicineTypeId = null;
-            } else {
-                if (!MedicineType::where('id', $this->medicineTypeId)->exists()) {
-                    $this->errors[$this->medicineTypeIdName] = $this->messRecordId;
-                    $this->medicineTypeId = null;
-                }
             }
         }
         $this->materialTypeId = $this->paramRequest['ApiData']['MaterialTypeId'] ?? null;
@@ -2093,12 +1934,7 @@ class BaseApiCacheController extends Controller
             if (!is_numeric($this->materialTypeId)) {
                 $this->errors[$this->materialTypeIdName] = $this->messFormat;
                 $this->materialTypeId = null;
-            } else {
-                if (!MaterialType::where('id', $this->materialTypeId)->exists()) {
-                    $this->errors[$this->materialTypeIdName] = $this->messRecordId;
-                    $this->materialTypeId = null;
-                }
-            }
+            } 
         }
         $this->treatmentId = $this->paramRequest['ApiData']['TreatmentId'] ?? null;
         if ($this->treatmentId !== null) {
@@ -2106,12 +1942,7 @@ class BaseApiCacheController extends Controller
             if (!is_numeric($this->treatmentId)) {
                 $this->errors[$this->treatmentIdName] = $this->messFormat;
                 $this->treatmentId = null;
-            } else {
-                if (!Treatment::where('id', $this->treatmentId)->exists()) {
-                    $this->errors[$this->treatmentIdName] = $this->messRecordId;
-                    $this->treatmentId = null;
-                }
-            }
+            } 
         }
         $this->trackingId = $this->paramRequest['ApiData']['TrackingId'] ?? null;
         if ($this->trackingId !== null) {
@@ -2119,12 +1950,7 @@ class BaseApiCacheController extends Controller
             if (!is_numeric($this->trackingId)) {
                 $this->errors[$this->trackingIdName] = $this->messFormat;
                 $this->trackingId = null;
-            } else {
-                if (!Tracking::where('id', $this->trackingId)->exists()) {
-                    $this->errors[$this->trackingIdName] = $this->messRecordId;
-                    $this->trackingId = null;
-                }
-            }
+            } 
         }
         $this->roomId = $this->paramRequest['ApiData']['RoomId'] ?? null;
         if ($this->roomId !== null) {
@@ -2132,12 +1958,7 @@ class BaseApiCacheController extends Controller
             if (!is_numeric($this->roomId)) {
                 $this->errors[$this->roomIdName] = $this->messFormat;
                 $this->roomId = null;
-            } else {
-                if (!Room::where('id', $this->roomId)->exists()) {
-                    $this->errors[$this->roomIdName] = $this->messRecordId;
-                    $this->roomId = null;
-                }
-            }
+            } 
         }
         $this->executeRoomId = $this->paramRequest['ApiData']['ExecuteRoomId'] ?? null;
         if ($this->executeRoomId !== null) {
@@ -2145,12 +1966,7 @@ class BaseApiCacheController extends Controller
             if (!is_numeric($this->executeRoomId)) {
                 $this->errors[$this->executeRoomIdName] = $this->messFormat;
                 $this->executeRoomId = null;
-            } else {
-                if (!ExecuteRoom::where('id', $this->executeRoomId)->exists()) {
-                    $this->errors[$this->executeRoomIdName] = $this->messRecordId;
-                    $this->executeRoomId = null;
-                }
-            }
+            } 
         }
         $this->patientTypeAllowId = $this->paramRequest['ApiData']['PatientTypeAllowId'] ?? null;
         if ($this->patientTypeAllowId !== null) {
@@ -2158,12 +1974,7 @@ class BaseApiCacheController extends Controller
             if (!is_numeric($this->patientTypeAllowId)) {
                 $this->errors[$this->patientTypeAllowIdName] = $this->messFormat;
                 $this->patientTypeAllowId = null;
-            } else {
-                if (!PatientType::where('id', $this->patientTypeAllowId)->exists()) {
-                    $this->errors[$this->patientTypeAllowIdName] = $this->messRecordId;
-                    $this->patientTypeAllowId = null;
-                }
-            }
+            } 
         }
         $this->activeIngredientId = $this->paramRequest['ApiData']['ActiveIngredientId'] ?? null;
         if ($this->activeIngredientId !== null) {
@@ -2171,12 +1982,7 @@ class BaseApiCacheController extends Controller
             if (!is_numeric($this->activeIngredientId)) {
                 $this->errors[$this->activeIngredientIdName] = $this->messFormat;
                 $this->activeIngredientId = null;
-            } else {
-                if (!ActiveIngredient::where('id', $this->activeIngredientId)->exists()) {
-                    $this->errors[$this->activeIngredientIdName] = $this->messRecordId;
-                    $this->activeIngredientId = null;
-                }
-            }
+            } 
         }
         $this->testServiceTypeId = $this->paramRequest['ApiData']['TestServiceTypeId'] ?? null;
         if ($this->testServiceTypeId !== null) {

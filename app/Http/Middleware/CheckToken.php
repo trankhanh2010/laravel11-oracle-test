@@ -9,6 +9,8 @@ use App\Models\ACS\Token;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Carbon;
 use App\Models\ACS\User;
+use Illuminate\Support\Facades\Redis;
+
 class CheckToken
 {
     /**
@@ -45,9 +47,15 @@ class CheckToken
                 'success'   => false,
                 'message' => 'Token không hợp lệ'], 401);
         }
+        
+        $cacheKey = 'loginname_'.$token->login_name;
+        $cacheKeySet = "cache_keys:" . $token->login_name; // Set để lưu danh sách key
         $user = Cache::remember('loginname_'.$token->login_name, now()->addMinutes(1440) , function () use ($token) {
             return User::where('loginname','=',$token->login_name)->get();
         });
+        // Lưu key vào Redis Set để dễ xóa sau này
+        Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+
         // Đặt người dùng hiện tại vào request
         $request->setUserResolver(function () use ($user) {
             return $user;

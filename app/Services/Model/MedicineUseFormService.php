@@ -60,13 +60,17 @@ class MedicineUseFormService
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $data = Cache::remember($this->params->medicineUseFormName . '_' . $id . '_is_active_' . $this->params->isActive, $this->params->time, function () use ($id){
+            $cacheKey = $this->params->medicineUseFormName .'_'.$id.'_'. $this->params->param;
+            $cacheKeySet = "cache_keys:" . $this->params->medicineUseFormName; // Set để lưu danh sách key
+            $data = Cache::remember($cacheKey, $this->params->time, function () use($id){
                 $data = $this->medicineUseFormRepository->applyJoins()
                     ->where('his_medicine_use_form.id', $id);
                 $data = $this->medicineUseFormRepository->applyIsActiveFilter($data, $this->params->isActive);
                 $data = $data->first();
                 return $data;
             });
+            // Lưu key vào Redis Set để dễ xóa sau này
+            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
             return $data;
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['medicine_use_form'], $e);

@@ -60,13 +60,17 @@ class TestIndexUnitService
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $data = Cache::remember($this->params->testIndexUnitName . '_' . $id . '_is_active_' . $this->params->isActive, $this->params->time, function () use ($id){
+            $cacheKey = $this->params->testIndexUnitName .'_'.$id.'_'. $this->params->param;
+            $cacheKeySet = "cache_keys:" . $this->params->testIndexUnitName; // Set để lưu danh sách key
+            $data = Cache::remember($cacheKey, $this->params->time, function () use($id){
                 $data = $this->testIndexUnitRepository->applyJoins()
                     ->where('his_test_index_unit.id', $id);
                 $data = $this->testIndexUnitRepository->applyIsActiveFilter($data, $this->params->isActive);
                 $data = $data->first();
                 return $data;
             });
+            // Lưu key vào Redis Set để dễ xóa sau này
+            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
             return $data;
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['test_index_unit'], $e);

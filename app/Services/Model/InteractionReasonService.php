@@ -60,13 +60,17 @@ class InteractionReasonService
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $data = Cache::remember($this->params->interactionReasonName . '_' . $id . '_is_active_' . $this->params->isActive, $this->params->time, function () use ($id){
+            $cacheKey = $this->params->interactionReasonName .'_'.$id.'_'. $this->params->param;
+            $cacheKeySet = "cache_keys:" . $this->params->interactionReasonName; // Set để lưu danh sách key
+            $data = Cache::remember($cacheKey, $this->params->time, function () use($id){
                 $data = $this->interactionReasonRepository->applyJoins()
                     ->where('his_interaction_reason.id', $id);
                 $data = $this->interactionReasonRepository->applyIsActiveFilter($data, $this->params->isActive);
                 $data = $data->first();
                 return $data;
             });
+            // Lưu key vào Redis Set để dễ xóa sau này
+            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
             return $data;
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['interaction_reason'], $e);
