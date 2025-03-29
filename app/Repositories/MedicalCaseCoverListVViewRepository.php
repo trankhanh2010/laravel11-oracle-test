@@ -67,8 +67,6 @@ class MedicalCaseCoverListVViewRepository
                 'out_date',
                 'out_code',
                 'tdl_hein_card_number',
-                'clinical_note_bk',
-                'subclinical_result_bk',
                 'medi_org_code',
                 'medi_org_name',
                 'tran_pati_form_id',

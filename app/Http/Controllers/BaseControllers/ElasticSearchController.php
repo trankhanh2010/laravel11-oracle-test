@@ -10,13 +10,16 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Http;
 use Carbon\Carbon;
-class ElasticSearchController extends Controller
+use App\Http\Controllers\BaseControllers\BaseApiCacheController;
+
+class ElasticSearchController extends BaseApiCacheController
 {
     protected $client;
     protected $all_table;
 
-    public function __construct()
+    public function __construct(Request $request)
     {
+        parent::__construct($request); // Gọi constructor của BaseController
         $this->client = app('Elasticsearch');
         $this->all_table = config('params')['elastic']['all_table'];
     }
@@ -31,8 +34,12 @@ class ElasticSearchController extends Controller
         // Tăng thời gian chờ lên 
         set_time_limit(3600);
         // Lấy tham số từ request (nếu có)
-        $table = $request->input('table', 'all'); // Mặc định là 'all'
+        // $table = $request->input('table', 'all'); // Mặc định là 'all'
 
+        if ($this->checkParam()) {
+            return $this->checkParam();
+        }
+        $table = implode(",", $this->table);
         // Gọi command với Artisan::call
         Artisan::call('app:index-records-to-elasticsearch', [
             '--table' => $table
@@ -52,12 +59,12 @@ class ElasticSearchController extends Controller
     {
         $table = $this->all_table;
 
-        $tables = explode(",", $request->tables);
-        if ($request->tables == null) {
+        $tables = $this->table;
+        if ($this->table == 'all') {
             $tables = $table;
         }
         foreach ($tables as $key => $item) {
-            if (!in_array($item, $table)) {
+            if (!in_array($item, $table) && $item!= 'all') {
                 return response()->json([
                     'status'    => 422,
                     'success' => true,

@@ -48,6 +48,8 @@ class BaseApiCacheController extends Controller
 {
     protected $currentUserLoginRoomIds;
     protected $currentLoginname;
+    protected $table;
+    protected $tableName = 'Table';
     protected $errors = [];
     protected $data = [];
     protected $param;
@@ -1343,6 +1345,17 @@ class BaseApiCacheController extends Controller
                 } 
             }
         }
+
+        $this->table = $this->paramRequest['ApiData']['Table'] ?? ["all"];
+        if ($this->table != null) {
+            foreach ($this->table as $key => $item) {
+                if (!is_string($item)) {
+                    $this->errors[$this->tableName] = $this->messFormat;
+                    unset($this->table[$key]);
+                } 
+            }
+        }
+
 
         $this->testIndexIds = $this->paramRequest['ApiData']['TestIndexIds'] ?? null;
         if ($this->testIndexIds != null) {

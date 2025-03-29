@@ -49,7 +49,7 @@ return [
             'execute_room',
             'exe_service_module',
             'exp_mest_reason',
-            'exro_room',
+            // 'exro_room',
             'file_type',
             'film_size',
             'fuex_type',

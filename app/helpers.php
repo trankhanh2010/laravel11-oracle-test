@@ -9,6 +9,7 @@ use App\Models\ACS\User;
 use App\Models\HIS\UserRoom;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Str;
 function create_slug($string)
 {
@@ -124,9 +125,13 @@ function arrayToCustomStringNotKey(array $array)
 if (!function_exists('get_user_with_loginname')) {
     function get_user_with_loginname($loginname)
     {
-        $user = Cache::remember('user_' . $loginname, now()->addMinutes(1440), function () use ($loginname) {
+        $cacheKey = 'user_' . $loginname;
+        $cacheKeySet = "cache_keys:" . $loginname; // Set để lưu danh sách key
+        $user = Cache::remember($cacheKey, now()->addMinutes(1440), function () use ($loginname) {
             return User::select()->where("loginname", $loginname)->first();
-        });
+        });            
+        // Lưu key vào Redis Set để dễ xóa sau này
+        Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
         return $user;
     }
 }
