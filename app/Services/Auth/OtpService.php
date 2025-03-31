@@ -7,7 +7,7 @@ use App\Services\Mail\MailService;
 use App\Services\Sms\ESmsService;
 use App\Services\Sms\SpeedSmsService;
 use Illuminate\Support\Facades\Cache;
-use App\Services\Sms\TwilioService;
+// use App\Services\Sms\TwilioService;
 use App\Services\Zalo\ZaloService;
 
 class OtpService
@@ -22,14 +22,14 @@ class OtpService
     protected $otpTTL;
 
     public function __construct(
-        TwilioService $twilioService,
+        // TwilioService $twilioService,
         ESmsService $eSmsService,
         SpeedSmsService $speedSmsService,
         MailService $mailService,
         ZaloService $zaloSerivce,
         PatientRepository $patientRepository,
     ) {
-        $this->twilioService = $twilioService;
+        // $this->twilioService = $twilioService;
         $this->eSmsService = $eSmsService;
         $this->speedSmsService = $speedSmsService;
         $this->mailService = $mailService;
