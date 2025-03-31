@@ -353,13 +353,14 @@ Route::group([
     /// Elastic Search
     Route::group(['as' => 'CauHinhElasticHeThong->'], function () { // link không có trong module => luôn trả về false => nếu là spAdmin thì qua được
         Route::get("v1/elastic-ping", [ElasticSearchController::class, "ping"])->name('.elastic_ping');
-        Route::get("v1/get-all-name", [ElasticSearchController::class, "get_all_name"])->name('.get_all_name');
-        Route::get("v1/index-records-to-elasticsearch", [ElasticSearchController::class, "index_records_to_elasticsearch"])->name('.index_records_to_elasticsearch');
-        Route::get("v1/get-mapping", [ElasticSearchController::class, "get_mapping"])->name('.get_mapping');
-        Route::get("v1/get-setting", [ElasticSearchController::class, "get_index_settings"])->name('.get_index_settings');
+        Route::get("v1/get-all-name", [ElasticSearchController::class, "getAllName"])->name('.get_all_name');
+        Route::get("v1/index-records-to-elasticsearch", [ElasticSearchController::class, "indexRecordsToElasticsearch"])->name('.index_records_to_elasticsearch');
+        Route::get("v1/get-mapping", [ElasticSearchController::class, "getMapping"])->name('.get_mapping');
+        Route::get("v1/get-setting", [ElasticSearchController::class, "getIndexSettings"])->name('.get_index_settings');
         Route::get("v1/set-max-result-window", [ElasticSearchController::class, "setMaxResultWindow"])->name('.set_max_result_window');
         Route::get("v1/check-node", [ElasticSearchController::class, "checkNodes"])->name('.check_nodes');
-        Route::delete("v1/delete-index", [ElasticSearchController::class, "delete_index"])->name('.delete_index');
+        Route::delete("v1/delete-index", [ElasticSearchController::class, "deleteIndex"])->name('.delete_index');
+        Route::get("v1/get-docs-count", [ElasticSearchController::class, "getDocsCount"])->name('.get_docs_count');
     });
 
     /// Quản lí thiết bị nhận OTP

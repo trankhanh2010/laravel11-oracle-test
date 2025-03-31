@@ -83,6 +83,8 @@ class BaseApiCacheController extends Controller
     protected $onlyActiveName = 'OnlyActive';
     protected $id;
     protected $idName = 'Id';
+    protected $ids;
+    protected $idsName = 'Ids';
     protected $testIndexIds;
     protected $testIndexIdsName = 'TestIndexIds';
     protected $executeRoomIds;
@@ -1297,6 +1299,16 @@ class BaseApiCacheController extends Controller
         }
         if ($this->patientClassifyIds != null) {
             $this->patientClassifyIdsString = arrayToCustomStringNotKey($this->patientClassifyIds);
+        }
+
+        $this->ids = $this->paramRequest['ApiData']['Ids'] ?? null;
+        if ($this->ids != null) {
+            foreach ($this->ids as $key => $item) {
+                if (!is_numeric($item)) {
+                    $this->errors[$this->idsName] = $this->messFormat;
+                    unset($this->ids[$key]);
+                }
+            }
         }
 
         $this->patientTypeIds = $this->paramRequest['ApiData']['PatientTypeIds'] ?? null;
