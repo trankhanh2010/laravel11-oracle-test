@@ -343,13 +343,16 @@ Route::group([
     Route::get("v1/log", [LogController::class, "getLog"])->name('.get_log');
     /// Request
     Route::get("v1/get-all-request-name", [BaseApiRequestController::class, "getAllRequestname"])->name('.get_all_request_name');
-    /// Cache
-    Route::get("v1/clear-cache", [CacheController::class, "clearCache"])->name('.clear_cache');
-    Route::get("v1/clear-cache-elastic-index-keyword", [CacheController::class, "clearCacheElaticIndexKeyword"])->name('.clear_cache_elatic_index_keyword');
 });
 Route::group([
     "middleware" => ["check_module:api"]
 ], function () {
+    /// Cache
+    Route::group(['as' => 'CauHinhCacheRedisHeThong->'], function () { // link không có trong module => luôn trả về false => nếu là spAdmin thì qua được
+        Route::get("v1/clear-cache", [CacheController::class, "clearCache"])->name('.clear_cache');
+        Route::get("v1/clear-cache-elastic-index-keyword", [CacheController::class, "clearCacheElaticIndexKeyword"])->name('.clear_cache_elatic_index_keyword');
+    });
+
     /// Elastic Search
     Route::group(['as' => 'CauHinhElasticHeThong->'], function () { // link không có trong module => luôn trả về false => nếu là spAdmin thì qua được
         Route::get("v1/elastic-ping", [ElasticSearchController::class, "ping"])->name('.elastic_ping');
@@ -494,7 +497,7 @@ Route::group([
     });
     /// Thời gian tử vong
     Route::apiResource('v1/death-within', DeathWithinController::class);
-    
+
     /// Nguyên nhân tử vong
     Route::apiResource('v1/death-cause', DeathCauseController::class)->only(['index', 'show']);
     /// Kết quả điều trị
