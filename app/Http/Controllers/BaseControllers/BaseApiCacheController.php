@@ -81,6 +81,8 @@ class BaseApiCacheController extends Controller
     protected $groupByString;
     protected $onlyActive;
     protected $onlyActiveName = 'OnlyActive';
+    protected $keys;
+    protected $keysName = 'Keys';
     protected $id;
     protected $idName = 'Id';
     protected $ids;
@@ -1308,6 +1310,16 @@ class BaseApiCacheController extends Controller
                     $this->errors[$this->idsName] = $this->messFormat;
                     unset($this->ids[$key]);
                 }
+            }
+        }
+
+        $this->keys = $this->paramRequest['ApiData']['Keys'] ?? ['all'];
+        if ($this->keys != null) {
+            foreach ($this->keys as $key => $item) {
+                if (!is_string($item)) {
+                    $this->errors[$this->keysName] = $this->messFormat;
+                    unset($this->keys[$key]);
+                } 
             }
         }
 

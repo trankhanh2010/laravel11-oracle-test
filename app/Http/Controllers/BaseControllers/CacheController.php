@@ -16,16 +16,15 @@ class CacheController extends BaseApiCacheController
     }
     public function clearCache(Request $request)
     {
-        if($request->table === null){
+        // Nếu xóa hết cache
+        if(in_array('all',$this->keys)){
             // Redis::select(config('database')['redis']['cache']['database']);  // Chuyển về db cache
             Redis::connection('cache')->flushAll();
         }
-        if($request->table != null){
-            $tableName = Str::camel($request->table . 'Name' ?? 'a');
-            if (!isset($this->$tableName)) {
-                return returnParamError();
-            }
-            event(new DeleteCache($this->$tableName));
+
+        // Nếu xóa theo param
+        foreach($this->keys as $key => $item){
+            event(new DeleteCache($item));
         }
         return returnClearCache();
     }
