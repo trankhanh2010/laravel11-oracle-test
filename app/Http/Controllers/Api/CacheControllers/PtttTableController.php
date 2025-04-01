@@ -52,6 +52,7 @@ class PtttTableController extends BaseApiCacheController
             $this->appModifier, 
             $this->time,
             $this->param,
+            $this->noCache,
         );
         $this->ptttTableService->withParams($this->ptttTableDTO);
     }

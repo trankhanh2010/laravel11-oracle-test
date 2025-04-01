@@ -18,6 +18,7 @@ class AccidentBodyPartDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $accidentBodyPartName,
         $keyword, 
@@ -33,6 +34,7 @@ class AccidentBodyPartDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->accidentBodyPartName = $accidentBodyPartName;
@@ -49,5 +51,6 @@ class AccidentBodyPartDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

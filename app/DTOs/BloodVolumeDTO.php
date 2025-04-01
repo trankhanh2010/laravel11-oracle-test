@@ -18,6 +18,7 @@ class BloodVolumeDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $bloodVolumeName,
         $keyword, 
@@ -33,6 +34,7 @@ class BloodVolumeDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->bloodVolumeName = $bloodVolumeName;
@@ -49,5 +51,6 @@ class BloodVolumeDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

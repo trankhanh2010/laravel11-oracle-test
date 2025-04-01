@@ -45,6 +45,7 @@ class ContraindicationController extends BaseApiCacheController
             $this->appModifier, 
             $this->time,
             $this->param,
+            $this->noCache,
         );
         $this->contraindicationService->withParams($this->contraindicationDTO);
     }

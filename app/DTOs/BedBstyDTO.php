@@ -20,6 +20,7 @@ class BedBstyDTO
     public $serviceIds;
     public $bedIds;
     public $param;
+    public $noCache;
     public function __construct(
         $bedBstyName,
         $keyword, 
@@ -37,6 +38,7 @@ class BedBstyDTO
         $serviceIds,
         $bedIds,
         $param,
+        $noCache,
         )
     {
         $this->bedBstyName = $bedBstyName;
@@ -55,5 +57,6 @@ class BedBstyDTO
         $this->serviceIds = $serviceIds;
         $this->bedIds = $bedIds;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

@@ -83,6 +83,8 @@ class BaseApiCacheController extends Controller
     protected $onlyActiveName = 'OnlyActive';
     protected $keys;
     protected $keysName = 'Keys';
+    protected $noCache;
+    protected $noCacheName = 'NoCache';
     protected $id;
     protected $idName = 'Id';
     protected $ids;
@@ -1015,6 +1017,12 @@ class BaseApiCacheController extends Controller
         if (!is_bool($this->isCount)) {
             $this->errors[$this->isCountName] = $this->messFormat;
             $this->isCount = false;
+        }
+
+        $this->noCache = $this->paramRequest['CommonParam']['NoCache'] ?? false;
+        if (!is_bool($this->noCache)) {
+            $this->errors[$this->noCacheName] = $this->messFormat;
+            $this->noCache = false;
         }
 
         $this->orderBy = $this->paramRequest['ApiData']['OrderBy'] ?? null;

@@ -45,6 +45,7 @@ class TestIndexUnitController extends BaseApiCacheController
             $this->appModifier, 
             $this->time,
             $this->param,
+            $this->noCache,
         );
         $this->testIndexUnitService->withParams($this->testIndexUnitDTO);
     }

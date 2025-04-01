@@ -26,6 +26,7 @@ class AccountBookVViewDTO
     // public $loginname;
     // public $cashierroomId;
     public $param;
+    public $noCache;
     public function __construct(
         $accountBookVViewName,
         $keyword, 
@@ -49,6 +50,7 @@ class AccountBookVViewDTO
         // $loginname,
         // $cashierroomId,
         $param,
+        $noCache,
         )
     {
         $this->accountBookVViewName = $accountBookVViewName;
@@ -73,5 +75,6 @@ class AccountBookVViewDTO
         // $this->loginname = $loginname;
         // $this->cashierroomId = $cashierroomId;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

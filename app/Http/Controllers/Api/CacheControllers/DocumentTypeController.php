@@ -47,6 +47,7 @@ class DocumentTypeController extends BaseApiCacheController
             $this->time,
             $this->tab,
             $this->param,
+            $this->noCache,
         );
         $this->documentTypeService->withParams($this->documentTypeDTO);
     }

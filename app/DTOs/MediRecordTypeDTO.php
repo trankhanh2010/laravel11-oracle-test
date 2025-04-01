@@ -18,6 +18,7 @@ class MediRecordTypeDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $mediRecordTypeName,
         $keyword, 
@@ -33,6 +34,7 @@ class MediRecordTypeDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->mediRecordTypeName = $mediRecordTypeName;
@@ -49,5 +51,6 @@ class MediRecordTypeDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

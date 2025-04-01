@@ -45,6 +45,7 @@ class StorageConditionController extends BaseApiCacheController
             $this->appModifier, 
             $this->time,
             $this->param,
+            $this->noCache,
         );
         $this->storageConditionService->withParams($this->storageConditionDTO);
     }

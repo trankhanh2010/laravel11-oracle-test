@@ -45,6 +45,7 @@ class BloodVolumeController extends BaseApiCacheController
             $this->appModifier, 
             $this->time,
             $this->param,
+            $this->noCache,
         );
         $this->bloodVolumeService->withParams($this->bloodVolumeDTO);
     }

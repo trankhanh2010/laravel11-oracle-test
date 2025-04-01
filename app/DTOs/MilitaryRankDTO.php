@@ -18,6 +18,7 @@ class MilitaryRankDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $militaryRankName,
         $keyword, 
@@ -33,6 +34,7 @@ class MilitaryRankDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->militaryRankName = $militaryRankName;
@@ -49,5 +51,6 @@ class MilitaryRankDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

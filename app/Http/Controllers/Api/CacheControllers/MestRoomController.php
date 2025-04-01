@@ -55,6 +55,7 @@ class MestRoomController extends BaseApiCacheController
             $this->mediStockId,
             $this->roomId,
             $this->param,
+            $this->noCache,
         );
         $this->mestRoomService->withParams($this->mestRoomDTO);
     }

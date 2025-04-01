@@ -22,6 +22,7 @@ class SereServTeinListVViewDTO
     public $groupBy;
     public $sereServIds;
     public $param;
+    public $noCache;
     public function __construct(
         $sereServTeinListVViewName,
         $keyword, 
@@ -41,6 +42,7 @@ class SereServTeinListVViewDTO
         $groupBy,
         $sereServIds,
         $param,
+        $noCache,
         )
     {
         $this->sereServTeinListVViewName = $sereServTeinListVViewName;
@@ -61,5 +63,6 @@ class SereServTeinListVViewDTO
         $this->groupBy = $groupBy;
         $this->sereServIds = $sereServIds;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

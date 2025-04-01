@@ -19,6 +19,7 @@ class DebateUserDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $debateUserName,
         $keyword, 
@@ -35,6 +36,7 @@ class DebateUserDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->debateUserName = $debateUserName;
@@ -52,5 +54,6 @@ class DebateUserDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

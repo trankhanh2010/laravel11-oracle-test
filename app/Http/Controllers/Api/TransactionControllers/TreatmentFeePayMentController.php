@@ -27,6 +27,7 @@ class TreatmentFeePayMentController extends BaseApiCacheController
             $this->transactionTypeCode,
             $this->depositReqCode,
             $this->param,
+            $this->noCache,
         );
         $this->serviceReqPaymentService->withParams($this->serviceReqPaymentDTO);
     }

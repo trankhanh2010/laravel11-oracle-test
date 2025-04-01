@@ -45,6 +45,7 @@ class IcdGroupController extends BaseApiCacheController
             $this->appModifier, 
             $this->time,
             $this->param,
+            $this->noCache,
         );
         $this->icdGroupService->withParams($this->icdGroupDTO);
     }

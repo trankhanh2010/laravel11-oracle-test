@@ -45,6 +45,7 @@ class IcdCmController extends BaseApiCacheController
             $this->appModifier, 
             $this->time,
             $this->param,
+            $this->noCache,
         );
         $this->icdCmService->withParams($this->icdCmDTO);
     }

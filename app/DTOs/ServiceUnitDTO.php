@@ -18,6 +18,7 @@ class ServiceUnitDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $serviceUnitName,
         $keyword, 
@@ -33,6 +34,7 @@ class ServiceUnitDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->serviceUnitName = $serviceUnitName;
@@ -49,5 +51,6 @@ class ServiceUnitDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

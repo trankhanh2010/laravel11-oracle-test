@@ -18,6 +18,7 @@ class CareerTitleDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $careerTitleName,
         $keyword, 
@@ -33,6 +34,7 @@ class CareerTitleDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->careerTitleName = $careerTitleName;
@@ -49,5 +51,6 @@ class CareerTitleDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

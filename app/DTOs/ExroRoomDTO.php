@@ -20,6 +20,7 @@ class ExroRoomDTO
     public $roomId;
     public $executeRoomId;
     public $param;
+    public $noCache;
     public function __construct(
         $exroRoomName,
         $keyword, 
@@ -37,6 +38,7 @@ class ExroRoomDTO
         $roomId,
         $executeRoomId,
         $param,
+        $noCache,
         )
     {
         $this->exroRoomName = $exroRoomName;
@@ -55,5 +57,6 @@ class ExroRoomDTO
         $this->roomId = $roomId;
         $this->executeRoomId = $executeRoomId;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

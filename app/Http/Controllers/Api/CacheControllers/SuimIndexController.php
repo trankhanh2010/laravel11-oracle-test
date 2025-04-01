@@ -45,6 +45,7 @@ class SuimIndexController extends BaseApiCacheController
             $this->appModifier, 
             $this->time,
             $this->param,
+            $this->noCache,
         );
         $this->suimIndexService->withParams($this->suimIndexDTO);
     }

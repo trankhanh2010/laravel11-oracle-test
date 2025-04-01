@@ -45,6 +45,7 @@ class RelationController extends BaseApiCacheController
             $this->appModifier, 
             $this->time,
             $this->param,
+            $this->noCache,
         );
         $this->relationService->withParams($this->relationDTO);
     }

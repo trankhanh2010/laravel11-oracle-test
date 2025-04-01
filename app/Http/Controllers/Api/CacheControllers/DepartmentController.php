@@ -53,6 +53,7 @@ class DepartmentController extends BaseApiCacheController
             $this->time,
             $this->tab,
             $this->param,
+            $this->noCache,
         );
         $this->departmentService->withParams($this->departmentDTO);
     }

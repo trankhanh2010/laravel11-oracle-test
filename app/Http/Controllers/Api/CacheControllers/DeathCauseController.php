@@ -47,6 +47,7 @@ class DeathCauseController extends BaseApiCacheController
             $this->time,
             $this->tab,
             $this->param,
+            $this->noCache,
         );
         $this->deathCauseService->withParams($this->deathCauseDTO);
     }

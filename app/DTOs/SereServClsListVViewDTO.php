@@ -33,6 +33,7 @@ class SereServClsListVViewDTO
     public $intructionTimeFrom;
     public $reportTypeCode;
     public $serviceCodes;
+    public $noCache;
     public function __construct(
         $sereServClsListVViewName,
         $keyword, 
@@ -63,6 +64,7 @@ class SereServClsListVViewDTO
         $intructionTimeFrom,
         $reportTypeCode,
         $serviceCodes,
+        $noCache,
         )
     {
         $this->sereServClsListVViewName = $sereServClsListVViewName;
@@ -94,5 +96,6 @@ class SereServClsListVViewDTO
         $this->intructionTimeFrom = $intructionTimeFrom;
         $this->reportTypeCode = $reportTypeCode;
         $this->serviceCodes = $serviceCodes;
+        $this->noCache = $noCache;
     }
 }

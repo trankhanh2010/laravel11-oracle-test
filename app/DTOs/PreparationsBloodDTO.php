@@ -18,6 +18,7 @@ class PreparationsBloodDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $preparationsBloodName,
         $keyword, 
@@ -33,6 +34,7 @@ class PreparationsBloodDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->preparationsBloodName = $preparationsBloodName;
@@ -49,5 +51,6 @@ class PreparationsBloodDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

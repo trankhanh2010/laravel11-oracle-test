@@ -44,6 +44,7 @@ class AccidentCareController extends BaseApiCacheController
             $this->appModifier, 
             $this->time,
             $this->param,
+            $this->noCache,
         );
         $this->accidentCareService->withParams($this->accidentCareDTO);
     }

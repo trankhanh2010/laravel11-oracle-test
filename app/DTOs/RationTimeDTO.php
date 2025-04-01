@@ -18,6 +18,7 @@ class RationTimeDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $rationTimeName,
         $keyword, 
@@ -33,6 +34,7 @@ class RationTimeDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->rationTimeName = $rationTimeName;
@@ -49,5 +51,6 @@ class RationTimeDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

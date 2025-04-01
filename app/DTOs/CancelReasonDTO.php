@@ -18,6 +18,7 @@ class CancelReasonDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $cancelReasonName,
         $keyword, 
@@ -33,6 +34,7 @@ class CancelReasonDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->cancelReasonName = $cancelReasonName;
@@ -49,5 +51,6 @@ class CancelReasonDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

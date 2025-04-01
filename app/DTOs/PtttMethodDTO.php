@@ -18,6 +18,7 @@ class PtttMethodDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $ptttMethodName,
         $keyword, 
@@ -33,6 +34,7 @@ class PtttMethodDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->ptttMethodName = $ptttMethodName;
@@ -49,5 +51,6 @@ class PtttMethodDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

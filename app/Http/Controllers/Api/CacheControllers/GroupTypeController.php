@@ -45,6 +45,7 @@ class GroupTypeController extends BaseApiCacheController
             $this->appModifier, 
             $this->time,
             $this->param,
+            $this->noCache,
         );
         $this->groupTypeService->withParams($this->groupTypeDTO);
     }

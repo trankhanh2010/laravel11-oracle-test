@@ -45,6 +45,7 @@ class DiimTypeController extends BaseApiCacheController
             $this->appModifier, 
             $this->time,
             $this->param,
+            $this->noCache,
         );
         $this->diimTypeService->withParams($this->diimTypeDTO);
     }

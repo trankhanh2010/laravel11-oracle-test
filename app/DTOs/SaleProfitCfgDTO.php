@@ -18,6 +18,7 @@ class SaleProfitCfgDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $saleProfitCfgName,
         $keyword, 
@@ -33,6 +34,7 @@ class SaleProfitCfgDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->saleProfitCfgName = $saleProfitCfgName;
@@ -49,5 +51,6 @@ class SaleProfitCfgDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

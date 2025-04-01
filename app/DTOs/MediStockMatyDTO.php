@@ -20,6 +20,7 @@ class MediStockMatyDTO
     public $mediStockId;
     public $materialTypeId;
     public $param;
+    public $noCache;
     public function __construct(
         $mediStockMatyName,
         $keyword, 
@@ -37,6 +38,7 @@ class MediStockMatyDTO
         $mediStockId,
         $materilalTypeId,
         $param,
+        $noCache,
         )
     {
         $this->mediStockMatyName = $mediStockMatyName;
@@ -55,5 +57,6 @@ class MediStockMatyDTO
         $this->mediStockId = $mediStockId;
         $this->materialTypeId = $materilalTypeId;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

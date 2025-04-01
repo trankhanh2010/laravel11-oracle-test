@@ -45,6 +45,7 @@ class MaterialTypeMapController extends BaseApiCacheController
             $this->appModifier, 
             $this->time,
             $this->param,
+            $this->noCache,
         );
         $this->materialTypeMapService->withParams($this->materialTypeMapDTO);
     }

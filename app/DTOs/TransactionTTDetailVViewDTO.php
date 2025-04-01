@@ -21,6 +21,7 @@ class TransactionTTDetailVViewDTO
     public $billId;
     public $billCode;
     public $param;
+    public $noCache;
     public function __construct(
         $transactionTTDetailVViewName,
         $keyword, 
@@ -39,6 +40,7 @@ class TransactionTTDetailVViewDTO
         $billId,
         $billCode,
         $param,
+        $noCache,
         )
     {
         $this->transactionTTDetailVViewName = $transactionTTDetailVViewName;
@@ -58,5 +60,6 @@ class TransactionTTDetailVViewDTO
         $this->billId = $billId;
         $this->billCode = $billCode;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

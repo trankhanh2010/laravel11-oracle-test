@@ -21,6 +21,7 @@ class TrackingDataDTO
     public $treatmentId;
     public $relations;
     public $param;
+    public $noCache;
     public function __construct(
         $trackingDataName,
         $keyword, 
@@ -39,6 +40,7 @@ class TrackingDataDTO
         $treatmentId,
         $relations,
         $param,
+        $noCache,
         )
     {
         $this->trackingDataName = $trackingDataName;
@@ -58,5 +60,6 @@ class TrackingDataDTO
         $this->treatmentId = $treatmentId;
         $this->relations = $relations;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

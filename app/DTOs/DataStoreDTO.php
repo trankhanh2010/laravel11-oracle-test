@@ -18,6 +18,7 @@ class DataStoreDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $dataStoreName,
         $keyword, 
@@ -33,6 +34,7 @@ class DataStoreDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->dataStoreName = $dataStoreName;
@@ -49,5 +51,6 @@ class DataStoreDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

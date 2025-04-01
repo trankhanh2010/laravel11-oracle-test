@@ -19,6 +19,7 @@ class DeathWithinDTO
     public $time;
     public $tab;
     public $param;
+    public $noCache;
     public function __construct(
         $deathWithinName,
         $keyword, 
@@ -35,6 +36,7 @@ class DeathWithinDTO
         $time,
         $tab,
         $param,
+        $noCache,
         )
     {
         $this->deathWithinName = $deathWithinName;
@@ -52,5 +54,6 @@ class DeathWithinDTO
         $this->time = $time;
         $this->tab = $tab;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

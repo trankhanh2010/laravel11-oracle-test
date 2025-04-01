@@ -20,6 +20,7 @@ class TreatmentLViewDTO
     public $time;
     public $patientCode;
     public $param;
+    public $noCache;
     public function __construct(
         $treatmentLViewName,
         $keyword, 
@@ -37,6 +38,7 @@ class TreatmentLViewDTO
         $time,
         $patientCode,
         $param,
+        $noCache,
         )
     {
         $this->treatmentLViewName = $treatmentLViewName;
@@ -55,5 +57,6 @@ class TreatmentLViewDTO
         $this->time = $time;
         $this->patientCode = $patientCode;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

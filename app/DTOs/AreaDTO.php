@@ -18,6 +18,7 @@ class AreaDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $areaName,
         $keyword, 
@@ -33,6 +34,7 @@ class AreaDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->areaName = $areaName;
@@ -49,5 +51,6 @@ class AreaDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

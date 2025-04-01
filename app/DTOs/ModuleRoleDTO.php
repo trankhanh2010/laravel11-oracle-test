@@ -20,6 +20,7 @@ class ModuleRoleDTO
     public $moduleId;
     public $roleId;
     public $param;
+    public $noCache;
     public function __construct(
         $moduleRoleName,
         $keyword, 
@@ -37,6 +38,7 @@ class ModuleRoleDTO
         $moduleId,
         $roleId,
         $param,
+        $noCache,
         )
     {
         $this->moduleRoleName = $moduleRoleName;
@@ -55,5 +57,6 @@ class ModuleRoleDTO
         $this->moduleId = $moduleId;
         $this->roleId = $roleId;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

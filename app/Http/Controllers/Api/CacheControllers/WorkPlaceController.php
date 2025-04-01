@@ -45,6 +45,7 @@ class WorkPlaceController extends BaseApiCacheController
             $this->appModifier, 
             $this->time,
             $this->param,
+            $this->noCache,
         );
         $this->workPlaceService->withParams($this->workPlaceDTO);
     }

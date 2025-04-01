@@ -46,6 +46,7 @@ class DhstController extends BaseApiCacheController
             $this->appModifier, 
             $this->time,
             $this->param,
+            $this->noCache,
         );
         $this->dhstService->withParams($this->dhstDTO);
     }

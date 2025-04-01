@@ -22,6 +22,7 @@ class DocumentListVViewDTO
     public $documentTypeId;
     public $treatmentCode;
     public $param;
+    public $noCache;
     public function __construct(
         $documentListVViewName,
         $keyword, 
@@ -41,6 +42,7 @@ class DocumentListVViewDTO
         $documentTypeId,
         $treatmentCode,
         $param,
+        $noCache,
         )
     {
         $this->documentListVViewName = $documentListVViewName;
@@ -61,5 +63,6 @@ class DocumentListVViewDTO
         $this->documentTypeId = $documentTypeId;
         $this->treatmentCode = $treatmentCode;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

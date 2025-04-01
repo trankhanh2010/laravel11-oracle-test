@@ -20,6 +20,7 @@ class SeseDepoRepayVViewDTO
     public $time;
     public $tdlTreatmentId;
     public $param;
+    public $noCache;
     public function __construct(
         $seseDepoRepayVViewName,
         $keyword, 
@@ -37,6 +38,7 @@ class SeseDepoRepayVViewDTO
         $time,
         $tdlTreatmentId,
         $param,
+        $noCache,
         )
     {
         $this->seseDepoRepayVViewName = $seseDepoRepayVViewName;
@@ -55,5 +57,6 @@ class SeseDepoRepayVViewDTO
         $this->time = $time;
         $this->tdlTreatmentId = $tdlTreatmentId;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

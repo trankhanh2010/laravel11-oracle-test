@@ -52,6 +52,7 @@ class TransactionListVViewController extends BaseApiCacheController
             $this->treatmentCode,
             $this->transactionCode,
             $this->param,
+            $this->noCache,
         );
         $this->transactionListVViewService->withParams($this->transactionListVViewDTO);
     }

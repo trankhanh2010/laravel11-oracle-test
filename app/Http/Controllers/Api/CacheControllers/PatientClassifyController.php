@@ -49,6 +49,7 @@ class PatientClassifyController extends BaseApiCacheController
             $this->appModifier, 
             $this->time,
             $this->param,
+            $this->noCache,
         );
         $this->patientClassifyService->withParams($this->patientClassifyDTO);
     }

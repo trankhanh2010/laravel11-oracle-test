@@ -46,6 +46,7 @@ class SereServVView4Controller extends BaseApiCacheController
             $this->appModifier, 
             $this->time,
             $this->param,
+            $this->noCache,
         );
         $this->sereServVView4Service->withParams($this->sereServVView4DTO);
     }

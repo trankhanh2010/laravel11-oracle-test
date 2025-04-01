@@ -18,6 +18,7 @@ class WorkPlaceDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $workPlaceName,
         $keyword, 
@@ -33,6 +34,7 @@ class WorkPlaceDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->workPlaceName = $workPlaceName;
@@ -49,5 +51,6 @@ class WorkPlaceDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

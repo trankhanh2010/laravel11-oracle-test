@@ -47,6 +47,7 @@ class SereServDepositVViewController extends BaseApiCacheController
             $this->time,
             $this->tdlTreatmentId,
             $this->param,
+            $this->noCache,
         );
         $this->sereServDepositVViewService->withParams($this->sereServDepositVViewDTO);
     }

@@ -47,6 +47,7 @@ class PtttCatastropheController extends BaseApiCacheController
             $this->time,
             $this->tab,
             $this->param,
+            $this->noCache,
         );
         $this->ptttCatastropheService->withParams($this->ptttCatastropheDTO);
     }

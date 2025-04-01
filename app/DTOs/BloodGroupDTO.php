@@ -18,6 +18,7 @@ class BloodGroupDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $bloodGroupName,
         $keyword, 
@@ -33,6 +34,7 @@ class BloodGroupDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->bloodGroupName = $bloodGroupName;
@@ -49,5 +51,6 @@ class BloodGroupDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

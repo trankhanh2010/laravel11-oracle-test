@@ -51,6 +51,7 @@ class DebateEkipUserController extends BaseApiCacheController
             $this->time,
             $this->debateId,
             $this->param,
+            $this->noCache,
         );
         $this->debateEkipUserService->withParams($this->debateEkipUserDTO);
     }

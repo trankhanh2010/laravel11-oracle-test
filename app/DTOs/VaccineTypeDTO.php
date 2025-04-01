@@ -18,6 +18,7 @@ class VaccineTypeDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $vaccineTypeName,
         $keyword, 
@@ -33,6 +34,7 @@ class VaccineTypeDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->vaccineTypeName = $vaccineTypeName;
@@ -49,5 +51,6 @@ class VaccineTypeDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

@@ -18,6 +18,7 @@ class TransactionTypeDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $transactionTypeName,
         $keyword, 
@@ -33,6 +34,7 @@ class TransactionTypeDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->transactionTypeName = $transactionTypeName;
@@ -49,5 +51,6 @@ class TransactionTypeDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

@@ -18,6 +18,7 @@ class BodyPartDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $bodyPartName,
         $keyword, 
@@ -33,6 +34,7 @@ class BodyPartDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->bodyPartName = $bodyPartName;
@@ -49,5 +51,6 @@ class BodyPartDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

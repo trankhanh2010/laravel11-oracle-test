@@ -18,6 +18,7 @@ class BhytParamDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $bhytParamName,
         $keyword, 
@@ -33,6 +34,7 @@ class BhytParamDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->bhytParamName = $bhytParamName;
@@ -49,5 +51,6 @@ class BhytParamDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

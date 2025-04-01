@@ -18,6 +18,7 @@ class DosageFormDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $dosageFormName,
         $keyword, 
@@ -33,6 +34,7 @@ class DosageFormDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->dosageFormName = $dosageFormName;
@@ -49,5 +51,6 @@ class DosageFormDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

@@ -52,6 +52,7 @@ class ReceptionRoomController extends BaseApiCacheController
             $this->appModifier, 
             $this->time,
             $this->param,
+            $this->noCache,
         );
         $this->receptionRoomService->withParams($this->receptionRoomDTO);
     }

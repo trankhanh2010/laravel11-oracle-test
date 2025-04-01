@@ -45,6 +45,7 @@ class MedicalContractController extends BaseApiCacheController
             $this->appModifier, 
             $this->time,
             $this->param,
+            $this->noCache,
         );
         $this->medicalContractService->withParams($this->medicalContractDTO);
     }

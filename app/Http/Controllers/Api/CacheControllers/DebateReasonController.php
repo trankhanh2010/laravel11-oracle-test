@@ -45,6 +45,7 @@ class DebateReasonController extends BaseApiCacheController
             $this->appModifier, 
             $this->time,
             $this->param,
+            $this->noCache,
         );
         $this->debateReasonService->withParams($this->debateReasonDTO);
     }

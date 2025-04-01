@@ -18,6 +18,7 @@ class ExecuteRoomDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $executeRoomName,
         $keyword, 
@@ -33,6 +34,7 @@ class ExecuteRoomDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->executeRoomName = $executeRoomName;
@@ -49,5 +51,6 @@ class ExecuteRoomDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

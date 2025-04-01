@@ -18,6 +18,7 @@ class StorageConditionDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $storageConditionName,
         $keyword, 
@@ -33,6 +34,7 @@ class StorageConditionDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->storageConditionName = $storageConditionName;
@@ -49,5 +51,6 @@ class StorageConditionDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

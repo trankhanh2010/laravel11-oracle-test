@@ -20,6 +20,7 @@ class DebateEkipUserDTO
     public $time;
     public $debateId;
     public $param;
+    public $noCache;
     public function __construct(
         $debateEkipUserName,
         $keyword, 
@@ -37,6 +38,7 @@ class DebateEkipUserDTO
         $time,
         $debateId,
         $param,
+        $noCache,
         )
     {
         $this->debateEkipUserName = $debateEkipUserName;
@@ -55,5 +57,6 @@ class DebateEkipUserDTO
         $this->time = $time;
         $this->debateId = $debateId;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

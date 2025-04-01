@@ -20,6 +20,7 @@ class UserRoomDTO
     public $time;
     public $loginname;
     public $param;
+    public $noCache;
     public function __construct(
         $userRoomName,
         $keyword, 
@@ -37,6 +38,7 @@ class UserRoomDTO
         $time,
         $loginname,
         $param,
+        $noCache,
         )
     {
         $this->userRoomName = $userRoomName;
@@ -55,5 +57,6 @@ class UserRoomDTO
         $this->time = $time;
         $this->loginname = $loginname;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

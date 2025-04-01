@@ -18,6 +18,7 @@ class MachineDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $machineName,
         $keyword, 
@@ -33,6 +34,7 @@ class MachineDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->machineName = $machineName;
@@ -49,5 +51,6 @@ class MachineDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

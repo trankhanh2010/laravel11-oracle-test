@@ -33,6 +33,7 @@ class SereServTeinChartsVViewDTO
     public $intructionTimeFrom;
     public $reportTypeCode;
     public $serviceCodes;
+    public $noCache;
     public function __construct(
         $sereServTeinChartsVViewName,
         $keyword, 
@@ -63,6 +64,7 @@ class SereServTeinChartsVViewDTO
         $intructionTimeFrom,
         $reportTypeCode,
         $serviceCodes,
+        $noCache,
         )
     {
         $this->sereServTeinChartsVViewName = $sereServTeinChartsVViewName;
@@ -94,5 +96,6 @@ class SereServTeinChartsVViewDTO
         $this->intructionTimeFrom = $intructionTimeFrom;
         $this->reportTypeCode = $reportTypeCode;
         $this->serviceCodes = $serviceCodes;
+        $this->noCache = $noCache;
     }
 }

@@ -18,6 +18,7 @@ class LicenseClassDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $licenseClassName,
         $keyword, 
@@ -33,6 +34,7 @@ class LicenseClassDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->licenseClassName = $licenseClassName;
@@ -49,5 +51,6 @@ class LicenseClassDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

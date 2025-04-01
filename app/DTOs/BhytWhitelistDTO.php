@@ -18,6 +18,7 @@ class BhytWhitelistDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $bhytWhitelistName,
         $keyword, 
@@ -33,6 +34,7 @@ class BhytWhitelistDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->bhytWhitelistName = $bhytWhitelistName;
@@ -49,5 +51,6 @@ class BhytWhitelistDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

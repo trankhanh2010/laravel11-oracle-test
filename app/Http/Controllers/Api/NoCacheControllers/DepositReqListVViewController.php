@@ -48,6 +48,7 @@ class DepositReqListVViewController extends BaseApiCacheController
             $this->isDeposit,
             $this->treatmentId,
             $this->param,
+            $this->noCache,
         );
         $this->depositReqListVViewService->withParams($this->depositReqListVViewDTO);
     }

@@ -18,6 +18,7 @@ class InteractionReasonDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $interactionReasonName,
         $keyword, 
@@ -33,6 +34,7 @@ class InteractionReasonDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->interactionReasonName = $interactionReasonName;
@@ -49,5 +51,6 @@ class InteractionReasonDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

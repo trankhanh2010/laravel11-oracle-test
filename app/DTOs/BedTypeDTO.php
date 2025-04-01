@@ -18,6 +18,7 @@ class BedTypeDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $bedTypeName,
         $keyword, 
@@ -33,6 +34,7 @@ class BedTypeDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->bedTypeName = $bedTypeName;
@@ -49,5 +51,6 @@ class BedTypeDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

@@ -46,6 +46,7 @@ class ServiceConditionController extends BaseApiCacheController
             $this->time,
             $this->serviceId,
             $this->param,
+            $this->noCache,
         );
         $this->serviceConditionService->withParams($this->serviceConditionDTO);
     }

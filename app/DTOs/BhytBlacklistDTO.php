@@ -18,6 +18,7 @@ class BhytBlacklistDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $bhytBlacklistName,
         $keyword, 
@@ -33,6 +34,7 @@ class BhytBlacklistDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->bhytBlacklistName = $bhytBlacklistName;
@@ -49,5 +51,6 @@ class BhytBlacklistDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

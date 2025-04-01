@@ -19,6 +19,7 @@ class DepartmentDTO
     public $time;
     public $tab;
     public $param;
+    public $noCache;
     public function __construct(
         $departmentName,
         $keyword, 
@@ -35,6 +36,7 @@ class DepartmentDTO
         $time,
         $tab,
         $param,
+        $noCache,
         )
     {
         $this->departmentName = $departmentName;
@@ -52,5 +54,6 @@ class DepartmentDTO
         $this->time = $time;
         $this->tab = $tab;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

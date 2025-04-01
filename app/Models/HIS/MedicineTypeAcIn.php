@@ -6,7 +6,7 @@ use App\Traits\dinh_dang_ten_truong;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class MedicineTypeAcIn extends Model
+class MedicineTypeAcin extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     

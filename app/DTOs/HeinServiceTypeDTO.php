@@ -18,6 +18,7 @@ class HeinServiceTypeDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $heinServiceTypeName,
         $keyword, 
@@ -33,6 +34,7 @@ class HeinServiceTypeDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->heinServiceTypeName = $heinServiceTypeName;
@@ -49,5 +51,6 @@ class HeinServiceTypeDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

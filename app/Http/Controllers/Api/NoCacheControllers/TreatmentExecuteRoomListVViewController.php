@@ -58,6 +58,7 @@ class TreatmentExecuteRoomListVViewController extends BaseApiCacheController
             $this->serviceReqSttIds,
             $this->isCount,
             $this->param,
+            $this->noCache,
         );
         $this->treatmentExecuteRoomListVViewService->withParams($this->treatmentExecuteRoomListVViewDTO);
     }

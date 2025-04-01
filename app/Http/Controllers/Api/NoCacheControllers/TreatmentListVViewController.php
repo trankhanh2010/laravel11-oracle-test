@@ -51,6 +51,7 @@ class TreatmentListVViewController extends BaseApiCacheController
             $this->treatmentTypeCode,
             $this->inTimeFrom,
             $this->inTimeTo,
+            $this->noCache,
 
         );
         $this->treatmentListVViewService->withParams($this->treatmentListVViewDTO);

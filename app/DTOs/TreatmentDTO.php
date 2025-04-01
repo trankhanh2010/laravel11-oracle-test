@@ -19,6 +19,7 @@ class TreatmentDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $treatmentName,
         $keyword, 
@@ -35,6 +36,7 @@ class TreatmentDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->treatmentName = $treatmentName;
@@ -52,5 +54,6 @@ class TreatmentDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

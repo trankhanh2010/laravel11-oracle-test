@@ -47,6 +47,7 @@ class SeseDepoRepayVViewController extends BaseApiCacheController
             $this->time,
             $this->tdlTreatmentId,
             $this->param,
+            $this->noCache,
         );
         $this->seseDepoRepayVViewService->withParams($this->seseDepoRepayVViewDTO);
     }

@@ -18,6 +18,7 @@ class MaterialTypeDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $materialTypeName,
         $keyword, 
@@ -33,6 +34,7 @@ class MaterialTypeDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->materialTypeName = $materialTypeName;
@@ -49,5 +51,6 @@ class MaterialTypeDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

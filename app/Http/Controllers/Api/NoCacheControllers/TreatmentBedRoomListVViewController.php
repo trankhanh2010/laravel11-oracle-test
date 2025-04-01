@@ -58,6 +58,7 @@ class TreatmentBedRoomListVViewController extends BaseApiCacheController
             $this->patientCode,
             $this->isCount,
             $this->param,
+            $this->noCache,
         );
         $this->treatmentBedRoomListVViewService->withParams($this->treatmentBedRoomListVViewDTO);
     }

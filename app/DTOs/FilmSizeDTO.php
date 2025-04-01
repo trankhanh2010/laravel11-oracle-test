@@ -18,6 +18,7 @@ class FilmSizeDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $filmSizeName,
         $keyword, 
@@ -33,6 +34,7 @@ class FilmSizeDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->filmSizeName = $filmSizeName;
@@ -49,5 +51,6 @@ class FilmSizeDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

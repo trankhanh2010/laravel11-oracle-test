@@ -20,6 +20,7 @@ class MestPatientTypeDTO
     public $mediStockId;
     public $patientTypeId;
     public $param;
+    public $noCache;
     public function __construct(
         $mestPatientTypeName,
         $keyword, 
@@ -37,6 +38,7 @@ class MestPatientTypeDTO
         $mediStockId,
         $patientTypeId,
         $param,
+        $noCache,
         )
     {
         $this->mestPatientTypeName = $mestPatientTypeName;
@@ -55,5 +57,6 @@ class MestPatientTypeDTO
         $this->mediStockId = $mediStockId;
         $this->patientTypeId = $patientTypeId;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

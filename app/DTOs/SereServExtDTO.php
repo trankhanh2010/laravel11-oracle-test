@@ -20,6 +20,7 @@ class SereServExtDTO
     public $time;
     public $sereServIds;
     public $param;
+    public $noCache;
     public function __construct(
         $sereServExtName,
         $keyword, 
@@ -37,6 +38,7 @@ class SereServExtDTO
         $time,
         $sereServIds,
         $param,
+        $noCache,
         )
     {
         $this->sereServExtName = $sereServExtName;
@@ -55,5 +57,6 @@ class SereServExtDTO
         $this->time = $time;
         $this->sereServIds = $sereServIds;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

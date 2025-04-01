@@ -19,6 +19,7 @@ class documentTypeDTO
     public $time;
     public $tab;
     public $param;
+    public $noCache;
     public function __construct(
         $documentTypeName,
         $keyword, 
@@ -35,6 +36,7 @@ class documentTypeDTO
         $time,
         $tab,
         $param,
+        $noCache,
         )
     {
         $this->documentTypeName = $documentTypeName;
@@ -52,5 +54,6 @@ class documentTypeDTO
         $this->time = $time;
         $this->tab = $tab;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

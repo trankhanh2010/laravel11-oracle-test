@@ -19,6 +19,7 @@ class TreatmentResultDTO
     public $time;
     public $tab;
     public $param;
+    public $noCache;
     public function __construct(
         $treatmentResultName,
         $keyword, 
@@ -35,6 +36,7 @@ class TreatmentResultDTO
         $time,
         $tab,
         $param,
+        $noCache,
         )
     {
         $this->treatmentResultName = $treatmentResultName;
@@ -52,5 +54,6 @@ class TreatmentResultDTO
         $this->time = $time;
         $this->tab = $tab;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

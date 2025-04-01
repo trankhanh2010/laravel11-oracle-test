@@ -21,6 +21,7 @@ class SereServBillDTO
     public $billId;
     public $billCode;
     public $param;
+    public $noCache;
     public function __construct(
         $sereServBillName,
         $keyword, 
@@ -39,6 +40,7 @@ class SereServBillDTO
         $billId,
         $billCode,
         $param,
+        $noCache,
         )
     {
         $this->sereServBillName = $sereServBillName;
@@ -58,5 +60,6 @@ class SereServBillDTO
         $this->billId = $billId;
         $this->billCode = $billCode;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

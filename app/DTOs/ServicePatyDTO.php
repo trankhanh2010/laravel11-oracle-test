@@ -23,6 +23,7 @@ class ServicePatyDTO
     public $packageId;
     public $effective;
     public $param;
+    public $noCache;
     public function __construct(
         $servicePatyName,
         $keyword, 
@@ -43,6 +44,7 @@ class ServicePatyDTO
         $packageId,
         $effective,
         $param,
+        $noCache,
         )
     {
         $this->servicePatyName = $servicePatyName;
@@ -64,5 +66,6 @@ class ServicePatyDTO
         $this->packageId = $packageId;
         $this->effective= $effective;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

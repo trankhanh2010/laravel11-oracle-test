@@ -48,6 +48,7 @@ class SereServBillController extends BaseApiCacheController
             $this->billId,
             $this->billCode,
             $this->param,
+            $this->noCache,
         );
         $this->sereServBillService->withParams($this->sereServBillDTO);
     }

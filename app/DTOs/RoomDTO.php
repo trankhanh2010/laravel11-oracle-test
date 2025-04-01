@@ -20,6 +20,7 @@ class RoomDTO
     public $departmentId;
     public $roomTypeId;
     public $param;
+    public $noCache;
     public function __construct(
         $roomName,
         $keyword, 
@@ -37,6 +38,7 @@ class RoomDTO
         $departmentId,
         $roomTypeId,
         $param,
+        $noCache,
         )
     {
         $this->roomName = $roomName;
@@ -55,5 +57,6 @@ class RoomDTO
         $this->departmentId = $departmentId;
         $this->roomTypeId = $roomTypeId;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

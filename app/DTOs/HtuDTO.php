@@ -18,6 +18,7 @@ class HtuDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $htuName,
         $keyword, 
@@ -33,6 +34,7 @@ class HtuDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->htuName = $htuName;
@@ -49,5 +51,6 @@ class HtuDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

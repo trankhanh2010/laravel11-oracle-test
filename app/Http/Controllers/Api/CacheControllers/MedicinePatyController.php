@@ -59,6 +59,7 @@ class MedicinePatyController extends BaseApiCacheController
             $this->appModifier,
             $this->time,
             $this->param,
+            $this->noCache,
         );
         $this->medicinePatyService->withParams($this->medicinePatyDTO);
     }

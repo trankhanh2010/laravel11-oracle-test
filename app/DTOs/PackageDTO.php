@@ -18,6 +18,7 @@ class PackageDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $packageName,
         $keyword, 
@@ -33,6 +34,7 @@ class PackageDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->packageName = $packageName;
@@ -49,5 +51,6 @@ class PackageDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

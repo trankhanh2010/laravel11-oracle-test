@@ -20,6 +20,7 @@ class SereServDepositVViewDTO
     public $time;
     public $tdlTreatmentId;
     public $param;
+    public $noCache;
     public function __construct(
         $sereServDepositVViewName,
         $keyword, 
@@ -37,6 +38,7 @@ class SereServDepositVViewDTO
         $time,
         $tdlTreatmentId,
         $param,
+        $noCache,
         )
     {
         $this->sereServDepositVViewName = $sereServDepositVViewName;
@@ -55,5 +57,6 @@ class SereServDepositVViewDTO
         $this->time = $time;
         $this->tdlTreatmentId = $tdlTreatmentId;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

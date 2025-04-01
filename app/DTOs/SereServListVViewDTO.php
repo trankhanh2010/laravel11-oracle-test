@@ -26,6 +26,7 @@ class SereServListVViewDTO
     public $patientCode;
     public $serviceTypeCodes;
     public $param;
+    public $noCache;
 
     public function __construct(
         $sereServListVViewName,
@@ -50,6 +51,7 @@ class SereServListVViewDTO
         $patientCode,
         $serviceTypeCodes,
         $param,
+        $noCache,
         )
     {
         $this->sereServListVViewName = $sereServListVViewName;
@@ -74,5 +76,6 @@ class SereServListVViewDTO
         $this->patientCode = $patientCode;
         $this->serviceTypeCodes = $serviceTypeCodes;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

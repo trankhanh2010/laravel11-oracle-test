@@ -35,6 +35,7 @@ class TreatmentExecuteRoomListVViewDTO
     public $serviceReqSttIds;
     public $isCount;
     public $param;
+    public $noCache;
 
     public function __construct(
         $treatmentExecuteRoomListVViewName,
@@ -68,6 +69,7 @@ class TreatmentExecuteRoomListVViewDTO
         $serviceReqSttIds,
         $isCount,
         $param,
+        $noCache,
         )
     {
         $this->treatmentExecuteRoomListVViewName = $treatmentExecuteRoomListVViewName;
@@ -101,5 +103,6 @@ class TreatmentExecuteRoomListVViewDTO
         $this->serviceReqSttIds = $serviceReqSttIds;
         $this->isCount = $isCount;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

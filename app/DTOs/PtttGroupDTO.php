@@ -18,6 +18,7 @@ class PtttGroupDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $ptttGroupName,
         $keyword, 
@@ -33,6 +34,7 @@ class PtttGroupDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->ptttGroupName = $ptttGroupName;
@@ -49,5 +51,6 @@ class PtttGroupDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

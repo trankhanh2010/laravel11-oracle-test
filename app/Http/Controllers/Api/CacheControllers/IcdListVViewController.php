@@ -45,6 +45,7 @@ class IcdListVViewController extends BaseApiCacheController
             $this->time,
             $this->tab,
             $this->param,
+            $this->noCache,
         );
         $this->icdListVViewService->withParams($this->icdListVViewDTO);
     }

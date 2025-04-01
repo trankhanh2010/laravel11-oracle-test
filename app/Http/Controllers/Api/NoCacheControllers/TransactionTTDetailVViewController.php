@@ -48,6 +48,7 @@ class TransactionTTDetailVViewController extends BaseApiCacheController
             $this->billId,
             $this->billCode,
             $this->param,
+            $this->noCache,
         );
         $this->transactionTTDetailVViewService->withParams($this->transactionTTDetailVViewDTO);
     }

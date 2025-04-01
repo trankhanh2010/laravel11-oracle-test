@@ -18,6 +18,7 @@ class LocationStoreDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $locationStoreName,
         $keyword, 
@@ -33,6 +34,7 @@ class LocationStoreDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->locationStoreName = $locationStoreName;
@@ -49,5 +51,6 @@ class LocationStoreDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

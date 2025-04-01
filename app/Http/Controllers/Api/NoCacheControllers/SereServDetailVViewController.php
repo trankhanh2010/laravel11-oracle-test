@@ -46,6 +46,7 @@ class SereServDetailVViewController extends BaseApiCacheController
             $this->time,
             $this->serviceTypeCode,
             $this->param,
+            $this->noCache,
         );
         $this->sereServDetailVViewService->withParams($this->sereServDetailVViewDTO);
     }

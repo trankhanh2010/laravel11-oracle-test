@@ -47,6 +47,7 @@ class CommuneController extends BaseApiCacheController
             $this->appModifier, 
             $this->time,
             $this->param,
+            $this->noCache,
         );
         $this->communeService->withParams($this->communeDTO);
     }

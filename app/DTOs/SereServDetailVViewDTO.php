@@ -20,6 +20,7 @@ class SereServDetailVViewDTO
     public $time;
     public $serviceTypeCode;
     public $param;
+    public $noCache;
     public function __construct(
         $sereServDetailVViewName,
         $keyword, 
@@ -37,6 +38,7 @@ class SereServDetailVViewDTO
         $time,
         $serviceTypeCode,
         $param,
+        $noCache,
         )
     {
         $this->sereServDetailVViewName = $sereServDetailVViewName;
@@ -55,5 +57,6 @@ class SereServDetailVViewDTO
         $this->time = $time;
         $this->serviceTypeCode = $serviceTypeCode;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

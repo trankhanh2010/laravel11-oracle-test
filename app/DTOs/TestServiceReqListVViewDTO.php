@@ -30,6 +30,7 @@ class TestServiceReqListVViewDTO
     public $status;
     public $patientPhone;
     public $param;
+    public $noCache;
     public function __construct(
         $testServiceReqListVViewName,
         $keyword, 
@@ -57,6 +58,7 @@ class TestServiceReqListVViewDTO
         $status,
         $patientPhone,
         $param,
+        $noCache,
         )
     {
         $this->testServiceReqListVViewName = $testServiceReqListVViewName;
@@ -85,5 +87,6 @@ class TestServiceReqListVViewDTO
         $this->status = $status;
         $this->patientPhone = $patientPhone;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

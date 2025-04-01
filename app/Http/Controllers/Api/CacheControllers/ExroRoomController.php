@@ -47,6 +47,7 @@ class ExroRoomController extends BaseApiCacheController
             $this->roomId,
             $this->executeRoomId,
             $this->param,
+            $this->noCache,
         );
         $this->exroRoomService->withParams($this->exroRoomDTO);
     }

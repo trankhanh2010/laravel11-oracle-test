@@ -45,6 +45,7 @@ class OtherPaySourceController extends BaseApiCacheController
             $this->appModifier, 
             $this->time,
             $this->param,
+            $this->noCache,
         );
         $this->otherPaySourceService->withParams($this->otherPaySourceDTO);
     }

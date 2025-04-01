@@ -19,6 +19,7 @@ class DebateVViewDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $debateVViewName,
         $keyword, 
@@ -35,6 +36,7 @@ class DebateVViewDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->debateVViewName = $debateVViewName;
@@ -52,5 +54,6 @@ class DebateVViewDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

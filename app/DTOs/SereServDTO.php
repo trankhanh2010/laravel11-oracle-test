@@ -22,6 +22,7 @@ class SereServDTO
     public $serviceTypeId;
     public $treatmentId;
     public $param;
+    public $noCache;
     public function __construct(
         $sereServName,
         $keyword, 
@@ -41,6 +42,7 @@ class SereServDTO
         $serviceTypeId,
         $treatmentId,
         $param,
+        $noCache,
         )
     {
         $this->sereServName = $sereServName;
@@ -61,5 +63,6 @@ class SereServDTO
         $this->serviceTypeId = $serviceTypeId;
         $this->treatmentId = $treatmentId;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

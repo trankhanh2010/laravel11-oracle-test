@@ -51,6 +51,7 @@ class MestPatientTypeController extends BaseApiCacheController
             $this->mediStockId,
             $this->patientTypeId,
             $this->param,
+            $this->noCache,
         );
         $this->mestPatientTypeService->withParams($this->mestPatientTypeDTO);
     }

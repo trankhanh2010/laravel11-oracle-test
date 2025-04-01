@@ -18,6 +18,7 @@ class SupplierDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $supplierName,
         $keyword, 
@@ -33,6 +34,7 @@ class SupplierDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->supplierName = $supplierName;
@@ -49,5 +51,6 @@ class SupplierDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

@@ -60,6 +60,7 @@ class SereServClsListVViewController extends BaseApiCacheController
             $this->intructionTimeFrom,
             $this->reportTypeCode,
             $this->serviceCodes,
+            $this->noCache,
         );
         $this->sereServClsListVViewService->withParams($this->sereServClsListVViewDTO);
     }

@@ -50,6 +50,7 @@ class TreatmentBedRoomLViewController extends BaseApiCacheController
             $this->addTimeFrom,
             $this->isInRoom,
             $this->param,
+            $this->noCache,
         );
         $this->treatmentBedRoomLViewService->withParams($this->treatmentBedRoomLViewDTO);
     }

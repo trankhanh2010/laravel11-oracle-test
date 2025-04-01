@@ -20,6 +20,7 @@ class TreatmentRoomGroupVViewDTO
     public $time;
     public $departmentCode;
     public $param;
+    public $noCache;
     public function __construct(
         $treatmentRoomGroupVViewName,
         $keyword, 
@@ -37,6 +38,7 @@ class TreatmentRoomGroupVViewDTO
         $time,
         $departmentCode,
         $param,
+        $noCache,
         )
     {
         $this->treatmentRoomGroupVViewName = $treatmentRoomGroupVViewName;
@@ -55,5 +57,6 @@ class TreatmentRoomGroupVViewDTO
         $this->time = $time;
         $this->departmentCode = $departmentCode;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

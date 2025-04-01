@@ -47,6 +47,7 @@ class EmrCoverTypeController extends BaseApiCacheController
             $this->time,
             $this->tab,
             $this->param,
+            $this->noCache,
         );
         $this->emrCoverTypeService->withParams($this->emrCoverTypeDTO);
     }

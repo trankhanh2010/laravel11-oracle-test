@@ -19,6 +19,7 @@ class BedRoomDTO
     public $time;
     public $departmentId;
     public $param;
+    public $noCache;
     public function __construct(
         $bedRoomName,
         $keyword, 
@@ -35,6 +36,7 @@ class BedRoomDTO
         $time,
         $departmentId,
         $param,
+        $noCache,
         )
     {
         $this->bedRoomName = $bedRoomName;
@@ -52,5 +54,6 @@ class BedRoomDTO
         $this->time = $time;
         $this->departmentId = $departmentId;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

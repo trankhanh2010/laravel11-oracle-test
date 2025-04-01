@@ -55,6 +55,7 @@ class MediStockMatyController extends BaseApiCacheController
             $this->mediStockId,
             $this->materialTypeId,
             $this->param,
+            $this->noCache,
         );
         $this->mediStockMatyService->withParams($this->mediStockMatyDTO);
     }

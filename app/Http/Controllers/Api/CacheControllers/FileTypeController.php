@@ -45,6 +45,7 @@ class FileTypeController extends BaseApiCacheController
             $this->appModifier, 
             $this->time,
             $this->param,
+            $this->noCache,
         );
         $this->fileTypeService->withParams($this->fileTypeDTO);
     }

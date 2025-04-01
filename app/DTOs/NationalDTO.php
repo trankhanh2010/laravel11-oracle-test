@@ -18,6 +18,7 @@ class NationalDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $nationalName,
         $keyword, 
@@ -33,6 +34,7 @@ class NationalDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->nationalName = $nationalName;
@@ -49,5 +51,6 @@ class NationalDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

@@ -45,6 +45,7 @@ class RoomGroupController extends BaseApiCacheController
             $this->appModifier, 
             $this->time,
             $this->param,
+            $this->noCache,
         );
         $this->roomGroupService->withParams($this->roomGroupDTO);
     }

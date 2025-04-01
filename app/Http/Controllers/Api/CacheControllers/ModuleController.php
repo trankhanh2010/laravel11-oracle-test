@@ -47,6 +47,7 @@ class ModuleController extends BaseApiCacheController
             $this->appModifier, 
             $this->time,
             $this->param,
+            $this->noCache,
         );
         $this->moduleService->withParams($this->moduleDTO);
     }

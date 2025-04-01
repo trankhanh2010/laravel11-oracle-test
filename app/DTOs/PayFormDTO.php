@@ -18,6 +18,7 @@ class PayFormDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $payFormName,
         $keyword, 
@@ -33,6 +34,7 @@ class PayFormDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->payFormName = $payFormName;
@@ -49,5 +51,6 @@ class PayFormDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

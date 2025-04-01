@@ -21,6 +21,7 @@ class DepositReqListVViewDTO
     public $isDeposit;
     public $treatmentId;
     public $param;
+    public $noCache;
     public function __construct(
         $depositReqListVViewName,
         $keyword, 
@@ -39,6 +40,7 @@ class DepositReqListVViewDTO
         $isDeposit,
         $treatmentId,
         $param,
+        $noCache,
         )
     {
         $this->depositReqListVViewName = $depositReqListVViewName;
@@ -58,5 +60,6 @@ class DepositReqListVViewDTO
         $this->isDeposit = $isDeposit;
         $this->treatmentId = $treatmentId;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

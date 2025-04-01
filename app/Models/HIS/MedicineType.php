@@ -29,6 +29,6 @@ class MedicineType extends Model
 
     public function active_ingredients()
     {
-        return $this->belongsToMany(ActiveIngredient::class, MedicineTypeAcIn::class, 'medicine_type_id', 'active_ingredient_id');
+        return $this->belongsToMany(ActiveIngredient::class, MedicineTypeAcin::class, 'medicine_type_id', 'active_ingredient_id');
     }
 }

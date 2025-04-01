@@ -45,6 +45,7 @@ class FilmSizeController extends BaseApiCacheController
             $this->appModifier, 
             $this->time,
             $this->param,
+            $this->noCache,
         );
         $this->filmSizeService->withParams($this->filmSizeDTO);
     }

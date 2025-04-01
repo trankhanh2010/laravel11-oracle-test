@@ -46,6 +46,7 @@ class CareController extends BaseApiCacheController
             $this->appModifier, 
             $this->time,
             $this->param,
+            $this->noCache,
         );
         $this->careService->withParams($this->careDTO);
     }

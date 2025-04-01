@@ -18,6 +18,7 @@ class ReceptionRoomDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $receptionRoomName,
         $keyword, 
@@ -33,6 +34,7 @@ class ReceptionRoomDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->receptionRoomName = $receptionRoomName;
@@ -49,5 +51,6 @@ class ReceptionRoomDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

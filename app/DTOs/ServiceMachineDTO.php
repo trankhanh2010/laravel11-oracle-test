@@ -20,6 +20,7 @@ class ServiceMachineDTO
     public $serviceId;
     public $machineId;
     public $param;
+    public $noCache;
     public function __construct(
         $serviceMachineName,
         $keyword, 
@@ -37,6 +38,7 @@ class ServiceMachineDTO
         $serviceId,
         $machineId,
         $param,
+        $noCache,
         )
     {
         $this->serviceMachineName = $serviceMachineName;
@@ -55,5 +57,6 @@ class ServiceMachineDTO
         $this->serviceId = $serviceId;
         $this->machineId = $machineId;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

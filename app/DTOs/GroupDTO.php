@@ -18,6 +18,7 @@ class GroupDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $groupName,
         $keyword, 
@@ -33,6 +34,7 @@ class GroupDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->groupName = $groupName;
@@ -49,5 +51,6 @@ class GroupDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

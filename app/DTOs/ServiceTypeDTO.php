@@ -19,6 +19,7 @@ class ServiceTypeDTO
     public $time;
     public $tab;
     public $param;
+    public $noCache;
     public function __construct(
         $serviceTypeName,
         $keyword, 
@@ -35,6 +36,7 @@ class ServiceTypeDTO
         $time,
         $tab,
         $param,
+        $noCache,
         )
     {
         $this->serviceTypeName = $serviceTypeName;
@@ -52,5 +54,6 @@ class ServiceTypeDTO
         $this->time = $time;
         $this->tab = $tab;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

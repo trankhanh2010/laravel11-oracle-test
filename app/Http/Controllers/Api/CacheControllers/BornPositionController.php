@@ -45,6 +45,7 @@ class BornPositionController extends BaseApiCacheController
             $this->appModifier, 
             $this->time,
             $this->param,
+            $this->noCache,
         );
         $this->bornPositionService->withParams($this->bornPositionDTO);
     }

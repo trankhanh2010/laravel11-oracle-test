@@ -19,6 +19,7 @@ class PtttConditionDTO
     public $time;
     public $tab;
     public $param;
+    public $noCache;
     public function __construct(
         $ptttConditionName,
         $keyword, 
@@ -35,6 +36,7 @@ class PtttConditionDTO
         $time,
         $tab,
         $param,
+        $noCache,
         )
     {
         $this->ptttConditionName = $ptttConditionName;
@@ -52,5 +54,6 @@ class PtttConditionDTO
         $this->time = $time;
         $this->tab = $tab;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

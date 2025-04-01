@@ -45,6 +45,7 @@ class HeinServiceTypeController extends BaseApiCacheController
             $this->appModifier, 
             $this->time,
             $this->param,
+            $this->noCache,
         );
         $this->heinServiceTypeService->withParams($this->heinServiceTypeDTO);
     }

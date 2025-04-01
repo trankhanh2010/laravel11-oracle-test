@@ -45,6 +45,7 @@ class ServiceReqTypeController extends BaseApiCacheController
             $this->appModifier, 
             $this->time,
             $this->param,
+            $this->noCache,
         );
         $this->serviceReqTypeService->withParams($this->serviceReqTypeDTO);
     }

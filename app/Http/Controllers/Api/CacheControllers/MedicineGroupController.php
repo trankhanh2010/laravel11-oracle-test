@@ -45,6 +45,7 @@ class MedicineGroupController extends BaseApiCacheController
             $this->appModifier, 
             $this->time,
             $this->param,
+            $this->noCache,
         );
         $this->medicineGroupService->withParams($this->medicineGroupDTO);
     }

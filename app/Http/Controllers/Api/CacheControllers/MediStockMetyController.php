@@ -60,6 +60,7 @@ class MediStockMetyController extends BaseApiCacheController
             $this->mediStockId,
             $this->medicineTypeId,
             $this->param,
+            $this->noCache,
         );
         $this->mediStockMetyService->withParams($this->mediStockMetyDTO);
     }

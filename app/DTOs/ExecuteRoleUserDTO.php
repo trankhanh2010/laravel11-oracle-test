@@ -20,6 +20,7 @@ class ExecuteRoleUserDTO
     public $loginname;
     public $executeRoleId;
     public $param;
+    public $noCache;
     public function __construct(
         $executeRoleUserName,
         $keyword, 
@@ -37,6 +38,7 @@ class ExecuteRoleUserDTO
         $loginname,
         $executeRoleId,
         $param,
+        $noCache,
         )
     {
         $this->executeRoleUserName = $executeRoleUserName;
@@ -55,5 +57,6 @@ class ExecuteRoleUserDTO
         $this->loginname = $loginname;
         $this->executeRoleId = $executeRoleId;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

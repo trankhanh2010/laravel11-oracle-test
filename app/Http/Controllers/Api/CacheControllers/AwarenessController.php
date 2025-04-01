@@ -45,6 +45,7 @@ class AwarenessController extends BaseApiCacheController
             $this->appModifier, 
             $this->time,
             $this->param,
+            $this->noCache,
         );
         $this->awarenessService->withParams($this->awarenessDTO);
     }

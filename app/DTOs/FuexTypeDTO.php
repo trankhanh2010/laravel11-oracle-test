@@ -18,6 +18,7 @@ class FuexTypeDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $fuexTypeName,
         $keyword, 
@@ -33,6 +34,7 @@ class FuexTypeDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->fuexTypeName = $fuexTypeName;
@@ -49,5 +51,6 @@ class FuexTypeDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

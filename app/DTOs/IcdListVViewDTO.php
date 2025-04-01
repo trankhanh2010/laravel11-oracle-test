@@ -19,6 +19,7 @@ class IcdListVViewDTO
     public $time;
     public $tab;
     public $param;
+    public $noCache;
     public function __construct(
         $icdListVViewName,
         $keyword, 
@@ -35,6 +36,7 @@ class IcdListVViewDTO
         $time,
         $tab,
         $param,
+        $noCache,
         )
     {
         $this->icdListVViewName = $icdListVViewName;
@@ -52,5 +54,6 @@ class IcdListVViewDTO
         $this->time = $time;
         $this->tab = $tab;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

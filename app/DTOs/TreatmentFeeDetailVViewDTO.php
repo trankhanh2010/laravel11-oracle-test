@@ -20,6 +20,7 @@ class TreatmentFeeDetailVViewDTO
     public $treatmentId;
     public $treatmentCode;
     public $param;
+    public $noCache;
     public function __construct(
         $treatmentFeeDetailVViewName,
         $keyword, 
@@ -37,6 +38,7 @@ class TreatmentFeeDetailVViewDTO
         $treatmentId,
         $treatmentCode,
         $param,
+        $noCache,
         )
     {
         $this->treatmentFeeDetailVViewName = $treatmentFeeDetailVViewName;
@@ -55,5 +57,6 @@ class TreatmentFeeDetailVViewDTO
         $this->treatmentId = $treatmentId;
         $this->treatmentCode = $treatmentCode;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

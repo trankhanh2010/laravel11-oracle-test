@@ -18,6 +18,7 @@ class EthnicDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $ethnicName,
         $keyword, 
@@ -33,6 +34,7 @@ class EthnicDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->ethnicName = $ethnicName;
@@ -49,5 +51,6 @@ class EthnicDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

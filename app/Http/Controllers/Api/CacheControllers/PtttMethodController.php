@@ -45,6 +45,7 @@ class PtttMethodController extends BaseApiCacheController
             $this->appModifier, 
             $this->time,
             $this->param,
+            $this->noCache,
         );
         $this->ptttMethodService->withParams($this->ptttMethodDTO);
     }

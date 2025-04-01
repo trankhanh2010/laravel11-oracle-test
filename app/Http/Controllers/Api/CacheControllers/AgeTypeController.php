@@ -42,6 +42,7 @@ class AgeTypeController extends BaseApiCacheController
             $this->appModifier, 
             $this->time,
             $this->param,
+            $this->noCache,
         );
         $this->ageTypeService->withParams($this->ageTypeDTO);
     }

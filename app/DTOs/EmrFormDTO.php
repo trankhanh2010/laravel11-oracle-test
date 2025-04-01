@@ -19,6 +19,7 @@ class EmrFormDTO
     public $time;
     public $tab;
     public $param;
+    public $noCache;
     public function __construct(
         $emrFormName,
         $keyword, 
@@ -35,6 +36,7 @@ class EmrFormDTO
         $time,
         $tab,
         $param,
+        $noCache,
         )
     {
         $this->emrFormName = $emrFormName;
@@ -52,5 +54,6 @@ class EmrFormDTO
         $this->time = $time;
         $this->tab = $tab;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

@@ -18,6 +18,7 @@ class TestIndexDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $testIndexName,
         $keyword, 
@@ -33,6 +34,7 @@ class TestIndexDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->testIndexName = $testIndexName;
@@ -49,5 +51,6 @@ class TestIndexDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

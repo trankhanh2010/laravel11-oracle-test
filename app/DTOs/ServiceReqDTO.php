@@ -27,6 +27,7 @@ class ServiceReqDTO
     public $hasExecute;
     public $isNotKskRequriedAprovalOrIsKskApprove;
     public $param;
+    public $noCache;
     public function __construct(
         $serviceReqName,
         $keyword, 
@@ -51,6 +52,7 @@ class ServiceReqDTO
         $hasExecute,
         $isNotKskRequriedAprovalOrIsKskApprove,
         $param,
+        $noCache,
         )
     {
         $this->serviceReqName = $serviceReqName;
@@ -76,5 +78,6 @@ class ServiceReqDTO
         $this->hasExecute = $hasExecute;
         $this->isNotKskRequriedAprovalOrIsKskApprove = $isNotKskRequriedAprovalOrIsKskApprove;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

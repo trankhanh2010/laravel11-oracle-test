@@ -21,6 +21,7 @@ class SereServTeinDTO
     public $testIndexIds;
     public $tdlTreatmentId;
     public $param;
+    public $noCache;
     public function __construct(
         $sereServTeinName,
         $keyword, 
@@ -39,6 +40,7 @@ class SereServTeinDTO
         $testIndexIds,
         $tdlTreatmentId,
         $param,
+        $noCache,
         )
     {
         $this->sereServTeinName = $sereServTeinName;
@@ -58,5 +60,6 @@ class SereServTeinDTO
         $this->testIndexIds = $testIndexIds;
         $this->tdlTreatmentId = $tdlTreatmentId;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

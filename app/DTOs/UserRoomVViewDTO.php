@@ -22,6 +22,7 @@ class UserRoomVViewDTO
     public $tab;
     public $currentLoginname;
     public $param;
+    public $noCache;
     public function __construct(
         $userRoomVViewName,
         $keyword, 
@@ -41,6 +42,7 @@ class UserRoomVViewDTO
         $tab,
         $currentLoginname,
         $param,
+        $noCache,
         )
     {
         $this->userRoomVViewName = $userRoomVViewName;
@@ -61,5 +63,6 @@ class UserRoomVViewDTO
         $this->tab = $tab;
         $this->currentLoginname = $currentLoginname;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

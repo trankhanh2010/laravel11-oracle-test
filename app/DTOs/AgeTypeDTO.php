@@ -18,6 +18,7 @@ class AgeTypeDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $ageTypeName,
         $keyword, 
@@ -33,6 +34,7 @@ class AgeTypeDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->ageTypeName = $ageTypeName;
@@ -49,5 +51,6 @@ class AgeTypeDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

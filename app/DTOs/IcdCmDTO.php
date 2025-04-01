@@ -18,6 +18,7 @@ class IcdCmDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $icdCmName,
         $keyword, 
@@ -33,6 +34,7 @@ class IcdCmDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->icdCmName = $icdCmName;
@@ -49,5 +51,6 @@ class IcdCmDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

@@ -47,6 +47,7 @@ class TreatmentResultController extends BaseApiCacheController
             $this->time,
             $this->tab,
             $this->param,
+            $this->noCache,
         );
         $this->treatmentResultService->withParams($this->treatmentResultDTO);
     }

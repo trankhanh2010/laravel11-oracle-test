@@ -19,6 +19,7 @@ class RoomVViewDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $roomVViewName,
         $keyword, 
@@ -35,6 +36,7 @@ class RoomVViewDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->roomVViewName = $roomVViewName;
@@ -52,5 +54,6 @@ class RoomVViewDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

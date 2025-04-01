@@ -45,6 +45,7 @@ class MediRecordTypeController extends BaseApiCacheController
             $this->appModifier, 
             $this->time,
             $this->param,
+            $this->noCache,
         );
         $this->mediRecordTypeService->withParams($this->mediRecordTypeDTO);
     }

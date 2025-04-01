@@ -19,6 +19,7 @@ class PtttCatastropheDTO
     public $time;
     public $tab;
     public $param;
+    public $noCache;
     public function __construct(
         $ptttCatastropheName,
         $keyword, 
@@ -35,6 +36,7 @@ class PtttCatastropheDTO
         $time,
         $tab,
         $param,
+        $noCache,
         )
     {
         $this->ptttCatastropheName = $ptttCatastropheName;
@@ -52,5 +54,6 @@ class PtttCatastropheDTO
         $this->time = $time;
         $this->tab = $tab;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

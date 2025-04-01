@@ -18,6 +18,7 @@ class TestSampleTypeDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $testSampleTypeName,
         $keyword, 
@@ -33,6 +34,7 @@ class TestSampleTypeDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->testSampleTypeName = $testSampleTypeName;
@@ -49,5 +51,6 @@ class TestSampleTypeDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

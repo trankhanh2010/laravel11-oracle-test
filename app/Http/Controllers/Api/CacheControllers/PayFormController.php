@@ -45,6 +45,7 @@ class PayFormController extends BaseApiCacheController
             $this->appModifier, 
             $this->time,
             $this->param,
+            $this->noCache,
         );
         $this->payFormService->withParams($this->payFormDTO);
     }

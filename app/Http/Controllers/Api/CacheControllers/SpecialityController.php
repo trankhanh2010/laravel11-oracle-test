@@ -45,6 +45,7 @@ class SpecialityController extends BaseApiCacheController
             $this->appModifier, 
             $this->time,
             $this->param,
+            $this->noCache,
         );
         $this->specialityService->withParams($this->specialityDTO);
     }

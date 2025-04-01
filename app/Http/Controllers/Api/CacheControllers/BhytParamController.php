@@ -45,6 +45,7 @@ class BhytParamController extends BaseApiCacheController
             $this->appModifier, 
             $this->time,
             $this->param,
+            $this->noCache,
         );
         $this->bhytParamService->withParams($this->bhytParamDTO);
     }

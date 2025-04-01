@@ -45,6 +45,7 @@ class ExecuteRoleController extends BaseApiCacheController
             $this->appModifier, 
             $this->time,
             $this->param,
+            $this->noCache,
         );
         $this->executeRoleService->withParams($this->executeRoleDTO);
     }

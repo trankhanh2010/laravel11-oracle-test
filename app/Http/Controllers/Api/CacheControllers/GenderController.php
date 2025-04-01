@@ -45,6 +45,7 @@ class GenderController extends BaseApiCacheController
             $this->appModifier, 
             $this->time,
             $this->param,
+            $this->noCache,
         );
         $this->genderService->withParams($this->genderDTO);
     }

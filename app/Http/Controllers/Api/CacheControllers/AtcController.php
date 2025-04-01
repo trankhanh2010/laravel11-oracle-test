@@ -45,6 +45,7 @@ class AtcController extends BaseApiCacheController
             $this->appModifier, 
             $this->time,
             $this->param,
+            $this->noCache,
         );
         $this->atcService->withParams($this->atcDTO);
     }

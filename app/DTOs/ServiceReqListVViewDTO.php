@@ -22,6 +22,7 @@ class ServiceReqListVViewDTO
     public $trackingId;
     public $treatmentId;
     public $param;
+    public $noCache;
     public function __construct(
         $serviceReqLisyVViewName,
         $keyword, 
@@ -41,6 +42,7 @@ class ServiceReqListVViewDTO
         $trackingId,
         $treatmentId,
         $param,
+        $noCache,
         )
     {
         $this->serviceReqLisyVViewName = $serviceReqLisyVViewName;
@@ -61,5 +63,6 @@ class ServiceReqListVViewDTO
         $this->trackingId = $trackingId;
         $this->treatmentId = $treatmentId;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

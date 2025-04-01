@@ -18,6 +18,7 @@ class ImpSourceDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $impSourceName,
         $keyword, 
@@ -33,6 +34,7 @@ class ImpSourceDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->impSourceName = $impSourceName;
@@ -49,5 +51,6 @@ class ImpSourceDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

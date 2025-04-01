@@ -18,6 +18,7 @@ class ServiceReqTypeDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $serviceReqTypeName,
         $keyword, 
@@ -33,6 +34,7 @@ class ServiceReqTypeDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->serviceReqTypeName = $serviceReqTypeName;
@@ -49,5 +51,6 @@ class ServiceReqTypeDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

@@ -18,6 +18,7 @@ class FileTypeDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $fileTypeName,
         $keyword, 
@@ -33,6 +34,7 @@ class FileTypeDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->fileTypeName = $fileTypeName;
@@ -49,5 +51,6 @@ class FileTypeDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

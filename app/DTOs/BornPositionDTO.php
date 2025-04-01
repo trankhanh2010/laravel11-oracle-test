@@ -18,6 +18,7 @@ class BornPositionDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $bornPositionName,
         $keyword, 
@@ -33,6 +34,7 @@ class BornPositionDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->bornPositionName = $bornPositionName;
@@ -49,5 +51,6 @@ class BornPositionDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

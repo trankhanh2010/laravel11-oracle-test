@@ -18,6 +18,7 @@ class SpecialityDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $specialityName,
         $keyword, 
@@ -33,6 +34,7 @@ class SpecialityDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->specialityName = $specialityName;
@@ -49,5 +51,6 @@ class SpecialityDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

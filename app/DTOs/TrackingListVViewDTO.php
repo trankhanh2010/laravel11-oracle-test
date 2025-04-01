@@ -21,6 +21,7 @@ class TrackingListVViewDTO
     public $treatmentId;
     public $groupBy;
     public $param;
+    public $noCache;
     public function __construct(
         $trackingListVViewName,
         $keyword, 
@@ -39,6 +40,7 @@ class TrackingListVViewDTO
         $treatmentId,
         $groupBy,
         $param,
+        $noCache,
         )
     {
         $this->trackingListVViewName = $trackingListVViewName;
@@ -58,5 +60,6 @@ class TrackingListVViewDTO
         $this->treatmentId = $treatmentId;
         $this->groupBy = $groupBy;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

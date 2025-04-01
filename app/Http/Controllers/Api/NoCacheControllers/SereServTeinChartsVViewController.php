@@ -60,6 +60,7 @@ class SereServTeinChartsVViewController extends BaseApiCacheController
             $this->intructionTimeFrom,
             $this->reportTypeCode,
             $this->serviceCodes,
+            $this->noCache,
         );
         $this->sereServTeinChartsVViewService->withParams($this->sereServTeinChartsVViewDTO);
     }

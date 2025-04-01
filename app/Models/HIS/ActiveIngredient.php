@@ -18,6 +18,6 @@ class ActiveIngredient extends Model
 
     public function medicine_types()
     {
-        return $this->belongsToMany(MedicineType::class, MedicineTypeAcIn::class, 'active_ingredient_id', 'medicine_type_id');
+        return $this->belongsToMany(MedicineType::class, MedicineTypeAcin::class, 'active_ingredient_id', 'medicine_type_id');
     }
 }

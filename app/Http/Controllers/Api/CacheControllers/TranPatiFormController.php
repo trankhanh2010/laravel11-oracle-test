@@ -45,6 +45,7 @@ class TranPatiFormController extends BaseApiCacheController
             $this->appModifier, 
             $this->time,
             $this->param,
+            $this->noCache,
         );
         $this->tranPatiFormService->withParams($this->tranPatiFormDTO);
     }

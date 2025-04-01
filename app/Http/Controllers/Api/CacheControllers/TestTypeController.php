@@ -45,6 +45,7 @@ class TestTypeController extends BaseApiCacheController
             $this->appModifier, 
             $this->time,
             $this->param,
+            $this->noCache,
         );
         $this->testTypeService->withParams($this->testTypeDTO);
     }

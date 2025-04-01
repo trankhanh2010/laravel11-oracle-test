@@ -19,6 +19,7 @@ class TestServiceTypeListVViewDTO
     public $time;
     public $treatmentId;
     public $param;
+    public $noCache;
 
     public function __construct(
         $testServiceTypeListVViewName,
@@ -36,6 +37,7 @@ class TestServiceTypeListVViewDTO
         $time,
         $treatmentId,
         $param,
+        $noCache,
         )
     {
         $this->testServiceTypeListVViewName = $testServiceTypeListVViewName;
@@ -53,5 +55,6 @@ class TestServiceTypeListVViewDTO
         $this->time = $time;
         $this->treatmentId = $treatmentId;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

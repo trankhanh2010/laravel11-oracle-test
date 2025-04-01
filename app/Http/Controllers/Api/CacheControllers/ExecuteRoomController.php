@@ -65,6 +65,7 @@ class ExecuteRoomController extends BaseApiCacheController
             $this->appModifier, 
             $this->time,
             $this->param,
+            $this->noCache,
         );
         $this->executeRoomService->withParams($this->executeRoomDTO);
     }

@@ -50,6 +50,7 @@ class BedController extends BaseApiCacheController
             $this->appModifier, 
             $this->time,
             $this->param,
+            $this->noCache,
         );
         $this->bedService->withParams($this->bedDTO);
     }

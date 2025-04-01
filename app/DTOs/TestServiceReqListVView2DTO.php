@@ -24,6 +24,7 @@ class TestServiceReqListVView2DTO
     public $isNoExcute;
     public $isSpecimen;
     public $param;
+    public $noCache;
     public function __construct(
         $testServiceReqListVView2Name,
         $keyword, 
@@ -45,6 +46,7 @@ class TestServiceReqListVView2DTO
         $isNoExcute,
         $isSpecimen,
         $param,
+        $noCache,
         )
     {
         $this->testServiceReqListVView2Name = $testServiceReqListVView2Name;
@@ -67,5 +69,6 @@ class TestServiceReqListVView2DTO
         $this->isNoExcute = $isNoExcute;
         $this->isSpecimen = $isSpecimen;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

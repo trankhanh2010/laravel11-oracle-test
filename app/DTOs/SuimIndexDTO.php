@@ -18,6 +18,7 @@ class SuimIndexDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $suimIndexName,
         $keyword, 
@@ -33,6 +34,7 @@ class SuimIndexDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->suimIndexName = $suimIndexName;
@@ -49,5 +51,6 @@ class SuimIndexDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

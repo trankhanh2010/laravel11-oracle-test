@@ -52,6 +52,7 @@ class TreatmentFeeViewController extends BaseApiCacheController
             $this->inDateTo,
             $this->isApproveStore,
             $this->param,
+            $this->noCache,
         );
         $this->treatmentFeeViewService->withParams($this->treatmentFeeViewDTO);
     }

@@ -18,6 +18,7 @@ class CommuneDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $communeName,
         $keyword, 
@@ -33,6 +34,7 @@ class CommuneDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->communeName = $communeName;
@@ -49,5 +51,6 @@ class CommuneDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

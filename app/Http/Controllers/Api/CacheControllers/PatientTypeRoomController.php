@@ -47,6 +47,7 @@ class PatientTypeRoomController extends BaseApiCacheController
             $this->patientTypeId,
             $this->roomId,
             $this->param,
+            $this->noCache,
         );
         $this->patientTypeRoomService->withParams($this->patientTypeRoomDTO);
     }

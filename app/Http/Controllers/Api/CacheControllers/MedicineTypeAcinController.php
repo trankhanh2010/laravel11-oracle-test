@@ -51,6 +51,7 @@ class MedicineTypeAcinController extends BaseApiCacheController
             $this->medicineTypeId,
             $this->activeIngredientId,
             $this->param,
+            $this->noCache,
         );
         $this->medicineTypeAcinService->withParams($this->medicineTypeAcinDTO);
     }

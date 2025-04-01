@@ -18,6 +18,7 @@ class AwarenessDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $awarenessName,
         $keyword, 
@@ -33,6 +34,7 @@ class AwarenessDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->awarenessName = $awarenessName;
@@ -49,5 +51,6 @@ class AwarenessDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

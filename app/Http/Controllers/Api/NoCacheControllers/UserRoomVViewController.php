@@ -50,6 +50,7 @@ class UserRoomVViewController extends BaseApiCacheController
             $this->tab,
             $this->currentLoginname,
             $this->param,
+            $this->noCache,
         );
         $this->userRoomVViewService->withParams($this->userRoomVViewDTO);
     }

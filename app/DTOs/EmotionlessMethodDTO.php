@@ -18,6 +18,7 @@ class EmotionlessMethodDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $emotionlessMethodName,
         $keyword, 
@@ -33,6 +34,7 @@ class EmotionlessMethodDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->emotionlessMethodName = $emotionlessMethodName;
@@ -49,5 +51,6 @@ class EmotionlessMethodDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

@@ -18,6 +18,7 @@ class AtcGroupDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $atcGroupName,
         $keyword, 
@@ -33,6 +34,7 @@ class AtcGroupDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->atcGroupName = $atcGroupName;
@@ -49,5 +51,6 @@ class AtcGroupDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

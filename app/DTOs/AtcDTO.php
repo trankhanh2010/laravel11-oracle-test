@@ -18,6 +18,7 @@ class AtcDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $atcName,
         $keyword, 
@@ -33,6 +34,7 @@ class AtcDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->atcName = $atcName;
@@ -49,5 +51,6 @@ class AtcDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

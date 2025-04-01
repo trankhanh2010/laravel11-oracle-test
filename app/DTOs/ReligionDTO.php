@@ -18,6 +18,7 @@ class ReligionDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $religionName,
         $keyword, 
@@ -33,6 +34,7 @@ class ReligionDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->religionName = $religionName;
@@ -49,5 +51,6 @@ class ReligionDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

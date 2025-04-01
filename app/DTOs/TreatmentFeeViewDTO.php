@@ -25,6 +25,7 @@ class TreatmentFeeViewDTO
     public $inDateTo;
     public $isApproveStore;
     public $param;
+    public $noCache;
     public function __construct(
         $treatmentFeeViewName,
         $keyword, 
@@ -47,6 +48,7 @@ class TreatmentFeeViewDTO
         $inDateTo,
         $isApproveStore,
         $param,
+        $noCache,
         )
     {
         $this->treatmentFeeViewName = $treatmentFeeViewName;
@@ -70,5 +72,6 @@ class TreatmentFeeViewDTO
         $this->inDateTo = $inDateTo;
         $this->isApproveStore = $isApproveStore;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

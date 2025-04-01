@@ -18,6 +18,7 @@ class ExecuteGroupDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $executeGroupName,
         $keyword, 
@@ -33,6 +34,7 @@ class ExecuteGroupDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->executeGroupName = $executeGroupName;
@@ -49,5 +51,6 @@ class ExecuteGroupDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

@@ -18,6 +18,7 @@ class ProvinceDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $provinceName,
         $keyword, 
@@ -33,6 +34,7 @@ class ProvinceDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->provinceName = $provinceName;
@@ -49,5 +51,6 @@ class ProvinceDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

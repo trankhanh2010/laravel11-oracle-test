@@ -23,6 +23,7 @@ class TreatmentBedRoomLViewDTO
     public $addTimeFrom;
     public $isInRoom;
     public $param;
+    public $noCache;
     public function __construct(
         $treatmentBedRoomLViewName,
         $keyword, 
@@ -43,6 +44,7 @@ class TreatmentBedRoomLViewDTO
         $addTimeFrom,
         $isInRoom,
         $param,
+        $noCache,
         )
     {
         $this->treatmentBedRoomLViewName = $treatmentBedRoomLViewName;
@@ -64,5 +66,6 @@ class TreatmentBedRoomLViewDTO
         $this->addTimeFrom = $addTimeFrom;
         $this->isInRoom = $isInRoom;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

@@ -45,6 +45,7 @@ class ImpSourceController extends BaseApiCacheController
             $this->appModifier, 
             $this->time,
             $this->param,
+            $this->noCache,
         );
         $this->impSourceService->withParams($this->impSourceDTO);
     }

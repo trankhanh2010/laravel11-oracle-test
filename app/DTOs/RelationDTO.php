@@ -18,6 +18,7 @@ class RelationDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $relationName,
         $keyword, 
@@ -33,6 +34,7 @@ class RelationDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->relationName = $relationName;
@@ -49,5 +51,6 @@ class RelationDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

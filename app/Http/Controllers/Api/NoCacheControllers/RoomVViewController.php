@@ -46,6 +46,7 @@ class RoomVViewController extends BaseApiCacheController
             $this->appModifier, 
             $this->time,
             $this->param,
+            $this->noCache,
         );
         $this->roomVViewService->withParams($this->roomVViewDTO);
     }

@@ -20,6 +20,7 @@ class MedicineTypeAcinDTO
     public $medicineTypeId;
     public $activeIngredientId;
     public $param;
+    public $noCache;
     public function __construct(
         $medicineTypeAcinName,
         $keyword, 
@@ -37,6 +38,7 @@ class MedicineTypeAcinDTO
         $medicineTypeId,
         $activeIngredientId,
         $param,
+        $noCache,
         )
     {
         $this->medicineTypeAcinName = $medicineTypeAcinName;
@@ -55,5 +57,6 @@ class MedicineTypeAcinDTO
         $this->medicineTypeId = $medicineTypeId;
         $this->activeIngredientId = $activeIngredientId;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

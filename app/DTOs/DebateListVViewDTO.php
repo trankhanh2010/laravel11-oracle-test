@@ -24,6 +24,7 @@ class DebateListVViewDTO
     public $debateTimeFrom;
     public $debateTimeTo;
     public $param;
+    public $noCache;
     public function __construct(
         $debateListVViewName,
         $keyword, 
@@ -45,6 +46,7 @@ class DebateListVViewDTO
         $debateTimeFrom,
         $debateTimeTo,
         $param,
+        $noCache,
         )
     {
         $this->debateListVViewName = $debateListVViewName;
@@ -67,5 +69,6 @@ class DebateListVViewDTO
         $this->debateTimeFrom = $debateTimeFrom;
         $this->debateTimeTo = $debateTimeTo;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

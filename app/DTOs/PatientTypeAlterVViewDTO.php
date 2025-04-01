@@ -21,6 +21,7 @@ class PatientTypeAlterVViewDTO
     public $treatmentId;
     public $logTimeTo;
     public $param;
+    public $noCache;
     public function __construct(
         $patientTypeAlterVViewName,
         $keyword, 
@@ -39,6 +40,7 @@ class PatientTypeAlterVViewDTO
         $treatmentId,
         $logTimeTo,
         $param,
+        $noCache,
         )
     {
         $this->patientTypeAlterVViewName = $patientTypeAlterVViewName;
@@ -58,5 +60,6 @@ class PatientTypeAlterVViewDTO
         $this->treatmentId = $treatmentId;
         $this->logTimeTo = $logTimeTo;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

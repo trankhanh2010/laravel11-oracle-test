@@ -46,6 +46,7 @@ class ServiceMachineController extends BaseApiCacheController
             $this->serviceId,
             $this->machineId,
             $this->param,
+            $this->noCache,
         );
         $this->serviceMachineService->withParams($this->serviceMachineDTO);
     }

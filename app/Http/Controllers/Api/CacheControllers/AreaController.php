@@ -44,6 +44,7 @@ class AreaController extends BaseApiCacheController
             $this->appModifier, 
             $this->time,
             $this->param,
+            $this->noCache,
         );
         $this->areaService->withParams($this->areaDTO);
     }

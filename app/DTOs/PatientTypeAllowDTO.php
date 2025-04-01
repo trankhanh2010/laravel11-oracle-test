@@ -18,6 +18,7 @@ class PatientTypeAllowDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $patientTypeAllowName,
         $keyword, 
@@ -33,6 +34,7 @@ class PatientTypeAllowDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->patientTypeAllowName = $patientTypeAllowName;
@@ -49,5 +51,6 @@ class PatientTypeAllowDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

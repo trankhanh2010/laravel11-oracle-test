@@ -46,6 +46,7 @@ class DebateDetailVViewController extends BaseApiCacheController
             $this->appModifier, 
             $this->time,
             $this->param,
+            $this->noCache,
         );
         $this->debateDetailVViewService->withParams($this->debateDetailVViewDTO);
     }

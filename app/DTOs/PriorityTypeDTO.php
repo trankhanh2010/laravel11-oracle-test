@@ -18,6 +18,7 @@ class PriorityTypeDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $priorityTypeName,
         $keyword, 
@@ -33,6 +34,7 @@ class PriorityTypeDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->priorityTypeName = $priorityTypeName;
@@ -49,5 +51,6 @@ class PriorityTypeDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

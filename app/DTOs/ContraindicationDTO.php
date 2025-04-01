@@ -18,6 +18,7 @@ class ContraindicationDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $contraindicationName,
         $keyword, 
@@ -33,6 +34,7 @@ class ContraindicationDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->contraindicationName = $contraindicationName;
@@ -49,5 +51,6 @@ class ContraindicationDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

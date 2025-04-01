@@ -58,6 +58,7 @@ class BedRoomController extends BaseApiCacheController
             $this->time,
             $this->departmentId,
             $this->param,
+            $this->noCache,
         );
         $this->bedRoomService->withParams($this->bedRoomDTO);
     }

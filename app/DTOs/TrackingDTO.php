@@ -21,6 +21,7 @@ class TrackingDTO
     public $treatmentId;
     public $groupBy;
     public $param;
+    public $noCache;
     public function __construct(
         $trackingName,
         $keyword, 
@@ -39,6 +40,7 @@ class TrackingDTO
         $treatmentId,
         $groupBy,
         $param,
+        $noCache,
         )
     {
         $this->trackingName = $trackingName;
@@ -58,5 +60,6 @@ class TrackingDTO
         $this->treatmentId = $treatmentId;
         $this->groupBy = $groupBy;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

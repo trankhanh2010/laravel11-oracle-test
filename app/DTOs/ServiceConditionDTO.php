@@ -19,6 +19,7 @@ class ServiceConditionDTO
     public $time;
     public $serviceId;
     public $param;
+    public $noCache;
     public function __construct(
         $serviceConditionName,
         $keyword, 
@@ -35,6 +36,7 @@ class ServiceConditionDTO
         $time,
         $serviceId,
         $param,
+        $noCache,
         )
     {
         $this->serviceConditionName = $serviceConditionName;
@@ -52,5 +54,6 @@ class ServiceConditionDTO
         $this->time = $time;
         $this->serviceId = $serviceId;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

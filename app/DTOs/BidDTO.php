@@ -18,6 +18,7 @@ class BidDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $bidName,
         $keyword, 
@@ -33,6 +34,7 @@ class BidDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->bidName = $bidName;
@@ -49,5 +51,6 @@ class BidDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

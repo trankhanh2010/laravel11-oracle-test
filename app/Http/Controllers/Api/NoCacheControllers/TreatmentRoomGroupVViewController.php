@@ -47,6 +47,7 @@ class TreatmentRoomGroupVViewController extends BaseApiCacheController
             $this->time,
             $this->departmentCode,
             $this->param,
+            $this->noCache,
         );
         $this->treatmentRoomGroupVViewService->withParams($this->treatmentRoomGroupVViewDTO);
     }

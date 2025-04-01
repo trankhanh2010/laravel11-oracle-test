@@ -20,6 +20,7 @@ class SereServTeinVViewDTO
     public $time;
     public $sereServIds;
     public $param;
+    public $noCache;
     public function __construct(
         $sereServTeinVViewName,
         $keyword, 
@@ -37,6 +38,7 @@ class SereServTeinVViewDTO
         $time,
         $sereServIds,
         $param,
+        $noCache,
         )
     {
         $this->sereServTeinVViewName = $sereServTeinVViewName;
@@ -55,5 +57,6 @@ class SereServTeinVViewDTO
         $this->time = $time;
         $this->sereServIds = $sereServIds;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

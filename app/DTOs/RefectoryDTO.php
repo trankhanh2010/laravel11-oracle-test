@@ -18,6 +18,7 @@ class RefectoryDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $refectoryName,
         $keyword, 
@@ -33,6 +34,7 @@ class RefectoryDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->refectoryName = $refectoryName;
@@ -49,5 +51,6 @@ class RefectoryDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

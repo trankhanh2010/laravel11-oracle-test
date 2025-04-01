@@ -45,6 +45,7 @@ class CareerTitleController extends BaseApiCacheController
             $this->appModifier, 
             $this->time,
             $this->param,
+            $this->noCache,
         );
         $this->careerTitleService->withParams($this->careerTitleDTO);
     }

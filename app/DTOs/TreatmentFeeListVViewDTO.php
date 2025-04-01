@@ -28,6 +28,7 @@ class TreatmentFeeListVViewDTO
     public $status;
     public $patientPhone;
     public $param;
+    public $noCache;
     public function __construct(
         $treatmentFeeListVViewName,
         $keyword, 
@@ -53,6 +54,7 @@ class TreatmentFeeListVViewDTO
         $status,
         $patientPhone,
         $param,
+        $noCache,
         )
     {
         $this->treatmentFeeListVViewName = $treatmentFeeListVViewName;
@@ -79,5 +81,6 @@ class TreatmentFeeListVViewDTO
         $this->status = $status;
         $this->patientPhone = $patientPhone;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

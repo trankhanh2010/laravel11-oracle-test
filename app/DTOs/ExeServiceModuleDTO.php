@@ -18,6 +18,7 @@ class ExeServiceModuleDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $exeServiceModuleName,
         $keyword, 
@@ -33,6 +34,7 @@ class ExeServiceModuleDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->exeServiceModuleName = $exeServiceModuleName;
@@ -49,5 +51,6 @@ class ExeServiceModuleDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

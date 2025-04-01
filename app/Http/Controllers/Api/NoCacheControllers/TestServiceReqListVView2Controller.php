@@ -51,6 +51,7 @@ class TestServiceReqListVView2Controller extends BaseApiCacheController
             $this->isNoExcute,
             $this->isSpecimen,
             $this->param,
+            $this->noCache,
         );
         $this->testServiceReqListVView2Service->withParams($this->testServiceReqListVView2DTO);
     }

@@ -49,6 +49,7 @@ class ServiceReqListVViewController extends BaseApiCacheController
             $this->trackingId,
             $this->treatmentId,
             $this->param,
+            $this->noCache,
         );
         $this->serviceReqListVViewService->withParams($this->serviceReqListVViewDTO);
     }

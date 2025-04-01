@@ -18,6 +18,7 @@ class GenderDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $genderName,
         $keyword, 
@@ -33,6 +34,7 @@ class GenderDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->genderName = $genderName;
@@ -49,5 +51,6 @@ class GenderDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }

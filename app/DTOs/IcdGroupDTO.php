@@ -18,6 +18,7 @@ class IcdGroupDTO
     public $appModifier;
     public $time;
     public $param;
+    public $noCache;
     public function __construct(
         $icdGroupName,
         $keyword, 
@@ -33,6 +34,7 @@ class IcdGroupDTO
         $appModifier,
         $time,
         $param,
+        $noCache,
         )
     {
         $this->icdGroupName = $icdGroupName;
@@ -49,5 +51,6 @@ class IcdGroupDTO
         $this->appModifier = $appModifier;
         $this->time = $time;
         $this->param = $param;
+        $this->noCache = $noCache;
     }
 }
