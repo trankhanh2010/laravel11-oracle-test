@@ -42,27 +42,44 @@ class ServicePatyService
             return writeAndThrowError(config('params')['db_service']['error']['service_paty'], $e);
         }
     }
+    private function getAllDataFromDatabase()
+    {
+        $data = $this->servicePatyRepository->applyJoins();
+        $data = $this->servicePatyRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $this->servicePatyRepository->applyServiceTypeIdsFilter($data, $this->params->serviceTypeIds);
+        $data = $this->servicePatyRepository->applyPatientTypeIdsFilter($data, $this->params->patientTypeIds);
+        $data = $this->servicePatyRepository->applyServiceIdFilter($data, $this->params->serviceId);
+        $data = $this->servicePatyRepository->applyPackageIdFilter($data, $this->params->packageId);
+        $data = $this->servicePatyRepository->applyEffectiveFilter($data, $this->params->effective);
+        $count = $data->count();
+        $data = $this->servicePatyRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->servicePatyRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        return ['data' => $data, 'count' => $count];
+    }
+    private function getDataById($id)
+    {
+        $data = $this->servicePatyRepository->applyJoins()
+            ->where('his_service_paty.id', $id);
+        $data = $this->servicePatyRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $data->first();
+        return $data;
+    }
     public function handleDataBaseGetAll()
     {
         try {
-            $cacheKey = $this->params->servicePatyName .'_'. $this->params->param;
-            $cacheKeySet = "cache_keys:" . $this->params->servicePatyName; // Set để lưu danh sách key
-            $data = Cache::remember($cacheKey, $this->params->time, function () {
-                $data = $this->servicePatyRepository->applyJoins();
-                $data = $this->servicePatyRepository->applyIsActiveFilter($data, $this->params->isActive);
-                $data = $this->servicePatyRepository->applyServiceTypeIdsFilter($data, $this->params->serviceTypeIds);
-                $data = $this->servicePatyRepository->applyPatientTypeIdsFilter($data, $this->params->patientTypeIds);
-                $data = $this->servicePatyRepository->applyServiceIdFilter($data, $this->params->serviceId);
-                $data = $this->servicePatyRepository->applyPackageIdFilter($data, $this->params->packageId);
-                $data = $this->servicePatyRepository->applyEffectiveFilter($data, $this->params->effective);
-                $count = $data->count();
-                $data = $this->servicePatyRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
-                $data = $this->servicePatyRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
-                return ['data' => $data, 'count' => $count];
-            });
-            // Lưu key vào Redis Set để dễ xóa sau này
-            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
-            return $data;
+            // Nếu không lưu cache
+            if ($this->params->noCache) {
+                return $this->getAllDataFromDatabase();
+            } else {
+                $cacheKey = $this->params->servicePatyName . '_' . $this->params->param;
+                $cacheKeySet = "cache_keys:" . $this->params->servicePatyName; // Set để lưu danh sách key
+                $data = Cache::remember($cacheKey, $this->params->time, function () {
+                    return $this->getAllDataFromDatabase();
+                });
+                // Lưu key vào Redis Set để dễ xóa sau này
+                Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+                return $data;
+            }
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['service_paty'], $e);
         }
@@ -70,18 +87,19 @@ class ServicePatyService
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $cacheKey = $this->params->servicePatyName .'_'.$id.'_'. $this->params->param;
-            $cacheKeySet = "cache_keys:" . $this->params->servicePatyName; // Set để lưu danh sách key
-            $data = Cache::remember($cacheKey, $this->params->time, function () use($id){
-                $data = $this->servicePatyRepository->applyJoins()
-                    ->where('his_service_paty.id', $id);
-                $data = $this->servicePatyRepository->applyIsActiveFilter($data, $this->params->isActive);
-                $data = $data->first();
+            // Nếu không lưu cache
+            if ($this->params->noCache) {
+                return $this->getDataById($id);
+            } else {
+                $cacheKey = $this->params->servicePatyName . '_' . $id . '_' . $this->params->param;
+                $cacheKeySet = "cache_keys:" . $this->params->servicePatyName; // Set để lưu danh sách key
+                $data = Cache::remember($cacheKey, $this->params->time, function () use ($id) {
+                    return $this->getDataById($id);
+                });
+                // Lưu key vào Redis Set để dễ xóa sau này
+                Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
                 return $data;
-            });
-            // Lưu key vào Redis Set để dễ xóa sau này
-            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
-            return $data;
+            }
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['service_paty'], $e);
         }
@@ -93,7 +111,7 @@ class ServicePatyService
             foreach (explode(',', $request->branch_ids) as $key => $branchId) {
                 foreach (explode(',', $request->patient_type_ids) as $key => $patientTypeId) {
                     $data = $this->servicePatyRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier, $branchId, $patientTypeId);
-                    
+
                     // Gọi event để thêm index vào elastic
                     event(new InsertServicePatyIndex($data, $this->params->servicePatyName));
                     $param[] = $data;
@@ -118,7 +136,7 @@ class ServicePatyService
         }
         try {
             $data = $this->servicePatyRepository->update($request, $data, $this->params->time, $this->params->appModifier);
-            
+
             // Gọi event để thêm index vào elastic
             event(new InsertServicePatyIndex($data, $this->params->servicePatyName));
             // Gọi event để xóa cache
@@ -140,7 +158,7 @@ class ServicePatyService
         }
         try {
             $data = $this->servicePatyRepository->delete($data);
-            
+
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->servicePatyName));
             // Gọi event để xóa cache

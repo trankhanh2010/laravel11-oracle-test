@@ -40,19 +40,32 @@ class TreatmentBedRoomLViewService
             return writeAndThrowError(config('params')['db_service']['error']['treatment_bed_room_l_view'], $e);
         }
     }
+    private function getAllDataFromDatabase()
+    {
+        $data = $this->treatmentBedRoomLViewRepository->applyJoins();
+        // $data = $this->treatmentBedRoomLViewRepository->applyIsActiveFilter($data, $this->params->isActive);
+        // $data = $this->treatmentBedRoomLViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+        $data = $this->treatmentBedRoomLViewRepository->applyBedRoomIdsFilter($data, $this->params->bedRoomIds);
+        $data = $this->treatmentBedRoomLViewRepository->applyAddTimeToFilter($data, $this->params->addTimeTo);
+        $data = $this->treatmentBedRoomLViewRepository->applyIsInRoomFilter($data, $this->params->isInRoom, $this->params->addTimeFrom);
+        $count = $data->count();
+        $data = $this->treatmentBedRoomLViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->treatmentBedRoomLViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        return ['data' => $data, 'count' => $count];
+    }
+    private function getDataById($id)
+    {
+        $data = $this->treatmentBedRoomLViewRepository->applyJoins()
+        ->where('l_his_treatment_bed_room.id', $id);
+    // $data = $this->treatmentBedRoomLViewRepository->applyIsActiveFilter($data, $this->params->isActive);
+    // $data = $this->treatmentBedRoomLViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+    $data = $data->first();
+    return $data;
+    }
     public function handleDataBaseGetAll()
     {
         try {
-            $data = $this->treatmentBedRoomLViewRepository->applyJoins();
-            // $data = $this->treatmentBedRoomLViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-            // $data = $this->treatmentBedRoomLViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
-            $data = $this->treatmentBedRoomLViewRepository->applyBedRoomIdsFilter($data, $this->params->bedRoomIds);
-            $data = $this->treatmentBedRoomLViewRepository->applyAddTimeToFilter($data, $this->params->addTimeTo);
-            $data = $this->treatmentBedRoomLViewRepository->applyIsInRoomFilter($data, $this->params->isInRoom, $this->params->addTimeFrom);
-            $count = $data->count();
-            $data = $this->treatmentBedRoomLViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
-            $data = $this->treatmentBedRoomLViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
-            return ['data' => $data, 'count' => $count];
+            return $this->getAllDataFromDatabase();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['treatment_bed_room_l_view'], $e);
         }
@@ -60,12 +73,7 @@ class TreatmentBedRoomLViewService
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $data = $this->treatmentBedRoomLViewRepository->applyJoins()
-                ->where('l_his_treatment_bed_room.id', $id);
-            // $data = $this->treatmentBedRoomLViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-            // $data = $this->treatmentBedRoomLViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
-            $data = $data->first();
-            return $data;
+            return $this->getDataById($id);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['treatment_bed_room_l_view'], $e);
         }

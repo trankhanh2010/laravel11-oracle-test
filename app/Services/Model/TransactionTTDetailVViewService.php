@@ -39,18 +39,31 @@ class TransactionTTDetailVViewService
             return writeAndThrowError(config('params')['db_service']['error']['transaction_tt_detail_v_view'], $e);
         }
     }
+    private function getAllDataFromDatabase()
+    {
+        $data = $this->transactionTTDetailVViewRepository->applyJoins();
+        $data = $this->transactionTTDetailVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $this->transactionTTDetailVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+        $data = $this->transactionTTDetailVViewRepository->applyBillIdFilter($data, $this->params->billId);
+        $data = $this->transactionTTDetailVViewRepository->applyBillCodeFilter($data, $this->params->billCode);
+        $count = $data->count();
+        $data = $this->transactionTTDetailVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->transactionTTDetailVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        return ['data' => $data, 'count' => $count];
+    }
+    private function getDataById($id)
+    {
+        $data = $this->transactionTTDetailVViewRepository->applyJoins()
+        ->where('id', $id);
+    $data = $this->transactionTTDetailVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
+    $data = $this->transactionTTDetailVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+    $data = $data->first();
+    return $data;
+    }
     public function handleDataBaseGetAll()
     {
         try {
-            $data = $this->transactionTTDetailVViewRepository->applyJoins();
-            $data = $this->transactionTTDetailVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-            $data = $this->transactionTTDetailVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
-            $data = $this->transactionTTDetailVViewRepository->applyBillIdFilter($data, $this->params->billId);
-            $data = $this->transactionTTDetailVViewRepository->applyBillCodeFilter($data, $this->params->billCode);
-            $count = $data->count();
-            $data = $this->transactionTTDetailVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
-            $data = $this->transactionTTDetailVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
-            return ['data' => $data, 'count' => $count];
+            return $this->getAllDataFromDatabase();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['transaction_tt_detail_v_view'], $e);
         }
@@ -58,12 +71,7 @@ class TransactionTTDetailVViewService
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $data = $this->transactionTTDetailVViewRepository->applyJoins()
-                ->where('id', $id);
-            $data = $this->transactionTTDetailVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-            $data = $this->transactionTTDetailVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
-            $data = $data->first();
-            return $data;
+            return $this->getDataById($id);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['transaction_tt_detail_v_view'], $e);
         }

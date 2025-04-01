@@ -23,35 +23,53 @@ class SereServTeinChartsVViewService
         $this->params = $params;
         return $this;
     }
+    private function getAllDataFromDatabase()
+    {
+        $data = $this->sereServTeinChartsVViewRepository->applyJoins();
+        $data = $this->sereServTeinChartsVViewRepository->applyWithParam($data);
+        $data = $this->sereServTeinChartsVViewRepository->applyIsActiveFilter($data, 1);
+        $data = $this->sereServTeinChartsVViewRepository->applyIsDeleteFilter($data, 0);
+        $data = $this->sereServTeinChartsVViewRepository->applyPatientCodeFilter($data, $this->params->patientCode);
+        $data = $this->sereServTeinChartsVViewRepository->applyServiceTypeCodesFilter($data, $this->params->serviceTypeCodes);
+        $data = $this->sereServTeinChartsVViewRepository->applyServiceCodesFilter($data, $this->params->serviceCodes);
+        $data = $this->sereServTeinChartsVViewRepository->applyReportTypeCodeFilter($data, $this->params->reportTypeCode);
+        $data = $this->sereServTeinChartsVViewRepository->applyIntructionTimeFilter($data, $this->params->intructionTimeFrom, $this->params->intructionTimeTo);
+        $data = $this->sereServTeinChartsVViewRepository->applyTabFilter($data, $this->params->tab);
+
+        // $count = $data->count();
+        $count = null;
+        $data = $this->sereServTeinChartsVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->sereServTeinChartsVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        // Group theo field
+        $data = $this->sereServTeinChartsVViewRepository->applyGroupByField($data, $this->params->groupBy);
+        return ['data' => $data, 'count' => $count];
+    }
+    private function getDataById($id)
+    {
+        $data = $this->sereServTeinChartsVViewRepository->applyJoins()
+            ->where('id', $id);
+        $data = $this->sereServTeinChartsVViewRepository->applyIsActiveFilter($data, 1);
+        $data = $this->sereServTeinChartsVViewRepository->applyIsDeleteFilter($data, 0);
+        $data = $data->first();
+        return $data;
+    }
     public function handleDataBaseGetAll()
     {
         try {
-            $cacheKey = $this->params->sereServTeinChartsVViewName .'_'. $this->params->param;
-            $cacheKeySet = "cache_keys:" . $this->params->sereServTeinChartsVViewName; // Set để lưu danh sách key
-            $data = Cache::remember($cacheKey, 3600, function () {
-                $data = $this->sereServTeinChartsVViewRepository->applyJoins();
-                $data = $this->sereServTeinChartsVViewRepository->applyWithParam($data);
-                $data = $this->sereServTeinChartsVViewRepository->applyIsActiveFilter($data, 1);
-                $data = $this->sereServTeinChartsVViewRepository->applyIsDeleteFilter($data, 0);
-                $data = $this->sereServTeinChartsVViewRepository->applyPatientCodeFilter($data, $this->params->patientCode);
-                $data = $this->sereServTeinChartsVViewRepository->applyServiceTypeCodesFilter($data, $this->params->serviceTypeCodes);
-                $data = $this->sereServTeinChartsVViewRepository->applyServiceCodesFilter($data, $this->params->serviceCodes);
-                $data = $this->sereServTeinChartsVViewRepository->applyReportTypeCodeFilter($data, $this->params->reportTypeCode);
-                $data = $this->sereServTeinChartsVViewRepository->applyIntructionTimeFilter($data, $this->params->intructionTimeFrom, $this->params->intructionTimeTo);
-                $data = $this->sereServTeinChartsVViewRepository->applyTabFilter($data, $this->params->tab);
+            // Nếu không lưu cache
+            if ($this->params->noCache) {
+                return $this->getAllDataFromDatabase();
+            } else {
+                $cacheKey = $this->params->sereServTeinChartsVViewName . '_' . $this->params->param;
+                $cacheKeySet = "cache_keys:" . $this->params->sereServTeinChartsVViewName; // Set để lưu danh sách key
+                $data = Cache::remember($cacheKey, 3600, function () {
+                    return $this->getAllDataFromDatabase();
+                });
+                // Lưu key vào Redis Set để dễ xóa sau này
+                Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
 
-                // $count = $data->count();
-                $count = null;
-                $data = $this->sereServTeinChartsVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
-                $data = $this->sereServTeinChartsVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
-                // Group theo field
-                $data = $this->sereServTeinChartsVViewRepository->applyGroupByField($data,$this->params->groupBy);
-                return ['data' => $data, 'count' => $count];
-            });
-            // Lưu key vào Redis Set để dễ xóa sau này
-            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
-
-            return $data;
+                return $data;
+            }
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['sere_serv_tein_charts_v_view'], $e);
         }
@@ -59,12 +77,7 @@ class SereServTeinChartsVViewService
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $data = $this->sereServTeinChartsVViewRepository->applyJoins()
-                ->where('id', $id);
-            $data = $this->sereServTeinChartsVViewRepository->applyIsActiveFilter($data, 1);
-            $data = $this->sereServTeinChartsVViewRepository->applyIsDeleteFilter($data, 0);
-            $data = $data->first();
-            return $data;
+            return $this->getDataById($id);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['sere_serv_tein_charts_v_view'], $e);
         }

@@ -39,18 +39,30 @@ class TrackingService
             return writeAndThrowError(config('params')['db_service']['error']['tracking'], $e);
         }
     }
+    private function getAllDataFromDatabase()
+    {
+        $data = $this->trackingRepository->applyJoins();
+        $data = $this->trackingRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $this->trackingRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
+        $count = $data->count();
+        $data = $this->trackingRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->trackingRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        // Group theo field
+        $data = $this->trackingRepository->applyGroupByField($data, $this->params->groupBy);
+        return ['data' => $data, 'count' => $count];
+    }
+    private function getDataById($id)
+    {
+        $data = $this->trackingRepository->applyJoins()
+        ->where('his_tracking.id', $id);
+    $data = $this->trackingRepository->applyIsActiveFilter($data, $this->params->isActive);
+    $data = $data->first();
+    return $data;
+    }
     public function handleDataBaseGetAll()
     {
         try {
-            $data = $this->trackingRepository->applyJoins();
-            $data = $this->trackingRepository->applyIsActiveFilter($data, $this->params->isActive);
-            $data = $this->trackingRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
-            $count = $data->count();
-            $data = $this->trackingRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
-            $data = $this->trackingRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
-            // Group theo field
-            $data = $this->trackingRepository->applyGroupByField($data, $this->params->groupBy);
-            return ['data' => $data, 'count' => $count];
+            return $this->getAllDataFromDatabase();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['tracking'], $e);
         }
@@ -58,11 +70,7 @@ class TrackingService
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $data = $this->trackingRepository->applyJoins()
-                ->where('his_tracking.id', $id);
-            $data = $this->trackingRepository->applyIsActiveFilter($data, $this->params->isActive);
-            $data = $data->first();
-            return $data;
+            return $this->getDataById($id);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['tracking'], $e);
         }

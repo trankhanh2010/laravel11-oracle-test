@@ -39,18 +39,31 @@ class SereServBillService
             return writeAndThrowError(config('params')['db_service']['error']['sere_serv_bill'], $e);
         }
     }
+    private function getAllDataFromDatabase()
+    {
+        $data = $this->sereServBillRepository->applyJoins();
+        $data = $this->sereServBillRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $this->sereServBillRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+        $data = $this->sereServBillRepository->applyBillIdFilter($data, $this->params->billId);
+        $data = $this->sereServBillRepository->applyBillCodeFilter($data, $this->params->billCode);
+        $count = $data->count();
+        $data = $this->sereServBillRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->sereServBillRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        return ['data' => $data, 'count' => $count];
+    }
+    private function getDataById($id)
+    {
+        $data = $this->sereServBillRepository->applyJoins()
+        ->where('his_sere_serv_bill.id', $id);
+    $data = $this->sereServBillRepository->applyIsActiveFilter($data, $this->params->isActive);
+    $data = $this->sereServBillRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+    $data = $data->first();
+    return $data;
+    }
     public function handleDataBaseGetAll()
     {
         try {
-            $data = $this->sereServBillRepository->applyJoins();
-            $data = $this->sereServBillRepository->applyIsActiveFilter($data, $this->params->isActive);
-            $data = $this->sereServBillRepository->applyIsDeleteFilter($data, $this->params->isDelete);
-            $data = $this->sereServBillRepository->applyBillIdFilter($data, $this->params->billId);
-            $data = $this->sereServBillRepository->applyBillCodeFilter($data, $this->params->billCode);
-            $count = $data->count();
-            $data = $this->sereServBillRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
-            $data = $this->sereServBillRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
-            return ['data' => $data, 'count' => $count];
+            return $this->getAllDataFromDatabase();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['sere_serv_bill'], $e);
         }
@@ -58,12 +71,7 @@ class SereServBillService
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $data = $this->sereServBillRepository->applyJoins()
-                ->where('his_sere_serv_bill.id', $id);
-            $data = $this->sereServBillRepository->applyIsActiveFilter($data, $this->params->isActive);
-            $data = $this->sereServBillRepository->applyIsDeleteFilter($data, $this->params->isDelete);
-            $data = $data->first();
-            return $data;
+            return $this->getDataById($id);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['sere_serv_bill'], $e);
         }

@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Cache;
 use App\Repositories\DocumentTypeRepository;
 use Illuminate\Support\Facades\Redis;
 
-class DocumentTypeService 
+class DocumentTypeService
 {
     protected $documentTypeRepository;
     protected $params;
@@ -67,22 +67,39 @@ class DocumentTypeService
             return writeAndThrowError(config('params')['db_service']['error']['document_type'], $e);
         }
     }
+    private function getAllDataFromDatabase()
+    {
+        $data = $this->documentTypeRepository->applyJoins();
+        $data = $this->documentTypeRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $count = $data->count();
+        $data = $this->documentTypeRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->documentTypeRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        return ['data' => $data, 'count' => $count];
+    }
+    private function getDataById($id)
+    {
+        $data = $this->documentTypeRepository->applyJoins()
+            ->where('emr_document_type.id', $id);
+        $data = $this->documentTypeRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $data->first();
+        return $data;
+    }
     public function handleDataBaseGetAll()
     {
         try {
-            $cacheKey = $this->params->documentTypeName .'_'. $this->params->param;
-            $cacheKeySet = "cache_keys:" . $this->params->documentTypeName; // Set để lưu danh sách key
-            $data = Cache::remember($cacheKey, $this->params->time, function () {
-                $data = $this->documentTypeRepository->applyJoins();
-                $data = $this->documentTypeRepository->applyIsActiveFilter($data, $this->params->isActive);
-                $count = $data->count();
-                $data = $this->documentTypeRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
-                $data = $this->documentTypeRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
-                return ['data' => $data, 'count' => $count];
-            });
-            // Lưu key vào Redis Set để dễ xóa sau này
-            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
-            return $data;
+            // Nếu không lưu cache
+            if ($this->params->noCache) {
+                return $this->getAllDataFromDatabase();
+            } else {
+                $cacheKey = $this->params->documentTypeName . '_' . $this->params->param;
+                $cacheKeySet = "cache_keys:" . $this->params->documentTypeName; // Set để lưu danh sách key
+                $data = Cache::remember($cacheKey, $this->params->time, function () {
+                    return $this->getAllDataFromDatabase();
+                });
+                // Lưu key vào Redis Set để dễ xóa sau này
+                Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+                return $data;
+            }
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['document_type'], $e);
         }
@@ -90,18 +107,19 @@ class DocumentTypeService
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $cacheKey = $this->params->documentTypeName .'_'.$id.'_'. $this->params->param;
-            $cacheKeySet = "cache_keys:" . $this->params->documentTypeName; // Set để lưu danh sách key
-            $data = Cache::remember($cacheKey, $this->params->time, function () use($id){
-                $data = $this->documentTypeRepository->applyJoins()
-                    ->where('emr_document_type.id', $id);
-                $data = $this->documentTypeRepository->applyIsActiveFilter($data, $this->params->isActive);
-                $data = $data->first();
+            // Nếu không lưu cache
+            if ($this->params->noCache) {
+                return $this->getDataById($id);
+            } else {
+                $cacheKey = $this->params->documentTypeName . '_' . $id . '_' . $this->params->param;
+                $cacheKeySet = "cache_keys:" . $this->params->documentTypeName; // Set để lưu danh sách key
+                $data = Cache::remember($cacheKey, $this->params->time, function () use ($id) {
+                    return $this->getDataById($id);
+                });
+                // Lưu key vào Redis Set để dễ xóa sau này
+                Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
                 return $data;
-            });
-            // Lưu key vào Redis Set để dễ xóa sau này
-            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
-            return $data;
+            }
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['document_type'], $e);
         }
@@ -114,8 +132,8 @@ class DocumentTypeService
 
             // Gọi event để thêm index vào elastic
             event(new InsertDocumentTypeIndex($data, $this->params->documentTypeName));
-             // Gọi event để xóa cache
-             event(new DeleteCache($this->params->documentTypeName));           
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->documentTypeName));
             return returnDataCreateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['document_type'], $e);
@@ -137,7 +155,7 @@ class DocumentTypeService
             // Gọi event để thêm index vào elastic
             event(new InsertDocumentTypeIndex($data, $this->params->documentTypeName));
             // Gọi event để xóa cache
-            event(new DeleteCache($this->params->documentTypeName));            
+            event(new DeleteCache($this->params->documentTypeName));
             return returnDataUpdateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['document_type'], $e);
@@ -159,7 +177,7 @@ class DocumentTypeService
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->documentTypeName));
             // Gọi event để xóa cache
-            event(new DeleteCache($this->params->documentTypeName));            
+            event(new DeleteCache($this->params->documentTypeName));
             return returnDataDeleteSuccess();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['document_type'], $e);

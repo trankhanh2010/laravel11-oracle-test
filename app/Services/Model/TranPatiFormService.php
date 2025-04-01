@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Cache;
 use App\Repositories\TranPatiFormRepository;
 use Illuminate\Support\Facades\Redis;
 
-class TranPatiFormService 
+class TranPatiFormService
 {
     protected $tranPatiFormRepository;
     protected $params;
@@ -37,22 +37,39 @@ class TranPatiFormService
             return writeAndThrowError(config('params')['db_service']['error']['tran_pati_form'], $e);
         }
     }
+    private function getAllDataFromDatabase()
+    {
+        $data = $this->tranPatiFormRepository->applyJoins();
+        $data = $this->tranPatiFormRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $count = $data->count();
+        $data = $this->tranPatiFormRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->tranPatiFormRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        return ['data' => $data, 'count' => $count];
+    }
+    private function getDataById($id)
+    {
+        $data = $this->tranPatiFormRepository->applyJoins()
+            ->where('his_tran_pati_form.id', $id);
+        $data = $this->tranPatiFormRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $data->first();
+        return $data;
+    }
     public function handleDataBaseGetAll()
     {
         try {
-            $cacheKey = $this->params->tranPatiFormName .'_'. $this->params->param;
-            $cacheKeySet = "cache_keys:" . $this->params->tranPatiFormName; // Set để lưu danh sách key
-            $data = Cache::remember($cacheKey, $this->params->time, function () {
-                $data = $this->tranPatiFormRepository->applyJoins();
-                $data = $this->tranPatiFormRepository->applyIsActiveFilter($data, $this->params->isActive);
-                $count = $data->count();
-                $data = $this->tranPatiFormRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
-                $data = $this->tranPatiFormRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
-                return ['data' => $data, 'count' => $count];
-            });
-            // Lưu key vào Redis Set để dễ xóa sau này
-            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
-            return $data;
+            // Nếu không lưu cache
+            if ($this->params->noCache) {
+                return $this->getAllDataFromDatabase();
+            } else {
+                $cacheKey = $this->params->tranPatiFormName . '_' . $this->params->param;
+                $cacheKeySet = "cache_keys:" . $this->params->tranPatiFormName; // Set để lưu danh sách key
+                $data = Cache::remember($cacheKey, $this->params->time, function () {
+                    return $this->getAllDataFromDatabase();
+                });
+                // Lưu key vào Redis Set để dễ xóa sau này
+                Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+                return $data;
+            }
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['tran_pati_form'], $e);
         }
@@ -60,18 +77,19 @@ class TranPatiFormService
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $cacheKey = $this->params->tranPatiFormName .'_'.$id.'_'. $this->params->param;
-            $cacheKeySet = "cache_keys:" . $this->params->tranPatiFormName; // Set để lưu danh sách key
-            $data = Cache::remember($cacheKey, $this->params->time, function () use($id){
-                $data = $this->tranPatiFormRepository->applyJoins()
-                    ->where('his_tran_pati_form.id', $id);
-                $data = $this->tranPatiFormRepository->applyIsActiveFilter($data, $this->params->isActive);
-                $data = $data->first();
+            // Nếu không lưu cache
+            if ($this->params->noCache) {
+                return $this->getDataById($id);
+            } else {
+                $cacheKey = $this->params->tranPatiFormName . '_' . $id . '_' . $this->params->param;
+                $cacheKeySet = "cache_keys:" . $this->params->tranPatiFormName; // Set để lưu danh sách key
+                $data = Cache::remember($cacheKey, $this->params->time, function () use ($id) {
+                    return $this->getDataById($id);
+                });
+                // Lưu key vào Redis Set để dễ xóa sau này
+                Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
                 return $data;
-            });
-            // Lưu key vào Redis Set để dễ xóa sau này
-            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
-            return $data;
+            }
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['tran_pati_form'], $e);
         }
@@ -84,8 +102,8 @@ class TranPatiFormService
 
             // Gọi event để thêm index vào elastic
             event(new InsertTranPatiFormIndex($data, $this->params->tranPatiFormName));
-             // Gọi event để xóa cache
-             event(new DeleteCache($this->params->tranPatiFormName));           
+            // Gọi event để xóa cache
+            event(new DeleteCache($this->params->tranPatiFormName));
             return returnDataCreateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['tran_pati_form'], $e);
@@ -107,7 +125,7 @@ class TranPatiFormService
             // Gọi event để thêm index vào elastic
             event(new InsertTranPatiFormIndex($data, $this->params->tranPatiFormName));
             // Gọi event để xóa cache
-            event(new DeleteCache($this->params->tranPatiFormName));            
+            event(new DeleteCache($this->params->tranPatiFormName));
             return returnDataUpdateSuccess($data);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['tran_pati_form'], $e);
@@ -129,7 +147,7 @@ class TranPatiFormService
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->tranPatiFormName));
             // Gọi event để xóa cache
-            event(new DeleteCache($this->params->tranPatiFormName));            
+            event(new DeleteCache($this->params->tranPatiFormName));
             return returnDataDeleteSuccess();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['tran_pati_form'], $e);

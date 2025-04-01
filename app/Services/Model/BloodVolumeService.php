@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Cache;
 use App\Repositories\BloodVolumeRepository;
 use Illuminate\Support\Facades\Redis;
 
-class BloodVolumeService 
+class BloodVolumeService
 {
     protected $bloodVolumeRepository;
     protected $params;
@@ -37,22 +37,39 @@ class BloodVolumeService
             return writeAndThrowError(config('params')['db_service']['error']['blood_volume'], $e);
         }
     }
+    private function getAllDataFromDatabase()
+    {
+        $data = $this->bloodVolumeRepository->applyJoins();
+        $data = $this->bloodVolumeRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $count = $data->count();
+        $data = $this->bloodVolumeRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->bloodVolumeRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        return ['data' => $data, 'count' => $count];
+    }
+    private function getDataById($id)
+    {
+        $data = $this->bloodVolumeRepository->applyJoins()
+            ->where('his_blood_volume.id', $id);
+        $data = $this->bloodVolumeRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $data->first();
+        return $data;
+    }
     public function handleDataBaseGetAll()
     {
         try {
-            $cacheKey = $this->params->bloodVolumeName .'_'. $this->params->param;
-            $cacheKeySet = "cache_keys:" . $this->params->bloodVolumeName; // Set để lưu danh sách key
-            $data = Cache::remember($cacheKey, $this->params->time, function () {
-                $data = $this->bloodVolumeRepository->applyJoins();
-                $data = $this->bloodVolumeRepository->applyIsActiveFilter($data, $this->params->isActive);
-                $count = $data->count();
-                $data = $this->bloodVolumeRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
-                $data = $this->bloodVolumeRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
-                return ['data' => $data, 'count' => $count];
-            });
-            // Lưu key vào Redis Set để dễ xóa sau này
-            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
-            return $data;
+            // Nếu không lưu cache
+            if ($this->params->noCache) {
+                return $this->getAllDataFromDatabase();
+            } else {
+                $cacheKey = $this->params->bloodVolumeName . '_' . $this->params->param;
+                $cacheKeySet = "cache_keys:" . $this->params->bloodVolumeName; // Set để lưu danh sách key
+                $data = Cache::remember($cacheKey, $this->params->time, function () {
+                    return $this->getAllDataFromDatabase();
+                });
+                // Lưu key vào Redis Set để dễ xóa sau này
+                Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+                return $data;
+            }
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['blood_volume'], $e);
         }
@@ -60,18 +77,19 @@ class BloodVolumeService
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $cacheKey = $this->params->bloodVolumeName .'_'.$id.'_'. $this->params->param;
-            $cacheKeySet = "cache_keys:" . $this->params->bloodVolumeName; // Set để lưu danh sách key
-            $data = Cache::remember($cacheKey, $this->params->time, function () use($id){
-                $data = $this->bloodVolumeRepository->applyJoins()
-                    ->where('his_blood_volume.id', $id);
-                $data = $this->bloodVolumeRepository->applyIsActiveFilter($data, $this->params->isActive);
-                $data = $data->first();
+            // Nếu không lưu cache
+            if ($this->params->noCache) {
+                return $this->getDataById($id);
+            } else {
+                $cacheKey = $this->params->bloodVolumeName . '_' . $id . '_' . $this->params->param;
+                $cacheKeySet = "cache_keys:" . $this->params->bloodVolumeName; // Set để lưu danh sách key
+                $data = Cache::remember($cacheKey, $this->params->time, function () use ($id) {
+                    return $this->getDataById($id);
+                });
+                // Lưu key vào Redis Set để dễ xóa sau này
+                Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
                 return $data;
-            });
-            // Lưu key vào Redis Set để dễ xóa sau này
-            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
-            return $data;
+            }
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['blood_volume'], $e);
         }
@@ -81,7 +99,7 @@ class BloodVolumeService
     {
         try {
             $data = $this->bloodVolumeRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
-            
+
             // Gọi event để thêm index vào elastic
             event(new InsertBloodVolumeIndex($data, $this->params->bloodVolumeName));
             // Gọi event để xóa cache
@@ -103,7 +121,7 @@ class BloodVolumeService
         }
         try {
             $data = $this->bloodVolumeRepository->update($request, $data, $this->params->time, $this->params->appModifier);
-            
+
             // Gọi event để thêm index vào elastic
             event(new InsertBloodVolumeIndex($data, $this->params->bloodVolumeName));
             // Gọi event để xóa cache
@@ -125,7 +143,7 @@ class BloodVolumeService
         }
         try {
             $data = $this->bloodVolumeRepository->delete($data);
-            
+
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->bloodVolumeName));
             // Gọi event để xóa cache

@@ -43,22 +43,35 @@ class SereServTeinListVViewService
             return writeAndThrowError(config('params')['db_service']['error']['sere_serv_tein_list_v_view'], $e);
         }
     }
+    private function getAllDataFromDatabase()
+    {
+        $data = $this->sereServTeinListVViewRepository->applyJoins();
+        $data = $this->sereServTeinListVViewRepository->applyIsActiveFilter($data, 1);
+        $data = $this->sereServTeinListVViewRepository->applyIsDeleteFilter($data, 0);
+        $data = $this->sereServTeinListVViewRepository->applyServiceReqIdFilter($data, $this->params->serviceReqId);
+        $data = $this->sereServTeinListVViewRepository->applySereServIdsFilter($data, $this->params->sereServIds);
+
+        // $count = $data->count();
+        $count = null;
+        $data = $this->sereServTeinListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->sereServTeinListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        // Group theo field
+        $data = $this->sereServTeinListVViewRepository->applyGroupByField($data, $this->params->groupBy);
+        return ['data' => $data, 'count' => $count];
+    }
+    private function getDataById($id)
+    {
+        $data = $this->sereServTeinListVViewRepository->applyJoins()
+        ->where('id', $id);
+    $data = $this->sereServTeinListVViewRepository->applyIsActiveFilter($data, 1);
+    $data = $this->sereServTeinListVViewRepository->applyIsDeleteFilter($data, 0);
+    $data = $data->first();
+    return $data;
+    }
     public function handleDataBaseGetAll()
     {
         try {
-            $data = $this->sereServTeinListVViewRepository->applyJoins();
-            $data = $this->sereServTeinListVViewRepository->applyIsActiveFilter($data, 1);
-            $data = $this->sereServTeinListVViewRepository->applyIsDeleteFilter($data, 0);
-            $data = $this->sereServTeinListVViewRepository->applyServiceReqIdFilter($data, $this->params->serviceReqId);
-            $data = $this->sereServTeinListVViewRepository->applySereServIdsFilter($data, $this->params->sereServIds);
-
-            // $count = $data->count();
-            $count = null;
-            $data = $this->sereServTeinListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
-            $data = $this->sereServTeinListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
-            // Group theo field
-            $data = $this->sereServTeinListVViewRepository->applyGroupByField($data, $this->params->groupBy);
-            return ['data' => $data, 'count' => $count];
+            return $this->getAllDataFromDatabase();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['sere_serv_tein_list_v_view'], $e);
         }
@@ -66,12 +79,7 @@ class SereServTeinListVViewService
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $data = $this->sereServTeinListVViewRepository->applyJoins()
-                ->where('id', $id);
-            $data = $this->sereServTeinListVViewRepository->applyIsActiveFilter($data, 1);
-            $data = $this->sereServTeinListVViewRepository->applyIsDeleteFilter($data, 0);
-            $data = $data->first();
-            return $data;
+            return $this->getDataById($id);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['sere_serv_tein_list_v_view'], $e);
         }

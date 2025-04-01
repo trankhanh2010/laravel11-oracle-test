@@ -38,17 +38,30 @@ class SereServExtService
             return writeAndThrowError(config('params')['db_service']['error']['sere_serv_ext'], $e);
         }
     }
+    private function getAllDataFromDatabase()
+    {
+        $data = $this->sereServExtRepository->applyJoins();
+        $data = $this->sereServExtRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $this->sereServExtRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+        $data = $this->sereServExtRepository->applySereServIdsFilter($data, $this->params->sereServIds);
+        $count = $data->count();
+        $data = $this->sereServExtRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->sereServExtRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        return ['data' => $data, 'count' => $count];
+    }
+    private function getDataById($id)
+    {
+        $data = $this->sereServExtRepository->applyJoins()
+        ->where('his_sere_serv_ext.id', $id);
+    $data = $this->sereServExtRepository->applyIsActiveFilter($data, $this->params->isActive);
+    $data = $this->sereServExtRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+    $data = $data->first();
+    return $data;
+    }
     public function handleDataBaseGetAll()
     {
         try {
-            $data = $this->sereServExtRepository->applyJoins();
-            $data = $this->sereServExtRepository->applyIsActiveFilter($data, $this->params->isActive);
-            $data = $this->sereServExtRepository->applyIsDeleteFilter($data, $this->params->isDelete);
-            $data = $this->sereServExtRepository->applySereServIdsFilter($data, $this->params->sereServIds);
-            $count = $data->count();
-            $data = $this->sereServExtRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
-            $data = $this->sereServExtRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
-            return ['data' => $data, 'count' => $count];
+            return $this->getAllDataFromDatabase();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['sere_serv_ext'], $e);
         }
@@ -56,12 +69,7 @@ class SereServExtService
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $data = $this->sereServExtRepository->applyJoins()
-                ->where('his_sere_serv_ext.id', $id);
-            $data = $this->sereServExtRepository->applyIsActiveFilter($data, $this->params->isActive);
-            $data = $this->sereServExtRepository->applyIsDeleteFilter($data, $this->params->isDelete);
-            $data = $data->first();
-            return $data;
+            return $this->getDataById($id);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['sere_serv_ext'], $e);
         }

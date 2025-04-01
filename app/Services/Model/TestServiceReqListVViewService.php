@@ -50,68 +50,82 @@ class TestServiceReqListVViewService
             return writeAndThrowError(config('params')['db_service']['error']['test_service_req_list_v_view'], $e);
         }
     }
+    private function getAllDataFromDatabase()
+    {
+        $data = $this->testServiceReqListVViewRepository->applyJoins();
+        // $data = $this->testServiceReqListVViewRepository->applyWith($data);
+        if($this->params->treatmentCode || $this->params->patientCode){
+            if($this->params->treatmentCode){
+                $data = $this->testServiceReqListVViewRepository->applyTreatmentCodeFilter($data, $this->params->treatmentCode);
+            }
+            if($this->params->patientCode){
+                $data = $this->testServiceReqListVViewRepository->applyPatientCodeFilter($data, $this->params->patientCode);
+            }
+            if($this->params->patientPhone){
+                $data = $this->testServiceReqListVViewRepository->applyPatientPhoneFilter($data, $this->params->patientPhone);
+            }
+        }else{
+            $data = $this->testServiceReqListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
+            $data = $this->testServiceReqListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+            $data = $this->testServiceReqListVViewRepository->applyStatusFilter($data, $this->params->status);
+            $data = $this->testServiceReqListVViewRepository->applyFromTimeFilter($data, $this->params->fromTime);
+            $data = $this->testServiceReqListVViewRepository->applyToTimeFilter($data, $this->params->toTime);
+            $data = $this->testServiceReqListVViewRepository->applyTreatmentType01IdFilter($data);
+            $data = $this->testServiceReqListVViewRepository->applyTreatmentType01Filter($data, $this->params->isNoExcute, $this->params->isSpecimen, $this->params->cursorPaginate);
+            $data = $this->testServiceReqListVViewRepository->applyExecuteDepartmentCodeFilter($data, $this->params->executeDepartmentCode);
+        }
+        // $data = $this->testServiceReqListVViewRepository->applyIsNoExcuteFilter($data, $this->params->isNoExcute);
+        // $data = $this->testServiceReqListVViewRepository->applyIsSpecimenFilter($data, $this->params->isSpecimen);
+        // if($this->params->start == 0){
+        //     // $count = $data->count();
+        //     $count = null;
+        // }else{
+        //     $count = null;
+        // }
+        $data = $this->testServiceReqListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->testServiceReqListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit, $this->params->cursorPaginate, $this->params->lastId);
+        // if ($this->params->getAll) {
+        //     $data = $data->filter(function ($item) {
+        //         // Kiểm tra điều kiện isSpecimen
+        //         $isSpecimenCondition = $this->params->isSpecimen ? 
+        //             collect($item['test_service_type_list'])->contains('isSpecimen', '1') :
+        //             collect($item['test_service_type_list'])->contains(function ($testServiceType) {
+        //                 return $testServiceType['isSpecimen'] === "0" || $testServiceType['isSpecimen'] === "";
+        //             });
+        
+        //         // Kiểm tra điều kiện isNoExecute
+        //         $isNoExecuteCondition = $this->params->isNoExcute ? 
+        //             collect($item['test_service_type_list'])->contains('isNoExecute', '1') :
+        //             collect($item['test_service_type_list'])->contains(function ($testServiceType) {
+        //                 return $testServiceType['isNoExecute'] === "0" || $testServiceType['isNoExecute'] === "";
+        //             });
+        
+        //         // Trả về true nếu cả hai điều kiện đều thỏa mãn
+        //         return $isSpecimenCondition && $isNoExecuteCondition;
+        //     });
+        // }            
+        // Đếm sau khi đã tải tất cả bản ghi vào bộ nhớ
+        if($this->params->getAll){
+            $count = $data->count();
+        }else{
+            $count = null;
+        }
+        return ['data' => $data, 'count' => $count];
+    }
+    private function getDataById($id)
+    {
+        $data = $this->testServiceReqListVViewRepository->applyJoins()
+        ->where('id', $id);
+    $data = $this->testServiceReqListVViewRepository->applyWith($data);
+    $data = $this->testServiceReqListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
+    $data = $this->testServiceReqListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+    $data = $data->first();
+    return $data;
+    }
     public function handleDataBaseGetAll()
     {
         try {
-            $data = $this->testServiceReqListVViewRepository->applyJoins();
-            // $data = $this->testServiceReqListVViewRepository->applyWith($data);
-            if($this->params->treatmentCode || $this->params->patientCode){
-                if($this->params->treatmentCode){
-                    $data = $this->testServiceReqListVViewRepository->applyTreatmentCodeFilter($data, $this->params->treatmentCode);
-                }
-                if($this->params->patientCode){
-                    $data = $this->testServiceReqListVViewRepository->applyPatientCodeFilter($data, $this->params->patientCode);
-                }
-                if($this->params->patientPhone){
-                    $data = $this->testServiceReqListVViewRepository->applyPatientPhoneFilter($data, $this->params->patientPhone);
-                }
-            }else{
-                $data = $this->testServiceReqListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-                $data = $this->testServiceReqListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
-                $data = $this->testServiceReqListVViewRepository->applyStatusFilter($data, $this->params->status);
-                $data = $this->testServiceReqListVViewRepository->applyFromTimeFilter($data, $this->params->fromTime);
-                $data = $this->testServiceReqListVViewRepository->applyToTimeFilter($data, $this->params->toTime);
-                $data = $this->testServiceReqListVViewRepository->applyTreatmentType01IdFilter($data);
-                $data = $this->testServiceReqListVViewRepository->applyTreatmentType01Filter($data, $this->params->isNoExcute, $this->params->isSpecimen, $this->params->cursorPaginate);
-                $data = $this->testServiceReqListVViewRepository->applyExecuteDepartmentCodeFilter($data, $this->params->executeDepartmentCode);
-            }
-            // $data = $this->testServiceReqListVViewRepository->applyIsNoExcuteFilter($data, $this->params->isNoExcute);
-            // $data = $this->testServiceReqListVViewRepository->applyIsSpecimenFilter($data, $this->params->isSpecimen);
-            // if($this->params->start == 0){
-            //     // $count = $data->count();
-            //     $count = null;
-            // }else{
-            //     $count = null;
-            // }
-            $data = $this->testServiceReqListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
-            $data = $this->testServiceReqListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit, $this->params->cursorPaginate, $this->params->lastId);
-            // if ($this->params->getAll) {
-            //     $data = $data->filter(function ($item) {
-            //         // Kiểm tra điều kiện isSpecimen
-            //         $isSpecimenCondition = $this->params->isSpecimen ? 
-            //             collect($item['test_service_type_list'])->contains('isSpecimen', '1') :
-            //             collect($item['test_service_type_list'])->contains(function ($testServiceType) {
-            //                 return $testServiceType['isSpecimen'] === "0" || $testServiceType['isSpecimen'] === "";
-            //             });
-            
-            //         // Kiểm tra điều kiện isNoExecute
-            //         $isNoExecuteCondition = $this->params->isNoExcute ? 
-            //             collect($item['test_service_type_list'])->contains('isNoExecute', '1') :
-            //             collect($item['test_service_type_list'])->contains(function ($testServiceType) {
-            //                 return $testServiceType['isNoExecute'] === "0" || $testServiceType['isNoExecute'] === "";
-            //             });
-            
-            //         // Trả về true nếu cả hai điều kiện đều thỏa mãn
-            //         return $isSpecimenCondition && $isNoExecuteCondition;
-            //     });
-            // }            
-            // Đếm sau khi đã tải tất cả bản ghi vào bộ nhớ
-            if($this->params->getAll){
-                $count = $data->count();
-            }else{
-                $count = null;
-            }
-            return ['data' => $data, 'count' => $count];
+            return $this->getAllDataFromDatabase();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['test_service_req_list_v_view'], $e);
         }
@@ -119,13 +133,7 @@ class TestServiceReqListVViewService
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $data = $this->testServiceReqListVViewRepository->applyJoins()
-                ->where('id', $id);
-            $data = $this->testServiceReqListVViewRepository->applyWith($data);
-            $data = $this->testServiceReqListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-            $data = $this->testServiceReqListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
-            $data = $data->first();
-            return $data;
+            return $this->getDataById($id);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['test_service_req_list_v_view'], $e);
         }

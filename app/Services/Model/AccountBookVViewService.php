@@ -40,19 +40,32 @@ class AccountBookVViewService
             return writeAndThrowError(config('params')['db_service']['error']['account_book_v_view'], $e);
         }
     }
+    private function getAllDataFromDatabase()
+    {
+        $data = $this->accountBookVViewRepository->applyJoins();
+        $data = $this->accountBookVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $this->accountBookVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+        $data = $this->accountBookVViewRepository->applyIsForDepositFilter($data, $this->params->isForDeposit);
+        $data = $this->accountBookVViewRepository->applyIsForRepayFilter($data, $this->params->isForRepay);
+        $data = $this->accountBookVViewRepository->applyIsForBillFilter($data, $this->params->isForBill);
+        $count = $data->count();
+        $data = $this->accountBookVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->accountBookVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        return ['data' => $data, 'count' => $count];
+    }
+    private function getDataById($id)
+    {
+        $data = $this->accountBookVViewRepository->applyJoins()
+        ->where('v_his_account_book.id', $id);
+    $data = $this->accountBookVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
+    $data = $this->accountBookVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+    $data = $data->first();
+    return $data;
+    }
     public function handleDataBaseGetAll()
     {
         try {
-            $data = $this->accountBookVViewRepository->applyJoins();
-            $data = $this->accountBookVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-            $data = $this->accountBookVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
-            $data = $this->accountBookVViewRepository->applyIsForDepositFilter($data, $this->params->isForDeposit);
-            $data = $this->accountBookVViewRepository->applyIsForRepayFilter($data, $this->params->isForRepay);
-            $data = $this->accountBookVViewRepository->applyIsForBillFilter($data, $this->params->isForBill);
-            $count = $data->count();
-            $data = $this->accountBookVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
-            $data = $this->accountBookVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
-            return ['data' => $data, 'count' => $count];
+            return $this->getAllDataFromDatabase();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['account_book_v_view'], $e);
         }
@@ -60,12 +73,7 @@ class AccountBookVViewService
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $data = $this->accountBookVViewRepository->applyJoins()
-                ->where('v_his_account_book.id', $id);
-            $data = $this->accountBookVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-            $data = $this->accountBookVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
-            $data = $data->first();
-            return $data;
+            return $this->getDataById($id);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['account_book_v_view'], $e);
         }

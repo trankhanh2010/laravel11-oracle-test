@@ -37,17 +37,29 @@ class RoomVViewService
             return writeAndThrowError(config('params')['db_service']['error']['room_v_view'], $e);
         }
     }
+    private function getAllDataFromDatabase()
+    {
+        $data = $this->roomVViewRepository->applyJoins();
+        $data = $this->roomVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $this->roomVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+
+        $count = $data->count();
+        $data = $this->roomVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->roomVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        return ['data' => $data, 'count' => $count];
+    }
+    private function getDataById($id)
+    {
+        $data = $this->roomVViewRepository->applyJoins()
+        ->where('v_his_room.id', $id);
+    $data = $this->roomVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
+    $data = $this->roomVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+    $data = $data->first();
+    }
     public function handleDataBaseGetAll()
     {
         try {
-            $data = $this->roomVViewRepository->applyJoins();
-            $data = $this->roomVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-            $data = $this->roomVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
-
-            $count = $data->count();
-            $data = $this->roomVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
-            $data = $this->roomVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
-            return ['data' => $data, 'count' => $count];
+            return $this->getAllDataFromDatabase();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['room_v_view'], $e);
         }
@@ -55,12 +67,7 @@ class RoomVViewService
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $data = $this->roomVViewRepository->applyJoins()
-                ->where('v_his_room.id', $id);
-            $data = $this->roomVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-            $data = $this->roomVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
-            $data = $data->first();
-            return $data;
+            return $this->getDataById($id);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['room_v_view'], $e);
         }

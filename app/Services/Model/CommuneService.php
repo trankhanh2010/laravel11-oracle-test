@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Cache;
 use App\Repositories\CommuneRepository;
 use Illuminate\Support\Facades\Redis;
 
-class CommuneService 
+class CommuneService
 {
     protected $communeRepository;
     protected $params;
@@ -37,23 +37,40 @@ class CommuneService
             return writeAndThrowError(config('params')['db_service']['error']['commune'], $e);
         }
     }
+    private function getAllDataFromDatabase()
+    {
+        $data = $this->communeRepository->applyJoins();
+        $data = $this->communeRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $count = $data->count();
+        $data = $this->communeRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->communeRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        return ['data' => $data, 'count' => $count];
+    }
+    private function getDataById($id)
+    {
+        $data = $this->communeRepository->applyJoins()
+            ->where('sda_commune.id', $id);
+        $data = $this->communeRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $data->first();
+        return $data;
+    }
     public function handleDataBaseGetAll()
     {
         try {
-            $cacheKey = $this->params->communeName .'_'. $this->params->param;
-            $cacheKeySet = "cache_keys:" . $this->params->communeName; // Set để lưu danh sách key
-            $data = Cache::remember($cacheKey, $this->params->time, function () {
-                $data = $this->communeRepository->applyJoins();
-                $data = $this->communeRepository->applyIsActiveFilter($data, $this->params->isActive);
-                $count = $data->count();
-                $data = $this->communeRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
-                $data = $this->communeRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
-                return ['data' => $data, 'count' => $count];
-            });
-            
-            // Lưu key vào Redis Set để dễ xóa sau này
-            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
-            return $data;
+            // Nếu không lưu cache
+            if ($this->params->noCache) {
+                return $this->getAllDataFromDatabase();
+            } else {
+                $cacheKey = $this->params->communeName . '_' . $this->params->param;
+                $cacheKeySet = "cache_keys:" . $this->params->communeName; // Set để lưu danh sách key
+                $data = Cache::remember($cacheKey, $this->params->time, function () {
+                    return $this->getAllDataFromDatabase();
+                });
+
+                // Lưu key vào Redis Set để dễ xóa sau này
+                Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+                return $data;
+            }
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['commune'], $e);
         }
@@ -61,18 +78,19 @@ class CommuneService
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $cacheKey = $this->params->communeName .'_'.$id.'_'. $this->params->param;
-            $cacheKeySet = "cache_keys:" . $this->params->communeName; // Set để lưu danh sách key
-            $data = Cache::remember($cacheKey, $this->params->time, function () use($id){
-                $data = $this->communeRepository->applyJoins()
-                    ->where('sda_commune.id', $id);
-                $data = $this->communeRepository->applyIsActiveFilter($data, $this->params->isActive);
-                $data = $data->first();
+            // Nếu không lưu cache
+            if ($this->params->noCache) {
+                return $this->getDataById($id);
+            } else {
+                $cacheKey = $this->params->communeName . '_' . $id . '_' . $this->params->param;
+                $cacheKeySet = "cache_keys:" . $this->params->communeName; // Set để lưu danh sách key
+                $data = Cache::remember($cacheKey, $this->params->time, function () use ($id) {
+                    return $this->getDataById($id);
+                });
+                // Lưu key vào Redis Set để dễ xóa sau này
+                Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
                 return $data;
-            });
-            // Lưu key vào Redis Set để dễ xóa sau này
-            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
-            return $data;
+            }
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['commune'], $e);
         }
@@ -82,7 +100,7 @@ class CommuneService
     {
         try {
             $data = $this->communeRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
-            
+
             // Gọi event để thêm index vào elastic
             event(new InsertCommuneIndex($data, $this->params->communeName));
             // Gọi event để xóa cache
@@ -104,7 +122,7 @@ class CommuneService
         }
         try {
             $data = $this->communeRepository->update($request, $data, $this->params->time, $this->params->appModifier);
-            
+
             // Gọi event để thêm index vào elastic
             event(new InsertCommuneIndex($data, $this->params->communeName));
             // Gọi event để xóa cache
@@ -126,7 +144,7 @@ class CommuneService
         }
         try {
             $data = $this->communeRepository->delete($data);
-            
+
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->communeName));
             // Gọi event để xóa cache

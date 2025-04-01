@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Cache;
 use App\Repositories\EthnicRepository;
 use Illuminate\Support\Facades\Redis;
 
-class EthnicService 
+class EthnicService
 {
     protected $ethnicRepository;
     protected $params;
@@ -37,22 +37,39 @@ class EthnicService
             return writeAndThrowError(config('params')['db_service']['error']['ethnic'], $e);
         }
     }
+    private function getAllDataFromDatabase()
+    {
+        $data = $this->ethnicRepository->applyJoins();
+        $data = $this->ethnicRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $count = $data->count();
+        $data = $this->ethnicRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->ethnicRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        return ['data' => $data, 'count' => $count];
+    }
+    private function getDataById($id)
+    {
+        $data = $this->ethnicRepository->applyJoins()
+            ->where('sda_ethnic.id', $id);
+        $data = $this->ethnicRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $data->first();
+        return $data;
+    }
     public function handleDataBaseGetAll()
     {
         try {
-            $cacheKey = $this->params->ethnicName .'_'. $this->params->param;
-            $cacheKeySet = "cache_keys:" . $this->params->ethnicName; // Set để lưu danh sách key
-            $data = Cache::remember($cacheKey, $this->params->time, function () {
-                $data = $this->ethnicRepository->applyJoins();
-                $data = $this->ethnicRepository->applyIsActiveFilter($data, $this->params->isActive);
-                $count = $data->count();
-                $data = $this->ethnicRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
-                $data = $this->ethnicRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
-                return ['data' => $data, 'count' => $count];
-            });
-            // Lưu key vào Redis Set để dễ xóa sau này
-            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
-            return $data;
+            // Nếu không lưu cache
+            if ($this->params->noCache) {
+                return $this->getAllDataFromDatabase();
+            } else {
+                $cacheKey = $this->params->ethnicName . '_' . $this->params->param;
+                $cacheKeySet = "cache_keys:" . $this->params->ethnicName; // Set để lưu danh sách key
+                $data = Cache::remember($cacheKey, $this->params->time, function () {
+                    return $this->getAllDataFromDatabase();
+                });
+                // Lưu key vào Redis Set để dễ xóa sau này
+                Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+                return $data;
+            }
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['ethnic'], $e);
         }
@@ -60,18 +77,19 @@ class EthnicService
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $cacheKey = $this->params->ethnicName .'_'.$id.'_'. $this->params->param;
-            $cacheKeySet = "cache_keys:" . $this->params->ethnicName; // Set để lưu danh sách key
-            $data = Cache::remember($cacheKey, $this->params->time, function () use($id){
-                $data = $this->ethnicRepository->applyJoins()
-                    ->where('sda_ethnic.id', $id);
-                $data = $this->ethnicRepository->applyIsActiveFilter($data, $this->params->isActive);
-                $data = $data->first();
+            // Nếu không lưu cache
+            if ($this->params->noCache) {
+                return $this->getDataById($id);
+            } else {
+                $cacheKey = $this->params->ethnicName . '_' . $id . '_' . $this->params->param;
+                $cacheKeySet = "cache_keys:" . $this->params->ethnicName; // Set để lưu danh sách key
+                $data = Cache::remember($cacheKey, $this->params->time, function () use ($id) {
+                    return $this->getDataById($id);
+                });
+                // Lưu key vào Redis Set để dễ xóa sau này
+                Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
                 return $data;
-            });
-            // Lưu key vào Redis Set để dễ xóa sau này
-            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
-            return $data;
+            }
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['ethnic'], $e);
         }
@@ -81,7 +99,7 @@ class EthnicService
     {
         try {
             $data = $this->ethnicRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
-            
+
             // Gọi event để thêm index vào elastic
             event(new InsertEthnicIndex($data, $this->params->ethnicName));
             // Gọi event để xóa cache
@@ -103,7 +121,7 @@ class EthnicService
         }
         try {
             $data = $this->ethnicRepository->update($request, $data, $this->params->time, $this->params->appModifier);
-            
+
             // Gọi event để thêm index vào elastic
             event(new InsertEthnicIndex($data, $this->params->ethnicName));
             // Gọi event để xóa cache
@@ -125,7 +143,7 @@ class EthnicService
         }
         try {
             $data = $this->ethnicRepository->delete($data);
-            
+
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->ethnicName));
             // Gọi event để xóa cache

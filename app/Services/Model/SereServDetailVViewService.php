@@ -38,17 +38,31 @@ class SereServDetailVViewService
             return writeAndThrowError(config('params')['db_service']['error']['sere_serv_detail_v_view'], $e);
         }
     }
+    private function getAllDataFromDatabase()
+    {
+        $data = $this->sereServDetailVViewRepository->applyJoins($this->params->serviceTypeCode);
+        $data = $this->sereServDetailVViewRepository->applyWithParam($data, $this->params->serviceTypeCode);
+        $data = $this->sereServDetailVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $this->sereServDetailVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+        $count = $data->count();
+        $data = $this->sereServDetailVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->sereServDetailVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        return ['data' => $data, 'count' => $count];
+    }
+    private function getDataById($id)
+    {
+        $data = $this->sereServDetailVViewRepository->applyJoins($this->params->serviceTypeCode)
+        ->where('id', $id);
+        $data = $this->sereServDetailVViewRepository->applyWithParam($data, $this->params->serviceTypeCode);
+    $data = $this->sereServDetailVViewRepository->applyIsActiveFilter($data, 1);
+    $data = $this->sereServDetailVViewRepository->applyIsDeleteFilter($data, 0);
+    $data = $data->first();
+    return $data;
+    }
     public function handleDataBaseGetAll()
     {
         try {
-            $data = $this->sereServDetailVViewRepository->applyJoins($this->params->serviceTypeCode);
-            $data = $this->sereServDetailVViewRepository->applyWithParam($data, $this->params->serviceTypeCode);
-            $data = $this->sereServDetailVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-            $data = $this->sereServDetailVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
-            $count = $data->count();
-            $data = $this->sereServDetailVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
-            $data = $this->sereServDetailVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
-            return ['data' => $data, 'count' => $count];
+            return $this->getAllDataFromDatabase();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['sere_serv_detail_v_view'], $e);
         }
@@ -56,13 +70,7 @@ class SereServDetailVViewService
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $data = $this->sereServDetailVViewRepository->applyJoins($this->params->serviceTypeCode)
-                ->where('id', $id);
-                $data = $this->sereServDetailVViewRepository->applyWithParam($data, $this->params->serviceTypeCode);
-            $data = $this->sereServDetailVViewRepository->applyIsActiveFilter($data, 1);
-            $data = $this->sereServDetailVViewRepository->applyIsDeleteFilter($data, 0);
-            $data = $data->first();
-            return $data;
+            return $this->getDataById($id);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['sere_serv_detail_v_view'], $e);
         }

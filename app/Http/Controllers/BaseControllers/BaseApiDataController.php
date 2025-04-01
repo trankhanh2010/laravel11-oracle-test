@@ -281,7 +281,7 @@ class BaseApiDataController extends Controller
     protected function check_param()
     {
         if ($this->has_errors()) {
-            return return_400($this->get_errors());
+            return return400($this->get_errors());
         }
         return null;
     }

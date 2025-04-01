@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Cache;
 use App\Repositories\MediStockRepository;
 use Illuminate\Support\Facades\Redis;
 
-class MediStockService 
+class MediStockService
 {
     protected $mediStockRepository;
     protected $params;
@@ -49,24 +49,43 @@ class MediStockService
             return writeAndThrowError(config('params')['db_service']['error']['medi_stock'], $e);
         }
     }
+    private function getAllDataFromDatabase()
+    {
+        $data = $this->mediStockRepository->applyJoins();
+        $data = $this->mediStockRepository->applyWith($data);
+        $data = $this->mediStockRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $count = $data->count();
+        $data = $this->mediStockRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->mediStockRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        $data = $this->applyResource($data);
+        return ['data' => $data, 'count' => $count];
+    }
+    private function getDataById($id)
+    {
+        $data = $this->mediStockRepository->applyJoins()
+            ->where('his_medi_stock.id', $id);
+        $data = $this->mediStockRepository->applyWith($data);
+        $data = $this->mediStockRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $data->first();
+        $data = $this->applyResource($data);
+        return $data;
+    }
     public function handleDataBaseGetAll()
     {
         try {
-            $cacheKey = $this->params->mediStockName .'_'. $this->params->param;
-            $cacheKeySet = "cache_keys:" . $this->params->mediStockName; // Set để lưu danh sách key
-            $data = Cache::remember($cacheKey, $this->params->time, function () {
-                $data = $this->mediStockRepository->applyJoins();
-                $data = $this->mediStockRepository->applyWith($data);
-                $data = $this->mediStockRepository->applyIsActiveFilter($data, $this->params->isActive);
-                $count = $data->count();
-                $data = $this->mediStockRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
-                $data = $this->mediStockRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
-                $data = $this->applyResource($data);
-                return ['data' => $data, 'count' => $count];
-            });
-            // Lưu key vào Redis Set để dễ xóa sau này
-            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
-            return $data;
+            // Nếu không lưu cache
+            if ($this->params->noCache) {
+                return $this->getAllDataFromDatabase();
+            } else {
+                $cacheKey = $this->params->mediStockName . '_' . $this->params->param;
+                $cacheKeySet = "cache_keys:" . $this->params->mediStockName; // Set để lưu danh sách key
+                $data = Cache::remember($cacheKey, $this->params->time, function () {
+                    return $this->getAllDataFromDatabase();
+                });
+                // Lưu key vào Redis Set để dễ xóa sau này
+                Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+                return $data;
+            }
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['medi_stock'], $e);
         }
@@ -74,20 +93,19 @@ class MediStockService
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $cacheKey = $this->params->mediStockName .'_'.$id.'_'. $this->params->param;
-            $cacheKeySet = "cache_keys:" . $this->params->mediStockName; // Set để lưu danh sách key
-            $data = Cache::remember($cacheKey, $this->params->time, function () use($id){
-                $data = $this->mediStockRepository->applyJoins()
-                    ->where('his_medi_stock.id', $id);
-                $data = $this->mediStockRepository->applyWith($data);
-                $data = $this->mediStockRepository->applyIsActiveFilter($data, $this->params->isActive);
-                $data = $data->first();
-                $data = $this->applyResource($data);
+            // Nếu không lưu cache
+            if ($this->params->noCache) {
+                return $this->getDataById($id);
+            } else {
+                $cacheKey = $this->params->mediStockName . '_' . $id . '_' . $this->params->param;
+                $cacheKeySet = "cache_keys:" . $this->params->mediStockName; // Set để lưu danh sách key
+                $data = Cache::remember($cacheKey, $this->params->time, function () use ($id) {
+                    return $this->getDataById($id);
+                });
+                // Lưu key vào Redis Set để dễ xóa sau này
+                Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
                 return $data;
-            });
-            // Lưu key vào Redis Set để dễ xóa sau này
-            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
-            return $data;
+            }
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['medi_stock'], $e);
         }
@@ -97,7 +115,7 @@ class MediStockService
     {
         try {
             $data = $this->mediStockRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
-            
+
             // Gọi event để thêm index vào elastic
             event(new InsertMediStockIndex($data, $this->params->mediStockName));
             // Gọi event để xóa cache
@@ -119,7 +137,7 @@ class MediStockService
         }
         try {
             $data = $this->mediStockRepository->update($request, $data, $this->params->time, $this->params->appModifier);
-            
+
             // Gọi event để thêm index vào elastic
             event(new InsertMediStockIndex($data, $this->params->mediStockName));
             // Gọi event để xóa cache
@@ -141,7 +159,7 @@ class MediStockService
         }
         try {
             $data = $this->mediStockRepository->delete($data);
-            
+
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->mediStockName));
             // Gọi event để xóa cache

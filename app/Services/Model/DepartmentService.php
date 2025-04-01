@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Cache;
 use App\Repositories\DepartmentRepository;
 use Illuminate\Support\Facades\Redis;
 
-class DepartmentService 
+class DepartmentService
 {
     protected $departmentRepository;
     protected $params;
@@ -67,22 +67,39 @@ class DepartmentService
             return writeAndThrowError(config('params')['db_service']['error']['department'], $e);
         }
     }
+    private function getAllDataFromDatabase()
+    {
+        $data = $this->departmentRepository->applyJoins();
+        $data = $this->departmentRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $count = $data->count();
+        $data = $this->departmentRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->departmentRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        return ['data' => $data, 'count' => $count];
+    }
+    private function getDataById($id)
+    {
+        $data = $this->departmentRepository->applyJoins()
+            ->where('his_department.id', $id);
+        $data = $this->departmentRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $data->first();
+        return $data;
+    }
     public function handleDataBaseGetAll()
     {
         try {
-            $cacheKey = $this->params->departmentName .'_'. $this->params->param;
-            $cacheKeySet = "cache_keys:" . $this->params->departmentName; // Set để lưu danh sách key
-            $data = Cache::remember($cacheKey, $this->params->time, function () {
-                $data = $this->departmentRepository->applyJoins();
-                $data = $this->departmentRepository->applyIsActiveFilter($data, $this->params->isActive);
-                $count = $data->count();
-                $data = $this->departmentRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
-                $data = $this->departmentRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
-                return ['data' => $data, 'count' => $count];
-            });
-            // Lưu key vào Redis Set để dễ xóa sau này
-            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
-            return $data;
+            // Nếu không lưu cache
+            if ($this->params->noCache) {
+                return $this->getAllDataFromDatabase();
+            } else {
+                $cacheKey = $this->params->departmentName . '_' . $this->params->param;
+                $cacheKeySet = "cache_keys:" . $this->params->departmentName; // Set để lưu danh sách key
+                $data = Cache::remember($cacheKey, $this->params->time, function () {
+                    return $this->getAllDataFromDatabase();
+                });
+                // Lưu key vào Redis Set để dễ xóa sau này
+                Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+                return $data;
+            }
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['department'], $e);
         }
@@ -90,18 +107,19 @@ class DepartmentService
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $cacheKey = $this->params->departmentName .'_'.$id.'_'. $this->params->param;
-            $cacheKeySet = "cache_keys:" . $this->params->departmentName; // Set để lưu danh sách key
-            $data = Cache::remember($cacheKey, $this->params->time, function () use($id){
-                $data = $this->departmentRepository->applyJoins()
-                    ->where('his_department.id', $id);
-                $data = $this->departmentRepository->applyIsActiveFilter($data, $this->params->isActive);
-                $data = $data->first();
+            // Nếu không lưu cache
+            if ($this->params->noCache) {
+                return $this->getDataById($id);
+            } else {
+                $cacheKey = $this->params->departmentName . '_' . $id . '_' . $this->params->param;
+                $cacheKeySet = "cache_keys:" . $this->params->departmentName; // Set để lưu danh sách key
+                $data = Cache::remember($cacheKey, $this->params->time, function () use ($id) {
+                    return $this->getDataById($id);
+                });
+                // Lưu key vào Redis Set để dễ xóa sau này
+                Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
                 return $data;
-            });
-            // Lưu key vào Redis Set để dễ xóa sau này
-            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
-            return $data;
+            }
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['department'], $e);
         }
@@ -111,7 +129,7 @@ class DepartmentService
     {
         try {
             $data = $this->departmentRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
-            
+
             // Gọi event để thêm index vào elastic
             event(new InsertDepartmentIndex($data, $this->params->departmentName));
             // Gọi event để xóa cache
@@ -133,7 +151,7 @@ class DepartmentService
         }
         try {
             $data = $this->departmentRepository->update($request, $data, $this->params->time, $this->params->appModifier);
-            
+
             // Gọi event để thêm index vào elastic
             event(new InsertDepartmentIndex($data, $this->params->departmentName));
             // Gọi event để xóa cache
@@ -155,7 +173,7 @@ class DepartmentService
         }
         try {
             $data = $this->departmentRepository->delete($data);
-            
+
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->departmentName));
             // Gọi event để xóa cache

@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Cache;
 use App\Repositories\ServiceUnitRepository;
 use Illuminate\Support\Facades\Redis;
 
-class ServiceUnitService 
+class ServiceUnitService
 {
     protected $serviceUnitRepository;
     protected $params;
@@ -37,22 +37,39 @@ class ServiceUnitService
             return writeAndThrowError(config('params')['db_service']['error']['service_unit'], $e);
         }
     }
+    private function getAllDataFromDatabase()
+    {
+        $data = $this->serviceUnitRepository->applyJoins();
+        $data = $this->serviceUnitRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $count = $data->count();
+        $data = $this->serviceUnitRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->serviceUnitRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        return ['data' => $data, 'count' => $count];
+    }
+    private function getDataById($id)
+    {
+        $data = $this->serviceUnitRepository->applyJoins()
+            ->where('his_service_unit.id', $id);
+        $data = $this->serviceUnitRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $data->first();
+        return $data;
+    }
     public function handleDataBaseGetAll()
     {
         try {
-            $cacheKey = $this->params->serviceUnitName .'_'. $this->params->param;
-            $cacheKeySet = "cache_keys:" . $this->params->serviceUnitName; // Set để lưu danh sách key
-            $data = Cache::remember($cacheKey, $this->params->time, function () {
-                $data = $this->serviceUnitRepository->applyJoins();
-                $data = $this->serviceUnitRepository->applyIsActiveFilter($data, $this->params->isActive);
-                $count = $data->count();
-                $data = $this->serviceUnitRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
-                $data = $this->serviceUnitRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
-                return ['data' => $data, 'count' => $count];
-            });
-            // Lưu key vào Redis Set để dễ xóa sau này
-            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
-            return $data;
+            // Nếu không lưu cache
+            if ($this->params->noCache) {
+                return $this->getAllDataFromDatabase();
+            } else {
+                $cacheKey = $this->params->serviceUnitName . '_' . $this->params->param;
+                $cacheKeySet = "cache_keys:" . $this->params->serviceUnitName; // Set để lưu danh sách key
+                $data = Cache::remember($cacheKey, $this->params->time, function () {
+                    return $this->getAllDataFromDatabase();
+                });
+                // Lưu key vào Redis Set để dễ xóa sau này
+                Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+                return $data;
+            }
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['service_unit'], $e);
         }
@@ -60,18 +77,19 @@ class ServiceUnitService
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $cacheKey = $this->params->serviceUnitName .'_'.$id.'_'. $this->params->param;
-            $cacheKeySet = "cache_keys:" . $this->params->serviceUnitName; // Set để lưu danh sách key
-            $data = Cache::remember($cacheKey, $this->params->time, function () use($id){
-                $data = $this->serviceUnitRepository->applyJoins()
-                    ->where('his_service_unit.id', $id);
-                $data = $this->serviceUnitRepository->applyIsActiveFilter($data, $this->params->isActive);
-                $data = $data->first();
+            // Nếu không lưu cache
+            if ($this->params->noCache) {
+                return $this->getDataById($id);
+            } else {
+                $cacheKey = $this->params->serviceUnitName . '_' . $id . '_' . $this->params->param;
+                $cacheKeySet = "cache_keys:" . $this->params->serviceUnitName; // Set để lưu danh sách key
+                $data = Cache::remember($cacheKey, $this->params->time, function () use ($id) {
+                    return $this->getDataById($id);
+                });
+                // Lưu key vào Redis Set để dễ xóa sau này
+                Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
                 return $data;
-            });
-            // Lưu key vào Redis Set để dễ xóa sau này
-            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
-            return $data;
+            }
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['service_unit'], $e);
         }
@@ -81,7 +99,7 @@ class ServiceUnitService
     {
         try {
             $data = $this->serviceUnitRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
-            
+
             // Gọi event để thêm index vào elastic
             event(new InsertServiceUnitIndex($data, $this->params->serviceUnitName));
             // Gọi event để xóa cache
@@ -103,7 +121,7 @@ class ServiceUnitService
         }
         try {
             $data = $this->serviceUnitRepository->update($request, $data, $this->params->time, $this->params->appModifier);
-            
+
             // Gọi event để thêm index vào elastic
             event(new InsertServiceUnitIndex($data, $this->params->serviceUnitName));
             // Gọi event để xóa cache
@@ -125,7 +143,7 @@ class ServiceUnitService
         }
         try {
             $data = $this->serviceUnitRepository->delete($data);
-            
+
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->serviceUnitName));
             // Gọi event để xóa cache

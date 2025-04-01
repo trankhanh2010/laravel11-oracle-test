@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Cache;
 use App\Repositories\HeinServiceTypeRepository;
 use Illuminate\Support\Facades\Redis;
 
-class HeinServiceTypeService 
+class HeinServiceTypeService
 {
     protected $heinServiceTypeRepository;
     protected $params;
@@ -37,22 +37,39 @@ class HeinServiceTypeService
             return writeAndThrowError(config('params')['db_service']['error']['hein_service_type'], $e);
         }
     }
+    private function getAllDataFromDatabase()
+    {
+        $data = $this->heinServiceTypeRepository->applyJoins();
+        $data = $this->heinServiceTypeRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $count = $data->count();
+        $data = $this->heinServiceTypeRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->heinServiceTypeRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        return ['data' => $data, 'count' => $count];
+    }
+    private function getDataById($id)
+    {
+        $data = $this->heinServiceTypeRepository->applyJoins()
+            ->where('his_hein_service_type.id', $id);
+        $data = $this->heinServiceTypeRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $data->first();
+        return $data;
+    }
     public function handleDataBaseGetAll()
     {
         try {
-            $cacheKey = $this->params->heinServiceTypeName .'_'. $this->params->param;
-            $cacheKeySet = "cache_keys:" . $this->params->heinServiceTypeName; // Set để lưu danh sách key
-            $data = Cache::remember($cacheKey, $this->params->time, function () {
-                $data = $this->heinServiceTypeRepository->applyJoins();
-                $data = $this->heinServiceTypeRepository->applyIsActiveFilter($data, $this->params->isActive);
-                $count = $data->count();
-                $data = $this->heinServiceTypeRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
-                $data = $this->heinServiceTypeRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
-                return ['data' => $data, 'count' => $count];
-            });
-            // Lưu key vào Redis Set để dễ xóa sau này
-            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
-            return $data;
+            // Nếu không lưu cache
+            if ($this->params->noCache) {
+                return $this->getAllDataFromDatabase();
+            } else {
+                $cacheKey = $this->params->heinServiceTypeName . '_' . $this->params->param;
+                $cacheKeySet = "cache_keys:" . $this->params->heinServiceTypeName; // Set để lưu danh sách key
+                $data = Cache::remember($cacheKey, $this->params->time, function () {
+                    return $this->getAllDataFromDatabase();
+                });
+                // Lưu key vào Redis Set để dễ xóa sau này
+                Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+                return $data;
+            }
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['hein_service_type'], $e);
         }
@@ -60,18 +77,19 @@ class HeinServiceTypeService
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $cacheKey = $this->params->heinServiceTypeName .'_'.$id.'_'. $this->params->param;
-            $cacheKeySet = "cache_keys:" . $this->params->heinServiceTypeName; // Set để lưu danh sách key
-            $data = Cache::remember($cacheKey, $this->params->time, function () use($id){
-                $data = $this->heinServiceTypeRepository->applyJoins()
-                    ->where('his_hein_service_type.id', $id);
-                $data = $this->heinServiceTypeRepository->applyIsActiveFilter($data, $this->params->isActive);
-                $data = $data->first();
+            // Nếu không lưu cache
+            if ($this->params->noCache) {
+                return $this->getDataById($id);
+            } else {
+                $cacheKey = $this->params->heinServiceTypeName . '_' . $id . '_' . $this->params->param;
+                $cacheKeySet = "cache_keys:" . $this->params->heinServiceTypeName; // Set để lưu danh sách key
+                $data = Cache::remember($cacheKey, $this->params->time, function () use ($id) {
+                    return $this->getDataById($id);
+                });
+                // Lưu key vào Redis Set để dễ xóa sau này
+                Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
                 return $data;
-            });
-            // Lưu key vào Redis Set để dễ xóa sau này
-            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
-            return $data;
+            }
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['hein_service_type'], $e);
         }
@@ -87,7 +105,7 @@ class HeinServiceTypeService
         }
         try {
             $data = $this->heinServiceTypeRepository->delete($data);
-            
+
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->heinServiceTypeName));
             // Gọi event để xóa cache

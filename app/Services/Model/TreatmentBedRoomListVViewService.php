@@ -55,34 +55,47 @@ class TreatmentBedRoomListVViewService
             return writeAndThrowError(config('params')['db_service']['error']['treatment_bed_room_list_v_view'], $e);
         }
     }
+    private function getAllDataFromDatabase()
+    {
+        $data = $this->treatmentBedRoomListVViewRepository->applyJoins();
+        $data = $this->treatmentBedRoomListVViewRepository->applyIsActiveFilter($data, 1);
+        $data = $this->treatmentBedRoomListVViewRepository->applyIsDeleteFilter($data, 0);
+        $data = $this->treatmentBedRoomListVViewRepository->applyTreatmentCodeFilter($data, $this->params->treatmentCode);
+        $data = $this->treatmentBedRoomListVViewRepository->applyPatientCodeFilter($data, $this->params->patientCode);
+        $data = $this->treatmentBedRoomListVViewRepository->applyBedRoomIdsFilter($data, $this->params->bedRoomIds);
+
+        if ($this->params->treatmentCode == null && $this->params->patientCode == null) {
+            $data = $this->treatmentBedRoomListVViewRepository->applyDepartmentCodeFilter($data, $this->params->departmentCode);
+            $data = $this->treatmentBedRoomListVViewRepository->applyIsInBedFilter($data, $this->params->isInBed);
+            $data = $this->treatmentBedRoomListVViewRepository->applyTreatmentTypeIdsFilter($data, $this->params->treatmentTypeIds);
+            $data = $this->treatmentBedRoomListVViewRepository->applyIsCoTreatDepartmentFilter($data, $this->params->isCoTreatDepartment);
+            $data = $this->treatmentBedRoomListVViewRepository->applyPatientClassifyIdsFilter($data, $this->params->patientClassifyIds);
+            $data = $this->treatmentBedRoomListVViewRepository->applyIsOutFilter($data, $this->params->isOut);
+            $data = $this->treatmentBedRoomListVViewRepository->applyAddLoginnameFilter($data, $this->params->addLoginname);
+            $data = $this->treatmentBedRoomListVViewRepository->applyAddTimeFromFilter($data, $this->params->addTimeFrom);
+            $data = $this->treatmentBedRoomListVViewRepository->applyAddTimeToFilter($data, $this->params->addTimeTo);
+        }
+        $count = $data->count();
+
+        $data = $this->treatmentBedRoomListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->treatmentBedRoomListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        // Group theo field
+        $data = $this->treatmentBedRoomListVViewRepository->applyGroupByField($data, $this->params->groupBy);
+        return ['data' => $data, 'count' => $count];
+    }
+    private function getDataById($id)
+    {
+        $data = $this->treatmentBedRoomListVViewRepository->applyJoins()
+        ->where('id', $id);
+    $data = $this->treatmentBedRoomListVViewRepository->applyIsActiveFilter($data, 1);
+    $data = $this->treatmentBedRoomListVViewRepository->applyIsDeleteFilter($data, 0);
+    $data = $data->first();
+    return $data;
+    }
     public function handleDataBaseGetAll()
     {
         try {
-            $data = $this->treatmentBedRoomListVViewRepository->applyJoins();
-            $data = $this->treatmentBedRoomListVViewRepository->applyIsActiveFilter($data, 1);
-            $data = $this->treatmentBedRoomListVViewRepository->applyIsDeleteFilter($data, 0);
-            $data = $this->treatmentBedRoomListVViewRepository->applyTreatmentCodeFilter($data, $this->params->treatmentCode);
-            $data = $this->treatmentBedRoomListVViewRepository->applyPatientCodeFilter($data, $this->params->patientCode);
-            $data = $this->treatmentBedRoomListVViewRepository->applyBedRoomIdsFilter($data, $this->params->bedRoomIds);
-
-            if ($this->params->treatmentCode == null && $this->params->patientCode == null) {
-                $data = $this->treatmentBedRoomListVViewRepository->applyDepartmentCodeFilter($data, $this->params->departmentCode);
-                $data = $this->treatmentBedRoomListVViewRepository->applyIsInBedFilter($data, $this->params->isInBed);
-                $data = $this->treatmentBedRoomListVViewRepository->applyTreatmentTypeIdsFilter($data, $this->params->treatmentTypeIds);
-                $data = $this->treatmentBedRoomListVViewRepository->applyIsCoTreatDepartmentFilter($data, $this->params->isCoTreatDepartment);
-                $data = $this->treatmentBedRoomListVViewRepository->applyPatientClassifyIdsFilter($data, $this->params->patientClassifyIds);
-                $data = $this->treatmentBedRoomListVViewRepository->applyIsOutFilter($data, $this->params->isOut);
-                $data = $this->treatmentBedRoomListVViewRepository->applyAddLoginnameFilter($data, $this->params->addLoginname);
-                $data = $this->treatmentBedRoomListVViewRepository->applyAddTimeFromFilter($data, $this->params->addTimeFrom);
-                $data = $this->treatmentBedRoomListVViewRepository->applyAddTimeToFilter($data, $this->params->addTimeTo);
-            }
-            $count = $data->count();
-
-            $data = $this->treatmentBedRoomListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
-            $data = $this->treatmentBedRoomListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
-            // Group theo field
-            $data = $this->treatmentBedRoomListVViewRepository->applyGroupByField($data, $this->params->groupBy);
-            return ['data' => $data, 'count' => $count];
+            return $this->getAllDataFromDatabase();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['treatment_bed_room_list_v_view'], $e);
         }
@@ -90,12 +103,7 @@ class TreatmentBedRoomListVViewService
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $data = $this->treatmentBedRoomListVViewRepository->applyJoins()
-                ->where('id', $id);
-            $data = $this->treatmentBedRoomListVViewRepository->applyIsActiveFilter($data, 1);
-            $data = $this->treatmentBedRoomListVViewRepository->applyIsDeleteFilter($data, 0);
-            $data = $data->first();
-            return $data;
+            return $this->getDataById($id);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['treatment_bed_room_list_v_view'], $e);
         }

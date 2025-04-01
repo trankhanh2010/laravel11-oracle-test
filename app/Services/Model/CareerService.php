@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Cache;
 use App\Repositories\CareerRepository;
 use Illuminate\Support\Facades\Redis;
 
-class CareerService 
+class CareerService
 {
     protected $careerRepository;
     protected $params;
@@ -37,23 +37,40 @@ class CareerService
             return writeAndThrowError(config('params')['db_service']['error']['career'], $e);
         }
     }
+    private function getAllDataFromDatabase()
+    {
+        $data = $this->careerRepository->applyJoins();
+        $data = $this->careerRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $count = $data->count();
+        $data = $this->careerRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->careerRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        return ['data' => $data, 'count' => $count];
+    }
+    private function getDataById($id)
+    {
+        $data = $this->careerRepository->applyJoins()
+            ->where('his_career.id', $id);
+        $data = $this->careerRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $data->first();
+        return $data;
+    }
     public function handleDataBaseGetAll()
     {
         try {
-            $cacheKey = $this->params->careerName .'_'. $this->params->param;
-            $cacheKeySet = "cache_keys:" . $this->params->careerName; // Set để lưu danh sách key
-            $data = Cache::remember($cacheKey, $this->params->time, function () {
-                $data = $this->careerRepository->applyJoins();
-                $data = $this->careerRepository->applyIsActiveFilter($data, $this->params->isActive);
-                $count = $data->count();
-                $data = $this->careerRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
-                $data = $this->careerRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
-                return ['data' => $data, 'count' => $count];
-            });
-            
-            // Lưu key vào Redis Set để dễ xóa sau này
-            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
-            return $data;
+            // Nếu không lưu cache
+            if ($this->params->noCache) {
+                return $this->getAllDataFromDatabase();
+            } else {
+                $cacheKey = $this->params->careerName . '_' . $this->params->param;
+                $cacheKeySet = "cache_keys:" . $this->params->careerName; // Set để lưu danh sách key
+                $data = Cache::remember($cacheKey, $this->params->time, function () {
+                    return $this->getAllDataFromDatabase();
+                });
+
+                // Lưu key vào Redis Set để dễ xóa sau này
+                Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+                return $data;
+            }
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['career'], $e);
         }
@@ -61,18 +78,19 @@ class CareerService
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $cacheKey = $this->params->careerName .'_'.$id.'_'. $this->params->param;
-            $cacheKeySet = "cache_keys:" . $this->params->careerName; // Set để lưu danh sách key
-            $data = Cache::remember($cacheKey, $this->params->time, function () use($id){
-                $data = $this->careerRepository->applyJoins()
-                    ->where('his_career.id', $id);
-                $data = $this->careerRepository->applyIsActiveFilter($data, $this->params->isActive);
-                $data = $data->first();
+            // Nếu không lưu cache
+            if ($this->params->noCache) {
+                return $this->getDataById($id);
+            } else {
+                $cacheKey = $this->params->careerName . '_' . $id . '_' . $this->params->param;
+                $cacheKeySet = "cache_keys:" . $this->params->careerName; // Set để lưu danh sách key
+                $data = Cache::remember($cacheKey, $this->params->time, function () use ($id) {
+                    return $this->getDataById($id);
+                });
+                // Lưu key vào Redis Set để dễ xóa sau này
+                Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
                 return $data;
-            });
-            // Lưu key vào Redis Set để dễ xóa sau này
-            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
-            return $data;
+            }
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['career'], $e);
         }
@@ -82,7 +100,7 @@ class CareerService
     {
         try {
             $data = $this->careerRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
-            
+
             // Gọi event để thêm index vào elastic
             event(new InsertCareerIndex($data, $this->params->careerName));
             // Gọi event để xóa cache
@@ -104,7 +122,7 @@ class CareerService
         }
         try {
             $data = $this->careerRepository->update($request, $data, $this->params->time, $this->params->appModifier);
-            
+
             // Gọi event để thêm index vào elastic
             event(new InsertCareerIndex($data, $this->params->careerName));
             // Gọi event để xóa cache
@@ -126,7 +144,7 @@ class CareerService
         }
         try {
             $data = $this->careerRepository->delete($data);
-            
+
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->careerName));
             // Gọi event để xóa cache

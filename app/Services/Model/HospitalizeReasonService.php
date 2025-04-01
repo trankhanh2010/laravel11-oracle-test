@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Cache;
 use App\Repositories\HospitalizeReasonRepository;
 use Illuminate\Support\Facades\Redis;
 
-class HospitalizeReasonService 
+class HospitalizeReasonService
 {
     protected $hospitalizeReasonRepository;
     protected $params;
@@ -37,22 +37,39 @@ class HospitalizeReasonService
             return writeAndThrowError(config('params')['db_service']['error']['hospitalize_reason'], $e);
         }
     }
+    private function getAllDataFromDatabase()
+    {
+        $data = $this->hospitalizeReasonRepository->applyJoins();
+        $data = $this->hospitalizeReasonRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $count = $data->count();
+        $data = $this->hospitalizeReasonRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->hospitalizeReasonRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        return ['data' => $data, 'count' => $count];
+    }
+    private function getDataById($id)
+    {
+        $data = $this->hospitalizeReasonRepository->applyJoins()
+            ->where('his_hospitalize_reason.id', $id);
+        $data = $this->hospitalizeReasonRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $data->first();
+        return $data;
+    }
     public function handleDataBaseGetAll()
     {
         try {
-            $cacheKey = $this->params->hospitalizeReasonName .'_'. $this->params->param;
-            $cacheKeySet = "cache_keys:" . $this->params->hospitalizeReasonName; // Set để lưu danh sách key
-            $data = Cache::remember($cacheKey, $this->params->time, function () {
-                $data = $this->hospitalizeReasonRepository->applyJoins();
-                $data = $this->hospitalizeReasonRepository->applyIsActiveFilter($data, $this->params->isActive);
-                $count = $data->count();
-                $data = $this->hospitalizeReasonRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
-                $data = $this->hospitalizeReasonRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
-                return ['data' => $data, 'count' => $count];
-            });
-            // Lưu key vào Redis Set để dễ xóa sau này
-            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
-            return $data;
+            // Nếu không lưu cache
+            if ($this->params->noCache) {
+                return $this->getAllDataFromDatabase();
+            } else {
+                $cacheKey = $this->params->hospitalizeReasonName . '_' . $this->params->param;
+                $cacheKeySet = "cache_keys:" . $this->params->hospitalizeReasonName; // Set để lưu danh sách key
+                $data = Cache::remember($cacheKey, $this->params->time, function () {
+                    return $this->getAllDataFromDatabase();
+                });
+                // Lưu key vào Redis Set để dễ xóa sau này
+                Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+                return $data;
+            }
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['hospitalize_reason'], $e);
         }
@@ -60,18 +77,19 @@ class HospitalizeReasonService
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $cacheKey = $this->params->hospitalizeReasonName .'_'.$id.'_'. $this->params->param;
-            $cacheKeySet = "cache_keys:" . $this->params->hospitalizeReasonName; // Set để lưu danh sách key
-            $data = Cache::remember($cacheKey, $this->params->time, function () use($id){
-                $data = $this->hospitalizeReasonRepository->applyJoins()
-                    ->where('his_hospitalize_reason.id', $id);
-                $data = $this->hospitalizeReasonRepository->applyIsActiveFilter($data, $this->params->isActive);
-                $data = $data->first();
+            // Nếu không lưu cache
+            if ($this->params->noCache) {
+                return $this->getDataById($id);
+            } else {
+                $cacheKey = $this->params->hospitalizeReasonName . '_' . $id . '_' . $this->params->param;
+                $cacheKeySet = "cache_keys:" . $this->params->hospitalizeReasonName; // Set để lưu danh sách key
+                $data = Cache::remember($cacheKey, $this->params->time, function () use ($id) {
+                    return $this->getDataById($id);
+                });
+                // Lưu key vào Redis Set để dễ xóa sau này
+                Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
                 return $data;
-            });
-            // Lưu key vào Redis Set để dễ xóa sau này
-            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
-            return $data;
+            }
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['hospitalize_reason'], $e);
         }
@@ -81,7 +99,7 @@ class HospitalizeReasonService
     {
         try {
             $data = $this->hospitalizeReasonRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
-            
+
             // Gọi event để thêm index vào elastic
             event(new InsertHospitalizeReasonIndex($data, $this->params->hospitalizeReasonName));
             // Gọi event để xóa cache
@@ -103,7 +121,7 @@ class HospitalizeReasonService
         }
         try {
             $data = $this->hospitalizeReasonRepository->update($request, $data, $this->params->time, $this->params->appModifier);
-            
+
             // Gọi event để thêm index vào elastic
             event(new InsertHospitalizeReasonIndex($data, $this->params->hospitalizeReasonName));
             // Gọi event để xóa cache
@@ -125,7 +143,7 @@ class HospitalizeReasonService
         }
         try {
             $data = $this->hospitalizeReasonRepository->delete($data);
-            
+
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->hospitalizeReasonName));
             // Gọi event để xóa cache

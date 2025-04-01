@@ -56,7 +56,8 @@ class CheckTokenController extends Controller
         return response()->json(['success' => false, 'message' => 'Đăng xuất thất bại! Người dùng k tồn tại!'], 200);
     }
     public function deleteTokenDB($bearerToken){
-        $deleteToken = Token::where('token_code', $bearerToken)->delete();
+        $deleteToken = true;
+        // $deleteToken = Token::where('token_code', $bearerToken)->delete();
         if($deleteToken){
             return response()->json(['success' => true, 'message' => 'Đăng xuất thành công!'], 200);
         }else{

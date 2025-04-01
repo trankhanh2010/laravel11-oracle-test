@@ -38,17 +38,30 @@ class SereServTeinVViewService
             return writeAndThrowError(config('params')['db_service']['error']['sere_serv_tein_v_view'], $e);
         }
     }
+    private function getAllDataFromDatabase()
+    {
+        $data = $this->sereServTeinVViewRepository->applyJoins();
+        $data = $this->sereServTeinVViewRepository->applyIsActiveFilter($data, 1);
+        $data = $this->sereServTeinVViewRepository->applyIsDeleteFilter($data, 0);
+        $data = $this->sereServTeinVViewRepository->applySereServIdsFilter($data, $this->params->sereServIds);
+        $count = $data->count();
+        $data = $this->sereServTeinVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->sereServTeinVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        return ['data' => $data, 'count' => $count];
+    }
+    private function getDataById($id)
+    {
+        $data = $this->sereServTeinVViewRepository->applyJoins()
+        ->where('v_his_sere_serv_tein.id', $id);
+    $data = $this->sereServTeinVViewRepository->applyIsActiveFilter($data, 1);
+    $data = $this->sereServTeinVViewRepository->applyIsDeleteFilter($data, 0);
+    $data = $data->first();
+    return $data;
+    }
     public function handleDataBaseGetAll()
     {
         try {
-            $data = $this->sereServTeinVViewRepository->applyJoins();
-            $data = $this->sereServTeinVViewRepository->applyIsActiveFilter($data, 1);
-            $data = $this->sereServTeinVViewRepository->applyIsDeleteFilter($data, 0);
-            $data = $this->sereServTeinVViewRepository->applySereServIdsFilter($data, $this->params->sereServIds);
-            $count = $data->count();
-            $data = $this->sereServTeinVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
-            $data = $this->sereServTeinVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
-            return ['data' => $data, 'count' => $count];
+            return $this->getAllDataFromDatabase();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['sere_serv_tein_v_view'], $e);
         }
@@ -56,12 +69,7 @@ class SereServTeinVViewService
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $data = $this->sereServTeinVViewRepository->applyJoins()
-                ->where('v_his_sere_serv_tein.id', $id);
-            $data = $this->sereServTeinVViewRepository->applyIsActiveFilter($data, 1);
-            $data = $this->sereServTeinVViewRepository->applyIsDeleteFilter($data, 0);
-            $data = $data->first();
-            return $data;
+            return $this->getDataById($id);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['sere_serv_tein_v_view'], $e);
         }

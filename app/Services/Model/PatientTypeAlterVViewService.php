@@ -39,18 +39,31 @@ class PatientTypeAlterVViewService
             return writeAndThrowError(config('params')['db_service']['error']['patient_type_alter_v_view'], $e);
         }
     }
+    private function getAllDataFromDatabase()
+    {
+        $data = $this->patientTypeAlterVViewRepository->view();
+        $data = $this->patientTypeAlterVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $this->patientTypeAlterVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+        $data = $this->patientTypeAlterVViewRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
+        $data = $this->patientTypeAlterVViewRepository->applyLogTimeToFilter($data, $this->params->logTimeTo);
+        $count = $data->count();
+        $data = $this->patientTypeAlterVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->patientTypeAlterVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        return ['data' => $data, 'count' => $count];
+    }
+    private function getDataById($id)
+    {
+        $data = $this->patientTypeAlterVViewRepository->view()
+        ->where('v_his_patient_type_alter.id', $id);
+    $data = $this->patientTypeAlterVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
+    $data = $this->patientTypeAlterVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+    $data = $data->first();
+    return $data;
+    }
     public function handleDataBaseGetAll()
     {
         try {
-            $data = $this->patientTypeAlterVViewRepository->view();
-            $data = $this->patientTypeAlterVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-            $data = $this->patientTypeAlterVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
-            $data = $this->patientTypeAlterVViewRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
-            $data = $this->patientTypeAlterVViewRepository->applyLogTimeToFilter($data, $this->params->logTimeTo);
-            $count = $data->count();
-            $data = $this->patientTypeAlterVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
-            $data = $this->patientTypeAlterVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
-            return ['data' => $data, 'count' => $count];
+            return $this->getAllDataFromDatabase();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['patient_type_alter_v_view'], $e);
         }
@@ -58,12 +71,7 @@ class PatientTypeAlterVViewService
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $data = $this->patientTypeAlterVViewRepository->view()
-                ->where('v_his_patient_type_alter.id', $id);
-            $data = $this->patientTypeAlterVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-            $data = $this->patientTypeAlterVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
-            $data = $data->first();
-            return $data;
+            return $this->getDataById($id);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['patient_type_alter_v_view'], $e);
         }

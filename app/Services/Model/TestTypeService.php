@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Cache;
 use App\Repositories\TestTypeRepository;
 use Illuminate\Support\Facades\Redis;
 
-class TestTypeService 
+class TestTypeService
 {
     protected $testTypeRepository;
     protected $params;
@@ -37,22 +37,39 @@ class TestTypeService
             return writeAndThrowError(config('params')['db_service']['error']['test_type'], $e);
         }
     }
+    private function getAllDataFromDatabase()
+    {
+        $data = $this->testTypeRepository->applyJoins();
+        $data = $this->testTypeRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $count = $data->count();
+        $data = $this->testTypeRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->testTypeRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        return ['data' => $data, 'count' => $count];
+    }
+    private function getDataById($id)
+    {
+        $data = $this->testTypeRepository->applyJoins()
+            ->where('his_test_type.id', $id);
+        $data = $this->testTypeRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $data->first();
+        return $data;
+    }
     public function handleDataBaseGetAll()
     {
         try {
-            $cacheKey = $this->params->testTypeName .'_'. $this->params->param;
-            $cacheKeySet = "cache_keys:" . $this->params->testTypeName; // Set để lưu danh sách key
-            $data = Cache::remember($cacheKey, $this->params->time, function () {
-                $data = $this->testTypeRepository->applyJoins();
-                $data = $this->testTypeRepository->applyIsActiveFilter($data, $this->params->isActive);
-                $count = $data->count();
-                $data = $this->testTypeRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
-                $data = $this->testTypeRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
-                return ['data' => $data, 'count' => $count];
-            });
-            // Lưu key vào Redis Set để dễ xóa sau này
-            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
-            return $data;
+            // Nếu không lưu cache
+            if ($this->params->noCache) {
+                return $this->getAllDataFromDatabase();
+            } else {
+                $cacheKey = $this->params->testTypeName . '_' . $this->params->param;
+                $cacheKeySet = "cache_keys:" . $this->params->testTypeName; // Set để lưu danh sách key
+                $data = Cache::remember($cacheKey, $this->params->time, function () {
+                    return $this->getAllDataFromDatabase();
+                });
+                // Lưu key vào Redis Set để dễ xóa sau này
+                Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+                return $data;
+            }
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['test_type'], $e);
         }
@@ -60,18 +77,19 @@ class TestTypeService
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $cacheKey = $this->params->testTypeName .'_'.$id.'_'. $this->params->param;
-            $cacheKeySet = "cache_keys:" . $this->params->testTypeName; // Set để lưu danh sách key
-            $data = Cache::remember($cacheKey, $this->params->time, function () use($id){
-                $data = $this->testTypeRepository->applyJoins()
-                    ->where('his_test_type.id', $id);
-                $data = $this->testTypeRepository->applyIsActiveFilter($data, $this->params->isActive);
-                $data = $data->first();
+            // Nếu không lưu cache
+            if ($this->params->noCache) {
+                return $this->getDataById($id);
+            } else {
+                $cacheKey = $this->params->testTypeName . '_' . $id . '_' . $this->params->param;
+                $cacheKeySet = "cache_keys:" . $this->params->testTypeName; // Set để lưu danh sách key
+                $data = Cache::remember($cacheKey, $this->params->time, function () use ($id) {
+                    return $this->getDataById($id);
+                });
+                // Lưu key vào Redis Set để dễ xóa sau này
+                Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
                 return $data;
-            });
-            // Lưu key vào Redis Set để dễ xóa sau này
-            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
-            return $data;
+            }
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['test_type'], $e);
         }
@@ -80,7 +98,7 @@ class TestTypeService
     {
         try {
             $data = $this->testTypeRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
-            
+
             // Gọi event để thêm index vào elastic
             event(new InsertTestTypeIndex($data, $this->params->testTypeName));
             // Gọi event để xóa cache
@@ -102,7 +120,7 @@ class TestTypeService
         }
         try {
             $data = $this->testTypeRepository->update($request, $data, $this->params->time, $this->params->appModifier);
-            
+
             // Gọi event để thêm index vào elastic
             event(new InsertTestTypeIndex($data, $this->params->testTypeName));
             // Gọi event để xóa cache
@@ -124,7 +142,7 @@ class TestTypeService
         }
         try {
             $data = $this->testTypeRepository->delete($data);
-            
+
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->testTypeName));
             // Gọi event để xóa cache

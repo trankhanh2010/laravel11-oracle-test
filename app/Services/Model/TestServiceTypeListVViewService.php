@@ -34,14 +34,26 @@ class TestServiceTypeListVViewService
             return writeAndThrowError(config('params')['db_service']['error']['test_service_type_list_v_view'], $e);
         }
     }
+    private function getAllDataFromDatabase()
+    {
+        $data = $this->testServiceTypeListVViewRepository->applyJoins();
+        $data = $this->testServiceTypeListVViewRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
+        $count = $data->count();
+        $data = $this->testServiceTypeListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        return ['data' => $data, 'count' => $count];
+    }
+    private function getDataById($id)
+    {
+        $data = $this->testServiceTypeListVViewRepository->applyJoins()
+        ->where('v_his_test_service_type_list.id', $id);
+    $data = $this->testServiceTypeListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
+    $data = $data->first();
+return $data;
+    }
     public function handleDataBaseGetAll()
     {
         try {
-                $data = $this->testServiceTypeListVViewRepository->applyJoins();
-                $data = $this->testServiceTypeListVViewRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
-                $count = $data->count();
-                $data = $this->testServiceTypeListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
-                return ['data' => $data, 'count' => $count];
+            return $this->getAllDataFromDatabase();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['test_service_type_list_v_view'], $e);
         }
@@ -49,11 +61,7 @@ class TestServiceTypeListVViewService
     public function handleDataBaseGetWithId($id)
     {
         try {
-                $data = $this->testServiceTypeListVViewRepository->applyJoins()
-                    ->where('v_his_test_service_type_list.id', $id);
-                $data = $this->testServiceTypeListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-                $data = $data->first();
-            return $data;
+            return $this->getDataById($id);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['test_service_type_list_v_view'], $e);
         }

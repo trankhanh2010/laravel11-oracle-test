@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Cache;
 use App\Repositories\VaccineTypeRepository;
 use Illuminate\Support\Facades\Redis;
 
-class VaccineTypeService 
+class VaccineTypeService
 {
     protected $vaccineTypeRepository;
     protected $params;
@@ -37,22 +37,39 @@ class VaccineTypeService
             return writeAndThrowError(config('params')['db_service']['error']['vaccine_type'], $e);
         }
     }
+    private function getAllDataFromDatabase()
+    {
+        $data = $this->vaccineTypeRepository->applyJoins();
+        $data = $this->vaccineTypeRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $count = $data->count();
+        $data = $this->vaccineTypeRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->vaccineTypeRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        return ['data' => $data, 'count' => $count];
+    }
+    private function getDataById($id)
+    {
+        $data = $this->vaccineTypeRepository->applyJoins()
+            ->where('his_vaccine_type.id', $id);
+        $data = $this->vaccineTypeRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $data->first();
+        return $data;
+    }
     public function handleDataBaseGetAll()
     {
         try {
-            $cacheKey = $this->params->vaccineTypeName .'_'. $this->params->param;
-            $cacheKeySet = "cache_keys:" . $this->params->vaccineTypeName; // Set để lưu danh sách key
-            $data = Cache::remember($cacheKey, $this->params->time, function () {
-                $data = $this->vaccineTypeRepository->applyJoins();
-                $data = $this->vaccineTypeRepository->applyIsActiveFilter($data, $this->params->isActive);
-                $count = $data->count();
-                $data = $this->vaccineTypeRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
-                $data = $this->vaccineTypeRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
-                return ['data' => $data, 'count' => $count];
-            });
-            // Lưu key vào Redis Set để dễ xóa sau này
-            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
-            return $data;
+            // Nếu không lưu cache
+            if ($this->params->noCache) {
+                return $this->getAllDataFromDatabase();
+            } else {
+                $cacheKey = $this->params->vaccineTypeName . '_' . $this->params->param;
+                $cacheKeySet = "cache_keys:" . $this->params->vaccineTypeName; // Set để lưu danh sách key
+                $data = Cache::remember($cacheKey, $this->params->time, function () {
+                    return $this->getAllDataFromDatabase();
+                });
+                // Lưu key vào Redis Set để dễ xóa sau này
+                Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+                return $data;
+            }
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['vaccine_type'], $e);
         }
@@ -60,18 +77,19 @@ class VaccineTypeService
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $cacheKey = $this->params->vaccineTypeName .'_'.$id.'_'. $this->params->param;
-            $cacheKeySet = "cache_keys:" . $this->params->vaccineTypeName; // Set để lưu danh sách key
-            $data = Cache::remember($cacheKey, $this->params->time, function () use($id){
-                $data = $this->vaccineTypeRepository->applyJoins()
-                    ->where('his_vaccine_type.id', $id);
-                $data = $this->vaccineTypeRepository->applyIsActiveFilter($data, $this->params->isActive);
-                $data = $data->first();
+            // Nếu không lưu cache
+            if ($this->params->noCache) {
+                return $this->getDataById($id);
+            } else {
+                $cacheKey = $this->params->vaccineTypeName . '_' . $id . '_' . $this->params->param;
+                $cacheKeySet = "cache_keys:" . $this->params->vaccineTypeName; // Set để lưu danh sách key
+                $data = Cache::remember($cacheKey, $this->params->time, function () use ($id) {
+                    return $this->getDataById($id);
+                });
+                // Lưu key vào Redis Set để dễ xóa sau này
+                Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
                 return $data;
-            });
-            // Lưu key vào Redis Set để dễ xóa sau này
-            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
-            return $data;
+            }
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['vaccine_type'], $e);
         }
@@ -81,7 +99,7 @@ class VaccineTypeService
     {
         try {
             $data = $this->vaccineTypeRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
-            
+
             // Gọi event để thêm index vào elastic
             event(new InsertVaccineTypeIndex($data, $this->params->vaccineTypeName));
             // Gọi event để xóa cache
@@ -103,7 +121,7 @@ class VaccineTypeService
         }
         try {
             $data = $this->vaccineTypeRepository->update($request, $data, $this->params->time, $this->params->appModifier);
-            
+
             // Gọi event để thêm index vào elastic
             event(new InsertVaccineTypeIndex($data, $this->params->vaccineTypeName));
             // Gọi event để xóa cache
@@ -125,7 +143,7 @@ class VaccineTypeService
         }
         try {
             $data = $this->vaccineTypeRepository->delete($data);
-            
+
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->vaccineTypeName));
             // Gọi event để xóa cache

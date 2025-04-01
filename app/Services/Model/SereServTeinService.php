@@ -39,18 +39,31 @@ class SereServTeinService
             return writeAndThrowError(config('params')['db_service']['error']['sere_serv_tein'], $e);
         }
     }
+    private function getAllDataFromDatabase()
+    {
+        $data = $this->sereServTeinRepository->applyJoins();
+        $data = $this->sereServTeinRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $this->sereServTeinRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+        $data = $this->sereServTeinRepository->applyTestIndexIdsFilter($data, $this->params->testIndexIds);
+        $data = $this->sereServTeinRepository->applyTdlTreatmentIdFilter($data, $this->params->tdlTreatmentId);
+        $count = $data->count();
+        $data = $this->sereServTeinRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->sereServTeinRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        return ['data' => $data, 'count' => $count];
+    }
+    private function getDataById($id)
+    {
+        $data = $this->sereServTeinRepository->applyJoins()
+        ->where('his_sere_serv_tein.id', $id);
+    $data = $this->sereServTeinRepository->applyIsActiveFilter($data, $this->params->isActive);
+    $data = $this->sereServTeinRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+    $data = $data->first();
+    return $data;
+    }
     public function handleDataBaseGetAll()
     {
         try {
-            $data = $this->sereServTeinRepository->applyJoins();
-            $data = $this->sereServTeinRepository->applyIsActiveFilter($data, $this->params->isActive);
-            $data = $this->sereServTeinRepository->applyIsDeleteFilter($data, $this->params->isDelete);
-            $data = $this->sereServTeinRepository->applyTestIndexIdsFilter($data, $this->params->testIndexIds);
-            $data = $this->sereServTeinRepository->applyTdlTreatmentIdFilter($data, $this->params->tdlTreatmentId);
-            $count = $data->count();
-            $data = $this->sereServTeinRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
-            $data = $this->sereServTeinRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
-            return ['data' => $data, 'count' => $count];
+            return $this->getAllDataFromDatabase();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['sere_serv_tein'], $e);
         }
@@ -58,12 +71,7 @@ class SereServTeinService
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $data = $this->sereServTeinRepository->applyJoins()
-                ->where('his_sere_serv_tein.id', $id);
-            $data = $this->sereServTeinRepository->applyIsActiveFilter($data, $this->params->isActive);
-            $data = $this->sereServTeinRepository->applyIsDeleteFilter($data, $this->params->isDelete);
-            $data = $data->first();
-            return $data;
+            return $this->getDataById($id);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['sere_serv_tein'], $e);
         }

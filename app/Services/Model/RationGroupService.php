@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Cache;
 use App\Repositories\RationGroupRepository;
 use Illuminate\Support\Facades\Redis;
 
-class RationGroupService 
+class RationGroupService
 {
     protected $rationGroupRepository;
     protected $params;
@@ -37,22 +37,39 @@ class RationGroupService
             return writeAndThrowError(config('params')['db_service']['error']['ration_group'], $e);
         }
     }
+    private function getAllDataFromDatabase()
+    {
+        $data = $this->rationGroupRepository->applyJoins();
+        $data = $this->rationGroupRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $count = $data->count();
+        $data = $this->rationGroupRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->rationGroupRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        return ['data' => $data, 'count' => $count];
+    }
+    private function getDataById($id)
+    {
+        $data = $this->rationGroupRepository->applyJoins()
+            ->where('his_ration_group.id', $id);
+        $data = $this->rationGroupRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $data->first();
+        return $data;
+    }
     public function handleDataBaseGetAll()
     {
         try {
-            $cacheKey = $this->params->rationGroupName .'_'. $this->params->param;
-            $cacheKeySet = "cache_keys:" . $this->params->rationGroupName; // Set để lưu danh sách key
-            $data = Cache::remember($cacheKey, $this->params->time, function () {
-                $data = $this->rationGroupRepository->applyJoins();
-                $data = $this->rationGroupRepository->applyIsActiveFilter($data, $this->params->isActive);
-                $count = $data->count();
-                $data = $this->rationGroupRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
-                $data = $this->rationGroupRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
-                return ['data' => $data, 'count' => $count];
-            });
-            // Lưu key vào Redis Set để dễ xóa sau này
-            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
-            return $data;
+            // Nếu không lưu cache
+            if ($this->params->noCache) {
+                return $this->getAllDataFromDatabase();
+            } else {
+                $cacheKey = $this->params->rationGroupName . '_' . $this->params->param;
+                $cacheKeySet = "cache_keys:" . $this->params->rationGroupName; // Set để lưu danh sách key
+                $data = Cache::remember($cacheKey, $this->params->time, function () {
+                    return $this->getAllDataFromDatabase();
+                });
+                // Lưu key vào Redis Set để dễ xóa sau này
+                Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+                return $data;
+            }
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['ration_group'], $e);
         }
@@ -60,18 +77,19 @@ class RationGroupService
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $cacheKey = $this->params->rationGroupName .'_'.$id.'_'. $this->params->param;
-            $cacheKeySet = "cache_keys:" . $this->params->rationGroupName; // Set để lưu danh sách key
-            $data = Cache::remember($cacheKey, $this->params->time, function () use($id){
-                $data = $this->rationGroupRepository->applyJoins()
-                    ->where('his_ration_group.id', $id);
-                $data = $this->rationGroupRepository->applyIsActiveFilter($data, $this->params->isActive);
-                $data = $data->first();
+            // Nếu không lưu cache
+            if ($this->params->noCache) {
+                return $this->getDataById($id);
+            } else {
+                $cacheKey = $this->params->rationGroupName . '_' . $id . '_' . $this->params->param;
+                $cacheKeySet = "cache_keys:" . $this->params->rationGroupName; // Set để lưu danh sách key
+                $data = Cache::remember($cacheKey, $this->params->time, function () use ($id) {
+                    return $this->getDataById($id);
+                });
+                // Lưu key vào Redis Set để dễ xóa sau này
+                Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
                 return $data;
-            });
-            // Lưu key vào Redis Set để dễ xóa sau này
-            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
-            return $data;
+            }
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['ration_group'], $e);
         }
@@ -81,7 +99,7 @@ class RationGroupService
     {
         try {
             $data = $this->rationGroupRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
-            
+
             // Gọi event để thêm index vào elastic
             event(new InsertRationGroupIndex($data, $this->params->rationGroupName));
             // Gọi event để xóa cache
@@ -103,7 +121,7 @@ class RationGroupService
         }
         try {
             $data = $this->rationGroupRepository->update($request, $data, $this->params->time, $this->params->appModifier);
-            
+
             // Gọi event để thêm index vào elastic
             event(new InsertRationGroupIndex($data, $this->params->rationGroupName));
             // Gọi event để xóa cache
@@ -125,7 +143,7 @@ class RationGroupService
         }
         try {
             $data = $this->rationGroupRepository->delete($data);
-            
+
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->rationGroupName));
             // Gọi event để xóa cache

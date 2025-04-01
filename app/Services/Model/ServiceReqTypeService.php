@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Cache;
 use App\Repositories\ServiceReqTypeRepository;
 use Illuminate\Support\Facades\Redis;
 
-class ServiceReqTypeService 
+class ServiceReqTypeService
 {
     protected $serviceReqTypeRepository;
     protected $params;
@@ -37,22 +37,39 @@ class ServiceReqTypeService
             return writeAndThrowError(config('params')['db_service']['error']['service_req_type'], $e);
         }
     }
+    private function getAllDataFromDatabase()
+    {
+        $data = $this->serviceReqTypeRepository->applyJoins();
+        $data = $this->serviceReqTypeRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $count = $data->count();
+        $data = $this->serviceReqTypeRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->serviceReqTypeRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        return ['data' => $data, 'count' => $count];
+    }
+    private function getDataById($id)
+    {
+        $data = $this->serviceReqTypeRepository->applyJoins()
+            ->where('id', $id);
+        $data = $this->serviceReqTypeRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $data->first();
+        return $data;
+    }
     public function handleDataBaseGetAll()
     {
         try {
-            $cacheKey = $this->params->serviceReqTypeName .'_'. $this->params->param;
-            $cacheKeySet = "cache_keys:" . $this->params->serviceReqTypeName; // Set để lưu danh sách key
-            $data = Cache::remember($cacheKey, $this->params->time, function () {
-                $data = $this->serviceReqTypeRepository->applyJoins();
-                $data = $this->serviceReqTypeRepository->applyIsActiveFilter($data, $this->params->isActive);
-                $count = $data->count();
-                $data = $this->serviceReqTypeRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
-                $data = $this->serviceReqTypeRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
-                return ['data' => $data, 'count' => $count];
-            });
-            // Lưu key vào Redis Set để dễ xóa sau này
-            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
-            return $data;
+            // Nếu không lưu cache
+            if ($this->params->noCache) {
+                return $this->getAllDataFromDatabase();
+            } else {
+                $cacheKey = $this->params->serviceReqTypeName . '_' . $this->params->param;
+                $cacheKeySet = "cache_keys:" . $this->params->serviceReqTypeName; // Set để lưu danh sách key
+                $data = Cache::remember($cacheKey, $this->params->time, function () {
+                    return $this->getAllDataFromDatabase();
+                });
+                // Lưu key vào Redis Set để dễ xóa sau này
+                Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+                return $data;
+            }
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['service_req_type'], $e);
         }
@@ -60,18 +77,19 @@ class ServiceReqTypeService
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $cacheKey = $this->params->serviceReqTypeName .'_'.$id.'_'. $this->params->param;
-            $cacheKeySet = "cache_keys:" . $this->params->serviceReqTypeName; // Set để lưu danh sách key
-            $data = Cache::remember($cacheKey, $this->params->time, function () use($id){
-                $data = $this->serviceReqTypeRepository->applyJoins()
-                    ->where('id', $id);
-                $data = $this->serviceReqTypeRepository->applyIsActiveFilter($data, $this->params->isActive);
-                $data = $data->first();
+            // Nếu không lưu cache
+            if ($this->params->noCache) {
+                return $this->getDataById($id);
+            } else {
+                $cacheKey = $this->params->serviceReqTypeName . '_' . $id . '_' . $this->params->param;
+                $cacheKeySet = "cache_keys:" . $this->params->serviceReqTypeName; // Set để lưu danh sách key
+                $data = Cache::remember($cacheKey, $this->params->time, function () use ($id) {
+                    return $this->getDataById($id);
+                });
+                // Lưu key vào Redis Set để dễ xóa sau này
+                Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
                 return $data;
-            });
-            // Lưu key vào Redis Set để dễ xóa sau này
-            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
-            return $data;
+            }
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['service_req_type'], $e);
         }
@@ -80,7 +98,7 @@ class ServiceReqTypeService
     {
         try {
             $data = $this->serviceReqTypeRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
-            
+
             // Gọi event để thêm index vào elastic
             event(new InsertServiceReqTypeIndex($data, $this->params->serviceReqTypeName));
             // Gọi event để xóa cache
@@ -102,7 +120,7 @@ class ServiceReqTypeService
         }
         try {
             $data = $this->serviceReqTypeRepository->update($request, $data, $this->params->time, $this->params->appModifier);
-            
+
             // Gọi event để thêm index vào elastic
             event(new InsertServiceReqTypeIndex($data, $this->params->serviceReqTypeName));
             // Gọi event để xóa cache
@@ -124,7 +142,7 @@ class ServiceReqTypeService
         }
         try {
             $data = $this->serviceReqTypeRepository->delete($data);
-            
+
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->serviceReqTypeName));
             // Gọi event để xóa cache

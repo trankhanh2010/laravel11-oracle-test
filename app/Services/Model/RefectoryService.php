@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Cache;
 use App\Repositories\RefectoryRepository;
 use Illuminate\Support\Facades\Redis;
 
-class RefectoryService 
+class RefectoryService
 {
     protected $refectoryRepository;
     protected $params;
@@ -37,22 +37,39 @@ class RefectoryService
             return writeAndThrowError(config('params')['db_service']['error']['refectory'], $e);
         }
     }
+    private function getAllDataFromDatabase()
+    {
+        $data = $this->refectoryRepository->applyJoins();
+        $data = $this->refectoryRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $count = $data->count();
+        $data = $this->refectoryRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->refectoryRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        return ['data' => $data, 'count' => $count];
+    }
+    private function getDataById($id)
+    {
+        $data = $this->refectoryRepository->applyJoins()
+            ->where('his_refectory.id', $id);
+        $data = $this->refectoryRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $data->first();
+        return $data;
+    }
     public function handleDataBaseGetAll()
     {
         try {
-            $cacheKey = $this->params->refectoryName .'_'. $this->params->param;
-            $cacheKeySet = "cache_keys:" . $this->params->refectoryName; // Set để lưu danh sách key
-            $data = Cache::remember($cacheKey, $this->params->time, function () {
-                $data = $this->refectoryRepository->applyJoins();
-                $data = $this->refectoryRepository->applyIsActiveFilter($data, $this->params->isActive);
-                $count = $data->count();
-                $data = $this->refectoryRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
-                $data = $this->refectoryRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
-                return ['data' => $data, 'count' => $count];
-            });
-            // Lưu key vào Redis Set để dễ xóa sau này
-            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
-            return $data;
+            // Nếu không lưu cache
+            if ($this->params->noCache) {
+                return $this->getAllDataFromDatabase();
+            } else {
+                $cacheKey = $this->params->refectoryName . '_' . $this->params->param;
+                $cacheKeySet = "cache_keys:" . $this->params->refectoryName; // Set để lưu danh sách key
+                $data = Cache::remember($cacheKey, $this->params->time, function () {
+                    return $this->getAllDataFromDatabase();
+                });
+                // Lưu key vào Redis Set để dễ xóa sau này
+                Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+                return $data;
+            }
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['refectory'], $e);
         }
@@ -60,18 +77,19 @@ class RefectoryService
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $cacheKey = $this->params->refectoryName .'_'.$id.'_'. $this->params->param;
-            $cacheKeySet = "cache_keys:" . $this->params->refectoryName; // Set để lưu danh sách key
-            $data = Cache::remember($cacheKey, $this->params->time, function () use($id){
-                $data = $this->refectoryRepository->applyJoins()
-                    ->where('his_refectory.id', $id);
-                $data = $this->refectoryRepository->applyIsActiveFilter($data, $this->params->isActive);
-                $data = $data->first();
+            // Nếu không lưu cache
+            if ($this->params->noCache) {
+                return $this->getDataById($id);
+            } else {
+                $cacheKey = $this->params->refectoryName . '_' . $id . '_' . $this->params->param;
+                $cacheKeySet = "cache_keys:" . $this->params->refectoryName; // Set để lưu danh sách key
+                $data = Cache::remember($cacheKey, $this->params->time, function () use ($id) {
+                    return $this->getDataById($id);
+                });
+                // Lưu key vào Redis Set để dễ xóa sau này
+                Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
                 return $data;
-            });
-            // Lưu key vào Redis Set để dễ xóa sau này
-            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
-            return $data;
+            }
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['refectory'], $e);
         }
@@ -81,7 +99,7 @@ class RefectoryService
     {
         try {
             $data = $this->refectoryRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
-            
+
             // Gọi event để thêm index vào elastic
             event(new InsertRefectoryIndex($data, $this->params->refectoryName));
             // Gọi event để xóa cache
@@ -103,7 +121,7 @@ class RefectoryService
         }
         try {
             $data = $this->refectoryRepository->update($request, $data, $this->params->time, $this->params->appModifier);
-            
+
             // Gọi event để thêm index vào elastic
             event(new InsertRefectoryIndex($data, $this->params->refectoryName));
             // Gọi event để xóa cache
@@ -125,7 +143,7 @@ class RefectoryService
         }
         try {
             $data = $this->refectoryRepository->delete($data);
-            
+
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->refectoryName));
             // Gọi event để xóa cache

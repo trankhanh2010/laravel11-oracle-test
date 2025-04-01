@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Cache;
 use App\Repositories\DeathCauseRepository;
 use Illuminate\Support\Facades\Redis;
 
-class DeathCauseService 
+class DeathCauseService
 {
     protected $deathCauseRepository;
     protected $params;
@@ -67,22 +67,39 @@ class DeathCauseService
             return writeAndThrowError(config('params')['db_service']['error']['death_cause'], $e);
         }
     }
+    private function getAllDataFromDatabase()
+    {
+        $data = $this->deathCauseRepository->applyJoins();
+        $data = $this->deathCauseRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $count = $data->count();
+        $data = $this->deathCauseRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->deathCauseRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        return ['data' => $data, 'count' => $count];
+    }
+    private function getDataById($id)
+    {
+        $data = $this->deathCauseRepository->applyJoins()
+            ->where('his_death_cause.id', $id);
+        $data = $this->deathCauseRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $data->first();
+        return $data;
+    }
     public function handleDataBaseGetAll()
     {
         try {
-            $cacheKey = $this->params->deathCauseName .'_'. $this->params->param;
-            $cacheKeySet = "cache_keys:" . $this->params->deathCauseName; // Set để lưu danh sách key
-            $data = Cache::remember($cacheKey, $this->params->time, function () {
-                $data = $this->deathCauseRepository->applyJoins();
-                $data = $this->deathCauseRepository->applyIsActiveFilter($data, $this->params->isActive);
-                $count = $data->count();
-                $data = $this->deathCauseRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
-                $data = $this->deathCauseRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
-                return ['data' => $data, 'count' => $count];
-            });
-            // Lưu key vào Redis Set để dễ xóa sau này
-            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
-            return $data;
+            // Nếu không lưu cache
+            if ($this->params->noCache) {
+                return $this->getAllDataFromDatabase();
+            } else {
+                $cacheKey = $this->params->deathCauseName . '_' . $this->params->param;
+                $cacheKeySet = "cache_keys:" . $this->params->deathCauseName; // Set để lưu danh sách key
+                $data = Cache::remember($cacheKey, $this->params->time, function () {
+                    return $this->getAllDataFromDatabase();
+                });
+                // Lưu key vào Redis Set để dễ xóa sau này
+                Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+                return $data;
+            }
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['death_cause'], $e);
         }
@@ -90,22 +107,21 @@ class DeathCauseService
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $cacheKey = $this->params->deathCauseName .'_'.$id.'_'. $this->params->param;
-            $cacheKeySet = "cache_keys:" . $this->params->deathCauseName; // Set để lưu danh sách key
-            $data = Cache::remember($cacheKey, $this->params->time, function () use($id){
-                $data = $this->deathCauseRepository->applyJoins()
-                    ->where('his_death_cause.id', $id);
-                $data = $this->deathCauseRepository->applyIsActiveFilter($data, $this->params->isActive);
-                $data = $data->first();
+            // Nếu không lưu cache
+            if ($this->params->noCache) {
+                return $this->getDataById($id);
+            } else {
+                $cacheKey = $this->params->deathCauseName . '_' . $id . '_' . $this->params->param;
+                $cacheKeySet = "cache_keys:" . $this->params->deathCauseName; // Set để lưu danh sách key
+                $data = Cache::remember($cacheKey, $this->params->time, function () use ($id) {
+                    return $this->getDataById($id);
+                });
+                // Lưu key vào Redis Set để dễ xóa sau này
+                Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
                 return $data;
-            });
-            // Lưu key vào Redis Set để dễ xóa sau này
-            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
-            return $data;
+            }
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['death_cause'], $e);
         }
     }
-
- 
 }

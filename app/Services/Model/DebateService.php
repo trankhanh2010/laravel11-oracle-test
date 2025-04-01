@@ -38,17 +38,31 @@ class DebateService
             return writeAndThrowError(config('params')['db_service']['error']['debate'], $e);
         }
     }
+    private function getAllDataFromDatabase()
+    {
+        $data = $this->debateRepository->applyJoins();
+        $data = $this->debateRepository->applyWith($data);
+        $data = $this->debateRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $this->debateRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+        $count = $data->count();
+        $data = $this->debateRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->debateRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        return ['data' => $data, 'count' => $count];
+    }
+    private function getDataById($id)
+    {
+        $data = $this->debateRepository->applyJoins()
+        ->where('his_debate.id', $id);
+    $data = $this->debateRepository->applyWith($data);
+    $data = $this->debateRepository->applyIsActiveFilter($data, $this->params->isActive);
+    $data = $this->debateRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+    $data = $data->first();
+    return $data;
+    }
     public function handleDataBaseGetAll()
     {
         try {
-            $data = $this->debateRepository->applyJoins();
-            $data = $this->debateRepository->applyWith($data);
-            $data = $this->debateRepository->applyIsActiveFilter($data, $this->params->isActive);
-            $data = $this->debateRepository->applyIsDeleteFilter($data, $this->params->isDelete);
-            $count = $data->count();
-            $data = $this->debateRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
-            $data = $this->debateRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
-            return ['data' => $data, 'count' => $count];
+            return $this->getAllDataFromDatabase();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['debate'], $e);
         }
@@ -56,13 +70,7 @@ class DebateService
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $data = $this->debateRepository->applyJoins()
-                ->where('his_debate.id', $id);
-            $data = $this->debateRepository->applyWith($data);
-            $data = $this->debateRepository->applyIsActiveFilter($data, $this->params->isActive);
-            $data = $this->debateRepository->applyIsDeleteFilter($data, $this->params->isDelete);
-            $data = $data->first();
-            return $data;
+            return $this->getDataById($id);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['debate'], $e);
         }

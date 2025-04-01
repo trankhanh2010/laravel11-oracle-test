@@ -41,20 +41,33 @@ class DocumentListVViewService
             return writeAndThrowError(config('params')['db_service']['error']['document_list_v_view'], $e);
         }
     }
+    private function getAllDataFromDatabase()
+    {
+        $data = $this->documentListVViewRepository->applyJoins();
+        $data = $this->documentListVViewRepository->applyWithParam($data);
+        $data = $this->documentListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $this->documentListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+        $data = $this->documentListVViewRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
+        $data = $this->documentListVViewRepository->applyDocumentTypeIdFilter($data, $this->params->documentTypeId);
+        $data = $this->documentListVViewRepository->applyTreatmentCodeFilter($data, $this->params->treatmentCode);
+        $count = $data->count();
+        $data = $this->documentListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->documentListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        return ['data' => $data, 'count' => $count];
+    }
+    private function getDataById($id)
+    {
+        $data = $this->documentListVViewRepository->applyJoins()
+        ->where('id', $id);
+    $data = $this->documentListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
+    $data = $this->documentListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+    $data = $data->first();
+    return $data;
+    }
     public function handleDataBaseGetAll()
     {
         try {
-            $data = $this->documentListVViewRepository->applyJoins();
-            $data = $this->documentListVViewRepository->applyWithParam($data);
-            $data = $this->documentListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-            $data = $this->documentListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
-            $data = $this->documentListVViewRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
-            $data = $this->documentListVViewRepository->applyDocumentTypeIdFilter($data, $this->params->documentTypeId);
-            $data = $this->documentListVViewRepository->applyTreatmentCodeFilter($data, $this->params->treatmentCode);
-            $count = $data->count();
-            $data = $this->documentListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
-            $data = $this->documentListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
-            return ['data' => $data, 'count' => $count];
+            return $this->getAllDataFromDatabase();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['document_list_v_view'], $e);
         }
@@ -62,12 +75,7 @@ class DocumentListVViewService
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $data = $this->documentListVViewRepository->applyJoins()
-                ->where('id', $id);
-            $data = $this->documentListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-            $data = $this->documentListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
-            $data = $data->first();
-            return $data;
+            return $this->getDataById($id);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['document_list_v_view'], $e);
         }

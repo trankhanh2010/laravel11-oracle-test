@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Cache;
 use App\Repositories\TreatmentEndTypeRepository;
 use Illuminate\Support\Facades\Redis;
 
-class TreatmentEndTypeService 
+class TreatmentEndTypeService
 {
     protected $treatmentEndTypeRepository;
     protected $params;
@@ -67,22 +67,39 @@ class TreatmentEndTypeService
             return writeAndThrowError(config('params')['db_service']['error']['treatment_end_type'], $e);
         }
     }
+    private function getAllDataFromDatabase()
+    {
+        $data = $this->treatmentEndTypeRepository->applyJoins();
+        $data = $this->treatmentEndTypeRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $count = $data->count();
+        $data = $this->treatmentEndTypeRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->treatmentEndTypeRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        return ['data' => $data, 'count' => $count];
+    }
+    private function getDataById($id)
+    {
+        $data = $this->treatmentEndTypeRepository->applyJoins()
+            ->where('his_treatment_end_type.id', $id);
+        $data = $this->treatmentEndTypeRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $data->first();
+        return $data;
+    }
     public function handleDataBaseGetAll()
     {
         try {
-            $cacheKey = $this->params->treatmentEndTypeName .'_'. $this->params->param;
-            $cacheKeySet = "cache_keys:" . $this->params->treatmentEndTypeName; // Set để lưu danh sách key
-            $data = Cache::remember($cacheKey, $this->params->time, function () {
-                $data = $this->treatmentEndTypeRepository->applyJoins();
-                $data = $this->treatmentEndTypeRepository->applyIsActiveFilter($data, $this->params->isActive);
-                $count = $data->count();
-                $data = $this->treatmentEndTypeRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
-                $data = $this->treatmentEndTypeRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
-                return ['data' => $data, 'count' => $count];
-            });
-            // Lưu key vào Redis Set để dễ xóa sau này
-            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
-            return $data;
+            // Nếu không lưu cache
+            if ($this->params->noCache) {
+                return $this->getAllDataFromDatabase();
+            } else {
+                $cacheKey = $this->params->treatmentEndTypeName . '_' . $this->params->param;
+                $cacheKeySet = "cache_keys:" . $this->params->treatmentEndTypeName; // Set để lưu danh sách key
+                $data = Cache::remember($cacheKey, $this->params->time, function () {
+                    return $this->getAllDataFromDatabase();
+                });
+                // Lưu key vào Redis Set để dễ xóa sau này
+                Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+                return $data;
+            }
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['treatment_end_type'], $e);
         }
@@ -90,18 +107,19 @@ class TreatmentEndTypeService
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $cacheKey = $this->params->treatmentEndTypeName .'_'.$id.'_'. $this->params->param;
-            $cacheKeySet = "cache_keys:" . $this->params->treatmentEndTypeName; // Set để lưu danh sách key
-            $data = Cache::remember($cacheKey, $this->params->time, function () use($id){
-                $data = $this->treatmentEndTypeRepository->applyJoins()
-                    ->where('his_treatment_end_type.id', $id);
-                $data = $this->treatmentEndTypeRepository->applyIsActiveFilter($data, $this->params->isActive);
-                $data = $data->first();
+            // Nếu không lưu cache
+            if ($this->params->noCache) {
+                return $this->getDataById($id);
+            } else {
+                $cacheKey = $this->params->treatmentEndTypeName . '_' . $id . '_' . $this->params->param;
+                $cacheKeySet = "cache_keys:" . $this->params->treatmentEndTypeName; // Set để lưu danh sách key
+                $data = Cache::remember($cacheKey, $this->params->time, function () use ($id) {
+                    return $this->getDataById($id);
+                });
+                // Lưu key vào Redis Set để dễ xóa sau này
+                Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
                 return $data;
-            });
-            // Lưu key vào Redis Set để dễ xóa sau này
-            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
-            return $data;
+            }
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['treatment_end_type'], $e);
         }
@@ -111,7 +129,7 @@ class TreatmentEndTypeService
     {
         try {
             $data = $this->treatmentEndTypeRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
-            
+
             // Gọi event để thêm index vào elastic
             event(new InsertTreatmentEndTypeIndex($data, $this->params->treatmentEndTypeName));
             // Gọi event để xóa cache
@@ -133,7 +151,7 @@ class TreatmentEndTypeService
         }
         try {
             $data = $this->treatmentEndTypeRepository->update($request, $data, $this->params->time, $this->params->appModifier);
-            
+
             // Gọi event để thêm index vào elastic
             event(new InsertTreatmentEndTypeIndex($data, $this->params->treatmentEndTypeName));
             // Gọi event để xóa cache
@@ -155,7 +173,7 @@ class TreatmentEndTypeService
         }
         try {
             $data = $this->treatmentEndTypeRepository->delete($data);
-            
+
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->treatmentEndTypeName));
             // Gọi event để xóa cache

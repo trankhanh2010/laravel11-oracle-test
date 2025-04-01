@@ -23,55 +23,74 @@ class SereServClsListVViewService
         $this->params = $params;
         return $this;
     }
+    private function getAllDataFromDatabase()
+    {
+        $data = $this->sereServClsListVViewRepository->applyJoins($this->params->reportTypeCode);
+        $data = $this->sereServClsListVViewRepository->applyWithParam($data, $this->params->tab, $this->params->serviceCodes, $this->params->groupBy);
+        $data = $this->sereServClsListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $this->sereServClsListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+        $data = $this->sereServClsListVViewRepository->applyPatientCodeFilter($data, $this->params->patientCode);
+        $data = $this->sereServClsListVViewRepository->applyServiceTypeCodesFilter($data, $this->params->serviceTypeCodes);
+        $data = $this->sereServClsListVViewRepository->applyServiceCodesFilter($data, $this->params->serviceCodes);
+        $data = $this->sereServClsListVViewRepository->applyReportTypeCodeFilter($data, $this->params->reportTypeCode);
+        $data = $this->sereServClsListVViewRepository->applyIntructionTimeFilter($data, $this->params->intructionTimeFrom, $this->params->intructionTimeTo);
+        $data = $this->sereServClsListVViewRepository->applyTabFilter($data, $this->params->tab);
+
+        if ($this->params->tab == 'CLS') {
+            $count = null;
+        } else {
+            $count = $data->count();
+        }
+        $data = $this->sereServClsListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->sereServClsListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+
+        // Group theo field
+        $data = $this->sereServClsListVViewRepository->applyGroupByField(
+            $data,
+            $this->params->groupBy,
+            $this->params->intructionTimeFrom,
+            $this->params->intructionTimeTo,
+            $this->params->reportTypeCode,
+            $this->params->tab,
+            $this->params->serviceCodes,
+        );
+
+        // **Nén dữ liệu trước khi lưu cache**
+        return ['data' => $data, 'count' => $count];
+    }
+    private function getDataById($id)
+    {
+        $data = $this->sereServClsListVViewRepository->applyJoins($this->params->reportTypeCode)
+            ->where('id', $id);
+        $data = $this->sereServClsListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $this->sereServClsListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+        $data = $data->first();
+        return $data;
+    }
     public function handleDataBaseGetAll()
     {
         try {
-            $cacheKey = $this->params->sereServClsListVViewName .'_'. $this->params->param;
-            $cacheKeySet = "cache_keys:" . $this->params->sereServClsListVViewName; // Set để lưu danh sách key
-            
-            $data = Cache::remember($cacheKey, 3600, function () {
-                $data = $this->sereServClsListVViewRepository->applyJoins($this->params->reportTypeCode);
-                $data = $this->sereServClsListVViewRepository->applyWithParam($data, $this->params->tab, $this->params->serviceCodes, $this->params->groupBy);
-                $data = $this->sereServClsListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-                $data = $this->sereServClsListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
-                $data = $this->sereServClsListVViewRepository->applyPatientCodeFilter($data, $this->params->patientCode);
-                $data = $this->sereServClsListVViewRepository->applyServiceTypeCodesFilter($data, $this->params->serviceTypeCodes);
-                $data = $this->sereServClsListVViewRepository->applyServiceCodesFilter($data, $this->params->serviceCodes);
-                $data = $this->sereServClsListVViewRepository->applyReportTypeCodeFilter($data, $this->params->reportTypeCode);
-                $data = $this->sereServClsListVViewRepository->applyIntructionTimeFilter($data, $this->params->intructionTimeFrom, $this->params->intructionTimeTo);
-                $data = $this->sereServClsListVViewRepository->applyTabFilter($data, $this->params->tab);
-            
-                if($this->params->tab == 'CLS'){
-                    $count = null;
-                }else{
-                    $count = $data->count();
+            // Nếu không lưu cache
+            if ($this->params->noCache) {
+                return $this->getAllDataFromDatabase();
+            } else {
+                $cacheKey = $this->params->sereServClsListVViewName . '_' . $this->params->param;
+                $cacheKeySet = "cache_keys:" . $this->params->sereServClsListVViewName; // Set để lưu danh sách key
+
+                $data = Cache::remember($cacheKey, 3600, function () {
+                    // **Nén dữ liệu trước khi lưu cache**
+                    return base64_encode(gzcompress(serialize($this->getAllDataFromDatabase())));
+                });
+                // Lưu key vào Redis Set để dễ xóa sau này
+                Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+                // **Giải nén khi lấy dữ liệu từ cache**
+                if ($data && is_string($data)) {
+                    $decompressedData = @gzuncompress(base64_decode($data));
+                    $data = $decompressedData !== false ? unserialize($decompressedData) : ['data' => [], 'count' => 0];
                 }
-                $data = $this->sereServClsListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
-                $data = $this->sereServClsListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
-                
-                // Group theo field
-                $data = $this->sereServClsListVViewRepository->applyGroupByField(
-                    $data,
-                    $this->params->groupBy,
-                    $this->params->intructionTimeFrom,
-                    $this->params->intructionTimeTo,
-                    $this->params->reportTypeCode,
-                    $this->params->tab,
-                    $this->params->serviceCodes,
-                );
-            
-                // **Nén dữ liệu trước khi lưu cache**
-                return base64_encode(gzcompress(serialize(['data' => $data, 'count' => $count])));
-            });
-            // Lưu key vào Redis Set để dễ xóa sau này
-            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
-            // **Giải nén khi lấy dữ liệu từ cache**
-            if ($data && is_string($data)) {
-                $decompressedData = @gzuncompress(base64_decode($data));
-                $data = $decompressedData !== false ? unserialize($decompressedData) : ['data' => [], 'count' => 0];
+
+                return $data;
             }
-        
-            return $data;
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['sere_serv_cls_list_v_view'], $e);
         }
@@ -79,12 +98,7 @@ class SereServClsListVViewService
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $data = $this->sereServClsListVViewRepository->applyJoins($this->params->reportTypeCode)
-                ->where('id', $id);
-            $data = $this->sereServClsListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-            $data = $this->sereServClsListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
-            $data = $data->first();
-            return $data;
+            return $this->getDataById($id);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['sere_serv_cls_list_v_view'], $e);
         }

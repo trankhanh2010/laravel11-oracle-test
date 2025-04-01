@@ -212,7 +212,7 @@ return [
         'vietinbank' => [
             'vietinbank_secret_key' => env('VIETINBANK_SECRET_KEY'),
             'vietinbank_merchant_id' => env('VIETINBANK_MERCHANT_ID'),
-            'vietinbank_api_url' => env('VIETINBANK_API_URL'),
+            'vietinbank_api_url' => env('VIETINBANK_API_URL',''),
             'public_key_vietinbank_path' => env('PUBLIC_KEY_VIETINBANK_PATH'),
             'private_key_bvxa_path' => env('PRIVATE_KEY_BVXA_PATH'),
         ],

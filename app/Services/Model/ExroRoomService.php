@@ -46,24 +46,41 @@ class ExroRoomService
             return writeAndThrowError(config('params')['db_service']['error']['exro_room'], $e);
         }
     }
+    private function getAllDataFromDatabase()
+    {
+        $data = $this->exroRoomRepository->applyJoins();
+        $data = $this->exroRoomRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $this->exroRoomRepository->applyExecuteRoomIdFilter($data, $this->params->executeRoomId);
+        $data = $this->exroRoomRepository->applyRoomIdFilter($data, $this->params->roomId);
+        $count = $data->count();
+        $data = $this->exroRoomRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->exroRoomRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        return ['data' => $data, 'count' => $count];
+    }
+    private function getDataById($id)
+    {
+        $data = $this->exroRoomRepository->applyJoins()
+            ->where('his_exro_room.id', $id);
+        $data = $this->exroRoomRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $data->first();
+        return $data;
+    }
     public function handleDataBaseGetAll()
     {
         try {
-            $cacheKey = $this->params->exroRoomName .'_'. $this->params->param;
-            $cacheKeySet = "cache_keys:" . $this->params->exroRoomName; // Set để lưu danh sách key
-            $data = Cache::remember($cacheKey, $this->params->time, function () {
-                $data = $this->exroRoomRepository->applyJoins();
-                $data = $this->exroRoomRepository->applyIsActiveFilter($data, $this->params->isActive);
-                $data = $this->exroRoomRepository->applyExecuteRoomIdFilter($data, $this->params->executeRoomId);
-                $data = $this->exroRoomRepository->applyRoomIdFilter($data, $this->params->roomId);
-                $count = $data->count();
-                $data = $this->exroRoomRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
-                $data = $this->exroRoomRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
-                return ['data' => $data, 'count' => $count];
-            });
-            // Lưu key vào Redis Set để dễ xóa sau này
-            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
-            return $data;
+            // Nếu không lưu cache
+            if ($this->params->noCache) {
+                return $this->getAllDataFromDatabase();
+            } else {
+                $cacheKey = $this->params->exroRoomName . '_' . $this->params->param;
+                $cacheKeySet = "cache_keys:" . $this->params->exroRoomName; // Set để lưu danh sách key
+                $data = Cache::remember($cacheKey, $this->params->time, function () {
+                    return $this->getAllDataFromDatabase();
+                });
+                // Lưu key vào Redis Set để dễ xóa sau này
+                Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+                return $data;
+            }
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['exro_room'], $e);
         }
@@ -71,18 +88,19 @@ class ExroRoomService
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $cacheKey = $this->params->exroRoomName .'_'.$id.'_'. $this->params->param;
-            $cacheKeySet = "cache_keys:" . $this->params->exroRoomName; // Set để lưu danh sách key
-            $data = Cache::remember($cacheKey, $this->params->time, function () use($id){
-                $data = $this->exroRoomRepository->applyJoins()
-                    ->where('his_exro_room.id', $id);
-                $data = $this->exroRoomRepository->applyIsActiveFilter($data, $this->params->isActive);
-                $data = $data->first();
+            // Nếu không lưu cache
+            if ($this->params->noCache) {
+                return $this->getDataById($id);
+            } else {
+                $cacheKey = $this->params->exroRoomName . '_' . $id . '_' . $this->params->param;
+                $cacheKeySet = "cache_keys:" . $this->params->exroRoomName; // Set để lưu danh sách key
+                $data = Cache::remember($cacheKey, $this->params->time, function () use ($id) {
+                    return $this->getDataById($id);
+                });
+                // Lưu key vào Redis Set để dễ xóa sau này
+                Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
                 return $data;
-            });
-            // Lưu key vào Redis Set để dễ xóa sau này
-            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
-            return $data;
+            }
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['exro_room'], $e);
         }

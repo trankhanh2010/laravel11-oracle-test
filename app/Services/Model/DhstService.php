@@ -38,17 +38,31 @@ class DhstService
             return writeAndThrowError(config('params')['db_service']['error']['dhst'], $e);
         }
     }
+    private function getAllDataFromDatabase()
+    {
+        $data = $this->dhstRepository->applyJoins();
+        $data = $this->dhstRepository->applyWith($data);
+        $data = $this->dhstRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $this->dhstRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+        $count = $data->count();
+        $data = $this->dhstRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->dhstRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        return ['data' => $data, 'count' => $count];
+    }
+    private function getDataById($id)
+    {
+        $data = $this->dhstRepository->applyJoins()
+        ->where('his_dhst.id', $id);
+    $data = $this->dhstRepository->applyWith($data);
+    $data = $this->dhstRepository->applyIsActiveFilter($data, $this->params->isActive);
+    $data = $this->dhstRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+    $data = $data->first();
+    return $data;
+    }
     public function handleDataBaseGetAll()
     {
         try {
-            $data = $this->dhstRepository->applyJoins();
-            $data = $this->dhstRepository->applyWith($data);
-            $data = $this->dhstRepository->applyIsActiveFilter($data, $this->params->isActive);
-            $data = $this->dhstRepository->applyIsDeleteFilter($data, $this->params->isDelete);
-            $count = $data->count();
-            $data = $this->dhstRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
-            $data = $this->dhstRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
-            return ['data' => $data, 'count' => $count];
+            return $this->getAllDataFromDatabase();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['dhst'], $e);
         }
@@ -56,13 +70,7 @@ class DhstService
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $data = $this->dhstRepository->applyJoins()
-                ->where('his_dhst.id', $id);
-            $data = $this->dhstRepository->applyWith($data);
-            $data = $this->dhstRepository->applyIsActiveFilter($data, $this->params->isActive);
-            $data = $this->dhstRepository->applyIsDeleteFilter($data, $this->params->isDelete);
-            $data = $data->first();
-            return $data;
+            return $this->getDataById($id);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['dhst'], $e);
         }

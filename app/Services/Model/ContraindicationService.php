@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Cache;
 use App\Repositories\ContraindicationRepository;
 use Illuminate\Support\Facades\Redis;
 
-class ContraindicationService 
+class ContraindicationService
 {
     protected $contraindicationRepository;
     protected $params;
@@ -37,22 +37,39 @@ class ContraindicationService
             return writeAndThrowError(config('params')['db_service']['error']['contraindication'], $e);
         }
     }
+    private function getAllDataFromDatabase()
+    {
+        $data = $this->contraindicationRepository->applyJoins();
+        $data = $this->contraindicationRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $count = $data->count();
+        $data = $this->contraindicationRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->contraindicationRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        return ['data' => $data, 'count' => $count];
+    }
+    private function getDataById($id)
+    {
+        $data = $this->contraindicationRepository->applyJoins()
+            ->where('his_contraindication.id', $id);
+        $data = $this->contraindicationRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $data->first();
+        return $data;
+    }
     public function handleDataBaseGetAll()
     {
         try {
-            $cacheKey = $this->params->contraindicationName .'_'. $this->params->param;
-            $cacheKeySet = "cache_keys:" . $this->params->contraindicationName; // Set để lưu danh sách key
-            $data = Cache::remember($cacheKey, $this->params->time, function () {
-                $data = $this->contraindicationRepository->applyJoins();
-                $data = $this->contraindicationRepository->applyIsActiveFilter($data, $this->params->isActive);
-                $count = $data->count();
-                $data = $this->contraindicationRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
-                $data = $this->contraindicationRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
-                return ['data' => $data, 'count' => $count];
-            });
-            // Lưu key vào Redis Set để dễ xóa sau này
-            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
-            return $data;
+            // Nếu không lưu cache
+            if ($this->params->noCache) {
+                return $this->getAllDataFromDatabase();
+            } else {
+                $cacheKey = $this->params->contraindicationName . '_' . $this->params->param;
+                $cacheKeySet = "cache_keys:" . $this->params->contraindicationName; // Set để lưu danh sách key
+                $data = Cache::remember($cacheKey, $this->params->time, function () {
+                    return $this->getAllDataFromDatabase();
+                });
+                // Lưu key vào Redis Set để dễ xóa sau này
+                Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+                return $data;
+            }
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['contraindication'], $e);
         }
@@ -60,18 +77,19 @@ class ContraindicationService
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $cacheKey = $this->params->contraindicationName .'_'.$id.'_'. $this->params->param;
-            $cacheKeySet = "cache_keys:" . $this->params->contraindicationName; // Set để lưu danh sách key
-            $data = Cache::remember($cacheKey, $this->params->time, function () use($id){
-                $data = $this->contraindicationRepository->applyJoins()
-                    ->where('his_contraindication.id', $id);
-                $data = $this->contraindicationRepository->applyIsActiveFilter($data, $this->params->isActive);
-                $data = $data->first();
+            // Nếu không lưu cache
+            if ($this->params->noCache) {
+                return $this->getDataById($id);
+            } else {
+                $cacheKey = $this->params->contraindicationName . '_' . $id . '_' . $this->params->param;
+                $cacheKeySet = "cache_keys:" . $this->params->contraindicationName; // Set để lưu danh sách key
+                $data = Cache::remember($cacheKey, $this->params->time, function () use ($id) {
+                    return $this->getDataById($id);
+                });
+                // Lưu key vào Redis Set để dễ xóa sau này
+                Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
                 return $data;
-            });
-            // Lưu key vào Redis Set để dễ xóa sau này
-            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
-            return $data;
+            }
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['contraindication'], $e);
         }
@@ -81,7 +99,7 @@ class ContraindicationService
     {
         try {
             $data = $this->contraindicationRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
-            
+
             // Gọi event để thêm index vào elastic
             event(new InsertContraindicationIndex($data, $this->params->contraindicationName));
             // Gọi event để xóa cache
@@ -103,7 +121,7 @@ class ContraindicationService
         }
         try {
             $data = $this->contraindicationRepository->update($request, $data, $this->params->time, $this->params->appModifier);
-            
+
             // Gọi event để thêm index vào elastic
             event(new InsertContraindicationIndex($data, $this->params->contraindicationName));
             // Gọi event để xóa cache
@@ -125,7 +143,7 @@ class ContraindicationService
         }
         try {
             $data = $this->contraindicationRepository->delete($data);
-            
+
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->contraindicationName));
             // Gọi event để xóa cache

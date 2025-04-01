@@ -38,17 +38,30 @@ class SereServDepositVViewService
             return writeAndThrowError(config('params')['db_service']['error']['sere_serv_deposit_v_view'], $e);
         }
     }
+    private function getAllDataFromDatabase()
+    {
+        $data = $this->sereServDepositVViewRepository->applyJoins();
+        $data = $this->sereServDepositVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $this->sereServDepositVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+        $data = $this->sereServDepositVViewRepository->applyTdlTreatmentIdFilter($data, $this->params->tdlTreatmentId);
+        $count = $data->count();
+        $data = $this->sereServDepositVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->sereServDepositVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        return ['data' => $data, 'count' => $count];
+    }
+    private function getDataById($id)
+    {
+        $data = $this->sereServDepositVViewRepository->applyJoins()
+        ->where('v_his_sere_serv_deposit.id', $id);
+    $data = $this->sereServDepositVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
+    $data = $this->sereServDepositVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+    $data = $data->first();
+    return $data;
+    }
     public function handleDataBaseGetAll()
     {
         try {
-            $data = $this->sereServDepositVViewRepository->applyJoins();
-            $data = $this->sereServDepositVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-            $data = $this->sereServDepositVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
-            $data = $this->sereServDepositVViewRepository->applyTdlTreatmentIdFilter($data, $this->params->tdlTreatmentId);
-            $count = $data->count();
-            $data = $this->sereServDepositVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
-            $data = $this->sereServDepositVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
-            return ['data' => $data, 'count' => $count];
+            return $this->getAllDataFromDatabase();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['sere_serv_deposit_v_view'], $e);
         }
@@ -56,12 +69,7 @@ class SereServDepositVViewService
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $data = $this->sereServDepositVViewRepository->applyJoins()
-                ->where('v_his_sere_serv_deposit.id', $id);
-            $data = $this->sereServDepositVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-            $data = $this->sereServDepositVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
-            $data = $data->first();
-            return $data;
+            return $this->getDataById($id);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['sere_serv_deposit_v_view'], $e);
         }

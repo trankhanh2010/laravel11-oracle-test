@@ -41,20 +41,33 @@ class DebateListVViewService
             return writeAndThrowError(config('params')['db_service']['error']['debate_list_v_view'], $e);
         }
     }
+    private function getAllDataFromDatabase()
+    {
+        $data = $this->debateListVViewRepository->applyJoins();
+        $data = $this->debateListVViewRepository->applyIsActiveFilter($data, 1);
+        $data = $this->debateListVViewRepository->applyIsDeleteFilter($data, 0);
+        $data = $this->debateListVViewRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
+        $data = $this->debateListVViewRepository->applyTreatmentCodeFilter($data, $this->params->treatmentCode);
+        $data = $this->debateListVViewRepository->applyDepartmentIdsFilter($data, $this->params->departmentIds);
+        $data = $this->debateListVViewRepository->applyDebateTimeFilter($data, $this->params->debateTimeFrom, $this->params->debateTimeTo);
+        $count = $data->count();
+        $data = $this->debateListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->debateListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        return ['data' => $data, 'count' => $count];
+    }
+    private function getDataById($id)
+    {
+        $data = $this->debateListVViewRepository->applyJoins()
+        ->where('v_his_debate_list.id', $id);
+    $data = $this->debateListVViewRepository->applyIsActiveFilter($data, 1);
+    $data = $this->debateListVViewRepository->applyIsDeleteFilter($data, 0);
+    $data = $data->first();
+    return $data;
+    }
     public function handleDataBaseGetAll()
     {
         try {
-            $data = $this->debateListVViewRepository->applyJoins();
-            $data = $this->debateListVViewRepository->applyIsActiveFilter($data, 1);
-            $data = $this->debateListVViewRepository->applyIsDeleteFilter($data, 0);
-            $data = $this->debateListVViewRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
-            $data = $this->debateListVViewRepository->applyTreatmentCodeFilter($data, $this->params->treatmentCode);
-            $data = $this->debateListVViewRepository->applyDepartmentIdsFilter($data, $this->params->departmentIds);
-            $data = $this->debateListVViewRepository->applyDebateTimeFilter($data, $this->params->debateTimeFrom, $this->params->debateTimeTo);
-            $count = $data->count();
-            $data = $this->debateListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
-            $data = $this->debateListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
-            return ['data' => $data, 'count' => $count];
+            return $this->getAllDataFromDatabase();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['debate_list_v_view'], $e);
         }
@@ -62,12 +75,7 @@ class DebateListVViewService
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $data = $this->debateListVViewRepository->applyJoins()
-                ->where('v_his_debate_list.id', $id);
-            $data = $this->debateListVViewRepository->applyIsActiveFilter($data, 1);
-            $data = $this->debateListVViewRepository->applyIsDeleteFilter($data, 0);
-            $data = $data->first();
-            return $data;
+            return $this->getDataById($id);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['debate_list_v_view'], $e);
         }

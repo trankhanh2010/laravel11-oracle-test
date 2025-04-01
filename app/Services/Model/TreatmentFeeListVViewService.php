@@ -45,34 +45,48 @@ class TreatmentFeeListVViewService
             return writeAndThrowError(config('params')['db_service']['error']['treatment_fee_list_v_view'], $e);
         }
     }
+    private function getAllDataFromDatabase()
+    {
+        $data = $this->treatmentFeeListVViewRepository->applyJoins();
+        // $data = $this->treatmentFeeListVViewRepository->applyWith($data);
+        if ($this->params->treatmentCode) {
+            $data = $this->treatmentFeeListVViewRepository->applyTreatmentCodeFilter($data, $this->params->treatmentCode);
+        }
+        if ($this->params->patientCode) {
+            $data = $this->treatmentFeeListVViewRepository->applyPatientCodeFilter($data, $this->params->patientCode);
+        }
+        if ($this->params->patientPhone) {
+            $data = $this->treatmentFeeListVViewRepository->applyPatientPhoneFilter($data, $this->params->patientPhone);
+        }
+        $data = $this->treatmentFeeListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $this->treatmentFeeListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+        $data = $this->treatmentFeeListVViewRepository->applyStatusFilter($data, $this->params->status);
+        $data = $this->treatmentFeeListVViewRepository->applyFromTimeFilter($data, $this->params->fromTime);
+        $data = $this->treatmentFeeListVViewRepository->applyToTimeFilter($data, $this->params->toTime);
+
+        $data = $this->treatmentFeeListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->treatmentFeeListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit, $this->params->cursorPaginate, $this->params->lastId);
+        if ($this->params->getAll) {
+            $count = $data->count();
+        } else {
+            $count = null;
+        }
+        return ['data' => $data, 'count' => $count];
+    }
+    private function getDataById($id)
+    {
+        $data = $this->treatmentFeeListVViewRepository->applyJoins()
+        ->where('id', $id);
+    $data = $this->treatmentFeeListVViewRepository->applyWith($data);
+    $data = $this->treatmentFeeListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
+    $data = $this->treatmentFeeListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+    $data = $data->first();
+    return $data;
+    }
     public function handleDataBaseGetAll()
     {
         try {
-            $data = $this->treatmentFeeListVViewRepository->applyJoins();
-            // $data = $this->treatmentFeeListVViewRepository->applyWith($data);
-            if ($this->params->treatmentCode) {
-                $data = $this->treatmentFeeListVViewRepository->applyTreatmentCodeFilter($data, $this->params->treatmentCode);
-            }
-            if ($this->params->patientCode) {
-                $data = $this->treatmentFeeListVViewRepository->applyPatientCodeFilter($data, $this->params->patientCode);
-            }
-            if ($this->params->patientPhone) {
-                $data = $this->treatmentFeeListVViewRepository->applyPatientPhoneFilter($data, $this->params->patientPhone);
-            }
-            $data = $this->treatmentFeeListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-            $data = $this->treatmentFeeListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
-            $data = $this->treatmentFeeListVViewRepository->applyStatusFilter($data, $this->params->status);
-            $data = $this->treatmentFeeListVViewRepository->applyFromTimeFilter($data, $this->params->fromTime);
-            $data = $this->treatmentFeeListVViewRepository->applyToTimeFilter($data, $this->params->toTime);
-
-            $data = $this->treatmentFeeListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
-            $data = $this->treatmentFeeListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit, $this->params->cursorPaginate, $this->params->lastId);
-            if ($this->params->getAll) {
-                $count = $data->count();
-            } else {
-                $count = null;
-            }
-            return ['data' => $data, 'count' => $count];
+            return $this->getAllDataFromDatabase();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['treatment_fee_list_v_view'], $e);
         }
@@ -80,13 +94,7 @@ class TreatmentFeeListVViewService
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $data = $this->treatmentFeeListVViewRepository->applyJoins()
-                ->where('id', $id);
-            $data = $this->treatmentFeeListVViewRepository->applyWith($data);
-            $data = $this->treatmentFeeListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-            $data = $this->treatmentFeeListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
-            $data = $data->first();
-            return $data;
+            return $this->getDataById($id);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['treatment_fee_list_v_view'], $e);
         }

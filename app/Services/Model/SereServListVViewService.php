@@ -46,25 +46,38 @@ class SereServListVViewService
             return writeAndThrowError(config('params')['db_service']['error']['sere_serv_list_v_view'], $e);
         }
     }
+    private function getAllDataFromDatabase()
+    {
+        $data = $this->sereServListVViewRepository->applyJoins();
+        $data = $this->sereServListVViewRepository->applyIsActiveFilter($data, 1);
+        $data = $this->sereServListVViewRepository->applyIsDeleteFilter($data, 0);
+        $data = $this->sereServListVViewRepository->applyTrackingIdFilter($data, $this->params->trackingId);
+        $data = $this->sereServListVViewRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
+        $data = $this->sereServListVViewRepository->applyPatientCodeFilter($data, $this->params->patientCode);
+        $data = $this->sereServListVViewRepository->applyServiceTypeCodesFilter($data, $this->params->serviceTypeCodes);
+        $data = $this->sereServListVViewRepository->applyServiceReqIdFilter($data, $this->params->serviceReqId);
+        $data = $this->sereServListVViewRepository->applyNotInTrackingFilter($data, $this->params->notInTracking);
+        
+        $count = $data->count();
+        $data = $this->sereServListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->sereServListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        // Group theo field
+        $data = $this->sereServListVViewRepository->applyGroupByField($data, $this->params->groupBy);
+        return ['data' => $data, 'count' => $count];
+    }
+    private function getDataById($id)
+    {
+        $data = $this->sereServListVViewRepository->applyJoins()
+        ->where('id', $id);
+    $data = $this->sereServListVViewRepository->applyIsActiveFilter($data, 1);
+    $data = $this->sereServListVViewRepository->applyIsDeleteFilter($data, 0);
+    $data = $data->first();
+    return $data;
+    }
     public function handleDataBaseGetAll()
     {
         try {
-            $data = $this->sereServListVViewRepository->applyJoins();
-            $data = $this->sereServListVViewRepository->applyIsActiveFilter($data, 1);
-            $data = $this->sereServListVViewRepository->applyIsDeleteFilter($data, 0);
-            $data = $this->sereServListVViewRepository->applyTrackingIdFilter($data, $this->params->trackingId);
-            $data = $this->sereServListVViewRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
-            $data = $this->sereServListVViewRepository->applyPatientCodeFilter($data, $this->params->patientCode);
-            $data = $this->sereServListVViewRepository->applyServiceTypeCodesFilter($data, $this->params->serviceTypeCodes);
-            $data = $this->sereServListVViewRepository->applyServiceReqIdFilter($data, $this->params->serviceReqId);
-            $data = $this->sereServListVViewRepository->applyNotInTrackingFilter($data, $this->params->notInTracking);
-            
-            $count = $data->count();
-            $data = $this->sereServListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
-            $data = $this->sereServListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
-            // Group theo field
-            $data = $this->sereServListVViewRepository->applyGroupByField($data, $this->params->groupBy);
-            return ['data' => $data, 'count' => $count];
+            return $this->getAllDataFromDatabase();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['sere_serv_list_v_view'], $e);
         }
@@ -72,12 +85,7 @@ class SereServListVViewService
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $data = $this->sereServListVViewRepository->applyJoins()
-                ->where('id', $id);
-            $data = $this->sereServListVViewRepository->applyIsActiveFilter($data, 1);
-            $data = $this->sereServListVViewRepository->applyIsDeleteFilter($data, 0);
-            $data = $data->first();
-            return $data;
+            return $this->getDataById($id);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['sere_serv_list_v_view'], $e);
         }

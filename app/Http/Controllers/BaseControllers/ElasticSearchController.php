@@ -203,8 +203,31 @@ class ElasticSearchController extends BaseApiCacheController
     }
     public function getAllName(Request $request)
     {
-        // Chỉ trả về key
-        $data = $this->all_table;
+        switch ($this->tab) {
+            case 'voBenhAn':
+                $data = [
+                    "pttt_catastrophe",
+                    "pttt_condition",
+                    "pttt_method",
+                    "service_req_type",
+                    "service_req_stt",
+                    "treatment_end_type",
+                    "emr_cover_type",
+                    "emr_form",
+                    "icd_list_v_view",
+                    "death_cause",
+                    "treatment_result",
+                    "document_type",
+                    "user_room_v_view"
+                ];
+                break;
+            default:
+                // Chỉ trả về key
+                $data = $this->all_table;
+                break;
+        }
+
+
         return returnDataSuccess([], $data);
     }
     public function indexRecordsToElasticsearch(Request $request)
@@ -267,7 +290,7 @@ class ElasticSearchController extends BaseApiCacheController
             $tables = $table;
         }
         // Nếu xóa theo ids
-        if($this->ids != null){
+        if ($this->ids != null) {
             $this->deleteIndexRecordsToElasticsearchByIds();
             return response()->json([
                 'status'    => 200,
@@ -416,7 +439,7 @@ class ElasticSearchController extends BaseApiCacheController
             'h' => 'index,docs.count',
             'format' => 'json',
         ]);
-        
+
         $data = json_decode($response->getBody(), true);
 
         return returnDataSuccess([], $data);
@@ -433,7 +456,8 @@ class ElasticSearchController extends BaseApiCacheController
         // Gọi event để xóa cache
         event(new DeleteCache($this->table[0]));
     }
-    public function deleteIndexRecordsToElasticsearchByIds(){
+    public function deleteIndexRecordsToElasticsearchByIds()
+    {
         foreach ($this->ids as $key => $item) {
             // Gọi event để thêm index vào elastic
             $data = new ArrayObject([

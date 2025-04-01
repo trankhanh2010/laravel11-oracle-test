@@ -38,18 +38,32 @@ class DepositReqListVViewService
             return writeAndThrowError(config('params')['db_service']['error']['deposit_req_list_v_view'], $e);
         }
     }
+    private function getAllDataFromDatabase()
+    {
+        $data = $this->depositReqListVViewRepository->applyJoins();
+        $data = $this->depositReqListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $this->depositReqListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+        $data = $this->depositReqListVViewRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
+        $data = $this->depositReqListVViewRepository->applyIsDepositFilter($data, $this->params->isDeposit);
+        $count = $data->count();
+        $data = $this->depositReqListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->depositReqListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        return ['data' => $data, 'count' => $count];
+    }
+    private function getDataById($id)
+    {
+        $data = $this->depositReqListVViewRepository->applyJoins()
+        ->where('id', $id);
+    $data = $this->depositReqListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
+    $data = $this->depositReqListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+    $data = $this->depositReqListVViewRepository->applyIsDepositFilter($data, $this->params->isDeposit);
+    $data = $data->first();
+    return $data;
+    }
     public function handleDataBaseGetAll()
     {
         try {
-            $data = $this->depositReqListVViewRepository->applyJoins();
-            $data = $this->depositReqListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-            $data = $this->depositReqListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
-            $data = $this->depositReqListVViewRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
-            $data = $this->depositReqListVViewRepository->applyIsDepositFilter($data, $this->params->isDeposit);
-            $count = $data->count();
-            $data = $this->depositReqListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
-            $data = $this->depositReqListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
-            return ['data' => $data, 'count' => $count];
+            return $this->getAllDataFromDatabase();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['deposit_req_list_v_view'], $e);
         }
@@ -57,13 +71,7 @@ class DepositReqListVViewService
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $data = $this->depositReqListVViewRepository->applyJoins()
-                ->where('id', $id);
-            $data = $this->depositReqListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-            $data = $this->depositReqListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
-            $data = $this->depositReqListVViewRepository->applyIsDepositFilter($data, $this->params->isDeposit);
-            $data = $data->first();
-            return $data;
+            return $this->getDataById($id);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['deposit_req_list_v_view'], $e);
         }

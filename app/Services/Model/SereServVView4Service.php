@@ -37,16 +37,29 @@ class SereServVView4Service
             return writeAndThrowError(config('params')['db_service']['error']['sere_serv_v_view_4'], $e);
         }
     }
+    private function getAllDataFromDatabase()
+    {
+        $data = $this->sereServVView4Repository->view();
+        $data = $this->sereServVView4Repository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $this->sereServVView4Repository->applyIsDeleteFilter($data, $this->params->isDelete);
+        $count = $data->count();
+        $data = $this->sereServVView4Repository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->sereServVView4Repository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        return ['data' => $data, 'count' => $count];
+    }
+    private function getDataById($id)
+    {
+        $data = $this->sereServVView4Repository->view()
+        ->where('v_his_sere_serv_4.id', $id);
+    $data = $this->sereServVView4Repository->applyIsActiveFilter($data, $this->params->isActive);
+    $data = $this->sereServVView4Repository->applyIsDeleteFilter($data, $this->params->isDelete);
+    $data = $data->first();
+    return $data;
+    }
     public function handleDataBaseGetAll()
     {
         try {
-            $data = $this->sereServVView4Repository->view();
-            $data = $this->sereServVView4Repository->applyIsActiveFilter($data, $this->params->isActive);
-            $data = $this->sereServVView4Repository->applyIsDeleteFilter($data, $this->params->isDelete);
-            $count = $data->count();
-            $data = $this->sereServVView4Repository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
-            $data = $this->sereServVView4Repository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
-            return ['data' => $data, 'count' => $count];
+            return $this->getAllDataFromDatabase();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['sere_serv_v_view_4'], $e);
         }
@@ -54,12 +67,7 @@ class SereServVView4Service
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $data = $this->sereServVView4Repository->view()
-                ->where('v_his_sere_serv_4.id', $id);
-            $data = $this->sereServVView4Repository->applyIsActiveFilter($data, $this->params->isActive);
-            $data = $this->sereServVView4Repository->applyIsDeleteFilter($data, $this->params->isDelete);
-            $data = $data->first();
-            return $data;
+            return $this->getDataById($id);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['sere_serv_v_view_4'], $e);
         }

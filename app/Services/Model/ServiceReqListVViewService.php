@@ -42,21 +42,35 @@ class ServiceReqListVViewService
             return writeAndThrowError(config('params')['db_service']['error']['service_req_list_v_view'], $e);
         }
     }
+    private function getAllDataFromDatabase()
+    {
+        $data = $this->serviceReqListVViewRepository->applyJoins();
+        $data = $this->serviceReqListVViewRepository->applyWithParam($data);
+        $data = $this->serviceReqListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $this->serviceReqListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+        $data = $this->serviceReqListVViewRepository->applyTrackingIdFilter($data, $this->params->trackingId);
+        $data = $this->serviceReqListVViewRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
+        $count = $data->count();
+        $data = $this->serviceReqListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->serviceReqListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        // Group theo field
+        $data = $this->serviceReqListVViewRepository->applyGroupByField($data, $this->params->groupBy);
+        return ['data' => $data, 'count' => $count];
+    }
+    private function getDataById($id)
+    {
+        $data = $this->serviceReqListVViewRepository->applyJoins()
+        ->where('id', $id);
+    $data = $this->serviceReqListVViewRepository->applyWithParam($data);
+    $data = $this->serviceReqListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
+    $data = $this->serviceReqListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+    $data = $data->first();
+    return $data;
+    }
     public function handleDataBaseGetAll()
     {
         try {
-            $data = $this->serviceReqListVViewRepository->applyJoins();
-            $data = $this->serviceReqListVViewRepository->applyWithParam($data);
-            $data = $this->serviceReqListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-            $data = $this->serviceReqListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
-            $data = $this->serviceReqListVViewRepository->applyTrackingIdFilter($data, $this->params->trackingId);
-            $data = $this->serviceReqListVViewRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
-            $count = $data->count();
-            $data = $this->serviceReqListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
-            $data = $this->serviceReqListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
-            // Group theo field
-            $data = $this->serviceReqListVViewRepository->applyGroupByField($data, $this->params->groupBy);
-            return ['data' => $data, 'count' => $count];
+            return $this->getAllDataFromDatabase();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['service_req_list_v_view'], $e);
         }
@@ -64,13 +78,7 @@ class ServiceReqListVViewService
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $data = $this->serviceReqListVViewRepository->applyJoins()
-                ->where('id', $id);
-            $data = $this->serviceReqListVViewRepository->applyWithParam($data);
-            $data = $this->serviceReqListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-            $data = $this->serviceReqListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
-            $data = $data->first();
-            return $data;
+            return $this->getDataById($id);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['service_req_list_v_view'], $e);
         }

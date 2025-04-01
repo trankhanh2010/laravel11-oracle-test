@@ -104,15 +104,27 @@ class UserRoomVViewService
             return writeAndThrowError(config('params')['db_service']['error']['user_room_v_view'], $e);
         }
     }
+    private function getAllDataFromDatabase()
+    {
+        $data = $this->userRoomVViewRepository->applyJoins();
+        $data = $this->userRoomVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $count = $data->count();
+        $data = $this->userRoomVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->userRoomVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        return ['data' => $data, 'count' => $count];
+    }
+    private function getDataById($id)
+    {
+        $data = $this->userRoomVViewRepository->applyJoins()
+        ->where('id', $id);
+    $data = $this->userRoomVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
+    $data = $data->first();
+    return $data;
+    }
     public function handleDataBaseGetAll()
     {
         try {
-            $data = $this->userRoomVViewRepository->applyJoins();
-            $data = $this->userRoomVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-            $count = $data->count();
-            $data = $this->userRoomVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
-            $data = $this->userRoomVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
-            return ['data' => $data, 'count' => $count];
+            return $this->getAllDataFromDatabase();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['user_room_v_view'], $e);
         }
@@ -120,11 +132,7 @@ class UserRoomVViewService
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $data = $this->userRoomVViewRepository->applyJoins()
-                ->where('id', $id);
-            $data = $this->userRoomVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-            $data = $data->first();
-            return $data;
+            return $this->getDataById($id);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['user_room_v_view'], $e);
         }

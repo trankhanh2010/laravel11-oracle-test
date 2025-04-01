@@ -23,31 +23,49 @@ class TreatmentListVViewService
         $this->params = $params;
         return $this;
     }
+    private function getAllDataFromDatabase()
+    {
+        $data = $this->treatmentListVViewRepository->applyJoins();
+        $data = $this->treatmentListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $this->treatmentListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+        $data = $this->treatmentListVViewRepository->applyPatientCodeFilter($data, $this->params->patientCode);
+        $data = $this->treatmentListVViewRepository->applyTreatmentTypeCodeFilter($data, $this->params->treatmentTypeCode);
+        $data = $this->treatmentListVViewRepository->applyInTimeFilter($data, $this->params->inTimeFrom, $this->params->inTimeTo);
+
+        $count = $data->count();
+        $data = $this->treatmentListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->treatmentListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        // Group theo field
+        $data = $this->treatmentListVViewRepository->applyGroupByField($data, $this->params->groupBy);
+        return ['data' => $data, 'count' => $count];
+    }
+    private function getDataById($id)
+    {
+        $data = $this->treatmentListVViewRepository->applyJoins()
+            ->where('id', $id);
+        $data = $this->treatmentListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $this->treatmentListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+        $data = $data->first();
+        return $data;
+    }
     public function handleDataBaseGetAll()
     {
         try {
-            $cacheKey = $this->params->treatmentListVViewName .'_'. $this->params->param;
-            $cacheKeySet = "cache_keys:" . $this->params->treatmentListVViewName; // Set để lưu danh sách key
-            
-            $data = Cache::remember($cacheKey, 3600, function () {                
-                $data = $this->treatmentListVViewRepository->applyJoins();
-                $data = $this->treatmentListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-                $data = $this->treatmentListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
-                $data = $this->treatmentListVViewRepository->applyPatientCodeFilter($data, $this->params->patientCode);
-                $data = $this->treatmentListVViewRepository->applyTreatmentTypeCodeFilter($data, $this->params->treatmentTypeCode);
-                $data = $this->treatmentListVViewRepository->applyInTimeFilter($data, $this->params->inTimeFrom, $this->params->inTimeTo);
+            // Nếu không lưu cache
+            if ($this->params->noCache) {
+                return $this->getAllDataFromDatabase();
+            } else {
+                $cacheKey = $this->params->treatmentListVViewName . '_' . $this->params->param;
+                $cacheKeySet = "cache_keys:" . $this->params->treatmentListVViewName; // Set để lưu danh sách key
 
-                $count = $data->count();
-                $data = $this->treatmentListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
-                $data = $this->treatmentListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
-                // Group theo field
-                $data = $this->treatmentListVViewRepository->applyGroupByField($data, $this->params->groupBy);
-                return ['data' => $data, 'count' => $count];
-            });
-            // Lưu key vào Redis Set để dễ xóa sau này
-            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+                $data = Cache::remember($cacheKey, 3600, function () {
+                    return $this->getAllDataFromDatabase();
+                });
+                // Lưu key vào Redis Set để dễ xóa sau này
+                Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
 
-            return $data;
+                return $data;
+            }
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['treatment_list_v_view'], $e);
         }
@@ -55,12 +73,7 @@ class TreatmentListVViewService
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $data = $this->treatmentListVViewRepository->applyJoins()
-                ->where('id', $id);
-            $data = $this->treatmentListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-            $data = $this->treatmentListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
-            $data = $data->first();
-            return $data;
+            return $this->getDataById($id);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['treatment_list_v_view'], $e);
         }

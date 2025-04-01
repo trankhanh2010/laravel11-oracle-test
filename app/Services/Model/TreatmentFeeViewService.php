@@ -43,22 +43,35 @@ class TreatmentFeeViewService
             return writeAndThrowError(config('params')['db_service']['error']['treatment_fee_view'], $e);
         }
     }
+    private function getAllDataFromDatabase()
+    {
+        $data = $this->treatmentFeeViewRepository->applyJoins();
+        $data = $this->treatmentFeeViewRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $this->treatmentFeeViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+        $data = $this->treatmentFeeViewRepository->applyTdlTreatmentTypeIdsFilter($data, $this->params->tdlTreatmentTypeIds);
+        $data = $this->treatmentFeeViewRepository->applyTdlPatientTypeIdsFilter($data, $this->params->tdlPatientTypeIds);
+        $data = $this->treatmentFeeViewRepository->applyBranchIdFilter($data, $this->params->branchId);
+        $data = $this->treatmentFeeViewRepository->applyInDateFromFilter($data, $this->params->inDateFrom);
+        $data = $this->treatmentFeeViewRepository->applyInDateToFilter($data, $this->params->inDateTo);
+        $data = $this->treatmentFeeViewRepository->applyIsApproveStoreFilter($data, $this->params->isApproveStore);
+        $count = $data->count();
+        $data = $this->treatmentFeeViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->treatmentFeeViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        return ['data' => $data, 'count' => $count];
+    }
+    private function getDataById($id)
+    {
+        $data = $this->treatmentFeeViewRepository->applyJoins()
+        ->where('v_his_treatment_fee.id', $id);
+    $data = $this->treatmentFeeViewRepository->applyIsActiveFilter($data, $this->params->isActive);
+    $data = $this->treatmentFeeViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+    $data = $data->first();
+    return $data;
+    }
     public function handleDataBaseGetAll()
     {
         try {
-            $data = $this->treatmentFeeViewRepository->applyJoins();
-            $data = $this->treatmentFeeViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-            $data = $this->treatmentFeeViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
-            $data = $this->treatmentFeeViewRepository->applyTdlTreatmentTypeIdsFilter($data, $this->params->tdlTreatmentTypeIds);
-            $data = $this->treatmentFeeViewRepository->applyTdlPatientTypeIdsFilter($data, $this->params->tdlPatientTypeIds);
-            $data = $this->treatmentFeeViewRepository->applyBranchIdFilter($data, $this->params->branchId);
-            $data = $this->treatmentFeeViewRepository->applyInDateFromFilter($data, $this->params->inDateFrom);
-            $data = $this->treatmentFeeViewRepository->applyInDateToFilter($data, $this->params->inDateTo);
-            $data = $this->treatmentFeeViewRepository->applyIsApproveStoreFilter($data, $this->params->isApproveStore);
-            $count = $data->count();
-            $data = $this->treatmentFeeViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
-            $data = $this->treatmentFeeViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
-            return ['data' => $data, 'count' => $count];
+            return $this->getAllDataFromDatabase();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['treatment_fee_view'], $e);
         }
@@ -66,12 +79,7 @@ class TreatmentFeeViewService
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $data = $this->treatmentFeeViewRepository->applyJoins()
-                ->where('v_his_treatment_fee.id', $id);
-            $data = $this->treatmentFeeViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-            $data = $this->treatmentFeeViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
-            $data = $data->first();
-            return $data;
+            return $this->getDataById($id);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['treatment_fee_view'], $e);
         }

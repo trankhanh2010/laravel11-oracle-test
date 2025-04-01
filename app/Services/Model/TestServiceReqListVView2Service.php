@@ -44,29 +44,43 @@ class TestServiceReqListVView2Service
             return writeAndThrowError(config('params')['db_service']['error']['test_service_req_list_v_view_2'], $e);
         }
     }
+    private function getAllDataFromDatabase()
+    {
+        $data = $this->testServiceReqListVView2Repository->applyJoins();
+        $data = $this->testServiceReqListVView2Repository->applyWith($data);
+        $data = $this->testServiceReqListVView2Repository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $this->testServiceReqListVView2Repository->applyIsDeleteFilter($data, $this->params->isDelete);
+        $data = $this->testServiceReqListVView2Repository->applyFromTimeFilter($data, $this->params->fromTime);
+        $data = $this->testServiceReqListVView2Repository->applyToTimeFilter($data, $this->params->toTime);
+        $data = $this->testServiceReqListVView2Repository->applyTreatmentType01IdFilter($data);
+        $data = $this->testServiceReqListVView2Repository->applyTreatmentType01Filter($data, $this->params->isNoExcute, $this->params->isSpecimen);
+        $data = $this->testServiceReqListVView2Repository->applyExecuteDepartmentCodeFilter($data, $this->params->executeDepartmentCode);
+        // $data = $this->testServiceReqListVViewRepository->applyIsNoExcuteFilter($data, $this->params->isNoExcute);
+        // $data = $this->testServiceReqListVViewRepository->applyIsSpecimenFilter($data, $this->params->isSpecimen);
+        if($this->params->start == 0){
+            // $count = $data->count();
+            $count = null;
+        }else{
+            $count = null;
+        }
+        $data = $this->testServiceReqListVView2Repository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->testServiceReqListVView2Repository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        return ['data' => $data, 'count' => $count];
+    }
+    private function getDataById($id)
+    {
+        $data = $this->testServiceReqListVView2Repository->applyJoins()
+        ->where('v_his_test_service_req_list_2.id', $id);
+    $data = $this->testServiceReqListVView2Repository->applyWith($data);
+    $data = $this->testServiceReqListVView2Repository->applyIsActiveFilter($data, $this->params->isActive);
+    $data = $this->testServiceReqListVView2Repository->applyIsDeleteFilter($data, $this->params->isDelete);
+    $data = $data->first();
+    return $data;
+    }
     public function handleDataBaseGetAll()
     {
         try {
-            $data = $this->testServiceReqListVView2Repository->applyJoins();
-            $data = $this->testServiceReqListVView2Repository->applyWith($data);
-            $data = $this->testServiceReqListVView2Repository->applyIsActiveFilter($data, $this->params->isActive);
-            $data = $this->testServiceReqListVView2Repository->applyIsDeleteFilter($data, $this->params->isDelete);
-            $data = $this->testServiceReqListVView2Repository->applyFromTimeFilter($data, $this->params->fromTime);
-            $data = $this->testServiceReqListVView2Repository->applyToTimeFilter($data, $this->params->toTime);
-            $data = $this->testServiceReqListVView2Repository->applyTreatmentType01IdFilter($data);
-            $data = $this->testServiceReqListVView2Repository->applyTreatmentType01Filter($data, $this->params->isNoExcute, $this->params->isSpecimen);
-            $data = $this->testServiceReqListVView2Repository->applyExecuteDepartmentCodeFilter($data, $this->params->executeDepartmentCode);
-            // $data = $this->testServiceReqListVViewRepository->applyIsNoExcuteFilter($data, $this->params->isNoExcute);
-            // $data = $this->testServiceReqListVViewRepository->applyIsSpecimenFilter($data, $this->params->isSpecimen);
-            if($this->params->start == 0){
-                // $count = $data->count();
-                $count = null;
-            }else{
-                $count = null;
-            }
-            $data = $this->testServiceReqListVView2Repository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
-            $data = $this->testServiceReqListVView2Repository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
-            return ['data' => $data, 'count' => $count];
+            return $this->getAllDataFromDatabase();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['test_service_req_list_v_view_2'], $e);
         }
@@ -74,13 +88,7 @@ class TestServiceReqListVView2Service
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $data = $this->testServiceReqListVView2Repository->applyJoins()
-                ->where('v_his_test_service_req_list_2.id', $id);
-            $data = $this->testServiceReqListVView2Repository->applyWith($data);
-            $data = $this->testServiceReqListVView2Repository->applyIsActiveFilter($data, $this->params->isActive);
-            $data = $this->testServiceReqListVView2Repository->applyIsDeleteFilter($data, $this->params->isDelete);
-            $data = $data->first();
-            return $data;
+            return $this->getDataById($id);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['test_service_req_list_v_view_2'], $e);
         }

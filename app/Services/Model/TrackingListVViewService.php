@@ -40,19 +40,33 @@ class TrackingListVViewService
             return writeAndThrowError(config('params')['db_service']['error']['tracking_list_v_view'], $e);
         }
     }
+    private function getAllDataFromDatabase()
+    {
+        $data = $this->trackingListVViewRepository->applyJoins();
+        $data = $this->trackingListVViewRepository->applyIsActiveFilter($data, 1);
+        $data = $this->trackingListVViewRepository->applyIsDeleteFilter($data, 0);
+        $data = $this->trackingListVViewRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
+        $count = $data->count();
+        $data = $this->trackingListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->trackingListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        // Group theo field
+        $data = $this->trackingListVViewRepository->applyGroupByField($data, $this->params->groupBy);
+        return ['data' => $data, 'count' => $count];
+    }
+    private function getDataById($id)
+    {
+        $data = $this->trackingListVViewRepository->applyJoins()
+        ->where('id', $id);
+    $data = $this->trackingListVViewRepository->applyIsActiveFilter($data, 1);
+    $data = $this->trackingListVViewRepository->applyIsDeleteFilter($data, 0);
+    $data = $this->trackingListVViewRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
+    $data = $data->first();
+    return $data;
+    }
     public function handleDataBaseGetAll()
     {
         try {
-            $data = $this->trackingListVViewRepository->applyJoins();
-            $data = $this->trackingListVViewRepository->applyIsActiveFilter($data, 1);
-            $data = $this->trackingListVViewRepository->applyIsDeleteFilter($data, 0);
-            $data = $this->trackingListVViewRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
-            $count = $data->count();
-            $data = $this->trackingListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
-            $data = $this->trackingListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
-            // Group theo field
-            $data = $this->trackingListVViewRepository->applyGroupByField($data, $this->params->groupBy);
-            return ['data' => $data, 'count' => $count];
+            return $this->getAllDataFromDatabase();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['tracking_list_v_view'], $e);
         }
@@ -60,13 +74,7 @@ class TrackingListVViewService
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $data = $this->trackingListVViewRepository->applyJoins()
-                ->where('id', $id);
-            $data = $this->trackingListVViewRepository->applyIsActiveFilter($data, 1);
-            $data = $this->trackingListVViewRepository->applyIsDeleteFilter($data, 0);
-            $data = $this->trackingListVViewRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
-            $data = $data->first();
-            return $data;
+            return $this->getDataById($id);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['tracking_list_v_view'], $e);
         }

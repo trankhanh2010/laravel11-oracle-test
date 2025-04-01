@@ -46,24 +46,41 @@ class MediStockMetyService
             return writeAndThrowError(config('params')['db_service']['error']['medi_stock_mety'], $e);
         }
     }
+    private function getAllDataFromDatabase()
+    {
+        $data = $this->mediStockMetyRepository->applyJoins();
+        $data = $this->mediStockMetyRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $this->mediStockMetyRepository->applyMedicineTypeIdFilter($data, $this->params->medicineTypeId);
+        $data = $this->mediStockMetyRepository->applyMediStockIdFilter($data, $this->params->mediStockId);
+        $count = $data->count();
+        $data = $this->mediStockMetyRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->mediStockMetyRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        return ['data' => $data, 'count' => $count];
+    }
+    private function getDataById($id)
+    {
+        $data = $this->mediStockMetyRepository->applyJoins()
+            ->where('his_medi_stock_mety.id', $id);
+        $data = $this->mediStockMetyRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $data->first();
+        return $data;
+    }
     public function handleDataBaseGetAll()
     {
         try {
-            $cacheKey = $this->params->mediStockMetyName .'_'. $this->params->param;
-            $cacheKeySet = "cache_keys:" . $this->params->mediStockMetyName; // Set để lưu danh sách key
-            $data = Cache::remember($cacheKey, $this->params->time, function () {
-                $data = $this->mediStockMetyRepository->applyJoins();
-                $data = $this->mediStockMetyRepository->applyIsActiveFilter($data, $this->params->isActive);
-                $data = $this->mediStockMetyRepository->applyMedicineTypeIdFilter($data, $this->params->medicineTypeId);
-                $data = $this->mediStockMetyRepository->applyMediStockIdFilter($data, $this->params->mediStockId);
-                $count = $data->count();
-                $data = $this->mediStockMetyRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
-                $data = $this->mediStockMetyRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
-                return ['data' => $data, 'count' => $count];
-            });
-            // Lưu key vào Redis Set để dễ xóa sau này
-            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
-            return $data;
+            // Nếu không lưu cache
+            if ($this->params->noCache) {
+                return $this->getAllDataFromDatabase();
+            } else {
+                $cacheKey = $this->params->mediStockMetyName . '_' . $this->params->param;
+                $cacheKeySet = "cache_keys:" . $this->params->mediStockMetyName; // Set để lưu danh sách key
+                $data = Cache::remember($cacheKey, $this->params->time, function () {
+                    return $this->getAllDataFromDatabase();
+                });
+                // Lưu key vào Redis Set để dễ xóa sau này
+                Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+                return $data;
+            }
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['medi_stock_mety'], $e);
         }
@@ -71,18 +88,19 @@ class MediStockMetyService
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $cacheKey = $this->params->mediStockMetyName .'_'.$id.'_'. $this->params->param;
-            $cacheKeySet = "cache_keys:" . $this->params->mediStockMetyName; // Set để lưu danh sách key
-            $data = Cache::remember($cacheKey, $this->params->time, function () use($id){
-                $data = $this->mediStockMetyRepository->applyJoins()
-                    ->where('his_medi_stock_mety.id', $id);
-                $data = $this->mediStockMetyRepository->applyIsActiveFilter($data, $this->params->isActive);
-                $data = $data->first();
+            // Nếu không lưu cache
+            if ($this->params->noCache) {
+                return $this->getDataById($id);
+            } else {
+                $cacheKey = $this->params->mediStockMetyName . '_' . $id . '_' . $this->params->param;
+                $cacheKeySet = "cache_keys:" . $this->params->mediStockMetyName; // Set để lưu danh sách key
+                $data = Cache::remember($cacheKey, $this->params->time, function () use ($id) {
+                    return $this->getDataById($id);
+                });
+                // Lưu key vào Redis Set để dễ xóa sau này
+                Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
                 return $data;
-            });
-            // Lưu key vào Redis Set để dễ xóa sau này
-            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
-            return $data;
+            }
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['medi_stock_mety'], $e);
         }

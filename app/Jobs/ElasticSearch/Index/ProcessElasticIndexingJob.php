@@ -279,7 +279,7 @@ class ProcessElasticIndexingJob implements ShouldQueue
              // Ghi lỗi vào log
              logError($e, $this->nameTable);
              // Gửi lỗi qua Telegram 
-             sendErrorToTelegram($e);
+            //  sendErrorToTelegram($e);
         } finally {
             // // Đặt lại thời gian làm mới
             // $this->setRefreshInterval(1, $this->name, $client);

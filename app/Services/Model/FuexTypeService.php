@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Cache;
 use App\Repositories\FuexTypeRepository;
 use Illuminate\Support\Facades\Redis;
 
-class FuexTypeService 
+class FuexTypeService
 {
     protected $fuexTypeRepository;
     protected $params;
@@ -37,22 +37,39 @@ class FuexTypeService
             return writeAndThrowError(config('params')['db_service']['error']['fuex_type'], $e);
         }
     }
+    private function getAllDataFromDatabase()
+    {
+        $data = $this->fuexTypeRepository->applyJoins();
+        $data = $this->fuexTypeRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $count = $data->count();
+        $data = $this->fuexTypeRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->fuexTypeRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        return ['data' => $data, 'count' => $count];
+    }
+    private function getDataById($id)
+    {
+        $data = $this->fuexTypeRepository->applyJoins()
+            ->where('his_fuex_type.id', $id);
+        $data = $this->fuexTypeRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $data->first();
+        return $data;
+    }
     public function handleDataBaseGetAll()
     {
         try {
-            $cacheKey = $this->params->fuexTypeName .'_'. $this->params->param;
-            $cacheKeySet = "cache_keys:" . $this->params->fuexTypeName; // Set để lưu danh sách key
-            $data = Cache::remember($cacheKey, $this->params->time, function () {
-                $data = $this->fuexTypeRepository->applyJoins();
-                $data = $this->fuexTypeRepository->applyIsActiveFilter($data, $this->params->isActive);
-                $count = $data->count();
-                $data = $this->fuexTypeRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
-                $data = $this->fuexTypeRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
-                return ['data' => $data, 'count' => $count];
-            });
-            // Lưu key vào Redis Set để dễ xóa sau này
-            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
-            return $data;
+            // Nếu không lưu cache
+            if ($this->params->noCache) {
+                return $this->getAllDataFromDatabase();
+            } else {
+                $cacheKey = $this->params->fuexTypeName . '_' . $this->params->param;
+                $cacheKeySet = "cache_keys:" . $this->params->fuexTypeName; // Set để lưu danh sách key
+                $data = Cache::remember($cacheKey, $this->params->time, function () {
+                    return $this->getAllDataFromDatabase();
+                });
+                // Lưu key vào Redis Set để dễ xóa sau này
+                Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+                return $data;
+            }
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['fuex_type'], $e);
         }
@@ -60,18 +77,19 @@ class FuexTypeService
     public function handleDataBaseGetWithId($id)
     {
         try {
-            $cacheKey = $this->params->fuexTypeName .'_'.$id.'_'. $this->params->param;
-            $cacheKeySet = "cache_keys:" . $this->params->fuexTypeName; // Set để lưu danh sách key
-            $data = Cache::remember($cacheKey, $this->params->time, function () use($id){
-                $data = $this->fuexTypeRepository->applyJoins()
-                    ->where('his_fuex_type.id', $id);
-                $data = $this->fuexTypeRepository->applyIsActiveFilter($data, $this->params->isActive);
-                $data = $data->first();
+            // Nếu không lưu cache
+            if ($this->params->noCache) {
+                return $this->getDataById($id);
+            } else {
+                $cacheKey = $this->params->fuexTypeName . '_' . $id . '_' . $this->params->param;
+                $cacheKeySet = "cache_keys:" . $this->params->fuexTypeName; // Set để lưu danh sách key
+                $data = Cache::remember($cacheKey, $this->params->time, function () use ($id) {
+                    return $this->getDataById($id);
+                });
+                // Lưu key vào Redis Set để dễ xóa sau này
+                Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
                 return $data;
-            });
-            // Lưu key vào Redis Set để dễ xóa sau này
-            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
-            return $data;
+            }
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['fuex_type'], $e);
         }
@@ -80,7 +98,7 @@ class FuexTypeService
     {
         try {
             $data = $this->fuexTypeRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
-            
+
             // Gọi event để thêm index vào elastic
             event(new InsertFuexTypeIndex($data, $this->params->fuexTypeName));
             // Gọi event để xóa cache
@@ -102,7 +120,7 @@ class FuexTypeService
         }
         try {
             $data = $this->fuexTypeRepository->update($request, $data, $this->params->time, $this->params->appModifier);
-            
+
             // Gọi event để thêm index vào elastic
             event(new InsertFuexTypeIndex($data, $this->params->fuexTypeName));
             // Gọi event để xóa cache
@@ -124,7 +142,7 @@ class FuexTypeService
         }
         try {
             $data = $this->fuexTypeRepository->delete($data);
-            
+
             // Gọi event để xóa index trong elastic
             event(new DeleteIndex($data, $this->params->fuexTypeName));
             // Gọi event để xóa cache
