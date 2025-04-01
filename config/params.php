@@ -75,7 +75,7 @@ return [
             'medicine_group',
             'medicine_line',
             'medicine_paty',
-            'medicine_type_acin',
+            // 'medicine_type_acin',
             'medicine_type',
             'medicine_use_form',
             'medi_org',
