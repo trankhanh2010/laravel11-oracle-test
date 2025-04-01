@@ -277,7 +277,7 @@ class ProcessElasticIndexingJob implements ShouldQueue
             }
         } catch (\Exception $e) {
              // Ghi lỗi vào log
-             logError($e);
+             logError($e, $this->nameTable);
              // Gửi lỗi qua Telegram 
              sendErrorToTelegram($e);
         } finally {

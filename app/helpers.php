@@ -823,10 +823,10 @@ if (!function_exists('sendErrorToTelegram')) {
 }
 
 if (!function_exists('logError')) {
-    function logError($e)
+    function logError($e, $mess = '')
     {
         $request = request();
-        $mess_write = $e->getMessage();
+        $mess_write = $mess .' '. $e->getMessage();
         $token = '';
         $login_name = '';
         $ip = '';
