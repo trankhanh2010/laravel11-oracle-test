@@ -188,6 +188,20 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Http;
 use Carbon\Carbon;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
+use App\Models\EMR\DocumentType;
+use App\Models\HIS\DeathCause;
+use App\Models\HIS\DeathWithin;
+use App\Models\HIS\EmrCoverType;
+use App\Models\HIS\EmrForm;
+use App\Models\HIS\PtttCatastrophe;
+use App\Models\HIS\PtttCondition;
+use App\Models\HIS\PtttMethod;
+use App\Models\HIS\ServiceReqStt;
+use App\Models\HIS\ServiceReqType;
+use App\Models\HIS\TreatmentEndType;
+use App\Models\HIS\TreatmentResult;
+use App\Models\View\IcdListVView;
+use App\Models\View\UserRoomVView;
 use ArrayObject;
 
 class ElasticSearchController extends BaseApiCacheController
@@ -203,22 +217,103 @@ class ElasticSearchController extends BaseApiCacheController
     }
     public function getAllName(Request $request)
     {
+        $elasticData = $this->client->cat()->indices([
+            'h' => 'index,docs.count',
+            'format' => 'json',
+        ]);
+
+        $elasticIndices = json_decode($elasticData->getBody(), true);
+        $elasticMap = collect($elasticIndices)->mapWithKeys(function ($item) {
+            return [$item['index'] => (int) ($item['docs.count'] ?? 0)];
+        })->toArray();
+
         switch ($this->tab) {
             case 'voBenhAn':
                 $data = [
-                    "pttt_catastrophe",
-                    "pttt_condition",
-                    "pttt_method",
-                    "service_req_type",
-                    "service_req_stt",
-                    "treatment_end_type",
-                    "emr_cover_type",
-                    "emr_form",
-                    "icd_list_v_view",
-                    "death_cause",
-                    "treatment_result",
-                    "document_type",
-                    "user_room_v_view"
+                    [
+                        "index" => "pttt_catastrophe",
+                        "name" => "Tai biến PTTT",
+                        "dbCount" => PtttCatastrophe::count(),
+                        "docsCount" => $elasticMap["pttt_catastrophe"] ?? 0,
+                    ],
+                    [
+                        "index" => "pttt_condition",
+                        "name" => "Điều kiện PTTT",
+                        "dbCount" => PtttCondition::count(),
+                        "docsCount" => $elasticMap["pttt_condition"] ?? 0,
+                    ],
+                    [
+                        "index" => "pttt_method",
+                        "name" => "Phương pháp PTTT",
+                        "dbCount" => PtttMethod::count(),
+                        "docsCount" => $elasticMap["pttt_method"] ?? 0,
+                    ],
+                    [
+                        "index" => "service_req_type",
+                        "name" => "Loại y lệnh",
+                        "dbCount" => ServiceReqType::count(),
+                        "docsCount" => $elasticMap["service_req_type"] ?? 0,
+                    ],
+                    [
+                        "index" => "service_req_stt",
+                        "name" => "Trạng thái y lệnh",
+                        "dbCount" => ServiceReqStt::count(),
+                        "docsCount" => $elasticMap["service_req_stt"] ?? 0,
+                    ],
+                    [
+                        "index" => "treatment_end_type",
+                        "name" => "Loại ra viện",
+                        "dbCount" => TreatmentEndType::count(),
+                        "docsCount" => $elasticMap["treatment_end_type"] ?? 0,
+                    ],
+                    [
+                        "index" => "emr_cover_type",
+                        "name" => "Loại vỏ bệnh án",
+                        "dbCount" => EmrCoverType::count(),
+                        "docsCount" => $elasticMap["emr_cover_type"] ?? 0,
+                    ],
+                    [
+                        "index" => "emr_form",
+                        "name" => "Loại phiếu",
+                        "dbCount" => EmrForm::count(),
+                        "docsCount" => $elasticMap["emr_form"] ?? 0,
+                    ],
+                    [
+                        "index" => "icd_list_v_view",
+                        "name" => "Bệnh",
+                        "dbCount" => IcdListVView::count(),
+                        "docsCount" => $elasticMap["icd_list_v_view"] ?? 0,
+                    ],
+                    [
+                        "index" => "death_cause",
+                        "name" => "Nguyên nhân tử vong",
+                        "dbCount" => DeathCause::count(),
+                        "docsCount" => $elasticMap["death_cause"] ?? 0,
+                    ],
+                    [
+                        "index" => "death_within",
+                        "name" => "Thời gian tử vong",
+                        "dbCount" => DeathWithin::count(),
+                        "docsCount" => $elasticMap["death_within"] ?? 0,
+                    ],
+                    [
+                        "index" => "treatment_result",
+                        "name" => "Kết quả điều trị",
+                        "dbCount" => TreatmentResult::count(),
+                        "docsCount" => $elasticMap["treatment_result"] ?? 0,
+                    ],
+                    [
+                        "index" => "document_type",
+                        "name" => "DocumentType",
+                        "dbCount" => DocumentType::count(),
+                        "docsCount" => $elasticMap["document_type"] ?? 0,
+                    ],
+                    [
+                        "index" => "user_room_v_view",
+                        "name" => "Tài khoản - Phòng",
+                        "dbCount" => UserRoomVView::count(),
+                        "docsCount" => $elasticMap["user_room_v_view"] ?? 0,
+                    ],
                 ];
                 break;
             default:
