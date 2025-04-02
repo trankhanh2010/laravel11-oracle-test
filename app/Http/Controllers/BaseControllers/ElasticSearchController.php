@@ -335,6 +335,26 @@ class ElasticSearchController extends BaseApiCacheController
             return $this->checkParam();
         }
 
+        // Nếu là voBenhAn
+        if ($this->tab == 'voBenhAn') {
+            $this->table =  [
+                "pttt_catastrophe",
+                "pttt_condition",
+                "pttt_method",
+                "service_req_type",
+                "service_req_stt",
+                "treatment_end_type",
+                "emr_cover_type",
+                "emr_form",
+                "icd_list_v_view",
+                "death_cause",
+                "death_within",
+                "treatment_result",
+                "document_type",
+                "user_room_v_view"
+            ];
+        }
+
         // Nếu có all 
         if (in_array('all', $this->table)) {
             // Gọi command với Artisan::call
