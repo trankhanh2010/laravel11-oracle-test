@@ -441,6 +441,14 @@ class ElasticSearchController extends BaseApiCacheController
         ]);
 
         $data = json_decode($response->getBody(), true);
+        // Chuyển đổi key docs.count -> docsCount
+        $data = array_map(function ($item) {
+            if (isset($item['docs.count'])) {
+                $item['docsCount'] = $item['docs.count'];
+                unset($item['docs.count']);
+            }
+            return $item;
+        }, $data);
 
         return returnDataSuccess([], $data);
     }
