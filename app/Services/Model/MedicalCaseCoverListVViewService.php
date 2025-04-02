@@ -28,7 +28,7 @@ class MedicalCaseCoverListVViewService
         try {
             $data = $this->medicalCaseCoverListVViewRepository->applyJoins();
             $data = $this->medicalCaseCoverListVViewRepository->applyKeywordFilter($data, $this->params->keyword);
-            $data = $this->medicalCaseCoverListVViewRepository->applyIsActiveFilter($data, 1);
+            // $data = $this->medicalCaseCoverListVViewRepository->applyIsActiveFilter($data, 1);
             $data = $this->medicalCaseCoverListVViewRepository->applyIsDeleteFilter($data, 0);
             $data = $this->medicalCaseCoverListVViewRepository->applyDepartmentCodeFilter($data, $this->params->departmentCode);
             $data = $this->medicalCaseCoverListVViewRepository->applyIsInBedFilter($data, $this->params->isInBed);
@@ -53,7 +53,7 @@ class MedicalCaseCoverListVViewService
     private function getAllDataFromDatabase()
     {
         $data = $this->medicalCaseCoverListVViewRepository->applyJoins();
-        $data = $this->medicalCaseCoverListVViewRepository->applyIsActiveFilter($data, 1);
+        // $data = $this->medicalCaseCoverListVViewRepository->applyIsActiveFilter($data, 1);
         $data = $this->medicalCaseCoverListVViewRepository->applyIsDeleteFilter($data, 0);
         $data = $this->medicalCaseCoverListVViewRepository->applyDepartmentCodeFilter($data, $this->params->departmentCode);
         $data = $this->medicalCaseCoverListVViewRepository->applyIsInBedFilter($data, $this->params->isInBed);
@@ -77,7 +77,7 @@ class MedicalCaseCoverListVViewService
         $data = $this->medicalCaseCoverListVViewRepository->applyJoins()
             ->where('id', $id);
         $data = $this->medicalCaseCoverListVViewRepository->applyWithParam($data);
-        $data = $this->medicalCaseCoverListVViewRepository->applyIsActiveFilter($data, 1);
+        // $data = $this->medicalCaseCoverListVViewRepository->applyIsActiveFilter($data, 1);
         $data = $this->medicalCaseCoverListVViewRepository->applyIsDeleteFilter($data, 0);
         $data = $data->first();
         return $data;
