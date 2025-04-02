@@ -874,6 +874,8 @@ class BaseApiCacheController extends Controller
         if($this->currentLoginname){
             $cacheKey = 'user_login_room_ids_'.$this->currentLoginname;
             $cacheKeySet = "cache_keys:" . $this->currentLoginname; // Set để lưu danh sách key
+            $cacheKeySetU = "cache_keys:" . $this->userRoomVViewName; // Set để lưu danh sách key
+
             $this->currentUserLoginRoomIds = Cache::remember(
                 $cacheKey, 
                 $this->time, 
@@ -884,6 +886,7 @@ class BaseApiCacheController extends Controller
             );
             // Lưu key vào Redis Set để dễ xóa sau này
             Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+            Redis::connection('cache')->sadd($cacheKeySetU, [$cacheKey]);
        }
         // Giải nén dữ liệu khi lấy từ cache
         if ($this->currentUserLoginRoomIds && is_string($this->currentUserLoginRoomIds)) {

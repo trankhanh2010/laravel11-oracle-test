@@ -1,5 +1,6 @@
 <?php
 
+use App\Events\Job\JobIndexElasticInfo;
 use App\Events\Transaction\MoMoNotificationTamUngReceived;
 use App\Http\Controllers\Api\AuthControllers\CheckTokenController;
 use App\Http\Controllers\Api\NoCacheControllers\SereServExtController;
@@ -285,6 +286,9 @@ Route::get("v1/test-db", function () {
 Route::get("v1/test-wss", function () {
     broadcast(new MoMoNotificationTamUngReceived('test'));
 })->name('.test_wss');
+Route::get("v1/test-wss-index-elastic", function () {
+    broadcast(new JobIndexElasticInfo('test'));
+})->name('.test_wss_index_elastic');
 
 Route::get('v1/check-token', [CheckTokenController::class, 'index']);
 Route::get('v1/log-out', [CheckTokenController::class, 'logOut']);

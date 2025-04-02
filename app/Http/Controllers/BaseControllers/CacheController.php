@@ -17,13 +17,31 @@ class CacheController extends BaseApiCacheController
     public function clearCache(Request $request)
     {
         // Nếu xóa hết cache
-        if(in_array('all',$this->keys)){
+        if (in_array('all', $this->keys) && !$this->tab) {
             // Redis::select(config('database')['redis']['cache']['database']);  // Chuyển về db cache
             Redis::connection('cache')->flushAll();
         }
-
+        // Nếu là voBenhAn
+        if ($this->tab == 'voBenhAn') {
+            $this->keys =  [
+                "department",
+                "pttt_catastrophe",
+                "pttt_condition",
+                "pttt_method",
+                "service_req_type",
+                "service_req_stt",
+                "treatment_end_type",
+                "emr_cover_type",
+                "emr_form",
+                "icd",
+                "death_cause",
+                "death_within",
+                "treatment_result",
+                "user_room_v_view"
+            ];
+        }
         // Nếu xóa theo param
-        foreach($this->keys as $key => $item){
+        foreach ($this->keys as $key => $item) {
             event(new DeleteCache($item));
         }
         return returnClearCache();
