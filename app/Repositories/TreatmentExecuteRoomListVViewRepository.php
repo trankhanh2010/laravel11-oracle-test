@@ -189,6 +189,8 @@ class TreatmentExecuteRoomListVViewRepository
     public function applyIntructionTimeToFilter($query, $param)
     {
         if ($param !== null) {
+            // Thay 6 số cuối thành "000000"
+            $param = substr($param, 0, 8) . '000000';
             return $query->where(function ($query) use ($param) {
                 $query->where('intruction_date', '<=', $param);
             });
