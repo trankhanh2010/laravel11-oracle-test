@@ -191,8 +191,10 @@ use App\Http\Controllers\BaseControllers\BaseApiCacheController;
 use App\Models\EMR\DocumentType;
 use App\Models\HIS\DeathCause;
 use App\Models\HIS\DeathWithin;
+use App\Models\HIS\Department;
 use App\Models\HIS\EmrCoverType;
 use App\Models\HIS\EmrForm;
+use App\Models\HIS\Icd;
 use App\Models\HIS\PtttCatastrophe;
 use App\Models\HIS\PtttCondition;
 use App\Models\HIS\PtttMethod;
@@ -230,6 +232,12 @@ class ElasticSearchController extends BaseApiCacheController
         switch ($this->tab) {
             case 'voBenhAn':
                 $data = [
+                    [
+                        "id" => "department",
+                        "name" => "Khoa",
+                        "dbCount" => Department::count(),
+                        "docsCount" => $elasticMap["department"] ?? 0,
+                    ],
                     [
                         "id" => "pttt_catastrophe",
                         "name" => "Tai biến PTTT",
@@ -279,10 +287,10 @@ class ElasticSearchController extends BaseApiCacheController
                         "docsCount" => $elasticMap["emr_form"] ?? 0,
                     ],
                     [
-                        "id" => "icd_list_v_view",
+                        "id" => "icd",
                         "name" => "Bệnh",
-                        "dbCount" => IcdListVView::count(),
-                        "docsCount" => $elasticMap["icd_list_v_view"] ?? 0,
+                        "dbCount" => Icd::count(),
+                        "docsCount" => $elasticMap["icd"] ?? 0,
                     ],
                     [
                         "id" => "death_cause",
@@ -301,12 +309,6 @@ class ElasticSearchController extends BaseApiCacheController
                         "name" => "Kết quả điều trị",
                         "dbCount" => TreatmentResult::count(),
                         "docsCount" => $elasticMap["treatment_result"] ?? 0,
-                    ],
-                    [
-                        "id" => "document_type",
-                        "name" => "DocumentType",
-                        "dbCount" => DocumentType::count(),
-                        "docsCount" => $elasticMap["document_type"] ?? 0,
                     ],
                     [
                         "id" => "user_room_v_view",
@@ -338,6 +340,7 @@ class ElasticSearchController extends BaseApiCacheController
         // Nếu là voBenhAn
         if ($this->tab == 'voBenhAn') {
             $this->table =  [
+                "department",
                 "pttt_catastrophe",
                 "pttt_condition",
                 "pttt_method",
@@ -346,17 +349,16 @@ class ElasticSearchController extends BaseApiCacheController
                 "treatment_end_type",
                 "emr_cover_type",
                 "emr_form",
-                "icd_list_v_view",
+                "icd",
                 "death_cause",
                 "death_within",
                 "treatment_result",
-                "document_type",
                 "user_room_v_view"
             ];
         }
 
         // Nếu có all 
-        if (in_array('all', $this->table)) {
+        if ($this->tab == 'all') {
             // Gọi command với Artisan::call
             Artisan::call('app:index-records-to-elasticsearch', [
                 '--table' => 'all'
@@ -398,11 +400,31 @@ class ElasticSearchController extends BaseApiCacheController
 
     public function deleteIndex(Request $request)
     {
-        $table = $this->all_table;
+        $allTable = $this->all_table;
 
-        $tables = $this->table;
-        if ($this->table == 'all') {
-            $tables = $table;
+        if ($this->tab == 'all') {
+            $tables = $allTable;
+        } else {
+            $tables = $this->table;
+        }
+        // Nếu là voBenhAn
+        if ($this->tab == 'voBenhAn') {
+            $tables =  [
+                "department",
+                "pttt_catastrophe",
+                "pttt_condition",
+                "pttt_method",
+                "service_req_type",
+                "service_req_stt",
+                "treatment_end_type",
+                "emr_cover_type",
+                "emr_form",
+                "icd",
+                "death_cause",
+                "death_within",
+                "treatment_result",
+                "user_room_v_view"
+            ];
         }
         // Nếu xóa theo ids
         if ($this->ids != null) {
@@ -416,7 +438,7 @@ class ElasticSearchController extends BaseApiCacheController
 
         // không thì kiểm tra tên bảng và xóa bình thường
         foreach ($tables as $key => $item) {
-            if (!in_array($item, $table) && $item != 'all') {
+            if (!in_array($item, $allTable) && $item != 'all') {
                 return response()->json([
                     'status'    => 422,
                     'success' => true,
