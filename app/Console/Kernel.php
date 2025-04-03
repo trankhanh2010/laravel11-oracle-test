@@ -28,9 +28,9 @@ class Kernel extends ConsoleKernel
         // $schedule->command('inspire')->hourly();
 
         // Job chạy định kỳ kiểm tra các giao dịch thành công mã = 0 nhưng bị khóa viện phí và vẫn còn mã 1000 trong db
-        $schedule->call(function () {
-            dispatch(app(CheckPaymentSuccessMoMo::class));
-        })->everyFifteenMinutes();
+        // $schedule->call(function () {
+        //     dispatch(app(CheckPaymentSuccessMoMo::class));
+        // })->everyFifteenMinutes();
         
     }
 
