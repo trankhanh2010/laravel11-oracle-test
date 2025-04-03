@@ -188,7 +188,7 @@ return [
                 'scheme' => env('ELASTICSEARCH_SCHEME', 'http'),
                 'user' => env('ELASTICSEARCH_USER'),
                 'pass' => env('ELASTICSEARCH_PASS'),
-                'ca' => env('ELASTICSEARCH_CA'),
+                'ca' => env('ELASTICSEARCH_CA','/etc/ssl/certs/ca-certificates.crt'),
             ],
             'client' => [
                 'persistent' => true,  // Sử dụng persistent connections (Giữ kết nối liên tục)

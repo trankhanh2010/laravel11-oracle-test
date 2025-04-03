@@ -135,7 +135,8 @@ class MedicalCaseCoverListVViewRepository
                     'previous_id',
                     'department_in_time',
                     'request_time',
-                    'treatment_id'
+                    'treatment_id',
+                    'is_hospitalized',
                 ]);
             },
             'department_trans.department:id,department_name,department_code',
@@ -296,6 +297,7 @@ class MedicalCaseCoverListVViewRepository
                     'id',
                     'treatment_id',
                     'dhst_sum_id',
+                    'execute_time',
                     'temperature',
                     'breath_rate',
                     'weight',
@@ -313,8 +315,9 @@ class MedicalCaseCoverListVViewRepository
                     'infution_into',
                     'infution_out',
                     'vaccination_exam_id',
-                    'urine'
-                ]);
+                    'urine',
+                ])
+                ->orderBy('execute_time', 'desc');
             },
         ]);
     }
