@@ -27,6 +27,7 @@ class DebateDetailVViewRepository
             'debate_ekip_users:id,debate_id,loginname,username,execute_role_id,description,department_id',
             'debate_ekip_users.department:id,department_code,department_name',
             'debate_ekip_users.execute_role:id,execute_role_code,execute_role_name,is_surgry,is_subclinical,is_subclinical_result',
+            'tracking:id,tracking_time',
         ]);
     }
     public function applyKeywordFilter($query, $keyword)

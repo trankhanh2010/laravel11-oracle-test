@@ -87,6 +87,7 @@ class SereServDetailVViewRepository
                     'service_req' => function ($query) {
                         $query->select([
                             'id',
+                            'tdl_patient_code',
                             'intruction_time',
                             'hospitalization_reason',
                             'sick_day',
@@ -145,6 +146,7 @@ class SereServDetailVViewRepository
                     'service_req' => function ($query) {
                         $query->select([
                             'id',
+                            'tdl_patient_code',
                             'intruction_time',
                             'hospitalization_reason',
                             'sick_day',
@@ -232,6 +234,7 @@ class SereServDetailVViewRepository
                     'service_req' => function ($query) {
                         $query->select([
                             'id',
+                            'tdl_patient_code',
                             'intruction_time',
                             'hospitalization_reason',
                             'sick_day',
@@ -489,6 +492,7 @@ class SereServDetailVViewRepository
                     'service_req' => function ($query) {
                         $query->select([
                             'id',
+                            'tdl_patient_code',
                             'intruction_time',
                             'hospitalization_reason',
                             'sick_day',
