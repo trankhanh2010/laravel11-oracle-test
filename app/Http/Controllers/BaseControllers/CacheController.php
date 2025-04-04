@@ -36,8 +36,12 @@ class CacheController extends BaseApiCacheController
                 "icd",
                 "death_cause",
                 "death_within",
+                "medical_case_cover_list_v_view",
                 "treatment_result",
-                "user_room_v_view"
+                "user_room_v_view",
+                "sere_serv_cls_list_v_view",
+                "sere_serv_tein_charts_v_view",
+                "treatment_list_v_view",
             ];
         }
         // Nếu xóa theo param

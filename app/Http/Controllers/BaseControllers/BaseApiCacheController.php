@@ -818,10 +818,10 @@ class BaseApiCacheController extends Controller
             return returnIdError($id);
         }
 
-        $checkId = $this->checkId($id, $model, $modelName);
-        if ($checkId) {
-            return $checkId;
-        }
+        // $checkId = $this->checkId($id, $model, $modelName);
+        // if ($checkId) {
+        //     return $checkId;
+        // }
 
         return null; // Trả về null nếu không có lỗi
     }
