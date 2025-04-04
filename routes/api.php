@@ -603,9 +603,9 @@ Route::group([
         Route::get('v1/icd-cm-check', [CheckIcdCmController::class, "checkCode"])->name('.icd_cm_check_code');
     });
     /// ICD - Accepted Icd - Chẩn đoán
-    Route::group(['as' => 'HIS.Desktop.Plugins.HisIcd->'], function () {
+    // Route::group(['as' => 'HIS.Desktop.Plugins.HisIcd->'], function () {
         Route::apiResource('v1/icd', IcdController::class);
-    });
+    // });
     /// Nhóm ICD
     Route::apiResource('v1/icd-group', IcdGroupController::class);
     /// Nguồn nhập
