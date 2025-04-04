@@ -28,8 +28,9 @@ class SereServDetailVViewService
             $data = $this->sereServDetailVViewRepository->applyJoins($this->params->serviceTypeCode);
             $data = $this->sereServDetailVViewRepository->applyWithParam($data, $this->params->serviceTypeCode);
             $data = $this->sereServDetailVViewRepository->applyKeywordFilter($data, $this->params->keyword);
+            $data = $this->sereServDetailVViewRepository->applyIsNoExecuteFilter($data);
             $data = $this->sereServDetailVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-            $data = $this->sereServDetailVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+            $data = $this->sereServDetailVViewRepository->applyIsDeleteFilter($data, 0);
             $count = $data->count();
             $data = $this->sereServDetailVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
             $data = $this->sereServDetailVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
@@ -42,8 +43,9 @@ class SereServDetailVViewService
     {
         $data = $this->sereServDetailVViewRepository->applyJoins($this->params->serviceTypeCode);
         $data = $this->sereServDetailVViewRepository->applyWithParam($data, $this->params->serviceTypeCode);
+        $data = $this->sereServDetailVViewRepository->applyIsNoExecuteFilter($data);
         $data = $this->sereServDetailVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-        $data = $this->sereServDetailVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+        $data = $this->sereServDetailVViewRepository->applyIsDeleteFilter($data, 0);
         $count = $data->count();
         $data = $this->sereServDetailVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
         $data = $this->sereServDetailVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
@@ -54,9 +56,10 @@ class SereServDetailVViewService
         $data = $this->sereServDetailVViewRepository->applyJoins($this->params->serviceTypeCode)
         ->where('id', $id);
         $data = $this->sereServDetailVViewRepository->applyWithParam($data, $this->params->serviceTypeCode);
-    $data = $this->sereServDetailVViewRepository->applyIsActiveFilter($data, 1);
-    $data = $this->sereServDetailVViewRepository->applyIsDeleteFilter($data, 0);
-    $data = $data->first();
+        $data = $this->sereServDetailVViewRepository->applyIsNoExecuteFilter($data);
+        $data = $this->sereServDetailVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $this->sereServDetailVViewRepository->applyIsDeleteFilter($data, 0);
+        $data = $data->first();
     return $data;
     }
     public function handleDataBaseGetAll()

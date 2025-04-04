@@ -23,6 +23,8 @@ class SereServTeinChartsVViewRepository
     {
         return $this->sereServTeinChartsVView
             ->select([
+                'service_req_is_no_execute',
+                'is_no_execute',
                 'intruction_date',
                 'intruction_time',
                 "service_name",
@@ -56,6 +58,22 @@ class SereServTeinChartsVViewRepository
         if ($isDelete !== null) {
             $query->where(('is_delete'), $isDelete);
         }
+        return $query;
+    }
+    public function applyIsNoExecuteFilter($query)
+    {
+        $query->where(function ($q) {
+            $q->where('IS_NO_EXECUTE', 0)
+              ->orWhereNull('IS_NO_EXECUTE');
+        });
+        return $query;
+    }
+    public function applyServiceReqIsNoExecuteFilter($query)
+    {
+        $query->where(function ($q) {
+            $q->where('SERVICE_REQ_IS_NO_EXECUTE', 0)
+              ->orWhereNull('SERVICE_REQ_IS_NO_EXECUTE');
+        });
         return $query;
     }
     public function applyPatientCodeFilter($query, $param)

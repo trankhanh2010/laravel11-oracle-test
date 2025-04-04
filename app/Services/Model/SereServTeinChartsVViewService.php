@@ -27,8 +27,10 @@ class SereServTeinChartsVViewService
     {
         $data = $this->sereServTeinChartsVViewRepository->applyJoins();
         $data = $this->sereServTeinChartsVViewRepository->applyWithParam($data);
-        $data = $this->sereServTeinChartsVViewRepository->applyIsActiveFilter($data, 1);
+        $data = $this->sereServTeinChartsVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
         $data = $this->sereServTeinChartsVViewRepository->applyIsDeleteFilter($data, 0);
+        $data = $this->sereServTeinChartsVViewRepository->applyIsNoExecuteFilter($data);
+        $data = $this->sereServTeinChartsVViewRepository->applyServiceReqIsNoExecuteFilter($data);
         $data = $this->sereServTeinChartsVViewRepository->applyPatientCodeFilter($data, $this->params->patientCode);
         $data = $this->sereServTeinChartsVViewRepository->applyServiceTypeCodesFilter($data, $this->params->serviceTypeCodes);
         $data = $this->sereServTeinChartsVViewRepository->applyServiceCodesFilter($data, $this->params->serviceCodes);
@@ -48,9 +50,11 @@ class SereServTeinChartsVViewService
     {
         $data = $this->sereServTeinChartsVViewRepository->applyJoins()
             ->where('id', $id);
-        $data = $this->sereServTeinChartsVViewRepository->applyIsActiveFilter($data, 1);
-        $data = $this->sereServTeinChartsVViewRepository->applyIsDeleteFilter($data, 0);
-        $data = $data->first();
+            $data = $this->sereServTeinChartsVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
+            $data = $this->sereServTeinChartsVViewRepository->applyIsDeleteFilter($data, 0);
+            $data = $this->sereServTeinChartsVViewRepository->applyIsNoExecuteFilter($data);
+            $data = $this->sereServTeinChartsVViewRepository->applyServiceReqIsNoExecuteFilter($data);
+            $data = $data->first();
         return $data;
     }
     public function handleDataBaseGetAll()

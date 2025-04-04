@@ -20,6 +20,8 @@ class TreatmentExecuteRoomListVViewRepository
         return $this->treatmentExecuteRoomListVView
             ->select([
                 'id',
+                'is_delete',
+                'is_no_execute',
                 'treatment_id',
                 'in_time',
                 'intruction_time',
@@ -77,6 +79,14 @@ class TreatmentExecuteRoomListVViewRepository
         if ($isDelete !== null) {
             $query->where(('is_delete'), $isDelete);
         }
+        return $query;
+    }
+    public function applyIsNoExecuteFilter($query)
+    {
+        $query->where(function ($q) {
+            $q->where('IS_NO_EXECUTE', 0)
+              ->orWhereNull('IS_NO_EXECUTE');
+        });
         return $query;
     }
     public function applyDepartmentCodeFilter($query, $code)

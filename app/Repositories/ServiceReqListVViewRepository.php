@@ -52,6 +52,14 @@ class ServiceReqListVViewRepository
         }
         return $query;
     }
+    public function applyIsNoExecuteFilter($query)
+    {
+        $query->where(function ($q) {
+            $q->where('IS_NO_EXECUTE', 0)
+              ->orWhereNull('IS_NO_EXECUTE');
+        });
+        return $query;
+    }
     public function applyTrackingIdFilter($query, $param)
     {
         if ($param !== null) {

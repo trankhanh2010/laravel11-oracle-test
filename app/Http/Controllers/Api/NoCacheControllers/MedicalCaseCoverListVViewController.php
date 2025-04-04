@@ -56,6 +56,7 @@ class MedicalCaseCoverListVViewController extends BaseApiCacheController
             $this->addTimeTo,
             $this->param,
             $this->noCache,
+            $this->tab,
         );
         $this->medicalCaseCoverListVViewService->withParams($this->medicalCaseCoverListVViewDTO);
     }

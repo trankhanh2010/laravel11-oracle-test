@@ -27,8 +27,10 @@ class SereServListVViewService
         try {
             $data = $this->sereServListVViewRepository->applyJoins();
             $data = $this->sereServListVViewRepository->applyKeywordFilter($data, $this->params->keyword);
-            $data = $this->sereServListVViewRepository->applyIsActiveFilter($data, 1);
+            $data = $this->sereServListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
             $data = $this->sereServListVViewRepository->applyIsDeleteFilter($data, 0);
+            $data = $this->sereServListVViewRepository->applyIsNoExecuteFilter($data);
+            $data = $this->sereServListVViewRepository->applyServiceReqIsNoExecuteFilter($data);
             $data = $this->sereServListVViewRepository->applyTrackingIdFilter($data, $this->params->trackingId);
             $data = $this->sereServListVViewRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
             $data = $this->sereServListVViewRepository->applyPatientCodeFilter($data, $this->params->patientCode);
@@ -49,8 +51,10 @@ class SereServListVViewService
     private function getAllDataFromDatabase()
     {
         $data = $this->sereServListVViewRepository->applyJoins();
-        $data = $this->sereServListVViewRepository->applyIsActiveFilter($data, 1);
+        $data = $this->sereServListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
         $data = $this->sereServListVViewRepository->applyIsDeleteFilter($data, 0);
+        $data = $this->sereServListVViewRepository->applyIsNoExecuteFilter($data);
+        $data = $this->sereServListVViewRepository->applyServiceReqIsNoExecuteFilter($data);
         $data = $this->sereServListVViewRepository->applyTrackingIdFilter($data, $this->params->trackingId);
         $data = $this->sereServListVViewRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
         $data = $this->sereServListVViewRepository->applyPatientCodeFilter($data, $this->params->patientCode);
@@ -69,10 +73,12 @@ class SereServListVViewService
     {
         $data = $this->sereServListVViewRepository->applyJoins()
         ->where('id', $id);
-    $data = $this->sereServListVViewRepository->applyIsActiveFilter($data, 1);
-    $data = $this->sereServListVViewRepository->applyIsDeleteFilter($data, 0);
-    $data = $data->first();
-    return $data;
+        $data = $this->sereServListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $this->sereServListVViewRepository->applyIsDeleteFilter($data, 0);
+        $data = $this->sereServListVViewRepository->applyIsNoExecuteFilter($data);
+        $data = $this->sereServListVViewRepository->applyServiceReqIsNoExecuteFilter($data);
+        $data = $data->first();
+        return $data;
     }
     public function handleDataBaseGetAll()
     {

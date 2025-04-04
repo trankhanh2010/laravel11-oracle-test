@@ -27,7 +27,7 @@ class TreatmentListVViewService
     {
         $data = $this->treatmentListVViewRepository->applyJoins();
         $data = $this->treatmentListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-        $data = $this->treatmentListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+        $data = $this->treatmentListVViewRepository->applyIsDeleteFilter($data, 0);
         $data = $this->treatmentListVViewRepository->applyPatientCodeFilter($data, $this->params->patientCode);
         $data = $this->treatmentListVViewRepository->applyTreatmentTypeCodeFilter($data, $this->params->treatmentTypeCode);
         $data = $this->treatmentListVViewRepository->applyInTimeFilter($data, $this->params->inTimeFrom, $this->params->inTimeTo);
@@ -44,7 +44,7 @@ class TreatmentListVViewService
         $data = $this->treatmentListVViewRepository->applyJoins()
             ->where('id', $id);
         $data = $this->treatmentListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-        $data = $this->treatmentListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+        $data = $this->treatmentListVViewRepository->applyIsDeleteFilter($data, 0);
         $data = $data->first();
         return $data;
     }

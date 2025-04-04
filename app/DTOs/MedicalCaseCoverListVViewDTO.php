@@ -30,7 +30,7 @@ class MedicalCaseCoverListVViewDTO
     public $addTimeTo;
     public $param;
     public $noCache;
-
+    public $tab;
     public function __construct(
         $medicalCaseCoverListVViewName,
         $keyword, 
@@ -58,6 +58,7 @@ class MedicalCaseCoverListVViewDTO
         $addTimeTo,
         $param,
         $noCache,
+        $tab,
         )
     {
         $this->medicalCaseCoverListVViewName = $medicalCaseCoverListVViewName;
@@ -86,5 +87,6 @@ class MedicalCaseCoverListVViewDTO
         $this->addTimeTo = $addTimeTo;
         $this->param = $param;
         $this->noCache = $noCache;
+        $this->tab = $tab;
     }
 }

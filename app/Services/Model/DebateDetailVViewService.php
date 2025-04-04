@@ -28,7 +28,7 @@ class DebateDetailVViewService
             $data = $this->debateDetailVViewRepository->applyJoins();
             $data = $this->debateDetailVViewRepository->applyKeywordFilter($data, $this->params->keyword);
             $data = $this->debateDetailVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-            $data = $this->debateDetailVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+            $data = $this->debateDetailVViewRepository->applyIsDeleteFilter($data, 0);
             $count = $data->count();
             $data = $this->debateDetailVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
             $data = $this->debateDetailVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
@@ -41,7 +41,7 @@ class DebateDetailVViewService
     {
         $data = $this->debateDetailVViewRepository->applyJoins();
         $data = $this->debateDetailVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-        $data = $this->debateDetailVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+        $data = $this->debateDetailVViewRepository->applyIsDeleteFilter($data, 0);
         $count = $data->count();
         $data = $this->debateDetailVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
         $data = $this->debateDetailVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
@@ -53,7 +53,7 @@ class DebateDetailVViewService
         ->where('id', $id);
     $data = $this->debateDetailVViewRepository->applyWithParam($data);
     $data = $this->debateDetailVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-    $data = $this->debateDetailVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+    $data = $this->debateDetailVViewRepository->applyIsDeleteFilter($data, 0);
     $data = $data->first();
     return $data;
     }

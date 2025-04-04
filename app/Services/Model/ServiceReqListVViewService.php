@@ -29,7 +29,8 @@ class ServiceReqListVViewService
             $data = $this->serviceReqListVViewRepository->applyWithParam($data);
             $data = $this->serviceReqListVViewRepository->applyKeywordFilter($data, $this->params->keyword);
             $data = $this->serviceReqListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-            $data = $this->serviceReqListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+            $data = $this->serviceReqListVViewRepository->applyIsDeleteFilter($data, 0);
+            $data = $this->serviceReqListVViewRepository->applyIsNoExecuteFilter($data);
             $data = $this->serviceReqListVViewRepository->applyTrackingIdFilter($data, $this->params->trackingId);
             $data = $this->serviceReqListVViewRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
             $count = $data->count();
@@ -47,7 +48,8 @@ class ServiceReqListVViewService
         $data = $this->serviceReqListVViewRepository->applyJoins();
         $data = $this->serviceReqListVViewRepository->applyWithParam($data);
         $data = $this->serviceReqListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-        $data = $this->serviceReqListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+        $data = $this->serviceReqListVViewRepository->applyIsDeleteFilter($data, 0);
+        $data = $this->serviceReqListVViewRepository->applyIsNoExecuteFilter($data);
         $data = $this->serviceReqListVViewRepository->applyTrackingIdFilter($data, $this->params->trackingId);
         $data = $this->serviceReqListVViewRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
         $count = $data->count();
@@ -61,11 +63,12 @@ class ServiceReqListVViewService
     {
         $data = $this->serviceReqListVViewRepository->applyJoins()
         ->where('id', $id);
-    $data = $this->serviceReqListVViewRepository->applyWithParam($data);
-    $data = $this->serviceReqListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-    $data = $this->serviceReqListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
-    $data = $data->first();
-    return $data;
+        $data = $this->serviceReqListVViewRepository->applyWithParam($data);
+        $data = $this->serviceReqListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $this->serviceReqListVViewRepository->applyIsDeleteFilter($data, 0);
+        $data = $this->serviceReqListVViewRepository->applyIsNoExecuteFilter($data);
+        $data = $data->first();
+        return $data;
     }
     public function handleDataBaseGetAll()
     {

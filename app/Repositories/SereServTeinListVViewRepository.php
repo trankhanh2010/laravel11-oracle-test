@@ -40,6 +40,22 @@ class SereServTeinListVViewRepository
         }
         return $query;
     }
+    public function applyIsNoExecuteFilter($query)
+    {
+        $query->where(function ($q) {
+            $q->where('IS_NO_EXECUTE', 0)
+              ->orWhereNull('IS_NO_EXECUTE');
+        });
+        return $query;
+    }
+    public function applyServiceReqIsNoExecuteFilter($query)
+    {
+        $query->where(function ($q) {
+            $q->where('SERVICE_REQ_IS_NO_EXECUTE', 0)
+              ->orWhereNull('SERVICE_REQ_IS_NO_EXECUTE');
+        });
+        return $query;
+    }
     public function applyServiceReqIdFilter($query, $param)
     {
         if ($param !== null) {

@@ -28,7 +28,9 @@ class SereServClsListVViewService
         $data = $this->sereServClsListVViewRepository->applyJoins($this->params->reportTypeCode);
         $data = $this->sereServClsListVViewRepository->applyWithParam($data, $this->params->tab, $this->params->serviceCodes, $this->params->groupBy);
         $data = $this->sereServClsListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-        $data = $this->sereServClsListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+        $data = $this->sereServClsListVViewRepository->applyIsDeleteFilter($data, 0);
+        $data = $this->sereServClsListVViewRepository->applyIsNoExecuteFilter($data);
+        $data = $this->sereServClsListVViewRepository->applyServiceReqIsNoExecuteFilter($data);
         $data = $this->sereServClsListVViewRepository->applyPatientCodeFilter($data, $this->params->patientCode);
         $data = $this->sereServClsListVViewRepository->applyServiceTypeCodesFilter($data, $this->params->serviceTypeCodes);
         $data = $this->sereServClsListVViewRepository->applyServiceCodesFilter($data, $this->params->serviceCodes);
@@ -63,7 +65,9 @@ class SereServClsListVViewService
         $data = $this->sereServClsListVViewRepository->applyJoins($this->params->reportTypeCode)
             ->where('id', $id);
         $data = $this->sereServClsListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-        $data = $this->sereServClsListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+        $data = $this->sereServClsListVViewRepository->applyIsDeleteFilter($data, 0);
+        $data = $this->sereServClsListVViewRepository->applyIsNoExecuteFilter($data);
+        $data = $this->sereServClsListVViewRepository->applyServiceReqIsNoExecuteFilter($data);
         $data = $data->first();
         return $data;
     }

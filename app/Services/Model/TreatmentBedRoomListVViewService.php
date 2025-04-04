@@ -27,7 +27,7 @@ class TreatmentBedRoomListVViewService
         try {
             $data = $this->treatmentBedRoomListVViewRepository->applyJoins();
             $data = $this->treatmentBedRoomListVViewRepository->applyKeywordFilter($data, $this->params->keyword);
-            $data = $this->treatmentBedRoomListVViewRepository->applyIsActiveFilter($data, 1);
+            $data = $this->treatmentBedRoomListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
             $data = $this->treatmentBedRoomListVViewRepository->applyIsDeleteFilter($data, 0);
             $data = $this->treatmentBedRoomListVViewRepository->applyTreatmentCodeFilter($data, $this->params->treatmentCode);
             $data = $this->treatmentBedRoomListVViewRepository->applyPatientCodeFilter($data, $this->params->patientCode);
@@ -58,7 +58,7 @@ class TreatmentBedRoomListVViewService
     private function getAllDataFromDatabase()
     {
         $data = $this->treatmentBedRoomListVViewRepository->applyJoins();
-        $data = $this->treatmentBedRoomListVViewRepository->applyIsActiveFilter($data, 1);
+        $data = $this->treatmentBedRoomListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
         $data = $this->treatmentBedRoomListVViewRepository->applyIsDeleteFilter($data, 0);
         $data = $this->treatmentBedRoomListVViewRepository->applyTreatmentCodeFilter($data, $this->params->treatmentCode);
         $data = $this->treatmentBedRoomListVViewRepository->applyPatientCodeFilter($data, $this->params->patientCode);
@@ -87,9 +87,9 @@ class TreatmentBedRoomListVViewService
     {
         $data = $this->treatmentBedRoomListVViewRepository->applyJoins()
         ->where('id', $id);
-    $data = $this->treatmentBedRoomListVViewRepository->applyIsActiveFilter($data, 1);
-    $data = $this->treatmentBedRoomListVViewRepository->applyIsDeleteFilter($data, 0);
-    $data = $data->first();
+        $data = $this->treatmentBedRoomListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $this->treatmentBedRoomListVViewRepository->applyIsDeleteFilter($data, 0);
+        $data = $data->first();
     return $data;
     }
     public function handleDataBaseGetAll()

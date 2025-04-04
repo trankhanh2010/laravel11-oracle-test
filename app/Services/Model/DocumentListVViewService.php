@@ -29,7 +29,7 @@ class DocumentListVViewService
             $data = $this->documentListVViewRepository->applyWithParam($data);
             $data = $this->documentListVViewRepository->applyKeywordFilter($data, $this->params->keyword);
             $data = $this->documentListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-            $data = $this->documentListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+            $data = $this->documentListVViewRepository->applyIsDeleteFilter($data, 0);
             $data = $this->documentListVViewRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
             $data = $this->documentListVViewRepository->applyDocumentTypeIdFilter($data, $this->params->documentTypeId);
             $data = $this->documentListVViewRepository->applyTreatmentCodeFilter($data, $this->params->treatmentCode);
@@ -46,7 +46,7 @@ class DocumentListVViewService
         $data = $this->documentListVViewRepository->applyJoins();
         $data = $this->documentListVViewRepository->applyWithParam($data);
         $data = $this->documentListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-        $data = $this->documentListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+        $data = $this->documentListVViewRepository->applyIsDeleteFilter($data, 0);
         $data = $this->documentListVViewRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
         $data = $this->documentListVViewRepository->applyDocumentTypeIdFilter($data, $this->params->documentTypeId);
         $data = $this->documentListVViewRepository->applyTreatmentCodeFilter($data, $this->params->treatmentCode);
@@ -60,7 +60,7 @@ class DocumentListVViewService
         $data = $this->documentListVViewRepository->applyJoins()
         ->where('id', $id);
     $data = $this->documentListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-    $data = $this->documentListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+    $data = $this->documentListVViewRepository->applyIsDeleteFilter($data, 0);
     $data = $data->first();
     return $data;
     }

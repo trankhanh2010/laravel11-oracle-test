@@ -122,8 +122,9 @@ class MedicalCaseCoverListVViewRepository
                 'hosp_subs_director_username',
             ]);
     }
-    public function applyWithParam($query)
+    public function applyWithParam($query, $tab = null)
     {
+        if($tab == 'info') return $query;
         return $query->with([
             'department_trans' => function ($query) {
                 $query               

@@ -22,6 +22,8 @@ class SereServDetailVViewRepository
                 return $this->sereServDetailVView
                     ->select([
                         'id',
+                        'is_delete',
+                        'is_no_execute',
                         'service_id',
                         'service_req_id',
                         'tdl_patient_id',
@@ -32,6 +34,8 @@ class SereServDetailVViewRepository
                 return $this->sereServDetailVView
                     ->select([
                         'id',
+                        'is_delete',
+                        'is_no_execute',
                         'service_id',
                         'service_req_id',
                         'tdl_patient_id',
@@ -42,6 +46,8 @@ class SereServDetailVViewRepository
                 return $this->sereServDetailVView
                     ->select([
                         'id',
+                        'is_delete',
+                        'is_no_execute',
                         'service_id',
                         'service_req_id',
                         'tdl_patient_id',
@@ -53,6 +59,8 @@ class SereServDetailVViewRepository
                 return $this->sereServDetailVView
                     ->select([
                         'id',
+                        'is_delete',
+                        'is_no_execute',
                         'service_id',
                         'service_req_id',
                         'tdl_patient_id',
@@ -67,6 +75,8 @@ class SereServDetailVViewRepository
                 return $this->sereServDetailVView
                     ->select([
                         'id',
+                        'is_delete',
+                        'is_no_execute',
                         'service_id',
                         'service_req_id',
                         'tdl_patient_id',
@@ -107,7 +117,7 @@ class SereServDetailVViewRepository
                             'icd_text',
                             'execute_username',
                             'execute_loginname',
-                        ])->where('is_delete', 0)->where('is_active', 1);
+                        ])->where('is_delete', 0);
                     }, // TH thuốc
                     'service_req.dhst' => function ($query) {
                         $query->select([
@@ -132,13 +142,13 @@ class SereServDetailVViewRepository
                             'VACCINATION_EXAM_ID',
                             'URINE',
 
-                        ])->where('is_delete', 0)->where('is_active', 1);
+                        ])->where('is_delete', 0);
                     },
                 ]);
             case 'TH':
                 return $query->with([
                     'exp_mest_medicine' => function ($query) {
-                        $query->where('is_delete', 0)->where('is_active', 1);
+                        $query->where('is_delete', 0);
                     }, // TH thuốc
                 ]);
             case 'XN':
@@ -167,14 +177,14 @@ class SereServDetailVViewRepository
                             'execute_username',
                             'execute_loginname',
                             'parent_id',
-                        ])->where('is_delete', 0)->where('is_active', 1);
+                        ])->where('is_delete', 0);
                     }, // XN Xét nghiệm (nếu có ekip thì lấy dựa theo role, nếu k có thì execute_username là người đọc và kỹ thuật viên luôn)
                     'service_req.machine' => function ($query) {
                         $query->select([
                             'id',
                             'machine_name',
                             'machine_code'
-                        ])->where('is_delete', 0)->where('is_active', 1);
+                        ])->where('is_delete', 0);
                     },
                     'service_req.sere_serv_details' => function ($query) {
                         $query->select([
@@ -185,7 +195,7 @@ class SereServDetailVViewRepository
                             'is_no_execute',
                             'tdl_intruction_date',
                             'tdl_intruction_time'
-                        ])->where('is_delete', 0)->where('is_active', 1);
+                        ])->where('is_delete', 0);
                     }, // Dịch vụ gần nhất - dịch vụ trong cùng 1 y lệnh
                     'service_req.sere_serv_details.sere_serv_teins' => function ($query) {
                         $query->select([
@@ -196,7 +206,7 @@ class SereServDetailVViewRepository
                             'result_code',
                             'description',
                             'result_description'
-                        ])->where('is_delete', 0)->where('is_active', 1);
+                        ])->where('is_delete', 0);
                     },
                     'service_req.sere_serv_details.sere_serv_teins.test_index' => function ($query) {
                         $query->select([
@@ -204,7 +214,7 @@ class SereServDetailVViewRepository
                             'test_index_code',
                             'test_index_name',
                             'test_index_unit_id'
-                        ])->where('is_delete', 0)->where('is_active', 1);
+                        ])->where('is_delete', 0);
                     },
                     'service_req.sere_serv_details.sere_serv_teins.test_index.test_index_unit' => function ($query) {
                         $query->select([
@@ -212,7 +222,7 @@ class SereServDetailVViewRepository
                             'test_index_unit_code',
                             'test_index_unit_name',
                             'test_index_unit_symbol'
-                        ])->where('is_delete', 0)->where('is_active', 1);
+                        ])->where('is_delete', 0);
                     },
                     'sere_serv_exts' => function ($query) {
                         $query->select([
@@ -225,7 +235,7 @@ class SereServDetailVViewRepository
                             'conclude',
                             'description',
                             'note',
-                        ])->where('is_delete', 0)->where('is_active', 1);
+                        ])->where('is_delete', 0);
                     },
                 ]);
             case 'TT':
@@ -255,7 +265,7 @@ class SereServDetailVViewRepository
                             'execute_username',
                             'execute_loginname',
                             'parent_id',
-                        ])->where('is_delete', 0)->where('is_active', 1);
+                        ])->where('is_delete', 0);
                     },
                     'sere_serv_exts' => function ($query) {
                         $query->select([
@@ -267,21 +277,21 @@ class SereServDetailVViewRepository
                             'conclude',
                             'description',
                             'note',
-                        ])->where('is_delete', 0)->where('is_active', 1);
+                        ])->where('is_delete', 0);
                     }, // TT thủ thuật, PT phẫu thuật Chỉ lấy is_delete = 0
                     'sere_serv_exts.machine' => function ($query) {
                         $query->select([
                             'id',
                             'machine_code',
                             'machine_name'
-                        ])->where('is_delete', 0)->where('is_active', 1);
+                        ])->where('is_delete', 0);
                     }, // Máy trả kết quả CLS
                     'sere_serv_exts.film_size' => function ($query) {
                         $query->select([
                             'id',
                             'film_size_code',
                             'film_size_name'
-                        ])->where('is_delete', 0)->where('is_active', 1);
+                        ])->where('is_delete', 0);
                     },
                     'service' => function ($query) {
                         $query->select([
@@ -289,19 +299,19 @@ class SereServDetailVViewRepository
                             'service_code',
                             'service_name',
                             'icd_cm_id'
-                        ])->where('is_delete', 0)->where('is_active', 1);
+                        ])->where('is_delete', 0);
                     },
                     'service.icd_cm' => function ($query) {
                         $query->select([
                             'id',
                             'icd_cm_code',
                             'icd_cm_name'
-                        ])->where('is_delete', 0)->where('is_active', 1);
+                        ])->where('is_delete', 0);
                     },
                     // 'service.machines' => function ($query) {
                     //     $query->select([
                     //         'id','machine_code','machine_name'
-                    //     ])->where('is_delete', 0)->where('is_active', 1);
+                    //     ])->where('is_delete', 0);
                     // }, // Máy thực hiện dịch vụ
                     'sere_serv_childrens' => function ($query) {
                         $query->select([
@@ -309,7 +319,7 @@ class SereServDetailVViewRepository
                             'parent_id',
                             'service_id',
                             'amount'
-                        ])->where('is_delete', 0)->where('is_active', 1);
+                        ])->where('is_delete', 0);
                     }, // dịch vụ đính kèm
                     'sere_serv_childrens.service' => function ($query) {
                         $query->select([
@@ -317,14 +327,14 @@ class SereServDetailVViewRepository
                             'service_unit_id',
                             'service_code',
                             'service_name'
-                        ])->where('is_delete', 0)->where('is_active', 1);
+                        ])->where('is_delete', 0);
                     },
                     'sere_serv_childrens.service.service_unit' => function ($query) {
                         $query->select([
                             'id',
                             'service_unit_code',
                             'service_unit_name'
-                        ])->where('is_delete', 0)->where('is_active', 1);
+                        ])->where('is_delete', 0);
                     },
 
                     'ekip_user' => function ($query) {
@@ -335,7 +345,7 @@ class SereServDetailVViewRepository
                             'loginname',
                             'username',
                             'execute_role_id'
-                        ])->where('is_delete', 0)->where('is_active', 1);
+                        ])->where('is_delete', 0);
                     }, // danh sách ekip
                     'ekip_user.execute_role' => function ($query) {
                         $query->select([
@@ -345,17 +355,17 @@ class SereServDetailVViewRepository
                             'is_surgry',
                             'is_subclinical',
                             'is_subclinical_result'
-                        ])->where('is_delete', 0)->where('is_active', 1);
+                        ])->where('is_delete', 0);
                     }, // IS_SURGRY gây mê, IS_SUBCLINICAL là kỹ thuật viên, IS_SUBCLINICAL_RESULT là người đọc kết quả
                     'ekip_user.department' => function ($query) {
                         $query->select([
                             'id',
                             'department_code',
                             'department_name'
-                        ])->where('is_delete', 0)->where('is_active', 1);
+                        ])->where('is_delete', 0);
                     },
                     'service_req_matys' => function ($query) {
-                        $query->where('is_delete', 0)->where('is_active', 1);
+                        $query->where('is_delete', 0);
                     },
                     'sere_serv_pttts' => function ($query) {
                         $query->select([
@@ -384,103 +394,103 @@ class SereServDetailVViewRepository
                             'after_pttt_icd_name',
                             'after_pttt_icd_code',
                             'manner',
-                        ])->where('is_delete', 0)->where('is_active', 1);
+                        ])->where('is_delete', 0);
                     }, // PT phẫu thuật
                     'sere_serv_pttts.pttt_group' => function ($query) {
                         $query->select([
                             'id',
                             'pttt_group_code',
                             'pttt_group_name'
-                        ])->where('is_delete', 0)->where('is_active', 1);
+                        ])->where('is_delete', 0);
                     }, // Phân loại
                     'sere_serv_pttts.pttt_method' => function ($query) {
                         $query->select([
                             'id',
                             'pttt_method_code',
                             'pttt_method_name'
-                        ])->where('is_delete', 0)->where('is_active', 1);
+                        ])->where('is_delete', 0);
                     }, // Phương pháp pttt
                     'sere_serv_pttts.real_pttt_method' => function ($query) {
                         $query->select([
                             'id',
                             'pttt_method_code',
                             'pttt_method_name'
-                        ])->where('is_delete', 0)->where('is_active', 1);
+                        ])->where('is_delete', 0);
                     }, // Phương pháp pttt thực tế
                     'sere_serv_pttts.pttt_condition' => function ($query) {
                         $query->select([
                             'id',
                             'pttt_condition_code',
                             'pttt_condition_name'
-                        ])->where('is_delete', 0)->where('is_active', 1);
+                        ])->where('is_delete', 0);
                     }, // Tình trạng pttt
                     'sere_serv_pttts.pttt_catastrophe' => function ($query) {
                         $query->select([
                             'id',
                             'pttt_catastrophe_code',
                             'pttt_catastrophe_name'
-                        ])->where('is_delete', 0)->where('is_active', 1);
+                        ])->where('is_delete', 0);
                     }, // Tai biến pttt
                     'sere_serv_pttts.pttt_high_tech' => function ($query) {
                         $query->select([
                             'id',
                             'pttt_high_tech_code',
                             'pttt_high_tech_name'
-                        ])->where('is_delete', 0)->where('is_active', 1);
+                        ])->where('is_delete', 0);
                     }, // công nghệ cao
                     'sere_serv_pttts.pttt_priority' => function ($query) {
                         $query->select([
                             'id',
                             'pttt_priority_code',
                             'pttt_priority_name'
-                        ])->where('is_delete', 0)->where('is_active', 1);
+                        ])->where('is_delete', 0);
                     }, // Ưu tiên
                     'sere_serv_pttts.pttt_table' => function ($query) {
                         $query->select([
                             'id',
                             'pttt_table_code',
                             'pttt_table_name'
-                        ])->where('is_delete', 0)->where('is_active', 1);
+                        ])->where('is_delete', 0);
                     }, // Bàn mổ
                     'sere_serv_pttts.emotionless_method' => function ($query) {
                         $query->select([
                             'id',
                             'emotionless_method_code',
                             'emotionless_method_name'
-                        ])->where('is_delete', 0)->where('is_active', 1);
+                        ])->where('is_delete', 0);
                     }, // Phương pháp vô cảm
                     'sere_serv_pttts.emotionless_method_second' => function ($query) {
                         $query->select([
                             'id',
                             'emotionless_method_code',
                             'emotionless_method_name'
-                        ])->where('is_delete', 0)->where('is_active', 1);
+                        ])->where('is_delete', 0);
                     }, // Phương pháp vô cảm 2
                     'sere_serv_pttts.emotionless_result' => function ($query) {
                         $query->select([
                             'id',
                             'emotionless_result_code',
                             'emotionless_result_name'
-                        ])->where('is_delete', 0)->where('is_active', 1);
+                        ])->where('is_delete', 0);
                     }, // Kết quả vô cảm
                     'sere_serv_pttts.death_within' => function ($query) {
                         $query->select([
                             'id',
                             'death_within_code',
                             'death_within_name'
-                        ])->where('is_delete', 0)->where('is_active', 1);
+                        ])->where('is_delete', 0);
                     }, // Tử vong trong
                     'sere_serv_pttts.blood_abo' => function ($query) {
                         $query->select([
                             'id',
                             'blood_abo_code'
-                        ])->where('is_delete', 0)->where('is_active', 1);
+                        ])->where('is_delete', 0);
                     }, // máu
                     'sere_serv_pttts.blood_rh' => function ($query) {
                         $query->select([
                             'id',
                             'blood_rh_code'
-                        ])->where('is_delete', 0)->where('is_active', 1);
+                        ])->where('is_delete', 0);
                     }, // máu
 
                 ]);
@@ -512,7 +522,7 @@ class SereServDetailVViewRepository
                             'icd_text',
                             'execute_username',
                             'execute_loginname',
-                        ])->where('is_delete', 0)->where('is_active', 1);
+                        ])->where('is_delete', 0);
                     },
                     'sere_serv_exts' => function ($query) {
                         $query->select([
@@ -525,10 +535,10 @@ class SereServDetailVViewRepository
                             'conclude',
                             'description',
                             'note',
-                        ])->where('is_delete', 0)->where('is_active', 1);
+                        ])->where('is_delete', 0);
                     }, // TT thủ thuật, PT phẫu thuật Chỉ lấy is_delete = 0
                     'sere_serv_exts.sar_print' => function ($query) {
-                        $query->where('is_delete', 0)->where('is_active', 1);
+                        $query->where('is_delete', 0);
                     }, // HA hình ảnh, SA siêu âm, CN thăm dò chức năng, NS nội soi
                     'ekip_user' => function ($query) {
                         $query->select([
@@ -538,7 +548,7 @@ class SereServDetailVViewRepository
                             'loginname',
                             'username',
                             'execute_role_id'
-                        ])->where('is_delete', 0)->where('is_active', 1);
+                        ])->where('is_delete', 0);
                     }, // danh sách ekip
                     'ekip_user.execute_role' => function ($query) {
                         $query->select([
@@ -548,14 +558,14 @@ class SereServDetailVViewRepository
                             'is_surgry',
                             'is_subclinical',
                             'is_subclinical_result'
-                        ])->where('is_delete', 0)->where('is_active', 1);
+                        ])->where('is_delete', 0);
                     }, // IS_SURGRY gây mê, IS_SUBCLINICAL là kỹ thuật viên, IS_SUBCLINICAL_RESULT là người đọc kết quả
                     'ekip_user.department' => function ($query) {
                         $query->select([
                             'id',
                             'department_code',
                             'department_name'
-                        ])->where('is_delete', 0)->where('is_active', 1);
+                        ])->where('is_delete', 0);
                     },
                 ]);
             default:
@@ -626,6 +636,14 @@ class SereServDetailVViewRepository
         if ($isDelete !== null) {
             $query->where(('is_delete'), $isDelete);
         }
+        return $query;
+    }
+    public function applyIsNoExecuteFilter($query)
+    {
+        $query->where(function ($q) {
+            $q->where('IS_NO_EXECUTE', 0)
+              ->orWhereNull('IS_NO_EXECUTE');
+        });
         return $query;
     }
     public function applyOrdering($query, $orderBy, $orderByJoin)
