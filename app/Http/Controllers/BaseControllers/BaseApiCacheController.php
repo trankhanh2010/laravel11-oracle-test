@@ -780,6 +780,10 @@ class BaseApiCacheController extends Controller
         }
     } 
     protected function  checkUserRoomCurrent($roomIds){
+        if($this->currentUserLoginRoomIds == null) {
+            $result = $roomIds;
+            return $result;
+        }
         if(is_array($roomIds)){
             $result = array_diff($roomIds, $this->currentUserLoginRoomIds);
         }else{
