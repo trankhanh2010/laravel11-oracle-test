@@ -148,10 +148,9 @@ class TreatmentBedRoomListVViewRepository
     {
         if ($param !== null) {
             if ($param) {
-                $query->whereNotNull(('bed_id'))
-                    ->whereNull(('remove_time'));
+                $query->whereNull(('remove_time'));
             } else {
-                $query->whereNull(('bed_id'));
+                $query->whereNotNull(('remove_time'));
             }
         }
         return $query;

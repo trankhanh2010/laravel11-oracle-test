@@ -2,6 +2,7 @@
 
 namespace App\Models\View;
 
+use App\Models\HIS\ActiveIngredient;
 use App\Models\HIS\DebateEkipUser;
 use App\Models\HIS\DebateInviteUser;
 use App\Models\HIS\MedicineType;
@@ -19,12 +20,26 @@ class DebateDetailVView extends Model
     protected $guarded = [
         'id',
     ];
-    // public function getMedicineTypeIdsAttribute()
-    // {
-    //     dd($this);
-    //     $data = MedicineType::select(['medicine_type_code', 'medicine_type_name'])->whereIn('id', explode(',', $this->medicine_type_ids))->get();
-    //     return $data;               
-    // }
+    public function getMedicineTypeIdsAttribute($value)
+    {
+        if($value != null){
+                return MedicineType::
+                select('id', 'medicine_type_code', 'medicine_type_name')
+                ->whereIn('id', explode(',', $value))->get();
+        }else{
+            return $value;
+        }
+    }
+    public function getActiveIngredientIdsAttribute($value)
+    {
+        if($value != null){
+                return ActiveIngredient::
+                select('id', 'active_ingredient_code', 'active_ingredient_name')
+                ->whereIn('id', explode(',', $value))->get();
+        }else{
+            return $value;
+        }
+    }
 
     public function debate_ekip_users()
     {

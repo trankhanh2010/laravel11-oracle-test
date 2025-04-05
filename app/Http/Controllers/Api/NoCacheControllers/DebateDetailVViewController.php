@@ -16,10 +16,9 @@ class DebateDetailVViewController extends BaseApiCacheController
 {
     protected $debateDetailVViewService;
     protected $debateDetailVViewDTO;
-    public function __construct(Request $request, ElasticsearchService $elasticSearchService, DebateDetailVViewService $debateDetailVViewService, DebateDetailVView $debateDetailVView)
+    public function __construct(Request $request, DebateDetailVViewService $debateDetailVViewService, DebateDetailVView $debateDetailVView)
     {
         parent::__construct($request); // Gọi constructor của BaseController
-        $this->elasticSearchService = $elasticSearchService;
         $this->debateDetailVViewService = $debateDetailVViewService;
         $this->debateDetailVView = $debateDetailVView;
         // Kiểm tra tên trường trong bảng
@@ -55,20 +54,8 @@ class DebateDetailVViewController extends BaseApiCacheController
         if ($this->checkParam()) {
             return $this->checkParam();
         }
-        $keyword = $this->keyword;
-        if (($keyword != null || $this->elasticSearchType != null) && !$this->cache) {
-            if ($this->elasticSearchType != null) {
-                $data = $this->elasticSearchService->handleElasticSearchSearch($this->debateDetailVViewName);
-            } else {
-                $data = $this->debateDetailVViewService->handleDataBaseSearch();
-            }
-        } else {
-            if ($this->elastic) {
-                $data = $this->elasticSearchService->handleElasticSearchGetAll($this->debateDetailVViewName);
-            } else {
-                $data = $this->debateDetailVViewService->handleDataBaseGetAll();
-            }
-        }
+        $data = $this->debateDetailVViewService->handleDataBaseGetAll();
+        
         $paramReturn = [
             $this->getAllName => $this->getAll,
             $this->startName => $this->getAll ? null : $this->start,
