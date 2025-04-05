@@ -6,6 +6,7 @@ use App\Models\HIS\ActiveIngredient;
 use App\Models\HIS\DebateEkipUser;
 use App\Models\HIS\DebateInviteUser;
 use App\Models\HIS\MedicineType;
+use App\Models\HIS\Service;
 use App\Models\HIS\Tracking;
 use App\Traits\dinh_dang_ten_truong;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -52,6 +53,10 @@ class DebateDetailVView extends Model
     public function tracking()
     {
         return $this->belongsTo(Tracking::class);
+    }
+    public function service()
+    {
+        return $this->belongsTo(Service::class);
     }
 
 }
