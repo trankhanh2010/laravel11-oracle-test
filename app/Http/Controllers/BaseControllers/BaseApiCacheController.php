@@ -1015,7 +1015,7 @@ class BaseApiCacheController extends Controller
         $cacheKey = 'treatment_id_by_treatment_code_'.$code;
         $cacheKeySet = "cache_keys:" . "setting"; // Set để lưu danh sách key
         $data = Cache::remember($cacheKey, $this->time, function () use($code) {
-            return Treatment::where('treatment_code', $code)->first()->id ?? null;
+            return Treatment::where('treatment_code', $code)->first()->id ?? 0;
         });
         // Lưu key vào Redis Set để dễ xóa sau này
         Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
@@ -1026,7 +1026,7 @@ class BaseApiCacheController extends Controller
         $cacheKey = 'patient_code_by_treatment_code_'.$code;
         $cacheKeySet = "cache_keys:" . "setting"; // Set để lưu danh sách key
         $data = Cache::remember($cacheKey, $this->time, function () use($code) {
-            return Treatment::where('treatment_code', $code)->first()->tdl_patient_code ?? null;
+            return Treatment::where('treatment_code', $code)->first()->tdl_patient_code ?? 0;
         });
         // Lưu key vào Redis Set để dễ xóa sau này
         Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
