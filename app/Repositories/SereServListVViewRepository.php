@@ -17,7 +17,32 @@ class SereServListVViewRepository
     public function applyJoins()
     {
         return $this->sereServListVView
-            ->select();
+            ->select([
+                "id",     
+                "is_no_execute",
+                "is_delete",
+                "amount",
+                "service_req_id",
+                "service_code",
+                "service_name",
+                "service_unit_name",
+                "service_req_code",
+                "treatment_id",
+                "tracking_id",
+                "intruction_time",
+                "intruction_date",
+                "vir_intruction_month",
+                "patient_type_name",
+                "request_department_name",
+                "department_name",
+                "tutorial",
+                "tracking_creator",
+                "service_type_code",
+                "service_type_name",
+                "service_req_stt_code",
+                "service_req_stt_name",
+                "patient_code",
+            ]);
     }
     public function applyKeywordFilter($query, $keyword)
     {

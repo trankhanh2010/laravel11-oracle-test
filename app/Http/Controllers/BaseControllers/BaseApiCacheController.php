@@ -3,7 +3,12 @@
 namespace App\Http\Controllers\BaseControllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\HIS\SereServ;
 use App\Models\HIS\Service;
+use App\Models\HIS\ServiceReq;
+use App\Models\HIS\Tracking;
+use App\Models\HIS\Treatment;
+use App\Models\HIS\TreatmentBedRoom;
 use Illuminate\Http\Request;
 use App\Models\HIS\UserRoom;
 use Illuminate\Support\Facades\Cache;
@@ -829,6 +834,19 @@ class BaseApiCacheController extends Controller
 
         return null; // Trả về null nếu không có lỗi
     }
+    protected function validateAndCheckCode($code, $model, $modelName)
+    {
+        if (!is_string($code)) {
+            return returnIdError($code);
+        }
+
+        // $checkId = $this->checkId($id, $model, $modelName);
+        // if ($checkId) {
+        //     return $checkId;
+        // }
+
+        return null; // Trả về null nếu không có lỗi
+    }
 
     protected function getColumnsTable($table, $isView = false)
     {
@@ -854,16 +872,166 @@ class BaseApiCacheController extends Controller
 
     protected function checkOrderBy($orderBy, $columns, $orderByJoin)
     {
-        foreach ($orderBy as $key => $item) {
-            if (!in_array($key, $orderByJoin)) {
-                if ((!in_array($key, $columns))) {
-                    $this->errors[snakeToCamel($key)] = $this->messOrderByName;
-                    unset($this->orderByRequest[camelCaseFromUnderscore($key)]);
-                    unset($this->orderBy[$key]);
-                }
-            }
-        }
+        // Lặp qua từng phần tử và kiểm tra
+        // foreach ($orderBy as $key => $item) {
+        //     if (!in_array($key, $orderByJoin)) {
+        //         if ((!in_array($key, $columns))) {
+        //             $this->errors[snakeToCamel($key)] = $this->messOrderByName;
+        //             unset($this->orderByRequest[camelCaseFromUnderscore($key)]);
+        //             unset($this->orderBy[$key]);
+        //         }
+        //     }
+        // }
         return $orderBy;
+    }
+    public function getBedRoomIdsTreatmentId($treatmentId){
+        $cacheKey = 'bed_room_ids_treatment_id_'.$treatmentId;
+        $cacheKeySet = "cache_keys:" . $this->currentLoginname; // Set để lưu danh sách key
+        $data = Cache::remember($cacheKey, 600, function () use($treatmentId) {
+            $bedRoomIds = TreatmentBedRoom::join('his_bed_room','his_bed_room.id', '=', 'his_treatment_bed_room.bed_room_id')
+            ->where('treatment_id', $treatmentId)->pluck('his_bed_room.room_id')->toArray();
+            return $bedRoomIds;
+        });
+        // Lưu key vào Redis Set để dễ xóa sau này
+        Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+
+        return $data;
+    }
+
+    public function getExeRoomIdsTreatmentId($treatmentId){
+        $cacheKey = 'exe_room_ids_treatment_id_'.$treatmentId;
+        $cacheKeySet = "cache_keys:" . $this->currentLoginname; // Set để lưu danh sách key
+        $data = Cache::remember($cacheKey, 600, function () use($treatmentId) {
+            $executeRoomIds = ServiceReq::where('treatment_id', $treatmentId)->pluck('execute_room_id')->toArray();
+            return $executeRoomIds;
+        });
+        // Lưu key vào Redis Set để dễ xóa sau này
+        Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+
+        return $data;
+    }
+    public function checkUserRoomTreatmentId($treatmentId){
+        if($treatmentId == null || !is_numeric($treatmentId)){
+            $this->errors[$this->treatmentIdName] = $this->messFormat;
+            return ;
+        }
+        $bedRoomIds = $this->getBedRoomIdsTreatmentId($treatmentId);
+        $executeRoomIds = $this->getExeRoomIdsTreatmentId($treatmentId);
+
+        // Check xem treatmentId này có roomId nào thuộc quyền của user đang lấy data hay không
+        $intersectBedRoom = array_intersect($bedRoomIds, $this->currentUserLoginRoomIds);
+        $intersectExeRoom = array_intersect($executeRoomIds, $this->currentUserLoginRoomIds);
+
+        $success = false;
+        if(!empty($intersectBedRoom) || !empty($intersectExeRoom)){
+            $success = true;
+        }
+        if(!$success){
+            $this->errors[$this->treatmentIdName] = 'Không có quyền xem thông tin hồ sơ này';
+        }
+    }
+
+    public function getBedRoomIdsPatientCode($patientCode){
+        $cacheKey = 'bed_room_ids_patient_code_'.$patientCode;
+        $cacheKeySet = "cache_keys:" . $this->currentLoginname; // Set để lưu danh sách key
+        $data = Cache::remember($cacheKey, 600, function () use($patientCode) {
+            $bedRoomIds = Treatment::join('his_treatment_bed_room','his_treatment_bed_room.treatment_id', '=', 'his_treatment.id')
+            ->join('his_bed_room','his_bed_room.id', '=', 'his_treatment_bed_room.bed_room_id')
+            ->where('tdl_patient_code', $patientCode)->pluck('his_bed_room.room_id')->toArray();
+            return $bedRoomIds;
+        });
+        // Lưu key vào Redis Set để dễ xóa sau này
+        Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+
+        return $data;
+    }
+
+    public function getExeRoomIdsPatientCode($patientCode){
+        $cacheKey = 'exe_room_ids_patient_code_'.$patientCode;
+        $cacheKeySet = "cache_keys:" . $this->currentLoginname; // Set để lưu danh sách key
+        $data = Cache::remember($cacheKey, 600, function () use($patientCode) {
+            $executeRoomIds = ServiceReq::where('tdl_patient_code', $patientCode)->pluck('execute_room_id')->toArray();
+            return $executeRoomIds;
+        });
+        // Lưu key vào Redis Set để dễ xóa sau này
+        Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+
+        return $data;
+    }
+    public function checkUserRoomPatientCode($patientCode){
+        if($patientCode == null || !is_string($patientCode)){
+            $this->errors[$this->patientCodeName] = $this->messFormat;
+            return ;
+        }
+        $bedRoomIds = $this->getBedRoomIdsPatientCode($patientCode);
+        $executeRoomIds = $this->getExeRoomIdsPatientCode($patientCode);
+
+        // Check xem patientCode này có roomId nào thuộc quyền của user đang lấy data hay không
+        $intersectBedRoom = array_intersect($bedRoomIds, $this->currentUserLoginRoomIds);
+        $intersectExeRoom = array_intersect($executeRoomIds, $this->currentUserLoginRoomIds);
+
+        $success = false;
+        if(!empty($intersectBedRoom) || !empty($intersectExeRoom)){
+            $success = true;
+        }
+        if(!$success){
+            $this->errors[$this->patientCodeName] = 'Không có quyền xem thông tin bệnh nhân này';
+        }
+    }
+    public function getTreatmentIdByTrackingId($id){
+        $cacheKey = 'treatment_id_by_tracking_id_'.$id;
+        $cacheKeySet = "cache_keys:" . "setting"; // Set để lưu danh sách key
+        $data = Cache::remember($cacheKey, 600, function () use($id) {
+            return Tracking::find($id)->treatment_id ?? null;
+        });
+        // Lưu key vào Redis Set để dễ xóa sau này
+        Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+
+        return $data;
+    }
+    public function getTreatmentIdByServiceReqId($id){
+        $cacheKey = 'treatment_id_by_service_req_id_'.$id;
+        $cacheKeySet = "cache_keys:" . "setting"; // Set để lưu danh sách key
+        $data = Cache::remember($cacheKey, 600, function () use($id) {
+            return ServiceReq::find($id)->treatment_id ?? null;
+        });
+        // Lưu key vào Redis Set để dễ xóa sau này
+        Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+
+        return $data;
+    }
+    public function getTreatmentIdBySereServId($id){
+        $cacheKey = 'treatment_id_by_sere_serv_id_'.$id;
+        $cacheKeySet = "cache_keys:" . "setting"; // Set để lưu danh sách key
+        $data = Cache::remember($cacheKey, 600, function () use($id) {
+            return SereServ::find($id)->tdl_treatment_id ?? null;
+        });
+        // Lưu key vào Redis Set để dễ xóa sau này
+        Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+
+        return $data;
+    }
+    public function getTreatmentIdByTreatmentCode($code){
+        $cacheKey = 'treatment_id_by_treatment_code_'.$code;
+        $cacheKeySet = "cache_keys:" . "setting"; // Set để lưu danh sách key
+        $data = Cache::remember($cacheKey, $this->time, function () use($code) {
+            return Treatment::where('treatment_code', $code)->first()->id ?? null;
+        });
+        // Lưu key vào Redis Set để dễ xóa sau này
+        Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+
+        return $data;
+    }
+    public function getPatientCodedByTreatmentCode($code){
+        $cacheKey = 'patient_code_by_treatment_code_'.$code;
+        $cacheKeySet = "cache_keys:" . "setting"; // Set để lưu danh sách key
+        $data = Cache::remember($cacheKey, $this->time, function () use($code) {
+            return Treatment::where('treatment_code', $code)->first()->tdl_patient_code ?? null;
+        });
+        // Lưu key vào Redis Set để dễ xóa sau này
+        Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+
+        return $data;
     }
     public function __construct(Request $request)
     {
@@ -1636,6 +1804,10 @@ class BaseApiCacheController extends Controller
                 $this->errors[$this->patientCodeName] = $this->messFormat;
                 $this->patientCode = null;
             }
+        }else{
+            if($this->treatmentCode != null){
+                $this->patientCode = $this->getPatientCodedByTreatmentCode($this->treatmentCode);
+            }
         }
         $this->executeRoomCode = $this->paramRequest['ApiData']['ExecuteRoomCode'] ?? null;
         if ($this->executeRoomCode !== null) {
@@ -1962,7 +2134,12 @@ class BaseApiCacheController extends Controller
                 $this->errors[$this->treatmentIdName] = $this->messFormat;
                 $this->treatmentId = null;
             } 
+        }else{
+            if($this->treatmentCode != null){
+                $this->treatmentId = $this->getTreatmentIdByTreatmentCode($this->treatmentCode);
+            }
         }
+
         $this->trackingId = $this->paramRequest['ApiData']['TrackingId'] ?? null;
         if ($this->trackingId !== null) {
             // Kiểm tra xem ID có tồn tại trong bảng  hay không

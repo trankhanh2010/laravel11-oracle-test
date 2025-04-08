@@ -17,7 +17,16 @@ class TrackingListVViewRepository
     public function applyJoins()
     {
         return $this->trackingListVView
-            ->select();
+            ->select([
+                "id",            
+                "treatment_id",
+                "tracking_time",
+                "content",
+                "department_code",
+                "department_name",
+                "intruction_date",
+                "tracking_creator",
+            ]);
     }
     public function applyKeywordFilter($query, $keyword)
     {

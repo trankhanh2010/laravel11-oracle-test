@@ -4,10 +4,7 @@ namespace App\Http\Controllers\Api\NoCacheControllers;
 
 use App\DTOs\SereServClsListVViewDTO;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
-use App\Http\Requests\SereServClsListVView\CreateSereServClsListVViewRequest;
-use App\Http\Requests\SereServClsListVView\UpdateSereServClsListVViewRequest;
 use App\Models\View\SereServClsListVView;
-use App\Services\Elastic\ElasticsearchService;
 use App\Services\Model\SereServClsListVViewService;
 use Illuminate\Http\Request;
 
@@ -16,10 +13,9 @@ class SereServClsListVViewController extends BaseApiCacheController
 {
     protected $sereServClsListVViewService;
     protected $sereServClsListVViewDTO;
-    public function __construct(Request $request, ElasticsearchService $elasticSearchService, SereServClsListVViewService $sereServClsListVViewService, SereServClsListVView $sereServClsListVView)
+    public function __construct(Request $request,  SereServClsListVViewService $sereServClsListVViewService, SereServClsListVView $sereServClsListVView)
     {
         parent::__construct($request); // Gọi constructor của BaseController
-        $this->elasticSearchService = $elasticSearchService;
         $this->sereServClsListVViewService = $sereServClsListVViewService;
         $this->sereServClsListVView = $sereServClsListVView;
         // Kiểm tra tên trường trong bảng
@@ -61,11 +57,14 @@ class SereServClsListVViewController extends BaseApiCacheController
             $this->reportTypeCode,
             $this->serviceCodes,
             $this->noCache,
+            $this->treatmentCode,
         );
         $this->sereServClsListVViewService->withParams($this->sereServClsListVViewDTO);
     }
     public function index()
     {
+        // Check xem người dùng có quyền lấy thông tin của patietnCode này không
+        // $this->checkUserRoomPatientCode($this->patientCode);
         if ($this->checkParam()) {
             return $this->checkParam();
         }
@@ -93,11 +92,7 @@ class SereServClsListVViewController extends BaseApiCacheController
                 return $validationError;
             }
         }
-        if ($this->elastic) {
-            $data = $this->elasticSearchService->handleElasticSearchGetWithId($this->sereServClsListVViewName, $id);
-        } else {
-            $data = $this->sereServClsListVViewService->handleDataBaseGetWithId($id);
-        }
+        $data = $this->sereServClsListVViewService->handleDataBaseGetWithId($id);
         $paramReturn = [
             $this->idName => $id,
             $this->isActiveName => $this->isActive,

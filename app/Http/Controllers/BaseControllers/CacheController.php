@@ -24,6 +24,7 @@ class CacheController extends BaseApiCacheController
         // Nếu là voBenhAn
         if ($this->tab == 'voBenhAn') {
             $this->keys =  [
+                "setting", //Cache hỗ trợ
                 "department",
                 "pttt_catastrophe",
                 "pttt_condition",

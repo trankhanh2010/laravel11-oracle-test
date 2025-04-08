@@ -13,8 +13,30 @@ class MedicalCaseCoverListVViewRepository
         $this->medicalCaseCoverListVView = $medicalCaseCoverListVView;
     }
 
-    public function applyJoins()
+    public function applyJoins($tab = null)
     {
+        if($tab == 'info') {
+            return $this->medicalCaseCoverListVView
+            ->select([
+                'id',
+                'treatment_id',
+                'department_code',
+                'patient_type_name',
+                'treatment_code',
+                'patient_id',               
+                'icd_code',
+                'icd_name',
+                'icd_sub_code',
+                'icd_text',
+                'tdl_patient_code',
+                'tdl_patient_name',
+                'tdl_patient_dob',
+                'tdl_patient_address',
+                'tdl_patient_gender_name',            
+                'tdl_patient_mobile',
+                'tdl_patient_phone',               
+            ]);
+        }
         return $this->medicalCaseCoverListVView
             ->select([
                 'id',

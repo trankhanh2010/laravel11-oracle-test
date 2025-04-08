@@ -29,12 +29,17 @@ class CheckModule
         }
         $token = get_token_header($request, $token_header);
         $user = get_user_with_loginname($token->login_name);
+
         // Nếu module vô danh thì đi tiếp
-        $list_is_anonymous = Cache::remember('list_is_anonymous', now()->addMinutes(10080), function () {
+        $cacheKey = 'list_is_anonymous';
+        $cacheKeySet = "cache_keys:" . "setting"; // Set để lưu danh sách key
+        $list_is_anonymous = Cache::remember($cacheKey, now()->addMinutes(10080), function () {
             $data = Module::where('is_anonymous', 1)->pluck('module_link')->toArray();
             return base64_encode(gzcompress(serialize($data))); // Nén và mã hóa trước khi lưu
         });
-        
+        // Lưu key vào Redis Set để dễ xóa sau này
+        Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+
         // Giải nén dữ liệu khi lấy từ cache
         if ($list_is_anonymous && is_string($list_is_anonymous)) {
             $decompressedData = @gzuncompress(base64_decode($list_is_anonymous));
@@ -46,23 +51,28 @@ class CheckModule
         // Nếu có full quyền thì đi tiếp
         $cacheKey = 'check_super_admin_'.$user->loginname;
         $cacheKeySet = "cache_keys:" . $user->loginname; // Set để lưu danh sách key
+        $cacheKeySetS = "cache_keys:" . "setting"; // Set để lưu danh sách key
         $check_super_admin =  Cache::remember('check_super_admin_'.$user->loginname, now()->addMinutes(1440) , function () use ($user) {
             return $user->checkSuperAdmin();
         });
         // Lưu key vào Redis Set để dễ xóa sau này
         Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+        Redis::connection('cache')->sadd($cacheKeySetS, [$cacheKey]);
+
         if($check_super_admin){
             return $next($request);
         }
         // Kiểm tra quyền module
         $cacheKey = 'has_module_'.$currentRouteName.'_'.$user->loginname;
         $cacheKeySet = "cache_keys:" . $user->loginname; // Set để lưu danh sách key
+        $cacheKeySetS = "cache_keys:" . "setting"; // Set để lưu danh sách key
         $has_module =  Cache::remember('has_module_'.$currentRouteName.'_'.$user->loginname, now()->addMinutes(1440) , function () use ($user, $currentRouteName) {
             return $user->hasModule($currentRouteName);
         });
         // Lưu key vào Redis Set để dễ xóa sau này
         Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
-        
+        Redis::connection('cache')->sadd($cacheKeySetS, [$cacheKey]);
+
         if ($has_module) {
             return $next($request);
         }

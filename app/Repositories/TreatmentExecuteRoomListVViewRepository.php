@@ -37,7 +37,6 @@ class TreatmentExecuteRoomListVViewRepository
                 'tdl_patient_dob',
                 'tdl_patient_gender_name',
                 'tdl_patient_ethnic_name',
-                'tdl_patient_address',
                 'room_type_code',
                 'room_type_name',
             ]);

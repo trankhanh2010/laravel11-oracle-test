@@ -27,11 +27,14 @@ class CheckAdmin
 
         $cacheKey = 'check_super_admin_'.$user->loginname;
         $cacheKeySet = "cache_keys:" . $user->loginname; // Set để lưu danh sách key
+        $cacheKeySetS = "cache_keys:" . "setting"; // Set để lưu danh sách key
         $check_super_admin =  Cache::remember($cacheKey, now()->addMinutes(1440) , function () use ($user) {
             return $user->checkSuperAdmin();
         });
         // Lưu key vào Redis Set để dễ xóa sau này
         Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+        Redis::connection('cache')->sadd($cacheKeySetS, [$cacheKey]);
+
         if($check_super_admin){
             return $next($request);
         }

@@ -4,10 +4,7 @@ namespace App\Http\Controllers\Api\NoCacheControllers;
 
 use App\DTOs\MedicalCaseCoverListVViewDTO;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
-use App\Http\Requests\MedicalCaseCoverListVView\CreateMedicalCaseCoverListVViewRequest;
-use App\Http\Requests\MedicalCaseCoverListVView\UpdateMedicalCaseCoverListVViewRequest;
 use App\Models\View\MedicalCaseCoverListVView;
-use App\Services\Elastic\ElasticsearchService;
 use App\Services\Model\MedicalCaseCoverListVViewService;
 use Illuminate\Http\Request;
 
@@ -80,22 +77,23 @@ class MedicalCaseCoverListVViewController extends BaseApiCacheController
         return returnDataSuccess($paramReturn, $data['data']);
     }
 
-    public function show($id)
+    public function show($code)
     {
+        // Check xem người dùng có quyền lấy thông tin của treatment này không
+        // $this->checkUserRoomTreatmentId($id);
         if ($this->checkParam()) {
             return $this->checkParam();
         }
-        if ($id !== null) {
-            $validationError = $this->validateAndCheckId($id, $this->medicalCaseCoverListVView, $this->medicalCaseCoverListVViewName);
+        if ($code !== null) {
+            $validationError = $this->validateAndCheckCode($code, $this->medicalCaseCoverListVView, $this->medicalCaseCoverListVViewName);
             if ($validationError) {
                 return $validationError;
             }
         }
-
-        $data = $this->medicalCaseCoverListVViewService->handleDataBaseGetWithId($id);
+        // $data = $this->medicalCaseCoverListVViewService->handleDataBaseGetWithId($id);
+        $data = $this->medicalCaseCoverListVViewService->handleDataBaseGetWithCode($code);
 
         $paramReturn = [
-            $this->idName => $id,
             $this->isActiveName => $this->isActive,
         ];
         return returnDataSuccess($paramReturn, $data);

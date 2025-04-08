@@ -52,7 +52,7 @@ class MedicalCaseCoverListVViewService
     }
     private function getAllDataFromDatabase()
     {
-        $data = $this->medicalCaseCoverListVViewRepository->applyJoins();
+        $data = $this->medicalCaseCoverListVViewRepository->applyJoins($this->params->tab);
         $data = $this->medicalCaseCoverListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
         $data = $this->medicalCaseCoverListVViewRepository->applyIsDeleteFilter($data, 0);
         $data = $this->medicalCaseCoverListVViewRepository->applyDepartmentCodeFilter($data, $this->params->departmentCode);
@@ -74,8 +74,18 @@ class MedicalCaseCoverListVViewService
     }
     private function getDataById($id)
     {
-        $data = $this->medicalCaseCoverListVViewRepository->applyJoins()
+        $data = $this->medicalCaseCoverListVViewRepository->applyJoins($this->params->tab)
             ->where('id', $id);
+        $data = $this->medicalCaseCoverListVViewRepository->applyWithParam($data, $this->params->tab);
+        $data = $this->medicalCaseCoverListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $this->medicalCaseCoverListVViewRepository->applyIsDeleteFilter($data, 0);
+        $data = $data->first();
+        return $data;
+    }
+    private function getDataByCode($code)
+    {
+        $data = $this->medicalCaseCoverListVViewRepository->applyJoins($this->params->tab)
+            ->where('treatment_code', $code);
         $data = $this->medicalCaseCoverListVViewRepository->applyWithParam($data, $this->params->tab);
         $data = $this->medicalCaseCoverListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
         $data = $this->medicalCaseCoverListVViewRepository->applyIsDeleteFilter($data, 0);
@@ -113,6 +123,26 @@ class MedicalCaseCoverListVViewService
                 $cacheKeySet = "cache_keys:" . $this->params->medicalCaseCoverListVViewName; // Set để lưu danh sách key
                 $data = Cache::remember($cacheKey, 6, function () use ($id) {
                     return $this->getDataById($id);
+                });
+                // Lưu key vào Redis Set để dễ xóa sau này
+                Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+                return $data;
+            }
+        } catch (\Throwable $e) {
+            return writeAndThrowError(config('params')['db_service']['error']['medical_case_cover_list_v_view'], $e);
+        }
+    }
+    public function handleDataBaseGetWithCode($code)
+    {
+        try {
+            // Nếu không lưu cache
+            if ($this->params->noCache) {
+                return $this->getDataByCode($code);
+            } else {
+                $cacheKey = $this->params->medicalCaseCoverListVViewName . '_' . $code . '_' . $this->params->param;
+                $cacheKeySet = "cache_keys:" . $this->params->medicalCaseCoverListVViewName; // Set để lưu danh sách key
+                $data = Cache::remember($cacheKey, 6, function () use ($code) {
+                    return $this->getDataByCode($code);
                 });
                 // Lưu key vào Redis Set để dễ xóa sau này
                 Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);

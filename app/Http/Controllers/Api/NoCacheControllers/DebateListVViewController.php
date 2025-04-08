@@ -4,10 +4,7 @@ namespace App\Http\Controllers\Api\NoCacheControllers;
 
 use App\DTOs\DebateListVViewDTO;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
-use App\Http\Requests\DebateListVView\CreateDebateListVViewRequest;
-use App\Http\Requests\DebateListVView\UpdateDebateListVViewRequest;
 use App\Models\View\DebateListVView;
-use App\Services\Elastic\ElasticsearchService;
 use App\Services\Model\DebateListVViewService;
 use Illuminate\Http\Request;
 
@@ -16,10 +13,9 @@ class DebateListVViewController extends BaseApiCacheController
 {
     protected $debateListVViewService;
     protected $debateListVViewDTO;
-    public function __construct(Request $request, ElasticsearchService $elasticSearchService, DebateListVViewService $debateListVViewService, DebateListVView $debateListVView)
+    public function __construct(Request $request, DebateListVViewService $debateListVViewService, DebateListVView $debateListVView)
     {
         parent::__construct($request); // Gọi constructor của BaseController
-        $this->elasticSearchService = $elasticSearchService;
         $this->debateListVViewService = $debateListVViewService;
         $this->debateListVView = $debateListVView;
         // Kiểm tra tên trường trong bảng
@@ -57,23 +53,13 @@ class DebateListVViewController extends BaseApiCacheController
     }
     public function index()
     {
+        // Check xem người dùng có quyền lấy thông tin của treatment này không
+        // $this->checkUserRoomTreatmentId($this->treatmentId);
         if ($this->checkParam()) {
             return $this->checkParam();
         }
-        $keyword = $this->keyword;
-        if (($keyword != null || $this->elasticSearchType != null) && !$this->cache) {
-            if ($this->elasticSearchType != null) {
-                $data = $this->elasticSearchService->handleElasticSearchSearch($this->debateListVViewName);
-            } else {
-                $data = $this->debateListVViewService->handleDataBaseSearch();
-            }
-        } else {
-            if ($this->elastic) {
-                $data = $this->elasticSearchService->handleElasticSearchGetAll($this->debateListVViewName);
-            } else {
-                $data = $this->debateListVViewService->handleDataBaseGetAll();
-            }
-        }
+
+        $data = $this->debateListVViewService->handleDataBaseGetAll();
         $paramReturn = [
             $this->getAllName => $this->getAll,
             $this->startName => $this->getAll ? null : $this->start,
@@ -97,11 +83,7 @@ class DebateListVViewController extends BaseApiCacheController
                 return $validationError;
             }
         }
-        if ($this->elastic) {
-            $data = $this->elasticSearchService->handleElasticSearchGetWithId($this->debateListVViewName, $id);
-        } else {
-            $data = $this->debateListVViewService->handleDataBaseGetWithId($id);
-        }
+        $data = $this->debateListVViewService->handleDataBaseGetWithId($id);
         $paramReturn = [
             $this->idName => $id,
             $this->isActiveName => $this->isActive,

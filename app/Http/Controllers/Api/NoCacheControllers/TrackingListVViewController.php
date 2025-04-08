@@ -4,10 +4,7 @@ namespace App\Http\Controllers\Api\NoCacheControllers;
 
 use App\DTOs\TrackingListVViewDTO;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
-use App\Http\Requests\TrackingListVView\CreateTrackingListVViewRequest;
-use App\Http\Requests\TrackingListVView\UpdateTrackingListVViewRequest;
 use App\Models\View\TrackingListVView;
-use App\Services\Elastic\ElasticsearchService;
 use App\Services\Model\TrackingListVViewService;
 use Illuminate\Http\Request;
 
@@ -48,28 +45,19 @@ class TrackingListVViewController extends BaseApiCacheController
             $this->groupBy,
             $this->param,
             $this->noCache,
+            $this->treatmentCode,
         );
         $this->trackingListVViewService->withParams($this->trackingListVViewDTO);
     }
     public function index()
     {
+        // Check xem người dùng có quyền lấy thông tin của treatment này không
+        // $this->checkUserRoomTreatmentId($this->treatmentId);
+
         if ($this->checkParam()) {
             return $this->checkParam();
         }
-        $keyword = $this->keyword;
-        if (($keyword != null || $this->elasticSearchType != null) && !$this->cache) {
-            if ($this->elasticSearchType != null) {
-                $data = $this->elasticSearchService->handleElasticSearchSearch($this->trackingListVViewName);
-            } else {
-                $data = $this->trackingListVViewService->handleDataBaseSearch();
-            }
-        } else {
-            if ($this->elastic) {
-                $data = $this->elasticSearchService->handleElasticSearchGetAll($this->trackingListVViewName);
-            } else {
-                $data = $this->trackingListVViewService->handleDataBaseGetAll();
-            }
-        }
+        $data = $this->trackingListVViewService->handleDataBaseGetAll();
         $paramReturn = [
             $this->getAllName => $this->getAll,
             $this->startName => $this->getAll ? null : $this->start,
@@ -93,11 +81,7 @@ class TrackingListVViewController extends BaseApiCacheController
                 return $validationError;
             }
         }
-        if ($this->elastic) {
-            $data = $this->elasticSearchService->handleElasticSearchGetWithId($this->trackingListVViewName, $id);
-        } else {
-            $data = $this->trackingListVViewService->handleDataBaseGetWithId($id);
-        }
+        $data = $this->trackingListVViewService->handleDataBaseGetWithId($id);
         $paramReturn = [
             $this->idName => $id,
             $this->isActiveName => $this->isActive,

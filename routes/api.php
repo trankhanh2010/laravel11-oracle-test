@@ -956,7 +956,7 @@ Route::group([
         Route::apiResource('v1/debate', DebateController::class)->only(['index', 'show']);
         Route::apiResource('v1/debate-v-view', DebateVViewController::class)->only(['index', 'show']);
         /// Danh sách biên bản hội chẩn
-        Route::apiResource('v1/debate-list-v-view', DebateListVViewController::class)->only(['index', 'show']);
+        Route::apiResource('v1/debate-list-v-view', DebateListVViewController::class)->only(['index']);
         /// Biên bản hội chẩn
         Route::apiResource('v1/debate-detail-v-view', DebateDetailVViewController::class)->only(['show']);
     });
@@ -1118,11 +1118,11 @@ Route::group([
             'check_module:api',
         ]);
     /// Vỏ bệnh án
-    Route::apiResource('v1/medical-case-cover-list-v-view', MedicalCaseCoverListVViewController::class)->only(['index', 'show']);
+    Route::apiResource('v1/medical-case-cover-list-v-view', MedicalCaseCoverListVViewController::class)->only(['show']);
     /// TreatmentBedRoomList
-    Route::apiResource('v1/treatment-bed-room-list-v-view', TreatmentBedRoomListVViewController::class)->only(['index', 'show']);
+    Route::apiResource('v1/treatment-bed-room-list-v-view', TreatmentBedRoomListVViewController::class)->only(['index']);
     /// TreatmentExecuteRoomList
-    Route::apiResource('v1/treatment-exe-room-list-v-view', TreatmentExecuteRoomListVViewController::class)->only(['index', 'show']);
+    Route::apiResource('v1/treatment-exe-room-list-v-view', TreatmentExecuteRoomListVViewController::class)->only(['index']);
     /// Loại vỏ bệnh án
     Route::apiResource('v1/emr-cover-type', EmrCoverTypeController::class);
     /// Loại phiếu
@@ -1132,13 +1132,13 @@ Route::group([
     /// Icd List
     Route::apiResource('v1/icd-list-v-view', IcdListVViewController::class)->only(['index', 'show']);
     /// Treatment Room Group
-    Route::apiResource('v1/treatment-bed-room-group-v-view', TreatmentRoomGroupVViewController::class)->only(['index', 'show']);
+    Route::apiResource('v1/treatment-bed-room-group-v-view', TreatmentRoomGroupVViewController::class)->only(['index']);
     /// ServiceReqList danh sách y lệnh
-    Route::apiResource('v1/service-req-list-v-view', ServiceReqListVViewController::class)->only(['index', 'show']);
+    Route::apiResource('v1/service-req-list-v-view', ServiceReqListVViewController::class)->only(['index']);
     /// Tracking List
     Route::apiResource('v1/tracking-list-v-view', TrackingListVViewController::class)->only(['index', 'show']);
     /// SereServ List
-    Route::apiResource('v1/sere-serv-list-v-view', SereServListVViewController::class)->only(['index', 'show']);
+    Route::apiResource('v1/sere-serv-list-v-view', SereServListVViewController::class)->only(['index']);
     /// SereServ Detail
     Route::apiResource('v1/sere-serv-detail-v-view', SereServDetailVViewController::class)->only(['show']);
     /// Loại văn bản
@@ -1146,9 +1146,9 @@ Route::group([
     /// Danh sách văn bản
     Route::apiResource('v1/document-list-v-view', DocumentListVViewController::class)->only(['index', 'show']);
     /// SereServ Cls List
-    Route::apiResource('v1/sere-serv-cls-list-v-view', SereServClsListVViewController::class)->only(['index', 'show']);
+    Route::apiResource('v1/sere-serv-cls-list-v-view', SereServClsListVViewController::class)->only(['index']);
     /// SereServ Cls List
-    Route::apiResource('v1/treatment-list-v-view', TreatmentListVViewController::class)->only(['index', 'show']);
+    Route::apiResource('v1/treatment-list-v-view', TreatmentListVViewController::class)->only(['index']);
     /// ServiceReqStt
     Route::apiResource('v1/service-req-stt', ServiceReqSttController::class)->only(['index', 'show']);
 });

@@ -50,11 +50,13 @@ class CheckToken
         
         $cacheKey = 'loginname_'.$token->login_name;
         $cacheKeySet = "cache_keys:" . $token->login_name; // Set để lưu danh sách key
+        $cacheKeySetS = "cache_keys:" . "setting"; // Set để lưu danh sách key
         $user = Cache::remember('loginname_'.$token->login_name, now()->addMinutes(1440) , function () use ($token) {
             return User::where('loginname','=',$token->login_name)->get();
         });
         // Lưu key vào Redis Set để dễ xóa sau này
         Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+        Redis::connection('cache')->sadd($cacheKeySetS, [$cacheKey]);
 
         // Đặt người dùng hiện tại vào request
         $request->setUserResolver(function () use ($user) {

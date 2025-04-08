@@ -4,10 +4,7 @@ namespace App\Http\Controllers\Api\NoCacheControllers;
 
 use App\DTOs\SereServTeinChartsVViewDTO;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
-use App\Http\Requests\SereServTeinChartsVView\CreateSereServTeinChartsVViewRequest;
-use App\Http\Requests\SereServTeinChartsVView\UpdateSereServTeinChartsVViewRequest;
 use App\Models\View\SereServTeinChartsVView;
-use App\Services\Elastic\ElasticsearchService;
 use App\Services\Model\SereServTeinChartsVViewService;
 use Illuminate\Http\Request;
 
@@ -16,10 +13,9 @@ class SereServTeinChartsVViewController extends BaseApiCacheController
 {
     protected $sereServTeinChartsVViewService;
     protected $sereServTeinChartsVViewDTO;
-    public function __construct(Request $request, ElasticsearchService $elasticSearchService, SereServTeinChartsVViewService $sereServTeinChartsVViewService, SereServTeinChartsVView $sereServTeinChartsVView)
+    public function __construct(Request $request, SereServTeinChartsVViewService $sereServTeinChartsVViewService, SereServTeinChartsVView $sereServTeinChartsVView)
     {
         parent::__construct($request); // Gọi constructor của BaseController
-        $this->elasticSearchService = $elasticSearchService;
         $this->sereServTeinChartsVViewService = $sereServTeinChartsVViewService;
         $this->sereServTeinChartsVView = $sereServTeinChartsVView;
         // Kiểm tra tên trường trong bảng
@@ -66,6 +62,9 @@ class SereServTeinChartsVViewController extends BaseApiCacheController
     }
     public function index()
     {
+        // Check xem người dùng có quyền lấy thông tin của patietnCode này không
+        // $this->checkUserRoomPatientCode($this->patientCode);
+
         if ($this->checkParam()) {
             return $this->checkParam();
         }
@@ -93,11 +92,7 @@ class SereServTeinChartsVViewController extends BaseApiCacheController
                 return $validationError;
             }
         }
-        if ($this->elastic) {
-            $data = $this->elasticSearchService->handleElasticSearchGetWithId($this->sereServTeinChartsVViewName, $id);
-        } else {
-            $data = $this->sereServTeinChartsVViewService->handleDataBaseGetWithId($id);
-        }
+        $data = $this->sereServTeinChartsVViewService->handleDataBaseGetWithId($id);
         $paramReturn = [
             $this->idName => $id,
             $this->isActiveName => $this->isActive,

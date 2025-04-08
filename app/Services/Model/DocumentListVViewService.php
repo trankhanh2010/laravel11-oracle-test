@@ -30,7 +30,7 @@ class DocumentListVViewService
             $data = $this->documentListVViewRepository->applyKeywordFilter($data, $this->params->keyword);
             $data = $this->documentListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
             $data = $this->documentListVViewRepository->applyIsDeleteFilter($data, 0);
-            $data = $this->documentListVViewRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
+            // $data = $this->documentListVViewRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
             $data = $this->documentListVViewRepository->applyDocumentTypeIdFilter($data, $this->params->documentTypeId);
             $data = $this->documentListVViewRepository->applyTreatmentCodeFilter($data, $this->params->treatmentCode);
             $count = $data->count();
@@ -47,7 +47,7 @@ class DocumentListVViewService
         $data = $this->documentListVViewRepository->applyWithParam($data);
         $data = $this->documentListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
         $data = $this->documentListVViewRepository->applyIsDeleteFilter($data, 0);
-        $data = $this->documentListVViewRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
+        // $data = $this->documentListVViewRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
         $data = $this->documentListVViewRepository->applyDocumentTypeIdFilter($data, $this->params->documentTypeId);
         $data = $this->documentListVViewRepository->applyTreatmentCodeFilter($data, $this->params->treatmentCode);
         $count = $data->count();

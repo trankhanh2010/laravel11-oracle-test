@@ -4,10 +4,7 @@ namespace App\Http\Controllers\Api\NoCacheControllers;
 
 use App\DTOs\SereServTeinListVViewDTO;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
-use App\Http\Requests\SereServTeinListVView\CreateSereServTeinListVViewRequest;
-use App\Http\Requests\SereServTeinListVView\UpdateSereServTeinListVViewRequest;
 use App\Models\View\SereServTeinListVView;
-use App\Services\Elastic\ElasticsearchService;
 use App\Services\Model\SereServTeinListVViewService;
 use Illuminate\Http\Request;
 
@@ -16,10 +13,9 @@ class SereServTeinListVViewController extends BaseApiCacheController
 {
     protected $sereServTeinListVViewService;
     protected $sereServTeinListVViewDTO;
-    public function __construct(Request $request, ElasticsearchService $elasticSearchService, SereServTeinListVViewService $sereServTeinListVViewService, SereServTeinListVView $sereServTeinListVView)
+    public function __construct(Request $request, SereServTeinListVViewService $sereServTeinListVViewService, SereServTeinListVView $sereServTeinListVView)
     {
         parent::__construct($request); // Gọi constructor của BaseController
-        $this->elasticSearchService = $elasticSearchService;
         $this->sereServTeinListVViewService = $sereServTeinListVViewService;
         $this->sereServTeinListVView = $sereServTeinListVView;
         // Kiểm tra tên trường trong bảng
@@ -55,6 +51,12 @@ class SereServTeinListVViewController extends BaseApiCacheController
     }
     public function index()
     {
+        // Check xem người dùng có quyền lấy thông tin của treatment này không
+        // $this->checkUserRoomTreatmentId(  
+        //     $this->getTreatmentIdByServiceReqId($this->serviceReqId)
+        //     ??  $this->getTreatmentIdBySereServId($this->sereServIds[0] ?? 0)
+        //     ??  null
+        // );
         if ($this->checkParam()) {
             return $this->checkParam();
         }
@@ -84,11 +86,7 @@ class SereServTeinListVViewController extends BaseApiCacheController
                 return $validationError;
             }
         }
-        if ($this->elastic) {
-            $data = $this->elasticSearchService->handleElasticSearchGetWithId($this->sereServTeinListVViewName, $id);
-        } else {
-            $data = $this->sereServTeinListVViewService->handleDataBaseGetWithId($id);
-        }
+        $data = $this->sereServTeinListVViewService->handleDataBaseGetWithId($id);
         $paramReturn = [
             $this->idName => $id,
             $this->isActiveName => $this->isActive,

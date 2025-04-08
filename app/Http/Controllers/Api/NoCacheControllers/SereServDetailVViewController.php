@@ -4,10 +4,7 @@ namespace App\Http\Controllers\Api\NoCacheControllers;
 
 use App\DTOs\SereServDetailVViewDTO;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
-use App\Http\Requests\SereServDetailVView\CreateSereServDetailVViewRequest;
-use App\Http\Requests\SereServDetailVView\UpdateSereServDetailVViewRequest;
 use App\Models\View\SereServDetailVView;
-use App\Services\Elastic\ElasticsearchService;
 use App\Services\Model\SereServDetailVViewService;
 use Illuminate\Http\Request;
 
@@ -73,6 +70,11 @@ class SereServDetailVViewController extends BaseApiCacheController
 
     public function show($id)
     {
+        // Check xem người dùng có quyền lấy thông tin của treatment này không
+        // $this->checkUserRoomTreatmentId(
+        //     $this->getTreatmentIdBySereServId($id)
+        //     ??  null
+        // );
         if ($this->checkParam()) {
             return $this->checkParam();
         }

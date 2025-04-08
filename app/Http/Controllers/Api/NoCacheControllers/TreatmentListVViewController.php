@@ -4,10 +4,7 @@ namespace App\Http\Controllers\Api\NoCacheControllers;
 
 use App\DTOs\TreatmentListVViewDTO;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
-use App\Http\Requests\TreatmentListVView\CreateTreatmentListVViewRequest;
-use App\Http\Requests\TreatmentListVView\UpdateTreatmentListVViewRequest;
 use App\Models\View\TreatmentListVView;
-use App\Services\Elastic\ElasticsearchService;
 use App\Services\Model\TreatmentListVViewService;
 use Illuminate\Http\Request;
 
@@ -16,10 +13,9 @@ class TreatmentListVViewController extends BaseApiCacheController
 {
     protected $treatmentListVViewService;
     protected $treatmentListVViewDTO;
-    public function __construct(Request $request, ElasticsearchService $elasticSearchService, TreatmentListVViewService $treatmentListVViewService, TreatmentListVView $treatmentListVView)
+    public function __construct(Request $request, TreatmentListVViewService $treatmentListVViewService, TreatmentListVView $treatmentListVView)
     {
         parent::__construct($request); // Gọi constructor của BaseController
-        $this->elasticSearchService = $elasticSearchService;
         $this->treatmentListVViewService = $treatmentListVViewService;
         $this->treatmentListVView = $treatmentListVView;
         // Kiểm tra tên trường trong bảng
@@ -58,6 +54,8 @@ class TreatmentListVViewController extends BaseApiCacheController
     }
     public function index()
     {
+        // Check xem người dùng có quyền lấy thông tin của patietnCode này không
+        // $this->checkUserRoomPatientCode($this->patientCode);
         if ($this->checkParam()) {
             return $this->checkParam();
         }
@@ -85,11 +83,7 @@ class TreatmentListVViewController extends BaseApiCacheController
                 return $validationError;
             }
         }
-        if ($this->elastic) {
-            $data = $this->elasticSearchService->handleElasticSearchGetWithId($this->treatmentListVViewName, $id);
-        } else {
-            $data = $this->treatmentListVViewService->handleDataBaseGetWithId($id);
-        }
+        $data = $this->treatmentListVViewService->handleDataBaseGetWithId($id);
         $paramReturn = [
             $this->idName => $id,
             $this->isActiveName => $this->isActive,

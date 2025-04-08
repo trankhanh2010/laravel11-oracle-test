@@ -127,11 +127,15 @@ if (!function_exists('get_user_with_loginname')) {
     {
         $cacheKey = 'user_' . $loginname;
         $cacheKeySet = "cache_keys:" . $loginname; // Set để lưu danh sách key
+        $cacheKeySetS = "cache_keys:" . "setting"; // Set để lưu danh sách key
+
         $user = Cache::remember($cacheKey, now()->addMinutes(1440), function () use ($loginname) {
             return User::select()->where("loginname", $loginname)->first();
         });            
         // Lưu key vào Redis Set để dễ xóa sau này
         Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+        Redis::connection('cache')->sadd($cacheKeySetS, [$cacheKey]);
+
         return $user;
     }
 }
@@ -152,7 +156,11 @@ if (!function_exists('get_token_header')) {
                 $remainingTime = now()->diffInSeconds($expiresAt, false);
                 if ($remainingTime > 0) {
                     // Lưu cache với thời gian hết hạn động
-                    Cache::put('token_' . $token_header, $record, $remainingTime);
+                    $cacheKey = 'token_' . $token_header;
+                    $cacheKeySetS = "cache_keys:" . "setting"; // Set để lưu danh sách key
+                    Cache::put($cacheKey, $record, $remainingTime);
+                    Redis::connection('cache')->sadd($cacheKeySetS, [$cacheKey]);
+
                 }
             }
         }
@@ -566,6 +574,17 @@ if (!function_exists('returnIdError')) {
     }
 }
 
+if (!function_exists('returnCodeError')) {
+    function returnCodeError($code)
+    {
+        return response()->json([
+            'status'    => 422,
+            'success'   => false,
+            'message'   => 'Code = ' . $code . ' không hợp lệ!',
+        ], 422);
+    }
+}
+
 if (!function_exists('returnNotRecord')) {
     function returnNotRecord($id)
     {
@@ -690,10 +709,12 @@ if (!function_exists('return401')) {
 if (!function_exists('return400')) {
     function return400($mess)
     {
+        // dd($mess);
         return response()->json([
             'status'    => 400,
             'success' => false,
-            'message' => $mess
+            'message' => 'Dữ liệu không hợp lệ!',
+            'error' => $mess
         ], 400);
     }
 }
