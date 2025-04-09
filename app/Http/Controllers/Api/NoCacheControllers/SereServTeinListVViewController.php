@@ -60,7 +60,9 @@ class SereServTeinListVViewController extends BaseApiCacheController
         if ($this->checkParam()) {
             return $this->checkParam();
         }
-
+        if($this->serviceReqId == null && $this->sereServIds == null){
+            return returnDataSuccess(null, []);
+        }
         $data = $this->sereServTeinListVViewService->handleDataBaseGetAll();
 
         $paramReturn = [

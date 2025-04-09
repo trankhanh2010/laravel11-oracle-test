@@ -59,6 +59,9 @@ class TreatmentListVViewController extends BaseApiCacheController
         if ($this->checkParam()) {
             return $this->checkParam();
         }
+        if($this->patientCode == null){
+            return returnDataSuccess(null, []);
+        }
         $data = $this->treatmentListVViewService->handleDataBaseGetAll();
         $paramReturn = [
             $this->getAllName => $this->getAll,

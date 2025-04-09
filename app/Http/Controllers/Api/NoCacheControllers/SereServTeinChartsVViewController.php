@@ -68,6 +68,9 @@ class SereServTeinChartsVViewController extends BaseApiCacheController
         if ($this->checkParam()) {
             return $this->checkParam();
         }
+        if($this->patientCode == null){
+            return returnDataSuccess(null, []);
+        }
         $data = $this->sereServTeinChartsVViewService->handleDataBaseGetAll();
         $paramReturn = [
             $this->getAllName => $this->getAll,

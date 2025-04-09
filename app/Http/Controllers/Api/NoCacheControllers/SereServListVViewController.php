@@ -67,6 +67,9 @@ class SereServListVViewController extends BaseApiCacheController
         if ($this->checkParam()) {
             return $this->checkParam();
         }
+        if($this->treatmentCode == null && $this->treatmentId == null && $this->trackingId == null && $this->serviceReqId == null){
+            return returnDataSuccess(null, []);
+        }
         $data = $this->sereServListVViewService->handleDataBaseGetAll();
         $paramReturn = [
             $this->getAllName => $this->getAll,

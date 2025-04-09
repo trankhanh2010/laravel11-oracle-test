@@ -58,6 +58,9 @@ class DocumentListVViewController extends BaseApiCacheController
         if($this->documentIds != null){
             $data = $this->documentListVViewService->handleMergeDocumentByIds();
         }else{
+            if($this->treatmentCode == null && $this->treatmentId == null){
+                return returnDataSuccess(null, []);
+            }
             $data = $this->documentListVViewService->handleDataBaseGetAll();
         }
         $paramReturn = [
