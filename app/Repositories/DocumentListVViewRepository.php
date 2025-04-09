@@ -4,6 +4,7 @@ namespace App\Repositories;
 use App\Jobs\ElasticSearch\Index\ProcessElasticIndexingJob;
 use App\Models\View\DocumentListVView;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class DocumentListVViewRepository
 {
@@ -17,6 +18,7 @@ class DocumentListVViewRepository
     {
         return $this->documentListVView
             ->select([
+                "id as key",
                 "id",
                 "create_time",
                 "modify_time",
@@ -153,6 +155,44 @@ class DocumentListVViewRepository
     public function getById($id)
     {
         return $this->documentListVView->find($id);
+    }
+    public function applyGroupByField($data, $groupByFields = [])
+    {
+        if (empty($groupByFields)) {
+            return $data;
+        }
+
+        // Chuyển các field thành snake_case trước khi nhóm
+        $fieldMappings = [];
+        foreach ($groupByFields as $field) {
+            $snakeField = Str::snake($field);
+            $fieldMappings[$snakeField] = $field;
+        }
+
+        $snakeFields = array_keys($fieldMappings);
+
+        // Đệ quy nhóm dữ liệu theo thứ tự fields đã convert
+        $groupData = function ($items, $fields) use (&$groupData, $fieldMappings) {
+            if (empty($fields)) {
+                return $items->values(); // Hết field nhóm -> Trả về danh sách gốc
+            }
+
+            $currentField = array_shift($fields);
+            $originalField = $fieldMappings[$currentField];
+
+            return $items->groupBy(function ($item) use ($currentField) {
+                return $item[$currentField] ?? null;
+            })->map(function ($group, $key) use ($fields, $groupData, $originalField) {
+                return [
+                    $originalField => (string)$key, // Hiển thị tên gốc
+                    'key' => (string)$key,
+                    'total' => $group->count(),
+                    'children' => $groupData($group, $fields),
+                ];
+            })->values();
+        };
+
+        return $groupData(collect($data), $snakeFields);
     }
     // public function create($request, $time, $appCreator, $appModifier){
     //     $data = $this->documentListVView::create([

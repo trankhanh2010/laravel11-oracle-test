@@ -89,6 +89,8 @@ class DocumentListVViewService
         $count = $data->count();
         $data = $this->documentListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
         $data = $this->documentListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        $data = $this->documentListVViewRepository->applyGroupByField($data, $this->params->groupBy);
+
         return ['data' => $data, 'count' => $count];
     }
     private function getDataById($id)

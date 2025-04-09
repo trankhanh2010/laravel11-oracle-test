@@ -31,7 +31,12 @@ trait dinh_dang_ten_truong
         $convertedArray = [];
         foreach ($array as $key => $value) {
             $convertedKey = $this->snakeToCamel($key);
-            $convertedArray[$convertedKey] = $value;
+            // Ép kiểu riêng cho những trường muốn là số
+            if (in_array($convertedKey, ['key',])) {
+                $convertedArray[$convertedKey] = (int) $value;
+            } else {
+                $convertedArray[$convertedKey] = $value;
+            }
         }
         return $convertedArray;
     }

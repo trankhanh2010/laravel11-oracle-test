@@ -24,6 +24,7 @@ class DocumentListVViewDTO
     public $param;
     public $noCache;
     public $documentIds;
+    public $groupBy;
     public function __construct(
         $documentListVViewName,
         $keyword, 
@@ -45,6 +46,7 @@ class DocumentListVViewDTO
         $param,
         $noCache,
         $documentIds,
+        $groupBy,
         )
     {
         $this->documentListVViewName = $documentListVViewName;
@@ -67,5 +69,6 @@ class DocumentListVViewDTO
         $this->param = $param;
         $this->noCache = $noCache;
         $this->documentIds = $documentIds;
+        $this->groupBy = $groupBy;
     }
 }

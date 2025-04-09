@@ -47,6 +47,7 @@ class DocumentListVViewController extends BaseApiCacheController
             $this->param,
             $this->noCache,
             $this->documentIds,
+            $this->groupBy,
         );
         $this->documentListVViewService->withParams($this->documentListVViewDTO);
     }
