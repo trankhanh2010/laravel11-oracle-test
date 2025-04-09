@@ -61,6 +61,8 @@ class BaseApiCacheController extends Controller
     protected $idName = 'Id';
     protected $ids;
     protected $idsName = 'Ids';
+    protected $documentIds;
+    protected $documentIdsName = 'DocumentIds';
     protected $testIndexIds;
     protected $testIndexIdsName = 'TestIndexIds';
     protected $executeRoomIds;
@@ -1529,7 +1531,16 @@ class BaseApiCacheController extends Controller
                 } 
             }
         }
-
+        $this->documentIds = $this->paramRequest['ApiData']['DocumentIds'] ?? null;
+        if ($this->documentIds != null) {
+            foreach ($this->documentIds as $key => $item) {
+                // Kiểm tra xem ID có tồn tại trong bảng  hay không
+                if (!is_numeric($item)) {
+                    $this->errors[$this->documentIdsName] = $this->messFormat;
+                    unset($this->documentIds[$key]);
+                } 
+            }
+        }
 
         $this->testIndexIds = $this->paramRequest['ApiData']['TestIndexIds'] ?? null;
         if ($this->testIndexIds != null) {

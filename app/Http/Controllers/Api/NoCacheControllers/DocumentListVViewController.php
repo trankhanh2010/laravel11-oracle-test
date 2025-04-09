@@ -4,10 +4,7 @@ namespace App\Http\Controllers\Api\NoCacheControllers;
 
 use App\DTOs\DocumentListVViewDTO;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
-use App\Http\Requests\DocumentListVView\CreateDocumentListVViewRequest;
-use App\Http\Requests\DocumentListVView\UpdateDocumentListVViewRequest;
 use App\Models\View\DocumentListVView;
-use App\Services\Elastic\ElasticsearchService;
 use App\Services\Model\DocumentListVViewService;
 use Illuminate\Http\Request;
 
@@ -16,10 +13,9 @@ class DocumentListVViewController extends BaseApiCacheController
 {
     protected $documentListVViewService;
     protected $documentListVViewDTO;
-    public function __construct(Request $request, ElasticsearchService $elasticSearchService, DocumentListVViewService $documentListVViewService, DocumentListVView $documentListVView)
+    public function __construct(Request $request, DocumentListVViewService $documentListVViewService, DocumentListVView $documentListVView)
     {
         parent::__construct($request); // Gọi constructor của BaseController
-        $this->elasticSearchService = $elasticSearchService;
         $this->documentListVViewService = $documentListVViewService;
         $this->documentListVView = $documentListVView;
         // Kiểm tra tên trường trong bảng
@@ -50,6 +46,7 @@ class DocumentListVViewController extends BaseApiCacheController
             $this->treatmentCode,
             $this->param,
             $this->noCache,
+            $this->documentIds,
         );
         $this->documentListVViewService->withParams($this->documentListVViewDTO);
     }
@@ -58,19 +55,10 @@ class DocumentListVViewController extends BaseApiCacheController
         if ($this->checkParam()) {
             return $this->checkParam();
         }
-        $keyword = $this->keyword;
-        if (($keyword != null || $this->elasticSearchType != null) && !$this->cache) {
-            if ($this->elasticSearchType != null) {
-                $data = $this->elasticSearchService->handleElasticSearchSearch($this->documentListVViewName);
-            } else {
-                $data = $this->documentListVViewService->handleDataBaseSearch();
-            }
-        } else {
-            if ($this->elastic) {
-                $data = $this->elasticSearchService->handleElasticSearchGetAll($this->documentListVViewName);
-            } else {
-                $data = $this->documentListVViewService->handleDataBaseGetAll();
-            }
+        if($this->documentIds != null){
+            $data = $this->documentListVViewService->handleMergeDocumentByIds();
+        }else{
+            $data = $this->documentListVViewService->handleDataBaseGetAll();
         }
         $paramReturn = [
             $this->getAllName => $this->getAll,

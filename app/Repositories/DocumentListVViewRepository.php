@@ -16,13 +16,64 @@ class DocumentListVViewRepository
     public function applyJoins()
     {
         return $this->documentListVView
-            ->select(
+            ->select([
+                "id",
+                "create_time",
+                "modify_time",
+                "creator",
+                "modifier",
+                "app_creator",
+                "app_modifier",
+                "document_code",
+                "document_name",
+                "treatment_code",
+                "treatment_id",
+                "document_type_id",
+                "his_code",
+                "his_order",
+                "is_multi_sign",
+                "is_capture", 
+                "create_date",
+                "document_name_unsign",
+                "document_time",
+                "document_date",
+                "last_version_url",
+                "document_type_code",
+                "document_type_name",
+                'document_type_num_order',
+                'document_group_code',
+                'document_group_name',
+                'document_group_num_order',
+            ]
             );
     }
     public function applyWithParam($query)
     {
         return $query->with([
-            'signs', 
+            'signs' => function ($q) {
+                $q->select([
+                    "id",
+                    "document_id",
+                    "num_order",
+                    "loginname",
+                    "username",
+                    "title",
+                    "department_code",
+                    "department_name",
+                    "sign_time",
+                    "sign_date",
+                    "reject_time",
+                    "reject_date",
+                    "reject_reason",
+                    "description",
+                    "is_sign_board",
+                    "sign_image",
+                    "password",
+                    "secret_key",
+                    "cancel_time",
+                    "cancel_reason",
+                ]);
+            },
         ]);
     }
     public function applyKeywordFilter($query, $keyword)
@@ -67,6 +118,13 @@ class DocumentListVViewRepository
         }
         return $query;
     }
+    public function applyDocumentIdsFilter($query, $param)
+    {
+        if ($param !== null) {
+            $query->whereIn(('id'), $param);
+        }
+        return $query;
+    }
     public function applyOrdering($query, $orderBy, $orderByJoin)
     {
         if ($orderBy != null) {
@@ -77,7 +135,6 @@ class DocumentListVViewRepository
                 }
             }
         }
-
         return $query;
     }
     public function fetchData($query, $getAll, $start, $limit)

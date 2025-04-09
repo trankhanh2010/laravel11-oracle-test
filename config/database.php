@@ -246,6 +246,9 @@ return [
         'libre_office' => [
             'libre_office_path' => env('LIBRE_OFFICE_PATH', ''),
         ],
+        'fss' => [
+            'fss_url' => env('URL_FSS', ''),
+        ],
     ],
 
     /*
