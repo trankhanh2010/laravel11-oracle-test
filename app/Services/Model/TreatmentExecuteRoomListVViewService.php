@@ -32,9 +32,9 @@ class TreatmentExecuteRoomListVViewService
             $data = $this->treatmentExecuteRoomListVViewRepository->applyIsNoExecuteFilter($data);
             $data = $this->treatmentExecuteRoomListVViewRepository->applyTreatmentCodeFilter($data, $this->params->treatmentCode);
             $data = $this->treatmentExecuteRoomListVViewRepository->applyPatientCodeFilter($data, $this->params->patientCode);
-            $data = $this->treatmentExecuteRoomListVViewRepository->applyExecuteRoomIdsFilter($data, $this->params->executeRoomIds);
 
             if ($this->params->treatmentCode == null && $this->params->patientCode == null) {
+                $data = $this->treatmentExecuteRoomListVViewRepository->applyExecuteRoomIdsFilter($data, $this->params->executeRoomIds);
                 $data = $this->treatmentExecuteRoomListVViewRepository->applyServiceReqSttCodesFilter($data, $this->params->serviceReqSttCodes);
                 $data = $this->treatmentExecuteRoomListVViewRepository->applyServiceReqSttIdsFilter($data, $this->params->serviceReqSttIds);
                 $data = $this->treatmentExecuteRoomListVViewRepository->applyDepartmentCodeFilter($data, $this->params->departmentCode);

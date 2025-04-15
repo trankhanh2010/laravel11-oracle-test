@@ -441,6 +441,7 @@ return [
             'treatment_list_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm TreatmentClsList!',
             'sere_serv_tein_charts_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm SereServTeinCharts!',
             'treatment_execute_room_list_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm TreatmentExeRoomList!',
+            'signer' => 'Có lỗi khi thực hiện thao tác với bảng EmrSigner!',
 
         ],
         'table' => [

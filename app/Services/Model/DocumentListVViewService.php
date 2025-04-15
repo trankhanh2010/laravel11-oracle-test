@@ -157,6 +157,22 @@ class DocumentListVViewService
 
         return $outputPath;
     }
+
+    public function getPathDocumentByIds()
+    {
+        $data = $this->documentListVViewRepository->applyJoins();
+        $data = $this->documentListVViewRepository->applyWithParam($data);
+        $data = $this->documentListVViewRepository->applyIsDeleteFilter($data, 0);
+        $data = $this->documentListVViewRepository->applyDocumentIdsFilter($data, $this->params->documentIds);
+        $count = null;
+        $data = $this->documentListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+
+        $urls = $data->pluck('last_version_url')->map(function ($path) {
+            return config('database')['connections']['fss']['fss_url'] . $path;
+        })->toArray();
+
+        return $urls;
+    }
     // public function createDocumentListVView($request)
     // {
     //     try {

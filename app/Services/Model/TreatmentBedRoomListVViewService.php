@@ -31,9 +31,9 @@ class TreatmentBedRoomListVViewService
             $data = $this->treatmentBedRoomListVViewRepository->applyIsDeleteFilter($data, 0);
             $data = $this->treatmentBedRoomListVViewRepository->applyTreatmentCodeFilter($data, $this->params->treatmentCode);
             $data = $this->treatmentBedRoomListVViewRepository->applyPatientCodeFilter($data, $this->params->patientCode);
-            $data = $this->treatmentBedRoomListVViewRepository->applyBedRoomIdsFilter($data, $this->params->bedRoomIds);
 
             if ($this->params->treatmentCode == null && $this->params->patientCode == null) {
+                $data = $this->treatmentBedRoomListVViewRepository->applyBedRoomIdsFilter($data, $this->params->bedRoomIds);
                 $data = $this->treatmentBedRoomListVViewRepository->applyDepartmentCodeFilter($data, $this->params->departmentCode);
                 $data = $this->treatmentBedRoomListVViewRepository->applyIsInBedFilter($data, $this->params->isInBed);
                 $data = $this->treatmentBedRoomListVViewRepository->applyTreatmentTypeIdsFilter($data, $this->params->treatmentTypeIds);

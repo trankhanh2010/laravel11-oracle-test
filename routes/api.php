@@ -194,6 +194,7 @@ use App\Http\Controllers\Api\NoCacheControllers\SereServVView4Controller;
 use App\Http\Controllers\Api\NoCacheControllers\ServiceReqListVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\ServiceReqLViewController;
 use App\Http\Controllers\Api\NoCacheControllers\SeseDepoRepayVViewController;
+use App\Http\Controllers\Api\NoCacheControllers\SignerController;
 use App\Http\Controllers\Api\NoCacheControllers\TestServiceReqListVView2Controller;
 use App\Http\Controllers\Api\NoCacheControllers\TestServiceReqListVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TrackingController;
@@ -329,7 +330,9 @@ Route::get('v1/check-transaction', [TreatmentFeePayMentController::class, 'check
 // Xác nhận giao dịch
 Route::post('v1/vietinbank-confirm-transaction', [VietinbankController::class, 'handleConfirmTransaction'])
     ->withoutMiddleware('check_token');
-
+// Vấn tin giao dịch
+Route::post('v1/vietinbank-inq-detail-trans', [VietinbankController::class, 'handleInqDetailTrans'])
+    ->withoutMiddleware('check_token');
 /// Request
 Route::get("v1/get-column-name", [BaseApiRequestController::class, "getColumnname"])->name('.get_column_name')
     ->withoutMiddleware('check_token');
@@ -338,7 +341,12 @@ Route::group([
 ], function () {
     /// Redis
     Route::get('v1/redis-ping', [RedisController::class, "ping"])->name('.redis_ping');
+    /// PDF
+    /// Chuyển TXT sang word
     Route::get('v1/convert-sar-print-to-word/{id}', [ConvertController::class, "convertSarPrintToWord"])->name('.convert_sar_print_to_word');
+    /// Tách header và content file pdf
+    Route::get('v1/split-header-content-file-pdf', [ConvertController::class, "splitHeaderContentFilePDF"])->name('.split_header_content_file_pdf');
+    Route::get('v1/merge-content-document', [ConvertController::class, "mergeContentDocument"])->name('.merge_content_document');
 
     /// Telegram
     Route::get('v1/updated-activity', [TelegramController::class, "updated_activity"])->name('.updated_activity');
@@ -1151,4 +1159,7 @@ Route::group([
     Route::apiResource('v1/treatment-list-v-view', TreatmentListVViewController::class)->only(['index']);
     /// ServiceReqStt
     Route::apiResource('v1/service-req-stt', ServiceReqSttController::class)->only(['index', 'show']);
+    /// Signer
+    Route::apiResource('v1/signer', SignerController::class)->only(['index']);
+
 });

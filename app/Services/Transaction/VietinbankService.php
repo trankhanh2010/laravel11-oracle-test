@@ -13,6 +13,7 @@ use App\Classes\Vietinbank\ServiceConfig;
 use App\Classes\Vietinbank\QRCode;
 use App\Repositories\TransactionRepository;
 use Illuminate\Support\Carbon;
+use GuzzleHttp\Client;
 use IntlChar;
 use Normalizer;
 
@@ -23,6 +24,7 @@ class VietinbankService
     protected string $secretKey;
     protected $publicKeyVietinbankPath;
     protected $privateKeyPath;
+    protected $urlInqDetailTrans;
     protected $transactionRepository;
     protected $params;
     private $VND = "VND";
@@ -35,6 +37,7 @@ class VietinbankService
         $this->secretKey = config('database')['connections']['vietinbank']['vietinbank_secret_key'];
         $this->publicKeyVietinbankPath = config('database')['connections']['vietinbank']['public_key_vietinbank_path'];
         $this->privateKeyPath = config('database')['connections']['vietinbank']['private_key_bvxa_path'];
+        $this->urlInqDetailTrans = config('database')['connections']['vietinbank']['vietinbank_api_url_inq_detail_trans'];
         $this->transactionRepository = $transactionRepository;
     }
     public function withParams(VietinbankDTO $params)
@@ -244,6 +247,88 @@ class VietinbankService
             return $paramFail;
         }
     }
+    public function handleInqDetailTrans()
+    {
+        $param = $this->getParamRequest();
+
+        $requestId = $param['requestId'] ?? '';
+        $providerId = $param['providerId'] ?? '';
+        $merchantId = $param['merchantId'] ?? '';
+        $terminalId = $param['terminalId'] ?? '';
+        $payDate =  $param['payDate'] ?? '';
+        $orderId = $param['orderId'] ?? '';
+        $hostrefno = $param['hostrefno'] ?? '';
+        $addInfor1 = $param['addInfor1'] ?? '';
+        $addInfor2 = $param['addInfor2'] ?? '';
+        $addInfor3 = $param['addInfor3'] ?? '';
+        $clientIP = $param['clientIP'] ?? '';
+        $channel = $param['channel'] ?? '';
+        $version = $param['version'] ?? '';
+        $language = $param['language'] ?? '';
+
+        $paramRequest = [
+            'requestId' => $requestId,
+            'providerId' => $providerId,
+            'merchantId' => $merchantId,
+            'terminalId' => $terminalId,
+            'payDate' => $payDate,
+            'orderId' => $orderId,
+            'hostrefno' => $hostrefno,
+            'addInfor1' => $addInfor1,
+            'addInfor2' => $addInfor2,
+            'addInfor3' => $addInfor3,
+            'clientIP' => $clientIP,
+            'channel' => $channel,
+            'version' => $version,
+            'language' => $language,
+            'signature' => $this->SignDataInqDetailTrans([
+                'requestId' => $requestId,
+                'providerId' => $providerId,
+                'merchantId' => $merchantId,
+                'terminalId' => $terminalId,
+                'payDate' => $payDate,
+                'transTime' => '',
+                'channel' => $channel,
+                'version' => $version,
+                'clientIP' => $clientIP,
+                'language' => $language,
+            ])
+        ];
+
+        try {
+            $client = new Client();
+            $response = $client->post($this->urlInqDetailTrans, [
+                'headers' => [
+                    'x-ibm-client-id' => $this->merchantId,
+                    'x-ibm-client-secret' => $this->secretKey,
+                ],
+                'json' => $paramRequest]
+            );
+
+            $data = json_decode($response->getBody(), true);
+
+        } catch (\Exception $e) {
+            // Xử lý lỗi nếu gọi API thất bại
+            throw new \Exception('Lỗi khi gọi api vấn tin Vietinbank ');
+        }
+
+        // Xác minh chữ ký 
+        $isVerify = $this->verifyVietinbankSignatureInqDetailTrans($data);
+        // Nếu đúng chữ ký 
+        if($isVerify){
+            // Nếu đúng và mã khác 00
+            if($data['statusCode'] !== '00'){
+                return $data;
+            }
+            // Nếu đúng và mã = 00
+            return $data;
+
+        } else {
+            // Nếu không đúng chữ ký
+            throw new \Exception('Lỗi khi gọi api vấn tin Vietinbank: Sai chữ ký ');
+
+        }
+    }
 
     private function verifyVietinbankSignature($data)
     {
@@ -271,6 +356,22 @@ class VietinbankService
 
         return $verify === 1;
     }
+    private function verifyVietinbankSignatureInqDetailTrans($data)
+    {
+        $publicKeyVietinbank = openssl_pkey_get_public(file_get_contents($this->publicKeyVietinbankPath));
+        if (!$publicKeyVietinbank) {
+            throw new \Exception("Không thể đọc public key VietinBank");
+        }
+        $signatureDecode = base64_decode($data['signature']);
+
+        // Tạo chuỗi rawData theo yêu cầu
+        $rawData = $data['requestId'] . $data['providerId'] . $data['merchantId'] . $data['status']['code'];
+
+        // Tạo chữ ký bằng HMAC-SHA256
+        $verify = openssl_verify($rawData, $signatureDecode, $publicKeyVietinbank, OPENSSL_ALGO_SHA256);
+        //  So sánh chữ ký
+        return $verify === 1;
+    }
 
     private function getParamRequest()
     {
@@ -288,6 +389,34 @@ class VietinbankService
 
         // Tạo chuỗi rawData theo yêu cầu
         $rawData = $data['requestId'] . $data['paymentStatus'];
+
+        // Tạo chữ ký bằng HMAC-SHA256
+        $signature = '';
+        $success = openssl_sign($rawData,$signature, $privateKey, OPENSSL_ALGO_SHA256);
+
+        // Base 64
+        $signatureBase64 = base64_encode($signature);
+        return $signatureBase64;
+    }
+    private function SignDataInqDetailTrans($data)
+    {
+
+        $privateKey = openssl_pkey_get_private(file_get_contents($this->privateKeyPath));
+        if (!$privateKey) {
+            throw new \Exception("Không thể đọc private key của viện");
+        }
+
+        // Tạo chuỗi rawData theo yêu cầu
+        $rawData = $data['requestId']??'' 
+        .$data['providerId']??'' 
+        .$data['merchantId']??'' 
+        .$data['terminalId']??'' 
+        .$data['payDate']??'' 
+        .$data['transTime']??'' 
+        .$data['channel']??'' 
+        .$data['version']??'' 
+        .$data['clientIP']??'' 
+        .$data['language']??'' ;
 
         // Tạo chữ ký bằng HMAC-SHA256
         $signature = '';

@@ -182,13 +182,20 @@ class DocumentListVViewRepository
 
             return $items->groupBy(function ($item) use ($currentField) {
                 return $item[$currentField] ?? null;
-            })->map(function ($group, $key) use ($fields, $groupData, $originalField) {
-                return [
-                    $originalField => (string)$key, // Hiển thị tên gốc
+            })->map(function ($group, $key) use ($fields, $groupData, $originalField, $currentField) {
+                $result = [
+                    $originalField => (string)$key, // Trả về tên field gốc
                     'key' => (string)$key,
                     'total' => $group->count(),
                     'children' => $groupData($group, $fields),
                 ];
+            
+                // Nếu group theo documentTypeName thì thêm documentName (lấy theo phần tử đầu)
+                if ($currentField === 'document_type_name') {
+                    $firstItem = $group->first();
+                    $result['documentName'] = $firstItem['document_type_name'] ?? null;
+                }
+                return $result;
             })->values();
         };
 

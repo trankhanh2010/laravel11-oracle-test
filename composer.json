@@ -11,6 +11,7 @@
         "php": "^8.2",
         "elasticsearch/elasticsearch": "8.15",
         "guzzlehttp/guzzle": "^7.0.1",
+        "intervention/image": "^3.11",
         "irazasyed/telegram-bot-sdk": "^3.14",
         "laravel/framework": "^11.0",
         "laravel/sanctum": "^4.0",
@@ -19,6 +20,7 @@
         "pusher/pusher-php-server": "^7.2",
         "setasign/fpdf": "^1.8",
         "setasign/fpdi": "^2.6",
+        "smalot/pdfparser": "^2.12",
         "symfony/psr-http-message-bridge": "^7.1",
         "yajra/laravel-oci8": "^11.0"
     },

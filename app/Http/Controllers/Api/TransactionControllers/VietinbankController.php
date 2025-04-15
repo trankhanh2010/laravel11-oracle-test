@@ -28,6 +28,10 @@ class VietinbankController extends BaseApiCacheController
         $data = $this->vietinbankService->handleConfirmTransaction();
         return $data;
     }
+    public function handleInqDetailTrans(Request $request){
+        $data = $this->vietinbankService->handleInqDetailTrans();
+        return $data;
+    }
     /**
      * API tạo QR Code giao dịch
      */

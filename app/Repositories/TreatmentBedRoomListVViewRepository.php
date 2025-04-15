@@ -21,6 +21,7 @@ class TreatmentBedRoomListVViewRepository
         return $this->treatmentBedRoomListVView
             ->select(
                 [
+                    'id as key',
                     'id',
                     'treatment_id',
                     'in_time',
@@ -247,12 +248,20 @@ class TreatmentBedRoomListVViewRepository
 
             return $items->groupBy(function ($item) use ($currentField) {
                 return $item[$currentField] ?? null;
-            })->map(function ($group, $key) use ($fields, $groupData, $originalField) {
-                return [
-                    $originalField => (string)$key, // Hiển thị tên gốc
+            })->map(function ($group, $key) use ($fields, $groupData, $originalField, $currentField) {
+                $result = [
+                    $originalField => (string)$key, // Trả về tên field gốc
+                    'key' => (string)$key,
                     'total' => $group->count(),
-                    'data' => $groupData($group, $fields),
+                    'children' => $groupData($group, $fields),
                 ];
+            
+                // Nếu group theo roomName thì thêm tdlPatientName (lấy theo phần tử đầu)
+                if ($currentField === 'room_name') {
+                    $firstItem = $group->first();
+                    $result['tdlPatientName'] = $firstItem['room_name'] ?? null;
+                }
+                return $result;
             })->values();
         };
 

@@ -89,7 +89,7 @@ class TreatmentBedRoomListVViewController extends BaseApiCacheController
             return $this->checkParam();
         }
         // Nếu k có danh sách id phòng thì k trả kết quả
-        if ($this->bedRoomIds == null) {
+        if ($this->bedRoomIds == null && $this->treatmentCode == null && $this->patientCode == null) {
             return returnDataSuccess(null, []);
         }
         $data = $this->treatmentBedRoomListVViewService->handleDataBaseSearch();
