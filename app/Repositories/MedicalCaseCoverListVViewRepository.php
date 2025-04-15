@@ -34,7 +34,8 @@ class MedicalCaseCoverListVViewRepository
                 'tdl_patient_address',
                 'tdl_patient_gender_name',            
                 'tdl_patient_mobile',
-                'tdl_patient_phone',               
+                'tdl_patient_phone',
+                'in_code',               
             ]);
         }
         return $this->medicalCaseCoverListVView
@@ -142,6 +143,7 @@ class MedicalCaseCoverListVViewRepository
                 'end_dept_subs_head_username',
                 'hosp_subs_director_loginname',
                 'hosp_subs_director_username',
+                'in_code'
             ]);
     }
     public function applyWithParam($query, $tab = null)
