@@ -2,10 +2,12 @@
 
 namespace App\Models\View;
 
+use App\Models\HIS\Bed;
 use App\Models\HIS\DepartmentTran;
 use App\Models\HIS\Dhst;
 use App\Models\HIS\ServiceReq;
 use App\Models\HIS\ServiceReqType;
+use App\Models\HIS\TreatmentBedRoom;
 use App\Traits\dinh_dang_ten_truong;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -36,5 +38,16 @@ class MedicalCaseCoverListVView extends Model
             return ServiceReqType::where('service_req_type_code', 'KH')->firstOrFail()->id;
         });
         return $this->hasMany(Dhst::class, 'treatment_id', 'treatment_id');
+    }
+    public function beds()
+    {
+        return $this->hasManyThrough(
+            Bed::class, // Mô hình cuối cùng
+            TreatmentBedRoom::class, // Mô hình trung gian
+            'treatment_id', // Khóa ngoại trong bảng treatment_bed_room trỏ tới medi_case_cover_list
+            'id', // Khóa chính trong bảng beds
+            'treatment_id', // Khóa chính trong bảng medi_case_cover_list
+            'bed_id' // Khóa ngoại trong bảng treatment_bed_room trỏ tới beds
+        );
     }
 }

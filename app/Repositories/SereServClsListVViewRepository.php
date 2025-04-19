@@ -20,7 +20,7 @@ class SereServClsListVViewRepository
         $this->reportTypeCat = $reportTypeCat;
     }
 
-    public function applyJoins($reportTypeCode = null)
+    public function applyJoins($reportTypeCode = null, $tab = null)
     {
         if($reportTypeCode){
             return $this->sereServClsListVView
@@ -54,6 +54,23 @@ class SereServClsListVViewRepository
                 'num_order',
             ]);
         }
+        if($tab == 'resultCls'){
+            return $this->sereServClsListVView
+            ->select([
+                'id',
+                'is_delete',
+                'is_no_execute',
+                'service_req_is_no_execute',
+                'execute_time',
+                'service_code',
+                'service_name',
+                'intruction_time',
+                'intruction_date',
+                'service_type_code',
+                'service_type_name',
+                'num_order',
+            ]); 
+        }
         return $this->sereServClsListVView
             ->select();
     }
@@ -78,6 +95,19 @@ class SereServClsListVViewRepository
                         },
                     ]);
                 }
+            }
+            if($tab == 'resultCls'){
+                return $query->with([
+                    'sere_serv_exts' => function ($query) {
+                        $query->select('id','sere_serv_id', 'conclude', 'note', 'description')
+                        ->where('is_delete', 0);
+                    },
+                    'test_results' => function ($query) {
+                        $query->select('id','test_index_name','test_index_code','sere_serv_id', 'value', 'result_code','note', 'description')
+                        ->where('is_delete', 0)
+                        ->orderByDesc('num_order');
+                    },
+                ]);
             }
         }
         return $query;
@@ -161,6 +191,9 @@ class SereServClsListVViewRepository
             }
             if ($param == 'XN') {
                 $query->whereIn(('service_type_code'), ['XN']);
+            }
+            if ($param == 'resultCls') {
+                $query->whereIn(('service_type_code'), ['XN', 'HA', 'NS', 'CN']);
             }
         }
         return $query;
@@ -316,7 +349,54 @@ class SereServClsListVViewRepository
         return $groupData(collect($data), $snakeFields);
     }
 
+    public function applyGroupByFieldResultCls($data, $groupByFields = [])
+    {
+        if (empty($groupByFields)) {
+            return $data;
+        }
 
+        // Chuyển các field thành snake_case trước khi nhóm
+        $fieldMappings = [];
+        foreach ($groupByFields as $field) {
+            $snakeField = Str::snake($field);
+            $fieldMappings[$snakeField] = $field;
+        }
+    
+        $snakeFields = array_keys($fieldMappings);
+    
+        // Đệ quy nhóm dữ liệu theo thứ tự fields đã convert
+        $groupData = function ($items, $fields) use (&$groupData, $fieldMappings) {
+            if (empty($fields)) {
+                return $items->values(); // Hết field nhóm -> Trả về danh sách gốc
+            }
+    
+            $currentField = array_shift($fields);
+            $originalField = $fieldMappings[$currentField];
+    
+            return $items->groupBy(function ($item) use ($currentField) {
+                return $item[$currentField] ?? null;
+            })->map(function ($group, $key) use ($fields, $groupData, $originalField, $currentField) {
+                $result = [
+                    'key' => (string)$key,
+                    $originalField => (string)$key, // Hiển thị tên gốc
+                    'total' => $group->count(),
+                    // 'children' => $groupData($group, $fields),
+                ];
+                // Nếu group theo intructionDate thì thêm serviceName (lấy theo phần tử đầu)
+                if ($currentField === 'intruction_date') {
+                    $firstItem = $group->first();
+                    $result['serviceName'] = $firstItem['intruction_date'] ?? null;
+                }
+
+                // Đem children xuống dưới để nằm dưới các trường được thêm
+                $result['children'] = $groupData($group, $fields);
+
+                return $result;
+            })->values();
+        };
+    
+        return $groupData(collect($data), $snakeFields);
+    }
     public function generateMonthList($from, $to)
     {
         $fromMonth = substr($from, 0, 6); // Lấy năm và tháng từ from

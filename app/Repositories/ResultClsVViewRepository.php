@@ -1,54 +1,104 @@
-<?php
-
+<?php 
 namespace App\Repositories;
 
 use App\Jobs\ElasticSearch\Index\ProcessElasticIndexingJob;
-use App\Models\HIS\ReportTypeCat;
-use App\Models\View\SereServTeinChartsVView;
-use Illuminate\Support\Facades\Cache;
+use App\Models\View\ResultClsVView;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
-class SereServTeinChartsVViewRepository
+class ResultClsVViewRepository
 {
-    protected $sereServTeinChartsVView;
-    protected $reportTypeCat;
-    public function __construct(SereServTeinChartsVView $sereServTeinChartsVView, ReportTypeCat $reportTypeCat)
+    protected $resultClsVView;
+    public function __construct(ResultClsVView $resultClsVView)
     {
-        $this->sereServTeinChartsVView = $sereServTeinChartsVView;
-        $this->reportTypeCat = $reportTypeCat;
+        $this->resultClsVView = $resultClsVView;
     }
 
     public function applyJoins()
     {
-        return $this->sereServTeinChartsVView
+        return $this->resultClsVView
             ->select([
-                'service_req_is_no_execute',
-                'is_no_execute',
-                'intruction_date',
-                'intruction_time',
+                DB::connection('oracle_his')->raw("ROWNUM as key"),
+                "id",
+                "is_delete",
+                "test_index_name",
+                "test_index_code",
+                "value",
+                "note",
+                "description",
                 "service_name",
                 "service_code",
-                'value',
-                'test_index_unit_name',
-                'test_index_name',
-                'num_order',
-                'note',
-                'description',
-                'service_description',
+                "service_req_is_no_execute",
+                "is_no_execute",
+                "patient_code",
+                "treatment_code",
+                "unit_code",
+                "unit_name",
+                "intruction_time",
+                "intruction_date",
+                "service_type_code",
+                "service_type_name",
             ]);
-    }
-    public function applyWithParam($query)
-    {
-        return $query;
     }
     public function applyKeywordFilter($query, $keyword)
     {
-        return $query->where(function ($query) use ($keyword) {
-            $query->where(('service_code'), 'like', '%' . $keyword . '%')
-                ->orWhere(('lower(service_name)'), 'like', '%' . strtolower($keyword) . '%');
-        });
+        if ($keyword != null) {
+            return $query->where(function ($query) use ($keyword) {
+                $query->whereRaw("
+                    REGEXP_LIKE(
+                        NLSSORT(test_index_name, 'NLS_SORT=GENERIC_M_AI'),
+                        NLSSORT(?, 'NLS_SORT=GENERIC_M_AI'),
+                        'i'
+                    )
+                ", [$keyword])
+                ->orWhereRaw("
+                    REGEXP_LIKE(
+                        NLSSORT(test_index_code, 'NLS_SORT=GENERIC_M_AI'),
+                        NLSSORT(?, 'NLS_SORT=GENERIC_M_AI'),
+                        'i'
+                    )
+                ", [$keyword])
+                ->orWhereRaw("
+                    REGEXP_LIKE(
+                        NLSSORT(value, 'NLS_SORT=GENERIC_M_AI'),
+                        NLSSORT(?, 'NLS_SORT=GENERIC_M_AI'),
+                        'i'
+                    )
+                ", [$keyword])
+                ->orWhereRaw("
+                    REGEXP_LIKE(
+                        NLSSORT(note, 'NLS_SORT=GENERIC_M_AI'),
+                        NLSSORT(?, 'NLS_SORT=GENERIC_M_AI'),
+                        'i'
+                    )
+                ", [$keyword])
+                ->orWhereRaw("
+                    REGEXP_LIKE(
+                        NLSSORT(description, 'NLS_SORT=GENERIC_M_AI'),
+                        NLSSORT(?, 'NLS_SORT=GENERIC_M_AI'),
+                        'i'
+                    )
+                ", [$keyword])
+                ->orWhereRaw("
+                    REGEXP_LIKE(
+                        NLSSORT(service_name, 'NLS_SORT=GENERIC_M_AI'),
+                        NLSSORT(?, 'NLS_SORT=GENERIC_M_AI'),
+                        'i'
+                    )
+                ", [$keyword])
+                ->orWhereRaw("
+                    REGEXP_LIKE(
+                        NLSSORT(service_code, 'NLS_SORT=GENERIC_M_AI'),
+                        NLSSORT(?, 'NLS_SORT=GENERIC_M_AI'),
+                        'i'
+                    )
+                ", [$keyword]);
+            });
+        }
+    
+        return $query;
     }
+    
     public function applyIsActiveFilter($query, $isActive)
     {
         if ($isActive !== null) {
@@ -60,6 +110,20 @@ class SereServTeinChartsVViewRepository
     {
         if ($isDelete !== null) {
             $query->where(('is_delete'), $isDelete);
+        }
+        return $query;
+    }
+    public function applyIntructionTimeFromFilter($query, $param)
+    {
+        if ($param != null) {
+            $query->where(('intruction_date'), '>=', $param);
+        }
+        return $query;
+    }
+    public function applyIntructionTimeToFilter($query, $param)
+    {
+        if ($param != null) {
+            $query->where(('intruction_date'), '<=', $param);
         }
         return $query;
     }
@@ -84,68 +148,6 @@ class SereServTeinChartsVViewRepository
         if ($param !== null) {
             $query->where(('patient_code'), $param);
         }
-        return $query;
-    }
-    public function applyServiceTypeCodesFilter($query, $param)
-    {
-        if ($param !== null) {
-            $query->whereIn(('service_type_code'), $param);
-        }
-        return $query;
-    }
-    public function applyServiceCodesFilter($query, $param)
-    {
-        if ($param !== null) {
-            $query->whereIn(('service_code'), $param);
-        }
-        return $query;
-    }
-    public function applyIntructionTimeFilter($query, $from, $to)
-    {
-        if (isset($to) && isset($from)) {
-            $query->whereBetween('intruction_time', [$from, $to]);
-        }
-        return $query;
-    }
-    public function applyTabFilter($query, $param)
-    {
-        if ($param !== null) {
-            if ($param == 'CongKham') {
-                $query->where(('service_req_type_code'), 'KH');
-            }
-            if ($param == 'CLS') {
-                $query->whereNot(('service_req_type_code'), 'KH');
-            }
-            if ($param == 'CDHA') {
-                $query->whereIn(('service_type_code'), ['HA','NS','SA','CN']);
-            }
-            if ($param == 'XN') {
-                $query->whereIn(('service_type_code'), ['XN']);
-            }
-        }
-        return $query;
-    }
-    public function applyReportTypeCodeFilter($query, $param)
-    {
-        if ($param !== null) {
-            $query->where(function ($q) use ($param) {
-                $q->where('report_type_code', $param)
-                  ->orWhereNull('report_type_code');
-            });
-        }
-        return $query;
-    }
-    public function applyOrdering($query, $orderBy, $orderByJoin)
-    {
-        if ($orderBy != null) {
-            foreach ($orderBy as $key => $item) {
-                if (in_array($key, $orderByJoin)) {
-                } else {
-                    $query->orderBy('' . $key, $item);
-                }
-            }
-        }
-
         return $query;
     }
     public function applyGroupByField($data, $groupByFields = [])
@@ -186,36 +188,31 @@ class SereServTeinChartsVViewRepository
                     $firstItem = $group->first();
                     $result['intructionTime'] = $firstItem['intruction_date'] ?? null;
                 }
-                // Nếu group theo serviceName thì thêm intructionTime (lấy theo phần tử đầu)
                 if ($currentField === 'service_name') {
                     $firstItem = $group->first();
-                    $result['intructionTime'] = $firstItem['service_name'] ?? null;
+                    $result['key'] = $firstItem['intruction_date'].$firstItem['service_name'];
                 }
 
                 // Đem children xuống dưới để nằm dưới các trường được thêm
                 $result['children'] = $groupData($group, $fields);
-
                 return $result;
             })->values();
         };
     
         return $groupData(collect($data), $snakeFields);
     }
-
-
-    public function generateMonthList($from, $to)
+    public function applyOrdering($query, $orderBy, $orderByJoin)
     {
-        $fromMonth = substr($from, 0, 6); // Lấy năm và tháng từ from
-        $toMonth = substr($to, 0, 6); // Lấy năm và tháng từ to
-
-        $currentMonth = $fromMonth;
-        $monthList = [];
-
-        while ($currentMonth <= $toMonth) {
-            $monthList[] = $currentMonth . '00000000'; // Thêm ngày 00 để phù hợp với định dạng virIntructionMonth
-            $currentMonth = date('Ym', strtotime($currentMonth . '01 +1 month')); // Tăng tháng
+        if ($orderBy != null) {
+            foreach ($orderBy as $key => $item) {
+                if (in_array($key, $orderByJoin)) {
+                } else {
+                    $query->orderBy('' . $key, $item);
+                }
+            }
         }
-        return $monthList;
+
+        return $query;
     }
     public function fetchData($query, $getAll, $start, $limit)
     {
@@ -232,9 +229,8 @@ class SereServTeinChartsVViewRepository
     }
     public function getById($id)
     {
-        return $this->sereServTeinChartsVView->find($id);
+        return $this->resultClsVView->find($id);
     }
-
 
     public function getDataFromDbToElastic($batchSize = 5000, $id = null)
     {
@@ -258,7 +254,7 @@ class SereServTeinChartsVViewRepository
                     $endId = $maxId;
                 }
                 // Dispatch job cho mỗi phạm vi id
-                ProcessElasticIndexingJob::dispatch('sere_serv_tein_charts_v_view', 'v_his_sere_serv_tein_charts', $startId, $endId, $batchSize);
+                ProcessElasticIndexingJob::dispatch('result_cls_v_view', 'v_his_result_cls', $startId, $endId, $batchSize);
             }
         }
     }

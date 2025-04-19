@@ -21,6 +21,10 @@ class SereServClsListVView extends Model
     {
         return $this->hasMany(SereServExt::class,'sere_serv_id');
     }
+    public function sere_serv_teins()
+    {
+        return $this->hasMany(SereServTein::class,'sere_serv_id');
+    }
     public function test_results()
     {
         return $this->hasMany(SereServTeinChartsVView::class,'sere_serv_id');

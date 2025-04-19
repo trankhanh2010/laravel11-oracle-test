@@ -179,6 +179,7 @@ use App\Http\Controllers\Api\NoCacheControllers\DhstController;
 use App\Http\Controllers\Api\NoCacheControllers\DocumentListVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\MedicalCaseCoverListVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\PatientTypeAlterVViewController;
+use App\Http\Controllers\Api\NoCacheControllers\ResultClsVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\RoomVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\SereServBillController;
 use App\Http\Controllers\Api\NoCacheControllers\SereServClsListVViewController;
@@ -258,6 +259,7 @@ use App\Http\Controllers\Api\TransactionControllers\VietinbankQrBillingControlle
 use App\Http\Controllers\Api\ValidateControllers\DeviceGetOtpController;
 use App\Http\Controllers\Api\ValidateControllers\OtpController;
 use App\Http\Controllers\BaseControllers\ConvertController;
+use App\Http\Controllers\BaseControllers\DigitalCertificateController;
 
 /*
 |--------------------------------------------------------------------------
@@ -339,6 +341,12 @@ Route::get("v1/get-column-name", [BaseApiRequestController::class, "getColumnnam
 Route::group([
     "middleware" => ["check_admin:api"]
 ], function () {
+    // Kiểm tra => tạo mới hoặc gia hạn Root-CA
+    Route::get('v1/certificates', [DigitalCertificateController::class, 'certificates']);
+    Route::get('v1/renew-certificate', [DigitalCertificateController::class, 'renewCertificate']);
+    Route::get('v1/revoke-certificate', [DigitalCertificateController::class, 'revokeCertificate']);
+    Route::get('v1/get-certificate-info', [DigitalCertificateController::class, 'getCertificateInfo']);
+
     /// Redis
     Route::get('v1/redis-ping', [RedisController::class, "ping"])->name('.redis_ping');
     /// PDF
@@ -1157,6 +1165,8 @@ Route::group([
     Route::apiResource('v1/sere-serv-cls-list-v-view', SereServClsListVViewController::class)->only(['index']);
     /// SereServ Cls List
     Route::apiResource('v1/treatment-list-v-view', TreatmentListVViewController::class)->only(['index']);
+    /// Result Cls
+    Route::apiResource('v1/result-cls-v-view', ResultClsVViewController::class)->only(['index']);
     /// ServiceReqStt
     Route::apiResource('v1/service-req-stt', ServiceReqSttController::class)->only(['index', 'show']);
     /// Signer

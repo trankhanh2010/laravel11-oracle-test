@@ -35,7 +35,10 @@ class MedicalCaseCoverListVViewRepository
                 'tdl_patient_gender_name',            
                 'tdl_patient_mobile',
                 'tdl_patient_phone',
-                'in_code',               
+                'in_code',
+                'last_department_code',
+                'last_department_name',
+                'bed_id',               
             ]);
         }
         return $this->medicalCaseCoverListVView
@@ -143,12 +146,25 @@ class MedicalCaseCoverListVViewRepository
                 'end_dept_subs_head_username',
                 'hosp_subs_director_loginname',
                 'hosp_subs_director_username',
-                'in_code'
+                'in_code',
             ]);
     }
     public function applyWithParam($query, $tab = null)
     {
-        if($tab == 'info') return $query;
+        if($tab == 'info') return $query->with([
+            'beds' => function ($query) {
+                $query               
+                ->where('his_bed.is_delete', 0)
+                ->select([
+                    'his_bed.id',
+                    'his_bed.bed_room_id',
+                    'his_bed.bed_name',
+                    'his_bed.bed_code'
+                ])                
+                ->orderBy('his_treatment_bed_room.add_time', 'desc');
+            },
+            'beds.bedRoom:id,bed_room_code,bed_room_name',
+        ]);
         return $query->with([
             'department_trans' => function ($query) {
                 $query               
@@ -344,6 +360,18 @@ class MedicalCaseCoverListVViewRepository
                 ])
                 ->orderBy('execute_time', 'desc');
             },
+            'beds' => function ($query) {
+                $query               
+                ->where('his_bed.is_delete', 0)
+                ->select([
+                    'his_bed.id',
+                    'his_bed.bed_room_id',
+                    'his_bed.bed_name',
+                    'his_bed.bed_code'
+                ])
+                ->orderBy('his_treatment_bed_room.add_time', 'desc');
+            },
+            'beds.bedRoom:id,bed_room_code,bed_room_name',
         ]);
     }
     public function applyKeywordFilter($query, $keyword)

@@ -71,7 +71,11 @@ class SereServClsListVViewController extends BaseApiCacheController
         if($this->treatmentCode == null && $this->patientCode == null){
             return returnDataSuccess(null, []);
         }
-        $data = $this->sereServClsListVViewService->handleDataBaseGetAll();
+        if($this->tab == 'resultCls'){
+            $data = $this->sereServClsListVViewService->handleDataBaseGetAllResultCls();
+        }else{
+            $data = $this->sereServClsListVViewService->handleDataBaseGetAll();
+        }
         $paramReturn = [
             $this->getAllName => $this->getAll,
             $this->startName => $this->getAll ? null : $this->start,
