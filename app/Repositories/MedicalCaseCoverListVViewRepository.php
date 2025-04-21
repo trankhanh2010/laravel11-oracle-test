@@ -38,7 +38,11 @@ class MedicalCaseCoverListVViewRepository
                 'in_code',
                 'last_department_code',
                 'last_department_name',
-                'bed_id',               
+                'bed_id',
+                'in_time',
+                'in_date',   
+                'tdl_patient_relative_type',
+                'tdl_patient_relative_name',            
             ]);
         }
         return $this->medicalCaseCoverListVView

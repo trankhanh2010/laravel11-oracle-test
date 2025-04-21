@@ -293,6 +293,8 @@ class BaseApiCacheController extends Controller
     protected $executeRoomName = "execute_room";
     protected $room;
     protected $roomName = "room";
+    protected $speedUnit;
+    protected $speedUnitName = 'speed_unit';
     protected $speciality;
     protected $specialityName = "speciality";
     protected $treatmentType;
@@ -725,6 +727,8 @@ class BaseApiCacheController extends Controller
     protected $transactionListVViewName = 'transaction_list_v_view';
     protected $depositReqListVView;
     protected $depositReqListVViewName = 'deposit_req_list_v_view';
+    protected $medicineListVView;
+    protected $medicineListVViewName = 'medicine_list_v_view';
     // Thanh toán
     protected $paymentMethod; // Hình thức thanh toán MoMo VNPay
     protected $paymentMethodName = 'PaymentMethod';
@@ -856,6 +860,9 @@ class BaseApiCacheController extends Controller
 
     protected function getColumnsTable($table, $isView = false)
     {
+        // Tắt để k cần check
+        return ;
+
         $tableName = strtolower($table->getTable());
         $parts = explode('_', $tableName);
 

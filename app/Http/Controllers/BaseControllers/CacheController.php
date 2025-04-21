@@ -43,6 +43,9 @@ class CacheController extends BaseApiCacheController
                 "sere_serv_cls_list_v_view",
                 "sere_serv_tein_charts_v_view",
                 "treatment_list_v_view",
+                "employee",
+                "signer",
+                "speed_unit"
             ];
         }
         // Nếu xóa theo param

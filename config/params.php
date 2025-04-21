@@ -443,6 +443,8 @@ return [
             'treatment_execute_room_list_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm TreatmentExeRoomList!',
             'signer' => 'Có lỗi khi thực hiện thao tác với bảng EmrSigner!',
             'result_cls_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm ResultCls!',
+            'medicine_list_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm MedicineList!',
+            'speed_unit' => 'Có lỗi khi thực hiện thao tác với bảng SpeedUnit!',
 
         ],
         'table' => [

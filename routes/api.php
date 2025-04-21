@@ -157,6 +157,7 @@ use App\Http\Controllers\Api\CacheControllers\PackingTypeController;
 use App\Http\Controllers\Api\CacheControllers\PayFormController;
 use App\Http\Controllers\Api\CacheControllers\ProcessingMethodController;
 use App\Http\Controllers\Api\CacheControllers\ServiceReqSttController;
+use App\Http\Controllers\Api\CacheControllers\SpeedUnitController;
 use App\Http\Controllers\Api\CacheControllers\StorageConditionController;
 use App\Http\Controllers\Api\CacheControllers\SuimIndexUnitController;
 use App\Http\Controllers\Api\CacheControllers\TestIndexGroupController;
@@ -178,6 +179,7 @@ use App\Http\Controllers\Api\NoCacheControllers\DepositReqListVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\DhstController;
 use App\Http\Controllers\Api\NoCacheControllers\DocumentListVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\MedicalCaseCoverListVViewController;
+use App\Http\Controllers\Api\NoCacheControllers\MedicineListVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\PatientTypeAlterVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\ResultClsVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\RoomVViewController;
@@ -1171,5 +1173,8 @@ Route::group([
     Route::apiResource('v1/service-req-stt', ServiceReqSttController::class)->only(['index', 'show']);
     /// Signer
     Route::apiResource('v1/signer', SignerController::class)->only(['index']);
-
+    /// MedicineList
+    Route::apiResource('v1/medicine-list-v-view', MedicineListVViewController::class)->only(['index']);
+    /// MedicineList
+    Route::apiResource('v1/speed-unit', SpeedUnitController::class)->only(['index']);
 });
