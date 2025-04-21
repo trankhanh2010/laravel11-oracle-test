@@ -50,6 +50,8 @@ class MedicineListVViewController extends BaseApiCacheController
             $this->tab,
             $this->treatmentCode,
             $this->patientCode,
+            $this->intructionTimeFrom,
+            $this->intructionTimeTo,
         );
         $this->medicineListVViewService->withParams($this->medicineListVViewDTO);
     }

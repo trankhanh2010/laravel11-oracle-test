@@ -66,6 +66,20 @@ class MedicineListVViewRepository
         }
         return $query;
     }
+    public function applyIntructionTimeFromFilter($query, $param)
+    {
+        if($param != null){
+            $query->where(('intruction_time'), '>=', $param);
+        }
+        return $query;
+    }
+    public function applyIntructionTimeToFilter($query, $param)
+    {
+        if($param != null){
+            $query->where(('intruction_time'), '<=', $param);
+        }
+        return $query;
+    }
     public function applyTabFilter($query, $param)
     {
         if ($param != null) {

@@ -32,6 +32,8 @@ class MedicineListVViewService
             $data = $this->medicineListVViewRepository->applyServiceTypeCodeTHFilter($data);
             $data = $this->medicineListVViewRepository->applyTabFilter($data, $this->params->tab);
             $data = $this->medicineListVViewRepository->applyPatientCodeFilter($data, $this->params->patientCode);
+            $data = $this->medicineListVViewRepository->applyIntructionTimeFromFilter($data, $this->params->intructionTimeFrom);
+            $data = $this->medicineListVViewRepository->applyIntructionTimeToFilter($data, $this->params->intructionTimeTo);
             $count = $data->count();
             $data = $this->medicineListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
             $data = $this->medicineListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
@@ -48,6 +50,8 @@ class MedicineListVViewService
         $data = $this->medicineListVViewRepository->applyServiceTypeCodeTHFilter($data);
         $data = $this->medicineListVViewRepository->applyTabFilter($data, $this->params->tab);
         $data = $this->medicineListVViewRepository->applyPatientCodeFilter($data, $this->params->patientCode);
+        $data = $this->medicineListVViewRepository->applyIntructionTimeFromFilter($data, $this->params->intructionTimeFrom);
+        $data = $this->medicineListVViewRepository->applyIntructionTimeToFilter($data, $this->params->intructionTimeTo);
         $count = $data->count();
         $data = $this->medicineListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
         $data = $this->medicineListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);

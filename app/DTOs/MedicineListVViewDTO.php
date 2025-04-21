@@ -23,6 +23,8 @@ class MedicineListVViewDTO
     public $tab;
     public $treatmentCode;
     public $patientCode;
+    public $intructionTimeFrom;
+    public $intructionTimeTo;
     public function __construct(
         $medicineListVViewName,
         $keyword, 
@@ -43,6 +45,8 @@ class MedicineListVViewDTO
         $tab,
         $treatmentCode,
         $patientCode,
+        $intructionTimeFrom,
+        $intructionTimeTo,
         )
     {
         $this->medicineListVViewName = $medicineListVViewName;
@@ -64,5 +68,7 @@ class MedicineListVViewDTO
         $this->tab = $tab;
         $this->treatmentCode = $treatmentCode;
         $this->patientCode = $patientCode;
+        $this->intructionTimeFrom = $intructionTimeFrom;
+        $this->intructionTimeTo = $intructionTimeTo;
     }
 }
