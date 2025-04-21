@@ -47,6 +47,7 @@ class SignerController extends BaseApiCacheController
             $this->time,
             $this->param,
             $this->noCache,
+            $this->tab,
         );
         $this->signerService->withParams($this->signerDTO);
     }
@@ -55,7 +56,11 @@ class SignerController extends BaseApiCacheController
         if ($this->checkParam()) {
             return $this->checkParam();
         }
-        $data = $this->signerService->handleDataBaseGetAll();
+        if($this->keyword == null){
+            $data = $this->signerService->handleDataBaseGetAll();
+        }else{
+            $data = $this->signerService->handleDataBaseSearch();
+        }
         $paramReturn = [
             $this->getAllName => $this->getAll,
             $this->startName => $this->getAll ? null : $this->start,

@@ -1,4 +1,5 @@
-<?php 
+<?php
+
 namespace App\Repositories;
 
 use App\Jobs\ElasticSearch\Index\ProcessElasticIndexingJob;
@@ -13,8 +14,14 @@ class EmployeeRepository
         $this->employee = $employee;
     }
 
-    public function applyJoins()
+    public function applyJoins($tab = null)
     {
+        if($tab == 'selectIsDoctor' || $tab == 'selectIsNurse' || $tab == 'selectPositionTruongKhoa')
+        return $this->employee->select([
+            'id',
+            'loginname',
+            'tdl_username',
+        ]);
         return $this->employee
             ->leftJoin('his_department as department', 'department.id', '=', 'his_employee.department_id')
             ->leftJoin('his_gender as gender', 'gender.id', '=', 'his_employee.gender_id')
@@ -66,6 +73,35 @@ class EmployeeRepository
 
         return $query;
     }
+    public function applyIsDeleteFilter($query, $param)
+    {
+        if ($param !== null) {
+            $query->where(DB::connection('oracle_his')->raw('his_employee.is_delete'), $param);
+        }
+
+        return $query;
+    }
+    public function applyTabFilter($query, $param)
+    {
+        if ($param != null) {
+            switch ($param) {
+                case 'selectIsDoctor':
+                    $query->where(DB::connection('oracle_his')->raw('his_employee.is_doctor'), '1');
+                    return $query;
+                case 'selectIsNurse':
+                    $query->where(DB::connection('oracle_his')->raw('his_employee.is_nurse'), '1');
+                    return $query;
+                case 'selectPositionTruongKhoa':
+                    $query->where(DB::connection('oracle_his')->raw('his_employee.position'), '2')
+                    ->orWhere(DB::connection('oracle_his')->raw('his_employee.position'), '3');
+                    return $query;
+                default:
+                    return $query;
+            }
+        }
+
+        return $query;
+    }
     public function applyOrdering($query, $orderBy, $orderByJoin)
     {
         if ($orderBy != null) {
@@ -109,7 +145,8 @@ class EmployeeRepository
     {
         return $this->employee->where('loginname', $id)->first();
     }
-    public function create($request, $time, $appCreator, $appModifier){
+    public function create($request, $time, $appCreator, $appModifier)
+    {
         $data = $this->employee::create([
             'create_time' => now()->format('Ymdhis'),
             'modify_time' => now()->format('Ymdhis'),
@@ -165,7 +202,8 @@ class EmployeeRepository
         ]);
         return $data;
     }
-    public function update($request, $data, $time, $appModifier){
+    public function update($request, $data, $time, $appModifier)
+    {
         $data->update([
             'modify_time' => now()->format('Ymdhis'),
             'modifier' => get_loginname_with_token($request->bearerToken(), $time),
@@ -216,7 +254,8 @@ class EmployeeRepository
         ]);
         return $data;
     }
-    public function updateInfoUser($request, $data, $time, $appModifier){
+    public function updateInfoUser($request, $data, $time, $appModifier)
+    {
         $data->update([
             'modify_time' => now()->format('Ymdhis'),
             'modifier' => get_loginname_with_token($request->bearerToken(), $time),
@@ -241,7 +280,8 @@ class EmployeeRepository
         ]);
         return $data;
     }
-    public function delete($data){
+    public function delete($data)
+    {
         $data->delete();
         return $data;
     }

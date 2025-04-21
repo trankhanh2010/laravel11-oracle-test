@@ -12,6 +12,8 @@ use App\Models\HIS\Employee;
 use App\Services\Elastic\ElasticsearchService;
 use App\Services\Model\EmployeeService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Request as FacadesRequest;
 
 class EmployeeController extends BaseApiCacheController
@@ -55,6 +57,7 @@ class EmployeeController extends BaseApiCacheController
             $this->time,
             $this->param,
             $this->noCache,
+            $this->tab,
         );
         $this->employeeService->withParams($this->employeeDTO);
     }
@@ -64,15 +67,28 @@ class EmployeeController extends BaseApiCacheController
             return $this->checkParam();
         }
         $keyword = $this->keyword;
-        if (($keyword != null || $this->elasticSearchType != null) && !$this->cache) {
-            if ($this->elasticSearchType != null) {
-                $data = $this->elasticSearchService->handleElasticSearchSearch($this->employeeName);
-            } else {
-                $data = $this->employeeService->handleDataBaseSearch();
+        $source = [
+            'id',
+            'loginname',
+            'tdl_username',
+        ];
+        $this->elasticCustom = $this->employeeService->handleCustomParamElasticSearch();
+        if ($this->elasticSearchType || $this->elastic) {
+            if(!$keyword){
+                $cacheKey = $this->employeeName .'_'. 'elastic' . '_' . $this->param;
+                $cacheKeySet = "cache_keys:" . $this->employeeName; // Set để lưu danh sách key
+                $data = Cache::remember($cacheKey, $this->time, function () use ($source) {
+                    $data = $this->elasticSearchService->handleElasticSearchSearch($this->employeeName, $this->elasticCustom, $source);
+                    return $data;
+                });
+                // Lưu key vào Redis Set để dễ xóa sau này
+                Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+            }else{
+                $data = $this->elasticSearchService->handleElasticSearchSearch($this->employeeName, $this->elasticCustom, $source);
             }
         } else {
-            if ($this->elastic) {
-                $data = $this->elasticSearchService->handleElasticSearchGetAll($this->employeeName);
+            if ($keyword) {
+                $data = $this->employeeService->handleDataBaseSearch();
             } else {
                 $data = $this->employeeService->handleDataBaseGetAll();
             }

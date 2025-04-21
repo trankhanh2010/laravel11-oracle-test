@@ -13,8 +13,15 @@ class SignerRepository
         $this->signer = $signer;
     }
 
-    public function applyJoins()
+    public function applyJoins($tab = null)
     {
+        if($tab == 'selectBacSi')
+        return $this->signer->select([
+            'id',
+            'loginname',
+            'username',
+            'title',
+        ]);
         return $this->signer
             ->select([
                 'id',
@@ -47,6 +54,20 @@ class SignerRepository
         if ($isDelete !== null) {
             $query->where(DB::connection('oracle_emr')->raw('emr_signer.is_delete'), $isDelete);
         }
+        return $query;
+    }
+    public function applyTabFilter($query, $param)
+    {
+        if ($param != null) {
+            switch ($param) {
+                case 'selectBacSi':
+                    $query->where(DB::connection('oracle_his')->raw('title'), 'Bác Sĩ');
+                    return $query;
+                default:
+                    return $query;
+            }
+        }
+
         return $query;
     }
     public function applyOrdering($query, $orderBy, $orderByJoin)

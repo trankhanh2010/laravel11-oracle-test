@@ -20,6 +20,7 @@ class SignerDTO
     public $time;
     public $param;
     public $noCache;
+    public $tab;
     public function __construct(
         $signerName,
         $keyword, 
@@ -37,6 +38,7 @@ class SignerDTO
         $time,
         $param,
         $noCache,
+        $tab,
         )
     {
         $this->signerName = $signerName;
@@ -55,5 +57,6 @@ class SignerDTO
         $this->time = $time;
         $this->param = $param;
         $this->noCache = $noCache;
+        $this->tab = $tab;
     }
 }

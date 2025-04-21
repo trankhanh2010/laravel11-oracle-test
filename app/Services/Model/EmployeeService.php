@@ -23,12 +23,50 @@ class EmployeeService
         $this->params = $params;
         return $this;
     }
+    public function handleCustomParamElasticSearch()
+    {
+        $data = null;
+        if ($this->params->tab == 'select') {
+            $data =  [
+                "bool" => [
+                    "filter" => [
+                        ["term" => ["is_active" => 1]],
+                        ["term" => ["is_delete" => 0]],
+                    ],
+                    "must" => [
+                        [
+                            "bool" => [
+                                "should" => [
+                                    ["wildcard" => ["tdl_username.keyword" => "*" . $this->params->keyword . "*"]],
+                                    ["match_phrase" => ["tdl_username" => $this->params->keyword]],
+                                    ["match_phrase_prefix" => ["tdl_username" => $this->params->keyword]],
+
+                                    ["match_phrase_prefix" => ["tdl_username" => $this->params->keyword]],
+
+                                    ["wildcard" => ["loginname.keyword" => "*" . $this->params->keyword . "*"]],
+                                    ["match_phrase" => ["loginname" => $this->params->keyword]],
+                                    ["match_phrase_prefix" => ["loginname" => $this->params->keyword]],
+
+                                    ["match_phrase_prefix" => ["loginname" => $this->params->keyword]]
+                                ],
+                                "minimum_should_match" => 1
+                            ]
+                        ]
+                    ]
+                ]
+            ];
+        }
+
+        return $data;
+    }
     public function handleDataBaseSearch()
     {
         try {
-            $data = $this->employeeRepository->applyJoins();
+            $data = $this->employeeRepository->applyJoins($this->params->tab);
             $data = $this->employeeRepository->applyKeywordFilter($data, $this->params->keyword);
             $data = $this->employeeRepository->applyIsActiveFilter($data, $this->params->isActive);
+            $data = $this->employeeRepository->applyIsDeleteFilter($data, 0);
+            $data = $this->employeeRepository->applyTabFilter($data, $this->params->tab);
             $count = $data->count();
             $data = $this->employeeRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
             $data = $this->employeeRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
@@ -39,8 +77,10 @@ class EmployeeService
     }
     private function getAllDataFromDatabase()
     {
-        $data = $this->employeeRepository->applyJoins();
+        $data = $this->employeeRepository->applyJoins($this->params->tab);
         $data = $this->employeeRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $this->employeeRepository->applyIsDeleteFilter($data, 0);
+        $data = $this->employeeRepository->applyTabFilter($data, $this->params->tab);
         $count = $data->count();
         $data = $this->employeeRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
         $data = $this->employeeRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);

@@ -38,6 +38,7 @@ class ResultClsVViewRepository
                 "intruction_date",
                 "service_type_code",
                 "service_type_name",
+                "test_index_num_order",
             ]);
     }
     public function applyKeywordFilter($query, $keyword)

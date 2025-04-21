@@ -26,10 +26,11 @@ class SignerService
     public function handleDataBaseSearch()
     {
         try {
-            $data = $this->signerRepository->applyJoins();
+            $data = $this->signerRepository->applyJoins($this->params->tab);
             $data = $this->signerRepository->applyKeywordFilter($data, $this->params->keyword);
             $data = $this->signerRepository->applyIsActiveFilter($data, $this->params->isActive);
-            $data = $this->signerRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+            $data = $this->signerRepository->applyIsDeleteFilter($data, 0);
+            $data = $this->signerRepository->applyTabFilter($data, $this->params->tab);
             $count = $data->count();
             $data = $this->signerRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
             $data = $this->signerRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
@@ -40,9 +41,10 @@ class SignerService
     }
     private function getAllDataFromDatabase()
     {
-        $data = $this->signerRepository->applyJoins();
+        $data = $this->signerRepository->applyJoins($this->params->tab);
         $data = $this->signerRepository->applyIsActiveFilter($data, $this->params->isActive);
-        $data = $this->signerRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+        $data = $this->signerRepository->applyIsDeleteFilter($data, 0);
+        $data = $this->signerRepository->applyTabFilter($data, $this->params->tab);
         $count = $data->count();
         $data = $this->signerRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
         $data = $this->signerRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
