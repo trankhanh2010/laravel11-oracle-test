@@ -44,11 +44,11 @@ class TransactionRepository
             return $data->value('id');
         });
         $this->payFormMoMoId = Cache::remember('pay_form_momo_id', now()->addMinutes(10080), function () {
-            $data =  $this->payForm->where('pay_form_code', '09')->get();
+            $data =  $this->payForm->where('pay_form_code', '08')->get();
             return $data->value('id');
         });
         $this->payFormQrVietinBankId = Cache::remember('pay_form_qr_vietin_bank_id', now()->addMinutes(10080), function () {
-            $data =  $this->payForm->where('pay_form_code', '10')->get();
+            $data =  $this->payForm->where('pay_form_code', '08')->get();
             return $data->value('id');
         });
         $this->payForm06Id = Cache::remember('pay_form_06_id', now()->addMinutes(10080), function () {
@@ -344,8 +344,8 @@ class TransactionRepository
     }
     public function getOrCreateTransactionVietinBank($data)
     {
+        // Nếu mà đã có transaction cũ chưa thanh toán mà khác tiền thì cập nhật lại tiền
         $dataReturn =  $this->transaction->where('treatment_id', $data['treatment_id'])
-        ->where('amount', $data['amount'])
         ->where('is_cancel', 1)
         ->where('cancel_reason', 'Khoi tao data QR Code thanh toan VietinBank')
         ->first();
@@ -396,6 +396,15 @@ class TransactionRepository
                 'tdl_patient_account_number'  => $treatmentData->tdl_patient_account_number,  
                 'tdl_patient_tax_code'  => $treatmentData->tdl_patient_tax_code,  
             ]);
+        }else{
+            if($dataReturn['amount'] != $data['amount']){
+                $dataReturn->update([
+                    'modify_time' => now()->format('Ymdhis'),
+                    'modifier' => 'MOS_v2',
+                    'app_modifier' => 'MOS_v2',
+                    'amount' => $data['amount'],
+                ]);
+            }
         }
         
         $dataReturn =  $this->transaction->where('treatment_id', $data['treatment_id'])

@@ -229,8 +229,12 @@ class VietinbankService
             }
             // Nếu đúng và mã = 00 và có transVietinbank(có is_cancel =1) thì cập nhật is_cancel = 0 cho transaction trong DB
             $dataTransactionVietinbank = $this->transactionRepository->getTransactionVietinBank($data);
+            // Đang test chưa thêm db thì để true
+            // $dataTransactionVietinbank = true;
             if($dataTransactionVietinbank){
                 $sttUpdate = $this->transactionRepository->updateTransactionVietinBank($dataTransactionVietinbank);
+                // Đang test chưa thêm db thì để true
+                // $sttUpdate = true;
                 if($sttUpdate){
                     // Nếu cập nhật thành công
                     return $paramSuccess;

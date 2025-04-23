@@ -687,9 +687,11 @@ class TreatmentFeePaymentService
                         'treatment_id' => $data['treatment_id'],
                     ];
                     $dataTransHis = $this->transactionRepository->getOrCreateTransactionVietinBank($dataQuery);
-                    
-                    // Tạo data qr với bill_number(order_id) là code của transaction trong his bỏ đi 2 số đầu
+                    // Cập nhật depositReq có transaction_id là cái vừa lấy ra để tạo qrCode
+                    $depositRecord = $this->depositReqRepository->getByCode($data->deposit_req_code);
+                    $this->depositReqRepository->updateDepositId($depositRecord, $dataTransHis['id']);
 
+                    // Tạo data qr với bill_number(order_id) là code của transaction trong his bỏ đi 2 số đầu
                     $dataGenQr = [
                         'amount' => $dataTransHis['amount'],
                         'orderInfo' => 'HisTran'.$dataTransHis['transaction_code'],

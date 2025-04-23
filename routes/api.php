@@ -349,6 +349,7 @@ Route::group([
     Route::get('v1/revoke-certificate', [DigitalCertificateController::class, 'revokeCertificate']);
     Route::get('v1/get-certificate-info', [DigitalCertificateController::class, 'getCertificateInfo']);
     Route::get('v1/sign', [DigitalCertificateController::class, 'sign']);
+    Route::get('v1/sign-xml', [DigitalCertificateController::class, 'signXML']);
 
     /// Redis
     Route::get('v1/redis-ping', [RedisController::class, "ping"])->name('.redis_ping');

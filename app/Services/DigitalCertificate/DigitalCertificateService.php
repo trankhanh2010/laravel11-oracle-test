@@ -3,10 +3,13 @@
 namespace App\Services\DigitalCertificate;
 
 use App\DTOs\DigitalCertificateDTO;
+use DOMDocument;
 use Exception;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
 use setasign\Fpdi\Tcpdf\Fpdi;
+use RobRichards\XMLSecLibs\XMLSecurityKey;
+use RobRichards\XMLSecLibs\XMLSecurityDSig;
 
 class DigitalCertificateService
 {
@@ -173,7 +176,103 @@ class DigitalCertificateService
         return $pdfBase64;
     }
     
+    // Ký xml
+    public function signXML(string $inputXmlPath, string $outputXmlPath, string $privateKeyPath, string $certPath, string $passphrase = '', $pdfPath, $pdfOutPath)
+    {
+        // Nếu file XML chưa tồn tại thì tạo mới
+    if (!file_exists($inputXmlPath)) {
+        // Tạo thư mục nếu chưa có
+        $dir = dirname($inputXmlPath);
+        if (!is_dir($dir)) {
+            mkdir($dir, 0777, true);
+        }
+        $sampleXml = <<<XML
+<?xml version="1.0" encoding="UTF-8"?>
+<Invoice>
+    <InvoiceNumber>INV-20250422-001</InvoiceNumber>
+    <Date>2025-04-22</Date>
+    <Customer>
+        <Name>Nguyễn Văn A</Name>
+    </Customer>
+</Invoice>
+XML;
+        file_put_contents($inputXmlPath, $sampleXml);
+    }
+        // Load XML
+        $doc = new DOMDocument();
+        $doc->preserveWhiteSpace = false;
+        $doc->formatOutput = true;
 
+        if (!$doc->load($inputXmlPath)) {
+            throw new Exception("Không thể tải XML từ: $inputXmlPath");
+        }
+
+        // Tạo đối tượng XMLDSig
+        $objDSig = new XMLSecurityDSig();
+        $objDSig->setCanonicalMethod(XMLSecurityDSig::EXC_C14N);
+
+        // Thêm reference để xác định phần cần ký
+        $objDSig->addReference(
+            $doc,
+            XMLSecurityDSig::SHA256,
+            ['http://www.w3.org/2000/09/xmldsig#enveloped-signature']
+        );
+
+        // Tạo key để ký
+        $objKey = new XMLSecurityKey(XMLSecurityKey::RSA_SHA256, ['type' => 'private']);
+        if ($passphrase) {
+            $objKey->passphrase = $passphrase;
+        }
+        $objKey->loadKey($privateKeyPath, true);
+
+        // Tiến hành ký
+        $objDSig->sign($objKey);
+
+        // Gắn chứng chỉ vào chữ ký
+        $objDSig->add509Cert(file_get_contents($certPath));
+
+        // Gắn chữ ký vào XML
+        $objDSig->appendSignature($doc->documentElement);
+
+        // Lưu XML đã ký
+        $doc->save($outputXmlPath);
+
+        // Đính kèm xml đã ký
+        $this->attachXmlToPdfWithTcpdf($pdfPath, $outputXmlPath, $pdfOutPath);
+        $pdfBase64 = base64_encode(file_get_contents($pdfOutPath));
+        return $pdfBase64;
+    }
+
+    public function attachXmlToPdfWithTcpdf(string $pdfPath, string $xmlPath, string $pdfOutPath): void
+    {
+        // Tạo TCPDF object (chế độ kế thừa nội dung từ file PDF gốc)
+        $pdf = new Fpdi();
+        $pdf->setPrintHeader(false);
+        $pdf->setPrintFooter(false);
+        $pdf->AddPage();
+    
+        // Nhúng nội dung PDF gốc vào
+        $pageCount = $pdf->setSourceFile($pdfPath);
+        for ($pageNo = 1; $pageNo <= $pageCount; $pageNo++) {
+            $tpl = $pdf->importPage($pageNo);
+            $pdf->useTemplate($tpl);
+            if ($pageNo < $pageCount) {
+                $pdf->AddPage();
+            }
+        }
+    
+        // Đính kèm file XML
+        $xmlData = file_get_contents($xmlPath);
+        // Đính kèm XML dưới dạng annotation có biểu tượng ghim tại (x=15, y=30)
+        $pdf->Annotation(15, 30, 5, 5, 'Signed XML file', array(
+            'Subtype' => 'FileAttachment',
+            'Name' => 'PushPin',
+            'FS' => $xmlPath,
+        ));
+    
+        // Xuất ra file mới
+        $pdf->Output($pdfOutPath, 'F');
+    }
     // Lấy token ngắn hạn cho việc ký
     public function getStepCaTokenSign($name)
     {

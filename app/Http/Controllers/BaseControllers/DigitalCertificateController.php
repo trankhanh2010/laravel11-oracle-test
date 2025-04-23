@@ -7,6 +7,7 @@ use App\Services\DigitalCertificate\DigitalCertificateService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
+
 class DigitalCertificateController extends BaseApiCacheController
 {
     protected $digitalCertificateService;
@@ -29,7 +30,7 @@ class DigitalCertificateController extends BaseApiCacheController
             return $this->checkParam();
         }
         $data = $this->digitalCertificateService->certificates();
-        return returnDataSuccess([],$data);
+        return returnDataSuccess([], $data);
     }
 
     // Gia hạn chứng thư 
@@ -39,7 +40,7 @@ class DigitalCertificateController extends BaseApiCacheController
             return $this->checkParam();
         }
         $data = $this->digitalCertificateService->renewCertificate();
-        return returnDataSuccess([],$data);
+        return returnDataSuccess([], $data);
     }
 
     // Thu hồi chứng chỉ
@@ -49,7 +50,7 @@ class DigitalCertificateController extends BaseApiCacheController
             return $this->checkParam();
         }
         $data = $this->digitalCertificateService->revokeCertificate();
-        return returnDataSuccess([],$data);
+        return returnDataSuccess([], $data);
     }
 
     public function getCertificateInfo()
@@ -58,7 +59,7 @@ class DigitalCertificateController extends BaseApiCacheController
             return $this->checkParam();
         }
         $data = $this->digitalCertificateService->getCertificateInfo();
-        return returnDataSuccess([],$data);
+        return returnDataSuccess([], $data);
     }
 
     public function sign()
@@ -67,7 +68,25 @@ class DigitalCertificateController extends BaseApiCacheController
             return $this->checkParam();
         }
         $data = $this->digitalCertificateService->sign();
-        return returnDataSuccess([],$data);
+        return returnDataSuccess([], $data);
     }
-    
+
+    public function signXML()
+    {
+        if ($this->checkParam()) {
+            return $this->checkParam();
+        }
+        $pdfPath = 'C:\Users\tranl\Downloads\f1ace4d9-72fc-466d-b4f5-0c01057ff76b.pdf';
+        $pdfOutPath = 'C:\Users\tranl\Downloads\out_put.pdf';
+        $data = $this->digitalCertificateService->signXML(
+            storage_path('app/temp/'.$this->loginname.'_'.now()->format('Ymdhis').'_input.xml'),
+            storage_path('app/temp/'.$this->loginname.'_'.now()->format('Ymdhis').'_signed_output.xml'),
+            storage_path('app/certificate/user/truyenlm/private.key'),
+            storage_path('app/certificate/user/truyenlm/cert-chain.crt'),
+            '',
+            $pdfPath,
+            $pdfOutPath
+        );
+        return returnDataSuccess([], $data);
+    }
 }
