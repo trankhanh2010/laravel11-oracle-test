@@ -3,8 +3,10 @@
 namespace App\Services\DigitalCertificate;
 
 use App\DTOs\DigitalCertificateDTO;
+use Exception;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
+use setasign\Fpdi\Tcpdf\Fpdi;
 
 class DigitalCertificateService
 {
@@ -141,6 +143,36 @@ class DigitalCertificateService
         return $data;
     }
 
+    // Ký số
+    public function sign()
+    {
+        $pdfPath = 'C:\Users\tranl\Downloads\f1ace4d9-72fc-466d-b4f5-0c01057ff76b.pdf';
+        $pdfOutPath = 'C:\Users\tranl\Downloads\out_put.pdf';
+
+        $privateKeyPath = storage_path("app/certificate/user/{$this->params->loginname}/private.key");
+        $certChainPath = storage_path("app/certificate/user/{$this->params->loginname}/cert-chain.crt");
+        $pdf = new Fpdi();
+        $pageCount = $pdf->setSourceFile($pdfPath);
+        for ($pageNo = 1; $pageNo <= $pageCount; $pageNo++) {
+            $templateId = $pdf->importPage($pageNo);
+            $pdf->AddPage();
+            $pdf->useTemplate($templateId);
+        }
+
+        // Thêm chữ ký số
+        $privateKeyContent = file_get_contents($privateKeyPath);
+        $certContent = file_get_contents($certChainPath);
+        
+        // Gán trực tiếp nội dung, không phải đường dẫn
+        $pdf->setSignature($certContent, $privateKeyContent);
+    
+        // Xuất file PDF đã ký ra 
+        $pdf->Output($pdfOutPath, 'F'); // 'F' = File
+        // Mã hóa file PDF đã ký dưới dạng base64
+        $pdfBase64 = base64_encode(file_get_contents($pdfOutPath));
+        return $pdfBase64;
+    }
+    
 
     // Lấy token ngắn hạn cho việc ký
     public function getStepCaTokenSign($name)

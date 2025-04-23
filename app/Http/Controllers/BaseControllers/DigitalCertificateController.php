@@ -60,5 +60,14 @@ class DigitalCertificateController extends BaseApiCacheController
         $data = $this->digitalCertificateService->getCertificateInfo();
         return returnDataSuccess([],$data);
     }
+
+    public function sign()
+    {
+        if ($this->checkParam()) {
+            return $this->checkParam();
+        }
+        $data = $this->digitalCertificateService->sign();
+        return returnDataSuccess([],$data);
+    }
     
 }
