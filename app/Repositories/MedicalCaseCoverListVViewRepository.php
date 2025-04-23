@@ -168,6 +168,17 @@ class MedicalCaseCoverListVViewRepository
                 ->orderBy('his_treatment_bed_room.add_time', 'desc');
             },
             'beds.bedRoom:id,bed_room_code,bed_room_name',
+            'patient' => function ($query) {
+                $query               
+                ->select([
+                    'id',
+                    'pt_allergic_history', // Tiền sử dị ứng
+                    'is_tuberculosis',
+                    'has_card',
+                    'note',
+                    'is_hiv'
+                ]);
+            },
         ]);
         return $query->with([
             'patient' => function ($query) {
