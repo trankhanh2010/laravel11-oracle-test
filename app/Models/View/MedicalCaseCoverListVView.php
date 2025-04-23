@@ -5,6 +5,7 @@ namespace App\Models\View;
 use App\Models\HIS\Bed;
 use App\Models\HIS\DepartmentTran;
 use App\Models\HIS\Dhst;
+use App\Models\HIS\Patient;
 use App\Models\HIS\ServiceReq;
 use App\Models\HIS\ServiceReqType;
 use App\Models\HIS\TreatmentBedRoom;
@@ -49,5 +50,9 @@ class MedicalCaseCoverListVView extends Model
             'treatment_id', // Khóa chính trong bảng medi_case_cover_list
             'bed_id' // Khóa ngoại trong bảng treatment_bed_room trỏ tới beds
         );
+    }
+    public function patient()
+    {
+        return $this->belongsTo(Patient::class);
     }
 }

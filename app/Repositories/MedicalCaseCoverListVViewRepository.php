@@ -170,6 +170,17 @@ class MedicalCaseCoverListVViewRepository
             'beds.bedRoom:id,bed_room_code,bed_room_name',
         ]);
         return $query->with([
+            'patient' => function ($query) {
+                $query               
+                ->select([
+                    'id',
+                    'pt_allergic_history', // Tiền sử dị ứng
+                    'is_tuberculosis',
+                    'has_card',
+                    'note',
+                    'is_hiv'
+                ]);
+            },
             'department_trans' => function ($query) {
                 $query               
                 ->where('is_active', 1)

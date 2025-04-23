@@ -688,6 +688,7 @@ class TreatmentFeePaymentService
                     ];
                     $dataTransHis = $this->transactionRepository->getOrCreateTransactionVietinBank($dataQuery);
                     // Cập nhật depositReq có transaction_id là cái vừa lấy ra để tạo qrCode
+                    // (Sẽ bị lỗi HIS_DEPOSIT_REQ_UK1 nếu có nhiều deposit cùng tiền)
                     $depositRecord = $this->depositReqRepository->getByCode($data->deposit_req_code);
                     $this->depositReqRepository->updateDepositId($depositRecord, $dataTransHis['id']);
 
