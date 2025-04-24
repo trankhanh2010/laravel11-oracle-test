@@ -2,6 +2,7 @@
 namespace App\Repositories;
 
 use App\Jobs\ElasticSearch\Index\ProcessElasticIndexingJob;
+use App\Models\HIS\AccountBook;
 use App\Models\HIS\PayForm;
 use App\Models\HIS\Transaction;
 use App\Models\HIS\TransactionType;
@@ -16,24 +17,27 @@ class TransactionRepository
     protected $transactionType;
     protected $treatment;
     protected $payForm;
+    protected $accountBook;
     protected $transactionTypeTTId;
     protected $transactionTypeTUId;
     protected $payFormMoMoId;
     protected $payFormQrVietinBankId;
     protected $payForm03Id;
     protected $payForm06Id;
-
+    protected $accountBookQrVietinbankId;
     public function __construct(
         Transaction $transaction,
         TransactionType $transactionType,
         Treatment $treatment,
         PayForm $payForm,
+        AccountBook $accountBook,
         )
     {
         $this->transaction = $transaction;
         $this->transactionType = $transactionType;
         $this->treatment = $treatment;
         $this->payForm = $payForm;
+        $this->accountBook = $accountBook;
 
         $this->transactionTypeTTId = Cache::remember('transaction_type_TT_id', now()->addMinutes(10080), function () {
             $data =  $this->transactionType->where('transaction_type_code', 'TT')->get();
@@ -57,6 +61,10 @@ class TransactionRepository
         });
         $this->payForm03Id = Cache::remember('pay_form_03_id', now()->addMinutes(10080), function () {
             $data =  $this->payForm->where('pay_form_code', '03')->get();
+            return $data->value('id');
+        });
+        $this->accountBookQrVietinbankId = Cache::remember('account_book_qr_vietinbank_id', now()->addMinutes(10080), function () {
+            $data =  $this->accountBook->where('account_book_code', 'QRVTB')->get();
             return $data->value('id');
         });
     }
@@ -347,6 +355,7 @@ class TransactionRepository
         // Nếu mà đã có transaction cũ chưa thanh toán mà khác tiền thì cập nhật lại tiền
         $dataReturn =  $this->transaction->where('treatment_id', $data['treatment_id'])
         ->where('is_cancel', 1)
+        ->where('account_book_id', $this->accountBookQrVietinbankId)
         ->where('cancel_reason', 'Khoi tao data QR Code thanh toan VietinBank')
         ->first();
         if(!$dataReturn){
@@ -359,10 +368,12 @@ class TransactionRepository
                 'modifier' => 'MOS_v2',
                 'app_creator' => 'MOS_v2',
                 'app_modifier' => 'MOS_v2',
+                'is_active' => '1',
+                'is_delete' => '0',
                 'transaction_type_id' =>  $this->transactionTypeTUId,
                 // 'transaction_time' => $request->transaction_time,
                 'amount' => $data['amount'],  
-                'account_book_id' => 32,      
+                'account_book_id' => $this->accountBookQrVietinbankId,      
                 'pay_form_id' => $this->payFormQrVietinBankId,
                 'cashier_room_id' => 1,
                 'treatment_id' => $data['treatment_id'],
@@ -410,13 +421,15 @@ class TransactionRepository
         $dataReturn =  $this->transaction->where('treatment_id', $data['treatment_id'])
         ->where('amount', $data['amount'])
         ->where('is_cancel', 1)
+        ->where('account_book_id', $this->accountBookQrVietinbankId)
         ->where('cancel_reason', 'Khoi tao data QR Code thanh toan VietinBank')
         ->first();
         return $dataReturn;
     }
     public function getTransactionVietinBank($data)
     {
-        $dataReturn =  $this->transaction->where('transaction_code', '00'.$data['orderId']) // Nối thêm chuỗi 00
+        $dataReturn =  $this->transaction->where('num_order', $data['orderId']) 
+        ->where('account_book_id', $this->accountBookQrVietinbankId)
         ->where('amount', $data['amount'])
         ->where('is_cancel', 1)
         ->where('cancel_reason', 'Khoi tao data QR Code thanh toan VietinBank')

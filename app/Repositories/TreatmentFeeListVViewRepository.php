@@ -60,9 +60,9 @@ class TreatmentFeeListVViewRepository
             'treatment_fee_detail' => function ($query) {
                 $query->select(
                     'xa_v_his_treatment_fee_detail.*',
-                    DB::connection('oracle_his')->raw('(total_deposit_amount - total_repay_amount - total_bill_transfer_amount + total_bill_amount) as da_thu'),
+                    DB::connection('oracle_his')->raw('(total_deposit_amount - total_repay_amount - total_bill_transfer_amount + total_bill_amount + locking_amount) as da_thu'),
                     DB::connection('oracle_his')->raw('(total_deposit_amount - total_service_deposit_amount) as tam_ung'),
-                    DB::connection('oracle_his')->raw('(total_patient_price - (total_deposit_amount - total_repay_amount - total_bill_transfer_amount + total_bill_amount)) as fee')
+                    DB::connection('oracle_his')->raw('(total_patient_price - (total_deposit_amount - total_repay_amount - total_bill_transfer_amount + total_bill_amount + locking_amount)) as fee')
                 );
             },
             // 'services.sereServBills:id,sere_serv_id,is_delete,bill_id,is_cancel',

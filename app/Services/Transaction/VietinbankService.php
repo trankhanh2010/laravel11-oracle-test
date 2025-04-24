@@ -22,6 +22,7 @@ class VietinbankService
     protected string $apiUrl;
     protected string $merchantId;
     protected string $secretKey;
+    protected string $clientId;
     protected $publicKeyVietinbankPath;
     protected $privateKeyPath;
     protected $urlInqDetailTrans;
@@ -40,6 +41,7 @@ class VietinbankService
         $this->apiUrl = config('database')['connections']['vietinbank']['vietinbank_api_url'];
         $this->merchantId = config('database')['connections']['vietinbank']['vietinbank_merchant_id'];
         $this->secretKey = config('database')['connections']['vietinbank']['vietinbank_secret_key'];
+        $this->clientId = config('database')['connections']['vietinbank']['vietinbank_client_id'];
         $this->publicKeyVietinbankPath = config('database')['connections']['vietinbank']['public_key_vietinbank_path'];
         $this->privateKeyPath = config('database')['connections']['vietinbank']['private_key_bvxa_path'];
         $this->urlInqDetailTrans = config('database')['connections']['vietinbank']['vietinbank_api_url_inq_detail_trans'];
@@ -314,7 +316,7 @@ class VietinbankService
             $client = new Client();
             $response = $client->post($this->urlInqDetailTrans, [
                 'headers' => [
-                    'x-ibm-client-id' => $this->merchantId,
+                    'x-ibm-client-id' => $this->clientId,
                     'x-ibm-client-secret' => $this->secretKey,
                 ],
                 'json' => $paramRequest]
@@ -363,7 +365,7 @@ class VietinbankService
         // // Tạo chữ ký test
         // $privateKeyVietinbankPath = "D:/vietinbank/vtb_private_key.pem";
         // $privateKeyVietinbank = openssl_pkey_get_private(file_get_contents($privateKeyVietinbankPath));
-        // $rawData = '0000022351234560000289449123';
+        // $rawData = '0000022351234565123';
         // $signature = '';
         // $success = openssl_sign($rawData,$signature, $privateKeyVietinbank, OPENSSL_ALGO_SHA256);
         // $signatureBase64 = base64_encode($signature);

@@ -572,7 +572,7 @@ class TreatmentFeePaymentService
                     $dataGenQr = [
                         'amount' => $dataTransHis['amount'],
                         'orderInfo' => 'HisTran'.$dataTransHis['transaction_code'],
-                        'orderId' => substr($dataTransHis['transaction_code'], 2), // Chỉ lấy 10 kí tự phía sau, bỏ 00
+                        'orderId' => $dataTransHis['num_order'], // Là duy nhất với mỗi accountBook
                     ];
                     // Gọi service và truyền đối tượng RequestCreateQrcode
                     $qrData = $this->vietinbankService->createTransactionQrCode($dataGenQr);
@@ -696,7 +696,7 @@ class TreatmentFeePaymentService
                     $dataGenQr = [
                         'amount' => $dataTransHis['amount'],
                         'orderInfo' => 'HisTran'.$dataTransHis['transaction_code'],
-                        'orderId' => substr($dataTransHis['transaction_code'], 2), // Chỉ lấy 10 kí tự phía sau, bỏ 00
+                        'orderId' => $dataTransHis['num_order'], // Là duy nhất với mỗi accountBook
                     ];
                     // Gọi service và truyền đối tượng RequestCreateQrcode
                     $qrData = $this->vietinbankService->createTransactionQrCode($dataGenQr);
