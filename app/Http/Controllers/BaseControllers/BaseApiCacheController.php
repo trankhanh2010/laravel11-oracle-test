@@ -729,6 +729,8 @@ class BaseApiCacheController extends Controller
     protected $depositReqListVViewName = 'deposit_req_list_v_view';
     protected $medicineListVView;
     protected $medicineListVViewName = 'medicine_list_v_view';
+    protected $phieutdvacsbnc2Phieumau;
+    protected $phieutdvacsbnc2PhieumauName = 'phieutdvacsbnc2_phieumau';
     // Thanh toán
     protected $paymentMethod; // Hình thức thanh toán MoMo VNPay
     protected $paymentMethodName = 'PaymentMethod';

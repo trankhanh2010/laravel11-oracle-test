@@ -23,7 +23,8 @@ class VietinbankService
     protected string $merchantId;
     protected string $secretKey;
     protected string $clientId;
-    protected $publicKeyVietinbankPath;
+    protected $publicKeyVietinbankConfirmPath;
+    protected $publicKeyVietinbankInqDetailPath;
     protected $privateKeyPath;
     protected $urlInqDetailTrans;
     protected $transactionRepository;
@@ -42,7 +43,8 @@ class VietinbankService
         $this->merchantId = config('database')['connections']['vietinbank']['vietinbank_merchant_id'];
         $this->secretKey = config('database')['connections']['vietinbank']['vietinbank_secret_key'];
         $this->clientId = config('database')['connections']['vietinbank']['vietinbank_client_id'];
-        $this->publicKeyVietinbankPath = config('database')['connections']['vietinbank']['public_key_vietinbank_path'];
+        $this->publicKeyVietinbankConfirmPath = config('database')['connections']['vietinbank']['public_key_vietinbank_confirm_path'];
+        $this->publicKeyVietinbankInqDetailPath = config('database')['connections']['vietinbank']['public_key_vietinbank_inq_detail_path'];
         $this->privateKeyPath = config('database')['connections']['vietinbank']['private_key_bvxa_path'];
         $this->urlInqDetailTrans = config('database')['connections']['vietinbank']['vietinbank_api_url_inq_detail_trans'];
         $this->merchantCode = config('database')['connections']['vietinbank']['merchant_code'];
@@ -349,7 +351,7 @@ class VietinbankService
 
     private function verifyVietinbankSignature($data)
     {
-        $publicKeyVietinbank = openssl_pkey_get_public(file_get_contents($this->publicKeyVietinbankPath));
+        $publicKeyVietinbank = openssl_pkey_get_public(file_get_contents($this->publicKeyVietinbankConfirmPath));
         if (!$publicKeyVietinbank) {
             throw new \Exception("Không thể đọc public key VietinBank");
         }
@@ -361,21 +363,19 @@ class VietinbankService
         // Tạo chữ ký bằng HMAC-SHA256
         $verify = openssl_verify($rawData, $signatureDecode, $publicKeyVietinbank, OPENSSL_ALGO_SHA256);
         //  So sánh chữ ký
-
         // // Tạo chữ ký test
         // $privateKeyVietinbankPath = "D:/vietinbank/vtb_private_key.pem";
         // $privateKeyVietinbank = openssl_pkey_get_private(file_get_contents($privateKeyVietinbankPath));
-        // $rawData = '0000022351234565123';
+        // $rawData = '0000022351234567123';
         // $signature = '';
         // $success = openssl_sign($rawData,$signature, $privateKeyVietinbank, OPENSSL_ALGO_SHA256);
         // $signatureBase64 = base64_encode($signature);
         // dd($signatureBase64);
-
         return $verify === 1;
     }
     private function verifyVietinbankSignatureInqDetailTrans($data)
     {
-        $publicKeyVietinbank = openssl_pkey_get_public(file_get_contents($this->publicKeyVietinbankPath));
+        $publicKeyVietinbank = openssl_pkey_get_public(file_get_contents($this->publicKeyVietinbankInqDetailPath));
         if (!$publicKeyVietinbank) {
             throw new \Exception("Không thể đọc public key VietinBank");
         }

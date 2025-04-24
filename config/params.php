@@ -445,6 +445,7 @@ return [
             'result_cls_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm ResultCls!',
             'medicine_list_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm MedicineList!',
             'speed_unit' => 'Có lỗi khi thực hiện thao tác với bảng SpeedUnit!',
+            'phieutdvacsbnc2_phieumau' => 'Có lỗi khi thực hiện thao tác với bảng Phieutdvacsbnc2Phieumau!',
 
         ],
         'table' => [

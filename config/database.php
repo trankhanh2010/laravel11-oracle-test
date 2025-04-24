@@ -177,6 +177,20 @@ return [
                 PDO::ATTR_PERSISTENT => true, // Kết nối liên tục
             ],
         ],
+        'oracle_emr_final' => [
+            'driver' => 'oracle',
+            'host' => env('DB_SAR_HOST', '192.168.101.251'),
+            'port' => env('DB_SAR_PORT', '1521'),
+            'database' => env('DB_EMR_FINAL_DATABASE', 'oracletest'),
+            'username' => env('DB_EMR_FINAL_USERNAME', 'EMR_FINAL'),
+            'password' => env('DB_EMR_FINAL_PASSWORD', 'EMR_FINAL'),
+            'service_name' => env('DB_SAR_SERVICE_NAME', 'orcl'),
+            'charset' => 'AL32UTF8',
+            'prefix' => '',
+            'options' => [
+                PDO::ATTR_PERSISTENT => true, // Kết nối liên tục
+            ],
+        ],
         'elasticsearch' => [
             'bulk' => [
                 'max_batch_size_mb' => env('ELASTICSEARCH_MAX_BATCH_SIZE_MB',1),
@@ -215,7 +229,8 @@ return [
             'vietinbank_client_id' => env('VIETINBANK_CLIENT_ID',''),
             'vietinbank_api_url' => env('VIETINBANK_API_URL',''),
             'vietinbank_api_url_inq_detail_trans' => env('VIETINBANK_API_URL_INQ_DETAIL_TRANS',''),
-            'public_key_vietinbank_path' => env('PUBLIC_KEY_VIETINBANK_PATH',''),
+            'public_key_vietinbank_confirm_path' => env('PUBLIC_KEY_VIETINBANK_CONFIRM_PATH',''),
+            'public_key_vietinbank_inq_detail_path' => env('PUBLIC_KEY_VIETINBANK_INQ_DETAIL_PATH',''),
             'private_key_bvxa_path' => env('PRIVATE_KEY_BVXA_PATH',''),
             'merchant_code' => env('MERCHANT_CODE',''),
             'merchant_cc' => env('MERCHANT_CC',''),

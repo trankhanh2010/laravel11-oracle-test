@@ -155,6 +155,7 @@ use App\Http\Controllers\Api\CacheControllers\MemaGroupController;
 use App\Http\Controllers\Api\CacheControllers\ModuleController;
 use App\Http\Controllers\Api\CacheControllers\PackingTypeController;
 use App\Http\Controllers\Api\CacheControllers\PayFormController;
+use App\Http\Controllers\Api\CacheControllers\Phieutdvacsbnc2PhieumauController;
 use App\Http\Controllers\Api\CacheControllers\ProcessingMethodController;
 use App\Http\Controllers\Api\CacheControllers\ServiceReqSttController;
 use App\Http\Controllers\Api\CacheControllers\SpeedUnitController;
@@ -1179,4 +1180,6 @@ Route::group([
     Route::apiResource('v1/medicine-list-v-view', MedicineListVViewController::class)->only(['index']);
     /// MedicineList
     Route::apiResource('v1/speed-unit', SpeedUnitController::class)->only(['index']);
+    /// Phieutdvacsbnc2Phieumau
+    Route::apiResource('v1/phieutdvacsbnc2-phieumau', Phieutdvacsbnc2PhieumauController::class)->only(['index']);
 });
