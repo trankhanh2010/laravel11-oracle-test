@@ -29,6 +29,11 @@ class VietinbankService
     protected $params;
     private $VND = "VND";
     private $EMPTY = "";
+    protected $merchantCode;
+    protected $merchantCC;
+    protected $merchantName;
+    protected $terminalId;
+    protected $storeId;
 
     public function __construct(TransactionRepository $transactionRepository)
     {
@@ -38,6 +43,12 @@ class VietinbankService
         $this->publicKeyVietinbankPath = config('database')['connections']['vietinbank']['public_key_vietinbank_path'];
         $this->privateKeyPath = config('database')['connections']['vietinbank']['private_key_bvxa_path'];
         $this->urlInqDetailTrans = config('database')['connections']['vietinbank']['vietinbank_api_url_inq_detail_trans'];
+        $this->merchantCode = config('database')['connections']['vietinbank']['merchant_code'];
+        $this->merchantCC = config('database')['connections']['vietinbank']['merchant_code'];
+        $this->merchantName = config('database')['connections']['vietinbank']['merchant_name'];
+        $this->terminalId = config('database')['connections']['vietinbank']['terminal_id'];
+        $this->storeId = config('database')['connections']['vietinbank']['store_id'];
+
         $this->transactionRepository = $transactionRepository;
     }
     public function withParams(VietinbankDTO $params)
@@ -53,10 +64,10 @@ class VietinbankService
         // dd($dataTreatment);
         $data = new RequestCreateQrcode();
         $data->masterMerCode = "970489";
-        $data->merchantCode = "VBI";
+        $data->merchantCode = $this->merchantCode;
         $data->merchantType = "01";
-        $data->merchantName = "Benh vien Xuyen A";
-        $data->terminalId = "0001"; // Mã này cố định
+        $data->merchantName = $this->merchantName;
+        $data->terminalId = $this->terminalId; // Mã này cố định
         $data->ccy = "704"; // Mã này cố định
         $data->desc = $dataTreatment['orderInfo'];
         $data->txnId = $dataTreatment['orderId'];
@@ -67,8 +78,8 @@ class VietinbankService
       
      
         $data->merchantCity = "VINHLONG";
-        $data->terminalName = "Xuyen A Vinh Long";
-        $data->merchantCC  = "4814";
+        $data->terminalName = $this->storeId;
+        $data->merchantCC  = $this->merchantCC;
         
 
         $niceAddtionalData = $this->removeDiacritics($data->desc);

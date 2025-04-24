@@ -216,6 +216,11 @@ return [
             'vietinbank_api_url_inq_detail_trans' => env('VIETINBANK_API_URL_INQ_DETAIL_TRANS',''),
             'public_key_vietinbank_path' => env('PUBLIC_KEY_VIETINBANK_PATH',''),
             'private_key_bvxa_path' => env('PRIVATE_KEY_BVXA_PATH',''),
+            'merchant_code' => env('MERCHANT_CODE',''),
+            'merchant_cc' => env('MERCHANT_CC',''),
+            'merchant_name' => env('MERCHANT_NAME',''),
+            'terminal_id' => env('TERMINAL_ID',''),
+            'store_id' => env('STORE_ID',''),
         ],
         'twilio' => [
             'sid' => env('TWILIO_SID',''),
