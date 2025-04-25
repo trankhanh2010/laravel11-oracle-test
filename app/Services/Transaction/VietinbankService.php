@@ -138,7 +138,7 @@ class VietinbankService
             $consumerEmail = "";
             // Thời gian hết hạn giao dịch +10 phút
             $timeTransaction = Carbon::now();
-            $expDate = $timeTransaction->addMinutes(10)->format('ymdHi'); 
+            $expDate = $timeTransaction->addMinutes(120)->format('ymdHi'); 
 
             if (QRCode::PAY_TYPE_01 === $request->payType) {
                 if ($this->VND === $request->ccy) {
@@ -271,8 +271,8 @@ class VietinbankService
         $param = $this->getParamRequest();
 
         $requestId = $param['requestId'] ?? '';
-        $providerId = $param['providerId'] ?? '';
-        $merchantId = $param['merchantId'] ?? '';
+        $providerId = $param['providerId'] ?? 'BVXUYENA';
+        $merchantId = $param['merchantId'];
         $terminalId = $param['terminalId'] ?? '';
         $payDate =  $param['payDate'] ?? '';
         $orderId = $param['orderId'] ?? '';
@@ -330,7 +330,7 @@ class VietinbankService
             // Xử lý lỗi nếu gọi API thất bại
             throw new \Exception('Lỗi khi gọi api vấn tin Vietinbank ');
         }
-
+        // dd($data);
         // Xác minh chữ ký 
         $isVerify = $this->verifyVietinbankSignatureInqDetailTrans($data);
         // Nếu đúng chữ ký 
@@ -366,7 +366,7 @@ class VietinbankService
         // // Tạo chữ ký test
         // $privateKeyVietinbankPath = "D:/vietinbank/vtb_private_key.pem";
         // $privateKeyVietinbank = openssl_pkey_get_private(file_get_contents($privateKeyVietinbankPath));
-        // $rawData = '0000022351234567123';
+        // $rawData = '0000022351234568123';
         // $signature = '';
         // $success = openssl_sign($rawData,$signature, $privateKeyVietinbank, OPENSSL_ALGO_SHA256);
         // $signatureBase64 = base64_encode($signature);
@@ -379,8 +379,7 @@ class VietinbankService
         if (!$publicKeyVietinbank) {
             throw new \Exception("Không thể đọc public key VietinBank");
         }
-        $signatureDecode = base64_decode($data['signature']);
-
+        $signatureDecode = base64_decode($data['signature']??'')?? '';
         // Tạo chuỗi rawData theo yêu cầu
         $rawData = $data['requestId'] . $data['providerId'] . $data['merchantId'] . $data['status']['code'];
 
