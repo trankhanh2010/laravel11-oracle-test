@@ -274,7 +274,7 @@ class VietinbankService
     {
         $param = $this->getParamRequest();
 
-        $requestId = $param['requestId'] ?? '';
+        $requestId = $param['requestId'] ?? Carbon::now()->timestamp;
         $providerId = $param['providerId'] ?? 'BVXUYENA';
         $merchantId = $param['merchantId'];
         $terminalId = $param['terminalId'] ?? '';
@@ -329,7 +329,7 @@ class VietinbankService
             );
 
             $data = json_decode($response->getBody(), true);
-
+            Log::error($data);
         } catch (\Exception $e) {
             // Xử lý lỗi nếu gọi API thất bại
             throw new \Exception('Lỗi khi gọi api vấn tin Vietinbank ');
