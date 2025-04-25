@@ -229,7 +229,7 @@ class VietinbankService
     public function handleConfirmTransaction()
     {
         $data = $this->getParamRequest();
-        // Log::error($data);
+        Log::error($data);
         // Xác minh chữ ký 
         $isVerify = $this->verifyVietinbankSignature($data);
         $paramSuccess = [
