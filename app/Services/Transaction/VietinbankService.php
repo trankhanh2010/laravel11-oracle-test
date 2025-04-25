@@ -280,7 +280,7 @@ class VietinbankService
         $terminalId = $param['terminalId'] ?? '';
         $payDate =  $param['payDate'] ?? '';
         $orderId = $param['orderId'] ?? '';
-        $hostrefno = $param['hostrefno'] ?? '';
+        $hostrefno = $param['hostrefno'] ?? ''; // Để rỗng
         $addInfor1 = $param['addInfor1'] ?? '';
         $addInfor2 = $param['addInfor2'] ?? '';
         $addInfor3 = $param['addInfor3'] ?? '';
@@ -427,17 +427,16 @@ class VietinbankService
         }
 
         // Tạo chuỗi rawData theo yêu cầu
-        $rawData = $data['requestId']??'' 
-        .$data['providerId']??'' 
-        .$data['merchantId']??'' 
-        .$data['terminalId']??'' 
-        .$data['payDate']??'' 
-        .$data['transTime']??'' 
-        .$data['channel']??'' 
-        .$data['version']??'' 
-        .$data['clientIP']??'' 
-        .$data['language']??'' ;
-
+        $rawData = $data['requestId'] 
+        .$data['providerId']
+        .$data['merchantId']
+        .$data['terminalId']
+        .$data['payDate']
+        .$data['transTime']
+        .$data['channel']
+        .$data['version'] 
+        .$data['clientIP']
+        .$data['language'];
         // Tạo chữ ký bằng HMAC-SHA256
         $signature = '';
         $success = openssl_sign($rawData,$signature, $privateKey, OPENSSL_ALGO_SHA256);
