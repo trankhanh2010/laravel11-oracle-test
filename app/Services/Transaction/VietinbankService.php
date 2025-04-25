@@ -14,8 +14,11 @@ use App\Classes\Vietinbank\QRCode;
 use App\Repositories\TransactionRepository;
 use Illuminate\Support\Carbon;
 use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Log;
 use IntlChar;
 use Normalizer;
+
+use function Laravel\Prompts\error;
 
 class VietinbankService
 {
@@ -224,6 +227,7 @@ class VietinbankService
     public function handleConfirmTransaction()
     {
         $data = $this->getParamRequest();
+        Log::error($data);
         // Xác minh chữ ký 
         $isVerify = $this->verifyVietinbankSignature($data);
         $paramSuccess = [
