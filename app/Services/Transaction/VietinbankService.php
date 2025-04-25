@@ -39,6 +39,7 @@ class VietinbankService
     protected $merchantName;
     protected $terminalId;
     protected $storeId;
+    protected $providerId;
 
     public function __construct(TransactionRepository $transactionRepository)
     {
@@ -55,6 +56,7 @@ class VietinbankService
         $this->merchantName = config('database')['connections']['vietinbank']['merchant_name'];
         $this->terminalId = config('database')['connections']['vietinbank']['terminal_id'];
         $this->storeId = config('database')['connections']['vietinbank']['store_id'];
+        $this->providerId = config('database')['connections']['vietinbank']['provider_id'];
 
         $this->transactionRepository = $transactionRepository;
     }
@@ -82,12 +84,12 @@ class VietinbankService
         $data->payType = QRCode::PAY_TYPE_01;
         $data->countryCode = "VN";
         //data.customerID = "Nhập thông tin mã khách hàng của Mobifone tại đây"; // 
-      
-     
+
+
         $data->merchantCity = "VINHLONG";
         $data->terminalName = $this->storeId;
         $data->merchantCC  = $this->merchantCC;
-        
+
 
         $niceAddtionalData = $this->removeDiacritics($data->desc);
         $data->desc = $niceAddtionalData;
@@ -99,7 +101,7 @@ class VietinbankService
         // $qrImageUrl = "http://chart.apis.google.com/chart?chs=500x500&cht=qr&chl=" . $qrData . "&choe=UTF-8";
         // $apiURL = "https://api.qrserver.com/v1/create-qr-code/";
         // $size = "300x300"; // Kích thước mã QR code
-    
+
         // $qrImageUrl = $apiURL . "?size=" . $size . "&data=" . $qrData;        
         return base64_encode($qrData);
     }
@@ -141,7 +143,7 @@ class VietinbankService
             $consumerEmail = "";
             // Thời gian hết hạn giao dịch +10 phút
             $timeTransaction = Carbon::now();
-            $expDate = $timeTransaction->addMinutes(120)->format('ymdHi'); 
+            $expDate = $timeTransaction->addMinutes(120)->format('ymdHi');
 
             if (QRCode::PAY_TYPE_01 === $request->payType) {
                 if ($this->VND === $request->ccy) {
@@ -203,19 +205,19 @@ class VietinbankService
         if (empty(trim($text))) {
             return $text;
         }
-    
+
         $normalizedString = Normalizer::normalize($text, Normalizer::FORM_D);
         $stringBuilder = '';
-    
+
         for ($i = 0; $i < mb_strlen($normalizedString); $i++) {
             $char = mb_substr($normalizedString, $i, 1);
             $unicodeCategory = IntlChar::charType($char);
-    
+
             if ($unicodeCategory != IntlChar::CHAR_CATEGORY_NON_SPACING_MARK) {
                 $stringBuilder .= $char;
             }
         }
-    
+
         return Normalizer::normalize($stringBuilder, Normalizer::FORM_C);
     }
 
@@ -241,27 +243,27 @@ class VietinbankService
             'signature' => $this->SignData(['requestId' => $data['requestId'], 'paymentStatus' => 'ZZ',])
         ];
         // Nếu đúng chữ ký 
-        if($isVerify){
+        if ($isVerify) {
             // Nếu đúng và mã khác 00
-            if($data['statusCode'] !== '00'){
+            if ($data['statusCode'] !== '00') {
                 return $paramFail;
             }
             // Nếu đúng và mã = 00 và có transVietinbank(có is_cancel =1) thì cập nhật is_cancel = 0 cho transaction trong DB
             $dataTransactionVietinbank = $this->transactionRepository->getTransactionVietinBank($data);
             // Đang test chưa thêm db thì để true
             // $dataTransactionVietinbank = true;
-            if($dataTransactionVietinbank){
+            if ($dataTransactionVietinbank) {
                 $sttUpdate = $this->transactionRepository->updateTransactionVietinBank($dataTransactionVietinbank);
                 // Đang test chưa thêm db thì để true
                 // $sttUpdate = true;
-                if($sttUpdate){
+                if ($sttUpdate) {
                     // Nếu cập nhật thành công
                     return $paramSuccess;
-                }else{
+                } else {
                     // Nếu không thành công
                     return $paramFail;
                 }
-            }else{
+            } else {
                 // Nếu đúng và mã khác 00 
                 return $paramFail;
             }
@@ -275,9 +277,9 @@ class VietinbankService
         $param = $this->getParamRequest();
 
         $requestId = $param['requestId'] ?? Carbon::now()->timestamp;
-        $providerId = $param['providerId'] ?? 'BVXUYENA';
-        $merchantId = $param['merchantId'];
-        $terminalId = $param['terminalId'] ?? '';
+        $providerId = $param['providerId'] ?? $this->providerId;
+        $merchantId = $param['merchantId'] ?? $this->merchantId;
+        $terminalId = $param['terminalId'] ?? $this->terminalId;
         $payDate =  $param['payDate'] ?? '';
         $orderId = $param['orderId'] ?? '';
         $hostrefno = $param['hostrefno'] ?? ''; // Để rỗng
@@ -285,9 +287,9 @@ class VietinbankService
         $addInfor2 = $param['addInfor2'] ?? '';
         $addInfor3 = $param['addInfor3'] ?? '';
         $clientIP = $param['clientIP'] ?? '';
-        $channel = $param['channel'] ?? '';
-        $version = $param['version'] ?? '';
-        $language = $param['language'] ?? '';
+        $channel = $param['channel'] ?? 'MOBILE';
+        $version = $param['version'] ?? '1.0';
+        $language = $param['language'] ?? 'vi';
 
         $paramRequest = [
             'requestId' => $requestId,
@@ -320,36 +322,38 @@ class VietinbankService
 
         try {
             $client = new Client();
-            $response = $client->post($this->urlInqDetailTrans, [
-                'headers' => [
-                    'x-ibm-client-id' => $this->clientId,
-                    'x-ibm-client-secret' => $this->secretKey,
-                ],
-                'json' => $paramRequest]
+            $response = $client->post(
+                $this->urlInqDetailTrans,
+                [
+                    'headers' => [
+                        'x-ibm-client-id' => $this->clientId,
+                        'x-ibm-client-secret' => $this->secretKey,
+                    ],
+                    'json' => $paramRequest
+                ]
             );
 
             $data = json_decode($response->getBody(), true);
-            Log::error($data);
+            // Log::error($data);
         } catch (\Exception $e) {
             // Xử lý lỗi nếu gọi API thất bại
             throw new \Exception('Lỗi khi gọi api vấn tin Vietinbank ');
         }
         // dd($data);
 
-        // Nếu đúng chữ ký 
-            // Nếu mã khác 00
-            if($data['status']['code'] !== '00'){
+        // Nếu mã khác 00
+        if ($data['status']['code'] !== '00') {
+            return $data;
+        } else {
+            // Xác minh chữ ký 
+            $isVerify = $this->verifyVietinbankSignatureInqDetailTrans($data);
+            if ($isVerify) {
                 return $data;
-            }else{
-                // Xác minh chữ ký 
-                $isVerify = $this->verifyVietinbankSignatureInqDetailTrans($data);
-                if($isVerify){
-                    return $data;
-                }else{
-                    // Nếu không đúng chữ ký
-                    throw new \Exception('Lỗi khi gọi api vấn tin Vietinbank: Sai chữ ký ');
-                }
+            } else {
+                // Nếu không đúng chữ ký
+                throw new \Exception('Lỗi khi gọi api vấn tin Vietinbank: Sai chữ ký ');
             }
+        }
     }
 
     private function verifyVietinbankSignature($data)
@@ -382,7 +386,7 @@ class VietinbankService
         if (!$publicKeyVietinbank) {
             throw new \Exception("Không thể đọc public key VietinBank");
         }
-        $signatureDecode = base64_decode($data['signature']??'')?? '';
+        $signatureDecode = base64_decode($data['signature'] ?? '') ?? '';
         // Tạo chuỗi rawData theo yêu cầu
         $rawData = $data['requestId'] . $data['providerId'] . $data['merchantId'] . $data['status']['code'];
 
@@ -411,7 +415,7 @@ class VietinbankService
 
         // Tạo chữ ký bằng HMAC-SHA256
         $signature = '';
-        $success = openssl_sign($rawData,$signature, $privateKey, OPENSSL_ALGO_SHA256);
+        $success = openssl_sign($rawData, $signature, $privateKey, OPENSSL_ALGO_SHA256);
 
         // Base 64
         $signatureBase64 = base64_encode($signature);
@@ -426,19 +430,19 @@ class VietinbankService
         }
 
         // Tạo chuỗi rawData theo yêu cầu
-        $rawData = $data['requestId'] 
-        .$data['providerId']
-        .$data['merchantId']
-        .$data['terminalId']
-        .$data['payDate']
-        .$data['transTime']
-        .$data['channel']
-        .$data['version'] 
-        .$data['clientIP']
-        .$data['language'];
+        $rawData = $data['requestId']
+            . $data['providerId']
+            . $data['merchantId']
+            . $data['terminalId']
+            . $data['payDate']
+            . $data['transTime']
+            . $data['channel']
+            . $data['version']
+            . $data['clientIP']
+            . $data['language'];
         // Tạo chữ ký bằng HMAC-SHA256
         $signature = '';
-        $success = openssl_sign($rawData,$signature, $privateKey, OPENSSL_ALGO_SHA256);
+        $success = openssl_sign($rawData, $signature, $privateKey, OPENSSL_ALGO_SHA256);
 
         // Base 64
         $signatureBase64 = base64_encode($signature);

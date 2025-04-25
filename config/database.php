@@ -237,6 +237,8 @@ return [
             'merchant_name' => env('MERCHANT_NAME',''),
             'terminal_id' => env('TERMINAL_ID',''),
             'store_id' => env('STORE_ID',''),
+            'provider_id' => env('PROVIDER_ID','BVXUYENA'),
+
         ],
         'twilio' => [
             'sid' => env('TWILIO_SID',''),
