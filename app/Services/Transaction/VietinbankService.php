@@ -335,22 +335,21 @@ class VietinbankService
             throw new \Exception('Lỗi khi gọi api vấn tin Vietinbank ');
         }
         // dd($data);
-        // Xác minh chữ ký 
-        $isVerify = $this->verifyVietinbankSignatureInqDetailTrans($data);
+
         // Nếu đúng chữ ký 
-        if($isVerify){
-            // Nếu đúng và mã khác 00
-            if($data['statusCode'] !== '00'){
+            // Nếu mã khác 00
+            if($data['status']['code'] !== '00'){
                 return $data;
+            }else{
+                // Xác minh chữ ký 
+                $isVerify = $this->verifyVietinbankSignatureInqDetailTrans($data);
+                if($isVerify){
+                    return $data;
+                }else{
+                    // Nếu không đúng chữ ký
+                    throw new \Exception('Lỗi khi gọi api vấn tin Vietinbank: Sai chữ ký ');
+                }
             }
-            // Nếu đúng và mã = 00
-            return $data;
-
-        } else {
-            // Nếu không đúng chữ ký
-            throw new \Exception('Lỗi khi gọi api vấn tin Vietinbank: Sai chữ ký ');
-
-        }
     }
 
     private function verifyVietinbankSignature($data)
