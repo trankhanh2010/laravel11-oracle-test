@@ -143,8 +143,8 @@ class VietinbankService
             $consumerEmail = "";
             // Thời gian hết hạn giao dịch +10 phút
             $timeTransaction = Carbon::now();
-            $expDate = $timeTransaction->addMinutes(120)->format('ymdHi');
-
+            // $expDate = $timeTransaction->addMinutes(120)->format('ymdHi');
+            $expDate = null;
             if (QRCode::PAY_TYPE_01 === $request->payType) {
                 if ($this->VND === $request->ccy) {
                     $request->ccy = ServiceConfig::CCY;
@@ -229,7 +229,7 @@ class VietinbankService
     public function handleConfirmTransaction()
     {
         $data = $this->getParamRequest();
-        Log::error($data);
+        // Log::error($data);
         // Xác minh chữ ký 
         $isVerify = $this->verifyVietinbankSignature($data);
         $paramSuccess = [
