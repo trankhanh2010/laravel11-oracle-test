@@ -242,6 +242,8 @@ class VietinbankService
             'paymentStatus' => 'ZZ',
             'signature' => $this->SignData(['requestId' => $data['requestId'], 'paymentStatus' => 'ZZ',])
         ];
+        // test confirm fail
+        return $paramFail;
         // Nếu đúng chữ ký 
         if ($isVerify) {
             // Nếu đúng và mã khác 00
