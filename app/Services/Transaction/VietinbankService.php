@@ -239,7 +239,7 @@ class VietinbankService
         ];
         $paramFail = [
             'requestId' => $data['requestId'],
-            'paymentStatus' => 'ZZ',
+            'paymentStatus' => '04',
             'signature' => $this->SignData(['requestId' => $data['requestId'], 'paymentStatus' => 'ZZ',])
         ];
         // test confirm fail
