@@ -584,6 +584,11 @@ class TreatmentFeePaymentService
                         ],
                         $dataGenQr
                     );
+                    // Nếu bị khóa viện phí thì k trả về link
+                    $treatmentFeeData = $this->treatmentFeeDetailVViewRepository->getById($data->id);
+                    if ($treatmentFeeData['fee_lock_time'] != null) {
+                        return ['data' => ['success' => false]];
+                    }
                     return ['data' => $dataReturn];
                 }
             }
@@ -708,6 +713,12 @@ class TreatmentFeePaymentService
                         ],
                         $dataGenQr
                     );
+                    // Nếu bị khóa viện phí thì k trả về link
+                    $treatmentFeeData = $this->treatmentFeeDetailVViewRepository->getById($data->treatment_id);
+                    if ($treatmentFeeData['fee_lock_time'] != null) {
+                        return ['data' => ['success' => false]];
+                    }
+
                     return ['data' => $dataReturn];
                 }
             }
