@@ -43,7 +43,8 @@ class MedicalCaseCoverListVViewRepository
                 'in_time',
                 'in_date',   
                 'tdl_patient_relative_type',
-                'tdl_patient_relative_name',            
+                'tdl_patient_relative_name',     
+                'branch_id',       
             ]);
         }
         return $this->medicalCaseCoverListVView
@@ -152,6 +153,7 @@ class MedicalCaseCoverListVViewRepository
                 'hosp_subs_director_loginname',
                 'hosp_subs_director_username',
                 'in_code',
+                'branch_id',       
             ]);
     }
     public function applyWithParam($query, $tab = null)
@@ -180,6 +182,7 @@ class MedicalCaseCoverListVViewRepository
                     'is_hiv'
                 ]);
             },
+            'branch:id,branch_code,branch_name,parent_organization_name',
         ]);
         return $query->with([
             'patient' => function ($query) {
@@ -399,6 +402,7 @@ class MedicalCaseCoverListVViewRepository
                 ->orderBy('his_treatment_bed_room.add_time', 'desc');
             },
             'beds.bedRoom:id,bed_room_code,bed_room_name',
+            'branch:id,branch_code,branch_name,parent_organization_name',
         ]);
     }
     public function applyKeywordFilter($query, $keyword)

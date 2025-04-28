@@ -21,6 +21,7 @@ class SignerRepository
             'loginname',
             'username',
             'title',
+            // 'sign_image'
         ]);
         return $this->signer
             ->select([

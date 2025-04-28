@@ -3,6 +3,8 @@
 namespace App\Models\View;
 
 use App\Models\HIS\Bed;
+use App\Models\HIS\Branch;
+use App\Models\HIS\Department;
 use App\Models\HIS\DepartmentTran;
 use App\Models\HIS\Dhst;
 use App\Models\HIS\Patient;
@@ -55,4 +57,10 @@ class MedicalCaseCoverListVView extends Model
     {
         return $this->belongsTo(Patient::class);
     }
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class);
+
+    }
+
 }

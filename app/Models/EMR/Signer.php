@@ -15,5 +15,10 @@ class Signer extends Model
     protected $guarded = [
         'id',
     ];
+    // Mã hóa Base64 trước khi trả về frontend
+    public function getSignImageAttribute($value)
+    {
+        return base64_encode($value);
+    }
 }
 
