@@ -19,6 +19,7 @@ class BranchDTO
     public $time;
     public $param;
     public $noCache;
+    public $branchCode;
     public function __construct(
         $branchName,
         $keyword, 
@@ -35,6 +36,7 @@ class BranchDTO
         $time,
         $param,
         $noCache,
+        $branchCode,
         )
     {
         $this->branchName = $branchName;
@@ -52,5 +54,6 @@ class BranchDTO
         $this->time = $time;
         $this->param = $param;
         $this->noCache = $noCache;
+        $this->branchCode = $branchCode;
     }
 }

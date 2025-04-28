@@ -242,11 +242,10 @@ class VietinbankService
 
     public function handleConfirmTransaction()
     {
-        $data = $this->getParamRequest();
         try {
             $data = $this->getParamRequest();
-            Log::error($data);
-            // test
+            // Log::error($data);
+            //test
             if($data['orderId'] == 'datt'){
                 return $this->generateParam($data['requestId'], '01');
             }

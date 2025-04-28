@@ -35,6 +35,14 @@ class BranchRepository
 
         return $query;
     }
+    public function applyBranchCodeFilter($query, $param)
+    {
+        if ($param !== null) {
+            $query->where(DB::connection('oracle_his')->raw('his_branch.branch_code'), $param);
+        }
+
+        return $query;
+    }
     public function applyOrdering($query, $orderBy, $orderByJoin)
     {
         if ($orderBy != null) {

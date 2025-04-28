@@ -35,6 +35,7 @@ class MedicalCaseCoverListVViewRepository
                 'tdl_patient_gender_name',            
                 'tdl_patient_mobile',
                 'tdl_patient_phone',
+                'tdl_patient_ethnic_name',
                 'in_code',
                 'last_department_code',
                 'last_department_name',

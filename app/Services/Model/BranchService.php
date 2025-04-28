@@ -29,6 +29,7 @@ class BranchService
             $data = $this->branchRepository->applyJoins();
             $data = $this->branchRepository->applyKeywordFilter($data, $this->params->keyword);
             $data = $this->branchRepository->applyIsActiveFilter($data, $this->params->isActive);
+            $data = $this->branchRepository->applyBranchCodeFilter($data, $this->params->branchCode);
             $count = $data->count();
             $data = $this->branchRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
             $data = $this->branchRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
@@ -41,6 +42,7 @@ class BranchService
     {
         $data = $this->branchRepository->applyJoins();
         $data = $this->branchRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $this->branchRepository->applyBranchCodeFilter($data, $this->params->branchCode);
         $count = $data->count();
         $data = $this->branchRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
         $data = $this->branchRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);

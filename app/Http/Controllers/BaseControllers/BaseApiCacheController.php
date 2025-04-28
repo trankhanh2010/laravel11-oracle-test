@@ -257,6 +257,8 @@ class BaseApiCacheController extends Controller
     protected $serviceReqIdName = 'ServiceReqId';
     protected $sereServIds;
     protected $sereServIdsName = 'SereServIds';
+    protected $branchCode;
+    protected $branchCodeName = 'BranchCode';
     protected $bedRoomIds;
     protected $bedRoomIdsName = 'BedRoomIds';
     protected $addTimeTo;
@@ -1291,6 +1293,14 @@ class BaseApiCacheController extends Controller
             if (!is_string($this->serviceReqCode)) {
                 $this->errors[$this->serviceReqCodeName] = $this->messFormat;
                 $this->serviceReqCode = null;
+            }
+        }
+
+        $this->branchCode = $this->paramRequest['ApiData']['BranchCode'] ?? null;
+        if ($this->branchCode !== null) {
+            if (!is_string($this->branchCode)) {
+                $this->errors[$this->branchCodeName] = $this->messFormat;
+                $this->branchCode = null;
             }
         }
 
