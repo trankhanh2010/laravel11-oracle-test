@@ -37,7 +37,7 @@ class BranchRepository
     }
     public function applyBranchCodeFilter($query, $param)
     {
-        if ($param !== null) {
+        if ($param != null) {
             $query->where(DB::connection('oracle_his')->raw('his_branch.branch_code'), $param);
         }
 
