@@ -12,6 +12,7 @@ use App\Classes\Vietinbank\QRAddtionalBean;
 use App\Classes\Vietinbank\ServiceConfig;
 use App\Classes\Vietinbank\QRCode;
 use App\Repositories\TransactionRepository;
+use Exception;
 use Illuminate\Support\Carbon;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Log;
@@ -40,6 +41,7 @@ class VietinbankService
     protected $terminalId;
     protected $storeId;
     protected $providerId;
+    protected $expTimeQrVtb;
 
     public function __construct(TransactionRepository $transactionRepository)
     {
@@ -57,6 +59,7 @@ class VietinbankService
         $this->terminalId = config('database')['connections']['vietinbank']['terminal_id'];
         $this->storeId = config('database')['connections']['vietinbank']['store_id'];
         $this->providerId = config('database')['connections']['vietinbank']['provider_id'];
+        $this->expTimeQrVtb = config('database')['connections']['vietinbank']['exp_time_qr_vtb'];
 
         $this->transactionRepository = $transactionRepository;
     }
@@ -141,10 +144,9 @@ class VietinbankService
             $consumerAddress = "";
             $consumerMobile = "";
             $consumerEmail = "";
-            // Thời gian hết hạn giao dịch +10 phút
+            // Thời gian hết hạn giao dịch  phút
             $timeTransaction = Carbon::now();
-            // $expDate = $timeTransaction->addMinutes(120)->format('ymdHi');
-            $expDate = null;
+            $expDate = $timeTransaction->addMinutes($this->expTimeQrVtb)->format('ymdHi');
             if (QRCode::PAY_TYPE_01 === $request->payType) {
                 if ($this->VND === $request->ccy) {
                     $request->ccy = ServiceConfig::CCY;
@@ -226,53 +228,87 @@ class VietinbankService
         $tokenKey = ServiceConfig::API_ID . $req->merchantCode;
         return $tokenKey;
     }
+    public function generateParam($requestId, $paymentStatus)
+    {
+        return [
+            'requestId' => $requestId,
+            'paymentStatus' => $paymentStatus,
+            'signature' => $this->SignData([
+                'requestId' => $requestId,
+                'paymentStatus' => $paymentStatus,
+            ]),
+        ];
+    }
+
     public function handleConfirmTransaction()
     {
         $data = $this->getParamRequest();
-        Log::error($data);
-        // Xác minh chữ ký 
-        $isVerify = $this->verifyVietinbankSignature($data);
-        $paramSuccess = [
-            'requestId' => $data['requestId'],
-            'paymentStatus' => '00',
-            'signature' => $this->SignData(['requestId' => $data['requestId'], 'paymentStatus' => '00',])
-        ];
-        $paramFail = [
-            'requestId' => $data['requestId'],
-            'paymentStatus' => '04',
-            'signature' => $this->SignData(['requestId' => $data['requestId'], 'paymentStatus' => 'ZZ',])
-        ];
-        // test confirm fail
-        return $paramFail;
-        // Nếu đúng chữ ký 
-        if ($isVerify) {
+        try {
+            $data = $this->getParamRequest();
+            Log::error($data);
+            // test
+            if($data['orderId'] == 'datt'){
+                return $this->generateParam($data['requestId'], '01');
+            }
+            if($data['orderId'] == 'khople'){
+                return $this->generateParam($data['requestId'], '02');
+            }
+            if($data['orderId'] == 'ktimthay'){
+                return $this->generateParam($data['requestId'], '03');
+            }
+            if($data['orderId'] == 'saitien'){
+                return $this->generateParam($data['requestId'], '04');
+            }
+            if($data['orderId'] == 'hethan'){
+                return $this->generateParam($data['requestId'], '05');
+            }
+            if($data['orderId'] == 'baotri'){
+                return $this->generateParam($data['requestId'], '09');
+            }
+
+            // Xác minh chữ ký 
+            $isVerify = $this->verifyVietinbankSignature($data);
+            // Nếu không đúng chữ ký
+            if (!$isVerify) {
+                return $this->generateParam($data['requestId'], '02');
+            }
             // Nếu đúng và mã khác 00
             if ($data['statusCode'] !== '00') {
-                return $paramFail;
+                return $this->generateParam($data['requestId'], '02');
             }
             // Nếu đúng và mã = 00 và có transVietinbank(có is_cancel =1) thì cập nhật is_cancel = 0 cho transaction trong DB
             $dataTransactionVietinbank = $this->transactionRepository->getTransactionVietinBank($data);
-            // Đang test chưa thêm db thì để true
-            // $dataTransactionVietinbank = true;
-            if ($dataTransactionVietinbank) {
-                $sttUpdate = $this->transactionRepository->updateTransactionVietinBank($dataTransactionVietinbank);
-                // Đang test chưa thêm db thì để true
-                // $sttUpdate = true;
-                if ($sttUpdate) {
-                    // Nếu cập nhật thành công
-                    return $paramSuccess;
-                } else {
-                    // Nếu không thành công
-                    return $paramFail;
-                }
-            } else {
-                // Nếu đúng và mã khác 00 
-                return $paramFail;
+            // Nếu k tìm thấy giao dịch
+            if (!$dataTransactionVietinbank) {
+                return $this->generateParam($data['requestId'], '03');
             }
-        } else {
-            // Nếu không đúng chữ ký
-            return $paramFail;
+            // Nếu số tiền giao dịch không khớp
+            if ($dataTransactionVietinbank['amount'] != $data['amount']) {
+                return $this->generateParam($data['requestId'], '04');
+            }
+            // Nếu hết hạn giao dịch
+            $transactionTime = Carbon::createFromFormat('YmdHis', $dataTransactionVietinbank['transaction_time']);
+            $expireTime = $transactionTime->copy()->addMinutes($this->expTimeQrVtb);
+            $requestTime = Carbon::createFromFormat('YmdHis', $data['transactionDate']);
+            // So sánh
+            if ($expireTime->lessThanOrEqualTo($requestTime)) {
+                return $this->generateParam($data['requestId'], '05');
+            }
+            // Nếu đã thanh toán cho giao dịch này
+            if (($dataTransactionVietinbank['is_cancel'] == 0) || (!$dataTransactionVietinbank['is_cancel'])) {
+                return $this->generateParam($data['requestId'], '01');
+            }
+            $sttUpdate = $this->transactionRepository->updateTransactionVietinBank($dataTransactionVietinbank);
+            // Nếu cập nhật không thành công
+            if (!$sttUpdate) {
+                return $this->generateParam($data['requestId'], '02');
+            }
+            // Cập nhật thành công
+            return $this->generateParam($data['requestId'], '00');
+        } catch (Exception $e) {
+            return $this->generateParam($data['requestId'], '09');
         }
+
     }
     public function handleInqDetailTrans()
     {

@@ -410,10 +410,20 @@ class TransactionRepository
         }else{
             if($dataReturn['amount'] != $data['amount']){
                 $dataReturn->update([
+                    'create_time' => now()->format('Ymdhis'),
                     'modify_time' => now()->format('Ymdhis'),
                     'modifier' => 'MOS_v2',
                     'app_modifier' => 'MOS_v2',
                     'amount' => $data['amount'],
+                    'transaction_time' => now()->format('Ymdhis'),
+                ]);
+            }else{
+                $dataReturn->update([
+                    'create_time' => now()->format('Ymdhis'),
+                    'modify_time' => now()->format('Ymdhis'),
+                    'modifier' => 'MOS_v2',
+                    'app_modifier' => 'MOS_v2',
+                    'transaction_time' => now()->format('Ymdhis'),
                 ]);
             }
         }
@@ -430,9 +440,9 @@ class TransactionRepository
     {
         $dataReturn =  $this->transaction->where('num_order', $data['orderId']) 
         ->where('account_book_id', $this->accountBookQrVietinbankId)
-        ->where('amount', $data['amount'])
-        ->where('is_cancel', 1)
-        ->where('cancel_reason', 'Khoi tao data QR Code thanh toan VietinBank')
+        // ->where('amount', $data['amount'])
+        // ->where('is_cancel', 1)
+        // ->where('cancel_reason', 'Khoi tao data QR Code thanh toan VietinBank')
         ->first();
         return $dataReturn;
     }

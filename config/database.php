@@ -238,6 +238,7 @@ return [
             'terminal_id' => env('TERMINAL_ID',''),
             'store_id' => env('STORE_ID',''),
             'provider_id' => env('PROVIDER_ID','BVXUYENA'),
+            'exp_time_qr_vtb' => (int) env('EXP_TIME_QR_VTB',10),
 
         ],
         'twilio' => [
