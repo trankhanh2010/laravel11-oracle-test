@@ -73,6 +73,11 @@ class VietinbankService
      */
     public function createTransactionQrCode($dataTreatment)
     {
+        // $dataTreatment = [
+        //     'amount' => 30000,
+        //     'orderInfo' => 'bao tri',
+        //     'orderId' => 'baotri2', // Là duy nhất với mỗi accountBook
+        // ];
         // dd($dataTreatment);
         $data = new RequestCreateQrcode();
         $data->masterMerCode = "970489";
@@ -147,6 +152,7 @@ class VietinbankService
             // Thời gian hết hạn giao dịch  phút
             $timeTransaction = Carbon::now();
             $expDate = $timeTransaction->addMinutes($this->expTimeQrVtb)->format('ymdHi');
+            // $expDate = "";
             if (QRCode::PAY_TYPE_01 === $request->payType) {
                 if ($this->VND === $request->ccy) {
                     $request->ccy = ServiceConfig::CCY;

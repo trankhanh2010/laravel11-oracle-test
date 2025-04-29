@@ -102,7 +102,7 @@ class DigitalCertificateController extends BaseApiCacheController
             $data = $this->digitalCertificateService->multiSignXml(
                 storage_path('app/temp/input.xml'),
                 storage_path('app/certificate/user/'.$item.'/private.key'),
-                storage_path('app/certificate/user/'.$item.'/cert-chain.crt'),
+                storage_path('app/certificate/user/'.$item.'/certificate.crt'),
                 '',
                 $base64Pdf
             );

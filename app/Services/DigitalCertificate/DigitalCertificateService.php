@@ -323,6 +323,12 @@ XML;
         // Ký dữ liệu
         $objDSig->sign($objKey);
 
+        // // Tạo Object chứa SigningTime
+        // $signingTimeXml = '<SigningTime>' . gmdate('Y-m-d\TH:i:s\Z') . '</SigningTime>';
+
+        // // Thêm Object vào chữ ký
+        // $objDSig->addObject($signingTimeXml);
+
         // Gắn chứng chỉ vào chữ ký
         $objDSig->add509Cert(file_get_contents($certPath));
 
