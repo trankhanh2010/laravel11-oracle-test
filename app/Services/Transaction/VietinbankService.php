@@ -261,7 +261,7 @@ class VietinbankService
             if($data['orderId'] == 'hethan'){
                 return $this->generateParam($data['requestId'], '05');
             }
-            if($data['orderId'] == 'baotri'){
+            if(($data['orderId'] == 'baotri') || ($data['orderId'] == 'baotri2') || ($data['orderId'] == 'baotri3') || ($data['orderId'] == 'baotri4')){
                 return $this->generateParam($data['requestId'], '09');
             }
 

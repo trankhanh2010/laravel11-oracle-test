@@ -151,6 +151,8 @@ class BaseApiCacheController extends Controller
     protected $serviceTypeIdName = 'ServiceTypeId';
     protected $loginname;
     protected $loginnameName = 'Loginname';
+    protected $loginnames;
+    protected $loginnamesName = 'Loginnames';
     protected $executeRoleId;
     protected $executeRoleIdName = 'ExecuteRoleId';
     protected $moduleId;
@@ -2101,6 +2103,16 @@ class BaseApiCacheController extends Controller
             if (!is_string($this->loginname)) {
                 $this->errors[$this->loginnameName] = $this->messFormat;
                 $this->loginname = null;
+            }
+        }
+        $this->loginnames = $this->paramRequest['ApiData']['Loginnames'] ?? null;
+        if ($this->loginnames != null) {
+            foreach ($this->loginnames as $key => $item) {
+                // Kiểm tra xem ID có tồn tại trong bảng  hay không
+                if (!is_string($item)) {
+                    $this->errors[$this->loginnamesName] = $this->messFormat;
+                    unset($this->loginnames[$key]);
+                } 
             }
         }
         $this->executeRoleId = $this->paramRequest['ApiData']['ExecuteRoleId'] ?? null;
