@@ -89,4 +89,27 @@ class DigitalCertificateController extends BaseApiCacheController
         );
         return returnDataSuccess([], $data);
     }
+    public function multiSignXml()
+    {
+        $listSign = [
+            'truyenlm',
+            'haivc',
+        ];
+        if ($this->checkParam()) {
+            return $this->checkParam();
+        }
+        $pdfPath = 'C:\Users\tranl\Downloads\f1ace4d9-72fc-466d-b4f5-0c01057ff76b.pdf';
+        $pdfData = file_get_contents($pdfPath); // Đọc file PDF
+        $base64Pdf = base64_encode($pdfData);    // Mã hóa Base64
+        foreach($listSign as $key => $item){
+            $data = $this->digitalCertificateService->multiSignXml(
+                storage_path('app/temp/input.xml'),
+                storage_path('app/certificate/user/'.$item.'/private.key'),
+                storage_path('app/certificate/user/'.$item.'/cert-chain.crt'),
+                '',
+                $base64Pdf
+            );
+        }
+        return returnDataSuccess([], $data);
+    }  
 }

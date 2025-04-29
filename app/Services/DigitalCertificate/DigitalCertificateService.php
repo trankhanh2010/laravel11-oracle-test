@@ -273,6 +273,65 @@ XML;
         // Xuất ra file mới
         $pdf->Output($pdfOutPath, 'F');
     }
+
+    public function multiSignXml(string $inputXmlPath, string $privateKeyPath, string $certPath, string $passphrase = '', $base64Pdf): bool
+    {
+        // Nếu file XML chưa tồn tại thì tạo mới
+        if (!file_exists($inputXmlPath)) {
+            $dir = dirname($inputXmlPath);
+            if (!is_dir($dir)) {
+                mkdir($dir, 0777, true);
+            }
+        
+            $sampleXml = <<<XML
+        <?xml version="1.0" encoding="UTF-8"?>
+        <Document>
+            <Content>$base64Pdf</Content>
+        </Document>
+        XML;
+        
+            file_put_contents($inputXmlPath, $sampleXml);
+        }
+        
+        // Load XML gốc
+        $doc = new DOMDocument();
+        $doc->preserveWhiteSpace = true; // Giữ nguyên khoảng trắng ban đầu
+        $doc->formatOutput = false;      // Không format lại XML
+
+        if (!$doc->load($inputXmlPath)) {
+            throw new Exception("Không thể tải XML từ: $inputXmlPath");
+        }
+
+        // Tạo đối tượng XMLSecurityDSig
+        $objDSig = new XMLSecurityDSig();
+        $objDSig->setCanonicalMethod(XMLSecurityDSig::EXC_C14N);
+
+        // Thêm tham chiếu tới toàn bộ tài liệu (ký Enveloped)
+        $objDSig->addReference(
+            $doc,
+            XMLSecurityDSig::SHA256,
+            ['http://www.w3.org/2000/09/xmldsig#enveloped-signature']
+        );
+
+        // Tạo Private Key
+        $objKey = new XMLSecurityKey(XMLSecurityKey::RSA_SHA256, ['type' => 'private']);
+        if ($passphrase) {
+            $objKey->passphrase = $passphrase;
+        }
+        $objKey->loadKey($privateKeyPath, true);
+
+        // Ký dữ liệu
+        $objDSig->sign($objKey);
+
+        // Gắn chứng chỉ vào chữ ký
+        $objDSig->add509Cert(file_get_contents($certPath));
+
+        // Gắn chữ ký vào XML
+        $objDSig->appendSignature($doc->documentElement);
+
+        // Lưu XML đã ký ra file mới
+        return $doc->save($inputXmlPath) !== false;
+    }
     // Lấy token ngắn hạn cho việc ký
     public function getStepCaTokenSign($name)
     {

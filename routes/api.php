@@ -351,6 +351,7 @@ Route::group([
     Route::get('v1/get-certificate-info', [DigitalCertificateController::class, 'getCertificateInfo']);
     Route::get('v1/sign', [DigitalCertificateController::class, 'sign']);
     Route::get('v1/sign-xml', [DigitalCertificateController::class, 'signXML']);
+    Route::get('v1/multi-sign-xml', [DigitalCertificateController::class, 'multiSignXML']);
 
     /// Redis
     Route::get('v1/redis-ping', [RedisController::class, "ping"])->name('.redis_ping');
