@@ -7,6 +7,7 @@ use App\Services\Auth\OtpService;
 use App\Services\Zalo\ZaloService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Redis;
 
 class OtpController extends Controller
 {
@@ -179,7 +180,11 @@ class OtpController extends Controller
         }
 
         // **Lưu lại vào cache với TTL 
+        $cacheKeySet = "cache_keys:" . "device_get_otp"; // Set để lưu danh sách key
         Cache::put($cacheKey, $cacheData, now()->addDay());
+
+        // Lưu key vào Redis Set để dễ xóa sau này
+        Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
 
         return $cacheData['total_requests'];
     }
@@ -214,7 +219,12 @@ class OtpController extends Controller
         }
 
         // Lưu lại vào cache với TTL 1 ngày
+        // **Lưu lại vào cache với TTL 
+        $cacheKeySet = "cache_keys:" . "device_get_otp"; // Set để lưu danh sách key
         Cache::put($cacheKey, $cacheData, now()->addDay());
+
+        // Lưu key vào Redis Set để dễ xóa sau này
+        Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
 
         return $cacheData['total_requests'];
     }

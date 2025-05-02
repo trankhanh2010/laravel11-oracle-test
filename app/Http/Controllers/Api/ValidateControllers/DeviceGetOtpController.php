@@ -12,18 +12,19 @@ class DeviceGetOtpController extends Controller
     protected $dbCache;
     protected $maxRequestSendOtpOnday;
     public function __construct(){
-        $this->dbCache = config('database')['redis']['cache']['database'];
+        // $this->dbCache = config('database')['redis']['cache']['database'];
         $this->maxRequestSendOtpOnday = config('database')['connections']['otp']['otp_max_requests_per_day'];
     }
     public function getDeviceGetOtpTreatmentFeeList()
     {
-        Redis::select($this->dbCache); // Chọn DB cache
-        $keys = Redis::keys('*total_OTP_treatment_fee*');
+        // Redis::select($this->dbCache); // Chọn DB cache
+        $cacheKeySet = "cache_keys:" . "device_get_otp";
+        // $keys = Redis::keys('*total_OTP_treatment_fee*');
+        $keys = Redis::connection('cache')->smembers($cacheKeySet);
         $devices = [];
     
         foreach ($keys as $key) {
             $cacheData = Cache::get($key);
-    
             if ($cacheData) {
                 if (is_string($cacheData)) {
                     $cacheData = json_decode($cacheData, true);
@@ -31,7 +32,7 @@ class DeviceGetOtpController extends Controller
     
                 // **Chỉ lấy nếu total_requests >= maxRequestSendOtpOnday**
                 if (($cacheData['total_requests'] ?? 0) >= $this->maxRequestSendOtpOnday) {
-                    $ttl = Cache::getRedis()->ttl($key); // Lấy TTL của cache (nếu dùng Redis)
+                    $ttl = Redis::connection('cache')->ttl($key); // Lấy TTL của cache (nếu dùng Redis)
                     $devices[] = [
                         'device' => $cacheData['device'] ?? 'Unknown',
                         'ip' => $cacheData['ip'] ?? 'Unknown',
@@ -44,7 +45,6 @@ class DeviceGetOtpController extends Controller
                 }
             }
         }
-    
         return returnDataSuccess([], $devices);
     }
 

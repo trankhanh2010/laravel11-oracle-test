@@ -135,6 +135,7 @@ class DigitalCertificateService
             throw new \Exception("Unable to parse certificate.");
         }
         $data = [
+                'name' => $certParsed['name'] ?? null,
                 'subject' => $certParsed['subject'] ?? null,
                 'issuer' => $certParsed['issuer'] ?? null,
                 'valid_from' => date('Y-m-d H:i:s', $certParsed['validFrom_time_t']),
@@ -382,10 +383,13 @@ XML;
         if (!file_exists($passwordFile)) {
             throw new \Exception("Không tìm thấy file password");
         }
+        $dataCrt = $this->getCertificateInfo();
+        $seriNumber = (string) hexdec($dataCrt['serial_number_decimal']);
+        dd( $seriNumber);
         $iss = 'laravel-provisioner'; // Tên provisioner
         $aud = 'https://localhost:8443/1.0/revoke'; // Dùng cho api nào
         $kid = $dataPub->kid; // kid của provisioner
-        $sub = $name; // Tên CN của chứng thư
+        $sub = hexdec($dataCrt['serial_number_decimal']); // Tên CN của chứng thư
         // Lấy thời gian hiện tại và cộng thêm 5 phút
         $exp = Carbon::now()->addMinutes(5)->timestamp;
         

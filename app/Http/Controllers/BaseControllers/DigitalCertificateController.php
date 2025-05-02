@@ -95,7 +95,7 @@ class DigitalCertificateController extends BaseApiCacheController
         if ($this->checkParam()) {
             return $this->checkParam();
         }
-        $pdfPath = 'C:\Users\tranl\Downloads\f1ace4d9-72fc-466d-b4f5-0c01057ff76b.pdf';
+        $pdfPath = 'https://apigw.vinhlong.xuyenahospital.xyz/dev/vss/fss/Upload/EMR/000000098666/9b153b60-ea35-4881-bca8-63c66f4c5c5d.pdf';
         $pdfData = file_get_contents($pdfPath); // Đọc file PDF
         $base64Pdf = base64_encode($pdfData);    // Mã hóa Base64
         foreach($this->loginnames as $key => $item){

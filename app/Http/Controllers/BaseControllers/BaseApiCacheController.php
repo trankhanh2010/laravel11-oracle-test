@@ -1835,7 +1835,7 @@ class BaseApiCacheController extends Controller
             }
         }
         $this->patientCode = $this->paramRequest['ApiData']['PatientCode'] ?? null;
-        if ($this->patientCode !== null) {
+        if ($this->patientCode != null) {
             if (!is_string($this->patientCode)) {
                 $this->errors[$this->patientCodeName] = $this->messFormat;
                 $this->patientCode = null;

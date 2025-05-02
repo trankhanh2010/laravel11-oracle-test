@@ -171,6 +171,7 @@ class TreatmentFeeListVViewController extends BaseApiCacheController
                 $filteredData = $data['data']->map(function ($item) {
                     return [
                         'patientCode' => $item->patient_code,
+                        'treatmentCode' => $this->treatmentCode ?? $item->treatment_code,
                         'patientPhone' => maskPhone($item->patient_phone),
                         'patientMobile' => maskPhone($item->patient_mobile),
                         'patientEmail' => maskPhone($item->patient_email),

@@ -84,14 +84,14 @@ class TreatmentFeeListVViewRepository
     }
     public function applyTreatmentCodeFilter($query, $code)
     {
-        if ($code !== null) {
+        if ($code != null) {
             $query->where('treatment_code', $code);
         }
         return $query;
     }
     public function applyPatientCodeFilter($query, $code)
     {
-        if ($code !== null) {
+        if ($code != null) {
             $query->where('patient_code', $code);
         }
         return $query;
