@@ -1083,11 +1083,12 @@ Route::group([
     /// Treatment Fee Detail
     // k cần token
     Route::apiResource('v1/treatment-fee-detail-v-view', TreatmentFeeDetailVViewController::class)->only(['index'])
-        ->withoutMiddleware([
-            'check_token',
-            'check_admin:api',
-            'check_module:api',
-        ]);
+        // ->withoutMiddleware([
+        //     'check_token',
+        //     'check_admin:api',
+        //     'check_module:api',
+        // ])
+        ;
     /// Danh sách thông tin bệnh nhân viện phí
     Route::apiResource('v1/treatment-fee-list-v-view', TreatmentFeeListVViewController::class)->only(['index']);
     // Lấy theo id k cần token

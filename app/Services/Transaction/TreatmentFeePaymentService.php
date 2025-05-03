@@ -567,7 +567,7 @@ class TreatmentFeePaymentService
                         'treatment_id' => $data['id'],
                     ];
                     $dataTransHis = $this->transactionRepository->getOrCreateTransactionVietinBank($dataQuery);
-                    // Tạo data qr với bill_number(order_id) là code của transaction trong his bỏ đi 2 số đầu
+                    // Tạo data qr với bill_number(order_id) là num_order
 
                     $dataGenQr = [
                         'amount' => $dataTransHis['amount'],
@@ -575,7 +575,7 @@ class TreatmentFeePaymentService
                         'orderId' => $dataTransHis['num_order'], // Là duy nhất với mỗi accountBook
                     ];
                     // Gọi service và truyền đối tượng RequestCreateQrcode
-                    $qrData = $this->vietinbankService->createTransactionQrCode($dataGenQr);
+                    $qrData = $this->vietinbankService->createTransactionQrCode($dataGenQr, $dataTransHis);
                     // $dataReturn = $this->formatResponseFromVietinbank($transactionInfo);
                     $dataReturn = array_merge(
                         [
@@ -697,14 +697,14 @@ class TreatmentFeePaymentService
                     $depositRecord = $this->depositReqRepository->getByCode($data->deposit_req_code);
                     $this->depositReqRepository->updateDepositId($depositRecord, $dataTransHis['id']);
 
-                    // Tạo data qr với bill_number(order_id) là code của transaction trong his bỏ đi 2 số đầu
+                    // Tạo data qr với bill_number(order_id) là num_order
                     $dataGenQr = [
                         'amount' => $dataTransHis['amount'],
                         'orderInfo' => 'HisTran'.$dataTransHis['transaction_code'],
                         'orderId' => $dataTransHis['num_order'], // Là duy nhất với mỗi accountBook
                     ];
                     // Gọi service và truyền đối tượng RequestCreateQrcode
-                    $qrData = $this->vietinbankService->createTransactionQrCode($dataGenQr);
+                    $qrData = $this->vietinbankService->createTransactionQrCode($dataGenQr, $dataTransHis);
                     // $dataReturn = $this->formatResponseFromVietinbank($transactionInfo);
                     $dataReturn = array_merge(
                         [

@@ -32,12 +32,12 @@ class TreatmentFeeListVViewService
             $data = $this->treatmentFeeListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
             $data = $this->treatmentFeeListVViewRepository->applyFromTimeFilter($data, $this->params->fromTime);
             $data = $this->treatmentFeeListVViewRepository->applyToTimeFilter($data, $this->params->toTime);
-            if ($this->params->start == 0) {
-                // $count = $data->count();
-                $count = null;
-            } else {
-                $count = null;
-            }
+            // if ($this->params->start == 0) {
+                $count = $data->count();
+            //     $count = null;
+            // } else {
+            //     $count = null;
+            // }
             $data = $this->treatmentFeeListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
             $data = $this->treatmentFeeListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit, $this->params->cursorPaginate, $this->params->lastId);
             return ['data' => $data, 'count' => $count];
@@ -66,11 +66,11 @@ class TreatmentFeeListVViewService
 
         $data = $this->treatmentFeeListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
         $data = $this->treatmentFeeListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit, $this->params->cursorPaginate, $this->params->lastId);
-        if ($this->params->getAll) {
+        // if ($this->params->getAll) {
             $count = $data->count();
-        } else {
-            $count = null;
-        }
+        // } else {
+        //     $count = null;
+        // }
         return ['data' => $data, 'count' => $count];
     }
     private function getDataById($id)

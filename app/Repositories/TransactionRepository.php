@@ -1,4 +1,5 @@
-<?php 
+<?php
+
 namespace App\Repositories;
 
 use App\Jobs\ElasticSearch\Index\ProcessElasticIndexingJob;
@@ -10,6 +11,7 @@ use App\Models\HIS\Treatment;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Redis;
 
 class TransactionRepository
 {
@@ -31,42 +33,69 @@ class TransactionRepository
         Treatment $treatment,
         PayForm $payForm,
         AccountBook $accountBook,
-        )
-    {
+    ) {
         $this->transaction = $transaction;
         $this->transactionType = $transactionType;
         $this->treatment = $treatment;
         $this->payForm = $payForm;
         $this->accountBook = $accountBook;
 
-        $this->transactionTypeTTId = Cache::remember('transaction_type_TT_id', now()->addMinutes(10080), function () {
+        $cacheKey = 'transaction_type_TT_id';
+        $cacheKeySet = "cache_keys:" . "setting"; // Set để lưu danh sách key
+        $this->transactionTypeTTId = Cache::remember($cacheKey, now()->addMinutes(10080), function () {
             $data =  $this->transactionType->where('transaction_type_code', 'TT')->get();
             return $data->value('id');
         });
-        $this->transactionTypeTUId = Cache::remember('transaction_type_TU_id', now()->addMinutes(10080), function () {
+        // Lưu key vào Redis Set để dễ xóa sau này
+        Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+
+        $cacheKey = 'transaction_type_TU_id';
+        $this->transactionTypeTUId = Cache::remember($cacheKey, now()->addMinutes(10080), function () {
             $data =  $this->transactionType->where('transaction_type_code', 'TU')->get();
             return $data->value('id');
         });
-        $this->payFormMoMoId = Cache::remember('pay_form_momo_id', now()->addMinutes(10080), function () {
+        // Lưu key vào Redis Set để dễ xóa sau này
+        Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+
+        $cacheKey = 'pay_form_momo_id';
+        $this->payFormMoMoId = Cache::remember($cacheKey, now()->addMinutes(10080), function () {
             $data =  $this->payForm->where('pay_form_code', '08')->get();
             return $data->value('id');
         });
-        $this->payFormQrVietinBankId = Cache::remember('pay_form_qr_vietin_bank_id', now()->addMinutes(10080), function () {
+        // Lưu key vào Redis Set để dễ xóa sau này
+        Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+
+        $cacheKey = 'pay_form_qr_vietin_bank_id';
+        $this->payFormQrVietinBankId = Cache::remember($cacheKey, now()->addMinutes(10080), function () {
             $data =  $this->payForm->where('pay_form_code', '08')->get();
             return $data->value('id');
         });
-        $this->payForm06Id = Cache::remember('pay_form_06_id', now()->addMinutes(10080), function () {
+        // Lưu key vào Redis Set để dễ xóa sau này
+        Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+
+        $cacheKey = 'pay_form_06_id';
+        $this->payForm06Id = Cache::remember($cacheKey, now()->addMinutes(10080), function () {
             $data =  $this->payForm->where('pay_form_code', '06')->get();
             return $data->value('id');
         });
-        $this->payForm03Id = Cache::remember('pay_form_03_id', now()->addMinutes(10080), function () {
+        // Lưu key vào Redis Set để dễ xóa sau này
+        Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+
+        $cacheKey = 'pay_form_03_id';
+        $this->payForm03Id = Cache::remember($cacheKey, now()->addMinutes(10080), function () {
             $data =  $this->payForm->where('pay_form_code', '03')->get();
             return $data->value('id');
         });
-        $this->accountBookQrVietinbankId = Cache::remember('account_book_qr_vietinbank_id', now()->addMinutes(10080), function () {
+        // Lưu key vào Redis Set để dễ xóa sau này
+        Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+
+        $cacheKey = 'account_book_qr_vietinbank_id';
+        $this->accountBookQrVietinbankId = Cache::remember($cacheKey, now()->addMinutes(10080), function () {
             $data =  $this->accountBook->where('account_book_code', 'QRVTB')->get();
             return $data->value('id');
         });
+        // Lưu key vào Redis Set để dễ xóa sau này
+        Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
     }
 
     public function applyJoins()
@@ -120,7 +149,8 @@ class TransactionRepository
     {
         return $this->transaction->find($id);
     }
-    public function createTransactionPaymentMoMoThanhToan($payment, $data, $appCreator, $appModifier){
+    public function createTransactionPaymentMoMoThanhToan($payment, $data, $appCreator, $appModifier)
+    {
         $treatmentData = $this->treatment->where('id', $payment->treatment_id)->first();
         // if(!$treatmentData) return;
         $data = $this->transaction::create([
@@ -134,9 +164,9 @@ class TransactionRepository
             'transaction_type_id' =>  $this->transactionTypeTTId,
             'transaction_time' => now()->format('Ymdhis'),
             'transaction_date' => now()->format('Ymdhis'),
-            'amount' => $data['amount'],  
+            'amount' => $data['amount'],
             'num_order' => $data['transId'],
-            'account_book_id' => 32,      
+            'account_book_id' => 32,
             'pay_form_id' => $this->payFormMoMoId,
             'cashier_room_id' => 1,
             'treatment_id' => $payment->treatment_id,
@@ -152,24 +182,25 @@ class TransactionRepository
             'tdl_patient_dob' => $treatmentData->tdl_patient_dob,
             'tdl_patient_is_has_not_day_dob' => $treatmentData->tdl_patient_is_has_not_day_dob,
             'tdl_patient_address' => $treatmentData->tdl_patient_address,
-            'tdl_patient_gender_id'  => $treatmentData->tdl_patient_gender_id,        
-            'tdl_patient_gender_name'  => $treatmentData->tdl_patient_gender_name,  
-            'tdl_patient_career_name'  => $treatmentData->tdl_patient_career_name,  
-            'tdl_patient_work_place'  => $treatmentData->tdl_patient_work_place,  
-            'tdl_patient_work_place_name'  => $treatmentData->tdl_patient_work_place_name,     
-            'tdl_patient_district_code'  => $treatmentData->tdl_patient_district_code,      
-            'tdl_patient_province_code' => $treatmentData->tdl_patient_province_code,  
-            'tdl_patient_commune_code'  => $treatmentData->tdl_patient_commune_code,  
-            'tdl_patient_military_rank_name'  => $treatmentData->tdl_patient_military_rank_name,   
-            'tdl_patient_national_name'  => $treatmentData->tdl_patient_national_name,  
-            'tdl_patient_relative_type' => $treatmentData->tdl_patient_relative_type,  
-            'tdl_patient_relative_name'  => $treatmentData->tdl_patient_relative_name,  
-            'tdl_patient_account_number'  => $treatmentData->tdl_patient_account_number,  
-            'tdl_patient_tax_code'  => $treatmentData->tdl_patient_tax_code,  
+            'tdl_patient_gender_id'  => $treatmentData->tdl_patient_gender_id,
+            'tdl_patient_gender_name'  => $treatmentData->tdl_patient_gender_name,
+            'tdl_patient_career_name'  => $treatmentData->tdl_patient_career_name,
+            'tdl_patient_work_place'  => $treatmentData->tdl_patient_work_place,
+            'tdl_patient_work_place_name'  => $treatmentData->tdl_patient_work_place_name,
+            'tdl_patient_district_code'  => $treatmentData->tdl_patient_district_code,
+            'tdl_patient_province_code' => $treatmentData->tdl_patient_province_code,
+            'tdl_patient_commune_code'  => $treatmentData->tdl_patient_commune_code,
+            'tdl_patient_military_rank_name'  => $treatmentData->tdl_patient_military_rank_name,
+            'tdl_patient_national_name'  => $treatmentData->tdl_patient_national_name,
+            'tdl_patient_relative_type' => $treatmentData->tdl_patient_relative_type,
+            'tdl_patient_relative_name'  => $treatmentData->tdl_patient_relative_name,
+            'tdl_patient_account_number'  => $treatmentData->tdl_patient_account_number,
+            'tdl_patient_tax_code'  => $treatmentData->tdl_patient_tax_code,
         ]);
         return $data;
     }
-    public function createTransactionPaymentMoMoTamUng($payment, $data, $appCreator, $appModifier){
+    public function createTransactionPaymentMoMoTamUng($payment, $data, $appCreator, $appModifier)
+    {
         $treatmentData = $this->treatment->where('id', $payment->treatment_id)->first();
         // if(!$treatmentData) return;
         $data = $this->transaction::create([
@@ -183,9 +214,9 @@ class TransactionRepository
             'transaction_type_id' =>  $this->transactionTypeTUId,
             'transaction_time' => now()->format('Ymdhis'),
             'transaction_date' => now()->format('Ymdhis'),
-            'amount' => $data['amount'],  
+            'amount' => $data['amount'],
             'num_order' => $data['transId'],
-            'account_book_id' => 32,      
+            'account_book_id' => 32,
             'pay_form_id' => $this->payFormMoMoId,
             'cashier_room_id' => 1,
             'treatment_id' => $payment->treatment_id,
@@ -200,24 +231,25 @@ class TransactionRepository
             'tdl_patient_dob' => $treatmentData->tdl_patient_dob,
             'tdl_patient_is_has_not_day_dob' => $treatmentData->tdl_patient_is_has_not_day_dob,
             'tdl_patient_address' => $treatmentData->tdl_patient_address,
-            'tdl_patient_gender_id'  => $treatmentData->tdl_patient_gender_id,        
-            'tdl_patient_gender_name'  => $treatmentData->tdl_patient_gender_name,  
-            'tdl_patient_career_name'  => $treatmentData->tdl_patient_career_name,  
-            'tdl_patient_work_place'  => $treatmentData->tdl_patient_work_place,  
-            'tdl_patient_work_place_name'  => $treatmentData->tdl_patient_work_place_name,     
-            'tdl_patient_district_code'  => $treatmentData->tdl_patient_district_code,      
-            'tdl_patient_province_code' => $treatmentData->tdl_patient_province_code,  
-            'tdl_patient_commune_code'  => $treatmentData->tdl_patient_commune_code,  
-            'tdl_patient_military_rank_name'  => $treatmentData->tdl_patient_military_rank_name,   
-            'tdl_patient_national_name'  => $treatmentData->tdl_patient_national_name,  
-            'tdl_patient_relative_type' => $treatmentData->tdl_patient_relative_type,  
-            'tdl_patient_relative_name'  => $treatmentData->tdl_patient_relative_name,  
-            'tdl_patient_account_number'  => $treatmentData->tdl_patient_account_number,  
-            'tdl_patient_tax_code'  => $treatmentData->tdl_patient_tax_code,  
+            'tdl_patient_gender_id'  => $treatmentData->tdl_patient_gender_id,
+            'tdl_patient_gender_name'  => $treatmentData->tdl_patient_gender_name,
+            'tdl_patient_career_name'  => $treatmentData->tdl_patient_career_name,
+            'tdl_patient_work_place'  => $treatmentData->tdl_patient_work_place,
+            'tdl_patient_work_place_name'  => $treatmentData->tdl_patient_work_place_name,
+            'tdl_patient_district_code'  => $treatmentData->tdl_patient_district_code,
+            'tdl_patient_province_code' => $treatmentData->tdl_patient_province_code,
+            'tdl_patient_commune_code'  => $treatmentData->tdl_patient_commune_code,
+            'tdl_patient_military_rank_name'  => $treatmentData->tdl_patient_military_rank_name,
+            'tdl_patient_national_name'  => $treatmentData->tdl_patient_national_name,
+            'tdl_patient_relative_type' => $treatmentData->tdl_patient_relative_type,
+            'tdl_patient_relative_name'  => $treatmentData->tdl_patient_relative_name,
+            'tdl_patient_account_number'  => $treatmentData->tdl_patient_account_number,
+            'tdl_patient_tax_code'  => $treatmentData->tdl_patient_tax_code,
         ]);
         return $data;
     }
-    public function createTransactionRefundSuccess($payment, $data, $appCreator, $appModifier){
+    public function createTransactionRefundSuccess($payment, $data, $appCreator, $appModifier)
+    {
         $treatmentData = $this->treatment->where('id', $payment->treatment_id)->first();
         // if(!$treatmentData) return;
         $data = $this->transaction::create([
@@ -231,9 +263,9 @@ class TransactionRepository
             'transaction_type_id' =>  $this->transactionTypeTUId,
             'transaction_time' => now()->format('Ymdhis'),
             'transaction_date' => now()->format('Ymdhis'),
-            'amount' => $data['amount'],  
+            'amount' => $data['amount'],
             'num_order' => $data['transId'],
-            'account_book_id' => 32,      
+            'account_book_id' => 32,
             'pay_form_id' => $this->payFormMoMoId,
             'cashier_room_id' => 1,
             'treatment_id' => $payment->treatment_id,
@@ -243,8 +275,8 @@ class TransactionRepository
             'is_cancel' => 1,
             'cancel_reason' => 'Hoàn tiền thành công, do thanh toán sau khi viện phí được khóa (do link thanh toán tồn tại đến sau khi viện phí được khóa)',
             'cancel_time' => now()->format('Ymdhis'),
-            'cancel_loginname' =>$appModifier,
-            'cancel_username' =>$appModifier,
+            'cancel_loginname' => $appModifier,
+            'cancel_username' => $appModifier,
             // Dữ liệu dư thừa
             'tdl_patient_id' => $treatmentData->patient_id,
             'tdl_patient_code' => $treatmentData->tdl_patient_code,
@@ -254,24 +286,25 @@ class TransactionRepository
             'tdl_patient_dob' => $treatmentData->tdl_patient_dob,
             'tdl_patient_is_has_not_day_dob' => $treatmentData->tdl_patient_is_has_not_day_dob,
             'tdl_patient_address' => $treatmentData->tdl_patient_address,
-            'tdl_patient_gender_id'  => $treatmentData->tdl_patient_gender_id,        
-            'tdl_patient_gender_name'  => $treatmentData->tdl_patient_gender_name,  
-            'tdl_patient_career_name'  => $treatmentData->tdl_patient_career_name,  
-            'tdl_patient_work_place'  => $treatmentData->tdl_patient_work_place,  
-            'tdl_patient_work_place_name'  => $treatmentData->tdl_patient_work_place_name,     
-            'tdl_patient_district_code'  => $treatmentData->tdl_patient_district_code,      
-            'tdl_patient_province_code' => $treatmentData->tdl_patient_province_code,  
-            'tdl_patient_commune_code'  => $treatmentData->tdl_patient_commune_code,  
-            'tdl_patient_military_rank_name'  => $treatmentData->tdl_patient_military_rank_name,   
-            'tdl_patient_national_name'  => $treatmentData->tdl_patient_national_name,  
-            'tdl_patient_relative_type' => $treatmentData->tdl_patient_relative_type,  
-            'tdl_patient_relative_name'  => $treatmentData->tdl_patient_relative_name,  
-            'tdl_patient_account_number'  => $treatmentData->tdl_patient_account_number,  
-            'tdl_patient_tax_code'  => $treatmentData->tdl_patient_tax_code,  
+            'tdl_patient_gender_id'  => $treatmentData->tdl_patient_gender_id,
+            'tdl_patient_gender_name'  => $treatmentData->tdl_patient_gender_name,
+            'tdl_patient_career_name'  => $treatmentData->tdl_patient_career_name,
+            'tdl_patient_work_place'  => $treatmentData->tdl_patient_work_place,
+            'tdl_patient_work_place_name'  => $treatmentData->tdl_patient_work_place_name,
+            'tdl_patient_district_code'  => $treatmentData->tdl_patient_district_code,
+            'tdl_patient_province_code' => $treatmentData->tdl_patient_province_code,
+            'tdl_patient_commune_code'  => $treatmentData->tdl_patient_commune_code,
+            'tdl_patient_military_rank_name'  => $treatmentData->tdl_patient_military_rank_name,
+            'tdl_patient_national_name'  => $treatmentData->tdl_patient_national_name,
+            'tdl_patient_relative_type' => $treatmentData->tdl_patient_relative_type,
+            'tdl_patient_relative_name'  => $treatmentData->tdl_patient_relative_name,
+            'tdl_patient_account_number'  => $treatmentData->tdl_patient_account_number,
+            'tdl_patient_tax_code'  => $treatmentData->tdl_patient_tax_code,
         ]);
         return $data;
     }
-    public function createTransactionTamUng($request, $time, $appCreator, $appModifier){
+    public function createTransactionTamUng($request, $time, $appCreator, $appModifier)
+    {
         $treatmentData = $this->treatment->where('id', $request->treatment_id)->first();
         // if(!$treatmentData) return;
         $data = $this->transaction::create([
@@ -283,10 +316,10 @@ class TransactionRepository
             'app_modifier' => $appModifier,
             'transaction_type_id' =>  $this->transactionTypeTUId,
             'transaction_time' => $request->transaction_time,
-            'amount' => $request->amount,  
+            'amount' => $request->amount,
             'transfer_amount' => $request->pay_form_id == $this->payForm03Id ? $request->transfer_amount : 0, // Nếu đúng hình thức tiền mặt/chuyển khoản
             'swipe_amount' => $request->pay_form_id == $this->payForm06Id ? $request->swipe_amount : 0, //Nếu đúng hình thức tiền mặt/quẹt thẻ
-            'account_book_id' => $request->account_book_id,      
+            'account_book_id' => $request->account_book_id,
             'pay_form_id' => $request->pay_form_id,
             'cashier_room_id' => $request->cashier_room_id,
             'treatment_id' => $request->treatment_id,
@@ -308,30 +341,31 @@ class TransactionRepository
             'tdl_patient_dob' => $treatmentData->tdl_patient_dob,
             'tdl_patient_is_has_not_day_dob' => $treatmentData->tdl_patient_is_has_not_day_dob,
             'tdl_patient_address' => $treatmentData->tdl_patient_address,
-            'tdl_patient_gender_id'  => $treatmentData->tdl_patient_gender_id,        
-            'tdl_patient_gender_name'  => $treatmentData->tdl_patient_gender_name,  
-            'tdl_patient_career_name'  => $treatmentData->tdl_patient_career_name,  
-            'tdl_patient_work_place'  => $treatmentData->tdl_patient_work_place,  
-            'tdl_patient_work_place_name'  => $treatmentData->tdl_patient_work_place_name,     
-            'tdl_patient_district_code'  => $treatmentData->tdl_patient_district_code,      
-            'tdl_patient_province_code' => $treatmentData->tdl_patient_province_code,  
-            'tdl_patient_commune_code'  => $treatmentData->tdl_patient_commune_code,  
-            'tdl_patient_military_rank_name'  => $treatmentData->tdl_patient_military_rank_name,   
-            'tdl_patient_national_name'  => $treatmentData->tdl_patient_national_name,  
-            'tdl_patient_relative_type' => $treatmentData->tdl_patient_relative_type,  
-            'tdl_patient_relative_name'  => $treatmentData->tdl_patient_relative_name,  
-            'tdl_patient_account_number'  => $treatmentData->tdl_patient_account_number,  
-            'tdl_patient_tax_code'  => $treatmentData->tdl_patient_tax_code,  
+            'tdl_patient_gender_id'  => $treatmentData->tdl_patient_gender_id,
+            'tdl_patient_gender_name'  => $treatmentData->tdl_patient_gender_name,
+            'tdl_patient_career_name'  => $treatmentData->tdl_patient_career_name,
+            'tdl_patient_work_place'  => $treatmentData->tdl_patient_work_place,
+            'tdl_patient_work_place_name'  => $treatmentData->tdl_patient_work_place_name,
+            'tdl_patient_district_code'  => $treatmentData->tdl_patient_district_code,
+            'tdl_patient_province_code' => $treatmentData->tdl_patient_province_code,
+            'tdl_patient_commune_code'  => $treatmentData->tdl_patient_commune_code,
+            'tdl_patient_military_rank_name'  => $treatmentData->tdl_patient_military_rank_name,
+            'tdl_patient_national_name'  => $treatmentData->tdl_patient_national_name,
+            'tdl_patient_relative_type' => $treatmentData->tdl_patient_relative_type,
+            'tdl_patient_relative_name'  => $treatmentData->tdl_patient_relative_name,
+            'tdl_patient_account_number'  => $treatmentData->tdl_patient_account_number,
+            'tdl_patient_tax_code'  => $treatmentData->tdl_patient_tax_code,
         ]);
         return $data;
     }
-    public function update($request, $data, $time, $appModifier){
+    public function update($request, $data, $time, $appModifier)
+    {
         $data->update([
             'modify_time' => now()->format('Ymdhis'),
             'modifier' => get_loginname_with_token($request->bearerToken(), $time),
             'app_modifier' => $appModifier,
 
-            'amount' => $request->amount,  
+            'amount' => $request->amount,
             'transfer_amount' => $request->pay_form_id == $this->payForm03Id ? $request->transfer_amount : 0, // Nếu đúng hình thức tiền mặt/chuyển khoản
             'swipe_amount' => $request->pay_form_id == $this->payForm06Id ? $request->swipe_amount : 0, //Nếu đúng hình thức tiền mặt/quẹt thẻ
             'pay_form_id' => $request->pay_form_id,
@@ -346,7 +380,8 @@ class TransactionRepository
         ]);
         return $data;
     }
-    public function delete($data){
+    public function delete($data)
+    {
         $data->delete();
         return $data;
     }
@@ -354,11 +389,12 @@ class TransactionRepository
     {
         // Nếu mà đã có transaction cũ chưa thanh toán mà khác tiền thì cập nhật lại tiền
         $dataReturn =  $this->transaction->where('treatment_id', $data['treatment_id'])
-        ->where('is_cancel', 1)
-        ->where('account_book_id', $this->accountBookQrVietinbankId)
-        ->where('cancel_reason', 'Khoi tao data QR Code thanh toan VietinBank')
-        ->first();
-        if(!$dataReturn){
+            ->where('is_cancel', 1)
+            ->whereNull('cancel_reason_id')
+            ->where('account_book_id', $this->accountBookQrVietinbankId)
+            ->where('cancel_reason', 'Khoi tao data QR Code thanh toan VietinBank')
+            ->first();
+        if (!$dataReturn) {
             $treatmentData = $this->treatment->where('id', $data['treatment_id'])->first();
             // if(!$treatmentData) return;
             $dataReturn = $this->transaction::create([
@@ -372,8 +408,8 @@ class TransactionRepository
                 'is_delete' => '0',
                 'transaction_type_id' =>  $this->transactionTypeTUId,
                 // 'transaction_time' => $request->transaction_time,
-                'amount' => $data['amount'],  
-                'account_book_id' => $this->accountBookQrVietinbankId,      
+                'amount' => $data['amount'],
+                'account_book_id' => $this->accountBookQrVietinbankId,
                 'pay_form_id' => $this->payFormQrVietinBankId,
                 'cashier_room_id' => 1,
                 'treatment_id' => $data['treatment_id'],
@@ -382,7 +418,7 @@ class TransactionRepository
                 'cancel_reason' => "Khoi tao data QR Code thanh toan VietinBank",
                 'is_cancel' => 1,
                 // Dữ liệu dư thừa
-    
+
                 'tdl_treatment_code' => $treatmentData->treatment_code,
                 'tdl_patient_id' => $treatmentData->patient_id,
                 'tdl_patient_code' => $treatmentData->tdl_patient_code,
@@ -392,23 +428,23 @@ class TransactionRepository
                 'tdl_patient_dob' => $treatmentData->tdl_patient_dob,
                 'tdl_patient_is_has_not_day_dob' => $treatmentData->tdl_patient_is_has_not_day_dob,
                 'tdl_patient_address' => $treatmentData->tdl_patient_address,
-                'tdl_patient_gender_id'  => $treatmentData->tdl_patient_gender_id,        
-                'tdl_patient_gender_name'  => $treatmentData->tdl_patient_gender_name,  
-                'tdl_patient_career_name'  => $treatmentData->tdl_patient_career_name,  
-                'tdl_patient_work_place'  => $treatmentData->tdl_patient_work_place,  
-                'tdl_patient_work_place_name'  => $treatmentData->tdl_patient_work_place_name,     
-                'tdl_patient_district_code'  => $treatmentData->tdl_patient_district_code,      
-                'tdl_patient_province_code' => $treatmentData->tdl_patient_province_code,  
-                'tdl_patient_commune_code'  => $treatmentData->tdl_patient_commune_code,  
-                'tdl_patient_military_rank_name'  => $treatmentData->tdl_patient_military_rank_name,   
-                'tdl_patient_national_name'  => $treatmentData->tdl_patient_national_name,  
-                'tdl_patient_relative_type' => $treatmentData->tdl_patient_relative_type,  
-                'tdl_patient_relative_name'  => $treatmentData->tdl_patient_relative_name,  
-                'tdl_patient_account_number'  => $treatmentData->tdl_patient_account_number,  
-                'tdl_patient_tax_code'  => $treatmentData->tdl_patient_tax_code,  
+                'tdl_patient_gender_id'  => $treatmentData->tdl_patient_gender_id,
+                'tdl_patient_gender_name'  => $treatmentData->tdl_patient_gender_name,
+                'tdl_patient_career_name'  => $treatmentData->tdl_patient_career_name,
+                'tdl_patient_work_place'  => $treatmentData->tdl_patient_work_place,
+                'tdl_patient_work_place_name'  => $treatmentData->tdl_patient_work_place_name,
+                'tdl_patient_district_code'  => $treatmentData->tdl_patient_district_code,
+                'tdl_patient_province_code' => $treatmentData->tdl_patient_province_code,
+                'tdl_patient_commune_code'  => $treatmentData->tdl_patient_commune_code,
+                'tdl_patient_military_rank_name'  => $treatmentData->tdl_patient_military_rank_name,
+                'tdl_patient_national_name'  => $treatmentData->tdl_patient_national_name,
+                'tdl_patient_relative_type' => $treatmentData->tdl_patient_relative_type,
+                'tdl_patient_relative_name'  => $treatmentData->tdl_patient_relative_name,
+                'tdl_patient_account_number'  => $treatmentData->tdl_patient_account_number,
+                'tdl_patient_tax_code'  => $treatmentData->tdl_patient_tax_code,
             ]);
-        }else{
-            if($dataReturn['amount'] != $data['amount']){
+        } else {
+            if ($dataReturn['amount'] != $data['amount']) {
                 $dataReturn->update([
                     'create_time' => now()->format('Ymdhis'),
                     'modify_time' => now()->format('Ymdhis'),
@@ -417,7 +453,7 @@ class TransactionRepository
                     'amount' => $data['amount'],
                     'transaction_time' => now()->format('Ymdhis'),
                 ]);
-            }else{
+            } else {
                 $dataReturn->update([
                     'create_time' => now()->format('Ymdhis'),
                     'modify_time' => now()->format('Ymdhis'),
@@ -427,32 +463,34 @@ class TransactionRepository
                 ]);
             }
         }
-        
+
         $dataReturn =  $this->transaction->where('treatment_id', $data['treatment_id'])
-        ->where('amount', $data['amount'])
-        ->where('is_cancel', 1)
-        ->where('account_book_id', $this->accountBookQrVietinbankId)
-        ->where('cancel_reason', 'Khoi tao data QR Code thanh toan VietinBank')
-        ->first();
+            ->where('amount', $data['amount'])
+            ->where('is_cancel', 1)
+            ->whereNull('cancel_reason_id')
+            ->where('account_book_id', $this->accountBookQrVietinbankId)
+            ->where('cancel_reason', 'Khoi tao data QR Code thanh toan VietinBank')
+            ->first();
         return $dataReturn;
     }
     public function getTransactionVietinBank($data)
     {
-        $dataReturn =  $this->transaction->where('num_order', $data['orderId']) 
-        ->where('account_book_id', $this->accountBookQrVietinbankId)
-        // ->where('amount', $data['amount'])
-        // ->where('is_cancel', 1)
-        // ->where('cancel_reason', 'Khoi tao data QR Code thanh toan VietinBank')
-        ->first();
+        $dataReturn =  $this->transaction->where('num_order', $data['orderId'])
+            ->where('account_book_id', $this->accountBookQrVietinbankId)
+            // ->where('amount', $data['amount'])
+            // ->where('is_cancel', 1)
+            // ->where('cancel_reason', 'Khoi tao data QR Code thanh toan VietinBank')
+            ->first();
         return $dataReturn;
     }
-    public function updateTransactionVietinBank($data){
+    public function updateTransactionVietinBank($data)
+    {
         $data->update([
             'modify_time' => now()->format('Ymdhis'),
             'modifier' => 'MOS_v2',
             'app_modifier' => 'MOS_v2',
             'is_cancel' => 0,
-            
+
         ]);
         return $data;
     }

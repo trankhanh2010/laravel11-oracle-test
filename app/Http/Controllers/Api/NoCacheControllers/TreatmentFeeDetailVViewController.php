@@ -82,17 +82,17 @@ class TreatmentFeeDetailVViewController extends BaseApiCacheController
             $this->authOtpName => false,
         ];
         // nếu có dữ liệu
-        if ($data['data']) {
-            $patientCode = $data['data']->patient_code;
-            $deviceInfo = request()->header('User-Agent'); // Lấy thông tin thiết bị từ User-Agent
-            $ipAddress = request()->ip(); // Lấy địa chỉ IP
-            // Gọi OtpService để xác thực OTP
-            $otpVerified = $this->otpService->isOtpTreatmentFeeVerified( $patientCode, $deviceInfo, $ipAddress);
+        // if ($data['data']) {
+        //     $patientCode = $data['data']->patient_code;
+        //     $deviceInfo = request()->header('User-Agent'); // Lấy thông tin thiết bị từ User-Agent
+        //     $ipAddress = request()->ip(); // Lấy địa chỉ IP
+        //     // Gọi OtpService để xác thực OTP
+        //     $otpVerified = $this->otpService->isOtpTreatmentFeeVerified( $patientCode, $deviceInfo, $ipAddress);
     
-            if ($otpVerified) {
-                $paramReturn[$this->authOtpName] = true;
-            }
-        }
+        //     if ($otpVerified) {
+        //         $paramReturn[$this->authOtpName] = true;
+        //     }
+        // }
         return returnDataSuccess($paramReturn, $data['data']);
     }
 

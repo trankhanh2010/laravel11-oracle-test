@@ -29,6 +29,7 @@ class TestServiceTypeListVViewService
             $data = $this->testServiceTypeListVViewRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
             $count = $data->count();
             $data = $this->testServiceTypeListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+            $data = $this->testServiceTypeListVViewRepository->applyGroupByField($data, $this->params->groupBy);
             return ['data' => $data, 'count' => $count];
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['test_service_type_list_v_view'], $e);
@@ -40,6 +41,7 @@ class TestServiceTypeListVViewService
         $data = $this->testServiceTypeListVViewRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
         $count = $data->count();
         $data = $this->testServiceTypeListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        $data = $this->testServiceTypeListVViewRepository->applyGroupByField($data, $this->params->groupBy);
         return ['data' => $data, 'count' => $count];
     }
     private function getDataById($id)

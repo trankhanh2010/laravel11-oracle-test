@@ -11,10 +11,13 @@ use App\Classes\Vietinbank\QRBean;
 use App\Classes\Vietinbank\QRAddtionalBean;
 use App\Classes\Vietinbank\ServiceConfig;
 use App\Classes\Vietinbank\QRCode;
+use App\Repositories\ConfigRepository;
 use App\Repositories\TransactionRepository;
+use App\Repositories\TransReqRepository;
 use Exception;
 use Illuminate\Support\Carbon;
 use GuzzleHttp\Client;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use IntlChar;
 use Normalizer;
@@ -32,6 +35,8 @@ class VietinbankService
     protected $privateKeyPath;
     protected $urlInqDetailTrans;
     protected $transactionRepository;
+    protected $transReqRepository;
+    protected $configRepository;
     protected $params;
     private $VND = "VND";
     private $EMPTY = "";
@@ -43,8 +48,15 @@ class VietinbankService
     protected $providerId;
     protected $expTimeQrVtb;
 
-    public function __construct(TransactionRepository $transactionRepository)
-    {
+    public function __construct(
+        TransactionRepository $transactionRepository,
+        TransReqRepository $transReqRepository,
+        ConfigRepository $configRepository,
+    ) {
+        $this->transactionRepository = $transactionRepository;
+        $this->transReqRepository = $transReqRepository;
+        $this->configRepository = $configRepository;
+
         $this->apiUrl = config('database')['connections']['vietinbank']['vietinbank_api_url'];
         $this->merchantId = config('database')['connections']['vietinbank']['vietinbank_merchant_id'];
         $this->secretKey = config('database')['connections']['vietinbank']['vietinbank_secret_key'];
@@ -59,9 +71,7 @@ class VietinbankService
         $this->terminalId = config('database')['connections']['vietinbank']['terminal_id'];
         $this->storeId = config('database')['connections']['vietinbank']['store_id'];
         $this->providerId = config('database')['connections']['vietinbank']['provider_id'];
-        $this->expTimeQrVtb = config('database')['connections']['vietinbank']['exp_time_qr_vtb'];
-
-        $this->transactionRepository = $transactionRepository;
+        $this->expTimeQrVtb = (int) $this->configRepository->getHisTranReqExpiredTimeOption();
     }
     public function withParams(VietinbankDTO $params)
     {
@@ -71,7 +81,7 @@ class VietinbankService
     /**
      * Tạo giao dịch QR Code
      */
-    public function createTransactionQrCode($dataTreatment)
+    public function createTransactionQrCode($dataTreatment, $dataTransHis)
     {
         // $dataTreatment = [
         //     'amount' => 30000,
@@ -101,10 +111,18 @@ class VietinbankService
 
         $niceAddtionalData = $this->removeDiacritics($data->desc);
         $data->desc = $niceAddtionalData;
+        // Thời gian hết hạn giao dịch  phút
+        $timeTransaction = Carbon::now();
+        $timeTransaction2 = $timeTransaction->copy();
+        $timeTransaction3 = $timeTransaction->copy()->format('YmdHis');
+        $data->expDate = $timeTransaction->addMinutes($this->expTimeQrVtb)->format('ymdHi');
+        $expDate = $timeTransaction2->addMinutes($this->expTimeQrVtb)->format('YmdHis');
         // dd($data);
         $req = $this->makeRequestToSystem($data, true, "");
         $pk = new QrPack();
         $qrData = $pk->pack($req->qrBean, "")->qrData;
+        // check và thêm mới thông tin trans_req cho his_trans
+        $qrData = $this->checkAndAddInfoTransReq($data, $timeTransaction3, $expDate, $qrData, $dataTransHis);
         // dd($qrData);
         // $qrImageUrl = "http://chart.apis.google.com/chart?chs=500x500&cht=qr&chl=" . $qrData . "&choe=UTF-8";
         // $apiURL = "https://api.qrserver.com/v1/create-qr-code/";
@@ -112,6 +130,62 @@ class VietinbankService
 
         // $qrImageUrl = $apiURL . "?size=" . $size . "&data=" . $qrData;        
         return base64_encode($qrData);
+    }
+    public function checkAndAddInfoTransReq($dataCreateQr, $timeTransaction, $expDate, $qrData, $dataTransHis)
+    {
+        // check xem có trans_req không, nếu không thì tạo trans_req mới và add vào his_trans
+        if (!$dataTransHis['trans_req_id']) {
+            $dataTransReq = $this->createTransReqVtb($dataCreateQr, $timeTransaction, $expDate, $qrData, $dataTransHis);
+            $dataTransHis->update([
+                'trans_req_id' => $dataTransReq['id'],
+            ]);
+            return $qrData;
+        }
+
+        // nếu có => trans_req của his_tran này, check xem có còn hạn k, nếu còn => dùng dataQr của trans_req, nếu không thì tạo trans_req mới và add vào his_trans
+        $dataTransReq = $this->transReqRepository->getById($dataTransHis['trans_req_id']);
+        // Nếu k có hạn
+        if (empty($dataTransReq['expired_time'])) {
+            $dataTransReq = $this->createTransReqVtb($dataCreateQr, $timeTransaction, $expDate, $qrData, $dataTransHis);
+            $dataTransHis->update([
+                'trans_req_id' => $dataTransReq['id'],
+            ]);
+        }
+
+        $expiredAt = Carbon::createFromFormat('YmdHis', $dataTransReq['expired_time']);
+        if (now()->lt($expiredAt)) {
+            // Còn hạn
+            return $dataTransReq['qr_text'];
+        }
+        // Hết hạn
+        $dataTransReq = $this->createTransReqVtb($dataCreateQr, $timeTransaction, $expDate, $qrData, $dataTransHis);
+        $dataTransHis->update([
+            'trans_req_id' => $dataTransReq['id'],
+        ]);
+        return $qrData;
+    }
+
+    public function createTransReqVtb($dataCreateQr, $timeTransaction, $expDate, $qrData, $dataTransHis)
+    {
+        $request = (object) [
+            'amount' => $dataTransHis->amount,
+            'treatment_id' => $dataTransHis->treatment_id,
+            'bank_json_data' => '',
+            'trans_req_code' => $dataTransHis->transaction_code,
+            'bank_message'  => '',
+            'tdl_treatment_code' => $dataTransHis->tdl_treatment_code,
+            'tdl_patient_code' => $dataTransHis->tdl_patient_code,
+            'tdl_patient_name' => $dataTransHis->tdl_patient_name,
+            'expired_time' => $expDate,
+            'bank'  => '',
+            'request_id'  => '',
+            'qr_text'  => $qrData,
+            'qr_time'  => $timeTransaction,
+            'bank_trans_code'  => '',
+            'merchant_code'  => $this->merchantCode,
+            'terminal_id'  => $this->terminalId,
+        ];
+        return $this->transReqRepository->createTransReqQrVtbByNguoiDung($request, 'MOS_v2', 'MOS_v2');
     }
 
     private function makeRequestToSystem(RequestCreateQrcode $req, bool $isInsert, string $tokenKey)
@@ -150,9 +224,11 @@ class VietinbankService
             $consumerMobile = "";
             $consumerEmail = "";
             // Thời gian hết hạn giao dịch  phút
-            $timeTransaction = Carbon::now();
-            $expDate = $timeTransaction->addMinutes($this->expTimeQrVtb)->format('ymdHi');
+            // $timeTransaction = Carbon::now();
+            // $expDate = $timeTransaction->addMinutes($this->expTimeQrVtb)->format('ymdHi');
             // $expDate = "";
+            $expDate = $request->expDate;
+
             if (QRCode::PAY_TYPE_01 === $request->payType) {
                 if ($this->VND === $request->ccy) {
                     $request->ccy = ServiceConfig::CCY;
@@ -252,25 +328,24 @@ class VietinbankService
             $data = $this->getParamRequest();
             // Log::error($data);
             //test
-            if($data['orderId'] == 'datt'){
+            if ($data['orderId'] == 'datt') {
                 return $this->generateParam($data['requestId'], '01');
             }
-            if($data['orderId'] == 'khople'){
+            if ($data['orderId'] == 'khople') {
                 return $this->generateParam($data['requestId'], '02');
             }
-            if($data['orderId'] == 'ktimthay'){
+            if ($data['orderId'] == 'ktimthay') {
                 return $this->generateParam($data['requestId'], '03');
             }
-            if($data['orderId'] == 'saitien'){
+            if ($data['orderId'] == 'saitien') {
                 return $this->generateParam($data['requestId'], '04');
             }
-            if($data['orderId'] == 'hethan'){
+            if ($data['orderId'] == 'hethan') {
                 return $this->generateParam($data['requestId'], '05');
             }
-            if(($data['orderId'] == 'baotri') || ($data['orderId'] == 'baotri2') || ($data['orderId'] == 'baotri3') || ($data['orderId'] == 'baotri4')){
+            if (($data['orderId'] == 'baotri') || ($data['orderId'] == 'baotri2') || ($data['orderId'] == 'baotri3') || ($data['orderId'] == 'baotri4')) {
                 return $this->generateParam($data['requestId'], '09');
             }
-
             // Xác minh chữ ký 
             $isVerify = $this->verifyVietinbankSignature($data);
             // Nếu không đúng chữ ký
@@ -303,17 +378,30 @@ class VietinbankService
             if (($dataTransactionVietinbank['is_cancel'] == 0) || (!$dataTransactionVietinbank['is_cancel'])) {
                 return $this->generateParam($data['requestId'], '01');
             }
-            $sttUpdate = $this->transactionRepository->updateTransactionVietinBank($dataTransactionVietinbank);
-            // Nếu cập nhật không thành công
-            if (!$sttUpdate) {
-                return $this->generateParam($data['requestId'], '02');
-            }
+
+            // Cập nhật trans_req và transaction
+            DB::connection('oracle_his')->transaction(function () use ($data, $dataTransactionVietinbank) {
+                $sttUpdate = $this->transactionRepository->updateTransactionVietinBank($dataTransactionVietinbank);
+                // Nếu cập nhật không thành công
+                if (!$sttUpdate) {
+                    return $this->generateParam($data['requestId'], '02');
+                }
+
+                // Cập nhật message và stt cho trans_req
+                $dataTransReq = $this->transReqRepository->getById($dataTransactionVietinbank['trans_req_id']);
+                $dataTransReq->update([
+                    'trans_req_stt_id' => 2,
+                    'bank_message' => $data['statusMessage'],
+                    'bank_json_data' => json_encode($data),
+                ]);
+                // test lỗi
+                // throw new Exception("Lỗi cập nhật db");
+            });
             // Cập nhật thành công
             return $this->generateParam($data['requestId'], '00');
         } catch (Exception $e) {
             return $this->generateParam($data['requestId'], '09');
         }
-
     }
     public function handleInqDetailTrans()
     {
@@ -416,7 +504,7 @@ class VietinbankService
         // // Tạo chữ ký test
         // $privateKeyVietinbankPath = "D:/vietinbank/vtb_private_key.pem";
         // $privateKeyVietinbank = openssl_pkey_get_private(file_get_contents($privateKeyVietinbankPath));
-        // $rawData = '0000022351234568123';
+        // $rawData = '00000223512345616123';
         // $signature = '';
         // $success = openssl_sign($rawData,$signature, $privateKeyVietinbank, OPENSSL_ALGO_SHA256);
         // $signatureBase64 = base64_encode($signature);

@@ -72,12 +72,12 @@ class TreatmentFeeListVViewController extends BaseApiCacheController
     public function index()
     {
         // Kiểm tra khoảng cách ngày
-        if (($this->fromTime !== null) && ($this->toTime !== null)) {
-            if (($this->toTime - $this->fromTime) > 60235959) {
-                $this->errors[$this->fromTimeName] = 'Khoảng thời gian vượt quá 60 ngày!';
-                $this->fromTime = null;
-            }
-        }
+        // if (($this->fromTime !== null) && ($this->toTime !== null)) {
+        //     if (($this->toTime - $this->fromTime) > 60235959) {
+        //         $this->errors[$this->fromTimeName] = 'Khoảng thời gian vượt quá 60 ngày!';
+        //         $this->fromTime = null;
+        //     }
+        // }
         if ($this->treatmentCode == null && $this->patientCode == null) {
             if (($this->fromTime == null) && ($this->toTime == null) && (!$this->cursorPaginate)) {
                 $this->errors[$this->fromTimeName] = 'Thiếu thời gian!';

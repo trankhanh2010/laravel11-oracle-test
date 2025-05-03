@@ -20,6 +20,7 @@ class TestServiceTypeListVViewDTO
     public $treatmentId;
     public $param;
     public $noCache;
+    public $groupBy;
 
     public function __construct(
         $testServiceTypeListVViewName,
@@ -38,6 +39,7 @@ class TestServiceTypeListVViewDTO
         $treatmentId,
         $param,
         $noCache,
+        $groupBy,
         )
     {
         $this->testServiceTypeListVViewName = $testServiceTypeListVViewName;
@@ -56,5 +58,6 @@ class TestServiceTypeListVViewDTO
         $this->treatmentId = $treatmentId;
         $this->param = $param;
         $this->noCache = $noCache;
+        $this->groupBy = $groupBy;
     }
 }
