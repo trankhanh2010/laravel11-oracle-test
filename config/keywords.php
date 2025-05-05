@@ -1610,4 +1610,23 @@ return [
         'buyer_address' => 'Địa chỉ người thanh toán',
         'buyer_phone' => 'Số điện thoại người thanh toán',
     ],
+    // giao dịch hoàn ứng
+    'transaction_hoan_ung' => [
+        'treatment_id' => 'Id điều trị',
+        'amount' => 'Số tiền hoàn ứng',
+        'account_book_id' => 'Id sổ thu chi',
+        'pay_form_id' => 'Id hình thức thanh toán',
+        'cashier_room_id' => 'Id phòng thu ngân',
+        'repay_reason_id' => 'Id lý do hoàn ứng',
+        'swipe_amount' => 'Số tiền quẹt thẻ',
+        'transfer_amount' => 'Số tiền chuyển khoản',
+        'description' => 'Lý do tạm ứng',
+        'transaction_time' => 'Thời gian giao dịch (Thời gian khi bắt đầu thao tác)',
+        'buyer_name' => 'Tên người thanh toán',
+        'buyer_tax_code' => 'Mã số thuế người thanh toán',
+        'buyer_account_number' => 'Số tài khoản người thanh toán',
+        'buyer_organization' => 'Đơn vị',
+        'buyer_address' => 'Địa chỉ người thanh toán',
+        'buyer_phone' => 'Số điện thoại người thanh toán',
+    ],
 ];

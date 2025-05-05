@@ -83,11 +83,8 @@ class VietinbankService
      */
     public function createTransactionQrCode($dataTreatment, $dataTransHis)
     {
-        // $dataTreatment = [
-        //     'amount' => 30000,
-        //     'orderInfo' => 'bao tri',
-        //     'orderId' => 'baotri2', // Là duy nhất với mỗi accountBook
-        // ];
+        // $dataTreatment['orderId'] = 'baotri4';
+        // $dataTreatment['orderInfo'] = 'bao tri';
         // dd($dataTreatment);
         $data = new RequestCreateQrcode();
         $data->masterMerCode = "970489";
@@ -144,12 +141,23 @@ class VietinbankService
 
         // nếu có => trans_req của his_tran này, check xem có còn hạn k, nếu còn => dùng dataQr của trans_req, nếu không thì tạo trans_req mới và add vào his_trans
         $dataTransReq = $this->transReqRepository->getById($dataTransHis['trans_req_id']);
+
+        // Nếu k khớp tiền
+        if ($dataTransReq['amount'] != $dataTransHis['amount']) {
+            $dataTransReq = $this->createTransReqVtb($dataCreateQr, $timeTransaction, $expDate, $qrData, $dataTransHis);
+            $dataTransHis->update([
+                'trans_req_id' => $dataTransReq['id'],
+            ]);
+            return $qrData;
+        }
+
         // Nếu k có hạn
         if (empty($dataTransReq['expired_time'])) {
             $dataTransReq = $this->createTransReqVtb($dataCreateQr, $timeTransaction, $expDate, $qrData, $dataTransHis);
             $dataTransHis->update([
                 'trans_req_id' => $dataTransReq['id'],
             ]);
+            return $qrData;
         }
 
         $expiredAt = Carbon::createFromFormat('YmdHis', $dataTransReq['expired_time']);
@@ -226,8 +234,8 @@ class VietinbankService
             // Thời gian hết hạn giao dịch  phút
             // $timeTransaction = Carbon::now();
             // $expDate = $timeTransaction->addMinutes($this->expTimeQrVtb)->format('ymdHi');
-            // $expDate = "";
             $expDate = $request->expDate;
+            // $expDate = "";
 
             if (QRCode::PAY_TYPE_01 === $request->payType) {
                 if ($this->VND === $request->ccy) {
@@ -343,7 +351,7 @@ class VietinbankService
             if ($data['orderId'] == 'hethan') {
                 return $this->generateParam($data['requestId'], '05');
             }
-            if (($data['orderId'] == 'baotri') || ($data['orderId'] == 'baotri2') || ($data['orderId'] == 'baotri3') || ($data['orderId'] == 'baotri4')) {
+            if (($data['orderId'] == 'baotri') || ($data['orderId'] == 'baotri2') || ($data['orderId'] == 'baotri3') || ($data['orderId'] == 'baotri4') || ($data['orderId'] == 'baotri5') || ($data['orderId'] == 'baotri6') || ($data['orderId'] == 'baotri7')) {
                 return $this->generateParam($data['requestId'], '09');
             }
             // Xác minh chữ ký 

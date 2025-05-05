@@ -257,6 +257,7 @@ use Illuminate\Support\Facades\DB;
 // Transaction
 use App\Http\Controllers\Api\TransactionControllers\TreatmentFeePayMentController;
 use App\Http\Controllers\Api\TransactionControllers\MoMoController;
+use App\Http\Controllers\Api\TransactionControllers\TransactionHoanUngController;
 use App\Http\Controllers\Api\TransactionControllers\VietinbankController;
 use App\Http\Controllers\Api\TransactionControllers\VietinbankQrBillingController;
 use App\Http\Controllers\Api\ValidateControllers\DeviceGetOtpController;
@@ -1124,6 +1125,9 @@ Route::group([
         ]);
     /// Tạo giao dịch tạm ứng Transaction Tạm ứng
     Route::apiResource('v1/transaction-tam-ung', TransactionTamUngController::class)->only(['store']);
+    /// Tạo giao dịch hoàn ứng Transaction Hoàn ứng
+    Route::apiResource('v1/transaction-hoan-ung', TransactionHoanUngController::class)->only(['store']);
+
     /// Chi tiết giao dịch transaction detail
     // Route::group(['as' => 'HIS.Desktop.Plugins.TransactionBillDetail->'], function () {
     Route::apiResource('v1/transaction-tt-detail-v-view', TransactionTTDetailVViewController::class)->only(['index'])

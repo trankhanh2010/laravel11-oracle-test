@@ -22,6 +22,7 @@ class TransactionRepository
     protected $accountBook;
     protected $transactionTypeTTId;
     protected $transactionTypeTUId;
+    protected $transactionTypeHUId;
     protected $payFormMoMoId;
     protected $payFormQrVietinBankId;
     protected $payForm03Id;
@@ -52,6 +53,14 @@ class TransactionRepository
         $cacheKey = 'transaction_type_TU_id';
         $this->transactionTypeTUId = Cache::remember($cacheKey, now()->addMinutes(10080), function () {
             $data =  $this->transactionType->where('transaction_type_code', 'TU')->get();
+            return $data->value('id');
+        });
+        // Lưu key vào Redis Set để dễ xóa sau này
+        Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+
+        $cacheKey = 'transaction_type_HU_id';
+        $this->transactionTypeHUId = Cache::remember($cacheKey, now()->addMinutes(10080), function () {
+            $data =  $this->transactionType->where('transaction_type_code', 'HU')->get();
             return $data->value('id');
         });
         // Lưu key vào Redis Set để dễ xóa sau này
@@ -331,6 +340,63 @@ class TransactionRepository
             'buyer_organization' => $request->buyer_organization,
             'buyer_address' => $request->buyer_address,
             'buyer_phone' => $request->buyer_phone,
+
+            'tdl_treatment_code' => $treatmentData->treatment_code,
+            'tdl_patient_id' => $treatmentData->patient_id,
+            'tdl_patient_code' => $treatmentData->tdl_patient_code,
+            'tdl_patient_name' => $treatmentData->tdl_patient_name,
+            'tdl_patient_first_name' => $treatmentData->tdl_patient_first_name,
+            'tdl_patient_last_name' => $treatmentData->tdl_patient_last_name,
+            'tdl_patient_dob' => $treatmentData->tdl_patient_dob,
+            'tdl_patient_is_has_not_day_dob' => $treatmentData->tdl_patient_is_has_not_day_dob,
+            'tdl_patient_address' => $treatmentData->tdl_patient_address,
+            'tdl_patient_gender_id'  => $treatmentData->tdl_patient_gender_id,
+            'tdl_patient_gender_name'  => $treatmentData->tdl_patient_gender_name,
+            'tdl_patient_career_name'  => $treatmentData->tdl_patient_career_name,
+            'tdl_patient_work_place'  => $treatmentData->tdl_patient_work_place,
+            'tdl_patient_work_place_name'  => $treatmentData->tdl_patient_work_place_name,
+            'tdl_patient_district_code'  => $treatmentData->tdl_patient_district_code,
+            'tdl_patient_province_code' => $treatmentData->tdl_patient_province_code,
+            'tdl_patient_commune_code'  => $treatmentData->tdl_patient_commune_code,
+            'tdl_patient_military_rank_name'  => $treatmentData->tdl_patient_military_rank_name,
+            'tdl_patient_national_name'  => $treatmentData->tdl_patient_national_name,
+            'tdl_patient_relative_type' => $treatmentData->tdl_patient_relative_type,
+            'tdl_patient_relative_name'  => $treatmentData->tdl_patient_relative_name,
+            'tdl_patient_account_number'  => $treatmentData->tdl_patient_account_number,
+            'tdl_patient_tax_code'  => $treatmentData->tdl_patient_tax_code,
+        ]);
+        return $data;
+    }
+
+    public function createTransactionHoanUng($request, $time, $appCreator, $appModifier)
+    {
+        $treatmentData = $this->treatment->where('id', $request->treatment_id)->first();
+        // if(!$treatmentData) return;
+        $data = $this->transaction::create([
+            'create_time' => now()->format('Ymdhis'),
+            'modify_time' => now()->format('Ymdhis'),
+            'creator' => get_loginname_with_token($request->bearerToken(), $time),
+            'modifier' => get_loginname_with_token($request->bearerToken(), $time),
+            'app_creator' => $appCreator,
+            'app_modifier' => $appModifier,
+            'transaction_type_id' =>  $this->transactionTypeHUId,
+            'transaction_time' => $request->transaction_time,
+            'amount' => $request->amount,
+            'transfer_amount' => $request->pay_form_id == $this->payForm03Id ? $request->transfer_amount : 0, // Nếu đúng hình thức tiền mặt/chuyển khoản
+            'swipe_amount' => $request->pay_form_id == $this->payForm06Id ? $request->swipe_amount : 0, //Nếu đúng hình thức tiền mặt/quẹt thẻ
+            'account_book_id' => $request->account_book_id,
+            'pay_form_id' => $request->pay_form_id,
+            'cashier_room_id' => $request->cashier_room_id,
+            'repay_reason_id' => $request->repay_reason_id,
+            'treatment_id' => $request->treatment_id,
+            'description' => $request->description,
+            // Dữ liệu dư thừa
+            // 'buyer_name' => $request->buyer_name,
+            // 'buyer_tax_code' => $request->buyer_tax_code,
+            // 'buyer_account_number' => $request->buyer_account_number,
+            // 'buyer_organization' => $request->buyer_organization,
+            // 'buyer_address' => $request->buyer_address,
+            // 'buyer_phone' => $request->buyer_phone,
 
             'tdl_treatment_code' => $treatmentData->treatment_code,
             'tdl_patient_id' => $treatmentData->patient_id,
