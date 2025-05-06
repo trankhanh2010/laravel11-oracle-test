@@ -71,9 +71,18 @@ class TreatmentFeeListVViewRepository
     }
     public function applyKeywordFilter($query, $keyword)
     {
-        return $query->where(function ($query) use ($keyword) {
-            $query->where(('service_req_code'), 'like', $keyword . '%');
-        });
+        if ($keyword != null) {
+            return $query->where(function ($query) use ($keyword) {
+                $query->whereRaw("
+                REGEXP_LIKE(
+                    NLSSORT(patient_name, 'NLS_SORT=GENERIC_M_AI'),
+                    NLSSORT(?, 'NLS_SORT=GENERIC_M_AI'),
+                    'i'
+                )
+            ", [$keyword]);
+            });
+        }
+        return $query;
     }
     public function applyIsActiveFilter($query, $isActive)
     {
@@ -93,6 +102,27 @@ class TreatmentFeeListVViewRepository
     {
         if ($code != null) {
             $query->where('patient_code', $code);
+        }
+        return $query;
+    }
+    public function applyEndDepartmentCodesFilter($query, $code)
+    {
+        if ($code != null) {
+            $query->whereIn('end_department_code', $code);
+        }
+        return $query;
+    }
+    public function applyPatientTypeCodesFilter($query, $code)
+    {
+        if ($code != null) {
+            $query->whereIn('patient_type_code', $code);
+        }
+        return $query;
+    }
+    public function applyTreatmentTypeCodesFilter($query, $code)
+    {
+        if ($code != null) {
+            $query->whereIn('treatment_type_code', $code);
         }
         return $query;
     }
@@ -157,6 +187,30 @@ class TreatmentFeeListVViewRepository
                 // $query->where(('CREATE_TIME-MOD(CREATE_TIME,1000000)'), '<=', $param);
                 // $query->where('vir_create_date', '<=', $param);
                 $query->where('IN_TIME', '<=', $param);
+            });
+        }
+        return $query;
+    }
+    public function applyOutTimeFromFilter($query, $param)
+    {
+        if ($param !== null) {
+            // $param = $param - ($param % 1000000);
+            return $query->where(function ($query) use ($param) {
+                // $query->where(('CREATE_TIME-MOD(CREATE_TIME,1000000)'), '>=', $param);
+                // $query->where('vir_create_date', '>=', $param);
+                $query->where('OUT_TIME', '>=', $param);
+            });
+        }
+        return $query;
+    }
+    public function applyOutTimeToFilter($query, $param)
+    {
+        if ($param !== null) {
+            // $param = $param - ($param % 1000000);
+            return $query->where(function ($query) use ($param) {
+                // $query->where(('CREATE_TIME-MOD(CREATE_TIME,1000000)'), '<=', $param);
+                // $query->where('vir_create_date', '<=', $param);
+                $query->where('OUT_TIME', '<=', $param);
             });
         }
         return $query;

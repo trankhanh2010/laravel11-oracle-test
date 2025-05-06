@@ -169,6 +169,10 @@ class BaseApiCacheController extends Controller
     protected $fromTimeName = 'FromTime';
     protected $toTime;
     protected $toTimeName = 'ToTime';
+    protected $outTimeFrom;
+    protected $outTimeFromName = 'OutTimeFrom';
+    protected $outTimeTo;
+    protected $outTimeToName = 'OutTimeTo';
     protected $logTimeTo;
     protected $logTimeToName = 'LogTimeTo';
     protected $executeDepartmentCode;
@@ -187,6 +191,8 @@ class BaseApiCacheController extends Controller
     protected $patientId;
     protected $patientIdName = 'PatientId';
     protected $patientTypeIdName = 'PatientTypeId';
+    protected $isClinical;
+    protected $isClinicalName = 'IsClinical';
     protected $medicineTypeId;
     protected $medicineTypeIdName = 'MedicineTypeId';
     protected $materialTypeId;
@@ -273,6 +279,12 @@ class BaseApiCacheController extends Controller
     protected $serviceTypeCodesString;
     protected $treatmentTypeCode;
     protected $treatmentTypeCodeName = 'TreatmentTypeCode';
+    protected $treatmentTypeCodes;
+    protected $treatmentTypeCodesName = 'TreatmentTypeCodes';
+    protected $patientTypeCodes;
+    protected $patientTypeCodesName = 'PatientTypeCodes';
+    protected $endDepartmentCodes;
+    protected $endDepartmentCodesName = 'EndDepartmentCodes';
     protected $inTimeFrom;
     protected $inTimeFromName = 'InTimeFrom';
     protected $inTimeTo;
@@ -289,6 +301,8 @@ class BaseApiCacheController extends Controller
     // Khai báo các biến model
     protected $department;
     protected $departmentName = "department";
+    protected $fund;
+    protected $fundName = 'fund';
     protected $bedRoom;
     protected $bedRoomName = "bed_room";
     protected $storageCondition;
@@ -477,6 +491,8 @@ class BaseApiCacheController extends Controller
     protected $medicinePatyName = 'medicine_paty';
     protected $accidentBodyPart;
     protected $accidentBodyPartName = 'accident_body_part';
+    protected $repayReason;
+    protected $repayReasonName = 'repay_reason';
     protected $tranPatiForm;
     protected $tranPatiFormName = 'tran_pati_form';
     protected $deathCause;
@@ -1696,6 +1712,13 @@ class BaseApiCacheController extends Controller
                 $this->isInBed = null;
             }
         }
+        $this->isClinical = $this->paramRequest['ApiData']['IsClinical'] ?? null;
+        if ($this->isClinical !== null) {
+            if (!is_bool($this->isClinical)) {
+                $this->errors[$this->isClinicalName] = $this->messFormat;
+                $this->isClinical = null;
+            }
+        }
         $this->isCoTreatDepartment = $this->paramRequest['ApiData']['IsCoTreatDepartment'] ?? null;
         if ($this->isCoTreatDepartment !== null) {
             if (!is_bool($this->isCoTreatDepartment)) {
@@ -1834,6 +1857,33 @@ class BaseApiCacheController extends Controller
                 $this->treatmentTypeCode = null;
             }
         }
+        $this->treatmentTypeCodes = $this->paramRequest['ApiData']['TreatmentTypeCodes'] ?? null;
+        if ($this->treatmentTypeCodes != null) {
+            foreach ($this->treatmentTypeCodes as $key => $item) {
+                if (!is_string($item)) {
+                    $this->errors[$this->treatmentTypeCodesName] = $this->messFormat;
+                    unset($this->treatmentTypeCodes[$key]);
+                } 
+            }
+        }
+        $this->patientTypeCodes = $this->paramRequest['ApiData']['PatientTypeCodes'] ?? null;
+        if ($this->patientTypeCodes != null) {
+            foreach ($this->patientTypeCodes as $key => $item) {
+                if (!is_string($item)) {
+                    $this->errors[$this->patientTypeCodesName] = $this->messFormat;
+                    unset($this->patientTypeCodes[$key]);
+                } 
+            }
+        }
+        $this->endDepartmentCodes = $this->paramRequest['ApiData']['EndDepartmentCodes'] ?? null;
+        if ($this->endDepartmentCodes != null) {
+            foreach ($this->endDepartmentCodes as $key => $item) {
+                if (!is_string($item)) {
+                    $this->errors[$this->endDepartmentCodesName] = $this->messFormat;
+                    unset($this->endDepartmentCodes[$key]);
+                } 
+            }
+        }
         $this->patientCode = $this->paramRequest['ApiData']['PatientCode'] ?? null;
         if ($this->patientCode != null) {
             if (!is_string($this->patientCode)) {
@@ -1896,6 +1946,20 @@ class BaseApiCacheController extends Controller
             if (!preg_match('/^\d{14}$/',  $this->toTime)) {
                 $this->errors[$this->toTimeName] = $this->messFormat;
                 $this->toTime = null;
+            }
+        }
+        $this->outTimeTo = $this->paramRequest['ApiData']['OutTimeTo'] ?? null;
+        if ($this->outTimeTo != null) {
+            if (!preg_match('/^\d{14}$/',  $this->outTimeTo)) {
+                $this->errors[$this->outTimeToName] = $this->messFormat;
+                $this->outTimeTo = null;
+            }
+        }
+        $this->outTimeFrom = $this->paramRequest['ApiData']['OutTimeFrom'] ?? null;
+        if ($this->outTimeFrom != null) {
+            if (!preg_match('/^\d{14}$/',  $this->outTimeFrom)) {
+                $this->errors[$this->outTimeFromName] = $this->messFormat;
+                $this->outTimeFrom = null;
             }
         }
         $this->logTimeTo = $this->paramRequest['ApiData']['LogTimeTo'] ?? null;

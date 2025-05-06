@@ -17,7 +17,36 @@ class TestServiceTypeListVViewRepository
     public function applyJoins()
     {
         return $this->testServiceTypeListVView
-            ->select();
+            ->select([
+                'id as key',
+                "id",
+                "tdl_patient_id",
+                "tdl_treatment_id",
+                "is_specimen",
+                "is_no_execute",
+                "service_type_name",
+                "amount",
+                "price",
+                "vir_total_price",
+                "vir_total_hein_price",
+                "vir_total_patient_price",
+                "discount",
+                "other_source_price",
+                "vir_total_price_no_expend",
+                "patient_type_name",
+                "vat_ratio",
+                "is_expend",
+                "tdl_service_req_code",
+                "service_req_id",
+                "tdl_service_code",
+                "tdl_service_name",
+                "service_req_stt_code",
+                "service_req_stt_name",
+                "request_department_name",
+                "request_department_code",
+                "da_tam_ung",
+                "da_thanh_toan",
+            ]);
     }
     public function applyKeywordFilter($query, $keyword)
     {
@@ -94,17 +123,24 @@ class TestServiceTypeListVViewRepository
                     'key' => (string)$key,
                     $originalField => (string)$key, // Hiển thị tên gốc
                     'total' => $group->count(),
+                    'amount' => $group->sum(function ($item) {
+                        return (int) $item['amount'] ?? 0;
+                    }),
+                    'virTotalPrice' => $group->sum(function ($item) {
+                        return (int) $item['vir_total_price'] ?? 0;
+                    }),
+                    'virTotalHeinPrice' => $group->sum(function ($item) {
+                        return (int) $item['vir_total_hein_price'] ?? 0;
+                    }),
+                    'virTotalPatientPrice' => $group->sum(function ($item) {
+                        return (int) $item['vir_total_patient_price'] ?? 0;
+                    }),
                     // 'children' => $groupData($group, $fields),
                 ];
-                // Nếu group theo patientTypeName thì thêm serviceTypeName (lấy theo phần tử đầu)
-                // if ($currentField === 'patient_type_name') {
-                //     $firstItem = $group->first();
-                //     $result['serviceTypeName'] = $firstItem['patient_type_name'] ?? null;
-                // }
-                // if ($currentField === 'service_type_name') {
-                //     $firstItem = $group->first();
-                //     $result['key'] = $firstItem['service_type_name'].$firstItem['service_name'];
-                // }
+                if ($currentField === 'service_type_name') {
+                    $firstItem = $group->first();
+                    $result['key'] = $firstItem['service_type_name'].' '.$firstItem['patient_type_name'];
+                }
 
                 // Đem children xuống dưới để nằm dưới các trường được thêm
                 $result['children'] = $groupData($group, $fields);

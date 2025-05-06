@@ -44,6 +44,16 @@ class DepartmentRepository
 
         return $query;
     }
+    public function applyIsClinicalFilter($query, $param)
+    {
+        if ($param != null) {
+            if($param){
+                $query->where(DB::connection('oracle_his')->raw('his_department.is_clinical'), $param);
+            }
+        }
+
+        return $query;
+    }
     public function applyOrdering($query, $orderBy, $orderByJoin)
     {
         if ($orderBy != null) {

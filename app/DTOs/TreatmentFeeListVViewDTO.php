@@ -29,6 +29,11 @@ class TreatmentFeeListVViewDTO
     public $patientPhone;
     public $param;
     public $noCache;
+    public $treatmentTypeCodes;
+    public $patientTypeCodes;
+    public $endDepartmentCodes;
+    public $outTimeFrom;
+    public $outTimeTo;
     public function __construct(
         $treatmentFeeListVViewName,
         $keyword, 
@@ -55,6 +60,11 @@ class TreatmentFeeListVViewDTO
         $patientPhone,
         $param,
         $noCache,
+        $treatmentTypeCodes,
+        $patientTypeCodes,
+        $endDepartmentCodes,
+        $outTimeFrom,
+        $outTimeTo,
         )
     {
         $this->treatmentFeeListVViewName = $treatmentFeeListVViewName;
@@ -82,5 +92,10 @@ class TreatmentFeeListVViewDTO
         $this->patientPhone = $patientPhone;
         $this->param = $param;
         $this->noCache = $noCache;
+        $this->treatmentTypeCodes = $treatmentTypeCodes;
+        $this->patientTypeCodes = $patientTypeCodes;
+        $this->endDepartmentCodes = $endDepartmentCodes;
+        $this->outTimeFrom = $outTimeFrom;
+        $this->outTimeTo = $outTimeTo;
     }
 }

@@ -2,9 +2,9 @@
 
 namespace App\DTOs;
 
-class DepartmentDTO
+class RepayReasonDTO
 {
-    public $departmentName;
+    public $repayReasonName;
     public $keyword;
     public $isActive;
     public $orderBy;
@@ -17,12 +17,10 @@ class DepartmentDTO
     public $appCreator;
     public $appModifier;
     public $time;
-    public $tab;
     public $param;
     public $noCache;
-    public $isClinical; 
     public function __construct(
-        $departmentName,
+        $repayReasonName,
         $keyword, 
         $isActive, 
         $orderBy, 
@@ -35,13 +33,11 @@ class DepartmentDTO
         $appCreator,
         $appModifier,
         $time,
-        $tab,
         $param,
         $noCache,
-        $isClinical,
         )
     {
-        $this->departmentName = $departmentName;
+        $this->repayReasonName = $repayReasonName;
         $this->keyword = $keyword;
         $this->isActive = $isActive;
         $this->orderBy = $orderBy;
@@ -54,9 +50,7 @@ class DepartmentDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
-        $this->tab = $tab;
         $this->param = $param;
         $this->noCache = $noCache;
-        $this->isClinical = $isClinical;
     }
 }

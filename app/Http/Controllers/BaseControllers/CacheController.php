@@ -45,7 +45,9 @@ class CacheController extends BaseApiCacheController
                 "treatment_list_v_view",
                 "employee",
                 "signer",
-                "speed_unit"
+                "speed_unit",
+                "repay_reason",
+                "fund",
             ];
         }
         // Nếu xóa theo param

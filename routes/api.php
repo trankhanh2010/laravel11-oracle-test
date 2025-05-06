@@ -142,6 +142,7 @@ use App\Http\Controllers\Api\CacheControllers\DeathCauseController;
 use App\Http\Controllers\Api\CacheControllers\DocumentTypeController;
 use App\Http\Controllers\Api\CacheControllers\EmrCoverTypeController;
 use App\Http\Controllers\Api\CacheControllers\EmrFormController;
+use App\Http\Controllers\Api\CacheControllers\FundController;
 use App\Http\Controllers\Api\CacheControllers\GroupTypeController;
 use App\Http\Controllers\Api\CacheControllers\HtuController;
 use App\Http\Controllers\Api\CacheControllers\IcdListVViewController;
@@ -157,6 +158,7 @@ use App\Http\Controllers\Api\CacheControllers\PackingTypeController;
 use App\Http\Controllers\Api\CacheControllers\PayFormController;
 use App\Http\Controllers\Api\CacheControllers\Phieutdvacsbnc2PhieumauController;
 use App\Http\Controllers\Api\CacheControllers\ProcessingMethodController;
+use App\Http\Controllers\Api\CacheControllers\RepayReasonController;
 use App\Http\Controllers\Api\CacheControllers\ServiceReqSttController;
 use App\Http\Controllers\Api\CacheControllers\SpeedUnitController;
 use App\Http\Controllers\Api\CacheControllers\StorageConditionController;
@@ -258,8 +260,8 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Api\TransactionControllers\TreatmentFeePayMentController;
 use App\Http\Controllers\Api\TransactionControllers\MoMoController;
 use App\Http\Controllers\Api\TransactionControllers\TransactionHoanUngController;
+use App\Http\Controllers\Api\TransactionControllers\TransactionThanhToanController;
 use App\Http\Controllers\Api\TransactionControllers\VietinbankController;
-use App\Http\Controllers\Api\TransactionControllers\VietinbankQrBillingController;
 use App\Http\Controllers\Api\ValidateControllers\DeviceGetOtpController;
 use App\Http\Controllers\Api\ValidateControllers\OtpController;
 use App\Http\Controllers\BaseControllers\ConvertController;
@@ -1127,6 +1129,8 @@ Route::group([
     Route::apiResource('v1/transaction-tam-ung', TransactionTamUngController::class)->only(['store']);
     /// Tạo giao dịch hoàn ứng Transaction Hoàn ứng
     Route::apiResource('v1/transaction-hoan-ung', TransactionHoanUngController::class)->only(['store']);
+    /// Tạo giao dịch thanh toán Transaction Thanh Toán
+    Route::apiResource('v1/transaction-thanh-toan', TransactionThanhToanController::class)->only(['store']);
 
     /// Chi tiết giao dịch transaction detail
     // Route::group(['as' => 'HIS.Desktop.Plugins.TransactionBillDetail->'], function () {
@@ -1188,4 +1192,9 @@ Route::group([
     Route::apiResource('v1/speed-unit', SpeedUnitController::class)->only(['index']);
     /// Phieutdvacsbnc2Phieumau
     Route::apiResource('v1/phieutdvacsbnc2-phieumau', Phieutdvacsbnc2PhieumauController::class)->only(['index']);
+    /// Repay Reason
+    Route::apiResource('v1/repay-reason', RepayReasonController::class)->only(['index']);
+    /// Fund
+    Route::apiResource('v1/fund', FundController::class)->only(['index']);
+
 });

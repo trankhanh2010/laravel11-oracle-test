@@ -54,6 +54,7 @@ class DepartmentController extends BaseApiCacheController
             $this->tab,
             $this->param,
             $this->noCache,
+            $this->isClinical,
         );
         $this->departmentService->withParams($this->departmentDTO);
     }

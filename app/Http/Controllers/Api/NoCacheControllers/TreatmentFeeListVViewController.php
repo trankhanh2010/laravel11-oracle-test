@@ -66,6 +66,11 @@ class TreatmentFeeListVViewController extends BaseApiCacheController
             $this->patientPhone,
             $this->param,
             $this->noCache,
+            $this->treatmentTypeCodes,
+            $this->patientTypeCodes,
+            $this->endDepartmentCodes,
+            $this->outTimeFrom,
+            $this->outTimeTo,
         );
         $this->treatmentFeeListVViewService->withParams($this->treatmentFeeListVViewDTO);
     }
@@ -89,7 +94,11 @@ class TreatmentFeeListVViewController extends BaseApiCacheController
             return $this->checkParam();
         }
         $keyword = $this->keyword;
-        $data = $this->treatmentFeeListVViewService->handleDataBaseGetAll();
+        if($keyword != null){
+            $data = $this->treatmentFeeListVViewService->handleDataBaseSearch();
+        }else{
+            $data = $this->treatmentFeeListVViewService->handleDataBaseGetAll();
+        }
         $paramReturn = [
             $this->getAllName => $this->getAll,
             $this->startName => $this->getAll ? null : $this->start,
