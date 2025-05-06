@@ -220,6 +220,7 @@ use App\Http\Controllers\Api\NoCacheControllers\TreatmentFeeDetailVViewControlle
 use App\Http\Controllers\Api\NoCacheControllers\TreatmentFeeListVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TreatmentListVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TreatmentRoomGroupVViewController;
+use App\Http\Controllers\Api\NoCacheControllers\UserAccountBookVViewController;
 // Base Api
 use App\Http\Controllers\BaseControllers\CacheController;
 use App\Http\Controllers\BaseControllers\ElasticSearchController;
@@ -1196,5 +1197,7 @@ Route::group([
     Route::apiResource('v1/repay-reason', RepayReasonController::class)->only(['index']);
     /// Fund
     Route::apiResource('v1/fund', FundController::class)->only(['index']);
+    /// UserAccountBookVView
+    Route::apiResource('v1/user-account-book-v-view', UserAccountBookVViewController::class)->only(['index']);
 
 });

@@ -89,15 +89,15 @@ class CreateTransactionHoanUngRequest extends FormRequest
                             ->where(DB::connection('oracle_his')->raw("is_active"), 1);
                     }),
             ],
-            'cashier_room_id' => [
-                'required',
-                'integer',
-                Rule::exists('App\Models\HIS\CashierRoom', 'id')
-                    ->where(function ($query) {
-                        $query = $query
-                            ->where(DB::connection('oracle_his')->raw("is_active"), 1);
-                    }),
-            ],
+            // 'cashier_room_id' => [
+            //     'required',
+            //     'integer',
+            //     Rule::exists('App\Models\HIS\CashierRoom', 'id')
+            //         ->where(function ($query) {
+            //             $query = $query
+            //                 ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+            //         }),
+            // ],
             'treatment_id' => [
                 'required',
                 'integer',

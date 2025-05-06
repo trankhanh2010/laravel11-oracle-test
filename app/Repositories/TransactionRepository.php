@@ -330,7 +330,7 @@ class TransactionRepository
             'swipe_amount' => $request->pay_form_id == $this->payForm06Id ? $request->swipe_amount : 0, //Nếu đúng hình thức tiền mặt/quẹt thẻ
             'account_book_id' => $request->account_book_id,
             'pay_form_id' => $request->pay_form_id,
-            'cashier_room_id' => $request->cashier_room_id,
+            'cashier_room_id' => 1,
             'treatment_id' => $request->treatment_id,
             'description' => $request->description,
             // Dữ liệu dư thừa
@@ -386,7 +386,7 @@ class TransactionRepository
             'swipe_amount' => $request->pay_form_id == $this->payForm06Id ? $request->swipe_amount : 0, //Nếu đúng hình thức tiền mặt/quẹt thẻ
             'account_book_id' => $request->account_book_id,
             'pay_form_id' => $request->pay_form_id,
-            'cashier_room_id' => $request->cashier_room_id,
+            'cashier_room_id' => 1,
             'repay_reason_id' => $request->repay_reason_id,
             'treatment_id' => $request->treatment_id,
             'description' => $request->description,
@@ -444,7 +444,7 @@ class TransactionRepository
             'swipe_amount' => $request->pay_form_id == $this->payForm06Id ? $request->swipe_amount : 0, //Nếu đúng hình thức tiền mặt/quẹt thẻ
             'account_book_id' => $request->account_book_id,
             'pay_form_id' => $request->pay_form_id,
-            'cashier_room_id' => $request->cashier_room_id,
+            'cashier_room_id' => 1,
             'repay_reason_id' => $request->repay_reason_id,
             'treatment_id' => $request->treatment_id,
             'description' => $request->description,

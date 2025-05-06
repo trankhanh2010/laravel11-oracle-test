@@ -9,10 +9,13 @@ use App\Models\HIS\Department;
 use App\Models\HIS\SereServ;
 use App\Models\HIS\ServiceReq;
 use App\Models\HIS\ServiceReqType;
+use App\Models\HIS\TreatmentEndType;
+use App\Models\HIS\TreatmentLogType;
 use App\Models\HIS\TreatmentType;
 use App\Models\View\TreatmentFeeListVView;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Redis;
 
 class TreatmentFeeListVViewRepository
 {
@@ -24,6 +27,11 @@ class TreatmentFeeListVViewRepository
     protected $serviceReq;
     protected $sereServ;
     protected $department;
+    protected $treatmentLogType;
+    protected $treatmentEndType;
+    protected $treatmentLogTypeKhoaIds;
+    protected $treatmentLogTypeKhoaCodes;
+    protected $treatmentEndTypeTronVienId;
     public function __construct(
         TreatmentFeeListVView $treatmentFeeListVView,
         ServiceReqType $serviceReqType,
@@ -31,6 +39,8 @@ class TreatmentFeeListVViewRepository
         ServiceReq $serviceReq,
         SereServ $sereServ,
         Department $department,
+        TreatmentLogType $treatmentLogType,
+        TreatmentEndType $treatmentEndType,
     ) {
         $this->treatmentFeeListVView = $treatmentFeeListVView;
         $this->serviceReqType = $serviceReqType;
@@ -38,6 +48,32 @@ class TreatmentFeeListVViewRepository
         $this->serviceReq = $serviceReq;
         $this->sereServ = $sereServ;
         $this->department = $department;
+        $this->treatmentLogType = $treatmentLogType;
+        $this->treatmentEndType = $treatmentEndType;
+
+        $cacheKey = 'treatment_log_type_khoa_ids';
+        $cacheKeySet = "cache_keys:" . "setting"; // Set để lưu danh sách key
+        $this->treatmentLogTypeKhoaIds = Cache::remember($cacheKey, now()->addMinutes(10080), function () {
+            return $this->treatmentLogType
+            ->whereIn('treatment_log_type_code', ['01','03','05','07'])
+            ->pluck('id') // Lấy tất cả thành mảng
+            ->toArray();  // Chuyển về mảng thuần
+        });
+        // Lưu key vào Redis Set để dễ xóa sau này
+        Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+
+        $this->treatmentLogTypeKhoaCodes = ['01','03','05','07'];
+
+        $cacheKey = 'treatment_end_type_tron_vien_id';
+        $cacheKeySet = "cache_keys:" . "setting"; // Set để lưu danh sách key
+        $this->treatmentEndTypeTronVienId = Cache::remember($cacheKey, now()->addMinutes(10080), function () {
+            $data =  $this->treatmentEndType->where('treatment_end_type_code', 'TR')->get();
+            return $data->value('id');
+        });
+        // Lưu key vào Redis Set để dễ xóa sau này
+        Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+
+
     }
 
     public function applyJoins()
@@ -143,27 +179,53 @@ class TreatmentFeeListVViewRepository
     public function applyStatusFilter($query, $param)
     {
         switch($param){
-            case 'ChuaKhoaVienPhi':
-                $query->whereNull('fee_lock_time');
+            case 'chuaKhoaVienPhi':
+                $query->where(function ($q) {
+                    $q->orWhereIn('last_treatment_log_type_code', ['01','04'])
+                      ->orWhereNull('fee_lock_time');
+                });
             break;
-            case 'DaKhoaVienPhi':
-                $query->whereNotNull('fee_lock_time');
+            case 'daKhoaVienPhi':
+                $query->where(function ($q) {
+                    $q->orWhereIn('last_treatment_log_type_code', ['03'])
+                      ->orWhere(function ($q) {
+                        $q->whereNotIn('last_treatment_log_type_code', ['01','04'])
+                          ->whereNotNull('fee_lock_time');
+                    });
+                });
             break;
-            case 'DaKetThucDieuTriNhungChuaDuyetKhoaVienPhi':
-                $query->where('is_pause', 1)
-                ->whereNull('fee_lock_time');
+            case 'daKetThucDieuTriNhungChuaDuyetKhoaVienPhi':
+                $query->where(function ($q) {
+                    $q->whereNotNull('treatment_end_type_id')
+                    ->whereNotIn('last_treatment_log_type_code', ['02','03','05','06']);
+                });
             break;
-            case 'ChuaKetThucDieuTri':
-                $query->whereNull('is_pause');
+            case 'chuaKetThucDieuTri':
+                $query->whereNotNull('patient_type_code');
+                $query->where(function ($q) {
+                    $q->orWhereNull('treatment_end_type_id')
+                    ->orWhereIn('last_treatment_log_type_code', ['02'])
+                    ->orWhereNull('last_treatment_log_type_code');
+                });            
             break;
-            case 'BenhNhanBHYT':
+            case 'benhNhanBHYT':
                 $query->where('patient_type_code', '01');
             break;
-            case 'DaKhoaVienPhiNhungChuaDuyetBHYT':
-                $query->whereNotNull('fee_lock_time')
-                ->whereNotNull('hein_lock_time');
+            case 'daKhoaVienPhiNhungChuaDuyetBHYT':
+                $query->whereIn('last_treatment_log_type_code', ['03'])
+                ->where('is_hein_approval',0);
+            break;
+            case 'daDuyetBHYTNhungChuaKhoaBHYT':
+                $query->where('is_hein_approval',1)
+                ->whereNull('is_lock_hein');
+            break;
+            case 'daKhoaBHYTNhungChuaThanhToan':
+                $query->whereNotNull('is_lock_hein')
+                ->where('co_thanh_toan',0);
             break;
         };
+
+
 
         return $query;
     }
