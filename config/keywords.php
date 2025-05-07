@@ -1655,5 +1655,6 @@ return [
         'fund_id' => 'Id quỹ hỗ trợ',
         'buyer_work_place_id' => 'Id nơi làm việc người thanh toán',
         'sere_serv_ids' => 'Danh sách dịch vụ thanh toán',
+        'kc_amount' => 'Tiền kết chuyển',
     ],
 ];

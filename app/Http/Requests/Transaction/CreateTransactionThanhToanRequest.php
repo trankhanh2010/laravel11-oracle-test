@@ -133,6 +133,11 @@ class CreateTransactionThanhToanRequest extends FormRequest
 
             'sere_serv_ids' =>             'required|array',
 
+            'kc_amount' => [
+                'nullable',
+                'integer',
+                'min:0',
+            ],
         ];
     }
     public function messages()
@@ -141,7 +146,6 @@ class CreateTransactionThanhToanRequest extends FormRequest
             'amount.required'      => config('keywords')['transaction_thanh_toan']['amount'] . config('keywords')['error']['required'],
             'amount.integer'       => config('keywords')['transaction_thanh_toan']['amount'] . config('keywords')['error']['integer'],
             'amount.min'           => config('keywords')['transaction_thanh_toan']['amount'] . config('keywords')['error']['integer_min'],
-            'amount.max'           => config('keywords')['transaction_thanh_toan']['amount'] . ' tối đa = Tiền đã thu - Tiền bệnh nhân phải thanh toán - Tiền đã nộp (tạm khóa)',
 
             'account_book_id.required'      => config('keywords')['transaction_thanh_toan']['account_book_id'] . config('keywords')['error']['required'],
             'account_book_id.integer'       => config('keywords')['transaction_thanh_toan']['account_book_id'] . config('keywords')['error']['integer'],
@@ -206,6 +210,8 @@ class CreateTransactionThanhToanRequest extends FormRequest
             'sere_serv_ids.required'      => config('keywords')['transaction_thanh_toan']['sere_serv_ids'] . config('keywords')['error']['required'],
             'sere_serv_ids.array'        => config('keywords')['transaction_thanh_toan']['sere_serv_ids'].config('keywords')['error']['array'], 
 
+            'kc_amount.integer'       => config('keywords')['transaction_thanh_toan']['kc_amount'] . config('keywords')['error']['integer'],
+            'kc_amount.min'           => config('keywords')['transaction_thanh_toan']['kc_amount'] . config('keywords')['error']['integer_min'],
         ];
     }
 
@@ -249,9 +255,9 @@ class CreateTransactionThanhToanRequest extends FormRequest
                 }
             }
             if((($this->exemption??0) + $totalAmountBillFund) > $this->amount){
-                $validator->errors()->add('amount', 'Tổng tiền chiết khấu và tiền các quỹ tối đa = tiền thanh toán!');
-                $validator->errors()->add('exemption', 'Tổng tiền chiết khấu và tiền các quỹ tối đa = tiền thanh toán!');
-                $validator->errors()->add('bill_funds', 'Tổng tiền chiết khấu và tiền các quỹ tối đa = tiền thanh toán!');
+                $validator->errors()->add('amount', 'Tổng tiền chiết khấu, tiền các quỹ tối đa = tiền thanh toán!');
+                $validator->errors()->add('exemption', 'Tổng tiền chiết khấu, tiền các quỹ tối đa = tiền thanh toán!');
+                $validator->errors()->add('bill_funds', 'Tổng tiền chiết khấu, tiền các quỹ tối đa = tiền thanh toán!');
             }
 
 
@@ -292,11 +298,25 @@ class CreateTransactionThanhToanRequest extends FormRequest
             if($this->amount != $totalVirTotalPatientPrice){
                 $validator->errors()->add('amount', config('keywords')['transaction_thanh_toan']['amount'].' không khớp với tổng số tiền dịch vụ đã chọn mà bệnh nhân cần thanh toán!');
             }
+            // Kiểm tra tiền kết chuyển có = tiền đã thu k
+            $this->treatmentFeeDetailVView = new TreatmentFeeDetailVView();
+            $dataTreatmentFee = $this->treatmentFeeDetailVView
+            ->select(
+                'xa_v_his_treatment_fee_detail.*'
+            )
+            ->addSelect(DB::connection('oracle_his')->raw('(total_deposit_amount - total_repay_amount - total_bill_transfer_amount - total_bill_fund - total_bill_exemption + total_bill_amount + locking_amount) as da_thu'))
+            ->find($this->treatment_id ?? 0);
+
+            if($this->kc_amount != $dataTreatmentFee->da_thu){
+                $validator->errors()->add('kc_amount', config('keywords')['transaction_thanh_toan']['kc_amount'].' không khớp với tiền đã thu từ bệnh nhân là '.$dataTreatmentFee->da_thu.' !');
+            }
         });
     }
 
     public function failedValidation(Validator $validator)
     {
+        // $messages = implode(' ', $validator->errors()->all());
+        // dd($messages);
         throw new HttpResponseException(response()->json([
             'success'   => false,
             'message'   => 'Dữ liệu không hợp lệ!',

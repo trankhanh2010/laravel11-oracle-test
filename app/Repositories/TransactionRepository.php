@@ -456,6 +456,7 @@ class TransactionRepository
                 'description' => $request->description,
                 'tdl_bill_fund_amount' => $totalAmountBillFund, // Tổng tiền quỹ thanh toán
                 'sere_serv_amount' => $request->total_vir_total_patient_price, // Tổng tiền bệnh nhân phải trả của các dịch vụ
+                'kc_amount' => $request->kc_amount, //            // Kiểm tra tiền kết chuyển có = tiền đã thu k
                 // Dữ liệu dư thừa
                 'buyer_name' => $request->buyer_name,
                 'buyer_tax_code' => $request->buyer_tax_code,
