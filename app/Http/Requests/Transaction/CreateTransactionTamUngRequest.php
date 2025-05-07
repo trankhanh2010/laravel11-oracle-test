@@ -130,6 +130,26 @@ class CreateTransactionTamUngRequest extends FormRequest
             'transaction_time.required'           => config('keywords')['transaction_tam_ung']['transaction_time'].config('keywords')['error']['required'],
             'transaction_time.integer'            => config('keywords')['transaction_tam_ung']['transaction_time'].config('keywords')['error']['integer'],
             'transaction_time.regex'              => config('keywords')['transaction_tam_ung']['transaction_time'].config('keywords')['error']['regex_ymdhis'],
+
+            
+            'buyer_name.string'        => config('keywords')['transaction_tam_ung']['buyer_name'] . config('keywords')['error']['string'],
+            'buyer_name.max'           => config('keywords')['transaction_tam_ung']['buyer_name'] . config('keywords')['error']['string_max'],
+
+            'buyer_tax_code.string'        => config('keywords')['transaction_tam_ung']['buyer_tax_code'] . config('keywords')['error']['string'],
+            'buyer_tax_code.max'           => config('keywords')['transaction_tam_ung']['buyer_tax_code'] . config('keywords')['error']['string_max'],
+
+            'buyer_account_number.string'        => config('keywords')['transaction_tam_ung']['buyer_account_number'] . config('keywords')['error']['string'],
+            'buyer_account_number.max'           => config('keywords')['transaction_tam_ung']['buyer_account_number'] . config('keywords')['error']['string_max'],
+
+            'buyer_organization.string'        => config('keywords')['transaction_tam_ung']['buyer_organization'] . config('keywords')['error']['string'],
+            'buyer_organization.max'           => config('keywords')['transaction_tam_ung']['buyer_organization'] . config('keywords')['error']['string_max'],
+
+            'buyer_address.string'        => config('keywords')['transaction_tam_ung']['buyer_address'] . config('keywords')['error']['string'],
+            'buyer_address.max'           => config('keywords')['transaction_tam_ung']['buyer_address'] . config('keywords')['error']['string_max'],
+
+            'buyer_phone.string'        => config('keywords')['transaction_tam_ung']['buyer_phone'] . config('keywords')['error']['string'],
+            'buyer_phone.max'           => config('keywords')['transaction_tam_ung']['buyer_phone'] . config('keywords')['error']['string_max'],
+
         ];
     }
 

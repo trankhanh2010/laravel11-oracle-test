@@ -41,7 +41,6 @@ class TransactionThanhToanController extends BaseApiCacheController
 
     public function store(CreateTransactionThanhToanRequest $request)
     {
-        dd($request);
         return $this->transactionThanhToanService->createTransactionThanhToan($request);
     }
 

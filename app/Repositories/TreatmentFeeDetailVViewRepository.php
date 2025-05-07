@@ -19,7 +19,7 @@ class TreatmentFeeDetailVViewRepository
             ->select(
                 'xa_v_his_treatment_fee_detail.*'
             )
-            ->addSelect(DB::connection('oracle_his')->raw('(total_deposit_amount - total_repay_amount - total_bill_transfer_amount + total_bill_amount + locking_amount) as da_thu'))
+            ->addSelect(DB::connection('oracle_his')->raw('(total_deposit_amount - total_repay_amount - total_bill_transfer_amount - total_bill_fund - total_bill_exemption + total_bill_amount + locking_amount) as da_thu')) // Đã thu là tiền thực thu từ bệnh nhân nên mới trừ quỹ ra, trừ ra chiết khấu
             ->addSelect(DB::connection('oracle_his')->raw('(total_deposit_amount - total_service_deposit_amount) as tam_ung'))
             ->addSelect(DB::connection('oracle_his')->raw('(total_patient_price - (total_deposit_amount - total_repay_amount - total_bill_transfer_amount + total_bill_amount + locking_amount)) as fee'))
             ;

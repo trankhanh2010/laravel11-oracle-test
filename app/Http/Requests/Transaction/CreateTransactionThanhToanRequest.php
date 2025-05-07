@@ -4,6 +4,7 @@ namespace App\Http\Requests\Transaction;
 
 use App\Models\HIS\Fund;
 use App\Models\HIS\PayForm;
+use App\Models\HIS\SereServ;
 use App\Models\View\TreatmentFeeDetailVView;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
@@ -20,6 +21,7 @@ class CreateTransactionThanhToanRequest extends FormRequest
     protected $payForm03;
     protected $treatmentFeeDetailVView;
     protected $fund;
+    protected $sereServ;
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -37,6 +39,7 @@ class CreateTransactionThanhToanRequest extends FormRequest
     {
         $this->payForm = new PayForm();
         $this->fund = new Fund();
+        $this->sereServ = new SereServ();
         $this->payForm06 = Cache::remember('pay_form_06_id', now()->addMinutes(10080), function () {
             $data =  $this->payForm->where('pay_form_code', '06')->get();
             return $data->value('id');
@@ -115,6 +118,21 @@ class CreateTransactionThanhToanRequest extends FormRequest
             'buyer_organization' =>     'nullable|string|max:500',
             'buyer_address' =>          'nullable|string|max:500',
             'buyer_phone' =>            'nullable|string|max:20',
+
+            'bill_funds' =>             'nullable|array',
+
+            'buyer_work_place_id' => [
+                'nullable',
+                'integer',
+                Rule::exists('App\Models\HIS\WorkPlace', 'id')
+                    ->where(function ($query) {
+                        $query = $query
+                            ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                    }),
+            ],
+
+            'sere_serv_ids' =>             'required|array',
+
         ];
     }
     public function messages()
@@ -161,6 +179,33 @@ class CreateTransactionThanhToanRequest extends FormRequest
 
             'exemption_reason.string'        => config('keywords')['transaction_thanh_toan']['exemption_reason'] . config('keywords')['error']['string'],
             'exemption_reason.max'           => config('keywords')['transaction_thanh_toan']['exemption_reason'] . config('keywords')['error']['string_max'],
+
+            'buyer_name.string'        => config('keywords')['transaction_thanh_toan']['buyer_name'] . config('keywords')['error']['string'],
+            'buyer_name.max'           => config('keywords')['transaction_thanh_toan']['buyer_name'] . config('keywords')['error']['string_max'],
+
+            'buyer_tax_code.string'        => config('keywords')['transaction_thanh_toan']['buyer_tax_code'] . config('keywords')['error']['string'],
+            'buyer_tax_code.max'           => config('keywords')['transaction_thanh_toan']['buyer_tax_code'] . config('keywords')['error']['string_max'],
+
+            'buyer_account_number.string'        => config('keywords')['transaction_thanh_toan']['buyer_account_number'] . config('keywords')['error']['string'],
+            'buyer_account_number.max'           => config('keywords')['transaction_thanh_toan']['buyer_account_number'] . config('keywords')['error']['string_max'],
+
+            'buyer_organization.string'        => config('keywords')['transaction_thanh_toan']['buyer_organization'] . config('keywords')['error']['string'],
+            'buyer_organization.max'           => config('keywords')['transaction_thanh_toan']['buyer_organization'] . config('keywords')['error']['string_max'],
+
+            'buyer_address.string'        => config('keywords')['transaction_thanh_toan']['buyer_address'] . config('keywords')['error']['string'],
+            'buyer_address.max'           => config('keywords')['transaction_thanh_toan']['buyer_address'] . config('keywords')['error']['string_max'],
+
+            'buyer_phone.string'        => config('keywords')['transaction_thanh_toan']['buyer_phone'] . config('keywords')['error']['string'],
+            'buyer_phone.max'           => config('keywords')['transaction_thanh_toan']['buyer_phone'] . config('keywords')['error']['string_max'],
+
+            'buyer_work_place_id.integer'       => config('keywords')['transaction_thanh_toan']['buyer_work_place_id'].config('keywords')['error']['integer'],
+            'buyer_work_place_id.exists'        => config('keywords')['transaction_thanh_toan']['buyer_work_place_id'].config('keywords')['error']['exists'], 
+
+            'bill_funds.array'        => config('keywords')['transaction_thanh_toan']['bill_funds'].config('keywords')['error']['array'], 
+
+            'sere_serv_ids.required'      => config('keywords')['transaction_thanh_toan']['sere_serv_ids'] . config('keywords')['error']['required'],
+            'sere_serv_ids.array'        => config('keywords')['transaction_thanh_toan']['sere_serv_ids'].config('keywords')['error']['array'], 
+
         ];
     }
 
@@ -169,29 +214,37 @@ class CreateTransactionThanhToanRequest extends FormRequest
     {
         if ($this->has('bill_funds') && $this->bill_funds != null) {
             $this->merge([
-                'bill_funds_list' => json_decode($this->bill_funds) ?? [],
+                'bill_funds_list' => (is_array($this->bill_funds)) ? $this->bill_funds : json_decode($this->bill_funds, true) ?? [],
+            ]);
+        }
+
+        if ($this->has('sere_serv_ids') && $this->sere_serv_ids != null) {
+            $this->merge([
+                'sere_serv_ids_list' => (is_array($this->sere_serv_ids)) ? $this->sere_serv_ids : json_decode($this->sere_serv_ids, true) ?? [],
             ]);
         }
     }
      
     public function withValidator($validator)
     {
-        
         $validator->after(function ($validator) {
             $totalAmountBillFund = 0;
             if ($this->has('bill_funds_list') && ($this->bill_funds_list[0] != null)) {
                 foreach ($this->bill_funds_list as $item) {
-                    $totalAmountBillFund = $totalAmountBillFund + $item->amount;
-                    if (!is_numeric($item->amount)) {
-                        $validator->errors()->add('bill_funds', 'Số tiền hỗ trợ với ID quỹ = ' . $item->fund_id . config('keywords')['error']['integer']);
+                    $totalAmountBillFund = $totalAmountBillFund + $item['amount'];
+                    if (!is_numeric($item['amount'])) {
+                        $validator->errors()->add('bill_funds', 'Số tiền hỗ trợ với ID quỹ = ' . $item['fund_id'] . config('keywords')['error']['integer']);
                     }
-                    if ($item->amount<0) {
-                        $validator->errors()->add('bill_funds', 'Số tiền hỗ trợ với ID quỹ = ' . $item->fund_id . ' phải lớn hơn 0!');
+                    if ($item['amount']<0) {
+                        $validator->errors()->add('bill_funds', 'Số tiền hỗ trợ với ID quỹ = ' . $item['fund_id'] . ' phải lớn hơn 0!');
                     }
                     // Kiểm tra fund_id có tồn tại trong DB không
-                    $exists = $this->fund->where('id', $item->fund_id)->exists();
+                    $exists = $this->fund
+                    ->where('id', $item['fund_id'])
+                    ->where('is_active', 1)
+                    ->exists();
                     if (!$exists) {
-                        $validator->errors()->add('bill_funds', 'ID quỹ = ' . $item->fund_id . ' không tồn tại hoặc đang bị tạm khóa!');
+                        $validator->errors()->add('bill_funds', 'ID quỹ = ' . $item['fund_id'] . ' không tồn tại hoặc đang bị tạm khóa!');
                     }
                 }
             }
@@ -199,6 +252,45 @@ class CreateTransactionThanhToanRequest extends FormRequest
                 $validator->errors()->add('amount', 'Tổng tiền chiết khấu và tiền các quỹ tối đa = tiền thanh toán!');
                 $validator->errors()->add('exemption', 'Tổng tiền chiết khấu và tiền các quỹ tối đa = tiền thanh toán!');
                 $validator->errors()->add('bill_funds', 'Tổng tiền chiết khấu và tiền các quỹ tối đa = tiền thanh toán!');
+            }
+
+
+            if ($this->has('sere_serv_ids_list') && ($this->sere_serv_ids_list[0] != null)) {
+                foreach ($this->sere_serv_ids_list as $item) {
+                    // Kiểm tra sere_serv_id có tồn tại trong DB không
+                    $exists = $this->sereServ
+                    ->where('his_sere_serv.id', $item)
+                    ->where('his_sere_serv.tdl_treatment_id', $this->treatment_id)
+                    ->where('his_sere_serv.is_active', 1)
+                    ->where('his_sere_serv.is_delete', 0)
+                    ->where(function ($query) {
+                        $query->where('his_sere_serv.is_no_execute', 0)
+                              ->orWhereNull('his_sere_serv.is_no_execute');
+                    })
+                    ->where(function ($query) {
+                        $query->where('his_sere_serv.is_no_pay', 0)
+                              ->orWhereNull('his_sere_serv.is_no_pay');
+                    })
+                    ->whereDoesntHave('sereServBills', function ($q) {
+                        $q->where('his_sere_serv_bill.is_delete', 0)
+                          ->where(function ($q2) {
+                              $q2->whereNull('his_sere_serv_bill.is_cancel')
+                                 ->orWhere('his_sere_serv_bill.is_cancel', 0);
+                          });
+                    })
+                    ->exists();
+                    if (!$exists) {
+                        $validator->errors()->add('bill_funds', 'ID SereServ = ' . $item . ' không tồn tại, đang bị tạm khóa, không thực hiện, không thanh toán, đã thanh toán hoặc không thuộc về hồ sơ này!');
+                    }
+                }
+            }
+            
+            $totalVirTotalPatientPrice = $this->sereServ->whereIn('id', $this->sere_serv_ids_list)->sum('vir_total_patient_price');
+            $this->merge([
+                'total_vir_total_patient_price' => $totalVirTotalPatientPrice
+            ]);
+            if($this->amount != $totalVirTotalPatientPrice){
+                $validator->errors()->add('amount', config('keywords')['transaction_thanh_toan']['amount'].' không khớp với tổng số tiền dịch vụ đã chọn mà bệnh nhân cần thanh toán!');
             }
         });
     }

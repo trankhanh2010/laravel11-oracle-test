@@ -102,11 +102,11 @@ class SereServBillRepository
             'app_modifier' => $appModifier,
             'sere_serv_id' => $sereServId,
             'bill_id' => $transaction->id,
-            'price' => $sereServ->price,
+            'price' => $sereServ->vir_total_patient_price,
             'vat_ratio' => $sereServ->vat_ratio,
             'tdl_treatment_id' => $sereServ->tdl_treatment_id,
 
-            'tdl_bill_type_id' => $sereServ->tdl_bill_option,   
+            'tdl_bill_type_id' => 1, //1-Thuong;2-Dich vu (Ng Tri Phuong) 
             'tdl_service_req_id' => $sereServ->service_req_id,   
             'tdl_primary_price' => $sereServ->primary_price,   
             'tdl_limit_price' => $sereServ->limit_price,   
@@ -138,9 +138,9 @@ class SereServBillRepository
             'tdl_execute_department_id' => $sereServ->tdl_execute_department_id,   
             'tdl_sere_serv_parent_id'  => $sereServ->tdl_sere_serv_parent_id,   
             'tdl_is_out_parent_fee' => $sereServ->is_out_parent_fee,   
-            //'tdl_real_price' => $sereServ->tdl_real_price,  // Kiểm tra lại trường tương ứng  
-            //'tdl_real_patient_price'  => $sereServ->tdl_real_patient_price,   //Kiểm tra lại trường tương ứng
-            //'tdl_real_hein_price' => $sereServ->tdl_real_hein_price,   //Kiểm tra lại trường tương ứng
+            'tdl_real_price' => $sereServ->vir_price,  // Kiểm tra lại trường tương ứng  
+            'tdl_real_patient_price'  => $sereServ->vir_patient_price,   //Kiểm tra lại trường tương ứng
+            'tdl_real_hein_price' => $sereServ->vir_hein_price,   //Kiểm tra lại trường tương ứng
             'tdl_primary_patient_type_id' => $sereServ->primary_patient_type_id,   
 
         ]);

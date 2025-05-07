@@ -28,6 +28,8 @@ return [
         'gte' => ' phải lớn hơn hoặc bằng :value!',
         'lt' => ' phải bé hơn :value!',
         'gt' => ' phải lớn hơn :value!',
+        'array' => ' phải là mảng!',
+
 
         /// Error logic db
         'not_in_service_type_id' => ' Hoặc không thuộc nhóm dịch vụ đã chọn!',
@@ -1649,7 +1651,9 @@ return [
         'buyer_organization' => 'Đơn vị',
         'buyer_address' => 'Địa chỉ người thanh toán',
         'buyer_phone' => 'Số điện thoại người thanh toán',
+        'bill_funds' => 'Danh sách quỹ hỗ trợ',
         'fund_id' => 'Id quỹ hỗ trợ',
-
+        'buyer_work_place_id' => 'Id nơi làm việc người thanh toán',
+        'sere_serv_ids' => 'Danh sách dịch vụ thanh toán',
     ],
 ];

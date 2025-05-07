@@ -47,11 +47,11 @@ class CreateTransactionHoanUngRequest extends FormRequest
         ->select(
             'xa_v_his_treatment_fee_detail.*'
         )
-        ->addSelect(DB::connection('oracle_his')->raw('(total_deposit_amount - total_repay_amount - total_bill_transfer_amount + total_bill_amount + locking_amount) as da_thu'))
+        ->addSelect(DB::connection('oracle_his')->raw('(total_deposit_amount - total_repay_amount - total_bill_transfer_amount - total_bill_fund - total_bill_exemption + total_bill_amount + locking_amount) as da_thu'))
         ->find($this->input('treatment_id') ?? 0);
         $max = 0;
         if ($data) {
-            $max = max(0, ((int) $data->da_thu - (int) $data->total_patient_price - (int) $data->locking_amount));
+            $max = max(0, ((int) $data->da_thu - (int) $data->total_patient_price - (int) $data->locking_amount) + (int) $data->total_bill_fund + (int) $data->total_bill_exemption);
         }
         // dd($max);
         // dd( (int) $data->da_thu , (int) $data->total_patient_price , (int) $data->locking_amount);
@@ -121,7 +121,7 @@ class CreateTransactionHoanUngRequest extends FormRequest
             'amount.required'      => config('keywords')['transaction_hoan_ung']['amount'] . config('keywords')['error']['required'],
             'amount.integer'       => config('keywords')['transaction_hoan_ung']['amount'] . config('keywords')['error']['integer'],
             'amount.min'           => config('keywords')['transaction_hoan_ung']['amount'] . config('keywords')['error']['integer_min'],
-            'amount.max'           => config('keywords')['transaction_hoan_ung']['amount'] . ' tối đa = Tiền đã thu - Tiền bệnh nhân phải thanh toán - Tiền đã nộp (tạm khóa)',
+            'amount.max'           => config('keywords')['transaction_hoan_ung']['amount'] . ' tối đa = Tiền đã thu - Tiền bệnh nhân phải thanh toán - Tiền đã nộp (tạm khóa) + Tiền thu quỹ + Tiền chiết khấu',
 
             'account_book_id.required'      => config('keywords')['transaction_hoan_ung']['account_book_id'] . config('keywords')['error']['required'],
             'account_book_id.integer'       => config('keywords')['transaction_hoan_ung']['account_book_id'] . config('keywords')['error']['integer'],
