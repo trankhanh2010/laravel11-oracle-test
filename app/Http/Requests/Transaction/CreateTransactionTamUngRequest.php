@@ -41,7 +41,7 @@ class CreateTransactionTamUngRequest extends FormRequest
             return $data->value('id');
         });
         return [
-            'amount' =>                         'required|integer|min:0',  
+            'amount' =>                 'required|numeric|regex:/^\d{1,15}(\.\d{1,6})?$/|min:0',
             'account_book_id' => [
                                     'required',
                                     'integer',
@@ -79,8 +79,8 @@ class CreateTransactionTamUngRequest extends FormRequest
                                     }),
                                 ], 
             'description' =>        'nullable|string|max:2000',  
-            'swipe_amount' =>       'required_if:pay_form_id,'.$this->payForm06.'|lte:amount',
-            'transfer_amount' =>    'required_if:pay_form_id,'.$this->payForm03.'|lte:amount',
+            'swipe_amount' =>       'required_if:pay_form_id,'.$this->payForm06.'|lte:amount|numeric|regex:/^\d{1,15}(\.\d{1,4})?$/|min:0',
+            'transfer_amount' =>    'required_if:pay_form_id,'.$this->payForm03.'|lte:amount|numeric|regex:/^\d{1,15}(\.\d{1,4})?$/|min:0',
             'transaction_time' =>   'required|integer|regex:/^\d{14}$/',
 
 
@@ -96,9 +96,10 @@ class CreateTransactionTamUngRequest extends FormRequest
     public function messages()
     {
         return [
-            'amount.required'      => config('keywords')['transaction_tam_ung']['amount'].config('keywords')['error']['required'],
-            'amount.integer'       => config('keywords')['transaction_tam_ung']['amount'].config('keywords')['error']['integer'],
-            'amount.min'           => config('keywords')['transaction_tam_ung']['amount'].config('keywords')['error']['integer_min'],
+            'amount.required'       => config('keywords')['transaction_tam_ung']['amount'].config('keywords')['error']['required'],
+            'amount.numeric'        => config('keywords')['transaction_tam_ung']['amount'].config('keywords')['error']['numeric'],
+            'amount.regex'          => config('keywords')['transaction_tam_ung']['amount'].config('keywords')['error']['regex_21_6'],
+            'amount.min'            => config('keywords')['transaction_tam_ung']['amount'].config('keywords')['error']['integer_min'],
 
             'account_book_id.required'      => config('keywords')['transaction_tam_ung']['account_book_id'].config('keywords')['error']['required'],
             'account_book_id.integer'       => config('keywords')['transaction_tam_ung']['account_book_id'].config('keywords')['error']['integer'],
@@ -120,11 +121,15 @@ class CreateTransactionTamUngRequest extends FormRequest
             'description.max'           => config('keywords')['transaction_tam_ung']['description'].config('keywords')['error']['string_max'],
 
             'swipe_amount.required_if'   => config('keywords')['transaction_tam_ung']['swipe_amount'].' không được bỏ trống nếu hình thức thanh toán là Tiền mặt/Quẹt thẻ',
-            'swipe_amount.integer'       => config('keywords')['transaction_tam_ung']['swipe_amount'].config('keywords')['error']['integer'],
+            'swipe_amount.numeric'       => config('keywords')['transaction_tam_ung']['swipe_amount'].config('keywords')['error']['numeric'],
+            'swipe_amount.regex'         => config('keywords')['transaction_tam_ung']['swipe_amount'].config('keywords')['error']['regex_19_4'],
+            'swipe_amount.min'           => config('keywords')['transaction_tam_ung']['swipe_amount'].config('keywords')['error']['integer_min'],
             'swipe_amount.lte'           => config('keywords')['transaction_tam_ung']['swipe_amount'].' phải bé hơn hoặc bằng '.config('keywords')['transaction_tam_ung']['amount'],
 
             'transfer_amount.required_if'   => config('keywords')['transaction_tam_ung']['transfer_amount'].' không được bỏ trống nếu hình thức thanh toán là Tiền mặt/Chuyển khoản',
-            'transfer_amount.integer'       => config('keywords')['transaction_tam_ung']['transfer_amount'].config('keywords')['error']['integer'],
+            'transfer_amount.numeric'       => config('keywords')['transaction_tam_ung']['transfer_amount'].config('keywords')['error']['numeric'],
+            'transfer_amount.regex'         => config('keywords')['transaction_tam_ung']['transfer_amount'].config('keywords')['error']['regex_19_4'],
+            'transfer_amount.min'           => config('keywords')['transaction_tam_ung']['transfer_amount'].config('keywords')['error']['integer_min'],
             'transfer_amount.lte'           => config('keywords')['transaction_tam_ung']['transfer_amount'].' phải bé hơn hoặc bằng '.config('keywords')['transaction_tam_ung']['amount'],
 
             'transaction_time.required'           => config('keywords')['transaction_tam_ung']['transaction_time'].config('keywords')['error']['required'],

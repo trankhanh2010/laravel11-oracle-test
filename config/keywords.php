@@ -15,6 +15,7 @@ return [
         'not_in' => ' không thể nhận giá trị :values',
         'email' => ' không đúng định dạng email!',
         'regex_23_6' => ' chỉ chấp nhận số có tối đa 23 chữ số trong đó có tối đa 6 chữ số thập phân!',
+        'regex_21_6' => ' chỉ chấp nhận số có tối đa 21 chữ số trong đó có tối đa 6 chữ số thập phân!',
         'regex_19_4' => ' chỉ chấp nhận số có tối đa 19 chữ số trong đó có tối đa 4 chữ số thập phân!',
         'regex_19_2' => ' chỉ chấp nhận số có tối đa 19 chữ số trong đó có tối đa 2 chữ số thập phân!',
         'regex_phone' => ' không đúng định dạng!',

@@ -52,7 +52,8 @@ class CreateTransactionThanhToanRequest extends FormRequest
         return [
             'amount' => [
                 'required',
-                'integer',
+                'numeric',
+                'regex:/^\d{1,15}(\.\d{1,6})?$/',
                 'min:0',
             ],
             'account_book_id' => [
@@ -101,13 +102,14 @@ class CreateTransactionThanhToanRequest extends FormRequest
                     }),
             ],
             'description' =>        'nullable|string|max:2000',
-            'swipe_amount' =>       'required_if:pay_form_id,' . $this->payForm06 . '|lte:amount',
-            'transfer_amount' =>    'required_if:pay_form_id,' . $this->payForm03 . '|lte:amount',
+            'swipe_amount' =>       'required_if:pay_form_id,'.$this->payForm06.'|lte:amount|numeric|regex:/^\d{1,15}(\.\d{1,4})?$/|min:0',
+            'transfer_amount' =>    'required_if:pay_form_id,'.$this->payForm03.'|lte:amount|numeric|regex:/^\d{1,15}(\.\d{1,4})?$/|min:0',
             'transaction_time' =>   'required|integer|regex:/^\d{14}$/',
 
             'exemption' => [
                 'nullable',
-                'integer',
+                'numeric',
+                'regex:/^\d{1,15}(\.\d{1,6})?$/',
                 'min:0',
             ],
             'exemption_reason' =>             'nullable|string|max:2000',
@@ -135,7 +137,8 @@ class CreateTransactionThanhToanRequest extends FormRequest
 
             'kc_amount' => [
                 'nullable',
-                'integer',
+                'numeric',
+                'regex:/^\d{1,15}(\.\d{1,6})?$/',
                 'min:0',
             ],
         ];
@@ -144,7 +147,8 @@ class CreateTransactionThanhToanRequest extends FormRequest
     {
         return [
             'amount.required'      => config('keywords')['transaction_thanh_toan']['amount'] . config('keywords')['error']['required'],
-            'amount.integer'       => config('keywords')['transaction_thanh_toan']['amount'] . config('keywords')['error']['integer'],
+            'amount.numeric'       => config('keywords')['transaction_thanh_toan']['amount'].config('keywords')['error']['numeric'],
+            'amount.regex'         => config('keywords')['transaction_thanh_toan']['amount'].config('keywords')['error']['regex_21_6'],
             'amount.min'           => config('keywords')['transaction_thanh_toan']['amount'] . config('keywords')['error']['integer_min'],
 
             'account_book_id.required'      => config('keywords')['transaction_thanh_toan']['account_book_id'] . config('keywords')['error']['required'],
@@ -166,19 +170,24 @@ class CreateTransactionThanhToanRequest extends FormRequest
             'description.string'        => config('keywords')['transaction_thanh_toan']['description'] . config('keywords')['error']['string'],
             'description.max'           => config('keywords')['transaction_thanh_toan']['description'] . config('keywords')['error']['string_max'],
 
-            'swipe_amount.required_if'   => config('keywords')['transaction_thanh_toan']['swipe_amount'] . ' không được bỏ trống nếu hình thức thanh toán là Tiền mặt/Quẹt thẻ',
-            'swipe_amount.integer'       => config('keywords')['transaction_thanh_toan']['swipe_amount'] . config('keywords')['error']['integer'],
-            'swipe_amount.lte'           => config('keywords')['transaction_thanh_toan']['swipe_amount'] . ' phải bé hơn hoặc bằng ' . config('keywords')['transaction_thanh_toan']['amount'],
+            'swipe_amount.required_if'   => config('keywords')['transaction_thanh_toan']['swipe_amount'].' không được bỏ trống nếu hình thức thanh toán là Tiền mặt/Quẹt thẻ',
+            'swipe_amount.numeric'       => config('keywords')['transaction_thanh_toan']['swipe_amount'].config('keywords')['error']['numeric'],
+            'swipe_amount.regex'         => config('keywords')['transaction_thanh_toan']['swipe_amount'].config('keywords')['error']['regex_19_4'],
+            'swipe_amount.min'           => config('keywords')['transaction_thanh_toan']['swipe_amount'].config('keywords')['error']['integer_min'],
+            'swipe_amount.lte'           => config('keywords')['transaction_thanh_toan']['swipe_amount'].' phải bé hơn hoặc bằng '.config('keywords')['transaction_tam_ung']['amount'],
 
-            'transfer_amount.required_if'   => config('keywords')['transaction_thanh_toan']['transfer_amount'] . ' không được bỏ trống nếu hình thức thanh toán là Tiền mặt/Chuyển khoản',
-            'transfer_amount.integer'       => config('keywords')['transaction_thanh_toan']['transfer_amount'] . config('keywords')['error']['integer'],
-            'transfer_amount.lte'           => config('keywords')['transaction_thanh_toan']['transfer_amount'] . ' phải bé hơn hoặc bằng ' . config('keywords')['transaction_thanh_toan']['amount'],
+            'transfer_amount.required_if'   => config('keywords')['transaction_thanh_toan']['transfer_amount'].' không được bỏ trống nếu hình thức thanh toán là Tiền mặt/Chuyển khoản',
+            'transfer_amount.numeric'       => config('keywords')['transaction_thanh_toan']['transfer_amount'].config('keywords')['error']['numeric'],
+            'transfer_amount.regex'         => config('keywords')['transaction_thanh_toan']['transfer_amount'].config('keywords')['error']['regex_19_4'],
+            'transfer_amount.min'           => config('keywords')['transaction_thanh_toan']['transfer_amount'].config('keywords')['error']['integer_min'],
+            'transfer_amount.lte'           => config('keywords')['transaction_thanh_toan']['transfer_amount'].' phải bé hơn hoặc bằng '.config('keywords')['transaction_tam_ung']['amount'],
 
             'transaction_time.required'           => config('keywords')['transaction_thanh_toan']['transaction_time'] . config('keywords')['error']['required'],
             'transaction_time.integer'            => config('keywords')['transaction_thanh_toan']['transaction_time'] . config('keywords')['error']['integer'],
             'transaction_time.regex'              => config('keywords')['transaction_thanh_toan']['transaction_time'] . config('keywords')['error']['regex_ymdhis'],
 
-            'exemption.integer'       => config('keywords')['transaction_thanh_toan']['exemption'] . config('keywords')['error']['integer'],
+            'exemption.numeric'       => config('keywords')['transaction_thanh_toan']['exemption'].config('keywords')['error']['numeric'],
+            'exemption.regex'         => config('keywords')['transaction_thanh_toan']['exemption'].config('keywords')['error']['regex_21_6'],
             'exemption.min'           => config('keywords')['transaction_thanh_toan']['exemption'] . config('keywords')['error']['integer_min'],
 
             'exemption_reason.string'        => config('keywords')['transaction_thanh_toan']['exemption_reason'] . config('keywords')['error']['string'],
@@ -210,7 +219,8 @@ class CreateTransactionThanhToanRequest extends FormRequest
             'sere_serv_ids.required'      => config('keywords')['transaction_thanh_toan']['sere_serv_ids'] . config('keywords')['error']['required'],
             'sere_serv_ids.array'        => config('keywords')['transaction_thanh_toan']['sere_serv_ids'].config('keywords')['error']['array'], 
 
-            'kc_amount.integer'       => config('keywords')['transaction_thanh_toan']['kc_amount'] . config('keywords')['error']['integer'],
+            'kc_amount.numeric'       => config('keywords')['transaction_thanh_toan']['kc_amount'].config('keywords')['error']['numeric'],
+            'kc_amount.regex'         => config('keywords')['transaction_thanh_toan']['kc_amount'].config('keywords')['error']['regex_21_6'],
             'kc_amount.min'           => config('keywords')['transaction_thanh_toan']['kc_amount'] . config('keywords')['error']['integer_min'],
         ];
     }
@@ -243,6 +253,9 @@ class CreateTransactionThanhToanRequest extends FormRequest
                     }
                     if ($item['amount']<0) {
                         $validator->errors()->add('bill_funds', 'Số tiền hỗ trợ với ID quỹ = ' . $item['fund_id'] . ' phải lớn hơn 0!');
+                    }
+                    if (!preg_match('/^\d{1,15}(\.\d{1,4})?$/', $item['amount'])) {
+                        $validator->errors()->add('bill_funds', 'Số tiền hỗ trợ với ID quỹ = ' . $item['fund_id'] . config('keywords')['error']['regex_19_4'],);
                     }
                     // Kiểm tra fund_id có tồn tại trong DB không
                     $exists = $this->fund
