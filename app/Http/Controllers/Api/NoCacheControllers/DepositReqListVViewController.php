@@ -49,13 +49,14 @@ class DepositReqListVViewController extends BaseApiCacheController
             $this->treatmentId,
             $this->param,
             $this->noCache,
+            $this->depositReqCode,
         );
         $this->depositReqListVViewService->withParams($this->depositReqListVViewDTO);
     }
     public function index()
     {
-        if($this->treatmentId == null){
-            $this->errors[$this->treatmentIdName] = 'Thiếu Id điện điều trị!';
+        if($this->treatmentId == null && $this->depositReqCode == null){
+            $this->errors[$this->treatmentIdName] = 'Thiếu Id điều trị hoặc Code YCTU!';
         }
         if ($this->checkParam()) {
             return $this->checkParam();

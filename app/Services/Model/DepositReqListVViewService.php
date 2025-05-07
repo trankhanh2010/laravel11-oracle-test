@@ -30,6 +30,7 @@ class DepositReqListVViewService
             $data = $this->depositReqListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
             $data = $this->depositReqListVViewRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
             $data = $this->depositReqListVViewRepository->applyIsDepositFilter($data, $this->params->isDeposit);
+            $data = $this->depositReqListVViewRepository->applyDepositReqCodeFilter($data, $this->params->depositReqCode);
             $count = $data->count();
             $data = $this->depositReqListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
             $data = $this->depositReqListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
@@ -45,6 +46,7 @@ class DepositReqListVViewService
         $data = $this->depositReqListVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
         $data = $this->depositReqListVViewRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
         $data = $this->depositReqListVViewRepository->applyIsDepositFilter($data, $this->params->isDeposit);
+        $data = $this->depositReqListVViewRepository->applyDepositReqCodeFilter($data, $this->params->depositReqCode);
         $count = $data->count();
         $data = $this->depositReqListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
         $data = $this->depositReqListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);

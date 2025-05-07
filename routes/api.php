@@ -1149,6 +1149,7 @@ Route::group([
             'check_admin:api',
             'check_module:api',
         ]);
+    Route::apiResource('v1/deposit-req-list-v-view', DepositReqListVViewController::class)->only(['index', 'show']);
     /// Vỏ bệnh án
     Route::apiResource('v1/medical-case-cover-list-v-view', MedicalCaseCoverListVViewController::class)->only(['show']);
     /// TreatmentBedRoomList
