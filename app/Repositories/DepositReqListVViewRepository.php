@@ -41,27 +41,29 @@ class DepositReqListVViewRepository
     }
     public function applyDepositReqCodeFilter($query, $code)
     {
-        if ($code !== null) {
+        if ($code != null) {
             $query->where(('deposit_req_code'), $code);
         }
         return $query;
     }
     public function applyIsDepositFilter($query, $param)
     {
-        if ($param) {
-            // có transaction và transaction đó chưa bị hủy/ hoặc bị hủy mà đã được khôi phục
-            $query->whereNotNull(('deposit_id'))
-            ->where(function ($subQuery) {
-                $subQuery->orWhere('transaction_is_cancel', 0)
-                         ->orWhereNull('transaction_is_cancel');
-            });
-        }else{
-            // không có transaction hoặc transaction đã bị hủy
-            $query->where(function ($subQuery) {
-                $subQuery->whereNull(('deposit_id'))
-                         ->orWhere('transaction_is_cancel', 1);
-            });
-            
+        if($param !== null){
+            if ($param) {
+                // có transaction và transaction đó chưa bị hủy/ hoặc bị hủy mà đã được khôi phục
+                $query->whereNotNull(('deposit_id'))
+                ->where(function ($subQuery) {
+                    $subQuery->orWhere('transaction_is_cancel', 0)
+                             ->orWhereNull('transaction_is_cancel');
+                });
+            }else{
+                // không có transaction hoặc transaction đã bị hủy
+                $query->where(function ($subQuery) {
+                    $subQuery->whereNull(('deposit_id'))
+                             ->orWhere('transaction_is_cancel', 1);
+                });
+                
+            }
         }
         return $query;
     }
