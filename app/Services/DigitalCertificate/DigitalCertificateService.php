@@ -99,7 +99,7 @@ class DigitalCertificateService
         // Lý do thu hồi (có thể là "superseded", "keyCompromise", v.v. - Step CA sẽ chấp nhận lý do tùy config)
         $reason = 'superseded'; // có thể thay đổi tùy tình huống
         $jwt = $this->getStepCaTokenRevoke($this->params->loginname);
-        dd($jwt, $serial);
+        // dd($jwt, $serial);
         // Gửi yêu cầu tới Step CA để thu hồi chứng thư
         $response = Http::withOptions([
             'verify' => false,
@@ -385,7 +385,7 @@ XML;
         }
         $dataCrt = $this->getCertificateInfo();
         $seriNumber = (string) hexdec($dataCrt['serial_number_decimal']);
-        dd( $seriNumber);
+        // dd( $seriNumber);
         $iss = 'laravel-provisioner'; // Tên provisioner
         $aud = 'https://localhost:8443/1.0/revoke'; // Dùng cho api nào
         $kid = $dataPub->kid; // kid của provisioner

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Transaction;
 
+use App\Models\HIS\DepositReq;
 use App\Models\HIS\PayForm;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
@@ -16,6 +17,7 @@ class CreateTransactionTamUngRequest extends FormRequest
     protected $payForm;
     protected $payForm06;
     protected $payForm03;
+    protected $depositReq;
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -91,6 +93,15 @@ class CreateTransactionTamUngRequest extends FormRequest
             'buyer_address' =>          'nullable|string|max:500',
             'buyer_phone' =>            'nullable|string|max:20',
 
+            'deposit_req_id' => [
+                'nullable',
+                'integer',
+                Rule::exists('App\Models\HIS\DepositReq', 'id')
+                ->where(function ($query) {
+                    $query = $query
+                    ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                }),
+            ], 
         ];
     }
     public function messages()
@@ -155,9 +166,38 @@ class CreateTransactionTamUngRequest extends FormRequest
             'buyer_phone.string'        => config('keywords')['transaction_tam_ung']['buyer_phone'] . config('keywords')['error']['string'],
             'buyer_phone.max'           => config('keywords')['transaction_tam_ung']['buyer_phone'] . config('keywords')['error']['string_max'],
 
+            'deposit_req_id.integer'       => config('keywords')['transaction_tam_ung']['deposit_req_id'].config('keywords')['error']['integer'],
+            'deposit_req_id.exists'        => config('keywords')['transaction_tam_ung']['deposit_req_id'].config('keywords')['error']['exists'], 
         ];
     }
 
+    public function withValidator($validator)
+    {
+        $validator->after(function ($validator) {
+            // Kiểm tra tiền thanh toán có = tiền yêu cầu tạm ứng k
+            if($this->deposit_req_id != null){
+                $this->depositReq = new DepositReq();
+                $dataDepositReq = $this->depositReq
+                ->select(
+                    'his_deposit_req.*'
+                )
+                ->find($this->deposit_req_id??0);
+                if(!$dataDepositReq){
+                    $validator->errors()->add('deposit_req_id', 'Không tìm thấy yêu cầu tạm ứng!');
+                    return;
+                }
+                if($dataDepositReq->treatment_id != $this->treatment_id){
+                    $validator->errors()->add('deposit_req_id', 'Yêu cầu tạm ứng không thuộc về lần điều trị này!');
+                }
+                if($dataDepositReq->deposit_id != null){
+                    $validator->errors()->add('deposit_req_id', 'Đã tồn tại giao dịch cho yêu cầu tạm ứng này!');
+                }
+                if($this->amount != $dataDepositReq->amount){
+                    $validator->errors()->add('amount', config('keywords')['transaction_tam_ung']['amount'].' không khớp với tiền của yêu cầu tạm ứng!');
+                }
+            }
+        });
+    }
     public function failedValidation(Validator $validator)
     {
         throw new HttpResponseException(response()->json([

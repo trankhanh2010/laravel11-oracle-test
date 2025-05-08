@@ -1612,6 +1612,7 @@ return [
         'buyer_organization' => 'Đơn vị',
         'buyer_address' => 'Địa chỉ người thanh toán',
         'buyer_phone' => 'Số điện thoại người thanh toán',
+        'deposit_req_id' => 'Id yêu cầu tạm ứng',
     ],
     // giao dịch hoàn ứng
     'transaction_hoan_ung' => [
