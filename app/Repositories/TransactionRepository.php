@@ -536,14 +536,19 @@ class TransactionRepository
         $data->delete();
         return $data;
     }
-    public function getOrCreateTransactionVietinBank($data)
+    public function getOrCreateTransactionVietinBank($data, $depositReqCode = '')
     {
+        $cancelReason = 'Khoi tao data QR Code thanh toan VietinBank';
+        if($depositReqCode){
+            $cancelReason = 'Khoi tao data QR Code thanh toan VietinBank cho phieu yeu cau tam ung '.$depositReqCode;
+        }
+
         // Nếu mà đã có transaction cũ chưa thanh toán mà khác tiền thì cập nhật lại tiền
         $dataReturn =  $this->transaction->where('treatment_id', $data['treatment_id'])
             ->where('is_cancel', 1)
             ->whereNull('cancel_reason_id')
             ->where('account_book_id', $this->accountBookQrVietinbankId)
-            ->where('cancel_reason', 'Khoi tao data QR Code thanh toan VietinBank')
+            ->where('cancel_reason', $cancelReason)
             ->first();
         if (!$dataReturn) {
             $treatmentData = $this->treatment->where('id', $data['treatment_id'])->first();
@@ -565,8 +570,8 @@ class TransactionRepository
                 'cashier_room_id' => 1,
                 'treatment_id' => $data['treatment_id'],
                 'transaction_time' => now()->format('Ymdhis'),
-                'description' => "Khoi tao data QR Code thanh toan VietinBank",
-                'cancel_reason' => "Khoi tao data QR Code thanh toan VietinBank",
+                'description' => $cancelReason,
+                'cancel_reason' => $cancelReason,
                 'is_cancel' => 1,
                 // Dữ liệu dư thừa
 
@@ -620,7 +625,7 @@ class TransactionRepository
             ->where('is_cancel', 1)
             ->whereNull('cancel_reason_id')
             ->where('account_book_id', $this->accountBookQrVietinbankId)
-            ->where('cancel_reason', 'Khoi tao data QR Code thanh toan VietinBank')
+            ->where('cancel_reason', $cancelReason)
             ->first();
         return $dataReturn;
     }

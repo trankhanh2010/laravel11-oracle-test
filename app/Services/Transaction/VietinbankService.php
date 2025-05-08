@@ -512,7 +512,7 @@ class VietinbankService
         // // Tạo chữ ký test
         // $privateKeyVietinbankPath = "D:/vietinbank/vtb_private_key.pem";
         // $privateKeyVietinbank = openssl_pkey_get_private(file_get_contents($privateKeyVietinbankPath));
-        // $rawData = '00000223512345616123';
+        // $rawData = $data['requestId'] . $data['merchantId'] . $data['orderId'] . $data['productId'];
         // $signature = '';
         // $success = openssl_sign($rawData,$signature, $privateKeyVietinbank, OPENSSL_ALGO_SHA256);
         // $signatureBase64 = base64_encode($signature);
