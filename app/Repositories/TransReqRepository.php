@@ -115,12 +115,13 @@ class TransReqRepository
         ]);
         return $data;
     }
-    public function createTransReqQrVtbByThuNgan($request, $appCreator, $time = 14400, $appModifier){
+    public function createTransReqQrVtbByThuNgan($request, $appCreator, $appModifier, $currentLoginname){
+        $time = 14400;
         $data = $this->transReq::create([
             'create_time' => now()->format('Ymdhis'),
             'modify_time' => now()->format('Ymdhis'),
-            'creator' => get_loginname_with_token($request->bearerToken(), $time),
-            'modifier' => get_loginname_with_token($request->bearerToken(), $time),
+            'creator' => $currentLoginname,
+            'modifier' => $currentLoginname,
             'app_creator' => $appCreator,
             'app_modifier' => $appModifier,
             'is_active' => 1,
@@ -135,8 +136,8 @@ class TransReqRepository
             'tdl_patient_code' => $request->tdl_patient_code,
             'tdl_patient_name' => $request->tdl_patient_name,
             'request_room_id' => $this->roomThuNganId,
-            'request_loginname'  => get_loginname_with_token($request->bearerToken(), $time),
-            'request_username' => get_loginname_with_token($request->bearerToken(), $time),
+            'request_loginname'  =>  $currentLoginname,
+            'request_username' => $currentLoginname,
             'expired_time' => $request->expired_time,
             'bank'  => $request->bank,
             'request_id'  => $request->request_id,

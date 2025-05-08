@@ -38,11 +38,11 @@ class TransactionListVViewService
         $data = $this->transactionListVViewRepository->applyCreateToTimeFilter($data, $this->params->createToTime);
         $data = $this->transactionListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
         $data = $this->transactionListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit, $this->params->cursorPaginate, $this->params->lastId);
-        if ($this->params->getAll) {
-            $count = $data->count();
-        } else {
-            $count = null;
-        }
+        // if ($this->params->getAll) {
+        $count = $data->count();
+        // } else {
+        //     $count = null;
+        // }
         return ['data' => $data, 'count' => $count];
     }
     private function getDataById($id)
