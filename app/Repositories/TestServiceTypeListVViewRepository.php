@@ -24,6 +24,8 @@ class TestServiceTypeListVViewRepository
                 "tdl_treatment_id",
                 "is_specimen",
                 "is_no_execute",
+                "is_no_pay",
+                "tdl_is_main_exam",
                 "service_type_name",
                 "amount",
                 "price",
@@ -45,6 +47,7 @@ class TestServiceTypeListVViewRepository
                 "request_department_name",
                 "request_department_code",
                 "da_tam_ung",
+                "tam_ung",
                 "da_thanh_toan",
             ]);
     }

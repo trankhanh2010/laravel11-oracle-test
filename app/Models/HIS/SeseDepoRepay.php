@@ -12,7 +12,8 @@ class SeseDepoRepay extends Model
     
     protected $connection = 'oracle_his'; 
     protected $table = 'his_sese_depo_repay';
-    protected $fillable = [
-
+    public $timestamps = false;
+    protected $guarded = [
+        'id',
     ];
 }

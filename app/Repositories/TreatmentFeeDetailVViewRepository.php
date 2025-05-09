@@ -22,6 +22,7 @@ class TreatmentFeeDetailVViewRepository
             ->addSelect(DB::connection('oracle_his')->raw('(total_deposit_amount - total_repay_amount - total_bill_transfer_amount - total_bill_fund - total_bill_exemption + total_bill_amount + locking_amount) as da_thu')) // Đã thu là tiền thực thu từ bệnh nhân nên mới trừ quỹ ra, trừ ra chiết khấu
             ->addSelect(DB::connection('oracle_his')->raw('(total_deposit_amount - total_service_deposit_amount) as tam_ung'))
             ->addSelect(DB::connection('oracle_his')->raw('(total_patient_price - (total_deposit_amount - total_repay_amount - total_bill_transfer_amount + total_bill_amount + locking_amount)) as fee'))
+            ->addSelect(DB::connection('oracle_his')->raw('((total_deposit_amount - total_repay_amount - total_bill_transfer_amount - total_bill_fund - total_bill_exemption + total_bill_amount + locking_amount) - total_patient_price - locking_amount - total_bill_fund + total_bill_exemption) as tien_hoan_ung_toi_da')) // Tiền tối đa hiện trên form lúc hoàn ứng max tối đa = Tiền đã thu - Tiền bệnh nhân phải thanh toán - Tiền đã nộp (tạm khóa) + Tiền thu quỹ + Tiền chiết khấu
             ;
     }
     public function applyKeywordFilter($query, $keyword)

@@ -191,7 +191,7 @@ class CreateTransactionTamThuDichVuRequest extends FormRequest
         $validator->after(function ($validator) {
             if ($this->has('sere_servs_list') && ($this->sere_servs_list[0] ?? 0 != null)) {
                 foreach ($this->sere_servs_list as $item) {
-                    // Kiểm tra sere_serv_id có tồn tại trong DB không
+                    // Kiểm tra sere_serv_id có tồn tại trong DB không, có tạm thu dv chưa
                     $exists = $this->sereServ
                         ->where('his_sere_serv.id', $item['id'])
                         ->where('his_sere_serv.tdl_treatment_id', $this->treatment_id)
@@ -216,11 +216,14 @@ class CreateTransactionTamThuDichVuRequest extends FormRequest
                     if (!$exists) {
                         $validator->errors()->add('sere_serv_ids', 'ID SereServ = ' . $item['id'] . ' không tồn tại, không thực hiện, đã tạm thu dịch vụ hoặc không thuộc về hồ sơ này!');
                     }
+                    if (!preg_match('/^\d{1,15}(\.\d{1,4})?$/', $item['amount'])) {
+                        $validator->errors()->add('sere_servs', 'ID SereServ = ' . $item['id'].' số tiền tạm thu dịch vụ' . config('keywords')['error']['regex_19_4'],);
+                    }
                 }
 
                 $totalAmountDeposit = array_sum(array_column($this->sere_servs_list, 'amount')) ?? 0;
                 if ($totalAmountDeposit != $this->amount) {
-                    $validator->errors()->add('amount', 'Tiền tạm thu không khớp với tổng tiền tạm thu của các dịch vụ đã chọn!');
+                    $validator->errors()->add('amount', 'Tiền tạm thu = '.$this->amount.' không khớp với tổng tiền tạm thu của các dịch vụ đã chọn = '.$totalAmountDeposit.'!');
                 }
             }
         });

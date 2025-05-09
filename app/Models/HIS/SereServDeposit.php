@@ -15,4 +15,8 @@ class SereServDeposit extends Model
     protected $guarded = [
         'id',
     ];
+    public function seseDepoRepays()
+    {
+        return $this->hasMany(SeseDepoRepay::class, 'sere_serv_deposit_id', 'id');
+    }
 }
