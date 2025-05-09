@@ -237,6 +237,9 @@ class CreateTransactionHoanUngDichVuRequest extends FormRequest
                     if (!$exists) {
                         $validator->errors()->add('sere_servs', 'ID SereServ = ' . $item['id'] . ' là khám chính, không tồn tại, không thực hiện, chưa tạm thu dịch vụ hoặc không thuộc về hồ sơ này!');
                     }
+                    if (!preg_match('/^\d{1,15}(\.\d{1,4})?$/', $item['amount'])) {
+                        $validator->errors()->add('sere_servs', 'ID SereServ = ' . $item['id'].' số tiền hoàn ứng dịch vụ' . config('keywords')['error']['regex_19_4'],);
+                    }
 
                     // Gán giá trị vào mảng (nếu tìm thấy)
                     // lấy ds các lần tạm thu dv mà chưa được tạm ứng dv lại

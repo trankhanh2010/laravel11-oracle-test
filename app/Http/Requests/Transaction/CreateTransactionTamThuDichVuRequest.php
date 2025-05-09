@@ -220,8 +220,8 @@ class CreateTransactionTamThuDichVuRequest extends FormRequest
                     if (!$exists) {
                         $validator->errors()->add('sere_serv_ids', 'ID SereServ = ' . $item['id'] . ' không tồn tại, không thực hiện, đã tạm thu dịch vụ hoặc không thuộc về hồ sơ này!');
                     }
-                    if (!preg_match('/^\d{1,15}(\.\d{1,4})?$/', $item['amount'])) {
-                        $validator->errors()->add('sere_servs', 'ID SereServ = ' . $item['id'].' số tiền tạm thu dịch vụ' . config('keywords')['error']['regex_19_4'],);
+                    if (!preg_match('/^\d{1,15}(\.\d{1,6})?$/', $item['amount'])) {
+                        $validator->errors()->add('sere_servs', 'ID SereServ = ' . $item['id'].' số tiền tạm thu dịch vụ' . config('keywords')['error']['regex_21_6'],);
                     }
                 }
 

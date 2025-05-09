@@ -304,7 +304,9 @@ class CreateTransactionThanhToanRequest extends FormRequest
                     if (!$exists) {
                         $validator->errors()->add('bill_funds', 'ID SereServ = ' . $item['id'] . ' không tồn tại, đang bị tạm khóa, không thực hiện, không thanh toán, đã thanh toán hoặc không thuộc về hồ sơ này!');
                     }
-
+                    if (!preg_match('/^\d{1,15}(\.\d{1,6})?$/', $item['amount'])) {
+                        $validator->errors()->add('sere_servs', 'ID SereServ = ' . $item['id'].' số tiền thanh toán dịch vụ' . config('keywords')['error']['regex_21_6'],);
+                    }
                     $virTotalPatientPrice = $this->sereServ
                     ->find($item['id']??0)->vir_total_patient_price??0;
                     // Nếu tiền thanh toán dv không khớp với tiền bệnh nhân phải trả
