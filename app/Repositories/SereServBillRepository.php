@@ -91,7 +91,7 @@ class SereServBillRepository
     {
         return $this->sereServBill->find($id);
     }
-    public function create($sereServId, $transaction, $appCreator, $appModifier){
+    public function create($sereServId, $amount, $transaction, $appCreator, $appModifier){
         $sereServ = $this->sereServ->find($sereServId);
         $data = $this->sereServBill::create([
             'create_time' => now()->format('Ymdhis'),
@@ -102,7 +102,7 @@ class SereServBillRepository
             'app_modifier' => $appModifier,
             'sere_serv_id' => $sereServId,
             'bill_id' => $transaction->id,
-            'price' => $sereServ->vir_total_patient_price,
+            'price' => $amount,
             'vat_ratio' => $sereServ->vat_ratio,
             'tdl_treatment_id' => $sereServ->tdl_treatment_id,
 

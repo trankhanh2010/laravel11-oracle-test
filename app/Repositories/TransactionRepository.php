@@ -455,7 +455,8 @@ class TransactionRepository
     {
         $treatmentData = $this->treatment->where('id', $request->treatment_id)->first();
         $totalAmountBillFund = array_sum(array_column($request->bill_funds, 'amount')); // Tổng tiền quỹ hỗ trợ
-        $data = DB::connection('oracle_his')->transaction(function () use ($request, $time, $appCreator, $appModifier, $treatmentData, $totalAmountBillFund) {
+        $sereServAmount = array_sum(array_column($request->sere_servs, 'amount')); // Tổng tiền các dịch vụ thanh toán
+        $data = DB::connection('oracle_his')->transaction(function () use ($request, $time, $appCreator, $appModifier, $treatmentData, $totalAmountBillFund, $sereServAmount) {
             // if(!$treatmentData) return;
             $data = $this->transaction::create([
                 'create_time' => now()->format('Ymdhis'),
@@ -475,7 +476,7 @@ class TransactionRepository
                 'treatment_id' => $request->treatment_id,
                 'description' => $request->description,
                 'tdl_bill_fund_amount' => $totalAmountBillFund, // Tổng tiền quỹ thanh toán
-                'sere_serv_amount' => $request->total_vir_total_patient_price, // Tổng tiền bệnh nhân phải trả của các dịch vụ
+                'sere_serv_amount' => $sereServAmount, // Tổng tiền bệnh nhân phải trả của các dịch vụ
                 'kc_amount' => $request->kc_amount, //            // Kiểm tra tiền kết chuyển có = tiền đã thu k
                 // Dữ liệu dư thừa
                 'buyer_name' => $request->buyer_name,
@@ -521,8 +522,8 @@ class TransactionRepository
             }
 
             // Tạo bản ghi sere_serv_bill
-            foreach ($request->sere_serv_ids as $key => $item) {
-                $this->sereServBillRepository->create($item, $data, $appCreator, $appModifier,);
+            foreach ($request->sere_servs as $key => $item) {
+                $this->sereServBillRepository->create($item['id'], $item['amount'], $data, $appCreator, $appModifier,);
             }
             return $data;
         });

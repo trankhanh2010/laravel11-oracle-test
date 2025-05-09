@@ -137,7 +137,7 @@ class CreateTransactionThanhToanRequest extends FormRequest
                     }),
             ],
 
-            'sere_serv_ids' =>             'required|array',
+            'sere_servs' =>             'required|array',
 
             'kc_amount' => [
                 'nullable',
@@ -220,8 +220,8 @@ class CreateTransactionThanhToanRequest extends FormRequest
 
             'bill_funds.array'        => config('keywords')['transaction_thanh_toan']['bill_funds'] . config('keywords')['error']['array'],
 
-            'sere_serv_ids.required'      => config('keywords')['transaction_thanh_toan']['sere_serv_ids'] . config('keywords')['error']['required'],
-            'sere_serv_ids.array'        => config('keywords')['transaction_thanh_toan']['sere_serv_ids'] . config('keywords')['error']['array'],
+            'sere_servs.required'      => config('keywords')['transaction_thanh_toan']['sere_servs'] . config('keywords')['error']['required'],
+            'sere_servs.array'        => config('keywords')['transaction_thanh_toan']['sere_servs'] . config('keywords')['error']['array'],
 
             'kc_amount.numeric'       => config('keywords')['transaction_thanh_toan']['kc_amount'] . config('keywords')['error']['numeric'],
             'kc_amount.regex'         => config('keywords')['transaction_thanh_toan']['kc_amount'] . config('keywords')['error']['regex_21_6'],
@@ -238,9 +238,9 @@ class CreateTransactionThanhToanRequest extends FormRequest
             ]);
         }
 
-        if ($this->has('sere_serv_ids') && $this->sere_serv_ids != null) {
+        if ($this->has('sere_servs') && $this->sere_servs != null) {
             $this->merge([
-                'sere_serv_ids_list' => (is_array($this->sere_serv_ids)) ? $this->sere_serv_ids : json_decode($this->sere_serv_ids, true) ?? [],
+                'sere_servs_list' => (is_array($this->sere_servs)) ? $this->sere_servs : json_decode($this->sere_servs, true) ?? [],
             ]);
         }
     }
@@ -277,11 +277,11 @@ class CreateTransactionThanhToanRequest extends FormRequest
                 }
             }
 
-            if ($this->has('sere_serv_ids_list') && ($this->sere_serv_ids_list[0] != null)) {
-                foreach ($this->sere_serv_ids_list as $item) {
+            if ($this->has('sere_servs_list') && ($this->sere_servs_list[0] != null)) {
+                foreach ($this->sere_servs_list as $item) {
                     // Kiểm tra sere_serv_id có tồn tại trong DB không
                     $exists = $this->sereServ
-                        ->where('his_sere_serv.id', $item)
+                        ->where('his_sere_serv.id', $item['id'])
                         ->where('his_sere_serv.tdl_treatment_id', $this->treatment_id)
                         ->where('his_sere_serv.is_active', 1)
                         ->where('his_sere_serv.is_delete', 0)
@@ -302,17 +302,22 @@ class CreateTransactionThanhToanRequest extends FormRequest
                         })
                         ->exists();
                     if (!$exists) {
-                        $validator->errors()->add('bill_funds', 'ID SereServ = ' . $item . ' không tồn tại, đang bị tạm khóa, không thực hiện, không thanh toán, đã thanh toán hoặc không thuộc về hồ sơ này!');
+                        $validator->errors()->add('bill_funds', 'ID SereServ = ' . $item['id'] . ' không tồn tại, đang bị tạm khóa, không thực hiện, không thanh toán, đã thanh toán hoặc không thuộc về hồ sơ này!');
+                    }
+                    
+                    $virTotalPatientPrice = $this->sereServ
+                    ->find($item['id']??0)->vir_total_patient_price??0;
+                    // Nếu tiền thanh toán dv không khớp với tiền bệnh nhân phải trả
+                    if($virTotalPatientPrice != $item['amount']){
+                        $validator->errors()->add('sere_servs', 'ID SereServ = ' . $item['id'] . ' tiền thanh toán dịch vụ = '.$item['amount'].' không khớp với tiền bệnh nhân phải trả = '.$virTotalPatientPrice.'!');
                     }
                 }
             }
 
-            $totalVirTotalPatientPrice = $this->sereServ->whereIn('id', $this->sere_serv_ids_list ?? [0])->sum('vir_total_patient_price');
-            $this->merge([
-                'total_vir_total_patient_price' => $totalVirTotalPatientPrice
-            ]);
-            if ($this->amount != $totalVirTotalPatientPrice) {
-                $validator->errors()->add('amount', config('keywords')['transaction_thanh_toan']['amount'] . ' = ' . $this->amount . ' không khớp với tổng số tiền dịch vụ đã chọn mà bệnh nhân cần thanh toán = ' . $totalVirTotalPatientPrice . '!');
+            $totalAmountBill = array_sum(array_column($this->sere_servs_list, 'amount')) ?? 0;
+
+            if ($this->amount != $totalAmountBill) {
+                $validator->errors()->add('amount', config('keywords')['transaction_thanh_toan']['amount'] . ' = ' . $this->amount . ' không khớp với tổng số tiền dịch vụ đã chọn mà bệnh nhân cần thanh toán = ' . $totalAmountBill . '!');
             }
             // Kiểm tra tiền kết chuyển có = tiền đã thu k
             $this->treatmentFeeDetailVView = new TreatmentFeeDetailVView();
@@ -326,7 +331,7 @@ class CreateTransactionThanhToanRequest extends FormRequest
             if ($this->kc_amount != $dataTreatmentFee?->da_thu ?? 0) {
                 $validator->errors()->add('kc_amount', config('keywords')['transaction_thanh_toan']['kc_amount'] . ' = ' . $this->kc_amount . ' không khớp với tiền đã thu từ bệnh nhân là ' . ($dataTreatmentFee->da_thu ?? 0) . ' !');
             }
-            // $totalAmountBill = $this->sereServ->whereIn('id', $this->sere_serv_ids)->sum('vir_total_patient_price') ?? 0;
+            // $totalAmountBill = $this->sereServ->whereIn('id', $this->sere_servs)->sum('vir_total_patient_price') ?? 0;
             // if ($totalAmountBill != $this->amount) {
             //     $validator->errors()->add('amount', 'Tiền thanh toán không khớp với tổng tiền thanh toán của các dịch vụ đã chọn!');
             // }
