@@ -41,28 +41,28 @@ class TransactionListVViewRepository
     }
     public function applyTransactionTypeIdsFilter($query, $ids)
     {
-        if ($ids !== null) {
+        if ($ids != null) {
             $query->whereIn(('transaction_type_id'), $ids);
         }
         return $query;
     }
     public function applyTransactionCodeFilter($query, $param)
     {
-        if ($param !== null) {
+        if ($param != null) {
             $query->where(('transaction_code'), $param);
         }
         return $query;
     }
     public function applyTreatmentCodeFilter($query, $param)
     {
-        if ($param !== null) {
+        if ($param != null) {
             $query->where(('tdl_treatment_code'), $param);
         }
         return $query;
     }
     public function applyCreateFromTimeFilter($query, $param)
     {
-        if ($param !== null) {
+        if ($param != null) {
             return $query->where(function ($query) use ($param) {
                 $query->where('create_time', '>=', $param);
             });
@@ -71,7 +71,7 @@ class TransactionListVViewRepository
     }
     public function applyCreateToTimeFilter($query, $param)
     {
-        if ($param !== null) {
+        if ($param != null) {
             return $query->where(function ($query) use ($param) {
                 $query->where('create_time', '<=', $param);
             });
