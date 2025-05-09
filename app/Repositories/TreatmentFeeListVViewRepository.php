@@ -280,7 +280,10 @@ class TreatmentFeeListVViewRepository
     public function applyChuaRaVienChuaKhoaVienPhiFilter($query)
     {
             $query->where(function ($query) {
-                $query->whereNull('fee_lock_time')
+                $query->where(function ($q) {
+                    $q->orWhereIn('last_treatment_log_type_code', ['01','04'])
+                      ->orWhereNull('fee_lock_time');
+                })
                 ->whereNull('treatment_end_type_id');
             });
         return $query;

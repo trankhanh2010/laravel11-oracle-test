@@ -102,10 +102,14 @@ class CreateTransactionHoanUngRequest extends FormRequest
             'treatment_id' => [
                 'required',
                 'integer',
-                Rule::exists('App\Models\HIS\Treatment', 'id')
+                Rule::exists('App\Models\View\TreatmentFeeListVView', 'id') 
                     ->where(function ($query) {
                         $query = $query
-                            ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                            ->where(DB::connection('oracle_his')->raw("is_active"), 1)  // Lọc chưa khóa viện phí
+                            ->where(function ($q) {
+                                $q->orWhereIn('last_treatment_log_type_code', ['01','04']) 
+                                  ->orWhereNull('fee_lock_time');
+                            });
                     }),
             ],
             'description' =>        'nullable|string|max:2000',

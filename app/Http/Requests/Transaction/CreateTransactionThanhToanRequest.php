@@ -95,10 +95,14 @@ class CreateTransactionThanhToanRequest extends FormRequest
             'treatment_id' => [
                 'required',
                 'integer',
-                Rule::exists('App\Models\HIS\Treatment', 'id')
+                Rule::exists('App\Models\View\TreatmentFeeListVView', 'id') 
                     ->where(function ($query) {
                         $query = $query
-                            ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                            ->where(DB::connection('oracle_his')->raw("is_active"), 1)  // Lọc chưa khóa viện phí
+                            ->where(function ($q) {
+                                $q->orWhereIn('last_treatment_log_type_code', ['01','04']) 
+                                  ->orWhereNull('fee_lock_time');
+                            });
                     }),
             ],
             'description' =>        'nullable|string|max:2000',
@@ -271,62 +275,61 @@ class CreateTransactionThanhToanRequest extends FormRequest
                     $validator->errors()->add('exemption', 'Tổng tiền chiết khấu, tiền các quỹ tối đa = tiền thanh toán!');
                     $validator->errors()->add('bill_funds', 'Tổng tiền chiết khấu, tiền các quỹ tối đa = tiền thanh toán!');
                 }
+            }
 
-
-                if ($this->has('sere_serv_ids_list') && ($this->sere_serv_ids_list[0] != null)) {
-                    foreach ($this->sere_serv_ids_list as $item) {
-                        // Kiểm tra sere_serv_id có tồn tại trong DB không
-                        $exists = $this->sereServ
-                            ->where('his_sere_serv.id', $item)
-                            ->where('his_sere_serv.tdl_treatment_id', $this->treatment_id)
-                            ->where('his_sere_serv.is_active', 1)
-                            ->where('his_sere_serv.is_delete', 0)
-                            ->where(function ($query) {
-                                $query->where('his_sere_serv.is_no_execute', 0)
-                                    ->orWhereNull('his_sere_serv.is_no_execute');
-                            })
-                            ->where(function ($query) {
-                                $query->where('his_sere_serv.is_no_pay', 0)
-                                    ->orWhereNull('his_sere_serv.is_no_pay');
-                            })
-                            ->whereDoesntHave('sereServBills', function ($q) {
-                                $q->where('his_sere_serv_bill.is_delete', 0)
-                                    ->where(function ($q2) {
-                                        $q2->whereNull('his_sere_serv_bill.is_cancel')
-                                            ->orWhere('his_sere_serv_bill.is_cancel', 0);
-                                    });
-                            })
-                            ->exists();
-                        if (!$exists) {
-                            $validator->errors()->add('bill_funds', 'ID SereServ = ' . $item . ' không tồn tại, đang bị tạm khóa, không thực hiện, không thanh toán, đã thanh toán hoặc không thuộc về hồ sơ này!');
-                        }
+            if ($this->has('sere_serv_ids_list') && ($this->sere_serv_ids_list[0] != null)) {
+                foreach ($this->sere_serv_ids_list as $item) {
+                    // Kiểm tra sere_serv_id có tồn tại trong DB không
+                    $exists = $this->sereServ
+                        ->where('his_sere_serv.id', $item)
+                        ->where('his_sere_serv.tdl_treatment_id', $this->treatment_id)
+                        ->where('his_sere_serv.is_active', 1)
+                        ->where('his_sere_serv.is_delete', 0)
+                        ->where(function ($query) {
+                            $query->where('his_sere_serv.is_no_execute', 0)
+                                ->orWhereNull('his_sere_serv.is_no_execute');
+                        })
+                        ->where(function ($query) {
+                            $query->where('his_sere_serv.is_no_pay', 0)
+                                ->orWhereNull('his_sere_serv.is_no_pay');
+                        })
+                        ->whereDoesntHave('sereServBills', function ($q) {
+                            $q->where('his_sere_serv_bill.is_delete', 0)
+                                ->where(function ($q2) {
+                                    $q2->whereNull('his_sere_serv_bill.is_cancel')
+                                        ->orWhere('his_sere_serv_bill.is_cancel', 0);
+                                });
+                        })
+                        ->exists();
+                    if (!$exists) {
+                        $validator->errors()->add('bill_funds', 'ID SereServ = ' . $item . ' không tồn tại, đang bị tạm khóa, không thực hiện, không thanh toán, đã thanh toán hoặc không thuộc về hồ sơ này!');
                     }
                 }
-
-                $totalVirTotalPatientPrice = $this->sereServ->whereIn('id', $this->sere_serv_ids_list ?? [0])->sum('vir_total_patient_price');
-                $this->merge([
-                    'total_vir_total_patient_price' => $totalVirTotalPatientPrice
-                ]);
-                if ($this->amount != $totalVirTotalPatientPrice) {
-                    $validator->errors()->add('amount', config('keywords')['transaction_thanh_toan']['amount'] .' = '.$this->amount. ' không khớp với tổng số tiền dịch vụ đã chọn mà bệnh nhân cần thanh toán = '.$totalVirTotalPatientPrice.'!');
-                }
-                // Kiểm tra tiền kết chuyển có = tiền đã thu k
-                $this->treatmentFeeDetailVView = new TreatmentFeeDetailVView();
-                $dataTreatmentFee = $this->treatmentFeeDetailVView
-                    ->select(
-                        'xa_v_his_treatment_fee_detail.*'
-                    )
-                    ->addSelect(DB::connection('oracle_his')->raw('(total_deposit_amount - total_repay_amount - total_bill_transfer_amount - total_bill_fund - total_bill_exemption + total_bill_amount + locking_amount) as da_thu'))
-                    ->find($this->treatment_id ?? 0);
-
-                if ($this->kc_amount != $dataTreatmentFee?->da_thu ?? 0) {
-                    $validator->errors()->add('kc_amount', config('keywords')['transaction_thanh_toan']['kc_amount'] .' = '.$this->kc_amount. ' không khớp với tiền đã thu từ bệnh nhân là ' . ($dataTreatmentFee->da_thu ?? 0) . ' !');
-                }
-                // $totalAmountBill = $this->sereServ->whereIn('id', $this->sere_serv_ids)->sum('vir_total_patient_price') ?? 0;
-                // if ($totalAmountBill != $this->amount) {
-                //     $validator->errors()->add('amount', 'Tiền thanh toán không khớp với tổng tiền thanh toán của các dịch vụ đã chọn!');
-                // }
             }
+
+            $totalVirTotalPatientPrice = $this->sereServ->whereIn('id', $this->sere_serv_ids_list ?? [0])->sum('vir_total_patient_price');
+            $this->merge([
+                'total_vir_total_patient_price' => $totalVirTotalPatientPrice
+            ]);
+            if ($this->amount != $totalVirTotalPatientPrice) {
+                $validator->errors()->add('amount', config('keywords')['transaction_thanh_toan']['amount'] . ' = ' . $this->amount . ' không khớp với tổng số tiền dịch vụ đã chọn mà bệnh nhân cần thanh toán = ' . $totalVirTotalPatientPrice . '!');
+            }
+            // Kiểm tra tiền kết chuyển có = tiền đã thu k
+            $this->treatmentFeeDetailVView = new TreatmentFeeDetailVView();
+            $dataTreatmentFee = $this->treatmentFeeDetailVView
+                ->select(
+                    'xa_v_his_treatment_fee_detail.*'
+                )
+                ->addSelect(DB::connection('oracle_his')->raw('(total_deposit_amount - total_repay_amount - total_bill_transfer_amount - total_bill_fund - total_bill_exemption + total_bill_amount + locking_amount) as da_thu'))
+                ->find($this->treatment_id ?? 0);
+
+            if ($this->kc_amount != $dataTreatmentFee?->da_thu ?? 0) {
+                $validator->errors()->add('kc_amount', config('keywords')['transaction_thanh_toan']['kc_amount'] . ' = ' . $this->kc_amount . ' không khớp với tiền đã thu từ bệnh nhân là ' . ($dataTreatmentFee->da_thu ?? 0) . ' !');
+            }
+            // $totalAmountBill = $this->sereServ->whereIn('id', $this->sere_serv_ids)->sum('vir_total_patient_price') ?? 0;
+            // if ($totalAmountBill != $this->amount) {
+            //     $validator->errors()->add('amount', 'Tiền thanh toán không khớp với tổng tiền thanh toán của các dịch vụ đã chọn!');
+            // }
         });
     }
 
