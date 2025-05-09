@@ -43,7 +43,7 @@ class CreateTransactionTamUngRequest extends FormRequest
             return $data->value('id');
         });
         return [
-            'amount' =>                 'required|numeric|regex:/^\d{1,15}(\.\d{1,6})?$/|min:0',
+            'amount' =>                 'required|numeric|regex:/^\d{1,15}(\.\d{1,6})?$/|min:1',
             'account_book_id' => [
                                     'required',
                                     'integer',

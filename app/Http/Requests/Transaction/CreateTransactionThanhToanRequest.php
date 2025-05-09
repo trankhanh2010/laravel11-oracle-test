@@ -54,7 +54,7 @@ class CreateTransactionThanhToanRequest extends FormRequest
                 'required',
                 'numeric',
                 'regex:/^\d{1,15}(\.\d{1,6})?$/',
-                'min:0',
+                'min:1',
             ],
             'account_book_id' => [
                 'required',
@@ -114,7 +114,7 @@ class CreateTransactionThanhToanRequest extends FormRequest
                 'nullable',
                 'numeric',
                 'regex:/^\d{1,15}(\.\d{1,6})?$/',
-                'min:0',
+                'min:1',
             ],
             'exemption_reason' =>             'nullable|string|max:2000',
 
@@ -143,7 +143,7 @@ class CreateTransactionThanhToanRequest extends FormRequest
                 'nullable',
                 'numeric',
                 'regex:/^\d{1,15}(\.\d{1,6})?$/',
-                'min:0',
+                'min:1',
             ],
         ];
     }
@@ -304,21 +304,22 @@ class CreateTransactionThanhToanRequest extends FormRequest
                     if (!$exists) {
                         $validator->errors()->add('bill_funds', 'ID SereServ = ' . $item['id'] . ' không tồn tại, đang bị tạm khóa, không thực hiện, không thanh toán, đã thanh toán hoặc không thuộc về hồ sơ này!');
                     }
-                    
+
                     $virTotalPatientPrice = $this->sereServ
                     ->find($item['id']??0)->vir_total_patient_price??0;
                     // Nếu tiền thanh toán dv không khớp với tiền bệnh nhân phải trả
                     if($virTotalPatientPrice != $item['amount']){
                         $validator->errors()->add('sere_servs', 'ID SereServ = ' . $item['id'] . ' tiền thanh toán dịch vụ = '.$item['amount'].' không khớp với tiền bệnh nhân phải trả = '.$virTotalPatientPrice.'!');
                     }
+
+                    $totalAmountBill = array_sum(array_column($this->sere_servs_list, 'amount')) ?? 0;
+
+                    if ($this->amount != $totalAmountBill) {
+                        $validator->errors()->add('amount', config('keywords')['transaction_thanh_toan']['amount'] . ' = ' . $this->amount . ' không khớp với tổng số tiền dịch vụ đã chọn mà bệnh nhân cần thanh toán = ' . $totalAmountBill . '!');
+                    }
                 }
             }
 
-            $totalAmountBill = array_sum(array_column($this->sere_servs_list, 'amount')) ?? 0;
-
-            if ($this->amount != $totalAmountBill) {
-                $validator->errors()->add('amount', config('keywords')['transaction_thanh_toan']['amount'] . ' = ' . $this->amount . ' không khớp với tổng số tiền dịch vụ đã chọn mà bệnh nhân cần thanh toán = ' . $totalAmountBill . '!');
-            }
             // Kiểm tra tiền kết chuyển có = tiền đã thu k
             $this->treatmentFeeDetailVView = new TreatmentFeeDetailVView();
             $dataTreatmentFee = $this->treatmentFeeDetailVView
