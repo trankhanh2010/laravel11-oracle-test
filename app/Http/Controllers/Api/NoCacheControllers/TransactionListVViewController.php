@@ -59,16 +59,19 @@ class TransactionListVViewController extends BaseApiCacheController
     public function index()
     {
         // Kiểm tra khoảng cách ngày
-        if (($this->fromTime !== null) && ($this->toTime !== null)) {
-            if (($this->toTime - $this->fromTime) > 60235959) {
-                $this->errors[$this->fromTimeName] = 'Khoảng thời gian vượt quá 60 ngày!';
-                $this->fromTime = null;
-            }
-        }
-        // if (($this->fromTime == null) && ($this->toTime == null) && (!$this->cursorPaginate)) {
-        //     $this->errors[$this->fromTimeName] = 'Thiếu thời gian!';
-        //     $this->errors[$this->toTimeName] = 'Thiếu thời gian!';
+        // if (($this->fromTime !== null) && ($this->toTime !== null)) {
+        //     if (($this->toTime - $this->fromTime) > 60235959) {
+        //         $this->errors[$this->fromTimeName] = 'Khoảng thời gian vượt quá 60 ngày!';
+        //         $this->fromTime = null;
+        //     }
         // }
+        if (($this->fromTime == null) && ($this->toTime == null) && ($this->treatmentCode == null) && ($this->transactionCode == null)) {
+            $this->errors[$this->fromTimeName] = 'Thiếu thời gian!';
+            $this->errors[$this->toTimeName] = 'Thiếu thời gian!';
+            $this->errors[$this->treatmentCodeName] = 'Thiếu mã điều trị!';
+            $this->errors[$this->transactionCodeName] = 'Thiếu mã giao dịch!';
+
+        }
         if ($this->checkParam()) {
             return $this->checkParam();
         }
