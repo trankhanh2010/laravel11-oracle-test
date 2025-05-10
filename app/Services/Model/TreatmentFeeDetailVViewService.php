@@ -93,6 +93,7 @@ class TreatmentFeeDetailVViewService
                 }
             }
         }
+        $data = $this->treatmentFeeDetailVViewRepository->themMucHuongBHYT($data);
         return ['data' => $data, 'count' => $count];
     }
     private function getDataById($id)

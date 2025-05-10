@@ -879,4 +879,62 @@ if (!function_exists('logError')) {
             'request_data' => request()->all(),
         ]);
     }
+    if (!function_exists('getMucHuongBHYT')) {
+        /**
+         * Tính mức hưởng BHYT dựa trên mã thẻ và tổng chi phí của lần khám
+         *
+         * @param $maThe          Mã thẻ BHYT
+         * @param float|null $tongChiPhi Tổng chi phí của lần khám
+         * @param int $mucLuongCoSo      Mức lương cơ sở hiện tại
+         * @return float|null            Tỷ lệ được hưởng (ví dụ: 0.8, 0.95, 1.0)
+         */
+        function getMucHuongBHYT( $maThe, ?float $tongChiPhi = null, int $mucLuongCoSo = 2340000): ?float
+        {
+            if(!$maThe){
+                return 0;
+            }
+            $doiTuong = substr($maThe, 0, 2);
+            $kyHieu = substr($maThe, 2, 1);
+    
+            $mucHuong = [
+                '1' => ['phanTram' => 1.0,  'doiTuong' => ['CC', 'TE']],
+                '2' => ['phanTram' => 1.0,  'doiTuong' => ['CK', 'CB', 'KC', 'HN', 'DT', 'DK', 'XD', 'BT', 'TS', 'AK', 'CT']],
+                '3' => ['phanTram' => 0.95, 'doiTuong' => ['HT', 'TC', 'CN', 'PV', 'TG', 'DS', 'HK']],
+                '4' => ['phanTram' => 0.8,  'doiTuong' => ['DN', 'HX', 'CH', 'NN', 'TK', 'HC', 'XK', 'TB', 'NO', 'XB', 'TN', 'CS', 'XN', 'MS', 'HD', 'TQ', 'TA', 'TY', 'HG', 'LS', 'HS', 'SV', 'GB', 'GD', 'ND', 'TH', 'TV', 'TD', 'TU', 'BA']],
+            ];
+    
+            // Tính mức mặc định nếu không nằm trong danh sách đối tượng cụ thể
+            $phanTramMacDinh = match ($kyHieu) {
+                '1' => 1.0,
+                '2' => 1.0,
+                '3' => 0.95,
+                '4' => 0.8,
+                default => null,
+            };
+    
+            // Áp dụng mức theo đối tượng nếu trùng
+            foreach ($mucHuong as $ky => $info) {
+                if ($ky === $kyHieu && in_array($doiTuong, $info['doiTuong'])) {
+                    $phanTram = $info['phanTram'];
+                    break;
+                }
+            }
+    
+            // Nếu không xác định được, dùng mặc định
+            $phanTram ??= $phanTramMacDinh;
+    
+            // Áp dụng ngoại lệ: nếu là ký hiệu 3 hoặc 4 và tổng chi phí < 15% mức lương cơ sở thì hưởng 100%
+            if (in_array($kyHieu, ['3', '4']) && $tongChiPhi !== null) {
+                $nguong = $mucLuongCoSo * 0.15;
+                if ($tongChiPhi < $nguong) {
+                    return 1.0;
+                }
+            }
+    
+            return $phanTram;
+        }
+    }
+    
+    
+    
 }

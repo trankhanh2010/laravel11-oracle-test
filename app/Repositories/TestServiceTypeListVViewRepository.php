@@ -3,6 +3,7 @@ namespace App\Repositories;
 
 use App\Jobs\ElasticSearch\Index\ProcessElasticIndexingJob;
 use App\Models\View\TestServiceTypeListVView;
+use App\Models\View\TreatmentFeeDetailVView;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -49,7 +50,9 @@ class TestServiceTypeListVViewRepository
                 "da_tam_ung",
                 "tam_ung",
                 "da_thanh_toan",
-            ]);
+            ])
+            ->addSelect(DB::connection('oracle_his')->raw('GREATEST(vir_total_patient_price - NVL(discount, 0), 0) as thuc_thu')) // max (tiền bệnh nhân phải trả - chiết khấu, 0)
+            ;
     }
     public function applyKeywordFilter($query, $keyword)
     {
@@ -166,6 +169,22 @@ class TestServiceTypeListVViewRepository
                 ->get();
         }
     }
+    public function themTienKhiTamUngDV($data, $treatmentId)
+    {
+        $treatmentFeeDetailVView = new TreatmentFeeDetailVView();
+        $dataFee = $treatmentFeeDetailVView->find($treatmentId ?? 0);
+        $mucHuongBhyt = getMucHuongBHYT($dataFee?->value('tdl_hein_card_number'??''));
+        
+        foreach ($data as &$item) {
+            $virTotalPatientPrice = $item['vir_total_patient_price'] ?? 0;
+            $virTotalHeinPrice = $item['vir_total_hein_price'] ?? 0;
+
+            $item['tien_khi_tam_ung_dv'] = round($virTotalPatientPrice + (1 - $mucHuongBhyt) * $virTotalHeinPrice);  // Làm tròn tiền
+        }
+    
+        return $data;
+    }
+
     public function getById($id)
     {
         return $this->testServiceTypeListVView->find($id);

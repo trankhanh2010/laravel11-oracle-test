@@ -331,8 +331,11 @@ class CreateTransactionThanhToanRequest extends FormRequest
                 ->addSelect(DB::connection('oracle_his')->raw('((total_deposit_amount - total_service_deposit_amount) + total_service_deposit_amount - total_repay_amount) as hien_du')) // hiện dư = (tạm ứng + tạm ứng dv - hoàn ứng)
                 ->find($this->treatment_id ?? 0);
 
-            if ($this->kc_amount != $dataTreatmentFee?->hien_du ?? 0) {
-                $validator->errors()->add('kc_amount', config('keywords')['transaction_thanh_toan']['kc_amount'] . ' = ' . $this->kc_amount . ' không khớp với tiền hiện dư của bệnh nhân là ' . ($dataTreatmentFee->hien_du ?? 0) . ' !');
+            // nếu có gửi kết chuyển thì mới check    
+            if($this->kc_amount){
+                if ($this->kc_amount != $dataTreatmentFee?->hien_du ?? 0) {
+                    $validator->errors()->add('kc_amount', config('keywords')['transaction_thanh_toan']['kc_amount'] . ' = ' . $this->kc_amount . ' không khớp với tiền hiện dư của bệnh nhân là ' . ($dataTreatmentFee->hien_du ?? 0) . ' !');
+                }
             }
             // $totalAmountBill = $this->sereServ->whereIn('id', $this->sere_servs)->sum('vir_total_patient_price') ?? 0;
             // if ($totalAmountBill != $this->amount) {

@@ -86,6 +86,18 @@ class TreatmentFeeDetailVViewRepository
                 ->get();
         }
     }
+    public function themMucHuongBHYT($item): object
+    {
+        // Kiểm tra nếu $item là đối tượng và có các trường cần thiết
+        $maThe = isset($item->tdl_hein_card_number) ? $item->tdl_hein_card_number : null;
+        $tongChiPhi = isset($item->total_price) ? $item->total_price : null;
+    
+        // Cập nhật trường mucHuongBhyt
+        $item->mucHuongBhyt = getMucHuongBHYT($maThe, $tongChiPhi);
+    
+        return $item;
+    }
+    
     public function getById($id)
     {
         return $this->treatmentFeeDetailVView->find($id);

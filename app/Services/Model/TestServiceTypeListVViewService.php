@@ -41,6 +41,7 @@ class TestServiceTypeListVViewService
         $data = $this->testServiceTypeListVViewRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
         $count = $data->count();
         $data = $this->testServiceTypeListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        $data = $this->testServiceTypeListVViewRepository->themTienKhiTamUngDV($data, $this->params->treatmentId);
         $data = $this->testServiceTypeListVViewRepository->applyGroupByField($data, $this->params->groupBy);
         return ['data' => $data, 'count' => $count];
     }
