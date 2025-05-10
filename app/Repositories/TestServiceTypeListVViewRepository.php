@@ -51,7 +51,7 @@ class TestServiceTypeListVViewRepository
                 "tam_ung",
                 "da_thanh_toan",
             ])
-            // ->addSelect(DB::connection('oracle_his')->raw('GREATEST(vir_total_patient_price - NVL(discount, 0), 0) as thuc_thu')) // max (tiền bệnh nhân phải trả - chiết khấu, 0)
+            ->addSelect(DB::connection('oracle_his')->raw('GREATEST(vir_total_patient_price - NVL(discount, 0), 0) as thuc_thu')) // max (tiền bệnh nhân phải trả - chiết khấu, 0)
             ;
     }
     public function applyKeywordFilter($query, $keyword)
@@ -179,7 +179,7 @@ class TestServiceTypeListVViewRepository
             $virTotalPatientPrice = $item['vir_total_patient_price'] ?? 0;
             $virTotalHeinPrice = $item['vir_total_hein_price'] ?? 0;
 
-            $item['tien_khi_tam_ung_dv'] = round($virTotalPatientPrice + (1 - $mucHuongBhyt) * $virTotalHeinPrice);  // Làm tròn tiền
+            $item['tien_khi_tam_ung_dv'] = (string) round($virTotalPatientPrice + (1 - $mucHuongBhyt) * $virTotalHeinPrice);  // Làm tròn tiền
         }
     
         return $data;
