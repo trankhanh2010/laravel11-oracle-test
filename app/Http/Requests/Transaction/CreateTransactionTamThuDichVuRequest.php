@@ -201,7 +201,7 @@ class CreateTransactionTamThuDichVuRequest extends FormRequest
             }
             if ($this->has('sere_servs_list') && ($this->sere_servs_list[0] ?? 0 != null)) {
                 foreach ($this->sere_servs_list as $item) {
-                    // Kiểm tra sere_serv_id có tồn tại trong DB không, có tạm thu dv chưa
+                    // Kiểm tra sere_serv_id có tồn tại trong DB không, có tạm thu dv chưa, có thanh toán chưa
                     $exists = $this->sereServ
                         ->where('his_sere_serv.id', $item['id'])
                         ->where('his_sere_serv.tdl_treatment_id', $this->treatment_id)
@@ -222,9 +222,16 @@ class CreateTransactionTamThuDichVuRequest extends FormRequest
                                         ->orWhere('his_sere_serv_deposit.is_cancel', 0);
                                 });
                         })
+                        ->whereDoesntHave('sereServBills', function ($q) {
+                            $q->where('his_sere_serv_bill.is_delete', 0)
+                                ->where(function ($q2) {
+                                    $q2->whereNull('his_sere_serv_bill.is_cancel')
+                                        ->orWhere('his_sere_serv_bill.is_cancel', 0);
+                                });
+                        })
                         ->exists();
                     if (!$exists) {
-                        $validator->errors()->add('sere_serv_ids', 'ID SereServ = ' . $item['id'] . ' không tồn tại, không thực hiện, đã tạm thu dịch vụ hoặc không thuộc về hồ sơ này!');
+                        $validator->errors()->add('sere_serv_ids', 'ID SereServ = ' . $item['id'] . ' không tồn tại, không thực hiện, đã tạm thu dịch vụ, đã thanh toán hoặc không thuộc về hồ sơ này!');
                     }
                     if (!preg_match('/^\d{1,15}(\.\d{1,6})?$/', $item['amount'])) {
                         $validator->errors()->add('sere_servs', 'ID SereServ = ' . $item['id'].' số tiền tạm thu dịch vụ' . config('keywords')['error']['regex_21_6'],);
