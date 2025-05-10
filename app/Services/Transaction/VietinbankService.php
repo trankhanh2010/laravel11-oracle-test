@@ -81,7 +81,7 @@ class VietinbankService
     /**
      * Tạo giao dịch QR Code
      */
-    public function createTransactionQrCode($dataTreatment, $dataTransHis, $currentLoginname = '')
+    public function createTransactionQrCode($dataTreatment, $dataTransHis, $currentLoginname = '', $depositReqCode = '')
     {
         // $dataTreatment['orderId'] = 'baotri4';
         // $dataTreatment['orderInfo'] = 'bao tri';
@@ -119,7 +119,7 @@ class VietinbankService
         $pk = new QrPack();
         $qrData = $pk->pack($req->qrBean, "")->qrData;
         // check và thêm mới thông tin trans_req cho his_trans
-        $qrData = $this->checkAndAddInfoTransReq($data, $timeTransaction3, $expDate, $qrData, $dataTransHis, $currentLoginname);
+        $qrData = $this->checkAndAddInfoTransReq($data, $timeTransaction3, $expDate, $qrData, $dataTransHis, $currentLoginname, $depositReqCode);
         // dd($qrData);
         // $qrImageUrl = "http://chart.apis.google.com/chart?chs=500x500&cht=qr&chl=" . $qrData . "&choe=UTF-8";
         // $apiURL = "https://api.qrserver.com/v1/create-qr-code/";
@@ -128,11 +128,11 @@ class VietinbankService
         // $qrImageUrl = $apiURL . "?size=" . $size . "&data=" . $qrData;        
         return base64_encode($qrData);
     }
-    public function checkAndAddInfoTransReq($dataCreateQr, $timeTransaction, $expDate, $qrData, $dataTransHis, $currentLoginname)
+    public function checkAndAddInfoTransReq($dataCreateQr, $timeTransaction, $expDate, $qrData, $dataTransHis, $currentLoginname, $depositReqCode)
     {
         // check xem có trans_req không, nếu không thì tạo trans_req mới và add vào his_trans
         if (!$dataTransHis['trans_req_id']) {
-            $dataTransReq = $this->createTransReqVtb($dataCreateQr, $timeTransaction, $expDate, $qrData, $dataTransHis, $currentLoginname);
+            $dataTransReq = $this->createTransReqVtb($dataCreateQr, $timeTransaction, $expDate, $qrData, $dataTransHis, $currentLoginname, $depositReqCode);
             $dataTransHis->update([
                 'trans_req_id' => $dataTransReq['id'],
             ]);
@@ -144,7 +144,7 @@ class VietinbankService
 
         // Nếu k khớp tiền
         if ($dataTransReq['amount'] != $dataTransHis['amount']) {
-            $dataTransReq = $this->createTransReqVtb($dataCreateQr, $timeTransaction, $expDate, $qrData, $dataTransHis, $currentLoginname);
+            $dataTransReq = $this->createTransReqVtb($dataCreateQr, $timeTransaction, $expDate, $qrData, $dataTransHis, $currentLoginname, $depositReqCode);
             $dataTransHis->update([
                 'trans_req_id' => $dataTransReq['id'],
             ]);
@@ -153,7 +153,7 @@ class VietinbankService
 
         // Nếu k có hạn
         if (empty($dataTransReq['expired_time'])) {
-            $dataTransReq = $this->createTransReqVtb($dataCreateQr, $timeTransaction, $expDate, $qrData, $dataTransHis, $currentLoginname);
+            $dataTransReq = $this->createTransReqVtb($dataCreateQr, $timeTransaction, $expDate, $qrData, $dataTransHis, $currentLoginname, $depositReqCode);
             $dataTransHis->update([
                 'trans_req_id' => $dataTransReq['id'],
             ]);
@@ -166,14 +166,14 @@ class VietinbankService
             return $dataTransReq['qr_text'];
         }
         // Hết hạn
-        $dataTransReq = $this->createTransReqVtb($dataCreateQr, $timeTransaction, $expDate, $qrData, $dataTransHis, $currentLoginname);
+        $dataTransReq = $this->createTransReqVtb($dataCreateQr, $timeTransaction, $expDate, $qrData, $dataTransHis, $currentLoginname, $depositReqCode);
         $dataTransHis->update([
             'trans_req_id' => $dataTransReq['id'],
         ]);
         return $qrData;
     }
 
-    public function createTransReqVtb($dataCreateQr, $timeTransaction, $expDate, $qrData, $dataTransHis, $currentLoginname)
+    public function createTransReqVtb($dataCreateQr, $timeTransaction, $expDate, $qrData, $dataTransHis, $currentLoginname, $depositReqCode)
     {
         $request = (object) [
             'amount' => $dataTransHis->amount,
@@ -194,9 +194,9 @@ class VietinbankService
             'terminal_id'  => $this->terminalId,
         ];
         if($currentLoginname == null){
-            return $this->transReqRepository->createTransReqQrVtbByNguoiDung($request, 'MOS_v2', 'MOS_v2');
+            return $this->transReqRepository->createTransReqQrVtbByNguoiDung($request, 'MOS_v2', 'MOS_v2', $depositReqCode);
         }else{
-            return $this->transReqRepository->createTransReqQrVtbByThuNgan($request, 'MOS_v2', 'MOS_v2', $currentLoginname);
+            return $this->transReqRepository->createTransReqQrVtbByThuNgan($request, 'MOS_v2', 'MOS_v2', $currentLoginname, $depositReqCode);
         }
     }
 

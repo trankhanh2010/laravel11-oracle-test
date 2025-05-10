@@ -82,7 +82,7 @@ class TransReqRepository
     {
         return $this->transReq->find($id);
     }
-    public function createTransReqQrVtbByNguoiDung($request, $appCreator, $appModifier){
+    public function createTransReqQrVtbByNguoiDung($request, $appCreator, $appModifier, $depositReqCode){
         $data = $this->transReq::create([
             'create_time' => now()->format('Ymdhis'),
             'modify_time' => now()->format('Ymdhis'),
@@ -96,7 +96,7 @@ class TransReqRepository
             'treatment_id' => $request->treatment_id,
             'trans_req_stt_id' => 1, // 1- Yeu cau; 2: Hoan thanh; 3: That bai va ket thuc; 4: Huy 
             'bank_json_data' => $request->bank_json_data,
-            'trans_req_type' => 3, // 1: Yeu cau thanh toan theo tung y lenh (co gan dich vu); 2: Yeu cau thanh toan theo so tien con thieu (co gan voi dich vu); 3: Yeu cau thanh toan theo tong so tien con thieu (khong gan voi dich vu); 4: Yeu cau thanh toan theo phieu yeu cau tam ung; 5: Yeu cau thanh toan theo giao dich , của bệnh nhân dùng trans_req_type 3 của thu ngân mới là trans_req_type 5 
+            'trans_req_type' => $depositReqCode ? 5 : 3, // 1: Yeu cau thanh toan theo tung y lenh (co gan dich vu); 2: Yeu cau thanh toan theo so tien con thieu (co gan voi dich vu); 3: Yeu cau thanh toan theo tong so tien con thieu (khong gan voi dich vu); 4: Yeu cau thanh toan theo phieu yeu cau tam ung; 5: Yeu cau thanh toan theo giao dich
             'bank_message'  => $request->bank_message,
             'tdl_treatment_code' => $request->tdl_treatment_code,
             'tdl_patient_code' => $request->tdl_patient_code,
@@ -115,7 +115,7 @@ class TransReqRepository
         ]);
         return $data;
     }
-    public function createTransReqQrVtbByThuNgan($request, $appCreator, $appModifier, $currentLoginname){
+    public function createTransReqQrVtbByThuNgan($request, $appCreator, $appModifier, $currentLoginname, $depositReqCode){
         $time = 14400;
         $data = $this->transReq::create([
             'create_time' => now()->format('Ymdhis'),
@@ -130,7 +130,7 @@ class TransReqRepository
             'treatment_id' => $request->treatment_id,
             'trans_req_stt_id' => 1, // 1- Yeu cau; 2: Hoan thanh; 3: That bai va ket thuc; 4: Huy 
             'bank_json_data' => $request->bank_json_data,
-            'trans_req_type' => 5, // 1: Yeu cau thanh toan theo tung y lenh (co gan dich vu); 2: Yeu cau thanh toan theo so tien con thieu (co gan voi dich vu); 3: Yeu cau thanh toan theo tong so tien con thieu (khong gan voi dich vu); 4: Yeu cau thanh toan theo phieu yeu cau tam ung; 5: Yeu cau thanh toan theo giao dich , của bệnh nhân dùng trans_req_type 3 của thu ngân mới là trans_req_type 5 
+            'trans_req_type' => $depositReqCode ? 5 : 3, // 1: Yeu cau thanh toan theo tung y lenh (co gan dich vu); 2: Yeu cau thanh toan theo so tien con thieu (co gan voi dich vu); 3: Yeu cau thanh toan theo tong so tien con thieu (khong gan voi dich vu); 4: Yeu cau thanh toan theo phieu yeu cau tam ung; 5: Yeu cau thanh toan theo giao dich 
             'bank_message'  => $request->bank_message,
             'tdl_treatment_code' => $request->tdl_treatment_code,
             'tdl_patient_code' => $request->tdl_patient_code,

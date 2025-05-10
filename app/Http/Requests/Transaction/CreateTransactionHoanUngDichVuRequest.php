@@ -208,12 +208,11 @@ class CreateTransactionHoanUngDichVuRequest extends FormRequest
             if ($this->has('sere_servs_list') && ($this->sere_servs_list[0] ?? 0 != null)) {
                 $dataSereServIds = $this->input('sere_servs', []); // Lấy mảng từ request
                 foreach ($this->sere_servs_list as $key => $item) {
-                    // Kiểm tra sere_serv_id có tồn tại trong DB không, có tạm thu chưa, có hoàn ứng dịch vụ chưa
+                    // Kiểm tra sere_serv_id có tồn tại trong DB không, có tạm thu chưa, có hoàn ứng dịch vụ chưa, có là chưa xử lý không
                     $exists = $this->sereServ
                         ->where('his_sere_serv.id', $item['id'])
-                        ->where(function ($query) {
-                            $query->where('his_sere_serv.tdl_is_main_exam', 0)
-                                ->orWhereNull('his_sere_serv.tdl_is_main_exam');
+                        ->whereHas('serviceReq.serviceReqStt', function ($q) {
+                            $q->where('his_service_req_stt.service_req_stt_code', '01');
                         })
                         ->where('his_sere_serv.tdl_treatment_id', $this->treatment_id)
                         ->where('his_sere_serv.is_active', 1)
@@ -235,7 +234,7 @@ class CreateTransactionHoanUngDichVuRequest extends FormRequest
                         })
                         ->exists();
                     if (!$exists) {
-                        $validator->errors()->add('sere_servs', 'ID SereServ = ' . $item['id'] . ' là khám chính, không tồn tại, không thực hiện, chưa tạm thu dịch vụ hoặc không thuộc về hồ sơ này!');
+                        $validator->errors()->add('sere_servs', 'ID SereServ = ' . $item['id'] . ' có trạng thái khác chưa xử lý, không tồn tại, không thực hiện, chưa tạm thu dịch vụ hoặc không thuộc về hồ sơ này!');
                     }
                     if (!preg_match('/^\d{1,15}(\.\d{1,4})?$/', $item['amount'])) {
                         $validator->errors()->add('sere_servs', 'ID SereServ = ' . $item['id'].' số tiền hoàn ứng dịch vụ' . config('keywords')['error']['regex_19_4'],);

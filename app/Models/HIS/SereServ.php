@@ -103,4 +103,8 @@ class SereServ extends Model
     {
         return $this->belongsTo(PatientType::class, 'patient_type_id');
     }
+    public function serviceReq()
+    {
+        return $this->belongsTo(ServiceReq::class);
+    }
 }

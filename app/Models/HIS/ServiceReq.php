@@ -98,4 +98,8 @@ class ServiceReq extends Model
     {
         return $this->belongsTo(Machine::class);
     }
+    public function serviceReqStt()
+    {
+        return $this->belongsTo(ServiceReqStt::class);
+    }
 }

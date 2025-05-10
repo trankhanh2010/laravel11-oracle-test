@@ -575,7 +575,7 @@ class TreatmentFeePaymentService
                         'orderId' => $dataTransHis['num_order'], // Là duy nhất với mỗi accountBook
                     ];
                     // Gọi service và truyền đối tượng RequestCreateQrcode
-                    $qrData = $this->vietinbankService->createTransactionQrCode($dataGenQr, $dataTransHis, $this->params->currentLoginname);
+                    $qrData = $this->vietinbankService->createTransactionQrCode($dataGenQr, $dataTransHis, $this->params->currentLoginname, $this->params->depositReqCode);
                     // $dataReturn = $this->formatResponseFromVietinbank($transactionInfo);
                     $dataReturn = array_merge(
                         [
@@ -704,7 +704,7 @@ class TreatmentFeePaymentService
                         'orderId' => $dataTransHis['num_order'], // Là duy nhất với mỗi accountBook
                     ];
                     // Gọi service và truyền đối tượng RequestCreateQrcode
-                    $qrData = $this->vietinbankService->createTransactionQrCode($dataGenQr, $dataTransHis, $this->params->currentLoginname);
+                    $qrData = $this->vietinbankService->createTransactionQrCode($dataGenQr, $dataTransHis, $this->params->currentLoginname, $this->params->depositReqCode);
                     // $dataReturn = $this->formatResponseFromVietinbank($transactionInfo);
                     $dataReturn = array_merge(
                         [
