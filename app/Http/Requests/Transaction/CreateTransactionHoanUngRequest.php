@@ -60,7 +60,7 @@ class CreateTransactionHoanUngRequest extends FormRequest
                 'required',
                 'numeric',
                 'regex:/^\d{1,15}(\.\d{1,6})?$/',
-                'min:1',
+                'min:0',
                 'max:'.$max, // Tiền hoàn ứng k lớn hơn tiền đã thu - tiền bệnh nhân phải thanh toán - đã nộp (tạm khóa) 
             ],
             'account_book_id' => [

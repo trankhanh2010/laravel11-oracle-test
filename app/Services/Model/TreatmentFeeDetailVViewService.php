@@ -76,6 +76,7 @@ class TreatmentFeeDetailVViewService
                             $item->deposit_req_code,
                             $this->params->param,
                             false,
+                            "MOS_v2"
                         );
                         $this->treatmentFeePaymentService->withParams($this->treatmentFeePaymentDTO);
 

@@ -54,7 +54,7 @@ class CreateTransactionThanhToanRequest extends FormRequest
                 'required',
                 'numeric',
                 'regex:/^\d{1,15}(\.\d{1,6})?$/',
-                'min:1',
+                'min:0',
             ],
             'account_book_id' => [
                 'required',
@@ -322,17 +322,17 @@ class CreateTransactionThanhToanRequest extends FormRequest
                 }
             }
 
-            // Kiểm tra tiền kết chuyển có = tiền đã thu k
+            // Kiểm tra tiền kết chuyển có = hiện dư (tạm ứng + tạm ứng dv - hoàn ứng) không
             $this->treatmentFeeDetailVView = new TreatmentFeeDetailVView();
             $dataTreatmentFee = $this->treatmentFeeDetailVView
                 ->select(
                     'xa_v_his_treatment_fee_detail.*'
                 )
-                ->addSelect(DB::connection('oracle_his')->raw('(total_deposit_amount - total_repay_amount - total_bill_transfer_amount - total_bill_fund - total_bill_exemption + total_bill_amount + locking_amount) as da_thu'))
+                ->addSelect(DB::connection('oracle_his')->raw('((total_deposit_amount - total_service_deposit_amount) + total_service_deposit_amount - total_repay_amount) as hien_du')) // hiện dư = (tạm ứng + tạm ứng dv - hoàn ứng)
                 ->find($this->treatment_id ?? 0);
 
-            if ($this->kc_amount != $dataTreatmentFee?->da_thu ?? 0) {
-                $validator->errors()->add('kc_amount', config('keywords')['transaction_thanh_toan']['kc_amount'] . ' = ' . $this->kc_amount . ' không khớp với tiền đã thu từ bệnh nhân là ' . ($dataTreatmentFee->da_thu ?? 0) . ' !');
+            if ($this->kc_amount != $dataTreatmentFee?->hien_du ?? 0) {
+                $validator->errors()->add('kc_amount', config('keywords')['transaction_thanh_toan']['kc_amount'] . ' = ' . $this->kc_amount . ' không khớp với tiền hiện dư của bệnh nhân là ' . ($dataTreatmentFee->hien_du ?? 0) . ' !');
             }
             // $totalAmountBill = $this->sereServ->whereIn('id', $this->sere_servs)->sum('vir_total_patient_price') ?? 0;
             // if ($totalAmountBill != $this->amount) {
