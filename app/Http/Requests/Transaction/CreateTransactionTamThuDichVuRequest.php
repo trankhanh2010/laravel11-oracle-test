@@ -201,7 +201,7 @@ class CreateTransactionTamThuDichVuRequest extends FormRequest
             }
             if ($this->has('sere_servs_list') && ($this->sere_servs_list[0] ?? 0 != null)) {
                 foreach ($this->sere_servs_list as $item) {
-                    // Kiểm tra sere_serv_id có tồn tại trong DB không, có tạm thu dv chưa, có thanh toán chưa
+                    // Kiểm tra sere_serv_id có tồn tại trong DB không, có tạm thu dv chưa hay, nếu có tạm thu thì có hoàn ứng chưa, có thanh toán chưa
                     $exists = $this->sereServ
                         ->where('his_sere_serv.id', $item['id'])
                         ->where('his_sere_serv.tdl_treatment_id', $this->treatment_id)
@@ -220,6 +220,13 @@ class CreateTransactionTamThuDichVuRequest extends FormRequest
                                 ->where(function ($q2) {
                                     $q2->whereNull('his_sere_serv_deposit.is_cancel')
                                         ->orWhere('his_sere_serv_deposit.is_cancel', 0);
+                                })
+                                ->whereDoesntHave('seseDepoRepays', function ($q) {
+                                    $q->where('his_sese_depo_repay.is_delete', 0)
+                                    ->where(function ($q2) {
+                                        $q2->whereNull('his_sese_depo_repay.is_cancel')
+                                            ->orWhere('his_sese_depo_repay.is_cancel', 0);
+                                    });
                                 });
                         })
                         ->whereDoesntHave('sereServBills', function ($q) {
