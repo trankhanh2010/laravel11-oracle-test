@@ -144,7 +144,7 @@ class CreateTransactionHoanUngDichVuRequest extends FormRequest
 
             'treatment_id.required'      => config('keywords')['transaction_hoan_ung_dich_vu']['treatment_id'] . config('keywords')['error']['required'],
             'treatment_id.integer'       => config('keywords')['transaction_hoan_ung_dich_vu']['treatment_id'] . config('keywords')['error']['integer'],
-            'treatment_id.exists'        => config('keywords')['transaction_hoan_ung_dich_vu']['treatment_id'] . config('keywords')['error']['exists'],
+            'treatment_id.exists'        => config('keywords')['transaction_hoan_ung_dich_vu']['treatment_id'] . ' không tồn tại hoặc đang bị khóa viện phí!',
 
             'description.string'        => config('keywords')['transaction_hoan_ung_dich_vu']['description'] . config('keywords')['error']['string'],
             'description.max'           => config('keywords')['transaction_hoan_ung_dich_vu']['description'] . config('keywords')['error']['string_max'],

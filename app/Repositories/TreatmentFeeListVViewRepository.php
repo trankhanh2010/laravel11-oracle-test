@@ -194,6 +194,11 @@ class TreatmentFeeListVViewRepository
 
         // is_lock_hein =1 => màu đỏ
         // is_active =0 && is_lock_hein is null && store_code is not null => xanh dương
+
+        // is_active = 0 => không cho tạm ứng, tạm ứng dv, hoàn ứng, hoàn ứng dv
+        // is_active = 0 && is_hein_approval = 0 => không cho thanh toán
+
+        
         switch($param){
             case 'chuaKhoaVienPhi':
                 $query->where('is_active', 1);

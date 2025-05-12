@@ -95,11 +95,12 @@ class CreateTransactionThanhToanRequest extends FormRequest
             'treatment_id' => [
                 'required',
                 'integer',
-                Rule::exists('App\Models\View\TreatmentFeeListVView', 'id') 
+                Rule::exists('App\Models\View\TreatmentFeeListVView', 'id')
                     ->where(function ($query) {
-                        $query = $query
-                            ->where(DB::connection('oracle_his')->raw("is_active"), 1)  // Lọc chưa khóa viện phí
-                            ;
+                        $query->where(function ($sub) {
+                            $sub->where('is_active', '!=', 0)
+                                ->orWhere('is_hein_approval', '!=', 0);
+                        });
                     }),
             ],
             'description' =>        'nullable|string|max:2000',
@@ -166,7 +167,7 @@ class CreateTransactionThanhToanRequest extends FormRequest
 
             'treatment_id.required'      => config('keywords')['transaction_thanh_toan']['treatment_id'] . config('keywords')['error']['required'],
             'treatment_id.integer'       => config('keywords')['transaction_thanh_toan']['treatment_id'] . config('keywords')['error']['integer'],
-            'treatment_id.exists'        => config('keywords')['transaction_thanh_toan']['treatment_id'] . config('keywords')['error']['exists'],
+            'treatment_id.exists'        => config('keywords')['transaction_thanh_toan']['treatment_id'] . ' không tồn tại hoặc đang bị khóa viện phí và chưa duyệt BHYT!',
 
             'description.string'        => config('keywords')['transaction_thanh_toan']['description'] . config('keywords')['error']['string'],
             'description.max'           => config('keywords')['transaction_thanh_toan']['description'] . config('keywords')['error']['string_max'],
