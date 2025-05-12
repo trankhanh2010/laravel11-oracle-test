@@ -178,46 +178,42 @@ class TreatmentFeeListVViewRepository
     }
     public function applyStatusFilter($query, $param)
     {
+        // Bảng HIS_TREATMENT
+        // is_active 0 - khóa viện phí
+        // is_pause 1 - kết thúc điều trị, 0 | null - đang điều trị
+        // is_lock_hein - 1 khóa BHYT
         switch($param){
             case 'chuaKhoaVienPhi':
-                $query->where(function ($q) {
-                    $q->orWhereIn('last_treatment_log_type_code', ['01','04'])
-                      ->orWhereNull('fee_lock_time');
-                });
+                $query->where('is_active', 1);
             break;
             case 'daKhoaVienPhi':
-                $query->where(function ($q) {
-                    $q->orWhereIn('last_treatment_log_type_code', ['03'])
-                      ->orWhere(function ($q) {
-                        $q->whereNotIn('last_treatment_log_type_code', ['01','04'])
-                          ->whereNotNull('fee_lock_time');
-                    });
-                });
+                $query->where('is_active', 0);
             break;
             case 'daKetThucDieuTriNhungChuaDuyetKhoaVienPhi':
                 $query->where(function ($q) {
-                    $q->whereNotNull('treatment_end_type_id')
-                    ->whereNotIn('last_treatment_log_type_code', ['02','03','05','06']);
+                    $q->where('is_pause', 1)
+                    ->where('is_active', 1);
                 });
             break;
             case 'chuaKetThucDieuTri':
-                $query->whereNotNull('patient_type_code');
                 $query->where(function ($q) {
-                    $q->orWhereNull('treatment_end_type_id')
-                    ->orWhereIn('last_treatment_log_type_code', ['02'])
-                    ->orWhereNull('last_treatment_log_type_code');
+                    $q->whereNull('is_pause')
+                    ->orWhere('is_pause', 0);
                 });            
             break;
             case 'benhNhanBHYT':
                 $query->where('patient_type_code', '01');
             break;
             case 'daKhoaVienPhiNhungChuaDuyetBHYT':
-                $query->whereIn('last_treatment_log_type_code', ['03'])
+                $query->where('is_active', 0)
                 ->where('is_hein_approval',0);
             break;
             case 'daDuyetBHYTNhungChuaKhoaBHYT':
                 $query->where('is_hein_approval',1)
-                ->whereNull('is_lock_hein');
+                ->where(function ($q) {
+                    $q->whereNull('is_lock_hein')
+                    ->orWhere('is_lock_hein', 0);
+                });
             break;
             case 'daKhoaBHYTNhungChuaThanhToan':
                 $query->whereNotNull('is_lock_hein')
@@ -281,8 +277,7 @@ class TreatmentFeeListVViewRepository
     {
             $query->where(function ($query) {
                 $query->where(function ($q) {
-                    $q->orWhereIn('last_treatment_log_type_code', ['01','04'])
-                      ->orWhereNull('fee_lock_time');
+                    $q->where('is_active', 1);
                 })
                 ->whereNull('treatment_end_type_id');
             });

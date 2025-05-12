@@ -45,7 +45,7 @@ class TreatmentFeeDetailVViewService
         // nếu có dữ liệu, kiểm tra xem có khóa viện phí không
         if($data){
             // nếu có khóa viện phí thì kiểm tra xem có giao dịch nào có mã 1000 không
-            if($data->fee_lock_time != null){
+            if($data->is_active == 0){
                 $listPayment = $this->treatmentMomoPaymentsRepository->getAllPayment1000($data->id);
                 // nếu có mã 1000 thì gọi lại việc lấy link để tạo lại, cập nhật bản ghi, => nếu đã khóa viện phí thì link sẽ k được trả về
                 // lặp qua từng bản ghi để kiểm tra

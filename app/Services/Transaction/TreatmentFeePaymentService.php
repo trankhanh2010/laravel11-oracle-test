@@ -264,7 +264,7 @@ class TreatmentFeePaymentService
             $treatmentFeeData = $this->treatmentFeeDetailVViewRepository->getById($treatmentMoMoPaymentData->treatment_id);
             // Nếu hoàn tiền thành công thì ngắt không tạo các transaction trong db, còn nếu không hoàn tiền được thì vẫn tạo như bình thường để giải quyết tiền mặt
             // chỉ hoàn tiền các giao dịch = 0, = 9000 là ủy quyền k hoàn
-            if ($treatmentFeeData['fee_lock_time'] != null && $dataMoMo['resultCode'] == 0) {
+            if ($treatmentFeeData['is_active'] == 0 && $dataMoMo['resultCode'] == 0) {
 
                 // Nếu mã khác 0 => không thành công thì chạy lại việc hoàn tiền cho đến khi thành công
                 $maxAttempts = 5; // Giới hạn số lần thử
@@ -508,7 +508,7 @@ class TreatmentFeePaymentService
                 if ($link) {
                     // Nếu bị khóa viện phí thì k trả về link
                     $treatmentFeeData = $this->treatmentFeeDetailVViewRepository->getById($data->id);
-                    if ($treatmentFeeData['fee_lock_time'] != null) {
+                    if ($treatmentFeeData['is_active'] == 0) {
                         return ['data' => ['success' => false]];
                     }
                     return ['data' => $this->formatResponseFromRepository($link, $transactionInfo['amount'], $transactionInfo['orderInfo'], $checkOtherLink)];
@@ -526,7 +526,7 @@ class TreatmentFeePaymentService
 
                 // Nếu bị khóa viện phí thì k tạo link 
                 $treatmentFeeData = $this->treatmentFeeDetailVViewRepository->getById($data->id);
-                if ($treatmentFeeData['fee_lock_time'] != null) {
+                if ($treatmentFeeData['is_active'] == 0) {
                     return ['data' => ['success' => false]];
                 }
 
@@ -586,7 +586,7 @@ class TreatmentFeePaymentService
                     );
                     // Nếu bị khóa viện phí thì k trả về link
                     $treatmentFeeData = $this->treatmentFeeDetailVViewRepository->getById($data->id);
-                    if ($treatmentFeeData['fee_lock_time'] != null) {
+                    if ($treatmentFeeData['is_active'] == 0) {
                         return ['data' => ['success' => false]];
                     }
                     return ['data' => $dataReturn];
@@ -632,7 +632,7 @@ class TreatmentFeePaymentService
                 if ($link) {
                     // Nếu bị khóa viện phí thì k trả về link 
                     $treatmentFeeData = $this->treatmentFeeDetailVViewRepository->getById($data->treatment_id);
-                    if ($treatmentFeeData['fee_lock_time'] != null) {
+                    if ($treatmentFeeData['is_active'] == 0) {
                         return ['data' => ['success' => false]];
                     }
                     return ['data' => $this->formatResponseFromRepository($link, $transactionInfo['amount'], $transactionInfo['orderInfo'], $checkOtherLink)];
@@ -650,7 +650,7 @@ class TreatmentFeePaymentService
 
                 // Nếu bị khóa viện phí thì k tạo link 
                 $treatmentFeeData = $this->treatmentFeeDetailVViewRepository->getById($data->treatment_id);
-                if ($treatmentFeeData['fee_lock_time'] != null) {
+                if ($treatmentFeeData['is_active'] == 0) {
                     return ['data' => ['success' => false]];
                 }
 
@@ -715,7 +715,7 @@ class TreatmentFeePaymentService
                     );
                     // Nếu bị khóa viện phí thì k trả về link
                     $treatmentFeeData = $this->treatmentFeeDetailVViewRepository->getById($data->treatment_id);
-                    if ($treatmentFeeData['fee_lock_time'] != null) {
+                    if ($treatmentFeeData['is_active'] == 0) {
                         return ['data' => ['success' => false]];
                     }
 
