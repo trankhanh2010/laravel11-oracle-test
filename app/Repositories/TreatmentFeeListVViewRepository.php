@@ -81,7 +81,16 @@ class TreatmentFeeListVViewRepository
 
         $query = $this->treatmentFeeListVView;
         return $query
-            ->select();
+            ->select('xa_v_his_treatment_fee_list.*')
+            ->addSelect(DB::connection('oracle_his')->raw("
+                CASE 
+                    WHEN is_lock_hein = 1 THEN 'red'
+                    WHEN is_active = 0 AND is_lock_hein IS NULL AND store_code IS NOT NULL THEN '#ADD8E6'
+                    ELSE NULL
+                END as text_color
+            "));         
+            // is_lock_hein =1 => màu đỏ
+            // is_active =0 && is_lock_hein is null && store_code is not null => xanh dương
     }
     public function applyWith($query)
     {
@@ -182,6 +191,9 @@ class TreatmentFeeListVViewRepository
         // is_active 0 - khóa viện phí
         // is_pause 1 - kết thúc điều trị, 0 | null - đang điều trị
         // is_lock_hein - 1 khóa BHYT
+
+        // is_lock_hein =1 => màu đỏ
+        // is_active =0 && is_lock_hein is null && store_code is not null => xanh dương
         switch($param){
             case 'chuaKhoaVienPhi':
                 $query->where('is_active', 1);
@@ -216,7 +228,7 @@ class TreatmentFeeListVViewRepository
                 });
             break;
             case 'daKhoaBHYTNhungChuaThanhToan':
-                $query->whereNotNull('is_lock_hein')
+                $query->where('is_lock_hein', 1)
                 ->where('co_thanh_toan',0);
             break;
         };
