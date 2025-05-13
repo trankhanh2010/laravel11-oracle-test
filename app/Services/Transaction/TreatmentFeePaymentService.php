@@ -557,45 +557,48 @@ class TreatmentFeePaymentService
             }
             // Giao dịch VietinBank
             if ($this->params->paymentMethod == 'VietinBank') {
-                $transactionInfo = $this->generateTransactionInfo($data, $costs);
-                if ($this->params->paymentOption == 'ThanhToanQRCode') {
-                    // Kiểm tra xem có transactino is_cancel nào trong his của bệnh nhân này đúng với số tiền không
-                    // Nếu có => Lấy data đó
-                    // Nếu không => Tạo transaction is_cancel trong HIS
-                    $dataQuery = [
-                        'amount' => $transactionInfo['amount'],
-                        'treatment_id' => $data['id'],
-                    ];
-                    $dataTransHis = $this->transactionRepository->getOrCreateTransactionVietinBank($dataQuery);
-                    // Tạo data qr với bill_number(order_id) là num_order
-
-                    $dataGenQr = [
-                        'amount' => $dataTransHis['amount'],
-                        'orderInfo' => 'HisTran'.$dataTransHis['transaction_code'],
-                        'orderId' => $dataTransHis['num_order'], // Là duy nhất với mỗi accountBook
-                    ];
-                    // Gọi service và truyền đối tượng RequestCreateQrcode
-                    $qrData = $this->vietinbankService->createTransactionQrCode($dataGenQr, $dataTransHis, $this->params->currentLoginname, $this->params->depositReqCode);
-                    // $dataReturn = $this->formatResponseFromVietinbank($transactionInfo);
-                    $dataReturn = array_merge(
-                        [
-                            'success' => true,
-                            'qrDataBase64' => $qrData,
-                        ],
-                        $dataGenQr
-                    );
-                    // Nếu bị khóa viện phí thì k trả về link
-                    $treatmentFeeData = $this->treatmentFeeDetailVViewRepository->getById($data->id);
-                    if ($treatmentFeeData['is_active'] == 0) {
-                        return ['data' => ['success' => false]];
-                    }
-                    return ['data' => $dataReturn];
-                }
+                return  $this->createTransactionVietinBank($data);
             }
 
             return ['data' => ['success' => false]];
         } catch (\Throwable $e) {
             return writeAndThrowError('Có lỗi khi tạo link thanh toán!', $e);
+        }
+    }
+    public function createTransactionVietinBank($data, $costs = 0, $cashierLoginame ='', $cashierUsername = ''){
+        $transactionInfo = $this->generateTransactionInfo($data, $costs);
+        if ($this->params->paymentOption == 'ThanhToanQRCode') {
+            // Kiểm tra xem có transactino is_cancel nào trong his của bệnh nhân này đúng với số tiền không
+            // Nếu có => Lấy data đó
+            // Nếu không => Tạo transaction is_cancel trong HIS
+            $dataQuery = [
+                'amount' => $transactionInfo['amount'],
+                'treatment_id' => $data['id'],
+            ];
+            $dataTransHis = $this->transactionRepository->getOrCreateTransactionVietinBank($dataQuery,  '', $cashierLoginame, $cashierUsername);
+            // Tạo data qr với bill_number(order_id) là num_order
+
+            $dataGenQr = [
+                'amount' => $dataTransHis['amount'],
+                'orderInfo' => 'HisTran'.$dataTransHis['transaction_code'],
+                'orderId' => $dataTransHis['num_order'], // Là duy nhất với mỗi accountBook
+            ];
+            // Gọi service và truyền đối tượng RequestCreateQrcode
+            $qrData = $this->vietinbankService->createTransactionQrCode($dataGenQr, $dataTransHis, $this->params->currentLoginname, $this->params->depositReqCode);
+            // $dataReturn = $this->formatResponseFromVietinbank($transactionInfo);
+            $dataReturn = array_merge(
+                [
+                    'success' => true,
+                    'qrDataBase64' => $qrData,
+                ],
+                $dataGenQr
+            );
+            // Nếu bị khóa viện phí thì k trả về link
+            $treatmentFeeData = $this->treatmentFeeDetailVViewRepository->getById($data->id);
+            if ($treatmentFeeData['is_active'] == 0) {
+                return ['data' => ['success' => false]];
+            }
+            return ['data' => $dataReturn];
         }
     }
 
@@ -682,45 +685,7 @@ class TreatmentFeePaymentService
             }
             // Giao dịch VietinBank
             if ($this->params->paymentMethod == 'VietinBank') {
-                $transactionInfo = $this->generateTransactionInfo($data, $costs);
-                if ($this->params->paymentOption == 'ThanhToanQRCode') {
-                    // Kiểm tra xem có transactino deposit is_cancel nào trong his của bệnh nhân này đúng với số tiền không
-                    // Nếu có => Lấy data đó
-                    // Nếu không => Tạo transaction deposit is_cancel trong HIS
-                    $dataQuery = [
-                        'amount' => $data['amount'],
-                        'treatment_id' => $data['treatment_id'],
-                    ];
-                    $dataTransHis = $this->transactionRepository->getOrCreateTransactionVietinBank($dataQuery, $data->deposit_req_code);
-                    // Cập nhật depositReq có transaction_id là cái vừa lấy ra để tạo qrCode
-                    // (Sẽ bị lỗi HIS_DEPOSIT_REQ_UK1 nếu có nhiều deposit cùng tiền)
-                    $depositRecord = $this->depositReqRepository->getByCode($data->deposit_req_code);
-                    $this->depositReqRepository->updateDepositId($depositRecord, $dataTransHis['id']);
-
-                    // Tạo data qr với bill_number(order_id) là num_order
-                    $dataGenQr = [
-                        'amount' => $dataTransHis['amount'],
-                        'orderInfo' => 'HisTran'.$dataTransHis['transaction_code'],
-                        'orderId' => $dataTransHis['num_order'], // Là duy nhất với mỗi accountBook
-                    ];
-                    // Gọi service và truyền đối tượng RequestCreateQrcode
-                    $qrData = $this->vietinbankService->createTransactionQrCode($dataGenQr, $dataTransHis, $this->params->currentLoginname, $this->params->depositReqCode);
-                    // $dataReturn = $this->formatResponseFromVietinbank($transactionInfo);
-                    $dataReturn = array_merge(
-                        [
-                            'success' => true,
-                            'qrDataBase64' => $qrData,
-                        ],
-                        $dataGenQr
-                    );
-                    // Nếu bị khóa viện phí thì k trả về link
-                    $treatmentFeeData = $this->treatmentFeeDetailVViewRepository->getById($data->treatment_id);
-                    if ($treatmentFeeData['is_active'] == 0) {
-                        return ['data' => ['success' => false]];
-                    }
-
-                    return ['data' => $dataReturn];
-                }
+                return $this->createTransactionDepositReqVietinBank($data);
             }
 
             return ['data' => ['success' => false]];
@@ -728,7 +693,47 @@ class TreatmentFeePaymentService
             return writeAndThrowError('Có lỗi khi tạo link thanh toán!', $e);
         }
     }
+    public function createTransactionDepositReqVietinBank($data, $costs = 0, $cashierLoginame = '', $cashierUsername = ''){
+        $transactionInfo = $this->generateTransactionInfo($data, $costs);
+        if ($this->params->paymentOption == 'ThanhToanQRCode') {
+            // Kiểm tra xem có transactino deposit is_cancel nào trong his của bệnh nhân này đúng với số tiền không
+            // Nếu có => Lấy data đó
+            // Nếu không => Tạo transaction deposit is_cancel trong HIS
+            $dataQuery = [
+                'amount' => $data['amount'],
+                'treatment_id' => $data['treatment_id'],
+            ];
+            $dataTransHis = $this->transactionRepository->getOrCreateTransactionVietinBank($dataQuery, $data->deposit_req_code, $cashierLoginame, $cashierUsername);
+            // Cập nhật depositReq có transaction_id là cái vừa lấy ra để tạo qrCode
+            // (Sẽ bị lỗi HIS_DEPOSIT_REQ_UK1 nếu có nhiều deposit cùng tiền)
+            $depositRecord = $this->depositReqRepository->getByCode($data->deposit_req_code);
+            $this->depositReqRepository->updateDepositId($depositRecord, $dataTransHis['id']);
 
+            // Tạo data qr với bill_number(order_id) là num_order
+            $dataGenQr = [
+                'amount' => $dataTransHis['amount'],
+                'orderInfo' => 'HisTran'.$dataTransHis['transaction_code'],
+                'orderId' => $dataTransHis['num_order'], // Là duy nhất với mỗi accountBook
+            ];
+            // Gọi service và truyền đối tượng RequestCreateQrcode
+            $qrData = $this->vietinbankService->createTransactionQrCode($dataGenQr, $dataTransHis, $this->params->currentLoginname, $this->params->depositReqCode);
+            // $dataReturn = $this->formatResponseFromVietinbank($transactionInfo);
+            $dataReturn = array_merge(
+                [
+                    'success' => true,
+                    'qrDataBase64' => $qrData,
+                ],
+                $dataGenQr
+            );
+            // Nếu bị khóa viện phí thì k trả về link
+            $treatmentFeeData = $this->treatmentFeeDetailVViewRepository->getById($data->treatment_id);
+            if ($treatmentFeeData['is_active'] == 0) {
+                return ['data' => ['success' => false]];
+            }
+
+            return ['data' => $dataReturn];
+        }
+    }
     public function checkTransactionStatus($orderId, $requestId = 0)
     {
         if (!$requestId) {

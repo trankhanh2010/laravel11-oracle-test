@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api\TransactionControllers;
 use App\DTOs\TransactionHoanUngDichVuDTO;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
 use App\Http\Requests\Transaction\CreateTransactionHoanUngDichVuRequest;
-use App\Services\Elastic\ElasticsearchService;
 use App\Services\Transaction\TransactionHoanUngDichVuService;
 use Illuminate\Http\Request;
 

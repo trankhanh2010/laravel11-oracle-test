@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api\TransactionControllers;
 use App\DTOs\TransactionThanhToanDTO;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
 use App\Http\Requests\Transaction\CreateTransactionThanhToanRequest;
-use App\Services\Elastic\ElasticsearchService;
 use App\Services\Transaction\TransactionThanhToanService;
 use Illuminate\Http\Request;
 

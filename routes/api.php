@@ -260,6 +260,7 @@ use Illuminate\Support\Facades\DB;
 // Transaction
 use App\Http\Controllers\Api\TransactionControllers\TreatmentFeePayMentController;
 use App\Http\Controllers\Api\TransactionControllers\MoMoController;
+use App\Http\Controllers\Api\TransactionControllers\TransactionCancelController;
 use App\Http\Controllers\Api\TransactionControllers\TransactionHoanUngController;
 use App\Http\Controllers\Api\TransactionControllers\TransactionHoanUngDichVuController;
 use App\Http\Controllers\Api\TransactionControllers\TransactionTamThuDichVuController;
@@ -632,7 +633,7 @@ Route::group([
     });
     /// ICD - Accepted Icd - Chẩn đoán
     // Route::group(['as' => 'HIS.Desktop.Plugins.HisIcd->'], function () {
-        Route::apiResource('v1/icd', IcdController::class);
+    Route::apiResource('v1/icd', IcdController::class);
     // });
     /// Nhóm ICD
     Route::apiResource('v1/icd-group', IcdGroupController::class);
@@ -1094,7 +1095,7 @@ Route::group([
         //     'check_admin:api',
         //     'check_module:api',
         // ])
-        ;
+    ;
     /// Danh sách thông tin bệnh nhân viện phí
     Route::apiResource('v1/treatment-fee-list-v-view', TreatmentFeeListVViewController::class)->only(['index']);
     // Lấy theo id k cần token
@@ -1129,15 +1130,25 @@ Route::group([
             'check_module:api',
         ]);
     /// Tạo giao dịch tạm ứng Transaction Tạm ứng
-    Route::apiResource('v1/transaction-tam-ung', TransactionTamUngController::class)->only(['store']);
+    Route::group(['as' => 'HIS.Desktop.Plugins.TransactionDeposit->'], function () {
+        Route::apiResource('v1/transaction-tam-ung', TransactionTamUngController::class)->only(['store']);
+    });
     /// Tạo giao dịch hoàn ứng Transaction Hoàn ứng
-    Route::apiResource('v1/transaction-hoan-ung', TransactionHoanUngController::class)->only(['store']);
+    Route::group(['as' => 'HIS.Desktop.Plugins.TransactionRepay->'], function () {
+        Route::apiResource('v1/transaction-hoan-ung', TransactionHoanUngController::class)->only(['store']);
+    });
     /// Tạo giao dịch thanh toán Transaction Thanh Toán
-    Route::apiResource('v1/transaction-thanh-toan', TransactionThanhToanController::class)->only(['store']);
+    Route::group(['as' => 'HIS.Desktop.Plugins.TransactionBill->'], function () {
+        Route::apiResource('v1/transaction-thanh-toan', TransactionThanhToanController::class)->only(['store']);
+    });
     /// Tạo giao dịch tạm thu dịch vụ Transaction Tạm Thu Dịch vụ
-    Route::apiResource('v1/transaction-tam-thu-dich-vu', TransactionTamThuDichVuController::class)->only(['store']);
+    Route::group(['as' => 'HIS.Desktop.Plugins.TransactionDeposit->'], function () {
+        Route::apiResource('v1/transaction-tam-thu-dich-vu', TransactionTamThuDichVuController::class)->only(['store']);
+    });
     /// Tạo giao dịch hoàn ứng dịch vụ Transaction Hoàn Ứng Dịch vụ
-    Route::apiResource('v1/transaction-hoan-ung-dich-vu', TransactionHoanUngDichVuController::class)->only(['store']);
+    Route::group(['as' => 'HIS.Desktop.Plugins.TransactionRepay->'], function () {
+        Route::apiResource('v1/transaction-hoan-ung-dich-vu', TransactionHoanUngDichVuController::class)->only(['store']);
+    });
 
     /// Chi tiết giao dịch transaction detail
     // Route::group(['as' => 'HIS.Desktop.Plugins.TransactionBillDetail->'], function () {
@@ -1206,5 +1217,4 @@ Route::group([
     Route::apiResource('v1/fund', FundController::class)->only(['index']);
     /// UserAccountBookVView
     Route::apiResource('v1/user-account-book-v-view', UserAccountBookVViewController::class)->only(['index']);
-
 });

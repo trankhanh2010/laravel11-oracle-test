@@ -562,6 +562,15 @@ if (!function_exists('get_loginname_with_token')) {
         return $loginname;
     }
 }
+if (!function_exists('get_username_with_token')) {
+    function get_username_with_token($token, $time)
+    {
+        $username = Cache::remember('token_' . $token . '_username', $time, function () use ($token) {
+            return Token::select()->where('token_code', '=', $token)->value('user_name');
+        });
+        return $username;
+    }
+}
 
 if (!function_exists('returnIdError')) {
     function returnIdError($id)

@@ -4,6 +4,7 @@ namespace App\Http\Requests\Transaction;
 
 use App\Models\HIS\DepositReq;
 use App\Models\HIS\PayForm;
+use App\Models\HIS\Transaction;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Contracts\Validation\Validator;
@@ -18,6 +19,7 @@ class CreateTransactionTamUngRequest extends FormRequest
     protected $payForm06;
     protected $payForm03;
     protected $depositReq;
+    protected $transaction;
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -34,6 +36,7 @@ class CreateTransactionTamUngRequest extends FormRequest
     public function rules()
     {
         $this->payForm = new PayForm();
+        $this->transaction = new Transaction();
         $this->payForm06 = Cache::remember('pay_form_06_id', now()->addMinutes(10080), function () {
             $data =  $this->payForm->where('pay_form_code', '06')->get();
             return $data->value('id');
@@ -191,7 +194,10 @@ class CreateTransactionTamUngRequest extends FormRequest
                     $validator->errors()->add('deposit_req_id', 'Yêu cầu tạm ứng không thuộc về lần điều trị này!');
                 }
                 if($dataDepositReq->deposit_id != null){
-                    $validator->errors()->add('deposit_req_id', 'Đã tồn tại giao dịch cho yêu cầu tạm ứng này!');
+                    $dataTransactionDepositReq = $this->transaction->find($dataDepositReq->deposit_id);
+                    if(!$dataTransactionDepositReq->is_cancel){
+                        $validator->errors()->add('deposit_req_id', 'Đã tồn tại giao dịch thành công cho yêu cầu tạm ứng này!');
+                    }
                 }
                 if($this->amount != $dataDepositReq->amount){
                     $validator->errors()->add('amount', config('keywords')['transaction_tam_ung']['amount'].' không khớp với tiền của yêu cầu tạm ứng!');

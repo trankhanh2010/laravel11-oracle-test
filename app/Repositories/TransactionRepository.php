@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Jobs\ElasticSearch\Index\ProcessElasticIndexingJob;
 use App\Models\HIS\AccountBook;
+use App\Models\HIS\CashierRoom;
 use App\Models\HIS\DepositReq;
 use App\Models\HIS\PayForm;
 use App\Models\HIS\Transaction;
@@ -26,6 +27,7 @@ class TransactionRepository
     protected $sereServBillRepository;
     protected $sereServDepositRepository;
     protected $seseDepoRepayRepository;
+    protected $cashierRoom;
     protected $transactionTypeTTId;
     protected $transactionTypeTUId;
     protected $transactionTypeHUId;
@@ -34,6 +36,7 @@ class TransactionRepository
     protected $payForm03Id;
     protected $payForm06Id;
     protected $accountBookQrVietinbankId;
+    protected $roomThuNganId;
     public function __construct(
         Transaction $transaction,
         TransactionType $transactionType,
@@ -45,6 +48,7 @@ class TransactionRepository
         SereServBillRepository $sereServBillRepository,
         SereServDepositRepository $sereServDepositRepository,
         SeseDepoRepayRepository $seseDepoRepayRepository,
+        CashierRoom $cashierRoom,
     ) {
         $this->transaction = $transaction;
         $this->transactionType = $transactionType;
@@ -56,6 +60,7 @@ class TransactionRepository
         $this->sereServBillRepository = $sereServBillRepository;
         $this->sereServDepositRepository = $sereServDepositRepository;
         $this->seseDepoRepayRepository = $seseDepoRepayRepository;
+        $this->cashierRoom = $cashierRoom;
 
         $cacheKey = 'transaction_type_TT_id';
         $cacheKeySet = "cache_keys:" . "setting"; // Set để lưu danh sách key
@@ -117,6 +122,14 @@ class TransactionRepository
         $cacheKey = 'account_book_qr_vietinbank_id';
         $this->accountBookQrVietinbankId = Cache::remember($cacheKey, now()->addMinutes(10080), function () {
             $data =  $this->accountBook->where('account_book_code', 'QRVTB')->get();
+            return $data->value('id');
+        });
+        // Lưu key vào Redis Set để dễ xóa sau này
+        Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+
+        $cacheKey = 'cashier_room_TCKT_TN_id';
+        $this->roomThuNganId = Cache::remember($cacheKey, now()->addMinutes(10080), function () {
+            $data =  $this->cashierRoom->where('cashier_room_code', 'TCKT_TN')->get();
             return $data->value('id');
         });
         // Lưu key vào Redis Set để dễ xóa sau này
@@ -193,7 +206,7 @@ class TransactionRepository
             'num_order' => $data['transId'],
             'account_book_id' => 32,
             'pay_form_id' => $this->payFormMoMoId,
-            'cashier_room_id' => 1,
+            'cashier_room_id' => $this->roomThuNganId,
             'treatment_id' => $payment->treatment_id,
             'tdl_treatment_code' => $payment->treatment_code,
             'sere_serv_amount' => $data['amount'],
@@ -243,7 +256,7 @@ class TransactionRepository
             'num_order' => $data['transId'],
             'account_book_id' => 32,
             'pay_form_id' => $this->payFormMoMoId,
-            'cashier_room_id' => 1,
+            'cashier_room_id' => $this->roomThuNganId,
             'treatment_id' => $payment->treatment_id,
             'tdl_treatment_code' => $payment->treatment_code,
 
@@ -292,7 +305,7 @@ class TransactionRepository
             'num_order' => $data['transId'],
             'account_book_id' => 32,
             'pay_form_id' => $this->payFormMoMoId,
-            'cashier_room_id' => 1,
+            'cashier_room_id' => $this->roomThuNganId,
             'treatment_id' => $payment->treatment_id,
             'tdl_treatment_code' => $payment->treatment_code,
 
@@ -347,7 +360,9 @@ class TransactionRepository
                 'swipe_amount' => $request->pay_form_id == $this->payForm06Id ? $request->swipe_amount : 0, //Nếu đúng hình thức tiền mặt/quẹt thẻ
                 'account_book_id' => $request->account_book_id,
                 'pay_form_id' => $request->pay_form_id,
-                'cashier_room_id' => 1,
+                'cashier_room_id' => $this->roomThuNganId,
+                'cashier_loginname' => get_loginname_with_token($request->bearerToken(), $time)??'MOS_v2',
+                'cashier_username' => get_username_with_token($request->bearerToken(), $time)??'MOS_v2',
                 'treatment_id' => $request->treatment_id,
                 'description' => $request->description,
                 // Dữ liệu dư thừa
@@ -412,7 +427,9 @@ class TransactionRepository
             'swipe_amount' => $request->pay_form_id == $this->payForm06Id ? $request->swipe_amount : 0, //Nếu đúng hình thức tiền mặt/quẹt thẻ
             'account_book_id' => $request->account_book_id,
             'pay_form_id' => $request->pay_form_id,
-            'cashier_room_id' => 1,
+            'cashier_room_id' => $this->roomThuNganId,
+            'cashier_loginname' => get_loginname_with_token($request->bearerToken(), $time)??'MOS_v2',
+            'cashier_username' => get_username_with_token($request->bearerToken(), $time)??'MOS_v2',
             'repay_reason_id' => $request->repay_reason_id,
             'treatment_id' => $request->treatment_id,
             'description' => $request->description,
@@ -472,7 +489,9 @@ class TransactionRepository
                 'swipe_amount' => $request->pay_form_id == $this->payForm06Id ? $request->swipe_amount : 0, //Nếu đúng hình thức tiền mặt/quẹt thẻ
                 'account_book_id' => $request->account_book_id,
                 'pay_form_id' => $request->pay_form_id,
-                'cashier_room_id' => 1,
+                'cashier_room_id' => $this->roomThuNganId,
+                'cashier_loginname' => get_loginname_with_token($request->bearerToken(), $time)??'MOS_v2',
+                'cashier_username' => get_username_with_token($request->bearerToken(), $time)??'MOS_v2',
                 'treatment_id' => $request->treatment_id,
                 'description' => $request->description,
                 'tdl_bill_fund_amount' => $totalAmountBillFund, // Tổng tiền quỹ thanh toán
@@ -549,7 +568,9 @@ class TransactionRepository
                 'swipe_amount' => $request->pay_form_id == $this->payForm06Id ? $request->swipe_amount : 0, //Nếu đúng hình thức tiền mặt/quẹt thẻ
                 'account_book_id' => $request->account_book_id,
                 'pay_form_id' => $request->pay_form_id,
-                'cashier_room_id' => 1,
+                'cashier_room_id' => $this->roomThuNganId,
+                'cashier_loginname' => get_loginname_with_token($request->bearerToken(), $time)??'MOS_v2',
+                'cashier_username' => get_username_with_token($request->bearerToken(), $time)??'MOS_v2',
                 'treatment_id' => $request->treatment_id,
                 'description' => $request->description,
                 'tdl_sere_serv_deposit_count' => count($request->sere_servs),
@@ -614,7 +635,9 @@ class TransactionRepository
                 'swipe_amount' => $request->pay_form_id == $this->payForm06Id ? $request->swipe_amount : 0, //Nếu đúng hình thức tiền mặt/quẹt thẻ
                 'account_book_id' => $request->account_book_id,
                 'pay_form_id' => $request->pay_form_id,
-                'cashier_room_id' => 1,
+                'cashier_room_id' => $this->roomThuNganId,
+                'cashier_loginname' => get_loginname_with_token($request->bearerToken(), $time)??'MOS_v2',
+                'cashier_username' => get_username_with_token($request->bearerToken(), $time)??'MOS_v2',
                 'treatment_id' => $request->treatment_id,
                 'description' => $request->description,
                 'repay_reason_id' => $request->repay_reason_id,
@@ -689,7 +712,7 @@ class TransactionRepository
         $data->delete();
         return $data;
     }
-    public function getOrCreateTransactionVietinBank($data, $depositReqCode = '')
+    public function getOrCreateTransactionVietinBank($data, $depositReqCode = '', $cashierLoginame, $cashierUsername)
     {
         $cancelReason = 'Khoi tao data QR Code thanh toan VietinBank';
         if ($depositReqCode) {
@@ -709,8 +732,8 @@ class TransactionRepository
             $dataReturn = $this->transaction::create([
                 'create_time' => now()->format('Ymdhis'),
                 'modify_time' => now()->format('Ymdhis'),
-                'creator' => 'MOS_v2',
-                'modifier' => 'MOS_v2',
+                'creator' => $cashierLoginame??'MOS_v2',
+                'modifier' => $cashierLoginame??'MOS_v2',
                 'app_creator' => 'MOS_v2',
                 'app_modifier' => 'MOS_v2',
                 'is_active' => '1',
@@ -720,8 +743,10 @@ class TransactionRepository
                 'amount' => $data['amount'],
                 'account_book_id' => $this->accountBookQrVietinbankId,
                 'pay_form_id' => $this->payFormQrVietinBankId,
-                'cashier_room_id' => 1,
+                'cashier_room_id' => $this->roomThuNganId,
                 'treatment_id' => $data['treatment_id'],
+                'cashier_loginname' => $cashierLoginame,
+                'cashier_username' => $cashierUsername,
                 'transaction_time' => now()->format('Ymdhis'),
                 'description' => $cancelReason,
                 'cancel_reason' => $cancelReason,
