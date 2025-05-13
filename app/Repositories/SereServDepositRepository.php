@@ -91,7 +91,11 @@ class SereServDepositRepository
     {
         return $this->sereServDeposit->find($id);
     }
-    public function create($sereServId, $amountDeposit, $transaction, $appCreator, $appModifier){
+    public function getByDepositId($id)
+    {
+        return $this->sereServDeposit->where('deposit_id', $id)->get();
+    }
+    public function create($sereServId, $amountDeposit, $transaction, $appCreator, $appModifier, $isCancel = 0){
         $sereServ = $this->sereServ->find($sereServId);
         $data = $this->sereServDeposit::create([
             'create_time' => now()->format('Ymdhis'),
@@ -104,6 +108,7 @@ class SereServDepositRepository
             'deposit_id' => $transaction->id,
             'amount' => $amountDeposit, // Giá này là sau khi tính là đúng tuyến hay trái tuyến được hưởng BH bao nhiêu + với giá bệnh nhân trả
             'tdl_treatment_id' => $sereServ->tdl_treatment_id,
+            'is_cancel' => $isCancel, // Nếu là tạo qr Vietinbank thì truyền vào isCancel =1
 
             'tdl_service_req_id' => $sereServ->service_req_id,   
             'tdl_service_id' => $sereServ->service_id,
@@ -131,21 +136,19 @@ class SereServDepositRepository
         ]);
         return $data;
     }
-    // public function update($request, $data, $time, $appModifier){
-    //     $data->update([
-    //         'modify_time' => now()->format('Ymdhis'),
-    //         'modifier' => get_loginname_with_token($request->bearerToken(), $time),
-    //         'app_modifier' => $appModifier,
-    //         'sere_serv_deposit_code' => $request->sere_serv_deposit_code,
-    //         'sere_serv_deposit_name' => $request->sere_serv_deposit_name,
-    //         'is_active' => $request->is_active
-    //     ]);
-    //     return $data;
-    // }
-    // public function delete($data){
-    //     $data->delete();
-    //     return $data;
-    // }
+    public function updateTransactionVietinBank($data){
+        $data->update([
+            'modify_time' => now()->format('Ymdhis'),
+            'modifier' => 'MOS_v2',
+            'app_modifier' => 'MOS_v2',
+            'is_cancel' => 0
+        ]);
+        return $data;
+    }
+    public function delete($data){
+        $data->delete();
+        return $data;
+    }
     public function getDataFromDbToElastic($batchSize = 5000, $id = null)
     {
         $numJobs = config('queue')['num_queue_worker']; // Số lượng job song song

@@ -74,7 +74,7 @@ class TransactionTamUngController extends BaseApiCacheController
                     'ThanhToanQRCode',
                     $this->patientCode,
                     $this->treatmentCode,
-                    $this->transactionTypeCode,
+                    'TU',
                     null,
                     $this->param,
                     $this->noCache,
@@ -85,7 +85,7 @@ class TransactionTamUngController extends BaseApiCacheController
                     'id'  => $request->treatment_id,
                     'fee' => $request->amount,
                 ]);
-                $dataReturn = $this->serviceReqPaymentService->createTransactionVietinBank($data, 0, get_loginname_with_token($request->bearerToken(), 14400), get_username_with_token($request->bearerToken(), 14400));
+                $dataReturn = $this->serviceReqPaymentService->createTransactionTamUngVietinBank($data, 0, get_loginname_with_token($request->bearerToken(), 14400), get_username_with_token($request->bearerToken(), 14400));
                 $paramReturn = [];
                 return returnDataSuccess($paramReturn, $dataReturn);
             }
@@ -103,7 +103,7 @@ class TransactionTamUngController extends BaseApiCacheController
                     'ThanhToanQRCode',
                     $this->patientCode,
                     $this->treatmentCode,
-                    $this->transactionTypeCode,
+                    'TU',
                     $dataDepositReq->deposit_req_code??null,
                     $this->param,
                     $this->noCache,
