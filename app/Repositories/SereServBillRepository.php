@@ -91,7 +91,11 @@ class SereServBillRepository
     {
         return $this->sereServBill->find($id);
     }
-    public function create($sereServId, $amount, $transaction, $appCreator, $appModifier){
+    public function getByBillId($id)
+    {
+        return $this->sereServBill->where('bill_id', $id)->get();
+    }
+    public function create($sereServId, $amount, $transaction, $appCreator, $appModifier, $isCancel = 0){
         $sereServ = $this->sereServ->find($sereServId);
         $data = $this->sereServBill::create([
             'create_time' => now()->format('Ymdhis'),
@@ -105,6 +109,7 @@ class SereServBillRepository
             'price' => $amount,
             'vat_ratio' => $sereServ->vat_ratio,
             'tdl_treatment_id' => $sereServ->tdl_treatment_id,
+            'is_cancel' => $isCancel, // Nếu là tạo qr Vietinbank thì truyền vào isCancel =1
 
             'tdl_bill_type_id' => 1, //1-Thuong;2-Dich vu (Ng Tri Phuong) 
             'tdl_service_req_id' => $sereServ->service_req_id,   
@@ -146,21 +151,15 @@ class SereServBillRepository
         ]);
         return $data;
     }
-    // public function update($request, $data, $time, $appModifier){
-    //     $data->update([
-    //         'modify_time' => now()->format('Ymdhis'),
-    //         'modifier' => get_loginname_with_token($request->bearerToken(), $time),
-    //         'app_modifier' => $appModifier,
-    //         'sere_serv_bill_code' => $request->sere_serv_bill_code,
-    //         'sere_serv_bill_name' => $request->sere_serv_bill_name,
-    //         'is_active' => $request->is_active
-    //     ]);
-    //     return $data;
-    // }
-    // public function delete($data){
-    //     $data->delete();
-    //     return $data;
-    // }
+    public function updateTransactionVietinBank($data){
+        $data->update([
+            'modify_time' => now()->format('Ymdhis'),
+            'modifier' => 'MOS_v2',
+            'app_modifier' => 'MOS_v2',
+            'is_cancel' => 0
+        ]);
+        return $data;
+    }
     public function getDataFromDbToElastic($batchSize = 5000, $id = null)
     {
         $numJobs = config('queue')['num_queue_worker']; // Số lượng job song song
