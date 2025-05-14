@@ -134,8 +134,8 @@ class ExecuteRoomRepository
                // Start transaction
                DB::connection('oracle_his')->beginTransaction();
                $room = $this->room::create([
-                   'create_time' => now()->format('Ymdhis'),
-                   'modify_time' => now()->format('Ymdhis'),
+                   'create_time' => now()->format('YmdHis'),
+                   'modify_time' => now()->format('YmdHis'),
                    'creator' => get_loginname_with_token($request->bearerToken(), $time),
                    'modifier' => get_loginname_with_token($request->bearerToken(), $time),
                    'app_creator' => $appCreator,
@@ -169,8 +169,8 @@ class ExecuteRoomRepository
                    'default_service_id' => $request->default_service_id
                ]);
                $data = $this->executeRoom::create([
-                   'create_time' => now()->format('Ymdhis'),
-                   'modify_time' => now()->format('Ymdhis'),
+                   'create_time' => now()->format('YmdHis'),
+                   'modify_time' => now()->format('YmdHis'),
                    'creator' => get_loginname_with_token($request->bearerToken(), $time),
                    'modifier' => get_loginname_with_token($request->bearerToken(), $time),
                    'app_creator' => $appCreator,
@@ -204,7 +204,7 @@ class ExecuteRoomRepository
               // Start transaction
               DB::connection('oracle_his')->beginTransaction();
               $room_update = [
-                'modify_time' => now()->format('Ymdhis'),
+                'modify_time' => now()->format('YmdHis'),
                 'modifier' => get_loginname_with_token($request->bearerToken(), $time),
                 'app_modifier' => $appModifier,
                 'room_group_id' => $request->room_group_id,
@@ -237,7 +237,7 @@ class ExecuteRoomRepository
       
               ];
               $data_update = [
-                  'modify_time' => now()->format('Ymdhis'),
+                  'modify_time' => now()->format('YmdHis'),
                   'modifier' => get_loginname_with_token($request->bearerToken(), $time),
                   'app_modifier' => $appModifier,
                   'execute_room_name' => $request->execute_room_name,

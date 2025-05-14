@@ -192,16 +192,16 @@ class TransactionRepository
         $treatmentData = $this->treatment->where('id', $payment->treatment_id)->first();
         // if(!$treatmentData) return;
         $data = $this->transaction::create([
-            'create_time' => now()->format('Ymdhis'),
-            'modify_time' => now()->format('Ymdhis'),
+            'create_time' => now()->format('YmdHis'),
+            'modify_time' => now()->format('YmdHis'),
             'creator' => $appCreator,
             'modifier' => $appModifier,
             'app_creator' => $appCreator,
             'app_modifier' => $appModifier,
             // 'transaction_code' => $data['orderId'],          
             'transaction_type_id' =>  $this->transactionTypeTTId,
-            'transaction_time' => now()->format('Ymdhis'),
-            'transaction_date' => now()->format('Ymdhis'),
+            'transaction_time' => now()->format('YmdHis'),
+            'transaction_date' => now()->format('YmdHis'),
             'amount' => $data['amount'],
             'num_order' => $data['transId'],
             'account_book_id' => 32,
@@ -242,16 +242,16 @@ class TransactionRepository
         $treatmentData = $this->treatment->where('id', $payment->treatment_id)->first();
         // if(!$treatmentData) return;
         $data = $this->transaction::create([
-            'create_time' => now()->format('Ymdhis'),
-            'modify_time' => now()->format('Ymdhis'),
+            'create_time' => now()->format('YmdHis'),
+            'modify_time' => now()->format('YmdHis'),
             'creator' => $appCreator,
             'modifier' => $appModifier,
             'app_creator' => $appCreator,
             'app_modifier' => $appModifier,
             // 'transaction_code' => $data['orderId'],          
             'transaction_type_id' =>  $this->transactionTypeTUId,
-            'transaction_time' => now()->format('Ymdhis'),
-            'transaction_date' => now()->format('Ymdhis'),
+            'transaction_time' => now()->format('YmdHis'),
+            'transaction_date' => now()->format('YmdHis'),
             'amount' => $data['amount'],
             'num_order' => $data['transId'],
             'account_book_id' => 32,
@@ -291,16 +291,16 @@ class TransactionRepository
         $treatmentData = $this->treatment->where('id', $payment->treatment_id)->first();
         // if(!$treatmentData) return;
         $data = $this->transaction::create([
-            'create_time' => now()->format('Ymdhis'),
-            'modify_time' => now()->format('Ymdhis'),
+            'create_time' => now()->format('YmdHis'),
+            'modify_time' => now()->format('YmdHis'),
             'creator' => $appCreator,
             'modifier' => $appModifier,
             'app_creator' => $appCreator,
             'app_modifier' => $appModifier,
             // 'transaction_code' => $data['orderId'],          
             'transaction_type_id' =>  $this->transactionTypeTUId,
-            'transaction_time' => now()->format('Ymdhis'),
-            'transaction_date' => now()->format('Ymdhis'),
+            'transaction_time' => now()->format('YmdHis'),
+            'transaction_date' => now()->format('YmdHis'),
             'amount' => $data['amount'],
             'num_order' => $data['transId'],
             'account_book_id' => 32,
@@ -312,7 +312,7 @@ class TransactionRepository
             // lý do is_cancel=1 
             'is_cancel' => 1,
             'cancel_reason' => 'Hoàn tiền thành công, do thanh toán sau khi viện phí được khóa (do link thanh toán tồn tại đến sau khi viện phí được khóa)',
-            'cancel_time' => now()->format('Ymdhis'),
+            'cancel_time' => now()->format('YmdHis'),
             'cancel_loginname' => $appModifier,
             'cancel_username' => $appModifier,
             // Dữ liệu dư thừa
@@ -347,8 +347,8 @@ class TransactionRepository
         // if(!$treatmentData) return;
         $data = DB::connection('oracle_his')->transaction(function () use ($request, $time, $appCreator, $appModifier, $treatmentData) {
             $data = $this->transaction::create([
-                'create_time' => now()->format('Ymdhis'),
-                'modify_time' => now()->format('Ymdhis'),
+                'create_time' => now()->format('YmdHis'),
+                'modify_time' => now()->format('YmdHis'),
                 'creator' => get_loginname_with_token($request->bearerToken(), $time),
                 'modifier' => get_loginname_with_token($request->bearerToken(), $time),
                 'app_creator' => $appCreator,
@@ -414,8 +414,8 @@ class TransactionRepository
         $treatmentData = $this->treatment->where('id', $request->treatment_id)->first();
         // if(!$treatmentData) return;
         $data = $this->transaction::create([
-            'create_time' => now()->format('Ymdhis'),
-            'modify_time' => now()->format('Ymdhis'),
+            'create_time' => now()->format('YmdHis'),
+            'modify_time' => now()->format('YmdHis'),
             'creator' => get_loginname_with_token($request->bearerToken(), $time),
             'modifier' => get_loginname_with_token($request->bearerToken(), $time),
             'app_creator' => $appCreator,
@@ -476,8 +476,8 @@ class TransactionRepository
         $data = DB::connection('oracle_his')->transaction(function () use ($request, $time, $appCreator, $appModifier, $treatmentData, $totalAmountBillFund, $sereServAmount) {
             // if(!$treatmentData) return;
             $data = $this->transaction::create([
-                'create_time' => now()->format('Ymdhis'),
-                'modify_time' => now()->format('Ymdhis'),
+                'create_time' => now()->format('YmdHis'),
+                'modify_time' => now()->format('YmdHis'),
                 'creator' => get_loginname_with_token($request->bearerToken(), $time),
                 'modifier' => get_loginname_with_token($request->bearerToken(), $time),
                 'app_creator' => $appCreator,
@@ -555,8 +555,8 @@ class TransactionRepository
         $data = DB::connection('oracle_his')->transaction(function () use ($request, $time, $appCreator, $appModifier, $treatmentData) {
             // if(!$treatmentData) return;
             $data = $this->transaction::create([
-                'create_time' => now()->format('Ymdhis'),
-                'modify_time' => now()->format('Ymdhis'),
+                'create_time' => now()->format('YmdHis'),
+                'modify_time' => now()->format('YmdHis'),
                 'creator' => get_loginname_with_token($request->bearerToken(), $time),
                 'modifier' => get_loginname_with_token($request->bearerToken(), $time),
                 'app_creator' => $appCreator,
@@ -622,8 +622,8 @@ class TransactionRepository
         $data = DB::connection('oracle_his')->transaction(function () use ($request, $time, $appCreator, $appModifier, $treatmentData) {
             // if(!$treatmentData) return;
             $data = $this->transaction::create([
-                'create_time' => now()->format('Ymdhis'),
-                'modify_time' => now()->format('Ymdhis'),
+                'create_time' => now()->format('YmdHis'),
+                'modify_time' => now()->format('YmdHis'),
                 'creator' => get_loginname_with_token($request->bearerToken(), $time),
                 'modifier' => get_loginname_with_token($request->bearerToken(), $time),
                 'app_creator' => $appCreator,
@@ -688,7 +688,7 @@ class TransactionRepository
     public function update($request, $data, $time, $appModifier)
     {
         $data->update([
-            'modify_time' => now()->format('Ymdhis'),
+            'modify_time' => now()->format('YmdHis'),
             'modifier' => get_loginname_with_token($request->bearerToken(), $time),
             'app_modifier' => $appModifier,
 
@@ -731,8 +731,8 @@ class TransactionRepository
             $treatmentData = $this->treatment->where('id', $data['treatment_id'])->first();
             // if(!$treatmentData) return;
             $dataReturn = $this->transaction::create([
-                'create_time' => now()->format('Ymdhis'),
-                'modify_time' => now()->format('Ymdhis'),
+                'create_time' => now()->format('YmdHis'),
+                'modify_time' => now()->format('YmdHis'),
                 'creator' => $cashierLoginame??'MOS_v2',
                 'modifier' => $cashierLoginame??'MOS_v2',
                 'app_creator' => 'MOS_v2',
@@ -748,7 +748,7 @@ class TransactionRepository
                 'treatment_id' => $data['treatment_id'],
                 'cashier_loginname' => $cashierLoginame,
                 'cashier_username' => $cashierUsername,
-                'transaction_time' => now()->format('Ymdhis'),
+                'transaction_time' => now()->format('YmdHis'),
                 'description' => $cancelReason,
                 'cancel_reason' => $cancelReason,
                 'is_cancel' => 1,
@@ -781,20 +781,20 @@ class TransactionRepository
         } else {
             if ($dataReturn['amount'] != $data['amount']) {
                 $dataReturn->update([
-                    'create_time' => now()->format('Ymdhis'),
-                    'modify_time' => now()->format('Ymdhis'),
+                    'create_time' => now()->format('YmdHis'),
+                    'modify_time' => now()->format('YmdHis'),
                     'modifier' => 'MOS_v2',
                     'app_modifier' => 'MOS_v2',
                     'amount' => $data['amount'],
-                    'transaction_time' => now()->format('Ymdhis'),
+                    'transaction_time' => now()->format('YmdHis'),
                 ]);
             } else {
                 $dataReturn->update([
-                    'create_time' => now()->format('Ymdhis'),
-                    'modify_time' => now()->format('Ymdhis'),
+                    'create_time' => now()->format('YmdHis'),
+                    'modify_time' => now()->format('YmdHis'),
                     'modifier' => 'MOS_v2',
                     'app_modifier' => 'MOS_v2',
-                    'transaction_time' => now()->format('Ymdhis'),
+                    'transaction_time' => now()->format('YmdHis'),
                 ]);
             }
         }
@@ -815,8 +815,8 @@ class TransactionRepository
             $cancelReason = 'Khoi tao data QR Code thanh toan VietinBank';
             // if(!$treatmentData) return;
             $data = $this->transaction::create([
-                'create_time' => now()->format('Ymdhis'),
-                'modify_time' => now()->format('Ymdhis'),
+                'create_time' => now()->format('YmdHis'),
+                'modify_time' => now()->format('YmdHis'),
                 'creator' => get_loginname_with_token($request->bearerToken(), $time),
                 'modifier' => get_loginname_with_token($request->bearerToken(), $time),
                 'app_creator' => $appCreator,
@@ -890,8 +890,8 @@ class TransactionRepository
             $cancelReason = 'Khoi tao data QR Code thanh toan VietinBank';
             // if(!$treatmentData) return;
             $data = $this->transaction::create([
-                'create_time' => now()->format('Ymdhis'),
-                'modify_time' => now()->format('Ymdhis'),
+                'create_time' => now()->format('YmdHis'),
+                'modify_time' => now()->format('YmdHis'),
                 'creator' => get_loginname_with_token($request->bearerToken(), $time),
                 'modifier' => get_loginname_with_token($request->bearerToken(), $time),
                 'app_creator' => $appCreator,
@@ -981,7 +981,7 @@ class TransactionRepository
     {
         DB::connection('oracle_his')->transaction(function () use ($data) {
         $data->update([
-            'modify_time' => now()->format('Ymdhis'),
+            'modify_time' => now()->format('YmdHis'),
             'modifier' => 'MOS_v2',
             'app_modifier' => 'MOS_v2',
             'is_cancel' => 0,
@@ -1006,5 +1006,20 @@ class TransactionRepository
         }
         return $data;
         });
+    }
+    public function cancelTransaction($request, $data, $time, $appModifier){
+        $data->update([
+            'modify_time' => now()->format('YmdHis'),
+            'modifier' => get_loginname_with_token($request->bearerToken(), $time),
+            'app_modifier' => $appModifier,
+            'is_cancel' => 1,
+            'cancel_reason' => $request->cancel_reason,
+            'cancel_time' => now()->format('YmdHis'), 
+            'cancel_loginname' => get_loginname_with_token($request->bearerToken(), $time),
+            'cancel_username' => get_username_with_token($request->bearerToken(), $time),
+            'cancel_cashier_room_id' => $this->roomThuNganId,
+            'cancel_reason_id' => $request->cancel_reason_id,
+        ]);
+        return $data;
     }
 }

@@ -94,8 +94,8 @@ class SeseDepoRepayRepository
     public function create($sereServId, $amountDeposit, $sereServDepositId, $transaction, $appCreator, $appModifier){
         $sereServ = $this->sereServ->find($sereServId);
         $data = $this->seseDepoRepay::create([
-            'create_time' => now()->format('Ymdhis'),
-            'modify_time' => now()->format('Ymdhis'),
+            'create_time' => now()->format('YmdHis'),
+            'modify_time' => now()->format('YmdHis'),
             'creator' => $appCreator,
             'modifier' => $appModifier,
             'app_creator' => $appCreator,
@@ -133,7 +133,7 @@ class SeseDepoRepayRepository
     }
     // public function update($request, $data, $time, $appModifier){
     //     $data->update([
-    //         'modify_time' => now()->format('Ymdhis'),
+    //         'modify_time' => now()->format('YmdHis'),
     //         'modifier' => get_loginname_with_token($request->bearerToken(), $time),
     //         'app_modifier' => $appModifier,
     //         'sese_depo_repay_code' => $request->sese_depo_repay_code,

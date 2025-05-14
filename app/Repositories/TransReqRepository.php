@@ -84,8 +84,8 @@ class TransReqRepository
     }
     public function createTransReqQrVtbByNguoiDung($request, $appCreator, $appModifier, $depositReqCode){
         $data = $this->transReq::create([
-            'create_time' => now()->format('Ymdhis'),
-            'modify_time' => now()->format('Ymdhis'),
+            'create_time' => now()->format('YmdHis'),
+            'modify_time' => now()->format('YmdHis'),
             'creator' => 'MOS_v2',
             'modifier' => 'MOS_v2',
             'app_creator' => $appCreator,
@@ -118,8 +118,8 @@ class TransReqRepository
     public function createTransReqQrVtbByThuNgan($request, $appCreator, $appModifier, $currentLoginname, $depositReqCode){
         $time = 14400;
         $data = $this->transReq::create([
-            'create_time' => now()->format('Ymdhis'),
-            'modify_time' => now()->format('Ymdhis'),
+            'create_time' => now()->format('YmdHis'),
+            'modify_time' => now()->format('YmdHis'),
             'creator' => $currentLoginname,
             'modifier' => $currentLoginname,
             'app_creator' => $appCreator,

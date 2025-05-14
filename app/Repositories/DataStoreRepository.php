@@ -93,8 +93,8 @@ class DataStoreRepository
        // Start transaction
        DB::connection('oracle_his')->beginTransaction();
        $room = $this->room::create([
-           'create_time' => now()->format('Ymdhis'),
-           'modify_time' => now()->format('Ymdhis'),
+           'create_time' => now()->format('YmdHis'),
+           'modify_time' => now()->format('YmdHis'),
            'creator' => get_loginname_with_token($request->bearerToken(), $time),
            'modifier' => get_loginname_with_token($request->bearerToken(), $time),
            'app_creator' => $appCreator,
@@ -103,8 +103,8 @@ class DataStoreRepository
            'room_type_id' => $request->room_type_id
        ]);
        $data = $this->dataStore::create([
-           'create_time' => now()->format('Ymdhis'),
-           'modify_time' => now()->format('Ymdhis'),
+           'create_time' => now()->format('YmdHis'),
+           'modify_time' => now()->format('YmdHis'),
            'creator' => get_loginname_with_token($request->bearerToken(), $time),
            'modifier' => get_loginname_with_token($request->bearerToken(), $time),
            'app_creator' => $appCreator,
@@ -125,7 +125,7 @@ class DataStoreRepository
         // Start transaction
         DB::connection('oracle_his')->beginTransaction();
         $room_update = [
-            'modify_time' => now()->format('Ymdhis'),
+            'modify_time' => now()->format('YmdHis'),
             'modifier' => get_loginname_with_token($request->bearerToken(), $time),
             'app_modifier' => $appModifier,
             'room_type_id' => $request->room_type_id,
@@ -133,7 +133,7 @@ class DataStoreRepository
 
         ];
         $data_update = [
-            'modify_time' => now()->format('Ymdhis'),
+            'modify_time' => now()->format('YmdHis'),
             'modifier' => get_loginname_with_token($request->bearerToken(), $time),
             'app_modifier' => $appModifier,
             'data_store_name' => $request->data_store_name,

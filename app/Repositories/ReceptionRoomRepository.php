@@ -110,8 +110,8 @@ class ReceptionRoomRepository
         // Start transaction
         DB::connection('oracle_his')->beginTransaction();
         $room = $this->room::create([
-            'create_time' => now()->format('Ymdhis'),
-            'modify_time' => now()->format('Ymdhis'),
+            'create_time' => now()->format('YmdHis'),
+            'modify_time' => now()->format('YmdHis'),
             'creator' => get_loginname_with_token($request->bearerToken(), $time),
             'modifier' => get_loginname_with_token($request->bearerToken(), $time),
             'app_creator' => $appCreator,
@@ -127,8 +127,8 @@ class ReceptionRoomRepository
             'is_pause' => $request->is_pause,
         ]);
         $data = $this->receptionRoom::create([
-            'create_time' => now()->format('Ymdhis'),
-            'modify_time' => now()->format('Ymdhis'),
+            'create_time' => now()->format('YmdHis'),
+            'modify_time' => now()->format('YmdHis'),
             'creator' => get_loginname_with_token($request->bearerToken(), $time),
             'modifier' => get_loginname_with_token($request->bearerToken(), $time),
             'app_creator' => $appCreator,
@@ -146,7 +146,7 @@ class ReceptionRoomRepository
         // Start transaction
         DB::connection('oracle_his')->beginTransaction();
         $room_update = [
-            'modify_time' => now()->format('Ymdhis'),
+            'modify_time' => now()->format('YmdHis'),
             'modifier' => get_loginname_with_token($request->bearerToken(), $time),
             'app_modifier' => $appModifier,
             'room_type_id' => $request->room_type_id,
@@ -160,7 +160,7 @@ class ReceptionRoomRepository
             'is_active' => $request->is_active,
         ];
         $data_update = [
-            'modify_time' => now()->format('Ymdhis'),
+            'modify_time' => now()->format('YmdHis'),
             'modifier' => get_loginname_with_token($request->bearerToken(), $time),
             'app_modifier' => $appModifier,
             'reception_room_name' => $request->reception_room_name,

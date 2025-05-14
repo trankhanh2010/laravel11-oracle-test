@@ -77,8 +77,8 @@ class PtttGroupRepository
         // Start transaction
         DB::connection('oracle_his')->beginTransaction();
         $data = $this->ptttGroup::create([
-            'create_time' => now()->format('Ymdhis'),
-            'modify_time' => now()->format('Ymdhis'),
+            'create_time' => now()->format('YmdHis'),
+            'modify_time' => now()->format('YmdHis'),
             'creator' => get_loginname_with_token($request->bearerToken(), $time),
             'modifier' => get_loginname_with_token($request->bearerToken(), $time),
             'app_creator' => $appCreator,
@@ -95,8 +95,8 @@ class PtttGroupRepository
             foreach ($request->bed_service_type_ids as $item) {
                 $id = $item;
                 $dataToSync_bed_service_type_ids[$id] = [];
-                $dataToSync_bed_service_type_ids[$id]['create_time'] = now()->format('Ymdhis');
-                $dataToSync_bed_service_type_ids[$id]['modify_time'] = now()->format('Ymdhis');
+                $dataToSync_bed_service_type_ids[$id]['create_time'] = now()->format('YmdHis');
+                $dataToSync_bed_service_type_ids[$id]['modify_time'] = now()->format('YmdHis');
                 $dataToSync_bed_service_type_ids[$id]['creator'] = get_loginname_with_token($request->bearerToken(), $time);
                 $dataToSync_bed_service_type_ids[$id]['modifier'] = get_loginname_with_token($request->bearerToken(), $time);
                 $dataToSync_bed_service_type_ids[$id]['app_creator'] = $appCreator;
@@ -112,7 +112,7 @@ class PtttGroupRepository
         // Start transaction
         DB::connection('oracle_his')->beginTransaction();
         $data_update = [
-            'modify_time' => now()->format('Ymdhis'),
+            'modify_time' => now()->format('YmdHis'),
             'modifier' => get_loginname_with_token($request->bearerToken(), $time),
             'app_modifier' => $appModifier,
             'pttt_group_code' => $request->pttt_group_code,
@@ -129,7 +129,7 @@ class PtttGroupRepository
             foreach ($request->bed_service_type_ids as $item) {
                 $id = $item;
                 $dataToSync_bed_service_type_ids[$id] = [];
-                $dataToSync_bed_service_type_ids[$id]['modify_time'] = now()->format('Ymdhis');
+                $dataToSync_bed_service_type_ids[$id]['modify_time'] = now()->format('YmdHis');
                 $dataToSync_bed_service_type_ids[$id]['modifier'] = get_loginname_with_token($request->bearerToken(), $time);
                 $dataToSync_bed_service_type_ids[$id]['app_modifier'] = $appModifier;
             }

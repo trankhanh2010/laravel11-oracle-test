@@ -105,8 +105,8 @@ class CashierRoomRepository
         // Start transaction
         DB::connection('oracle_his')->beginTransaction();
         $room = $this->room::create([
-            'create_time' => now()->format('Ymdhis'),
-            'modify_time' => now()->format('Ymdhis'),
+            'create_time' => now()->format('YmdHis'),
+            'modify_time' => now()->format('YmdHis'),
             'creator' => get_loginname_with_token($request->bearerToken(), $time),
             'modifier' => get_loginname_with_token($request->bearerToken(), $time),
             'app_creator' => $appCreator,
@@ -117,8 +117,8 @@ class CashierRoomRepository
             'is_pause' => $request->is_pause,
         ]);
         $data = $this->cashierRoom::create([
-            'create_time' => now()->format('Ymdhis'),
-            'modify_time' => now()->format('Ymdhis'),
+            'create_time' => now()->format('YmdHis'),
+            'modify_time' => now()->format('YmdHis'),
             'creator' => get_loginname_with_token($request->bearerToken(), $time),
             'modifier' => get_loginname_with_token($request->bearerToken(), $time),
             'app_creator' => $appCreator,
@@ -137,7 +137,7 @@ class CashierRoomRepository
         // Start transaction
         DB::connection('oracle_his')->beginTransaction();
         $room_update = [
-            'modify_time' => now()->format('Ymdhis'),
+            'modify_time' => now()->format('YmdHis'),
             'modifier' => get_loginname_with_token($request->bearerToken(), $time),
             'app_modifier' => $appModifier,
             'room_type_id' => $request->room_type_id,
@@ -147,7 +147,7 @@ class CashierRoomRepository
 
         ];
         $data_update = [
-            'modify_time' => now()->format('Ymdhis'),
+            'modify_time' => now()->format('YmdHis'),
             'modifier' => get_loginname_with_token($request->bearerToken(), $time),
             'app_modifier' => $appModifier,
             'cashier_room_name' => $request->cashier_room_name,

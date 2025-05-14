@@ -117,8 +117,8 @@ class BedRoomRepository
         // Start transaction
         DB::connection('oracle_his')->beginTransaction();
         $room = $this->room::create([
-            'create_time' => now()->format('Ymdhis'),
-            'modify_time' => now()->format('Ymdhis'),
+            'create_time' => now()->format('YmdHis'),
+            'modify_time' => now()->format('YmdHis'),
             'creator' => get_loginname_with_token($request->bearerToken(), $time),
             'modifier' => get_loginname_with_token($request->bearerToken(), $time),
             'app_creator' => $appCreator,
@@ -134,8 +134,8 @@ class BedRoomRepository
             'room_type_id' => $request->room_type_id
         ]);
         $data = $this->bedRoom::create([
-            'create_time' => now()->format('Ymdhis'),
-            'modify_time' => now()->format('Ymdhis'),
+            'create_time' => now()->format('YmdHis'),
+            'modify_time' => now()->format('YmdHis'),
             'creator' => get_loginname_with_token($request->bearerToken(), $time),
             'modifier' => get_loginname_with_token($request->bearerToken(), $time),
             'app_creator' => $appCreator,
@@ -154,7 +154,7 @@ class BedRoomRepository
         // Start transaction
         DB::connection('oracle_his')->beginTransaction();
         $room_update = [
-            'modify_time' => now()->format('Ymdhis'),
+            'modify_time' => now()->format('YmdHis'),
             'modifier' => get_loginname_with_token($request->bearerToken(), $time),
             'app_modifier' => $appModifier,
             'area_id' => $request->area_id,
@@ -169,7 +169,7 @@ class BedRoomRepository
 
         ];
         $data_update = [
-            'modify_time' => now()->format('Ymdhis'),
+            'modify_time' => now()->format('YmdHis'),
             'modifier' => get_loginname_with_token($request->bearerToken(), $time),
             'app_modifier' => $appModifier,
             'bed_room_name' => $request->bed_room_name,

@@ -1075,6 +1075,10 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.TransactionList->'], function () {
         Route::apiResource('v1/transaction-list-v-view', TransactionListVViewController::class)->only(['index', 'show']);
     });
+    /// Transaction Cancel
+    Route::group(['as' => 'HIS.Desktop.Plugins.TransactionCancel->'], function () {
+        Route::put('v1/transaction-cancel/{id}', [TransactionListVViewController::class, 'cancelTransaction']);
+    });
     Route::apiResource('v1/transaction-list-v-view-no-login', TransactionListVViewController::class)->only(['index', 'show'])->withoutMiddleware([
         'check_token',
         'check_admin:api',

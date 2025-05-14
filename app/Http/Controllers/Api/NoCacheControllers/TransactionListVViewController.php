@@ -4,8 +4,7 @@ namespace App\Http\Controllers\Api\NoCacheControllers;
 
 use App\DTOs\TransactionListVViewDTO;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
-use App\Http\Requests\TransactionListVView\CreateTransactionListVViewRequest;
-use App\Http\Requests\TransactionListVView\UpdateTransactionListVViewRequest;
+use App\Http\Requests\Transaction\UpdateCancelTransactionRequest;
 use App\Models\View\TransactionListVView;
 use App\Services\Elastic\ElasticsearchService;
 use App\Services\Model\TransactionListVViewService;
@@ -99,15 +98,14 @@ class TransactionListVViewController extends BaseApiCacheController
                 return $validationError;
             }
         }
-        if ($this->elastic) {
-            $data = $this->elasticSearchService->handleElasticSearchGetWithId($this->transactionListVViewName, $id);
-        } else {
-            $data = $this->transactionListVViewService->handleDataBaseGetWithId($id);
-        }
+        $data = $this->transactionListVViewService->handleDataBaseGetWithId($id);
         $paramReturn = [
             $this->idName => $id,
             $this->isActiveName => $this->isActive,
         ];
         return returnDataSuccess($paramReturn, $data);
+    }
+    public function cancelTransaction(UpdateCancelTransactionRequest $request, $id){
+        return $this->transactionListVViewService->cancelTransaction($id, $request);
     }
 }

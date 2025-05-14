@@ -1706,4 +1706,9 @@ return [
         'amount' => 'Số tiền yêu cầu tạm ứng',
         'description' => 'Lý do tạm ứng',
     ],
+    // transaction cancel
+    'transaction_cancel' => [
+        'cancel_reason' => 'Lý do hủy',
+        'cancel_reason_id' => 'Id lý do hủy',
+    ],
 ];

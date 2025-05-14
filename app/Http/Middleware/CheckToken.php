@@ -40,7 +40,7 @@ class CheckToken
         // dd(date("Y-m-d H:i:s", $token->expire_time));
         // $date = Carbon::createFromTimestamp($token->expire_time);
         // Kiểm tra xem ngày hiện tại có lớn hơn ngày hết hạn hay không
-        $is_expire = now()->format('Ymdhis') >= $token->expire_time;
+        $is_expire = now()->format('YmdHis') >= $token->expire_time;
         // Nếu token không hợp lệ, trả về lỗi 401 Unauthorized
         if (!$token || (!$token->is_active) || ($token->is_delete) || ($is_expire)) {
             return response()->json([

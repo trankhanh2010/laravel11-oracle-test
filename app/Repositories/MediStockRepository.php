@@ -101,8 +101,8 @@ class MediStockRepository
         // Start transaction
         DB::connection('oracle_his')->beginTransaction();
         $room = $this->room::create([
-            'create_time' => now()->format('Ymdhis'),
-            'modify_time' => now()->format('Ymdhis'),
+            'create_time' => now()->format('YmdHis'),
+            'modify_time' => now()->format('YmdHis'),
             'creator' => get_loginname_with_token($request->bearerToken(), $time),
             'modifier' => get_loginname_with_token($request->bearerToken(), $time),
             'app_creator' => $appCreator,
@@ -111,8 +111,8 @@ class MediStockRepository
             'room_type_id' => $request->room_type_id,
         ]);
         $data = $this->mediStock::create([
-            'create_time' => now()->format('Ymdhis'),
-            'modify_time' => now()->format('Ymdhis'),
+            'create_time' => now()->format('YmdHis'),
+            'modify_time' => now()->format('YmdHis'),
             'creator' => get_loginname_with_token($request->bearerToken(), $time),
             'modifier' => get_loginname_with_token($request->bearerToken(), $time),
             'app_creator' => $appCreator,
@@ -152,8 +152,8 @@ class MediStockRepository
             foreach ($request->medi_stock_exty as $item) {
                 $id = $item->id;
                 $dataToSync_medi_stock_exty[$id] = [];
-                $dataToSync_medi_stock_exty[$id]['create_time'] = now()->format('Ymdhis');
-                $dataToSync_medi_stock_exty[$id]['modify_time'] = now()->format('Ymdhis');
+                $dataToSync_medi_stock_exty[$id]['create_time'] = now()->format('YmdHis');
+                $dataToSync_medi_stock_exty[$id]['modify_time'] = now()->format('YmdHis');
                 $dataToSync_medi_stock_exty[$id]['creator'] = get_loginname_with_token($request->bearerToken(), $time);
                 $dataToSync_medi_stock_exty[$id]['modifier'] = get_loginname_with_token($request->bearerToken(), $time);
                 $dataToSync_medi_stock_exty[$id]['app_creator'] = $appCreator;
@@ -168,8 +168,8 @@ class MediStockRepository
             foreach ($request->medi_stock_imty as $item) {
                 $id = $item->id;
                 $dataToSync_medi_stock_imty[$id] = [];
-                $dataToSync_medi_stock_imty[$id]['create_time'] = now()->format('Ymdhis');
-                $dataToSync_medi_stock_imty[$id]['modify_time'] = now()->format('Ymdhis');
+                $dataToSync_medi_stock_imty[$id]['create_time'] = now()->format('YmdHis');
+                $dataToSync_medi_stock_imty[$id]['modify_time'] = now()->format('YmdHis');
                 $dataToSync_medi_stock_imty[$id]['creator'] = get_loginname_with_token($request->bearerToken(), $time);
                 $dataToSync_medi_stock_imty[$id]['modifier'] = get_loginname_with_token($request->bearerToken(), $time);
                 $dataToSync_medi_stock_imty[$id]['app_creator'] = $appCreator;
@@ -187,7 +187,7 @@ class MediStockRepository
         // Start transaction
         DB::connection('oracle_his')->beginTransaction();
         $room_update = [
-            'modify_time' => now()->format('Ymdhis'),
+            'modify_time' => now()->format('YmdHis'),
             'modifier' => get_loginname_with_token($request->bearerToken(), $time),
             'app_modifier' => $appModifier,
             'department_id' => $request->department_id,
@@ -195,7 +195,7 @@ class MediStockRepository
             'is_active' => $request->is_active,
         ];
         $data_update = [
-            'modify_time' => now()->format('Ymdhis'),
+            'modify_time' => now()->format('YmdHis'),
             'modifier' => get_loginname_with_token($request->bearerToken(), $time),
             'app_modifier' => $appModifier,
             'medi_stock_code' => $request->medi_stock_code,
@@ -238,7 +238,7 @@ class MediStockRepository
             foreach ($request->medi_stock_exty as $item) {
                 $id = $item->id;
                 $dataToSync_medi_stock_exty[$id] = [];
-                $dataToSync_medi_stock_exty[$id]['modify_time'] = now()->format('Ymdhis');
+                $dataToSync_medi_stock_exty[$id]['modify_time'] = now()->format('YmdHis');
                 $dataToSync_medi_stock_exty[$id]['modifier'] = get_loginname_with_token($request->bearerToken(), $time);
                 $dataToSync_medi_stock_exty[$id]['app_modifier'] = $appModifier;
                 $dataToSync_medi_stock_exty[$id]['is_auto_approve'] = $item->is_auto_approve;
@@ -254,7 +254,7 @@ class MediStockRepository
             foreach ($request->medi_stock_imty as $item) {
                 $id = $item->id;
                 $dataToSync_medi_stock_imty[$id] = [];
-                $dataToSync_medi_stock_imty[$id]['modify_time'] = now()->format('Ymdhis');
+                $dataToSync_medi_stock_imty[$id]['modify_time'] = now()->format('YmdHis');
                 $dataToSync_medi_stock_imty[$id]['modifier'] = get_loginname_with_token($request->bearerToken(), $time);
                 $dataToSync_medi_stock_imty[$id]['app_modifier'] = $appModifier;
                 $dataToSync_medi_stock_imty[$id]['is_auto_approve'] = $item->is_auto_approve;

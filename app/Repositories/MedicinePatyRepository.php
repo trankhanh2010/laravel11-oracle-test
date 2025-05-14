@@ -107,8 +107,8 @@ class MedicinePatyRepository
     }
     public function create($request, $time, $appCreator, $appModifier){
         $data = $this->medicinePaty::create([
-            'create_time' => now()->format('Ymdhis'),
-            'modify_time' => now()->format('Ymdhis'),
+            'create_time' => now()->format('YmdHis'),
+            'modify_time' => now()->format('YmdHis'),
             'creator' => get_loginname_with_token($request->bearerToken(), $time),
             'modifier' => get_loginname_with_token($request->bearerToken(), $time),
             'app_creator' => $appCreator,
@@ -122,7 +122,7 @@ class MedicinePatyRepository
     }
     public function update($request, $data, $time, $appModifier){
         $data->update([
-            'modify_time' => now()->format('Ymdhis'),
+            'modify_time' => now()->format('YmdHis'),
             'modifier' => get_loginname_with_token($request->bearerToken(), $time),
             'app_modifier' => $appModifier,
             'medicine_id' => $request->medicine_id,

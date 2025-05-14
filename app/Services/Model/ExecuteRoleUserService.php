@@ -108,8 +108,8 @@ class ExecuteRoleUserService
     private function buildSyncData($request)
     {
         return [
-            'create_time' => now()->format('Ymdhis'),
-            'modify_time' => now()->format('Ymdhis'),
+            'create_time' => now()->format('YmdHis'),
+            'modify_time' => now()->format('YmdHis'),
             'creator' => get_loginname_with_token($request->bearerToken(), $this->params->time),
             'modifier' => get_loginname_with_token($request->bearerToken(), $this->params->time),
             'app_creator' => $this->params->appCreator,

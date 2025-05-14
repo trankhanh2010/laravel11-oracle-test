@@ -1,0 +1,114 @@
+<?php
+
+namespace App\Http\Requests\Transaction;
+
+use App\Models\HIS\Transaction;
+use App\Models\HIS\Treatment;
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Redis;
+
+class UpdateCancelTransactionRequest extends FormRequest
+{
+    protected $transaction;
+    protected $treatment;
+    protected $payFormQrId;
+    /**
+     * Determine if the user is authorized to make this request.
+     */
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     */
+    public function rules()
+    {
+        $this->transaction = new Transaction();
+        $this->treatment = new Treatment();
+
+        $cacheKeySet = "cache_keys:" . "setting"; // Set để lưu danh sách key
+        $cacheKey = 'pay_form_qr_vietin_bank_id';
+        $this->payFormQrId = Cache::remember($cacheKey, now()->addMinutes(10080), function () {
+            $data =  $this->payForm->where('pay_form_code', '08')->get();
+            return $data->value('id');
+        });
+        // Lưu key vào Redis Set để dễ xóa sau này
+        Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+        return [
+            'cancel_reason' => 'nullable|string|max:2000',
+            'cancel_reason_id' => [
+                'nullable',
+                'integer',
+                Rule::exists('App\Models\HIS\CancelReason', 'id')
+                ->where(function ($query) {
+                    $query = $query
+                    ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                }),
+            ], 
+        ];
+    }
+    public function messages()
+    {
+        return [
+            'cancel_reason_id.integer'       => config('keywords')['transaction_cancel']['cancel_reason_id'].config('keywords')['error']['integer'],
+            'cancel_reason_id.exists'        => config('keywords')['transaction_cancel']['cancel_reason_id'].config('keywords')['error']['exists'],  
+
+            'cancel_reason.string'        => config('keywords')['transaction_cancel']['cancel_reason'].config('keywords')['error']['string'],
+            'cancel_reason.max'           => config('keywords')['transaction_cancel']['cancel_reason'].config('keywords')['error']['string_max'],
+        ];
+    }
+
+    public function withValidator($validator)
+    {
+        $validator->after(function ($validator) {
+            $id = $this->id;
+            $dataTransaction = $this->transaction->find($id);
+            if (!$dataTransaction) {
+                $validator->errors()->add('id', 'ID giao dịch không tồn tại!');
+            }else{
+                if ($dataTransaction->is_active == 0) {
+                    $validator->errors()->add('id', 'Giao dịch này đang bị khóa!');
+                }
+                if ($dataTransaction->is_cancel == 1) {
+                    $validator->errors()->add('id', 'Giao dịch này đã bị hủy!');
+                }
+                if ($dataTransaction->treatment_id) {
+                    $dataTreatment = $this->treatment->find($dataTransaction->treatment_id);
+                    if (!$dataTreatment) {
+                        $validator->errors()->add('id', 'Hồ sơ không tồn tại!');
+                    }else{
+                        if ($dataTreatment->is_active == 0) {
+                            $validator->errors()->add('id', 'Hồ sơ đã bị khóa viện phí!');
+                        }
+                    }
+                }
+                if($dataTransaction->pay_form_id == $this->payFormQrId){
+                    $validator->errors()->add('id', 'Không thể hủy giao dịch với hình thức thanh toán là Thanh toán QR!');
+                }
+            }
+
+            if(($this->cancel_reason == null) && ($this->cancel_reason_id == null)){
+                $validator->errors()->add('cancel_reason_id', 'Thiếu lý do hủy giao dịch!');
+                $validator->errors()->add('cancel_reason', 'Thiếu lý do hủy giao dịch!');
+            }
+        });
+    }
+
+    public function failedValidation(Validator $validator)
+    {
+        throw new HttpResponseException(response()->json([
+            'success'   => false,
+            'message'   => 'Dữ liệu không hợp lệ!',
+            'data'      => $validator->errors()
+        ], 422));
+    }
+}

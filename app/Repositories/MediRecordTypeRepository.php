@@ -66,8 +66,8 @@ class MediRecordTypeRepository
     }
     public function create($request, $time, $appCreator, $appModifier){
         $data = $this->mediRecordType::create([
-            'create_time' => now()->format('Ymdhis'),
-            'modify_time' => now()->format('Ymdhis'),
+            'create_time' => now()->format('YmdHis'),
+            'modify_time' => now()->format('YmdHis'),
             'creator' => get_loginname_with_token($request->bearerToken(), $time),
             'modifier' => get_loginname_with_token($request->bearerToken(), $time),
             'app_creator' => $appCreator,
@@ -79,7 +79,7 @@ class MediRecordTypeRepository
     }
     public function update($request, $data, $time, $appModifier){
         $data->update([
-            'modify_time' => now()->format('Ymdhis'),
+            'modify_time' => now()->format('YmdHis'),
             'modifier' => get_loginname_with_token($request->bearerToken(), $time),
             'app_modifier' => $appModifier,
             'medi_record_type_name' => $request->medi_record_type_name,

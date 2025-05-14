@@ -91,15 +91,15 @@ class TreatmentMoMoPaymentsRepository
         ->where('treatment_code', $treatmentCode)
         ->where('result_code', 1000)
         ->update([
-            'modify_time' => now()->format('Ymdhis'),
+            'modify_time' => now()->format('YmdHis'),
             'result_code' => 1005,
         ]);
         return $data;
     }
     public function create($data, $appCreator, $appModifier){
         $data = $this->treatmentMoMoPayments::create([
-            'create_time' => now()->format('Ymdhis'),
-            'modify_time' => now()->format('Ymdhis'),
+            'create_time' => now()->format('YmdHis'),
+            'modify_time' => now()->format('YmdHis'),
             // 'creator' => get_loginname_with_token($request->bearerToken(), $time),
             // 'modifier' => get_loginname_with_token($request->bearerToken(), $time),
             'app_creator' => $appCreator,
@@ -125,8 +125,8 @@ class TreatmentMoMoPaymentsRepository
     }
     public function createDepositReq($data, $appCreator, $appModifier){
         $data = $this->treatmentMoMoPayments::create([
-            'create_time' => now()->format('Ymdhis'),
-            'modify_time' => now()->format('Ymdhis'),
+            'create_time' => now()->format('YmdHis'),
+            'modify_time' => now()->format('YmdHis'),
             // 'creator' => get_loginname_with_token($request->bearerToken(), $time),
             // 'modifier' => get_loginname_with_token($request->bearerToken(), $time),
             'app_creator' => $appCreator,
@@ -153,7 +153,7 @@ class TreatmentMoMoPaymentsRepository
     public function update($data){
         $dataDB = $this->treatmentMoMoPayments->where('order_id', $data['orderId'])->first();
         $dataDB->update([
-            'modify_time' => now()->format('Ymdhis'),
+            'modify_time' => now()->format('YmdHis'),
             'result_code' => $data['resultCode'],
             'trans_id' => $data['transId'] ?? '',
         ]);
@@ -161,7 +161,7 @@ class TreatmentMoMoPaymentsRepository
     }
     public function updateBill($data, $billId){
         $data->update([
-            'modify_time' => now()->format('Ymdhis'),
+            'modify_time' => now()->format('YmdHis'),
             'bill_id' => $billId,
             // Nếu là thanh toán tạm ứng cho DepositReq thì cập nhật deposit_id
             'deposit_id' => ($data->deposit_req_code) ? $billId : null

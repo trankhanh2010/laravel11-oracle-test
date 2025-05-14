@@ -28,7 +28,7 @@ class Treatment extends Model
 
     // public function getServerTimeAttribute()
     // {
-    //     return now()->format('Ymdhis');
+    //     return now()->format('YmdHis');
     // }
     // public function getPatientTypeAttribute()
     // {

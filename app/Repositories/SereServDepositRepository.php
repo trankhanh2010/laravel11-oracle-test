@@ -98,8 +98,8 @@ class SereServDepositRepository
     public function create($sereServId, $amountDeposit, $transaction, $appCreator, $appModifier, $isCancel = 0){
         $sereServ = $this->sereServ->find($sereServId);
         $data = $this->sereServDeposit::create([
-            'create_time' => now()->format('Ymdhis'),
-            'modify_time' => now()->format('Ymdhis'),
+            'create_time' => now()->format('YmdHis'),
+            'modify_time' => now()->format('YmdHis'),
             'creator' => $appCreator,
             'modifier' => $appModifier,
             'app_creator' => $appCreator,
@@ -138,7 +138,7 @@ class SereServDepositRepository
     }
     public function updateTransactionVietinBank($data){
         $data->update([
-            'modify_time' => now()->format('Ymdhis'),
+            'modify_time' => now()->format('YmdHis'),
             'modifier' => 'MOS_v2',
             'app_modifier' => 'MOS_v2',
             'is_cancel' => 0

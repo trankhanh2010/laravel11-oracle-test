@@ -80,8 +80,8 @@ class DigitalCertificateController extends BaseApiCacheController
         $pdfPath = 'C:\Users\tranl\Downloads\f1ace4d9-72fc-466d-b4f5-0c01057ff76b.pdf';
         $pdfOutPath = 'C:\Users\tranl\Downloads\out_put.pdf';
         $data = $this->digitalCertificateService->signXML(
-            storage_path('app/temp/'.$this->loginname.'_'.now()->format('Ymdhis').'_input.xml'),
-            storage_path('app/temp/'.$this->loginname.'_'.now()->format('Ymdhis').'_signed_output.xml'),
+            storage_path('app/temp/'.$this->loginname.'_'.now()->format('YmdHis').'_input.xml'),
+            storage_path('app/temp/'.$this->loginname.'_'.now()->format('YmdHis').'_signed_output.xml'),
             storage_path('app/certificate/user/truyenlm/private.key'),
             storage_path('app/certificate/user/truyenlm/cert-chain.crt'),
             '',

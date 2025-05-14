@@ -6,16 +6,26 @@ use App\DTOs\TransactionListVViewDTO;
 use App\Events\Cache\DeleteCache;
 use App\Events\Elastic\TransactionListVView\InsertTransactionListVViewIndex;
 use App\Events\Elastic\DeleteIndex;
+use App\Models\HIS\Transaction;
 use Illuminate\Support\Facades\Cache;
 use App\Repositories\TransactionListVViewRepository;
+use App\Repositories\TransactionRepository;
 
 class TransactionListVViewService
 {
     protected $transactionListVViewRepository;
+    protected $transaction;
+    protected $transactionRepository;
     protected $params;
-    public function __construct(TransactionListVViewRepository $transactionListVViewRepository)
+    public function __construct(
+        TransactionListVViewRepository $transactionListVViewRepository,
+        Transaction $transaction,
+        TransactionRepository $transactionRepository,
+        )
     {
+        $this->transaction = $transaction;
         $this->transactionListVViewRepository = $transactionListVViewRepository;
+        $this->transactionRepository = $transactionRepository;
     }
     public function withParams(TransactionListVViewDTO $params)
     {
@@ -68,6 +78,22 @@ class TransactionListVViewService
             return $this->getDataById($id);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['transaction_list_v_view'], $e);
+        }
+    }
+    public function cancelTransaction($id, $request)
+    {
+        if (!is_numeric($id)) {
+            return returnIdError($id);
+        }
+        $data = $this->transaction->find($id);
+        if ($data == null) {
+            return returnNotRecord($id);
+        }
+        try {
+            $data = $this->transactionRepository->cancelTransaction($request, $data, $this->params->time, $this->params->appModifier);
+            return returnDataUpdateSuccess($data);
+        } catch (\Throwable $e) {
+            return writeAndThrowError(config('params')['db_service']['error']['transaction'], $e);
         }
     }
 }
