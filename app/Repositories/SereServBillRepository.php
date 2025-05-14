@@ -160,6 +160,15 @@ class SereServBillRepository
         ]);
         return $data;
     }
+    public function cancelTransaction($data){
+        $data->update([
+            'modify_time' => now()->format('YmdHis'),
+            'modifier' => 'MOS_v2',
+            'app_modifier' => 'MOS_v2',
+            'is_cancel' => 1
+        ]);
+        return $data;
+    }
     public function getDataFromDbToElastic($batchSize = 5000, $id = null)
     {
         $numJobs = config('queue')['num_queue_worker']; // Số lượng job song song

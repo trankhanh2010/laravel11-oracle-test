@@ -361,8 +361,8 @@ class TransactionRepository
                 'account_book_id' => $request->account_book_id,
                 'pay_form_id' => $request->pay_form_id,
                 'cashier_room_id' => $this->roomThuNganId,
-                'cashier_loginname' => get_loginname_with_token($request->bearerToken(), $time)??'MOS_v2',
-                'cashier_username' => get_username_with_token($request->bearerToken(), $time)??'MOS_v2',
+                'cashier_loginname' => get_loginname_with_token($request->bearerToken(), $time) ?? 'MOS_v2',
+                'cashier_username' => get_username_with_token($request->bearerToken(), $time) ?? 'MOS_v2',
                 'treatment_id' => $request->treatment_id,
                 'description' => $request->description,
                 // Dữ liệu dư thừa
@@ -397,7 +397,7 @@ class TransactionRepository
                 'tdl_patient_account_number'  => $treatmentData->tdl_patient_account_number,
                 'tdl_patient_tax_code'  => $treatmentData->tdl_patient_tax_code,
             ]);
-            if($request->deposit_req_id != null){
+            if ($request->deposit_req_id != null) {
                 $recordDepositReq = $this->depositReq->find($request->deposit_req_id);
                 $recordDepositReq->update([
                     'deposit_id' => $data->id,
@@ -428,8 +428,8 @@ class TransactionRepository
             'account_book_id' => $request->account_book_id,
             'pay_form_id' => $request->pay_form_id,
             'cashier_room_id' => $this->roomThuNganId,
-            'cashier_loginname' => get_loginname_with_token($request->bearerToken(), $time)??'MOS_v2',
-            'cashier_username' => get_username_with_token($request->bearerToken(), $time)??'MOS_v2',
+            'cashier_loginname' => get_loginname_with_token($request->bearerToken(), $time) ?? 'MOS_v2',
+            'cashier_username' => get_username_with_token($request->bearerToken(), $time) ?? 'MOS_v2',
             'repay_reason_id' => $request->repay_reason_id,
             'treatment_id' => $request->treatment_id,
             'description' => $request->description,
@@ -471,7 +471,7 @@ class TransactionRepository
     public function createTransactionThanhToan($request, $time, $appCreator, $appModifier)
     {
         $treatmentData = $this->treatment->where('id', $request->treatment_id)->first();
-        $totalAmountBillFund = $request->bill_funds?array_sum(array_column($request->bill_funds, 'amount')):null; // Tổng tiền quỹ hỗ trợ
+        $totalAmountBillFund = $request->bill_funds ? array_sum(array_column($request->bill_funds, 'amount')) : null; // Tổng tiền quỹ hỗ trợ
         $sereServAmount = array_sum(array_column($request->sere_servs, 'amount')); // Tổng tiền các dịch vụ thanh toán
         $data = DB::connection('oracle_his')->transaction(function () use ($request, $time, $appCreator, $appModifier, $treatmentData, $totalAmountBillFund, $sereServAmount) {
             // if(!$treatmentData) return;
@@ -490,8 +490,8 @@ class TransactionRepository
                 'account_book_id' => $request->account_book_id,
                 'pay_form_id' => $request->pay_form_id,
                 'cashier_room_id' => $this->roomThuNganId,
-                'cashier_loginname' => get_loginname_with_token($request->bearerToken(), $time)??'MOS_v2',
-                'cashier_username' => get_username_with_token($request->bearerToken(), $time)??'MOS_v2',
+                'cashier_loginname' => get_loginname_with_token($request->bearerToken(), $time) ?? 'MOS_v2',
+                'cashier_username' => get_username_with_token($request->bearerToken(), $time) ?? 'MOS_v2',
                 'treatment_id' => $request->treatment_id,
                 'description' => $request->description,
                 'tdl_bill_fund_amount' => $totalAmountBillFund, // Tổng tiền quỹ thanh toán
@@ -569,8 +569,8 @@ class TransactionRepository
                 'account_book_id' => $request->account_book_id,
                 'pay_form_id' => $request->pay_form_id,
                 'cashier_room_id' => $this->roomThuNganId,
-                'cashier_loginname' => get_loginname_with_token($request->bearerToken(), $time)??'MOS_v2',
-                'cashier_username' => get_username_with_token($request->bearerToken(), $time)??'MOS_v2',
+                'cashier_loginname' => get_loginname_with_token($request->bearerToken(), $time) ?? 'MOS_v2',
+                'cashier_username' => get_username_with_token($request->bearerToken(), $time) ?? 'MOS_v2',
                 'treatment_id' => $request->treatment_id,
                 'description' => $request->description,
                 'tdl_sere_serv_deposit_count' => count($request->sere_servs),
@@ -636,8 +636,8 @@ class TransactionRepository
                 'account_book_id' => $request->account_book_id,
                 'pay_form_id' => $request->pay_form_id,
                 'cashier_room_id' => $this->roomThuNganId,
-                'cashier_loginname' => get_loginname_with_token($request->bearerToken(), $time)??'MOS_v2',
-                'cashier_username' => get_username_with_token($request->bearerToken(), $time)??'MOS_v2',
+                'cashier_loginname' => get_loginname_with_token($request->bearerToken(), $time) ?? 'MOS_v2',
+                'cashier_username' => get_username_with_token($request->bearerToken(), $time) ?? 'MOS_v2',
                 'treatment_id' => $request->treatment_id,
                 'description' => $request->description,
                 'repay_reason_id' => $request->repay_reason_id,
@@ -733,8 +733,8 @@ class TransactionRepository
             $dataReturn = $this->transaction::create([
                 'create_time' => now()->format('YmdHis'),
                 'modify_time' => now()->format('YmdHis'),
-                'creator' => $cashierLoginame??'MOS_v2',
-                'modifier' => $cashierLoginame??'MOS_v2',
+                'creator' => $cashierLoginame ?? 'MOS_v2',
+                'modifier' => $cashierLoginame ?? 'MOS_v2',
                 'app_creator' => 'MOS_v2',
                 'app_modifier' => 'MOS_v2',
                 'is_active' => '1',
@@ -829,8 +829,8 @@ class TransactionRepository
                 'account_book_id' => $this->accountBookQrVietinbankId, // Nếu mà thanh toán QR thì mặc định là sổ này
                 'pay_form_id' => $request->pay_form_id,
                 'cashier_room_id' => $this->roomThuNganId,
-                'cashier_loginname' => get_loginname_with_token($request->bearerToken(), $time)??'MOS_v2',
-                'cashier_username' => get_username_with_token($request->bearerToken(), $time)??'MOS_v2',
+                'cashier_loginname' => get_loginname_with_token($request->bearerToken(), $time) ?? 'MOS_v2',
+                'cashier_username' => get_username_with_token($request->bearerToken(), $time) ?? 'MOS_v2',
                 'treatment_id' => $request->treatment_id,
                 'description' => $cancelReason,
                 'cancel_reason' => $cancelReason,
@@ -884,7 +884,7 @@ class TransactionRepository
     public function createTransactionThanhToanVietinBank($request, $time, $appCreator, $appModifier)
     {
         $treatmentData = $this->treatment->where('id', $request->treatment_id)->first();
-        $totalAmountBillFund = $request->bill_funds?array_sum(array_column($request->bill_funds, 'amount')):null; // Tổng tiền quỹ hỗ trợ
+        $totalAmountBillFund = $request->bill_funds ? array_sum(array_column($request->bill_funds, 'amount')) : null; // Tổng tiền quỹ hỗ trợ
         $sereServAmount = array_sum(array_column($request->sere_servs, 'amount')); // Tổng tiền các dịch vụ thanh toán
         $data = DB::connection('oracle_his')->transaction(function () use ($request, $time, $appCreator, $appModifier, $treatmentData, $totalAmountBillFund, $sereServAmount) {
             $cancelReason = 'Khoi tao data QR Code thanh toan VietinBank';
@@ -904,8 +904,8 @@ class TransactionRepository
                 'account_book_id' => $this->accountBookQrVietinbankId, // Nếu mà thanh toán QR thì mặc định là sổ này
                 'pay_form_id' => $request->pay_form_id,
                 'cashier_room_id' => $this->roomThuNganId,
-                'cashier_loginname' => get_loginname_with_token($request->bearerToken(), $time)??'MOS_v2',
-                'cashier_username' => get_username_with_token($request->bearerToken(), $time)??'MOS_v2',
+                'cashier_loginname' => get_loginname_with_token($request->bearerToken(), $time) ?? 'MOS_v2',
+                'cashier_username' => get_username_with_token($request->bearerToken(), $time) ?? 'MOS_v2',
                 'treatment_id' => $request->treatment_id,
                 'description' => $cancelReason,
                 'cancel_reason' => $cancelReason,
@@ -980,46 +980,63 @@ class TransactionRepository
     public function updateTransactionVietinBank($data)
     {
         DB::connection('oracle_his')->transaction(function () use ($data) {
-        $data->update([
-            'modify_time' => now()->format('YmdHis'),
-            'modifier' => 'MOS_v2',
-            'app_modifier' => 'MOS_v2',
-            'is_cancel' => 0,
+            $data->update([
+                'modify_time' => now()->format('YmdHis'),
+                'modifier' => 'MOS_v2',
+                'app_modifier' => 'MOS_v2',
+                'is_cancel' => 0,
 
-        ]);
+            ]);
 
-        // Check thêm : 
-        // + nếu là tạm thu dịch vụ thì phải cập nhật lại các bản ghi của sere_serv_deposit
-        if($data->transaction_type_id = $this->transactionTypeTUId && $data->tdl_sere_serv_deposit_count > 0){
-            $listSereServDeposit = $this->sereServDepositRepository->getByDepositId($data->id);
-            foreach($listSereServDeposit as $key => $item){
-                $this->sereServDepositRepository->updateTransactionVietinBank($item);
+            // Check thêm : 
+            // + nếu là tạm thu dịch vụ thì phải cập nhật lại các bản ghi của sere_serv_deposit
+            if ($data->transaction_type_id = $this->transactionTypeTUId && $data->tdl_sere_serv_deposit_count > 0) {
+                $listSereServDeposit = $this->sereServDepositRepository->getByDepositId($data->id);
+                foreach ($listSereServDeposit as $key => $item) {
+                    $this->sereServDepositRepository->updateTransactionVietinBank($item);
+                }
             }
-
-        }
-        // + nếu là thanh toán thì phải cập nhật lại các bản ghi của sere_serv_bill
-        if($data->transaction_type_id = $this->transactionTypeTTId){
-            $listSereServBill = $this->sereServBillRepository->getByBillId($data->id);
-            foreach($listSereServBill as $key => $item){
-                $this->sereServBillRepository->updateTransactionVietinBank($item);
+            // + nếu là thanh toán thì phải cập nhật lại các bản ghi của sere_serv_bill
+            if ($data->transaction_type_id = $this->transactionTypeTTId) {
+                $listSereServBill = $this->sereServBillRepository->getByBillId($data->id);
+                foreach ($listSereServBill as $key => $item) {
+                    $this->sereServBillRepository->updateTransactionVietinBank($item);
+                }
             }
-        }
-        return $data;
+            return $data;
         });
     }
-    public function cancelTransaction($request, $data, $time, $appModifier){
-        $data->update([
-            'modify_time' => now()->format('YmdHis'),
-            'modifier' => get_loginname_with_token($request->bearerToken(), $time),
-            'app_modifier' => $appModifier,
-            'is_cancel' => 1,
-            'cancel_reason' => $request->cancel_reason,
-            'cancel_time' => $request->cancel_time, 
-            'cancel_loginname' => get_loginname_with_token($request->bearerToken(), $time),
-            'cancel_username' => get_username_with_token($request->bearerToken(), $time),
-            'cancel_cashier_room_id' => $this->roomThuNganId,
-            'cancel_reason_id' => $request->cancel_reason_id,
-        ]);
-        return $data;
+    public function cancelTransaction($request, $data, $time, $appModifier)
+    {
+        DB::connection('oracle_his')->transaction(function () use ($request, $data, $time, $appModifier) {
+            $data->update([
+                'modify_time' => now()->format('YmdHis'),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $time),
+                'app_modifier' => $appModifier,
+                'is_cancel' => 1,
+                'cancel_reason' => $request->cancel_reason,
+                'cancel_time' => $request->cancel_time,
+                'cancel_loginname' => get_loginname_with_token($request->bearerToken(), $time),
+                'cancel_username' => get_username_with_token($request->bearerToken(), $time),
+                'cancel_cashier_room_id' => $this->roomThuNganId,
+                'cancel_reason_id' => $request->cancel_reason_id,
+            ]);
+            // Check thêm : 
+            // + nếu là tạm thu dịch vụ thì phải cập nhật lại các bản ghi của sere_serv_deposit
+            if ($data->transaction_type_id = $this->transactionTypeTUId && $data->tdl_sere_serv_deposit_count > 0) {
+                $listSereServDeposit = $this->sereServDepositRepository->getByDepositId($data->id);
+                foreach ($listSereServDeposit as $key => $item) {
+                    $this->sereServDepositRepository->cancelTransaction($item);
+                }
+            }
+            // + nếu là thanh toán thì phải cập nhật lại các bản ghi của sere_serv_bill
+            if ($data->transaction_type_id = $this->transactionTypeTTId) {
+                $listSereServBill = $this->sereServBillRepository->getByBillId($data->id);
+                foreach ($listSereServBill as $key => $item) {
+                    $this->sereServBillRepository->cancelTransaction($item);
+                }
+            }
+            return $data;
+        });
     }
 }
