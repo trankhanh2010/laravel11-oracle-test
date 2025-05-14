@@ -1,7 +1,7 @@
 <?php 
 namespace App\Repositories;
 
-use App\Models\VIEW\TransactionTTDetailVView;
+use App\Models\View\TransactionTTDetailVView;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
