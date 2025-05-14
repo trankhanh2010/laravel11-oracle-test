@@ -2,32 +2,32 @@
 
 namespace App\Http\Controllers\Api\NoCacheControllers;
 
-use App\DTOs\TransactionTTDetailVViewDTO;
+use App\DTOs\TransactionTUDetailVViewDTO;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
-use App\Models\View\TransactionTTDetailVView;
-use App\Services\Model\TransactionTTDetailVViewService;
+use App\Models\View\TransactionTUDetailVView;
+use App\Services\Model\TransactionTUDetailVViewService;
 use Illuminate\Http\Request;
 
 
-class TransactionTTDetailVViewController extends BaseApiCacheController
+class TransactionTUDetailVViewController extends BaseApiCacheController
 {
-    protected $transactionTTDetailVViewService;
-    protected $transactionTTDetailVViewDTO;
-    public function __construct(Request $request, TransactionTTDetailVViewService $transactionTTDetailVViewService, TransactionTTDetailVView $transactionTTDetailVView)
+    protected $transactionTUDetailVViewService;
+    protected $transactionTUDetailVViewDTO;
+    public function __construct(Request $request, TransactionTUDetailVViewService $transactionTUDetailVViewService, TransactionTUDetailVView $transactionTUDetailVView)
     {
         parent::__construct($request); // Gọi constructor của BaseController
-        $this->transactionTTDetailVViewService = $transactionTTDetailVViewService;
-        $this->transactionTTDetailVView = $transactionTTDetailVView;
+        $this->transactionTUDetailVViewService = $transactionTUDetailVViewService;
+        $this->transactionTUDetailVView = $transactionTUDetailVView;
         // Kiểm tra tên trường trong bảng
         if ($this->orderBy != null) {
             $this->orderByJoin = [
             ];
-            $columns = $this->getColumnsTable($this->transactionTTDetailVView, true);
+            $columns = $this->getColumnsTable($this->transactionTUDetailVView, true);
             $this->orderBy = $this->checkOrderBy($this->orderBy, $columns, $this->orderByJoin ?? []);
         }
         // Thêm tham số vào service
-        $this->transactionTTDetailVViewDTO = new TransactionTTDetailVViewDTO(
-            $this->transactionTTDetailVViewName,
+        $this->transactionTUDetailVViewDTO = new TransactionTUDetailVViewDTO(
+            $this->transactionTUDetailVViewName,
             $this->keyword,
             $this->isActive,
             $this->isDelete,
@@ -41,24 +41,24 @@ class TransactionTTDetailVViewController extends BaseApiCacheController
             $this->appCreator, 
             $this->appModifier, 
             $this->time,
-            $this->billId,
-            $this->billCode,
+            $this->depositId,
+            $this->depositCode,
             $this->param,
             $this->noCache,
             $this->groupBy,
         );
-        $this->transactionTTDetailVViewService->withParams($this->transactionTTDetailVViewDTO);
+        $this->transactionTUDetailVViewService->withParams($this->transactionTUDetailVViewDTO);
     }
     public function index()
     {
-        if(($this->billId == null) && ($this->billCode == null)){
-            $this->errors[$this->billIdName] = "Thiếu BillId";
-            $this->errors[$this->billCodeName] = "Thiếu BillCode";
+        if(($this->depositId == null) && ($this->depositCode == null)){
+            $this->errors[$this->depositIdName] = "Thiếu BillId";
+            $this->errors[$this->depositCodeName] = "Thiếu BillCode";
         }
         if ($this->checkParam()) {
             return $this->checkParam();
         }
-        $data = $this->transactionTTDetailVViewService->handleDataBaseGetAll();
+        $data = $this->transactionTUDetailVViewService->handleDataBaseGetAll();
         $paramReturn = [
             $this->getAllName => $this->getAll,
             $this->startName => $this->getAll ? null : $this->start,

@@ -85,7 +85,7 @@ class TreatmentFeeListVViewRepository
             ->addSelect(DB::connection('oracle_his')->raw("
                 CASE 
                     WHEN is_lock_hein = 1 THEN 'red'
-                    WHEN is_active = 0 AND is_lock_hein IS NULL AND store_code IS NOT NULL THEN '#ADD8E6'
+                    WHEN is_active = 0 AND is_lock_hein IS NULL AND store_code IS NOT NULL THEN 'blue'
                     ELSE NULL
                 END as text_color
             "));         

@@ -2,9 +2,9 @@
 
 namespace App\DTOs;
 
-class TransactionTTDetailVViewDTO
+class TransactionTUDetailVViewDTO
 {
-    public $transactionTTDetailVViewName;
+    public $transactionTUDetailVViewName;
     public $keyword;
     public $isActive;
     public $isDelete;
@@ -18,13 +18,13 @@ class TransactionTTDetailVViewDTO
     public $appCreator;
     public $appModifier;
     public $time;
-    public $billId;
-    public $billCode;
+    public $depositId;
+    public $depositCode;
     public $param;
     public $noCache;
     public $groupBy;
     public function __construct(
-        $transactionTTDetailVViewName,
+        $transactionTUDetailVViewName,
         $keyword, 
         $isActive, 
         $isDelete,
@@ -38,14 +38,14 @@ class TransactionTTDetailVViewDTO
         $appCreator,
         $appModifier,
         $time,
-        $billId,
-        $billCode,
+        $depositId,
+        $depositCode,
         $param,
         $noCache,
         $groupBy,
         )
     {
-        $this->transactionTTDetailVViewName = $transactionTTDetailVViewName;
+        $this->transactionTUDetailVViewName = $transactionTUDetailVViewName;
         $this->keyword = $keyword;
         $this->isActive = $isActive;
         $this->isDelete = $isDelete;
@@ -59,8 +59,8 @@ class TransactionTTDetailVViewDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
-        $this->billId = $billId;
-        $this->billCode = $billCode;
+        $this->depositId = $depositId;
+        $this->depositCode = $depositCode;
         $this->param = $param;
         $this->noCache = $noCache;
         $this->groupBy = $groupBy;

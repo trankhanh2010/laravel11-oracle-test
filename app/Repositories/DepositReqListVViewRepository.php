@@ -53,7 +53,18 @@ class DepositReqListVViewRepository
     public function applyJoins()
     {
         return $this->DepositReqListVView
-            ->select();
+            ->select('xa_v_his_deposit_req_list.*')
+            ->addSelect(DB::connection('oracle_his')->raw("
+            CASE 
+                WHEN deposit_id is null THEN 'red'
+                WHEN deposit_id is not null AND (transaction_is_cancel = 0 OR transaction_is_cancel is null) THEN 'blue'
+                ELSE NULL
+            END as text_color,
+            CASE 
+                WHEN deposit_id is not null AND transaction_is_cancel = 1 THEN 'line-through'
+                ELSE NULL
+            END as text_type
+        "));   ;
     }
     public function applyIsActiveFilter($query, $isActive)
     {

@@ -294,6 +294,10 @@ class BaseApiCacheController extends Controller
     protected $relationsName = 'realtions';
     protected $transactionCode;
     protected $transactionCodeName = 'TransactionCode';
+    protected $depositId;
+    protected $depositIdName = 'DepositId';
+    protected $depositCode;
+    protected $depositCodeName = 'DepositCode';
 
     // Khai báo các biến mặc định model
     protected $appCreator = "MOS_v2";
@@ -707,6 +711,8 @@ class BaseApiCacheController extends Controller
     protected $sereServBillName = 'sere_serv_bill';
     protected $transactionTTDetailVView;
     protected $transactionTTDetailVViewName = 'TransactionTTDetailVView';
+    protected $transactionTUDetailVView;
+    protected $transactionTUDetailVViewName = 'TransactionTUDetailVView';
     protected $sereServDepositVView;
     protected $sereServDepositVViewName = 'sere_serv_deposit_v_view';
     protected $seseDepoRepayVView;
@@ -1751,6 +1757,14 @@ class BaseApiCacheController extends Controller
                 $this->billId = null;
             } 
         }
+        $this->depositId = $this->paramRequest['ApiData']['DepositId'] ?? null;
+        if ($this->depositId !== null) {
+            // Kiểm tra xem ID có tồn tại trong bảng  hay không
+            if (!is_numeric($this->depositId)) {
+                $this->errors[$this->depositIdName] = $this->messFormat;
+                $this->depositId = null;
+            } 
+        }
         $this->machineId = $this->paramRequest['ApiData']['MachineId'] ?? null;
         if ($this->machineId !== null) {
             // Kiểm tra xem ID có tồn tại trong bảng  hay không
@@ -1850,6 +1864,13 @@ class BaseApiCacheController extends Controller
             if (!is_string($this->treatmentCode)) {
                 $this->errors[$this->treatmentCodeName] = $this->messFormat;
                 $this->treatmentCode = null;
+            }
+        }
+        $this->depositCode = $this->paramRequest['ApiData']['DepositCode'] ?? null;
+        if ($this->depositCode !== null) {
+            if (!is_string($this->depositCode)) {
+                $this->errors[$this->depositCodeName] = $this->messFormat;
+                $this->depositCode = null;
             }
         }
         $this->treatmentTypeCode = $this->paramRequest['ApiData']['TreatmentTypeCode'] ?? null;

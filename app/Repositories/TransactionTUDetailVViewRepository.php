@@ -1,21 +1,21 @@
 <?php 
 namespace App\Repositories;
 
-use App\Models\VIEW\TransactionTTDetailVView;
+use App\Models\VIEW\TransactionTUDetailVView;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
-class TransactionTTDetailVViewRepository
+class TransactionTUDetailVViewRepository
 {
-    protected $transactionTTDetailVView;
-    public function __construct(TransactionTTDetailVView $transactionTTDetailVView,)
+    protected $transactionTUDetailVView;
+    public function __construct(TransactionTUDetailVView $transactionTUDetailVView,)
     {
-        $this->transactionTTDetailVView = $transactionTTDetailVView;
+        $this->transactionTUDetailVView = $transactionTUDetailVView;
     }
 
     public function applyJoins()
     {
-        return $this->transactionTTDetailVView
+        return $this->transactionTUDetailVView
             ->select();
     }
     public function applyKeywordFilter($query, $keyword)
@@ -38,17 +38,17 @@ class TransactionTTDetailVViewRepository
         }
         return $query;
     }
-    public function applyBillIdFilter($query, $id)
+    public function applyDepositIdFilter($query, $id)
     {
         if ($id != null) {
-            $query->where(('bill_id'), $id);
+            $query->where(('deposit_id'), $id);
         }
         return $query;
     }
-    public function applyBillCodeFilter($query, $code)
+    public function applyDepositCodeFilter($query, $code)
     {
         if ($code != null) {
-            $query->where(('bill_code'), $code);
+            $query->where(('deposit_code'), $code);
         }
         return $query;
     }
@@ -80,7 +80,7 @@ class TransactionTTDetailVViewRepository
     }
     public function getById($id)
     {
-        return $this->transactionTTDetailVView->find($id);
+        return $this->transactionTUDetailVView->find($id);
     }
     public function applyGroupByField($data, $groupByFields = [])
     {

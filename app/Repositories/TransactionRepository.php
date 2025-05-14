@@ -724,6 +724,7 @@ class TransactionRepository
             ->where('is_cancel', 1)
             ->whereNull('cancel_reason_id')
             ->where('account_book_id', $this->accountBookQrVietinbankId)
+            ->where('transaction_type_id', $this->transactionTypeTUId) // Link tạm ứng, theo yêu cầu tạm ứng, tạm thu thì chọn type là TU
             ->where('cancel_reason', $cancelReason)
             ->first();
         if (!$dataReturn) {

@@ -214,6 +214,7 @@ use App\Http\Controllers\Api\NoCacheControllers\TestServiceTypeListVViewControll
 use App\Http\Controllers\Api\NoCacheControllers\TrackingListVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TransactionTTDetailVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TransactionListVViewController;
+use App\Http\Controllers\Api\NoCacheControllers\TransactionTUDetailVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TreatmentBedRoomListVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TreatmentExecuteRoomListVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TreatmentFeeDetailVViewController;
@@ -1150,7 +1151,7 @@ Route::group([
         Route::apiResource('v1/transaction-hoan-ung-dich-vu', TransactionHoanUngDichVuController::class)->only(['store']);
     });
 
-    /// Chi tiết giao dịch transaction detail
+    /// Chi tiết giao dịch thanh toán
     // Route::group(['as' => 'HIS.Desktop.Plugins.TransactionBillDetail->'], function () {
     Route::apiResource('v1/transaction-tt-detail-v-view', TransactionTTDetailVViewController::class)->only(['index'])
         ->withoutMiddleware([
@@ -1159,6 +1160,13 @@ Route::group([
             'check_module:api',
         ]);
     // });
+    /// Chi tiết giao dịch tạm thu
+    Route::apiResource('v1/transaction-tu-detail-v-view', TransactionTUDetailVViewController::class)->only(['index'])
+    ->withoutMiddleware([
+        'check_token',
+        'check_admin:api',
+        'check_module:api',
+    ]);
     // Danh sách yêu cầu tạm ứng
     Route::apiResource('v1/deposit-req-list-v-view-no-login', DepositReqListVViewController::class)->only(['index', 'show'])
         ->withoutMiddleware([

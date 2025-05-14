@@ -34,6 +34,7 @@ class TransactionTTDetailVViewService
             $count = $data->count();
             $data = $this->transactionTTDetailVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
             $data = $this->transactionTTDetailVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+            $data = $this->transactionTTDetailVViewRepository->applyGroupByField($data, $this->params->groupBy);
             return ['data' => $data, 'count' => $count];
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['transaction_tt_detail_v_view'], $e);
@@ -49,6 +50,7 @@ class TransactionTTDetailVViewService
         $count = $data->count();
         $data = $this->transactionTTDetailVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
         $data = $this->transactionTTDetailVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        $data = $this->transactionTTDetailVViewRepository->applyGroupByField($data, $this->params->groupBy);
         return ['data' => $data, 'count' => $count];
     }
     private function getDataById($id)
