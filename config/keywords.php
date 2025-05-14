@@ -1710,5 +1710,6 @@ return [
     'transaction_cancel' => [
         'cancel_reason' => 'Lý do hủy',
         'cancel_reason_id' => 'Id lý do hủy',
+        'cancel_time' => 'Thời gian hủy giao dịch',
     ],
 ];

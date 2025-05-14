@@ -54,6 +54,8 @@ class UpdateCancelTransactionRequest extends FormRequest
                     ->where(DB::connection('oracle_his')->raw("is_active"), 1);
                 }),
             ], 
+            'cancel_time' =>   'required|integer|regex:/^\d{14}$/',
+
         ];
     }
     public function messages()
@@ -64,6 +66,10 @@ class UpdateCancelTransactionRequest extends FormRequest
 
             'cancel_reason.string'        => config('keywords')['transaction_cancel']['cancel_reason'].config('keywords')['error']['string'],
             'cancel_reason.max'           => config('keywords')['transaction_cancel']['cancel_reason'].config('keywords')['error']['string_max'],
+
+            'cancel_time.required'           => config('keywords')['transaction_cancel']['cancel_time'] . config('keywords')['error']['required'],
+            'cancel_time.integer'            => config('keywords')['transaction_cancel']['cancel_time'] . config('keywords')['error']['integer'],
+            'cancel_time.regex'              => config('keywords')['transaction_cancel']['cancel_time'] . config('keywords')['error']['regex_ymdhis'],
         ];
     }
 
@@ -93,6 +99,9 @@ class UpdateCancelTransactionRequest extends FormRequest
                 }
                 if($dataTransaction->pay_form_id == $this->payFormQrId){
                     $validator->errors()->add('id', 'Không thể hủy giao dịch với hình thức thanh toán là Thanh toán QR!');
+                }
+                if ($this->cancel_time && $this->cancel_time < $dataTransaction->transaction_time) {
+                    $validator->errors()->add('cancel_time', 'Thời gian hủy không được nhỏ hơn thời gian giao dịch!');
                 }
             }
 

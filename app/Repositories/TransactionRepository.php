@@ -1014,7 +1014,7 @@ class TransactionRepository
             'app_modifier' => $appModifier,
             'is_cancel' => 1,
             'cancel_reason' => $request->cancel_reason,
-            'cancel_time' => now()->format('YmdHis'), 
+            'cancel_time' => $request->cancel_time, 
             'cancel_loginname' => get_loginname_with_token($request->bearerToken(), $time),
             'cancel_username' => get_username_with_token($request->bearerToken(), $time),
             'cancel_cashier_room_id' => $this->roomThuNganId,
