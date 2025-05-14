@@ -425,6 +425,7 @@ return [
             'transaction_list_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm Danh sách giao dịch!',
             'transaction_tt_detail_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm Chi tiết giao dịch!',
             'deposit_req_list_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm Danh sách yêu cầu tạm ứng!',
+            'deposit_req' => 'Có lỗi khi thực hiện thao tác với bảng Yêu cầu tạm ứng!',
             'medical_case_cover_list_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm Vỏ bệnh án!',
             'treatment_bed_room_list_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm TreatBedRoomList!',
             'icd_list_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm IcdList!',

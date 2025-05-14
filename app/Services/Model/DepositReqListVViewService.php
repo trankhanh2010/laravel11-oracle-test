@@ -6,16 +6,22 @@ use App\DTOs\DepositReqListVViewDTO;
 use App\Events\Cache\DeleteCache;
 use App\Events\Elastic\DepositReqListVView\InsertDepositReqListVViewIndex;
 use App\Events\Elastic\DeleteIndex;
+use App\Models\HIS\DepositReq;
 use Illuminate\Support\Facades\Cache;
 use App\Repositories\DepositReqListVViewRepository;
 
 class DepositReqListVViewService
 {
     protected $depositReqListVViewRepository;
+    protected $depositReq;
     protected $params;
-    public function __construct(DepositReqListVViewRepository $depositReqListVViewRepository)
+    public function __construct(
+        DepositReqListVViewRepository $depositReqListVViewRepository,
+        DepositReq $depositReq,
+        )
     {
         $this->depositReqListVViewRepository = $depositReqListVViewRepository;
+        $this->depositReq = $depositReq;
     }
     public function withParams(DepositReqListVViewDTO $params)
     {
@@ -79,59 +85,47 @@ class DepositReqListVViewService
         }
     }
 
-    // public function createDepositReqListVView($request)
-    // {
-    //     try {
-    //         $data = $this->depositReqListVViewRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
-    //         // Gọi event để xóa cache
-    //         event(new DeleteCache($this->params->depositReqListVViewName));
-    //         // Gọi event để thêm index vào elastic
-    //         event(new InsertDepositReqListVViewIndex($data, $this->params->depositReqListVViewName));
-    //         return returnDataCreateSuccess($data);
-    //     } catch (\Throwable $e) {
-    //         return writeAndThrowError(config('params')['db_service']['error']['deposit_req_list_v_view'], $e);
-    //     }
-    // }
+    public function createDepositReq($request)
+    {
+        try {
+            $data = $this->depositReqListVViewRepository->create($request, $this->params->time, $this->params->appCreator, $this->params->appModifier);
+            return returnDataCreateSuccess($data);
+        } catch (\Throwable $e) {
+            return writeAndThrowError(config('params')['db_service']['error']['deposit_req'], $e);
+        }
+    }
 
-    // public function updateDepositReqListVView($id, $request)
-    // {
-    //     if (!is_numeric($id)) {
-    //         return returnIdError($id);
-    //     }
-    //     $data = $this->depositReqListVViewRepository->getById($id);
-    //     if ($data == null) {
-    //         return returnNotRecord($id);
-    //     }
-    //     try {
-    //         $data = $this->depositReqListVViewRepository->update($request, $data, $this->params->time, $this->params->appModifier);
-    //         // Gọi event để xóa cache
-    //         event(new DeleteCache($this->params->depositReqListVViewName));
-    //         // Gọi event để thêm index vào elastic
-    //         event(new InsertDepositReqListVViewIndex($data, $this->params->depositReqListVViewName));
-    //         return returnDataUpdateSuccess($data);
-    //     } catch (\Throwable $e) {
-    //         return writeAndThrowError(config('params')['db_service']['error']['deposit_req_list_v_view'], $e);
-    //     }
-    // }
+    public function updateDepositReq($id, $request)
+    {
+        if (!is_numeric($id)) {
+            return returnIdError($id);
+        }
+        $data = $this->depositReq->find($id);
+        if ($data == null) {
+            return returnNotRecord($id);
+        }
+        try {
+            $data = $this->depositReqListVViewRepository->update($request, $data, $this->params->time, $this->params->appModifier);
+            return returnDataUpdateSuccess($data);
+        } catch (\Throwable $e) {
+            return writeAndThrowError(config('params')['db_service']['error']['deposit_req'], $e);
+        }
+    }
 
-    // public function deleteDepositReqListVView($id)
-    // {
-    //     if (!is_numeric($id)) {
-    //         return returnIdError($id);
-    //     }
-    //     $data = $this->depositReqListVViewRepository->getById($id);
-    //     if ($data == null) {
-    //         return returnNotRecord($id);
-    //     }
-    //     try {
-    //         $data = $this->depositReqListVViewRepository->delete($data);
-    //         // Gọi event để xóa cache
-    //         event(new DeleteCache($this->params->depositReqListVViewName));
-    //         // Gọi event để xóa index trong elastic
-    //         event(new DeleteIndex($data, $this->params->depositReqListVViewName));
-    //         return returnDataDeleteSuccess();
-    //     } catch (\Throwable $e) {
-    //         return writeAndThrowError(config('params')['db_service']['error']['deposit_req_list_v_view'], $e);
-    //     }
-    // }
+    public function deleteDepositReq($id)
+    {
+        if (!is_numeric($id)) {
+            return returnIdError($id);
+        }
+        $data = $this->depositReq->find($id);
+        if ($data == null) {
+            return returnNotRecord($id);
+        }
+        try {
+            $data = $this->depositReqListVViewRepository->delete($data);
+            return returnDataDeleteSuccess();
+        } catch (\Throwable $e) {
+            return writeAndThrowError(config('params')['db_service']['error']['deposit_req'], $e);
+        }
+    }
 }

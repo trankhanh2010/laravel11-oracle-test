@@ -2,15 +2,52 @@
 namespace App\Repositories;
 
 use App\Jobs\ElasticSearch\Index\ProcessElasticIndexingJob;
+use App\Models\HIS\Department;
+use App\Models\HIS\DepositReq;
 use App\Models\View\DepositReqListVView;
+use App\Models\View\RoomVView;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Redis;
 
 class DepositReqListVViewRepository
 {
     protected $DepositReqListVView;
-    public function __construct(DepositReqListVView $DepositReqListVView)
+    protected $depositReq;
+    protected $roomVView;
+    protected $deparment;
+    protected $roomThuNganId;
+    protected $departmentRoomThuNganId;
+    public function __construct(
+        DepositReqListVView $DepositReqListVView,
+        DepositReq $depositReq,
+        RoomVView $roomVView,
+        Department $deparment,
+        )
     {
         $this->DepositReqListVView = $DepositReqListVView;
+        $this->depositReq = $depositReq;
+        $this->roomVView = $roomVView;
+        $this->deparment = $deparment;
+
+        $cacheKeySet = "cache_keys:" . "setting"; // Set để lưu danh sách key
+
+        $cacheKey = 'room_TCKT_TN_id';
+        $this->roomThuNganId = Cache::remember($cacheKey, now()->addMinutes(10080), function () {
+            $data =  $this->roomVView->where('room_code', 'TCKT_TN')->get();
+            return $data->value('id');
+        });
+        // Lưu key vào Redis Set để dễ xóa sau này
+        Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+
+        $cacheKey = 'department_room_TCKT_TN_id';
+        $this->departmentRoomThuNganId = Cache::remember($cacheKey, now()->addMinutes(10080), function () {
+            $data =  $this->roomVView->where('room_code', 'TCKT_TN')->get();
+            $dataDepartment = $this->deparment->find($data->value('department_id'));
+            return $dataDepartment->id;
+        });
+        // Lưu key vào Redis Set để dễ xóa sau này
+        Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
     }
 
     public function applyJoins()
@@ -34,7 +71,7 @@ class DepositReqListVViewRepository
     }
     public function applyTreatmentIdFilter($query, $id)
     {
-        if ($id !== null) {
+        if ($id != null) {
             $query->where(('treatment_id'), $id);
         }
         return $query;
@@ -97,36 +134,38 @@ class DepositReqListVViewRepository
     {
         return $this->DepositReqListVView->find($id);
     }
-    // public function create($request, $time, $appCreator, $appModifier){
-    //     $data = $this->DepositReqListVView::create([
-    //         'create_time' => now()->format('Ymdhis'),
-    //         'modify_time' => now()->format('Ymdhis'),
-    //         'creator' => get_loginname_with_token($request->bearerToken(), $time),
-    //         'modifier' => get_loginname_with_token($request->bearerToken(), $time),
-    //         'app_creator' => $appCreator,
-    //         'app_modifier' => $appModifier,
-    //         'is_active' => 1,
-    //         'is_delete' => 0,
-    //         'deposit_req_list_v_view_code' => $request->deposit_req_list_v_view_code,
-    //         'deposit_req_list_v_view_name' => $request->deposit_req_list_v_view_name,
-    //     ]);
-    //     return $data;
-    // }
-    // public function update($request, $data, $time, $appModifier){
-    //     $data->update([
-    //         'modify_time' => now()->format('Ymdhis'),
-    //         'modifier' => get_loginname_with_token($request->bearerToken(), $time),
-    //         'app_modifier' => $appModifier,
-    //         'deposit_req_list_v_view_code' => $request->deposit_req_list_v_view_code,
-    //         'deposit_req_list_v_view_name' => $request->deposit_req_list_v_view_name,
-    //         'is_active' => $request->is_active
-    //     ]);
-    //     return $data;
-    // }
-    // public function delete($data){
-    //     $data->delete();
-    //     return $data;
-    // }
+    public function create($request, $time, $appCreator, $appModifier){
+        $data = $this->depositReq::create([
+            'create_time' => now()->format('Ymdhis'),
+            'modify_time' => now()->format('Ymdhis'),
+            'creator' => get_loginname_with_token($request->bearerToken(), $time),
+            'modifier' => get_loginname_with_token($request->bearerToken(), $time),
+            'app_creator' => $appCreator,
+            'app_modifier' => $appModifier,
+            'amount' => $request->amount,
+            'treatment_id' => $request->treatment_id,
+            'description' => $request->description,
+            'request_room_id' => $this->roomThuNganId,
+            'request_department_id' => $this->departmentRoomThuNganId,
+            'request_loginname' => get_loginname_with_token($request->bearerToken(), $time),
+            'request_username' => get_username_with_token($request->bearerToken(), $time),
+        ]);
+        return $data;
+    }
+    public function update($request, $data, $time, $appModifier){
+        $data->update([
+            'modify_time' => now()->format('Ymdhis'),
+            'modifier' => get_loginname_with_token($request->bearerToken(), $time),
+            'app_modifier' => $appModifier,
+            'amount' => $request->amount,
+            'description' => $request->description,
+        ]);
+        return $data;
+    }
+    public function delete($data){
+        $data->delete();
+        return $data;
+    }
     public function getDataFromDbToElastic($batchSize = 5000, $id = null)
     {
         $numJobs = config('queue')['num_queue_worker']; // Số lượng job song song

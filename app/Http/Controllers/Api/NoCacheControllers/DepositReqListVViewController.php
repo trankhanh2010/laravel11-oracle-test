@@ -4,10 +4,10 @@ namespace App\Http\Controllers\Api\NoCacheControllers;
 
 use App\DTOs\DepositReqListVViewDTO;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
-use App\Http\Requests\DepositReqListVView\CreateDepositReqListVViewRequest;
-use App\Http\Requests\DepositReqListVView\UpdateDepositReqListVViewRequest;
+use App\Http\Requests\DepositReq\CreateDepositReqRequest;
+use App\Http\Requests\DepositReq\DeleteDepositReqRequest;
+use App\Http\Requests\DepositReq\UpdateDepositReqRequest;
 use App\Models\View\DepositReqListVView;
-use App\Services\Elastic\ElasticsearchService;
 use App\Services\Model\DepositReqListVViewService;
 use Illuminate\Http\Request;
 
@@ -16,16 +16,14 @@ class DepositReqListVViewController extends BaseApiCacheController
 {
     protected $depositReqListVViewService;
     protected $depositReqListVViewDTO;
-    public function __construct(Request $request, ElasticsearchService $elasticSearchService, DepositReqListVViewService $depositReqListVViewService, DepositReqListVView $depositReqListVView)
+    public function __construct(Request $request, DepositReqListVViewService $depositReqListVViewService, DepositReqListVView $depositReqListVView)
     {
         parent::__construct($request); // Gọi constructor của BaseController
-        $this->elasticSearchService = $elasticSearchService;
         $this->depositReqListVViewService = $depositReqListVViewService;
         $this->depositReqListVView = $depositReqListVView;
         // Kiểm tra tên trường trong bảng
         if ($this->orderBy != null) {
-            $this->orderByJoin = [
-            ];
+            $this->orderByJoin = [];
             $columns = $this->getColumnsTable($this->depositReqListVView, true);
             $this->orderBy = $this->checkOrderBy($this->orderBy, $columns, $this->orderByJoin ?? []);
         }
@@ -42,8 +40,8 @@ class DepositReqListVViewController extends BaseApiCacheController
             $this->start,
             $this->limit,
             $request,
-            $this->appCreator, 
-            $this->appModifier, 
+            $this->appCreator,
+            $this->appModifier,
             $this->time,
             $this->isDeposit,
             $this->treatmentId,
@@ -55,25 +53,17 @@ class DepositReqListVViewController extends BaseApiCacheController
     }
     public function index()
     {
-        if($this->treatmentId == null && $this->depositReqCode == null){
+        if ($this->treatmentId == null && $this->depositReqCode == null) {
             $this->errors[$this->treatmentIdName] = 'Thiếu Id điều trị hoặc Code YCTU!';
         }
         if ($this->checkParam()) {
             return $this->checkParam();
         }
         $keyword = $this->keyword;
-        if (($keyword != null || $this->elasticSearchType != null) && !$this->cache) {
-            if ($this->elasticSearchType != null) {
-                $data = $this->elasticSearchService->handleElasticSearchSearch($this->depositReqListVViewName);
-            } else {
-                $data = $this->depositReqListVViewService->handleDataBaseSearch();
-            }
+        if ($keyword != null) {
+            $data = $this->depositReqListVViewService->handleDataBaseSearch();
         } else {
-            if ($this->elastic) {
-                $data = $this->elasticSearchService->handleElasticSearchGetAll($this->depositReqListVViewName);
-            } else {
-                $data = $this->depositReqListVViewService->handleDataBaseGetAll();
-            }
+            $data = $this->depositReqListVViewService->handleDataBaseGetAll();
         }
         $paramReturn = [
             $this->getAllName => $this->getAll,
@@ -104,5 +94,18 @@ class DepositReqListVViewController extends BaseApiCacheController
             $this->isActiveName => $this->isActive,
         ];
         return returnDataSuccess($paramReturn, $data);
+    }
+
+    public function store(CreateDepositReqRequest $request)
+    {
+        return $this->depositReqListVViewService->createDepositReq($request);
+    }
+    public function update(UpdateDepositReqRequest $request, $id)
+    {
+        return $this->depositReqListVViewService->updateDepositReq($id, $request);
+    }
+    public function destroy(DeleteDepositReqRequest $request, $id)
+    {
+        return $this->depositReqListVViewService->deleteDepositReq($id);
     }
 }

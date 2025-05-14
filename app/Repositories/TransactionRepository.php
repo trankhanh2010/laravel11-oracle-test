@@ -471,7 +471,7 @@ class TransactionRepository
     public function createTransactionThanhToan($request, $time, $appCreator, $appModifier)
     {
         $treatmentData = $this->treatment->where('id', $request->treatment_id)->first();
-        $totalAmountBillFund = $request->bill_funds?array_sum(array_column($request->bill_funds, 'amount')):0; // Tổng tiền quỹ hỗ trợ
+        $totalAmountBillFund = $request->bill_funds?array_sum(array_column($request->bill_funds, 'amount')):null; // Tổng tiền quỹ hỗ trợ
         $sereServAmount = array_sum(array_column($request->sere_servs, 'amount')); // Tổng tiền các dịch vụ thanh toán
         $data = DB::connection('oracle_his')->transaction(function () use ($request, $time, $appCreator, $appModifier, $treatmentData, $totalAmountBillFund, $sereServAmount) {
             // if(!$treatmentData) return;
@@ -883,7 +883,7 @@ class TransactionRepository
     public function createTransactionThanhToanVietinBank($request, $time, $appCreator, $appModifier)
     {
         $treatmentData = $this->treatment->where('id', $request->treatment_id)->first();
-        $totalAmountBillFund = $request->bill_funds?array_sum(array_column($request->bill_funds, 'amount')):0; // Tổng tiền quỹ hỗ trợ
+        $totalAmountBillFund = $request->bill_funds?array_sum(array_column($request->bill_funds, 'amount')):null; // Tổng tiền quỹ hỗ trợ
         $sereServAmount = array_sum(array_column($request->sere_servs, 'amount')); // Tổng tiền các dịch vụ thanh toán
         $data = DB::connection('oracle_his')->transaction(function () use ($request, $time, $appCreator, $appModifier, $treatmentData, $totalAmountBillFund, $sereServAmount) {
             $cancelReason = 'Khoi tao data QR Code thanh toan VietinBank';

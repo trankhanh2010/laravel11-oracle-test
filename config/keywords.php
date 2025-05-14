@@ -1699,4 +1699,11 @@ return [
         'buyer_phone' => 'Số điện thoại người thanh toán',
         'sere_servs' => 'Danh sách dịch vụ hoàn ứng',
     ],
+    // yêu cầu tạm ứng
+    'deposit_req' => [
+        'id' => 'Id yêu cầu tạm ứng',
+        'treatment_id' => 'Id điều trị',
+        'amount' => 'Số tiền yêu cầu tạm ứng',
+        'description' => 'Lý do tạm ứng',
+    ],
 ];
