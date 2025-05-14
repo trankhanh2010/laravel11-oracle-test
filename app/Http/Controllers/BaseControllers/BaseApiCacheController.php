@@ -73,6 +73,10 @@ class BaseApiCacheController extends Controller
     protected $serviceReqSttCodesName = 'ServiceReqSttCodes';
     protected $serviceCodes;
     protected $serviceCodesName = 'ServiceCodes';
+    protected $accountBookCode;
+    protected $accountBookCodeName = 'AccountBookCode';
+    protected $transReqCode;
+    protected $transReqCodeName = 'TransReqCode';
     protected $tdlTreatmentId;
     protected $tdlTreatmentIdName = 'TdlTreatmentId';
     protected $documentTypeId;
@@ -1343,6 +1347,20 @@ class BaseApiCacheController extends Controller
             if (!is_string($this->depositReqCode)) {
                 $this->errors[$this->depositReqCodeName] = $this->messFormat;
                 $this->depositReqCode = null;
+            }
+        }
+        $this->accountBookCode = $this->paramRequest['ApiData']['AccountBookCode'] ?? null;
+        if ($this->accountBookCode !== null) {
+            if (!is_string($this->accountBookCode)) {
+                $this->errors[$this->accountBookCodeName] = $this->messFormat;
+                $this->accountBookCode = null;
+            }
+        }
+        $this->transReqCode = $this->paramRequest['ApiData']['TransReqCode'] ?? null;
+        if ($this->transReqCode !== null) {
+            if (!is_string($this->transReqCode)) {
+                $this->errors[$this->transReqCodeName] = $this->messFormat;
+                $this->transReqCode = null;
             }
         }
 

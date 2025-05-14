@@ -60,6 +60,20 @@ class TransactionListVViewRepository
         }
         return $query;
     }
+    public function applyTransReqCodeFilter($query, $param)
+    {
+        if ($param != null) {
+            $query->where(('trans_req_code'), $param);
+        }
+        return $query;
+    }
+    public function applyAccountBookCodeFilter($query, $param)
+    {
+        if ($param != null) {
+            $query->where(('account_book_code'), $param);
+        }
+        return $query;
+    }
     public function applyCreateFromTimeFilter($query, $param)
     {
         if ($param != null) {

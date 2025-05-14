@@ -52,6 +52,8 @@ class TransactionListVViewController extends BaseApiCacheController
             $this->transactionCode,
             $this->param,
             $this->noCache,
+            $this->transReqCode,
+            $this->accountBookCode,
         );
         $this->transactionListVViewService->withParams($this->transactionListVViewDTO);
     }
@@ -64,11 +66,13 @@ class TransactionListVViewController extends BaseApiCacheController
         //         $this->fromTime = null;
         //     }
         // }
-        if (($this->fromTime == null) && ($this->toTime == null) && ($this->treatmentCode == null) && ($this->transactionCode == null)) {
+        if (($this->fromTime == null) && ($this->toTime == null) && ($this->treatmentCode == null) && ($this->transactionCode == null) && ($this->accountBookCode == null) && ($this->transReqCode == null)) {
             $this->errors[$this->fromTimeName] = 'Thiếu thời gian!';
             $this->errors[$this->toTimeName] = 'Thiếu thời gian!';
             $this->errors[$this->treatmentCodeName] = 'Thiếu mã điều trị!';
             $this->errors[$this->transactionCodeName] = 'Thiếu mã giao dịch!';
+            $this->errors[$this->accountBookCodeName] = 'Thiếu mã sổ thu chi!';
+            $this->errors[$this->transReqCodeName] = 'Thiếu mã giao dịch QR!';
 
         }
         if ($this->checkParam()) {

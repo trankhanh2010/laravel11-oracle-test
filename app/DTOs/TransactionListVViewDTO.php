@@ -27,6 +27,8 @@ class TransactionListVViewDTO
     public $transactionCode;
     public $param;
     public $noCache;
+    public $transReqCode;
+    public $accountBookCode;
     public function __construct(
         $transactionListVViewName,
         $keyword, 
@@ -51,6 +53,8 @@ class TransactionListVViewDTO
         $transactionCode,
         $param,
         $noCache,
+        $transReqCode,
+        $accountBookCode,
         )
     {
         $this->transactionListVViewName = $transactionListVViewName;
@@ -76,5 +80,7 @@ class TransactionListVViewDTO
         $this->transactionCode = $transactionCode;
         $this->param = $param;
         $this->noCache = $noCache;
+        $this->transReqCode = $transReqCode;
+        $this->accountBookCode = $accountBookCode; 
     }
 }
