@@ -11,6 +11,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Redis;
 
 class CreateTransactionHoanUngRequest extends FormRequest
 {
@@ -34,14 +35,22 @@ class CreateTransactionHoanUngRequest extends FormRequest
     public function rules()
     {
         $this->payForm = new PayForm();
-        $this->payForm06 = Cache::remember('pay_form_06_id', now()->addMinutes(10080), function () {
+        $cacheKeySet = "cache_keys:" . "setting"; // Set để lưu danh sách key
+        $cacheKey = 'pay_form_06_id';
+        $this->payForm06 = Cache::remember($cacheKey, now()->addMinutes(10080), function () {
             $data =  $this->payForm->where('pay_form_code', '06')->get();
             return $data->value('id');
         });
-        $this->payForm03 = Cache::remember('pay_form_03_id', now()->addMinutes(10080), function () {
+        // Lưu key vào Redis Set để dễ xóa sau này
+        Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+
+        $cacheKey = 'pay_form_03_id';
+        $this->payForm03 = Cache::remember($cacheKey, now()->addMinutes(10080), function () {
             $data =  $this->payForm->where('pay_form_code', '03')->get();
             return $data->value('id');
         });
+        // Lưu key vào Redis Set để dễ xóa sau này
+        Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
         $this->treatmentFeeDetailVView = new TreatmentFeeDetailVView();
         $data = $this->treatmentFeeDetailVView
         ->select(

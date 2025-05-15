@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Transaction;
 
+use App\Models\HIS\PayForm;
 use App\Models\HIS\Transaction;
 use App\Models\HIS\Treatment;
 use Illuminate\Foundation\Http\FormRequest;
@@ -17,6 +18,7 @@ class UpdateCancelTransactionRequest extends FormRequest
     protected $transaction;
     protected $treatment;
     protected $payFormQrId;
+    protected $payForm;
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -34,6 +36,7 @@ class UpdateCancelTransactionRequest extends FormRequest
     {
         $this->transaction = new Transaction();
         $this->treatment = new Treatment();
+        $this->payForm = new PayForm();
 
         $cacheKeySet = "cache_keys:" . "setting"; // Set để lưu danh sách key
         $cacheKey = 'pay_form_qr_vietin_bank_id';

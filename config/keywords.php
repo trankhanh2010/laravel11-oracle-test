@@ -1577,7 +1577,7 @@ return [
     // Loại xét nghiệm
     'test_type' => [
         'test_type_code' => 'Mã loại xét nghiệm',
-        'test_type_name' => 'Tên loại xét nghiệm',         
+        'test_type_name' => 'Tên loại xét nghiệm',
     ],
     // Đơn vị tính chỉ số siêu âm
     'suim_index_unit' => [
@@ -1711,5 +1711,19 @@ return [
         'cancel_reason' => 'Lý do hủy',
         'cancel_reason_id' => 'Id lý do hủy',
         'cancel_time' => 'Thời gian hủy giao dịch',
+    ],
+    // cập nhật thông tin giao dịch
+    'transaction_update' => [
+        'pay_form_id' => 'Id hình thức thanh toán',
+        'repay_reason_id' => 'Id lý do hoàn ứng',
+        'swipe_amount' => 'Số tiền quẹt thẻ',
+        'transfer_amount' => 'Số tiền chuyển khoản',
+        'description' => 'Mô tả',
+        'buyer_name' => 'Tên người thanh toán',
+        'buyer_tax_code' => 'Mã số thuế người thanh toán',
+        'buyer_account_number' => 'Số tài khoản người thanh toán',
+        'buyer_organization' => 'Đơn vị',
+        'buyer_address' => 'Địa chỉ người thanh toán',
+        'buyer_phone' => 'Số điện thoại người thanh toán',
     ],
 ];

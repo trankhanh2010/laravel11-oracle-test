@@ -262,6 +262,7 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Api\TransactionControllers\TreatmentFeePayMentController;
 use App\Http\Controllers\Api\TransactionControllers\MoMoController;
 use App\Http\Controllers\Api\TransactionControllers\TransactionCancelController;
+use App\Http\Controllers\Api\TransactionControllers\TransactionController;
 use App\Http\Controllers\Api\TransactionControllers\TransactionHoanUngController;
 use App\Http\Controllers\Api\TransactionControllers\TransactionHoanUngDichVuController;
 use App\Http\Controllers\Api\TransactionControllers\TransactionTamThuDichVuController;
@@ -1079,6 +1080,9 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.TransactionCancel->'], function () {
         Route::put('v1/transaction-cancel/{id}', [TransactionListVViewController::class, 'cancelTransaction']);
     });
+    /// Transaction Update
+    Route::apiResource('v1/transaction', TransactionController::class)->only(['update']);
+
     Route::apiResource('v1/transaction-list-v-view-no-login', TransactionListVViewController::class)->only(['index', 'show'])->withoutMiddleware([
         'check_token',
         'check_admin:api',
@@ -1156,21 +1160,13 @@ Route::group([
     });
 
     /// Chi tiết giao dịch thanh toán
-    // Route::group(['as' => 'HIS.Desktop.Plugins.TransactionBillDetail->'], function () {
-    Route::apiResource('v1/transaction-tt-detail-v-view', TransactionTTDetailVViewController::class)->only(['index'])
-        ->withoutMiddleware([
-            'check_token',
-            'check_admin:api',
-            'check_module:api',
-        ]);
-    // });
+    Route::group(['as' => 'HIS.Desktop.Plugins.TransactionBillDetail->'], function () {
+        Route::apiResource('v1/transaction-tt-detail-v-view', TransactionTTDetailVViewController::class)->only(['index']);
+    });
     /// Chi tiết giao dịch tạm thu
-    Route::apiResource('v1/transaction-tu-detail-v-view', TransactionTUDetailVViewController::class)->only(['index'])
-    ->withoutMiddleware([
-        'check_token',
-        'check_admin:api',
-        'check_module:api',
-    ]);
+    Route::group(['as' => 'HIS.Desktop.Plugins.TransactionDepositDetail->'], function () {
+        Route::apiResource('v1/transaction-tu-detail-v-view', TransactionTUDetailVViewController::class)->only(['index']);
+    });
     // Danh sách yêu cầu tạm ứng
     Route::apiResource('v1/deposit-req-list-v-view-no-login', DepositReqListVViewController::class)->only(['index', 'show'])
         ->withoutMiddleware([
