@@ -37,6 +37,7 @@ class TransactionListVViewService
         $data = $this->transactionListVViewRepository->applyJoins();
         if ($this->params->treatmentCode) {
             $data = $this->transactionListVViewRepository->applyTreatmentCodeFilter($data, $this->params->treatmentCode);
+            $data = $this->transactionListVViewRepository->applyTransactionTypeIdsFilter($data, $this->params->transactionTypeIds);
             $data = $this->transactionListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
             $data = $this->transactionListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit, $this->params->cursorPaginate, $this->params->lastId);
             $count = $data->count();
@@ -44,6 +45,7 @@ class TransactionListVViewService
         }
         if ($this->params->transactionCode) {
             $data = $this->transactionListVViewRepository->applyTransactionCodeFilter($data, $this->params->transactionCode);
+            $data = $this->transactionListVViewRepository->applyTransactionTypeIdsFilter($data, $this->params->transactionTypeIds);
             $data = $this->transactionListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
             $data = $this->transactionListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit, $this->params->cursorPaginate, $this->params->lastId);
             $count = $data->count();
@@ -51,6 +53,7 @@ class TransactionListVViewService
         }
         if ($this->params->accountBookCode) {
             $data = $this->transactionListVViewRepository->applyAccountBookCodeFilter($data, $this->params->accountBookCode);
+            $data = $this->transactionListVViewRepository->applyTransactionTypeIdsFilter($data, $this->params->transactionTypeIds);
             $data = $this->transactionListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
             $data = $this->transactionListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit, $this->params->cursorPaginate, $this->params->lastId);
             $count = $data->count();
@@ -58,6 +61,7 @@ class TransactionListVViewService
         }
         if ($this->params->transReqCode) {
             $data = $this->transactionListVViewRepository->applyTransReqCodeFilter($data, $this->params->transReqCode);
+            $data = $this->transactionListVViewRepository->applyTransactionTypeIdsFilter($data, $this->params->transactionTypeIds);
             $data = $this->transactionListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
             $data = $this->transactionListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit, $this->params->cursorPaginate, $this->params->lastId);
             $count = $data->count();

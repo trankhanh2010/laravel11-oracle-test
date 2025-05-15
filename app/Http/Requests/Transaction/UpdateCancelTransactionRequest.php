@@ -160,7 +160,7 @@ class UpdateCancelTransactionRequest extends FormRequest
                         ->exists();
                 
                     if ($exists) {
-                        $validator->errors()->add('sere_servs', 'Xử lý thất bại! Số tiền đã được hoàn ứng hoặc kết chuyển một phần!');
+                        $validator->errors()->add('id', 'Xử lý thất bại! Số tiền đã được hoàn ứng hoặc kết chuyển một phần!');
                     }
                 }
                 
