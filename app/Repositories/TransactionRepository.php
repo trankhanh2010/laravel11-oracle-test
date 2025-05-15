@@ -1061,4 +1061,31 @@ class TransactionRepository
             ]);
             return $data;
     }
+    public function restoreTransaction($request, $data, $time, $appModifier)
+    {
+        DB::connection('oracle_his')->transaction(function () use ($request, $data, $time, $appModifier) {
+            $data->update([
+                'modify_time' => now()->format('YmdHis'),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $time),
+                'app_modifier' => $appModifier,
+                'is_cancel' => null,
+            ]);
+            // Check thêm : 
+            // + nếu là tạm thu dịch vụ thì phải cập nhật lại các bản ghi của sere_serv_deposit
+            if ($data->transaction_type_id = $this->transactionTypeTUId && $data->tdl_sere_serv_deposit_count > 0) {
+                $listSereServDeposit = $this->sereServDepositRepository->getByDepositId($data->id);
+                foreach ($listSereServDeposit as $key => $item) {
+                    $this->sereServDepositRepository->restoreTransaction($item);
+                }
+            }
+            // + nếu là thanh toán thì phải cập nhật lại các bản ghi của sere_serv_bill
+            if ($data->transaction_type_id = $this->transactionTypeTTId) {
+                $listSereServBill = $this->sereServBillRepository->getByBillId($data->id);
+                foreach ($listSereServBill as $key => $item) {
+                    $this->sereServBillRepository->restoreTransaction($item);
+                }
+            }
+            return $data;
+        });
+    }
 }

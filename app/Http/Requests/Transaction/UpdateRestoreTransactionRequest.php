@@ -3,10 +3,13 @@
 namespace App\Http\Requests\Transaction;
 
 use App\Models\HIS\PayForm;
+use App\Models\HIS\SereServDeposit;
+use App\Models\HIS\ServicePaty;
 use App\Models\HIS\Transaction;
 use App\Models\HIS\TransactionType;
 use App\Models\HIS\Treatment;
-use App\Models\View\TreatmentFeeListVView;
+use App\Repositories\SereServDepositRepository;
+use App\Repositories\ServicePatyRepository;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Contracts\Validation\Validator;
@@ -15,12 +18,15 @@ use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
 
-class UpdateCancelTransactionRequest extends FormRequest
+class UpdateRestoreTransactionRequest extends FormRequest
 {
     protected $transaction;
-    protected $treatmentFeeListVView;
+    protected $treatment;
     protected $payFormQrId;
     protected $payForm;
+    protected $sereServDeposit;
+    protected $servicePaty;
+    protected $servicePatyRepository;
     protected $transactionType;
     protected $transactionTypeHUId;
     protected $transactionTypeTUId;
@@ -41,9 +47,12 @@ class UpdateCancelTransactionRequest extends FormRequest
     public function rules()
     {
         $this->transaction = new Transaction();
-        $this->treatmentFeeListVView = new TreatmentFeeListVView();
+        $this->treatment = new Treatment();
         $this->payForm = new PayForm();
         $this->transactionType = new TransactionType();
+        $this->sereServDeposit = new SereServDeposit();
+        $this->servicePaty = new ServicePaty();
+        $this->servicePatyRepository = new ServicePatyRepository($this->servicePaty);
 
         $cacheKeySet = "cache_keys:" . "setting"; // Set để lưu danh sách key
         $cacheKey = 'pay_form_qr_vietin_bank_id';
@@ -78,39 +87,14 @@ class UpdateCancelTransactionRequest extends FormRequest
         // Lưu key vào Redis Set để dễ xóa sau này
         Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
         return [
-            'cancel_reason' => 'nullable|string|max:2000',
-            'cancel_reason_id' => [
-                'nullable',
-                'integer',
-                Rule::exists('App\Models\HIS\CancelReason', 'id')
-                ->where(function ($query) {
-                    $query = $query
-                    ->where(DB::connection('oracle_his')->raw("is_active"), 1);
-                }),
-            ], 
-            'cancel_time' =>   'required|integer|regex:/^\d{14}$/',
 
-        ];
-    }
-    public function messages()
-    {
-        return [
-            'cancel_reason_id.integer'       => config('keywords')['transaction_cancel']['cancel_reason_id'].config('keywords')['error']['integer'],
-            'cancel_reason_id.exists'        => config('keywords')['transaction_cancel']['cancel_reason_id'].config('keywords')['error']['exists'],  
-
-            'cancel_reason.string'        => config('keywords')['transaction_cancel']['cancel_reason'].config('keywords')['error']['string'],
-            'cancel_reason.max'           => config('keywords')['transaction_cancel']['cancel_reason'].config('keywords')['error']['string_max'],
-
-            'cancel_time.required'           => config('keywords')['transaction_cancel']['cancel_time'] . config('keywords')['error']['required'],
-            'cancel_time.integer'            => config('keywords')['transaction_cancel']['cancel_time'] . config('keywords')['error']['integer'],
-            'cancel_time.regex'              => config('keywords')['transaction_cancel']['cancel_time'] . config('keywords')['error']['regex_ymdhis'],
         ];
     }
 
     public function withValidator($validator)
     {
         $validator->after(function ($validator) {
-            $id = $this->id;
+            $id = $this->transaction_restore;
             $dataTransaction = $this->transaction->find($id);
             if (!$dataTransaction) {
                 $validator->errors()->add('id', 'ID giao dịch không tồn tại!');
@@ -118,11 +102,11 @@ class UpdateCancelTransactionRequest extends FormRequest
                 if ($dataTransaction->is_active == 0) {
                     $validator->errors()->add('id', 'Giao dịch này đang bị khóa!');
                 }
-                if ($dataTransaction->is_cancel == 1) {
-                    $validator->errors()->add('id', 'Giao dịch này đã bị hủy!');
+                if ($dataTransaction->is_cancel != 1) {
+                    $validator->errors()->add('id', 'Giao dịch này chưa bị hủy!');
                 }
                 if ($dataTransaction->treatment_id) {
-                    $dataTreatment = $this->treatmentFeeListVView->find($dataTransaction->treatment_id);
+                    $dataTreatment = $this->treatment->find($dataTransaction->treatment_id);
                     if (!$dataTreatment) {
                         $validator->errors()->add('id', 'Hồ sơ không tồn tại!');
                     }else{
@@ -135,44 +119,21 @@ class UpdateCancelTransactionRequest extends FormRequest
                     }
                 }
                 if($dataTransaction->pay_form_id == $this->payFormQrId){
-                    $validator->errors()->add('id', 'Không thể hủy giao dịch với hình thức thanh toán là Thanh toán QR!');
+                    $validator->errors()->add('id', 'Không thể khôi phục giao dịch với hình thức thanh toán là Thanh toán QR!');
                 }
-                if ($this->cancel_time && $this->cancel_time < $dataTransaction->transaction_time) {
-                    $validator->errors()->add('cancel_time', 'Thời gian hủy không được nhỏ hơn thời gian giao dịch!');
-                }
-                // nếu là tạm thu => Check xem sau giao dịch này (id > hơn id transaction này) có giao dịch hoàn ứng hay giao dịch thanh toán nào mà có kc không, nếu có => không cho hủy
-                if ($dataTransaction->transaction_type_id == $this->transactionTypeTUId) {
-                    $exists = $this->transaction
-                        ->where('his_transaction.treatment_id', $dataTransaction->treatment_id)
-                        ->where('his_transaction.id', '>', $dataTransaction->id)
-                        ->where(function ($q) {
-                            $q->where(function ($q1) {
-                                // Giao dịch hoàn ứng
-                                $q1->where('his_transaction.transaction_type_id', $this->transactionTypeHUId);
-                            })
-                            ->orWhere(function ($q2) {
-                                // Giao dịch thanh toán và có kc_amount > 0
-                                $q2->where('his_transaction.transaction_type_id', $this->transactionTypeTTId)
-                                    ->where('his_transaction.kc_amount', '>', 0);
-                            });
-                        })
-                        ->where(function ($q) {
-                            // Kiểm tra is_cancel null hoặc 0
-                            $q->whereNull('his_transaction.is_cancel')
-                              ->orWhere('his_transaction.is_cancel', 0);
-                        })
-                        ->exists();
-                
-                    if ($exists) {
-                        $validator->errors()->add('id', 'Xử lý thất bại! Số tiền đã được hoàn ứng hoặc kết chuyển một phần!');
+
+                // nếu là tạm thu dịch vụ => check lại xem cái dịch vụ của deposit có cái nào bị thay đổi giá không, nếu bị thay đổi => không cho khôi phục giao dịch
+                if (($dataTransaction->transaction_type_id == $this->transactionTypeTUId) && ($dataTransaction->tdl_sere_serv_deposit_count > 0)) {
+                    $listSereServDeposit = $this->sereServDeposit->where('deposit_id',$dataTransaction->id)->get();
+                    foreach ($listSereServDeposit as $key => $item) {
+                        // Lấy ra giá của chính sách 
+                        $activePrice = $this->servicePatyRepository->getActivePriceByServieIdPatientTypeId($item->tdl_service_id, $item->tdl_patient_type_id)->price ?? null;
+                        if($activePrice && $activePrice != $item->vir_price){
+                            $validator->errors()->add('id', 'Dịch vụ '.$item->tdl_service_name.' đã thay đổi giá!');
+                        }
                     }
                 }
                 
-            }
-
-            if(($this->cancel_reason == null) && ($this->cancel_reason_id == null)){
-                $validator->errors()->add('cancel_reason_id', 'Thiếu lý do hủy giao dịch!');
-                $validator->errors()->add('cancel_reason', 'Thiếu lý do hủy giao dịch!');
             }
         });
     }

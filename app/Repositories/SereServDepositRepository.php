@@ -154,6 +154,15 @@ class SereServDepositRepository
         ]);
         return $data;
     }
+    public function restoreTransaction($data){
+        $data->update([
+            'modify_time' => now()->format('YmdHis'),
+            'modifier' => 'MOS_v2',
+            'app_modifier' => 'MOS_v2',
+            'is_cancel' => null
+        ]);
+        return $data;
+    }
     public function delete($data){
         $data->delete();
         return $data;

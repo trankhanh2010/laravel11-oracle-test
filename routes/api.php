@@ -268,6 +268,7 @@ use App\Http\Controllers\Api\TransactionControllers\TransactionHoanUngDichVuCont
 use App\Http\Controllers\Api\TransactionControllers\TransactionTamThuDichVuController;
 use App\Http\Controllers\Api\TransactionControllers\TransactionThanhToanController;
 use App\Http\Controllers\Api\TransactionControllers\VietinbankController;
+use App\Http\Controllers\Api\TransactionControllers\TransactionRestoreController;
 use App\Http\Controllers\Api\ValidateControllers\DeviceGetOtpController;
 use App\Http\Controllers\Api\ValidateControllers\OtpController;
 use App\Http\Controllers\BaseControllers\ConvertController;
@@ -1082,6 +1083,8 @@ Route::group([
     });
     /// Transaction Update
     Route::apiResource('v1/transaction', TransactionController::class)->only(['update']);
+    /// Transaction Restore
+    Route::apiResource('v1/transaction-restore', TransactionRestoreController::class)->only(['update']);
 
     Route::apiResource('v1/transaction-list-v-view-no-login', TransactionListVViewController::class)->only(['index', 'show'])->withoutMiddleware([
         'check_token',

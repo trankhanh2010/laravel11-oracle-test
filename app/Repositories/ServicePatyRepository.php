@@ -156,6 +156,20 @@ class ServicePatyRepository
     {
         return $this->servicePaty->find($id);
     }
+    public function getActivePriceByServieIdPatientTypeId($serviceId, $patientTypeId)
+    {
+        $data = $this->servicePaty
+        ->where('service_id', $serviceId)
+        ->where('patient_type_id', $patientTypeId)
+        ->where(function ($q) {
+            // Kiểm tra is_cancel null hoặc 0
+            $q->whereNull('to_time')
+              ->orWhere('to_time', '>', now()->format('YmdHis'));
+        })
+        ->orderBy('from_time', 'desc')
+        ->first();
+        return $data;
+    }
     public function create($request, $time, $appCreator, $appModifier, $branchId, $patientTypeId)
     {
         $data = $this->servicePaty::create([
