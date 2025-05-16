@@ -113,7 +113,7 @@ class UpdateCancelTransactionRequest extends FormRequest
             $id = $this->id;
             $dataTransaction = $this->transaction->find($id);
             if (!$dataTransaction) {
-                $validator->errors()->add('id', 'ID giao dịch không tồn tại!');
+                $validator->errors()->add('id', 'Giao dịch không tồn tại!');
             }else{
                 if ($dataTransaction->is_active == 0) {
                     $validator->errors()->add('id', 'Giao dịch này đang bị khóa!');

@@ -286,6 +286,7 @@ class CreateTransactionThanhToanRequest extends FormRequest
 
             if ($this->has('sere_servs_list') && ($this->sere_servs_list[0] != null)) {
                 foreach ($this->sere_servs_list as $item) {
+                    $dataItem = $this->sereServ->find($item['id']??0);
                     // Kiểm tra sere_serv_id có tồn tại trong DB không
                     $exists = $this->sereServ
                         ->where('his_sere_serv.id', $item['id'])
@@ -309,16 +310,16 @@ class CreateTransactionThanhToanRequest extends FormRequest
                         })
                         ->exists();
                     if (!$exists) {
-                        $validator->errors()->add('bill_funds', 'ID SereServ = ' . $item['id'] . ' không tồn tại, đang bị tạm khóa, không thực hiện, không thanh toán, đã thanh toán hoặc không thuộc về hồ sơ này!');
+                        $validator->errors()->add('bill_funds', 'Dịch vụ ' . ($dataItem['tdl_service_name']??'') . ' không tồn tại, đang bị tạm khóa, không thực hiện, không thanh toán, đã thanh toán hoặc không thuộc về hồ sơ này!');
                     }
                     if (!preg_match('/^\d{1,15}(\.\d{1,6})?$/', $item['amount'])) {
-                        $validator->errors()->add('sere_servs', 'ID SereServ = ' . $item['id'].' số tiền thanh toán dịch vụ' . config('keywords')['error']['regex_21_6'],);
+                        $validator->errors()->add('sere_servs', 'Dịch vụ ' . ($dataItem['tdl_service_name']??'').' số tiền thanh toán dịch vụ' . config('keywords')['error']['regex_21_6'],);
                     }
                     $virTotalPatientPrice = $this->sereServ
                     ->find($item['id']??0)->vir_total_patient_price??0;
                     // Nếu tiền thanh toán dv không khớp với tiền bệnh nhân phải trả
                     if($virTotalPatientPrice != $item['amount']){
-                        $validator->errors()->add('sere_servs', 'ID SereServ = ' . $item['id'] . ' tiền thanh toán dịch vụ = '.$item['amount'].' không khớp với tiền bệnh nhân phải trả = '.$virTotalPatientPrice.'!');
+                        $validator->errors()->add('sere_servs', 'Dịch vụ ' . ($dataItem['tdl_service_name']??'') . ' tiền thanh toán dịch vụ = '.$item['amount'].' không khớp với tiền bệnh nhân phải trả = '.$virTotalPatientPrice.'!');
                     }
 
                     $totalAmountBill = array_sum(array_column($this->sere_servs_list, 'amount')) ?? 0;

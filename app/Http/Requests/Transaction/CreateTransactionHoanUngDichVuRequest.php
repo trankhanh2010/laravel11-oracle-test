@@ -214,6 +214,7 @@ class CreateTransactionHoanUngDichVuRequest extends FormRequest
             if ($this->has('sere_servs_list') && ($this->sere_servs_list[0] ?? 0 != null)) {
                 $dataSereServIds = $this->input('sere_servs', []); // Lấy mảng từ request
                 foreach ($this->sere_servs_list as $key => $item) {
+                    $dataItem = $this->sereServ->find($item['id']??0);
                     // Kiểm tra sere_serv_id có tồn tại trong DB không, có tạm thu chưa, có hoàn ứng dịch vụ chưa, có là chưa xử lý không
                     $exists = $this->sereServ
                         ->where('his_sere_serv.id', $item['id'])
@@ -240,10 +241,10 @@ class CreateTransactionHoanUngDichVuRequest extends FormRequest
                         })
                         ->exists();
                     if (!$exists) {
-                        $validator->errors()->add('sere_servs', 'ID SereServ = ' . $item['id'] . ' có trạng thái khác chưa xử lý, không tồn tại, không thực hiện, chưa tạm thu dịch vụ hoặc không thuộc về hồ sơ này!');
+                        $validator->errors()->add('sere_servs', 'Dịch vụ ' . ($dataItem['tdl_service_name']??'') . ' có trạng thái khác chưa xử lý, không tồn tại, không thực hiện, chưa tạm thu dịch vụ hoặc không thuộc về hồ sơ này!');
                     }
                     if (!preg_match('/^\d{1,15}(\.\d{1,4})?$/', $item['amount'])) {
-                        $validator->errors()->add('sere_servs', 'ID SereServ = ' . $item['id'].' số tiền hoàn ứng dịch vụ' . config('keywords')['error']['regex_19_4'],);
+                        $validator->errors()->add('sere_servs', 'Dịch vụ ' . ($dataItem['tdl_service_name']??'').' số tiền hoàn ứng dịch vụ' . config('keywords')['error']['regex_19_4'],);
                     }
 
                     // Gán giá trị vào mảng (nếu tìm thấy)
@@ -270,12 +271,12 @@ class CreateTransactionHoanUngDichVuRequest extends FormRequest
                     
                     // Nếu đang có tồn tại nhiều hơn 1 lần giao dịch tạm thu dv cho dịch vụ này
                     if(count($depositIds) > 1){
-                        $validator->errors()->add('sere_servs', 'ID SereServ = ' . $item['id'] . ' đang tồn tại nhiều hơn 1 lần giao dịch tạm thu dịch vụ!');
+                        $validator->errors()->add('sere_servs', 'Dịch vụ ' . ($dataItem['tdl_service_name']??'') . ' đang tồn tại nhiều hơn 1 lần giao dịch tạm thu dịch vụ!');
                     }
 
                     // Nếu tiền hoàn ứng dv không khớp
                     if($totalAmount != $item['amount']){
-                        $validator->errors()->add('sere_servs', 'ID SereServ = ' . $item['id'] . ' tiền hoàn ứng dịch vụ = '.$item['amount'].' không khớp với tiền tạm thu dịch vụ = '.$totalAmount.'!');
+                        $validator->errors()->add('sere_servs', 'Dịch vụ ' . ($dataItem['tdl_service_name']??'') . ' tiền hoàn ứng dịch vụ = '.$item['amount'].' không khớp với tiền tạm thu dịch vụ = '.$totalAmount.'!');
                     }
 
                     $sereServDepositId = $depositIds[0] ?? null;

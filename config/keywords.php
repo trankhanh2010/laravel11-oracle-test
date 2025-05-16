@@ -1597,7 +1597,7 @@ return [
     ],
     // giao dịch tạm ứng
     'transaction_tam_ung' => [
-        'treatment_id' => 'Id điều trị',
+        'treatment_id' => 'Hồ sơ điều trị',
         'amount' => 'Số tiền tạm ứng',
         'account_book_id' => 'Id sổ thu chi',
         'pay_form_id' => 'Id hình thức thanh toán',
@@ -1616,7 +1616,7 @@ return [
     ],
     // giao dịch hoàn ứng
     'transaction_hoan_ung' => [
-        'treatment_id' => 'Id điều trị',
+        'treatment_id' => 'Hồ sơ điều trị',
         'amount' => 'Số tiền hoàn ứng',
         'account_book_id' => 'Id sổ thu chi',
         'pay_form_id' => 'Id hình thức thanh toán',
@@ -1635,7 +1635,7 @@ return [
     ],
     // giao dịch thanh toán
     'transaction_thanh_toan' => [
-        'treatment_id' => 'Id điều trị',
+        'treatment_id' => 'Hồ sơ điều trị',
         'amount' => 'Số tiền thanh toán',
         'account_book_id' => 'Id sổ thu chi',
         'pay_form_id' => 'Id hình thức thanh toán',
@@ -1661,7 +1661,7 @@ return [
     ],
     // giao dịch tạm thu dịch vụ
     'transaction_tam_thu_dich_vu' => [
-        'treatment_id' => 'Id điều trị',
+        'treatment_id' => 'Hồ sơ điều trị',
         'amount' => 'Số tiền tạm thu dịch vụ',
         'account_book_id' => 'Id sổ thu chi',
         'pay_form_id' => 'Id hình thức thanh toán',
@@ -1681,7 +1681,7 @@ return [
     ],
     // giao dịch tạm thu dịch vụ
     'transaction_hoan_ung_dich_vu' => [
-        'treatment_id' => 'Id điều trị',
+        'treatment_id' => 'Hồ sơ điều trị',
         'amount' => 'Số tiền hoàn ứng dịch vụ',
         'account_book_id' => 'Id sổ thu chi',
         'pay_form_id' => 'Id hình thức thanh toán',
@@ -1701,8 +1701,8 @@ return [
     ],
     // yêu cầu tạm ứng
     'deposit_req' => [
-        'id' => 'Id yêu cầu tạm ứng',
-        'treatment_id' => 'Id điều trị',
+        'id' => 'Yêu cầu tạm ứng',
+        'treatment_id' => 'Hồ sơ điều trị',
         'amount' => 'Số tiền yêu cầu tạm ứng',
         'description' => 'Lý do tạm ứng',
     ],
