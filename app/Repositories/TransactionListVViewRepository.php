@@ -28,7 +28,14 @@ class TransactionListVViewRepository
     public function applyIsActiveFilter($query, $isActive)
     {
         if ($isActive !== null) {
-            $query->where(('is_active'), $isActive);
+            if($isActive){
+                $query->where(('is_active'), 1);
+            }else{
+                $query->where(function ($query) {
+                    $query->whereNull('is_active')
+                    ->orWhere('is_active', 0);
+                });
+            }
         }
         return $query;
     }
@@ -89,6 +96,35 @@ class TransactionListVViewRepository
             return $query->where(function ($query) use ($param) {
                 $query->where('create_time', '<=', $param);
             });
+        }
+        return $query;
+    }
+    public function applyIsCancelFilter($query, $isCancel)
+    {
+        if ($isCancel !== null) {
+            if($isCancel){
+                $query->where(('is_cancel'), 1);
+            }else{
+                $query->where(function ($query) {
+                    $query->whereNull('is_cancel')
+                    ->orWhere('is_cancel', 0);
+                });
+            }
+        }
+        return $query;
+    }
+    public function applyBillTypeIdFilter($query, $param)
+    {
+        if ($param !== null) {
+            if($param == 1){
+                $query->where(function ($query) {
+                    $query->whereNull('bill_type_id')
+                    ->orWhere('bill_type_id', 1);
+                });
+            }
+            if($param == 2){
+                $query->where('bill_type_id',$param);
+            }
         }
         return $query;
     }

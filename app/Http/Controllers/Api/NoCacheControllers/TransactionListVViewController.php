@@ -6,7 +6,6 @@ use App\DTOs\TransactionListVViewDTO;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
 use App\Http\Requests\Transaction\UpdateCancelTransactionRequest;
 use App\Models\View\TransactionListVView;
-use App\Services\Elastic\ElasticsearchService;
 use App\Services\Model\TransactionListVViewService;
 use Illuminate\Http\Request;
 
@@ -15,10 +14,9 @@ class TransactionListVViewController extends BaseApiCacheController
 {
     protected $transactionListVViewService;
     protected $transactionListVViewDTO;
-    public function __construct(Request $request, ElasticsearchService $elasticSearchService, TransactionListVViewService $transactionListVViewService, TransactionListVView $transactionListVView)
+    public function __construct(Request $request, TransactionListVViewService $transactionListVViewService, TransactionListVView $transactionListVView)
     {
         parent::__construct($request); // Gọi constructor của BaseController
-        $this->elasticSearchService = $elasticSearchService;
         $this->transactionListVViewService = $transactionListVViewService;
         $this->transactionListVView = $transactionListVView;
         // Kiểm tra tên trường trong bảng
@@ -54,6 +52,8 @@ class TransactionListVViewController extends BaseApiCacheController
             $this->noCache,
             $this->transReqCode,
             $this->accountBookCode,
+            $this->isCancel,
+            $this->billTypeId,
         );
         $this->transactionListVViewService->withParams($this->transactionListVViewDTO);
     }

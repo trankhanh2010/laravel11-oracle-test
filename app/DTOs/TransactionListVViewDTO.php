@@ -29,6 +29,8 @@ class TransactionListVViewDTO
     public $noCache;
     public $transReqCode;
     public $accountBookCode;
+    public $isCancel;
+    public $billTypeId;
     public function __construct(
         $transactionListVViewName,
         $keyword, 
@@ -55,6 +57,8 @@ class TransactionListVViewDTO
         $noCache,
         $transReqCode,
         $accountBookCode,
+        $isCancel,
+        $billTypeId,
         )
     {
         $this->transactionListVViewName = $transactionListVViewName;
@@ -82,5 +86,7 @@ class TransactionListVViewDTO
         $this->noCache = $noCache;
         $this->transReqCode = $transReqCode;
         $this->accountBookCode = $accountBookCode; 
+        $this->isCancel = $isCancel;
+        $this->billTypeId = $billTypeId;
     }
 }

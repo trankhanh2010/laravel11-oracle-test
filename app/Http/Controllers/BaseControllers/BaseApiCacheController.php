@@ -139,6 +139,10 @@ class BaseApiCacheController extends Controller
     protected $paramRequest;
     protected $isActive;
     protected $isActiveName = 'IsActive';
+    protected $isCancel;
+    protected $isCancelName = 'IsCancel';
+    protected $billTypeId;
+    protected $billTypeIdName = 'BillTypeId';
     protected $isDelete;
     protected $isDeleteName = 'IsDelete';
     protected $effective;
@@ -1252,6 +1256,13 @@ class BaseApiCacheController extends Controller
                 $this->isActive = 1;
             }
         }
+        $this->isCancel = $this->paramRequest['ApiData']['IsCancel'] ?? null;
+        if ($this->isCancel !== null) {
+            if (!is_bool($this->isCancel)) {
+                $this->errors[$this->isCancelName] = $this->messFormat;
+                $this->isCancel = false;
+            }
+        }
 
         $this->isDelete = $this->paramRequest['ApiData']['IsDelete'] ?? null;
         if ($this->isDelete !== null) {
@@ -1865,6 +1876,14 @@ class BaseApiCacheController extends Controller
             if (!is_numeric($this->roomTypeId)) {
                 $this->errors[$this->roomTypeIdName] = $this->messFormat;
                 $this->roomTypeId = null;
+            } 
+        }
+        $this->billTypeId = $this->paramRequest['ApiData']['BillTypeId'] ?? null;
+        if ($this->billTypeId !== null) {
+            // Kiểm tra xem ID có tồn tại trong bảng  hay không
+            if (!is_numeric($this->billTypeId)) {
+                $this->errors[$this->billTypeIdName] = $this->messFormat;
+                $this->billTypeId = null;
             } 
         }
         $this->departmentIds = $this->paramRequest['ApiData']['DepartmentIds'] ?? null;
