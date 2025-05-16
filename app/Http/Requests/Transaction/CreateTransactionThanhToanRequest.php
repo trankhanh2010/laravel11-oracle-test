@@ -68,11 +68,13 @@ class CreateTransactionThanhToanRequest extends FormRequest
             'account_book_id' => [
                 'required',
                 'integer',
-                Rule::exists('App\Models\HIS\AccountBook', 'id')
-                    ->where(function ($query) {
-                        $query = $query
-                            ->where(DB::connection('oracle_his')->raw("is_active"), 1);
-                    }),
+                Rule::exists('App\Models\View\UserAccountBookVView', 'account_book_id')
+                ->where(function ($query) {
+                    $query = $query
+                    ->where("is_active", 1)
+                    ->where("loginname", get_loginname_with_token($this->bearerToken()))
+                    ->where("is_for_bill", 1);
+                }),
             ],
             'pay_form_id' => [
                 'required',
@@ -164,7 +166,7 @@ class CreateTransactionThanhToanRequest extends FormRequest
 
             'account_book_id.required'      => config('keywords')['transaction_thanh_toan']['account_book_id'] . config('keywords')['error']['required'],
             'account_book_id.integer'       => config('keywords')['transaction_thanh_toan']['account_book_id'] . config('keywords')['error']['integer'],
-            'account_book_id.exists'        => config('keywords')['transaction_thanh_toan']['account_book_id'] . config('keywords')['error']['exists'],
+            'account_book_id.exists'        => config('keywords')['transaction_thanh_toan']['account_book_id'] . ' không tồn tại, không dùng để thanh toán hoặc bạn chưa được cấp quyền dùng sổ này!',
 
             'pay_form_id.required'      => config('keywords')['transaction_thanh_toan']['pay_form_id'] . config('keywords')['error']['required'],
             'pay_form_id.integer'       => config('keywords')['transaction_thanh_toan']['pay_form_id'] . config('keywords')['error']['integer'],
