@@ -205,7 +205,7 @@ class CreateTransactionTamThuDichVuRequest extends FormRequest
         $validator->after(function ($validator) {
             if($this->treatment_id){   
                 $dataFee = $this->treatmentFeeDetailVView->find($this->treatment_id ?? 0);
-                $this->mucHuongBhyt = getMucHuongBHYT($dataFee?->value('tdl_hein_card_number'??''))??0;
+                $this->mucHuongBhyt = getMucHuongBHYT($dataFee['tdl_hein_card_number']??'', $dataFee['total_price']??0)??0;
             }
             if ($this->has('sere_servs_list') && ($this->sere_servs_list[0] ?? 0 != null)) {
                 foreach ($this->sere_servs_list as $item) {
@@ -256,7 +256,9 @@ class CreateTransactionTamThuDichVuRequest extends FormRequest
                     ->find($item['id']??0);
                     $virTotalPatientPrice = $dataSereServ->vir_total_patient_price ?? 0;
                     $virTotalHeinPrice =$dataSereServ->vir_total_hein_price ?? 0;
-
+                    if(!$dataFee['tdl_hein_card_number']){
+                        $virTotalHeinPrice = 0; // Tiền mà khi không có mã BHYT thì là tiền công ty trả, không tính vào đây
+                    }
                     $tienKhiTamUngDv = round($virTotalPatientPrice + (1 - $this->mucHuongBhyt) * $virTotalHeinPrice);  // Làm tròn tiền
                     // Nếu tiền thanh toán dv không khớp với tiền bệnh nhân phải trả
                     if($tienKhiTamUngDv != $item['amount']){

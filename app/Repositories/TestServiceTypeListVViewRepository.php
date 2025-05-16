@@ -177,13 +177,14 @@ class TestServiceTypeListVViewRepository
     {
         $treatmentFeeDetailVView = new TreatmentFeeDetailVView();
         $dataFee = $treatmentFeeDetailVView->find($treatmentId ?? 0);
-        $mucHuongBhyt = getMucHuongBHYT($dataFee?->value('tdl_hein_card_number'??''));
-        
+        $mucHuongBhyt = getMucHuongBHYT($dataFee['tdl_hein_card_number']??'', $dataFee['total_price']??0);
         foreach ($data as &$item) {
             $virTotalPatientPrice = $item['vir_total_patient_price'] ?? 0;
-            $virTotalHeinPrice = $item['vir_total_hein_price'] ?? 0;
-
-            $item['tien_khi_tam_ung_dv'] = (string) round($virTotalPatientPrice + (1 - $mucHuongBhyt) * $virTotalHeinPrice);  // Làm tròn tiền
+            $virTotalHeinPrice = $item['vir_total_hein_price'] ?? 0; 
+            if(!$dataFee['tdl_hein_card_number']){
+                $virTotalHeinPrice = 0; // Tiền mà khi không có mã BHYT thì là tiền công ty trả, không tính vào đây
+            }
+            $item['tien_khi_tam_ung_dv'] = (string) round($virTotalPatientPrice + (1 - $mucHuongBhyt) * $virTotalHeinPrice);  // Làm tròn tiền 
         }
     
         return $data;

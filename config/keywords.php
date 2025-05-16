@@ -1599,7 +1599,7 @@ return [
     'transaction_tam_ung' => [
         'treatment_id' => 'Hồ sơ điều trị',
         'amount' => 'Số tiền tạm ứng',
-        'account_book_id' => 'Id sổ thu chi',
+        'account_book_id' => 'Sổ thu chi',
         'pay_form_id' => 'Id hình thức thanh toán',
         'cashier_room_id' => 'Id phòng thu ngân',
         'swipe_amount' => 'Số tiền quẹt thẻ',
@@ -1618,7 +1618,7 @@ return [
     'transaction_hoan_ung' => [
         'treatment_id' => 'Hồ sơ điều trị',
         'amount' => 'Số tiền hoàn ứng',
-        'account_book_id' => 'Id sổ thu chi',
+        'account_book_id' => 'Sổ thu chi',
         'pay_form_id' => 'Id hình thức thanh toán',
         'cashier_room_id' => 'Id phòng thu ngân',
         'repay_reason_id' => 'Id lý do hoàn ứng',
@@ -1637,7 +1637,7 @@ return [
     'transaction_thanh_toan' => [
         'treatment_id' => 'Hồ sơ điều trị',
         'amount' => 'Số tiền thanh toán',
-        'account_book_id' => 'Id sổ thu chi',
+        'account_book_id' => 'Sổ thu chi',
         'pay_form_id' => 'Id hình thức thanh toán',
         'cashier_room_id' => 'Id phòng thu ngân',
         'repay_reason_id' => 'Id lý do hoàn ứng',
@@ -1663,7 +1663,7 @@ return [
     'transaction_tam_thu_dich_vu' => [
         'treatment_id' => 'Hồ sơ điều trị',
         'amount' => 'Số tiền tạm thu dịch vụ',
-        'account_book_id' => 'Id sổ thu chi',
+        'account_book_id' => 'Sổ thu chi',
         'pay_form_id' => 'Id hình thức thanh toán',
         'cashier_room_id' => 'Id phòng thu ngân',
         'repay_reason_id' => 'Id lý do hoàn ứng',
@@ -1683,7 +1683,7 @@ return [
     'transaction_hoan_ung_dich_vu' => [
         'treatment_id' => 'Hồ sơ điều trị',
         'amount' => 'Số tiền hoàn ứng dịch vụ',
-        'account_book_id' => 'Id sổ thu chi',
+        'account_book_id' => 'Sổ thu chi',
         'pay_form_id' => 'Id hình thức thanh toán',
         'cashier_room_id' => 'Id phòng thu ngân',
         'repay_reason_id' => 'Id lý do hoàn ứng',
