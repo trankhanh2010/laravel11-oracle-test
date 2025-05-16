@@ -127,7 +127,7 @@ class UpdateRestoreTransactionRequest extends FormRequest
                     $listSereServDeposit = $this->sereServDeposit->where('deposit_id',$dataTransaction->id)->get();
                     foreach ($listSereServDeposit as $key => $item) {
                         // Lấy ra giá của chính sách 
-                        $activePrice = $this->servicePatyRepository->getActivePriceByServieIdPatientTypeId($item->tdl_service_id, $item->tdl_patient_type_id)->price ?? null;
+                        $activePrice = $this->servicePatyRepository->getActivePriceByServieIdPatientTypeId($item->tdl_service_id, $item->tdl_patient_type_id, $dataTreatment->in_time)->price ?? null;
                         if($activePrice && $activePrice != $item->vir_price){
                             $validator->errors()->add('id', 'Dịch vụ '.$item->tdl_service_name.' đã thay đổi giá!');
                         }

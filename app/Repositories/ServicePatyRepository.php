@@ -156,7 +156,7 @@ class ServicePatyRepository
     {
         return $this->servicePaty->find($id);
     }
-    public function getActivePriceByServieIdPatientTypeId($serviceId, $patientTypeId)
+    public function getActivePriceByServieIdPatientTypeId($serviceId, $patientTypeId, $inTime)
     {
         $data = $this->servicePaty
         ->where('service_id', $serviceId)
@@ -165,6 +165,16 @@ class ServicePatyRepository
             // Kiểm tra is_cancel null hoặc 0
             $q->whereNull('to_time')
               ->orWhere('to_time', '>', now()->format('YmdHis'));
+        })
+        ->where(function ($q) use ($inTime) {
+            // Kiểm tra thời gian vào có lớn hơn bằng thời gian điều trị áp dụng từ không
+            $q->whereNull('treatment_from_time')
+              ->orWhere('treatment_from_time', '<=', $inTime);
+        })
+        ->where(function ($q) use ($inTime) {
+            // Kiểm tra thời gian vào có bé hơn bằng thời gian điều trị áp dụng đến không
+            $q->whereNull('treatment_to_time')
+              ->orWhere('treatment_to_time', '>=', $inTime);
         })
         ->orderBy('from_time', 'desc')
         ->first();
