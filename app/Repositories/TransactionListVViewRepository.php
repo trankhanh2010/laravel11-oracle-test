@@ -127,18 +127,16 @@ class TransactionListVViewRepository
         }
         return $query;
     }
-    public function applyBillTypeIdFilter($query, $param)
+    public function applyBillTypeIdsFilter($query, $param)
     {
-        if ($param !== null) {
-            if($param == 1){
-                $query->where(function ($query) {
-                    $query->whereNull('bill_type_id')
-                    ->orWhere('bill_type_id', 1);
-                });
-            }
-            if($param == 2){
-                $query->where('bill_type_id',$param);
-            }
+        if (!empty($param)) {
+            $query->where(function ($q) use ($param) {
+                $q->whereIn('bill_type_id', $param);
+                
+                if (in_array(1, $param)) {
+                    $q->orWhereNull('bill_type_id');
+                }
+            });
         }
         return $query;
     }

@@ -143,8 +143,8 @@ class BaseApiCacheController extends Controller
     protected $isLockName = 'IsLock';
     protected $isCancel;
     protected $isCancelName = 'IsCancel';
-    protected $billTypeId;
-    protected $billTypeIdName = 'BillTypeId';
+    protected $billTypeIds;
+    protected $billTypeIdsName = 'BillTypeIds';
     protected $isDelete;
     protected $isDeleteName = 'IsDelete';
     protected $effective;
@@ -1887,13 +1887,15 @@ class BaseApiCacheController extends Controller
                 $this->roomTypeId = null;
             } 
         }
-        $this->billTypeId = $this->paramRequest['ApiData']['BillTypeId'] ?? null;
-        if ($this->billTypeId !== null) {
-            // Kiểm tra xem ID có tồn tại trong bảng  hay không
-            if (!is_numeric($this->billTypeId)) {
-                $this->errors[$this->billTypeIdName] = $this->messFormat;
-                $this->billTypeId = null;
-            } 
+        $this->billTypeIds = $this->paramRequest['ApiData']['BillTypeIds'] ?? null;
+        if ($this->billTypeIds != null) {
+            foreach ($this->billTypeIds as $key => $item) {
+                // Kiểm tra xem ID có tồn tại trong bảng  hay không
+                if (!is_numeric($item)) {
+                    $this->errors[$this->billTypeIdsName] = $this->messFormat;
+                    unset($this->billTypeIds[$key]);
+                } 
+            }
         }
         $this->departmentIds = $this->paramRequest['ApiData']['DepartmentIds'] ?? null;
         if ($this->departmentIds != null) {

@@ -30,7 +30,7 @@ class TransactionListVViewDTO
     public $transReqCode;
     public $accountBookCode;
     public $isCancel;
-    public $billTypeId;
+    public $billTypeIds;
     public $isLock;
     public function __construct(
         $transactionListVViewName,
@@ -59,7 +59,7 @@ class TransactionListVViewDTO
         $transReqCode,
         $accountBookCode,
         $isCancel,
-        $billTypeId,
+        $billTypeIds,
         $isLock,
         )
     {
@@ -89,7 +89,7 @@ class TransactionListVViewDTO
         $this->transReqCode = $transReqCode;
         $this->accountBookCode = $accountBookCode; 
         $this->isCancel = $isCancel;
-        $this->billTypeId = $billTypeId;
+        $this->billTypeIds = $billTypeIds;
         $this->isLock = $isLock;
     }
 }

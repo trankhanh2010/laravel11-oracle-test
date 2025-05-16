@@ -46,7 +46,7 @@ class TransactionListVViewService
         $data = $this->transactionListVViewRepository->applyTransactionTypeIdsFilter($data, $this->params->transactionTypeIds);
         $data = $this->transactionListVViewRepository->applyCreateFromTimeFilter($data, $this->params->createFromTime);
         $data = $this->transactionListVViewRepository->applyCreateToTimeFilter($data, $this->params->createToTime);
-        $data = $this->transactionListVViewRepository->applyBillTypeIdFilter($data, $this->params->billTypeId);
+        $data = $this->transactionListVViewRepository->applyBillTypeIdsFilter($data, $this->params->billTypeIds);
         $data = $this->transactionListVViewRepository->applyIsCancelFilter($data, $this->params->isCancel);
         $data = $this->transactionListVViewRepository->applyIsLockFilter($data, $this->params->isLock);
 
