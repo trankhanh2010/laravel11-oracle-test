@@ -18,6 +18,8 @@ class CreateTransactionHoanUngRequest extends FormRequest
     protected $payForm;
     protected $payForm06;
     protected $payForm03;
+    protected $payFormQrId;
+
     protected $treatmentFeeDetailVView;
     /**
      * Determine if the user is authorized to make this request.
@@ -36,6 +38,13 @@ class CreateTransactionHoanUngRequest extends FormRequest
     {
         $this->payForm = new PayForm();
         $cacheKeySet = "cache_keys:" . "setting"; // Set để lưu danh sách key
+        $cacheKey = 'pay_form_qr_vietin_bank_id';
+        $this->payFormQrId = Cache::remember($cacheKey, now()->addMinutes(10080), function () {
+            $data =  $this->payForm->where('pay_form_code', '08')->get();
+            return $data->value('id');
+        });
+        // Lưu key vào Redis Set để dễ xóa sau này
+        Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
         $cacheKey = 'pay_form_06_id';
         $this->payForm06 = Cache::remember($cacheKey, now()->addMinutes(10080), function () {
             $data =  $this->payForm->where('pay_form_code', '06')->get();
@@ -72,7 +81,7 @@ class CreateTransactionHoanUngRequest extends FormRequest
                 'min:0',
                 'max:'.$max, // Tiền hoàn ứng k lớn hơn tiền đã thu - tiền bệnh nhân phải thanh toán - đã nộp (tạm khóa) 
             ],
-            'account_book_id' => [
+            'account_book_id' => $this->pay_form_id == $this->payFormQrId ? ['nullable'] : [
                 'required',
                 'integer',
                 Rule::exists('App\Models\View\UserAccountBookVView', 'account_book_id')

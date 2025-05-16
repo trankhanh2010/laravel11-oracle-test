@@ -25,6 +25,8 @@ class CreateTransactionHoanUngDichVuRequest extends FormRequest
     protected $fund;
     protected $sereServ;
     protected $sereServDeposit;
+    protected $payFormQrId;
+
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -45,6 +47,14 @@ class CreateTransactionHoanUngDichVuRequest extends FormRequest
         $this->sereServ = new SereServ();
         $this->sereServDeposit = new SereServDeposit();
         $cacheKeySet = "cache_keys:" . "setting"; // Set để lưu danh sách key
+        $cacheKey = 'pay_form_qr_vietin_bank_id';
+        $this->payFormQrId = Cache::remember($cacheKey, now()->addMinutes(10080), function () {
+            $data =  $this->payForm->where('pay_form_code', '08')->get();
+            return $data->value('id');
+        });
+        // Lưu key vào Redis Set để dễ xóa sau này
+        Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+
         $cacheKey = 'pay_form_06_id';
         $this->payForm06 = Cache::remember($cacheKey, now()->addMinutes(10080), function () {
             $data =  $this->payForm->where('pay_form_code', '06')->get();
@@ -68,7 +78,7 @@ class CreateTransactionHoanUngDichVuRequest extends FormRequest
                 'regex:/^\d{1,15}(\.\d{1,6})?$/',
                 'min:0',
             ],
-            'account_book_id' => [
+            'account_book_id' => $this->pay_form_id == $this->payFormQrId ? ['nullable'] : [
                 'required',
                 'integer',
                 Rule::exists('App\Models\View\UserAccountBookVView', 'account_book_id')
