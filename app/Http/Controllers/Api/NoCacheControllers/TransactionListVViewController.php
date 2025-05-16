@@ -54,6 +54,7 @@ class TransactionListVViewController extends BaseApiCacheController
             $this->accountBookCode,
             $this->isCancel,
             $this->billTypeId,
+            $this->isLock,
         );
         $this->transactionListVViewService->withParams($this->transactionListVViewDTO);
     }

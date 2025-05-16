@@ -113,6 +113,20 @@ class TransactionListVViewRepository
         }
         return $query;
     }
+    public function applyIsLockFilter($query, $isLock)
+    {
+        if ($isLock !== null) {
+            if($isLock){
+                $query->where(function ($query) {
+                    $query->whereNull('is_active')
+                    ->orWhere('is_active', 0);
+                });
+            }else{
+                $query->where(('is_active'), 1);
+            }
+        }
+        return $query;
+    }
     public function applyBillTypeIdFilter($query, $param)
     {
         if ($param !== null) {

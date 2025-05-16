@@ -139,6 +139,8 @@ class BaseApiCacheController extends Controller
     protected $paramRequest;
     protected $isActive;
     protected $isActiveName = 'IsActive';
+    protected $isLock;
+    protected $isLockName = 'IsLock';
     protected $isCancel;
     protected $isCancelName = 'IsCancel';
     protected $billTypeId;
@@ -1261,6 +1263,13 @@ class BaseApiCacheController extends Controller
             if (!is_bool($this->isCancel)) {
                 $this->errors[$this->isCancelName] = $this->messFormat;
                 $this->isCancel = false;
+            }
+        }
+        $this->isLock = $this->paramRequest['ApiData']['IsLock'] ?? null;
+        if ($this->isLock !== null) {
+            if (!is_bool($this->isLock)) {
+                $this->errors[$this->isLockName] = $this->messFormat;
+                $this->isLock = false;
             }
         }
 
