@@ -42,7 +42,7 @@ class PatientTypeAllowRepository
     }
     public function applyPatientTypeIdFilter($query, $id)
     {
-        if ($id !== null) {
+        if ($id != null) {
             $query->where(DB::connection('oracle_his')->raw('his_patient_type_allow.patient_type_id'), $id);
         }
         return $query;
