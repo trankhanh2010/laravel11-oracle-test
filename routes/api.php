@@ -170,6 +170,7 @@ use App\Http\Controllers\Api\CacheControllers\TransactionTypeController;
 use App\Http\Controllers\Api\CacheControllers\TreatmentResultController;
 use App\Http\Controllers\Api\CacheControllers\VaccineTypeController;
 use App\Http\Controllers\Api\NoCacheControllers\AccountBookVViewController;
+use App\Http\Controllers\Api\NoCacheControllers\BangKeVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\CareController;
 // No cache Controller
 use App\Http\Controllers\Api\NoCacheControllers\DebateController;
@@ -1231,4 +1232,7 @@ Route::group([
     Route::apiResource('v1/fund', FundController::class)->only(['index']);
     /// UserAccountBookVView
     Route::apiResource('v1/user-account-book-v-view', UserAccountBookVViewController::class)->only(['index']);
+    /// Bảng kê
+    Route::apiResource('v1/bang-ke-v-view', BangKeVViewController::class)->only(['index']);
+
 });

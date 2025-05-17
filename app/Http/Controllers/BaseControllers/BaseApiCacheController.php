@@ -757,6 +757,8 @@ class BaseApiCacheController extends Controller
     protected $treatmentWithPatientTypeInfoSdoName = 'treatment_with_patient_type_info_sdo';
     protected $testServiceTypeListVView;
     protected $testServiceTypeListVViewName = 'test_service_type_list_v_view';
+    protected $bangKeVView;
+    protected $bangKeVViewName = 'BangKeVView';
     protected $treatmentFeeListVView;
     protected $treatmentFeeListVViewName = 'treatment_fee_list_v_view';
     protected $treatmentExecuteRoomListVView;
