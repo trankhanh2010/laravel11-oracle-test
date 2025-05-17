@@ -58,6 +58,8 @@ class BangKeVViewRepository
                 "request_room_code",
                 "request_room_name",
 
+                "hein_card_number",
+                // 'json_patient_type_alter',
                 "tdl_patient_id",
                 "tdl_treatment_id",
                 "is_specimen",

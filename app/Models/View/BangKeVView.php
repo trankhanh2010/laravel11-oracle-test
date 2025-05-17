@@ -15,4 +15,8 @@ class BangKeVView extends Model
     protected $guarded = [
         'id',
     ];
+    // public function getJsonPatientTypeAlterAttribute($value)
+    // {
+    //     return json_decode($value);
+    // }
 }

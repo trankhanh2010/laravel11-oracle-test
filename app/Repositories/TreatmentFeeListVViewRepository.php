@@ -82,6 +82,7 @@ class TreatmentFeeListVViewRepository
         $query = $this->treatmentFeeListVView;
         return $query
             ->select('xa_v_his_treatment_fee_list.*')
+            ->addSelect('id as key')
             ->addSelect(DB::connection('oracle_his')->raw("
                 CASE 
                     WHEN is_lock_hein = 1 THEN 'red'
