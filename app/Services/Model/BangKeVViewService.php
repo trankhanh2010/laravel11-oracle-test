@@ -22,11 +22,33 @@ class BangKeVViewService
         $this->params = $params;
         return $this;
     }
+    public function handleDataBaseSearch()
+    {
+        try {
+            $data = $this->bangKeVViewRepository->applyJoins();
+            $data = $this->bangKeVViewRepository->applyKeywordFilter($data, $this->params->keyword);
+            $data = $this->bangKeVViewRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
+            $data = $this->bangKeVViewRepository->applyIntructionTimeFromFilter($data, $this->params->intructionTimeFrom);
+            $data = $this->bangKeVViewRepository->applyIntructionTimeToFilter($data, $this->params->intructionTimeTo);
+            $data = $this->bangKeVViewRepository->applyAmountGreaterThan0Filter($data, $this->params->amountGreaterThan0);
+            $count = $data->count();
+            $data = $this->bangKeVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+            $data = $this->bangKeVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+            $data = $this->bangKeVViewRepository->applyGroupByField($data, $this->params->groupBy);
+            return ['data' => $data, 'count' => $count];
+        } catch (\Throwable $e) {
+            return writeAndThrowError(config('params')['db_service']['error']['bang_ke_v_view'], $e);
+        }
+    }
     private function getAllDataFromDatabase()
     {
         $data = $this->bangKeVViewRepository->applyJoins();
         $data = $this->bangKeVViewRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
+        $data = $this->bangKeVViewRepository->applyIntructionTimeFromFilter($data, $this->params->intructionTimeFrom);
+        $data = $this->bangKeVViewRepository->applyIntructionTimeToFilter($data, $this->params->intructionTimeTo);
+        $data = $this->bangKeVViewRepository->applyAmountGreaterThan0Filter($data, $this->params->amountGreaterThan0);
         $count = $data->count();
+        $data = $this->bangKeVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
         $data = $this->bangKeVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
         $data = $this->bangKeVViewRepository->applyGroupByField($data, $this->params->groupBy);
         return ['data' => $data, 'count' => $count];

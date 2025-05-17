@@ -21,6 +21,9 @@ class BangKeVViewDTO
     public $param;
     public $noCache;
     public $groupBy;
+    public $intructionTimeFrom;
+    public $intructionTimeTo;
+    public $amountGreaterThan0;
 
     public function __construct(
         $bangKeVViewName,
@@ -40,6 +43,9 @@ class BangKeVViewDTO
         $param,
         $noCache,
         $groupBy,
+        $intructionTimeFrom,
+        $intructionTimeTo,
+        $amountGreaterThan0,
         )
     {
         $this->bangKeVViewName = $bangKeVViewName;
@@ -59,5 +65,8 @@ class BangKeVViewDTO
         $this->param = $param;
         $this->noCache = $noCache;
         $this->groupBy = $groupBy;
+        $this->intructionTimeFrom = $intructionTimeFrom;
+        $this->intructionTimeTo = $intructionTimeTo;
+        $this->amountGreaterThan0 = $amountGreaterThan0;
     }
 }

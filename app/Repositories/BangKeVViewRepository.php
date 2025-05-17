@@ -57,7 +57,7 @@ class BangKeVViewRepository
                 "share_count",
                 "package_code",
                 "package_name",
-                "tdl_service_description",
+                "description",
                 "request_department_code",
                 "request_department_name",
                 "request_room_code",
@@ -86,10 +86,28 @@ class BangKeVViewRepository
     }
     public function applyKeywordFilter($query, $keyword)
     {
-        return $query->where(function ($query) use ($keyword) {
-            $query->where(('bang_ke_v_view_code'), 'like', $keyword . '%')
-                ->orWhere(('bang_ke_v_view_name'), 'like', $keyword . '%');
-        });
+        if ($keyword != null) {
+            return $query->where(function ($query) use ($keyword) {
+                $query->whereRaw("
+                        REGEXP_LIKE(
+                            NLSSORT(tdl_service_name, 'NLS_SORT=GENERIC_M_AI'),
+                            NLSSORT(?, 'NLS_SORT=GENERIC_M_AI'),
+                            'i'
+                        )
+                    ", [$keyword])
+                    ->orWhereRaw("
+                        REGEXP_LIKE(
+                            NLSSORT(service_type_name, 'NLS_SORT=GENERIC_M_AI'),
+                            NLSSORT(?, 'NLS_SORT=GENERIC_M_AI'),
+                            'i'
+                        )
+                    ", [$keyword])
+                    ->orWhere(('tdl_service_code'), 'like', '%' . $keyword . '%')
+                    ->orWhere(('service_req_code'), 'like', '%' . $keyword . '%')
+                    ->orWhere(('tdl_hein_service_bhyt_code'), 'like', '%' . $keyword . '%');
+            });
+        }
+        return $query;
     }
     public function applyIsActiveFilter($query, $isActive)
     {
@@ -112,6 +130,35 @@ class BangKeVViewRepository
     {
         if ($id !== null) {
             $query->where(('tdl_treatment_id'), $id);
+        }
+        return $query;
+    }
+    public function applyIntructionTimeFromFilter($query, $param)
+    {
+        if ($param !== null) {
+            return $query->where(function ($query) use ($param) {
+                $query->where('intruction_time', '>=', $param);
+            });
+        }
+        return $query;
+    }
+    public function applyIntructionTimeToFilter($query, $param)
+    {
+        if ($param !== null) {
+            return $query->where(function ($query) use ($param) {
+                $query->where('intruction_time', '<=', $param);
+            });
+        }
+        return $query;
+    }
+    public function applyAmountGreaterThan0Filter($query, $param)
+    {
+        if ($param !== null) {
+            if($param){
+                return $query->where(function ($query) use ($param) {
+                    $query->where('amount', '>', 0);
+                });
+            }
         }
         return $query;
     }

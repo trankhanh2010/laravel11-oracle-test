@@ -44,6 +44,9 @@ class BangKeVViewController extends BaseApiCacheController
             $this->param,
             $this->noCache,
             $this->groupBy,
+            $this->intructionTimeFrom,
+            $this->intructionTimeTo,
+            $this->amountGreaterThan0,
         );
         $this->bangKeVViewService->withParams($this->bangKeVViewDTO);
     }
@@ -52,7 +55,11 @@ class BangKeVViewController extends BaseApiCacheController
         if ($this->checkParam()) {
             return $this->checkParam();
         }
-        $data = $this->bangKeVViewService->handleDataBaseGetAll();
+        if($this->keyword){
+            $data = $this->bangKeVViewService->handleDataBaseSearch();
+        }else{
+            $data = $this->bangKeVViewService->handleDataBaseGetAll();
+        }
         $paramReturn = [
             $this->getAllName => $this->getAll,
             $this->startName => $this->getAll ? null : $this->start,

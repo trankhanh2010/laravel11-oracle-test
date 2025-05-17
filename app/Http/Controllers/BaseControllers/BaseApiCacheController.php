@@ -115,6 +115,8 @@ class BaseApiCacheController extends Controller
     protected $machineIdsString;
     protected $roomIds;
     protected $roomIdsName = 'RoomIds';
+    protected $amountGreaterThan0;
+    protected $amountGreaterThan0Name = 'AmountGreaterThan0';
     protected $serviceFollowIds;
     protected $serviceFollowIdsName = 'ServiceFollowIds';
     protected $bedIds;
@@ -1274,7 +1276,13 @@ class BaseApiCacheController extends Controller
                 $this->isLock = false;
             }
         }
-
+        $this->amountGreaterThan0 = $this->paramRequest['ApiData']['AmountGreaterThan0'] ?? null;
+        if ($this->amountGreaterThan0 !== null) {
+            if (!is_bool($this->amountGreaterThan0)) {
+                $this->errors[$this->amountGreaterThan0Name] = $this->messFormat;
+                $this->amountGreaterThan0 = false;
+            }
+        }
         $this->isDelete = $this->paramRequest['ApiData']['IsDelete'] ?? null;
         if ($this->isDelete !== null) {
             if (!in_array($this->isDelete, [0, 1])) {
