@@ -253,6 +253,9 @@ class UpdateBangKeRequest extends FormRequest
                                 if ($dataBangKeVView->da_thanh_toan) {
                                     $validator->errors()->add('is_no_execute', '(' . $dataBangKeVView->service_req_code . ')' . ' - ' . $dataBangKeVView->tdl_service_name   . ' dịch vụ đã được thanh toán!');
                                 }
+                                if ($dataBangKeVView->service_req_stt_code != '01') {
+                                    $validator->errors()->add('is_no_execute', '(' . $dataBangKeVView->service_req_code . ')' . ' - ' . $dataBangKeVView->tdl_service_name   . ' dịch vụ có trạng thái khác trạng thái chưa xử lý!');
+                                }
                             }
                             // Không hưởng BHYT
                             if ($this->is_not_use_bhyt) {
