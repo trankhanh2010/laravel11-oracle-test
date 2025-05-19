@@ -54,6 +54,27 @@ class PatientTypeAllowRepository
         }
         return $query;
     }
+    public function applyTabFilter($query, $param)
+    {
+        switch ($param) {
+            case 'DTTT':
+                $query->where(function ($query) {
+                    $query->where(('patient_type_allow.IS_NOT_USE_FOR_PAYMENT'), 0)
+                        ->orWhereNull(('patient_type_allow.IS_NOT_USE_FOR_PAYMENT'));
+                });
+                break;
+            case 'phuThu':
+                $query->where(function ($query) {
+                    $query->where(('patient_type_allow.IS_NOT_USE_FOR_PAYMENT'), 0)
+                        ->orWhereNull(('patient_type_allow.IS_NOT_USE_FOR_PAYMENT'));
+                });
+                $query->where('patient_type_allow.IS_ADDITION', 1);
+                break;
+            default:
+                break;
+        }
+        return $query;
+    }
     public function applyOrdering($query, $orderBy, $orderByJoin)
     {
         if ($orderBy != null) {

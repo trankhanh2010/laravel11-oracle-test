@@ -11,8 +11,9 @@ class SereServ extends Model
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
     protected $table = 'his_sere_serv';
-    protected $fillable = [
-
+    public $timestamps = false;
+    protected $guarded = [
+        'id',
     ];
     public function getSearchCodeAttribute()
     {

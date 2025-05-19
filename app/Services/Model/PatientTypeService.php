@@ -30,6 +30,7 @@ class PatientTypeService
             $data = $this->patientTypeRepository->applyWith($data);
             $data = $this->patientTypeRepository->applyKeywordFilter($data, $this->params->keyword);
             $data = $this->patientTypeRepository->applyIsActiveFilter($data, $this->params->isActive);
+            $data = $this->patientTypeRepository->applyTabFilter($data, $this->params->tab);
             $count = $data->count();
             $data = $this->patientTypeRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
             $data = $this->patientTypeRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
@@ -43,6 +44,7 @@ class PatientTypeService
         $data = $this->patientTypeRepository->applyJoins();
         $data = $this->patientTypeRepository->applyWith($data);
         $data = $this->patientTypeRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $this->patientTypeRepository->applyTabFilter($data, $this->params->tab);
         $count = $data->count();
         $data = $this->patientTypeRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
         $data = $this->patientTypeRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);

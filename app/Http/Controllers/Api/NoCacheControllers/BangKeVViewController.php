@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\NoCacheControllers;
 
 use App\DTOs\BangKeVViewDTO;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
+use App\Http\Requests\BangKe\UpdateBangKeRequest;
 use App\Models\View\BangKeVView;
 use App\Services\Model\BangKeVViewService;
 use Illuminate\Http\Request;
@@ -47,6 +48,7 @@ class BangKeVViewController extends BaseApiCacheController
             $this->intructionTimeFrom,
             $this->intructionTimeTo,
             $this->amountGreaterThan0,
+            $this->tab,
         );
         $this->bangKeVViewService->withParams($this->bangKeVViewDTO);
     }
@@ -70,6 +72,11 @@ class BangKeVViewController extends BaseApiCacheController
             $this->orderByName => $this->orderByRequest
         ];
         return returnDataSuccess($paramReturn, $data['data']);
+    }
+
+    public function update(UpdateBangKeRequest $request, $id)
+    {
+        return $this->bangKeVViewService->updateBangKe($id, $request);
     }
 
 }

@@ -42,6 +42,23 @@ class PatientTypeRepository
         }
         return $query;
     }
+    public function applyTabFilter($query, $param)
+    {
+        switch ($param) {
+            case 'DTTT':
+                $query->where(function ($query) {
+                    $query->where(('IS_NOT_USE_FOR_PAYMENT'), 0)
+                        ->orWhereNull(('IS_NOT_USE_FOR_PAYMENT'));
+                });
+                break;
+            case 'phuThu':
+                $query->where('IS_ADDITION', 1);
+                break;
+            default:
+                break;
+        }
+        return $query;
+    }
     public function applyOrdering($query, $orderBy, $orderByJoin)
     {
         if ($orderBy != null) {

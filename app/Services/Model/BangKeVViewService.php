@@ -6,16 +6,22 @@ use App\DTOs\BangKeVViewDTO;
 use App\Events\Cache\DeleteCache;
 use App\Events\Elastic\BangKeVView\InsertBangKeVViewIndex;
 use App\Events\Elastic\DeleteIndex;
+use App\Models\HIS\SereServ;
 use Illuminate\Support\Facades\Cache;
 use App\Repositories\BangKeVViewRepository;
 
 class BangKeVViewService 
 {
     protected $bangKeVViewRepository;
+    protected $sereServ;
     protected $params;
-    public function __construct(BangKeVViewRepository $bangKeVViewRepository)
+    public function __construct(
+        BangKeVViewRepository $bangKeVViewRepository,
+        SereServ $sereServ,
+        )
     {
         $this->bangKeVViewRepository = $bangKeVViewRepository;
+        $this->sereServ = $sereServ;
     }
     public function withParams(BangKeVViewDTO $params)
     {
@@ -75,6 +81,22 @@ class BangKeVViewService
             return $this->getDataById($id);
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['bang_ke_v_view'], $e);
+        }
+    }
+
+    public function updateBangKe($id, $request)
+    {
+        foreach($request->ids as $id){
+            $data = $this->sereServ->find($id);
+            if ($data == null) {
+                return returnNotRecord($id);
+            }
+            try {
+                $data = $this->bangKeVViewRepository->updateBangKe($request, $data, $this->params->time, $this->params->appModifier);
+                // return returnDataUpdateSuccess($data);
+            } catch (\Throwable $e) {
+                return writeAndThrowError(config('params')['db_service']['error']['bang_ke_v_view'], $e);
+            }
         }
     }
 }

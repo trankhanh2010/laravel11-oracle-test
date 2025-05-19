@@ -51,6 +51,7 @@ class PatientTypeAllowController extends BaseApiCacheController
             $this->param,
             $this->noCache,
             $this->patientTypeId,
+            $this->tab,
         );
         $this->patientTypeAllowService->withParams($this->patientTypeAllowDTO);
     }

@@ -64,6 +64,8 @@ class BangKeVViewRepository
                 "request_room_name",
 
                 // 'json_patient_type_alter',
+                'service_id',
+                "other_pay_source_id",
                 "tdl_patient_id",
                 "tdl_treatment_id",
                 "is_specimen",
@@ -250,5 +252,30 @@ class BangKeVViewRepository
     public function getById($id)
     {
         return $this->bangKeVView->find($id);
+    }
+
+    public function updateBangKe($request, $data, $time, $appModifier){
+        $data->update([
+            'modify_time' => now()->format('YmdHis'),
+            'modifier' => get_loginname_with_token($request->bearerToken(), $time),
+            'app_modifier' => $appModifier,
+            'patient_type_id' => $request->patient_type_id,
+            'primary_patient_type_id' => $request->primary_patient_type_id,
+            'is_out_parent_fee' => $request->is_out_parent_fee,
+            'is_expend' => $request->is_expend,
+            'expend_type_id' => $request->expend_type_id,
+            'is_no_execute' => $request->is_no_execute,
+            'is_not_use_bhyt' => $request->is_not_use_bhyt,
+            'other_pay_source_id' => $request->other_pay_source_id,
+
+            'primary_price' => $request->primary_price,
+            'limit_price' => $request->limit_price,
+            'price' => $request->price,
+            'original_price' => $request->original_price,
+            'hein_price' => $request->hein_price,
+            'hein_limit_price' => $request->hein_limit_price,
+
+        ]);
+        return $data;
     }
 }

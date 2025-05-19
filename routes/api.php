@@ -1233,6 +1233,6 @@ Route::group([
     /// UserAccountBookVView
     Route::apiResource('v1/user-account-book-v-view', UserAccountBookVViewController::class)->only(['index']);
     /// Bảng kê
-    Route::apiResource('v1/bang-ke-v-view', BangKeVViewController::class)->only(['index']);
+    Route::apiResource('v1/bang-ke-v-view', BangKeVViewController::class)->only(['index', 'update']);
 
 });
