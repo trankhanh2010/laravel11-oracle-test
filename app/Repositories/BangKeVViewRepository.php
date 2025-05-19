@@ -2,6 +2,7 @@
 namespace App\Repositories;
 
 use App\Jobs\ElasticSearch\Index\ProcessElasticIndexingJob;
+use App\Models\HIS\SereServ;
 use App\Models\View\BangKeVView;
 use App\Models\View\TreatmentFeeDetailVView;
 use Illuminate\Support\Facades\DB;
@@ -10,9 +11,14 @@ use Illuminate\Support\Str;
 class BangKeVViewRepository
 {
     protected $bangKeVView;
-    public function __construct(BangKeVView $bangKeVView)
+    protected $sereServ;
+    public function __construct(
+        BangKeVView $bangKeVView,
+        SereServ $sereServ,
+        )
     {
         $this->bangKeVView = $bangKeVView;
+        $this->sereServ = $sereServ;
     }
 
     public function applyJoins()
@@ -277,5 +283,28 @@ class BangKeVViewRepository
 
         ]);
         return $data;
+    }
+    public function updateBangKeIds($request, $ids, $time, $appModifier){
+        $this->sereServ->whereIn('id', $ids)->update([
+            'modify_time' => now()->format('YmdHis'),
+            'modifier' => get_loginname_with_token($request->bearerToken(), $time),
+            'app_modifier' => $appModifier,
+            'patient_type_id' => $request->patient_type_id,
+            'primary_patient_type_id' => $request->primary_patient_type_id,
+            'is_out_parent_fee' => $request->is_out_parent_fee,
+            'is_expend' => $request->is_expend,
+            'expend_type_id' => $request->expend_type_id,
+            'is_no_execute' => $request->is_no_execute,
+            'is_not_use_bhyt' => $request->is_not_use_bhyt,
+            'other_pay_source_id' => $request->other_pay_source_id,
+
+            'primary_price' => $request->primary_price,
+            'limit_price' => $request->limit_price,
+            'price' => $request->price,
+            'original_price' => $request->original_price,
+            'hein_price' => $request->hein_price,
+            'hein_limit_price' => $request->hein_limit_price,
+
+        ]);
     }
 }

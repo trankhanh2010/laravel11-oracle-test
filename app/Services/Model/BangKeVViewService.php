@@ -10,7 +10,7 @@ use App\Models\HIS\SereServ;
 use Illuminate\Support\Facades\Cache;
 use App\Repositories\BangKeVViewRepository;
 
-class BangKeVViewService 
+class BangKeVViewService
 {
     protected $bangKeVViewRepository;
     protected $sereServ;
@@ -18,8 +18,7 @@ class BangKeVViewService
     public function __construct(
         BangKeVViewRepository $bangKeVViewRepository,
         SereServ $sereServ,
-        )
-    {
+    ) {
         $this->bangKeVViewRepository = $bangKeVViewRepository;
         $this->sereServ = $sereServ;
     }
@@ -62,9 +61,9 @@ class BangKeVViewService
     private function getDataById($id)
     {
         $data = $this->bangKeVViewRepository->applyJoins()
-        ->where('id', $id);
-    $data = $this->bangKeVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-    $data = $data->first();
+            ->where('id', $id);
+        $data = $this->bangKeVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $data->first();
         return $data;
     }
     public function handleDataBaseGetAll()
@@ -86,17 +85,12 @@ class BangKeVViewService
 
     public function updateBangKe($id, $request)
     {
-        foreach($request->ids as $id){
-            $data = $this->sereServ->find($id);
-            if ($data == null) {
-                return returnNotRecord($id);
-            }
-            try {
-                $data = $this->bangKeVViewRepository->updateBangKe($request, $data, $this->params->time, $this->params->appModifier);
-                // return returnDataUpdateSuccess($data);
-            } catch (\Throwable $e) {
-                return writeAndThrowError(config('params')['db_service']['error']['bang_ke_v_view'], $e);
-            }
+
+        try {
+            $data = $this->bangKeVViewRepository->updateBangKeIds($request, $request->ids, $this->params->time, $this->params->appModifier);
+            // return returnDataUpdateSuccess($data);
+        } catch (\Throwable $e) {
+            return writeAndThrowError(config('params')['db_service']['error']['bang_ke_v_view'], $e);
         }
     }
 }
