@@ -166,6 +166,9 @@ class UpdateBangKeRequest extends FormRequest
                                         $validator->errors()->add('patient_type_id',  '(' . $dataBangKeVView->service_req_code . ')' . ' - ' . $dataBangKeVView->tdl_service_name   . ' không tìm thấy thông tin hợp đồng khám sức khỏe vì vậy không thể chọn đối tượng thanh toán là Khám sức khỏe!');
                                     }
                                 }
+                                if ($dataBangKeVView->da_thanh_toan) {
+                                    $validator->errors()->add('is_out_parent_fee', '(' . $dataBangKeVView->service_req_code . ')' . ' - ' . $dataBangKeVView->tdl_service_name   . ' dịch vụ đã được thanh toán!');
+                                }
                                 $activePrice = $this->servicePatyRepository->getActivePriceByServieIdPatientTypeId($dataBangKeVView->service_id, $patient_type_id, $dataTreatment->in_time)->price ?? null;
                                 if ($activePrice === null) {
                                     $validator->errors()->add('patient_type_id',  '(' . $dataBangKeVView->service_req_code . ')' . ' - ' . $dataBangKeVView->tdl_service_name   . ' không tìm thấy chính sách giá cho đối tượng thanh toán!');
@@ -186,6 +189,9 @@ class UpdateBangKeRequest extends FormRequest
                                 if ($primary_patient_type_id) {
                                     if ($patient_type_id == $primary_patient_type_id) {
                                         $validator->errors()->add('primary_patient_type_id',  '(' . $dataBangKeVView->service_req_code . ')' . ' - ' . $dataBangKeVView->tdl_service_name   . ' đối tượng thanh toán và đối tượng phụ thu không được trùng nhau!');
+                                    }
+                                    if ($dataBangKeVView->da_thanh_toan) {
+                                        $validator->errors()->add('is_out_parent_fee', '(' . $dataBangKeVView->service_req_code . ')' . ' - ' . $dataBangKeVView->tdl_service_name   . ' dịch vụ đã được thanh toán!');
                                     }
                                     $activePrimaryPrice = $this->servicePatyRepository->getActivePriceByServieIdPatientTypeId($dataBangKeVView->service_id, $primary_patient_type_id, $dataTreatment->in_time)->price ?? null;
                                     if ($activePrimaryPrice === null) {
