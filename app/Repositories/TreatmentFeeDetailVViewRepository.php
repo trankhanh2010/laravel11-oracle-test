@@ -19,11 +19,15 @@ class TreatmentFeeDetailVViewRepository
             ->select(
                 'xa_v_his_treatment_fee_detail.*'
             )
+            ->addSelect(DB::connection('oracle_his')->raw('(tong_so_phim - (tong_so_phim_x_quang + tong_so_phim_mri)) as tong_so_phim_ct')) // ct = tổng - x-quang - mri
+
             ->addSelect(DB::connection('oracle_his')->raw('(total_deposit_amount - total_repay_amount - total_bill_transfer_amount - total_bill_fund - total_bill_exemption + total_bill_amount + locking_amount) as da_thu')) // Đã thu là tiền thực thu từ bệnh nhân nên mới trừ quỹ ra, trừ ra chiết khấu
             ->addSelect(DB::connection('oracle_his')->raw('(total_deposit_amount - total_service_deposit_amount) as tam_ung'))
             ->addSelect(DB::connection('oracle_his')->raw('(total_patient_price - (total_deposit_amount - total_repay_amount - total_bill_transfer_amount + total_bill_amount + locking_amount)) as fee'))
             ->addSelect(DB::connection('oracle_his')->raw('((total_deposit_amount - total_repay_amount - total_bill_transfer_amount - total_bill_fund - total_bill_exemption + total_bill_amount + locking_amount) - total_patient_price - locking_amount - total_bill_fund + total_bill_exemption) as tien_hoan_ung_toi_da')) // Tiền tối đa hiện trên form lúc hoàn ứng max tối đa = Tiền đã thu - Tiền bệnh nhân phải thanh toán - Tiền đã nộp (tạm khóa) + Tiền thu quỹ + Tiền chiết khấu
             ->addSelect(DB::connection('oracle_his')->raw('((total_deposit_amount - total_service_deposit_amount) + total_service_deposit_amount - total_repay_amount) as hien_du')) // hiện dư = (tạm ứng + tạm ứng dv - hoàn ứng)
+            ->addSelect(DB::connection('oracle_his')->raw('(total_deposit_amount - total_repay_amount - total_bill_transfer_amount + total_bill_amount) as da_thu_bang_ke')) // đã thu BN 
+            ->addSelect(DB::connection('oracle_his')->raw('(total_patient_price - (total_deposit_amount - total_repay_amount - total_bill_transfer_amount + total_bill_amount)) as can_thu_them_bang_ke')) // = tiền phải thu BN - đã thu BN
             ;
     }
     public function applyKeywordFilter($query, $keyword)
