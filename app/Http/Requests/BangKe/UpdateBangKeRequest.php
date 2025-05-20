@@ -28,6 +28,8 @@ class UpdateBangKeRequest extends FormRequest
     protected $service;
     protected $patientType;
     protected $patientTypeBHYTId;
+    protected $patientTypeKSKId;
+
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -55,6 +57,14 @@ class UpdateBangKeRequest extends FormRequest
         $cacheKey = 'patient_type_bhyt_id';
         $this->patientTypeBHYTId = Cache::remember($cacheKey, now()->addMinutes(10080), function () {
             $data = $this->patientType->where('patient_type_code', '01')->get();
+            return $data->value('id');
+        });
+        // Lưu key vào Redis Set để dễ xóa sau này
+        Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+
+        $cacheKey = 'patient_type_ksk_id';
+        $this->patientTypeKSKId = Cache::remember($cacheKey, now()->addMinutes(10080), function () {
+            $data = $this->patientType->where('patient_type_code', '04')->get();
             return $data->value('id');
         });
         // Lưu key vào Redis Set để dễ xóa sau này
@@ -109,7 +119,7 @@ class UpdateBangKeRequest extends FormRequest
                 'ids' => $ids,
             ]);
 
-            if(is_array($ids)){
+            if (is_array($ids)) {
                 foreach ($ids as $id) {
                     $dataBangKeVView = $this->bangKeVView->find($id);
                     if (!$dataBangKeVView) {
@@ -117,100 +127,92 @@ class UpdateBangKeRequest extends FormRequest
                     } else {
                         $dataTreatment = $this->treatment->find($dataBangKeVView->tdl_treatment_id);
 
-                        // Lấy data từ DB 
-                        if($this->patient_type_id === null){
-                            $this->merge([
-                                'patient_type_id' => $dataBangKeVView->patient_type_id,
-                            ]);
-                        }
-                        if($this->primary_patient_type_id === null){
-                            $this->merge([
-                                'primary_patient_type_id' => $dataBangKeVView->primary_patient_type_id,
-                            ]);
-                        }
-                        if($this->is_out_parent_fee === null){
-                            $this->merge([
-                                'is_out_parent_fee' => $dataBangKeVView->is_out_parent_fee,
-                            ]);
-                        }
-                        if($this->is_expend === null){
-                            $this->merge([
-                                'is_expend' => $dataBangKeVView->is_expend,
-                            ]);
-                        }
-                        if($this->expend_type_id === null){
-                            $this->merge([
-                                'expend_type_id' => $dataBangKeVView->expend_type_id,
-                            ]);
-                        }
-                        if($this->is_no_execute === null){
-                            $this->merge([
-                                'is_no_execute' => $dataBangKeVView->is_no_execute,
-                            ]);
-                        }
-                        if($this->is_not_use_bhyt === null){
-                            $this->merge([
-                                'is_not_use_bhyt' => $dataBangKeVView->is_not_use_bhyt,
-                            ]);
-                        }
-                        if($this->other_pay_source_id === null){
-                            $this->merge([
-                                'other_pay_source_id' => $dataBangKeVView->other_pay_source_id,
-                            ]);
-                        }
-
-
-
                         if (!$dataTreatment) {
                             $validator->errors()->add('id', 'Hồ sơ không tồn tại!');
                         } else {
+                            // Lấy data từ DB 
+                            $patient_type_id = $this->has('patient_type_id') ? $this->patient_type_id : $dataBangKeVView->patient_type_id;
+                            $primary_patient_type_id = $this->has('primary_patient_type_id') ? $this->primary_patient_type_id : $dataBangKeVView->primary_patient_type_id;
+                            $is_out_parent_fee = $this->has('is_out_parent_fee') ? $this->is_out_parent_fee : $dataBangKeVView->is_out_parent_fee;
+                            $is_expend = $this->has('is_expend') ? $this->is_expend : $dataBangKeVView->is_expend;
+                            $expend_type_id = $this->has('expend_type_id') ? $this->expend_type_id : $dataBangKeVView->expend_type_id;
+                            $is_no_execute = $this->has('is_no_execute') ? $this->is_no_execute : $dataBangKeVView->is_no_execute;
+                            $is_not_use_bhyt = $this->has('is_not_use_bhyt') ? $this->is_not_use_bhyt : $dataBangKeVView->is_not_use_bhyt;
+                            $other_pay_source_id = $this->has('other_pay_source_id') ? $this->other_pay_source_id : $dataBangKeVView->other_pay_source_id;
+                            // Lưu tạm data update vào mảng 
+                            $patientTypeIds[$id] = $patient_type_id;
+                            $primaryPatientTypeIds[$id] = $primary_patient_type_id;
+                            $isOutParentFees[$id] = $is_out_parent_fee;
+                            $isExpends[$id] = $is_expend;
+                            $expendTypeIds[$id] = $expend_type_id;
+                            $isNoExecutes[$id] = $is_no_execute;
+                            $isNotUseBhyts[$id] = $is_not_use_bhyt;
+                            $otherPaySourceIds[$id] = $other_pay_source_id;
+
+
                             if ($dataTreatment->is_active == 0) {
                                 $validator->errors()->add('id', 'Hồ sơ đã bị khóa viện phí!');
                             }
                             if ($dataTreatment->is_hein_approval) {
                                 $validator->errors()->add('id', 'Hồ sơ đã duyệt BHYT!');
                             }
-    
+
                             // DTTT
                             // Lấy ra giá của chính sách 
-                            if ($this->patient_type_id) {
-                                $activePrice = $this->servicePatyRepository->getActivePriceByServieIdPatientTypeId($dataBangKeVView->service_id, $this->patient_type_id, $dataTreatment->in_time)->price ?? null;
+                            if ($patient_type_id) {
+                                // Check khi chọn đối tượng thanh toán là khám sức khỏe
+                                if ($patient_type_id == $this->patientTypeKSKId) {
+                                    if ($dataTreatment->tdl_ksk_contract_id == null) {
+                                        $validator->errors()->add('patient_type_id',  '(' . $dataBangKeVView->service_req_code . ')' . ' - ' . $dataBangKeVView->tdl_service_name   . ' không tìm thấy thông tin hợp đồng khám sức khỏe vì vậy không thể chọn đối tượng thanh toán là Khám sức khỏe!');
+                                    }
+                                }
+                                $activePrice = $this->servicePatyRepository->getActivePriceByServieIdPatientTypeId($dataBangKeVView->service_id, $patient_type_id, $dataTreatment->in_time)->price ?? null;
                                 if ($activePrice === null) {
-                                    $validator->errors()->add('patient_type_id', 'Không tìm thấy chính sách giá cho đối tượng thanh toán!');
+                                    $validator->errors()->add('patient_type_id',  '(' . $dataBangKeVView->service_req_code . ')' . ' - ' . $dataBangKeVView->tdl_service_name   . ' không tìm thấy chính sách giá cho đối tượng thanh toán!');
                                 } else {
+                                    $primaryPrices[$id] = $activePrice;
+                                    $prices[$id] = $activePrice;
+                                    $originalPrices[$id] = $activePrice;
+
                                     $this->merge([
-                                        'primary_price' => $activePrice,
-                                        'price' => $activePrice,
-                                        'original_price' => $activePrice,
+                                        'primary_price' => $primaryPrices,
+                                        'price' => $prices,
+                                        'original_price' => $originalPrices,
                                     ]);
                                 }
-    
+
                                 // Phụ thu
                                 // Lấy ra giá của chính sách 
-                                if ($this->primary_patient_type_id) {
-                                    if ($this->patient_type_id == $this->primary_patient_type_id) {
-                                        $validator->errors()->add('primary_patient_type_id', 'Đối tượng thanh toán và đối tượng phụ thu không được trùng nhau!');
+                                if ($primary_patient_type_id) {
+                                    if ($patient_type_id == $primary_patient_type_id) {
+                                        $validator->errors()->add('primary_patient_type_id',  '(' . $dataBangKeVView->service_req_code . ')' . ' - ' . $dataBangKeVView->tdl_service_name   . ' đối tượng thanh toán và đối tượng phụ thu không được trùng nhau!');
                                     }
-                                    $activePrimaryPrice = $this->servicePatyRepository->getActivePriceByServieIdPatientTypeId($dataBangKeVView->service_id, $this->primary_patient_type_id, $dataTreatment->in_time)->price ?? null;
+                                    $activePrimaryPrice = $this->servicePatyRepository->getActivePriceByServieIdPatientTypeId($dataBangKeVView->service_id, $primary_patient_type_id, $dataTreatment->in_time)->price ?? null;
                                     if ($activePrimaryPrice === null) {
-                                        $validator->errors()->add('primary_patient_type_id', 'Không tìm thấy chính sách giá cho đối tượng phụ thu!');
+                                        $validator->errors()->add('primary_patient_type_id',  '(' . $dataBangKeVView->service_req_code . ')' . ' - ' . $dataBangKeVView->tdl_service_name   . ' không tìm thấy chính sách giá cho đối tượng phụ thu!');
                                     } else {
                                         if ($activePrimaryPrice <= $activePrice) {
-                                            $validator->errors()->add('primary_patient_type_id', 'Giá của đối tượng phụ thu cần lớn hơn giá đối tượng thanh toán!');
+                                            $validator->errors()->add('primary_patient_type_id',  '(' . $dataBangKeVView->service_req_code . ')' . ' - ' . $dataBangKeVView->tdl_service_name   . ' giá của đối tượng phụ thu cần lớn hơn giá đối tượng thanh toán!');
                                         }
+                                        $limitPrices[$id] = $activePrice;
+                                        $prices[$id] = $activePrimaryPrice;
+                                        $primaryPrices[$id] = $activePrimaryPrice;
+                                        $heinPrices[$id] = $activePrice;
+                                        $heinLimitPrices[$id] = $activePrice;
+
                                         $this->merge([
-                                            'limit_price' => $activePrice, // Nếu có chọn phụ thu thì mới có
-                                            'hein_price' => $activePrice, // Nếu có chọn phụ thu thì mới có
-                                            'hein_limit_price' => $activePrice, // Nếu có chọn phụ thu thì mới có
-                                            'primary_price' => $activePrimaryPrice,
-                                            'price' => $activePrimaryPrice,
+                                            'price' => $prices,
+                                            'primary_price' => $primaryPrices,
+                                            'limit_price' => $limitPrices, 
+                                            'hein_price' => $heinPrices, 
+                                            'hein_limit_price' => $heinLimitPrices,
                                         ]);
                                     }
                                 }
                             }
-    
+
                             // CP ngoài gói
-                            if ($this->is_out_parent_fee) {
+                            if ($is_out_parent_fee) {
                                 $existsDVDinhKem = $this->sereServ->where('parent_id', $id)->exists();
                                 if (!$existsDVDinhKem) {
                                     $validator->errors()->add('is_out_parent_fee', '(' . $dataBangKeVView->service_req_code . ')' . ' - ' . $dataBangKeVView->tdl_service_name   . ' dịch vụ không phải là dịch vụ đính kèm!');
@@ -223,7 +225,7 @@ class UpdateBangKeRequest extends FormRequest
                                 }
                             }
                             // Hao phí
-                            if ($this->is_expend) {
+                            if ($is_expend) {
                                 $dataService = $this->service->find($dataBangKeVView->service_id);
                                 if ($dataBangKeVView->da_tam_ung) {
                                     $validator->errors()->add('is_expend', '(' . $dataBangKeVView->service_req_code . ')' . ' - ' . $dataBangKeVView->tdl_service_name   . ' dịch vụ đã được tạm ứng!');
@@ -235,18 +237,18 @@ class UpdateBangKeRequest extends FormRequest
                                     $validator->errors()->add('is_expend', '(' . $dataBangKeVView->service_req_code . ')' . ' - ' . $dataBangKeVView->tdl_service_name   . ' không có quyền thực hiện chức năng này!');
                                 }
                             } else {
-                                if ($this->expend_type_id && $dataBangKeVView->expend_type_id) {
+                                if ($expend_type_id && $dataBangKeVView->expend_type_id) {
                                     $validator->errors()->add('expend_type_id', '(' . $dataBangKeVView->service_req_code . ')' . ' - ' . $dataBangKeVView->tdl_service_name   . ' cần thực hiện thao tác bỏ hao phí tiền giường trước!');
                                 }
                             }
                             // Hao phí tiền giường
-                            if ($this->expend_type_id) {
+                            if ($expend_type_id) {
                                 if (!$this->is_expend && !$dataBangKeVView->is_expend) {
                                     $validator->errors()->add('expend_type_id', '(' . $dataBangKeVView->service_req_code . ')' . ' - ' . $dataBangKeVView->tdl_service_name   . ' không phải là hao phí!');
                                 }
                             }
                             // Không thực hiện
-                            if ($this->is_no_execute) {
+                            if ($is_no_execute) {
                                 if ($dataBangKeVView->da_tam_ung) {
                                     $validator->errors()->add('is_no_execute', '(' . $dataBangKeVView->service_req_code . ')' . ' - ' . $dataBangKeVView->tdl_service_name   . ' dịch vụ đã được tạm ứng!');
                                 }
@@ -258,7 +260,7 @@ class UpdateBangKeRequest extends FormRequest
                                 }
                             }
                             // Không hưởng BHYT
-                            if ($this->is_not_use_bhyt) {
+                            if ($is_not_use_bhyt) {
                                 if ($dataBangKeVView->da_thanh_toan) {
                                     $validator->errors()->add('is_not_use_bhyt', '(' . $dataBangKeVView->service_req_code . ')' . ' - ' . $dataBangKeVView->tdl_service_name   . ' dịch vụ đã được thanh toán!');
                                 }
@@ -267,7 +269,7 @@ class UpdateBangKeRequest extends FormRequest
                                 }
                             }
                             // Nguồn thanh toán khác
-                            if ($this->other_pay_source_id) {
+                            if ($other_pay_source_id) {
                                 if ($dataBangKeVView->da_thanh_toan) {
                                     $validator->errors()->add('other_pay_source_id', '(' . $dataBangKeVView->service_req_code . ')' . ' - ' . $dataBangKeVView->tdl_service_name   . ' dịch vụ đã được thanh toán!');
                                 }
@@ -275,8 +277,20 @@ class UpdateBangKeRequest extends FormRequest
                         }
                     }
                 }
-            }else{
-                $validator->errors()->add('id', 'Danh sách dịch vụ không hợp lệ!');  
+
+            // Cập nhật lại request sau khi đã lặp qua các id
+            $this->merge([
+                'patient_type_id' => $patientTypeIds,
+                'primary_patient_type_id' => $primaryPatientTypeIds,
+                'is_out_parent_fee' => $isOutParentFees,
+                'is_expend' => $isExpends,
+                'expend_type_id' => $expendTypeIds,
+                'is_no_execute' => $isNoExecutes,
+                'is_not_use_bhyt' => $isNotUseBhyts,
+                'other_pay_source_id' => $otherPaySourceIds,
+            ]);
+            } else {
+                $validator->errors()->add('id', 'Danh sách dịch vụ không hợp lệ!');
             }
         });
     }

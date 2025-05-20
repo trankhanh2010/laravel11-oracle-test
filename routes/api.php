@@ -1234,5 +1234,6 @@ Route::group([
     Route::apiResource('v1/user-account-book-v-view', UserAccountBookVViewController::class)->only(['index']);
     /// Bảng kê
     Route::apiResource('v1/bang-ke-v-view', BangKeVViewController::class)->only(['index', 'update']);
-
+    /// Bảng kê biểu mẫu
+    Route::get('v1/bang-ke-bieu-mau', [BangKeVViewController::class, "handleBieuMau"]);
 });

@@ -73,6 +73,31 @@ class BangKeVViewController extends BaseApiCacheController
         ];
         return returnDataSuccess($paramReturn, $data['data']);
     }
+    public function handleBieuMau()
+    {
+        if ($this->checkParam()) {
+            return $this->checkParam();
+        }
+        switch ($this->tab) {
+            case 'bangKeNgoaiTruHaoPhi':
+                $data = $this->bangKeVViewService->bangKeNgoaiTruHaoPhi();
+                break;
+        
+            default:
+            return returnDataSuccess([], []);
+        }
+        
+        $paramReturn = [
+            $this->getAllName => $this->getAll,
+            $this->startName => $this->getAll ? null : $this->start,
+            $this->limitName => $this->getAll ? null : $this->limit,
+            $this->countName => $data['count'],
+            $this->isActiveName => $this->isActive,
+            $this->keywordName => $this->keyword,
+            $this->orderByName => $this->orderByRequest
+        ];
+        return returnDataSuccess($paramReturn, $data['data']);
+    }
 
     public function update(UpdateBangKeRequest $request, $id)
     {

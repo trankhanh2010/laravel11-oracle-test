@@ -58,6 +58,21 @@ class BangKeVViewService
         $data = $this->bangKeVViewRepository->applyGroupByField($data, $this->params->groupBy);
         return ['data' => $data, 'count' => $count];
     }
+    private function getBangKeNgoaiTruHaoPhi()
+    {
+        $data = $this->bangKeVViewRepository->applyJoins();
+        $data = $this->bangKeVViewRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
+        $data = $this->bangKeVViewRepository->applyIntructionTimeFromFilter($data, $this->params->intructionTimeFrom);
+        $data = $this->bangKeVViewRepository->applyIntructionTimeToFilter($data, $this->params->intructionTimeTo);
+        $data = $this->bangKeVViewRepository->applyBangKeNgoaiTruHaoPhi($data);
+
+        $count = $data->count();
+        $data = $this->bangKeVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->bangKeVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        $groupBy = [];
+        $data = $this->bangKeVViewRepository->applyGroupByField($data, $groupBy);
+        return ['data' => $data, 'count' => $count];
+    }
     private function getDataById($id)
     {
         $data = $this->bangKeVViewRepository->applyJoins()
@@ -70,6 +85,14 @@ class BangKeVViewService
     {
         try {
             return $this->getAllDataFromDatabase();
+        } catch (\Throwable $e) {
+            return writeAndThrowError(config('params')['db_service']['error']['bang_ke_v_view'], $e);
+        }
+    }
+    public function bangKeNgoaiTruHaoPhi()
+    {
+        try {
+            return $this->getBangKeNgoaiTruHaoPhi();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['bang_ke_v_view'], $e);
         }

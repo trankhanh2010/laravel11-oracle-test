@@ -70,6 +70,7 @@ class BangKeVViewRepository
                 "request_room_name",
 
                 // 'json_patient_type_alter',
+                'hein_card_number',
                 'service_id',
                 "other_pay_source_id",
                 "tdl_patient_id",
@@ -255,6 +256,11 @@ class BangKeVViewRepository
         }
     }
 
+    public function applyBangKeNgoaiTruHaoPhi($query)
+    {
+        $query->where('is_expend', 1);
+        return $query;
+    }
     public function getById($id)
     {
         return $this->bangKeVView->find($id);
@@ -285,26 +291,32 @@ class BangKeVViewRepository
         return $data;
     }
     public function updateBangKeIds($request, $ids, $time, $appModifier){
-        $this->sereServ->whereIn('id', $ids)->update([
-            'modify_time' => now()->format('YmdHis'),
-            'modifier' => get_loginname_with_token($request->bearerToken(), $time),
-            'app_modifier' => $appModifier,
-            'patient_type_id' => $request->patient_type_id,
-            'primary_patient_type_id' => $request->primary_patient_type_id,
-            'is_out_parent_fee' => $request->is_out_parent_fee,
-            'is_expend' => $request->is_expend,
-            'expend_type_id' => $request->expend_type_id,
-            'is_no_execute' => $request->is_no_execute,
-            'is_not_use_bhyt' => $request->is_not_use_bhyt,
-            'other_pay_source_id' => $request->other_pay_source_id,
-
-            'primary_price' => $request->primary_price,
-            'limit_price' => $request->limit_price,
-            'price' => $request->price,
-            'original_price' => $request->original_price,
-            'hein_price' => $request->hein_price,
-            'hein_limit_price' => $request->hein_limit_price,
-
-        ]);
+        foreach ($ids as $id) {
+            $dataUpdate = [
+                'modify_time' => now()->format('YmdHis'),
+                'modifier' => get_loginname_with_token($request->bearerToken(), $time),
+                'app_modifier' => $appModifier,
+                'patient_type_id' => $request->patient_type_id[$id],
+                'primary_patient_type_id' => $request->primary_patient_type_id[$id],
+                'is_out_parent_fee' => $request->is_out_parent_fee[$id] == 0 ? null : $request->is_out_parent_fee[$id], // buộc để null để cột vir không tính sai giá
+                'is_expend' => $request->is_expend[$id] == 0 ? null : $request->is_expend[$id], // buộc để null để cột vir không tính sai giá
+                'expend_type_id' => $request->expend_type_id[$id],
+                'is_no_execute' => $request->is_no_execute[$id] == 0 ? null : $request->is_no_execute[$id], // buộc để null để cột vir không tính sai giá
+                'is_not_use_bhyt' => $request->is_not_use_bhyt[$id] == 0 ? null : $request->is_not_use_bhyt[$id], // buộc để null để cột vir không tính sai giá
+                'other_pay_source_id' => $request->other_pay_source_id[$id],
+        
+                'primary_price' => $request->primary_price[$id],
+                'limit_price' => $request->limit_price[$id] ?? null, // phụ thu mới có
+                'price' => $request->price[$id],
+                'original_price' => $request->original_price[$id],
+                'hein_price' => $request->hein_price[$id] ?? null, // phụ thu mới có
+                'hein_limit_price' => $request->hein_limit_price[$id] ?? null, // phụ thu mới có
+            ];
+            if(!$request->other_pay_source_id[$id]){
+                $dataUpdate['other_source_price'] =  0; // khi bỏ chọn Nguồn khác thì set lại = 0
+            }
+            $this->sereServ->where('id', $id)->update($dataUpdate);
+        }
+        
     }
 }
