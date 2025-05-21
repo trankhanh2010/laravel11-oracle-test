@@ -46,6 +46,8 @@ class MedicalCaseCoverListVViewRepository
                 'tdl_patient_relative_name',     
                 'branch_id',   
                 'treatment_day_count',  
+                'treatment_type_code',
+                'treatment_type_name',
             ]);
         }
         return $this->medicalCaseCoverListVView
@@ -94,6 +96,8 @@ class MedicalCaseCoverListVViewRepository
                 'end_code',
                 'extra_end_code',
                 'treatment_day_count',
+                'treatment_type_code',
+                'treatment_type_name',
                 'appointment_time',
                 'appointment_desc',
                 'appointment_code',

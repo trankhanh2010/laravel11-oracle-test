@@ -79,6 +79,9 @@ class BangKeVViewRepository
                 "hein_service_type_name",
                 "hein_service_type_num_order",
                 "hein_ratio",
+                "hein_price",
+                "patient_price_bhyt",
+                "vir_hein_price",
                 'hein_card_number',
                 'service_id',
                 "other_pay_source_id",
@@ -239,6 +242,12 @@ class BangKeVViewRepository
                 $totalOtherSourcePrice = round($group->sum(function ($item) {
                     return ($item['other_source_price']) ?? 0;
                 }));
+                $totalPatientPriceBhyt = round($group->sum(function ($item) {
+                    return ($item['patient_price_bhyt']) ?? 0;
+                }));
+                $totalVirHeinPrice = round($group->sum(function ($item) {
+                    return ($item['vir_hein_price']) ?? 0;
+                }));
 
                 $result = [
                     'key' => (string)$key,
@@ -248,12 +257,16 @@ class BangKeVViewRepository
                         return $item['amount'] ?? 0;
                     }),
                     'virPriceNoExpend' => (int) round($group->first()['vir_price_no_expend']) ?? 0,
+                    'price' => (int) round($group->first()['price']) ?? 0,
+                    'heinPrice' => (int) round($group->first()['hein_price']) ?? 0,
                     'totalVirTotalPriceNoExpend' => $totalVirTotalPriceNoExpend,
                     'totalVirTotalPrice' => $totalVirTotalPrice,
                     'totalVirTotalHeinPrice' => $totalVirTotalHeinPrice,
                     'totalVirTotalPatientPrice' => $totalVirTotalPatientPrice,
                     'totalPriceExpend' => $totalPriceExpend,
                     'totalOtherSourcePrice' => $totalOtherSourcePrice,
+                    'totalPatientPriceBhyt' => $totalPatientPriceBhyt,
+                    'totalVirHeinPrice' => $totalVirHeinPrice,
 
                     // 'children' => $groupData($group, $fields),
                 ];
@@ -279,9 +292,16 @@ class BangKeVViewRepository
                 if($currentField === 'patient_type_name'){
                     $serviceName = $group->first()['tdl_service_name'] ?? '';
                     $serviceUnitName = $group->first()['service_unit_name'] ?? '';
+                    $requestDepartmentName = $group->first()['request_department_name'] ?? '';
+                    $requestRoomName = $group->first()['request_room_name'] ?? '';
+                    $heinRatio = $group->first()['hein_ratio'] ?? 0;
 
                     $result['tdlServiceName'] = $serviceName;
                     $result['serviceUnitName'] = $serviceUnitName;
+                    $result['requestDepartmentName'] = $requestDepartmentName;
+                    $result['requestRoomName'] = $requestRoomName;
+                    $result['heinRatio'] = $heinRatio;
+
                 }
 
                 // Đem children xuống dưới để nằm dưới các trường được thêm
@@ -373,7 +393,7 @@ class BangKeVViewRepository
     {
         $query
         ->where(function ($query)  {
-            $query->where('treatment_type_code', '02');
+            $query->where('treatment_type_code', '<>', '03');
         })
         ->whereNotNull('hein_card_number')
         ->where(function ($query)  {

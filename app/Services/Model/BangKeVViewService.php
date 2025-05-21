@@ -95,6 +95,7 @@ class BangKeVViewService
             "total",
             "heinServiceTypeName",
             "tdlServiceName",
+            "patientTypeName",
         ];
         $data = $this->bangKeVViewRepository->applyGroupByField($data, $groupBy);
         return ['data' => $data, 'count' => $count];
@@ -136,8 +137,10 @@ class BangKeVViewService
             "heinCardNumber",
             "requestDepartmentName",
             "requestRoomName",
-            "serviceTypeName",
+            "heinServiceTypeName",
             "tdlServiceName",
+            "patientTypeName",
+
         ];
         $data = $this->bangKeVViewRepository->applyGroupByField($data, $groupBy);
         return ['data' => $data, 'count' => $count];
