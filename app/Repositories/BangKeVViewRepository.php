@@ -30,6 +30,7 @@ class BangKeVViewRepository
                 "service_req_code",
                 "intruction_time",
                 "service_type_name",
+                "service_type_code",
                 "tdl_service_code",
                 "tdl_hein_service_bhyt_code",
                 "tdl_service_name",
@@ -76,6 +77,7 @@ class BangKeVViewRepository
                 "treatment_type_code",
                 "treatment_type_name",
                 "hein_service_type_name",
+                "hein_service_type_num_order",
                 "hein_ratio",
                 'hein_card_number',
                 'service_id',
@@ -231,6 +233,12 @@ class BangKeVViewRepository
                 $totalVirTotalPatientPrice = round($group->sum(function ($item) {
                     return ($item['vir_total_patient_price']) ?? 0;
                 }));
+                $totalPriceExpend = round($group->sum(function ($item) {
+                    return $item['is_expend'] ? ($item['vir_total_price_no_expend']) : 0;
+                }));
+                $totalOtherSourcePrice = round($group->sum(function ($item) {
+                    return ($item['other_source_price']) ?? 0;
+                }));
 
                 $result = [
                     'key' => (string)$key,
@@ -244,6 +252,8 @@ class BangKeVViewRepository
                     'totalVirTotalPrice' => $totalVirTotalPrice,
                     'totalVirTotalHeinPrice' => $totalVirTotalHeinPrice,
                     'totalVirTotalPatientPrice' => $totalVirTotalPatientPrice,
+                    'totalPriceExpend' => $totalPriceExpend,
+                    'totalOtherSourcePrice' => $totalOtherSourcePrice,
 
                     // 'children' => $groupData($group, $fields),
                 ];
@@ -256,6 +266,8 @@ class BangKeVViewRepository
                     $result['totalVirTotalPriceToWords'] = moneyToWords($totalVirTotalPrice);
                     $result['totalVirTotalHeinPriceToWords'] = moneyToWords($totalVirTotalHeinPrice);
                     $result['totalVirTotalPatientPriceToWords'] = moneyToWords($totalVirTotalPatientPrice);
+                    $result['totalPriceExpendToWords'] = moneyToWords($totalPriceExpend);
+                    $result['totalOtherSourcePriceToWords'] = moneyToWords($totalOtherSourcePrice);
                 }
                 if($currentField === 'hein_card_number'){
                     $maThe = $group->first()['hein_card_number'] ?? '';
@@ -263,8 +275,12 @@ class BangKeVViewRepository
                     $result['maTheBHYT'] = $maThe;
                     $result['mucHuongBHYT'] = getMucHuongBHYT($maThe, $tongChiPhi);
                 }
-                if($currentField === 'tdl_service_name'){
+
+                if($currentField === 'patient_type_name'){
+                    $serviceName = $group->first()['tdl_service_name'] ?? '';
                     $serviceUnitName = $group->first()['service_unit_name'] ?? '';
+
+                    $result['tdlServiceName'] = $serviceName;
                     $result['serviceUnitName'] = $serviceUnitName;
                 }
 
@@ -289,6 +305,22 @@ class BangKeVViewRepository
                 ->get();
         }
     }
+    function customizeHeinServiceTypeNameTongHop($data)
+    {
+        return $data->map(function ($item) {
+            if ($item->is_expend == 1 && $item->service_type_code === 'TH') {
+                $item->hein_service_type_name = 'Thuốc hao phí trong phẫu thuật';
+            }
+
+            if ($item->is_expend == 1 && $item->service_type_code === 'VT') {
+                $item->hein_service_type_name = 'Vật tư hao phí trong phẫu thuật';
+            }
+    
+            return $item;
+        });
+    }
+    
+
     public function applyStatusFilter($query, $param)
     {
         switch ($param) {
@@ -313,6 +345,7 @@ class BangKeVViewRepository
     }
     public function applyBangKeNgoaiTruHaoPhiFilter($query)
     {
+        $query->where('treatment_type_code', '02');
         $query->where('is_expend', 1);
         return $query;
     }
@@ -364,6 +397,20 @@ class BangKeVViewRepository
         })
         ;
         
+        return $query;
+    }
+    public function applyBangKeNoiTruHaoPhiFilter($query)
+    {
+        $query->where('is_expend', 1)
+        ->where('treatment_type_code', '<>','02');
+        return $query;
+    }
+    public function applyBangKeTongHop6556KhoaPhongThanhToanFilter($query)
+    {
+        return $query;
+    }
+    public function applyTongHopNgoaiTruVienPhiHaoPhiFilter($query)
+    {   
         return $query;
     }
     public function getById($id)
