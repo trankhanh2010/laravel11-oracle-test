@@ -1,4 +1,5 @@
-<?php 
+<?php
+
 namespace App\Repositories;
 
 use App\Jobs\ElasticSearch\Index\ProcessElasticIndexingJob;
@@ -15,8 +16,7 @@ class BangKeVViewRepository
     public function __construct(
         BangKeVView $bangKeVView,
         SereServ $sereServ,
-        )
-    {
+    ) {
         $this->bangKeVView = $bangKeVView;
         $this->sereServ = $sereServ;
     }
@@ -34,8 +34,10 @@ class BangKeVViewRepository
                 "tdl_hein_service_bhyt_code",
                 "tdl_service_name",
                 "patient_type_name",
+                "patient_type_code",
                 "patient_type_id",
                 "primary_patient_type_name",
+                "primary_patient_type_code",
                 "primary_patient_type_id",
                 "service_unit_name",
                 "amount",
@@ -70,6 +72,11 @@ class BangKeVViewRepository
                 "request_room_name",
 
                 // 'json_patient_type_alter',
+                "tdl_treatment_type_id",
+                "treatment_type_code",
+                "treatment_type_name",
+                "hein_service_type_name",
+                "hein_ratio",
                 'hein_card_number',
                 'service_id',
                 "other_pay_source_id",
@@ -81,6 +88,7 @@ class BangKeVViewRepository
                 "vir_total_hein_price",
                 "vir_total_patient_price",
                 "discount",
+                "vir_price_no_expend",
                 "vir_total_price_no_expend",
                 "vat_ratio",
                 "service_req_id",
@@ -91,7 +99,7 @@ class BangKeVViewRepository
                 "da_tam_ung",
                 "da_thanh_toan",
             ])
-            ;
+        ;
     }
     public function applyKeywordFilter($query, $keyword)
     {
@@ -163,7 +171,7 @@ class BangKeVViewRepository
     public function applyAmountGreaterThan0Filter($query, $param)
     {
         if ($param !== null) {
-            if($param){
+            if ($param) {
                 return $query->where(function ($query) use ($param) {
                     $query->where('amount', '>', 0);
                 });
@@ -196,42 +204,68 @@ class BangKeVViewRepository
             $snakeField = Str::snake($field);
             $fieldMappings[$snakeField] = $field;
         }
-    
+
         $snakeFields = array_keys($fieldMappings);
-    
+
         // Đệ quy nhóm dữ liệu theo thứ tự fields đã convert
         $groupData = function ($items, $fields) use (&$groupData, $fieldMappings) {
             if (empty($fields)) {
                 return $items->values(); // Hết field nhóm -> Trả về danh sách gốc
             }
-    
+
             $currentField = array_shift($fields);
             $originalField = $fieldMappings[$currentField];
-    
+
             return $items->groupBy(function ($item) use ($currentField) {
                 return $item[$currentField] ?? null;
             })->map(function ($group, $key) use ($fields, $groupData, $originalField, $currentField) {
+                $totalVirTotalPriceNoExpend = round($group->sum(function ($item) {
+                    return ($item['vir_total_price_no_expend']) ?? 0;
+                }));
+                $totalVirTotalPrice = round($group->sum(function ($item) {
+                    return ($item['vir_total_price']) ?? 0;
+                }));
+                $totalVirTotalHeinPrice =round($group->sum(function ($item) {
+                    return ($item['vir_total_hein_price']) ?? 0;
+                }));
+                $totalVirTotalPatientPrice = round($group->sum(function ($item) {
+                    return ($item['vir_total_patient_price']) ?? 0;
+                }));
+
                 $result = [
                     'key' => (string)$key,
                     $originalField => (string)$key, // Hiển thị tên gốc
                     'total' => $group->count(),
                     'amount' => $group->sum(function ($item) {
-                        return (int) $item['amount'] ?? 0;
+                        return $item['amount'] ?? 0;
                     }),
-                    'virTotalPrice' => $group->sum(function ($item) {
-                        return (int) $item['vir_total_price'] ?? 0;
-                    }),
-                    'virTotalHeinPrice' => $group->sum(function ($item) {
-                        return (int) $item['vir_total_hein_price'] ?? 0;
-                    }),
-                    'virTotalPatientPrice' => $group->sum(function ($item) {
-                        return (int) $item['vir_total_patient_price'] ?? 0;
-                    }),
+                    'virPriceNoExpend' => (int) round($group->first()['vir_price_no_expend']) ?? 0,
+                    'totalVirTotalPriceNoExpend' => $totalVirTotalPriceNoExpend,
+                    'totalVirTotalPrice' => $totalVirTotalPrice,
+                    'totalVirTotalHeinPrice' => $totalVirTotalHeinPrice,
+                    'totalVirTotalPatientPrice' => $totalVirTotalPatientPrice,
+
                     // 'children' => $groupData($group, $fields),
                 ];
                 if ($currentField === 'service_type_name') {
                     $firstItem = $group->first();
-                    $result['key'] = $firstItem['service_type_name'].' '.$firstItem['patient_type_name'];
+                    $result['key'] = $firstItem['service_type_name'] . ' ' . $firstItem['patient_type_name'];
+                }
+                if($currentField === 'total'){
+                    $result['totalVirTotalPriceNoExpendToWords'] = moneyToWords($totalVirTotalPriceNoExpend);
+                    $result['totalVirTotalPriceToWords'] = moneyToWords($totalVirTotalPrice);
+                    $result['totalVirTotalHeinPriceToWords'] = moneyToWords($totalVirTotalHeinPrice);
+                    $result['totalVirTotalPatientPriceToWords'] = moneyToWords($totalVirTotalPatientPrice);
+                }
+                if($currentField === 'hein_card_number'){
+                    $maThe = $group->first()['hein_card_number'] ?? '';
+                    $tongChiPhi = $totalVirTotalPrice;
+                    $result['maTheBHYT'] = $maThe;
+                    $result['mucHuongBHYT'] = getMucHuongBHYT($maThe, $tongChiPhi);
+                }
+                if($currentField === 'tdl_service_name'){
+                    $serviceUnitName = $group->first()['service_unit_name'] ?? '';
+                    $result['serviceUnitName'] = $serviceUnitName;
                 }
 
                 // Đem children xuống dưới để nằm dưới các trường được thêm
@@ -239,7 +273,7 @@ class BangKeVViewRepository
                 return $result;
             })->values();
         };
-    
+
         return $groupData(collect($data), $snakeFields);
     }
     public function fetchData($query, $getAll, $start, $limit)
@@ -255,10 +289,81 @@ class BangKeVViewRepository
                 ->get();
         }
     }
-
-    public function applyBangKeNgoaiTruHaoPhi($query)
+    public function applyStatusFilter($query, $param)
+    {
+        switch ($param) {
+            case 'tatCa':
+                break;
+            case 'daThanhToanDichVu':
+                $query->where('da_thanh_toan', 1);
+                break;
+            case 'daTamUngDichVu':
+                $query->where('da_tam_ung', 1);
+                break;
+            case 'chuaThanhToan':
+                $query->where('da_thanh_toan', 0);
+                break;
+            case 'chuaTamUng':
+                $query->where('da_tam_ung', 0);
+                break;
+            default:
+                return $query;
+        }
+        return $query;
+    }
+    public function applyBangKeNgoaiTruHaoPhiFilter($query)
     {
         $query->where('is_expend', 1);
+        return $query;
+    }
+    public function applyBangKeNgoaiTruBHYTHaoPhiFilter($query)
+    {
+        $query->where('patient_type_code', '01')
+        ->where('is_expend', 1);
+        return $query;
+    }
+    public function applyBangKeNgoaiTruVienPhiTPTBFilter($query)
+    {
+        $query
+        ->where(function ($query)  {
+            $query->where('treatment_type_code', '02');
+        })
+        ->where(function ($query)  {
+            $query->where('is_expend', 0)
+            ->orWhereNull('is_expend');
+        })
+        ;
+        
+        return $query;
+    }
+    public function applyBangKeNgoaiTruBHYTTheoKhoa6556QDBYTFilter($query)
+    {
+        $query
+        ->where(function ($query)  {
+            $query->where('treatment_type_code', '02');
+        })
+        ->whereNotNull('hein_card_number')
+        ->where(function ($query)  {
+            $query->where('is_expend', 0)
+            ->orWhereNull('is_expend');
+        })
+        ;
+        
+        return $query;
+    }
+    public function applyBangKeNgoaiTruVienPhiTheoKhoaFilter($query)
+    {
+        $query
+        ->where(function ($query)  {
+            $query->where('treatment_type_code', '02');
+        })
+        ->where('patient_type_code', '02')
+        ->where(function ($query)  {
+            $query->where('is_expend', 0)
+            ->orWhereNull('is_expend');
+        })
+        ;
+        
         return $query;
     }
     public function getById($id)
@@ -266,7 +371,8 @@ class BangKeVViewRepository
         return $this->bangKeVView->find($id);
     }
 
-    public function updateBangKe($request, $data, $time, $appModifier){
+    public function updateBangKe($request, $data, $time, $appModifier)
+    {
         $data->update([
             'modify_time' => now()->format('YmdHis'),
             'modifier' => get_loginname_with_token($request->bearerToken(), $time),
@@ -290,7 +396,8 @@ class BangKeVViewRepository
         ]);
         return $data;
     }
-    public function updateBangKeIds($request, $ids, $time, $appModifier){
+    public function updateBangKeIds($request, $ids, $time, $appModifier)
+    {
         foreach ($ids as $id) {
             $dataUpdate = [
                 'modify_time' => now()->format('YmdHis'),
@@ -304,7 +411,7 @@ class BangKeVViewRepository
                 'is_no_execute' => $request->is_no_execute[$id] == 0 ? null : $request->is_no_execute[$id], // buộc để null để cột vir không tính sai giá
                 'is_not_use_bhyt' => $request->is_not_use_bhyt[$id] == 0 ? null : $request->is_not_use_bhyt[$id], // buộc để null để cột vir không tính sai giá
                 'other_pay_source_id' => $request->other_pay_source_id[$id],
-        
+
                 'primary_price' => $request->primary_price[$id],
                 'limit_price' => $request->limit_price[$id] ?? null, // phụ thu mới có
                 'price' => $request->price[$id],
@@ -312,11 +419,10 @@ class BangKeVViewRepository
                 'hein_price' => $request->hein_price[$id] ?? null, // phụ thu mới có
                 'hein_limit_price' => $request->hein_limit_price[$id] ?? null, // phụ thu mới có
             ];
-            if(!$request->other_pay_source_id[$id]){
+            if (!$request->other_pay_source_id[$id]) {
                 $dataUpdate['other_source_price'] =  0; // khi bỏ chọn Nguồn khác thì set lại = 0
             }
             $this->sereServ->where('id', $id)->update($dataUpdate);
         }
-        
     }
 }

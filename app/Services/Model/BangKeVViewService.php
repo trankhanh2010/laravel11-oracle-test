@@ -64,12 +64,102 @@ class BangKeVViewService
         $data = $this->bangKeVViewRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
         $data = $this->bangKeVViewRepository->applyIntructionTimeFromFilter($data, $this->params->intructionTimeFrom);
         $data = $this->bangKeVViewRepository->applyIntructionTimeToFilter($data, $this->params->intructionTimeTo);
-        $data = $this->bangKeVViewRepository->applyBangKeNgoaiTruHaoPhi($data);
+        $data = $this->bangKeVViewRepository->applyBangKeNgoaiTruHaoPhiFilter($data);
+        $data = $this->bangKeVViewRepository->applyStatusFilter($data, $this->params->status);
 
         $count = $data->count();
         $data = $this->bangKeVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
         $data = $this->bangKeVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
-        $groupBy = [];
+        $groupBy = [
+            "total",
+            "heinServiceTypeName",
+            "tdlServiceName",
+        ];
+        $data = $this->bangKeVViewRepository->applyGroupByField($data, $groupBy);
+        return ['data' => $data, 'count' => $count];
+    }
+    private function getBangKeNgoaiTruBHYTHaoPhi()
+    {
+        $data = $this->bangKeVViewRepository->applyJoins();
+        $data = $this->bangKeVViewRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
+        $data = $this->bangKeVViewRepository->applyIntructionTimeFromFilter($data, $this->params->intructionTimeFrom);
+        $data = $this->bangKeVViewRepository->applyIntructionTimeToFilter($data, $this->params->intructionTimeTo);
+        $data = $this->bangKeVViewRepository->applyBangKeNgoaiTruBHYTHaoPhiFilter($data);
+        $data = $this->bangKeVViewRepository->applyStatusFilter($data, $this->params->status);
+
+        $count = $data->count();
+        $data = $this->bangKeVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->bangKeVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        $groupBy = [
+            "total",
+            "heinServiceTypeName",
+            "tdlServiceName",
+        ];
+        $data = $this->bangKeVViewRepository->applyGroupByField($data, $groupBy);
+        return ['data' => $data, 'count' => $count];
+    }
+    private function getBangKeNgoaiTruVienPhiTPTB()
+    {
+        $data = $this->bangKeVViewRepository->applyJoins();
+        $data = $this->bangKeVViewRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
+        $data = $this->bangKeVViewRepository->applyIntructionTimeFromFilter($data, $this->params->intructionTimeFrom);
+        $data = $this->bangKeVViewRepository->applyIntructionTimeToFilter($data, $this->params->intructionTimeTo);
+        $data = $this->bangKeVViewRepository->applyBangKeNgoaiTruVienPhiTPTBFilter($data);
+        $data = $this->bangKeVViewRepository->applyStatusFilter($data, $this->params->status);
+
+        $count = $data->count();
+        $data = $this->bangKeVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->bangKeVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        $groupBy = [
+            "total",
+            "heinServiceTypeName",
+            "tdlServiceName",
+        ];
+        $data = $this->bangKeVViewRepository->applyGroupByField($data, $groupBy);
+        return ['data' => $data, 'count' => $count];
+    }
+    private function getBangKeNgoaiTruBHYTTheoKhoa6556QDBYT()
+    {
+        $data = $this->bangKeVViewRepository->applyJoins();
+        $data = $this->bangKeVViewRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
+        $data = $this->bangKeVViewRepository->applyIntructionTimeFromFilter($data, $this->params->intructionTimeFrom);
+        $data = $this->bangKeVViewRepository->applyIntructionTimeToFilter($data, $this->params->intructionTimeTo);
+        $data = $this->bangKeVViewRepository->applyBangKeNgoaiTruBHYTTheoKhoa6556QDBYTFilter($data);
+        $data = $this->bangKeVViewRepository->applyStatusFilter($data, $this->params->status);
+
+        $count = $data->count();
+        $data = $this->bangKeVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->bangKeVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        $groupBy = [
+            "total",
+            "heinCardNumber",
+            "requestDepartmentName",
+            "requestRoomName",
+            "serviceTypeName",
+            "tdlServiceName",
+        ];
+        $data = $this->bangKeVViewRepository->applyGroupByField($data, $groupBy);
+        return ['data' => $data, 'count' => $count];
+    }
+    private function getBangKeNgoaiTruVienPhiTheoKhoa()
+    {
+        $data = $this->bangKeVViewRepository->applyJoins();
+        $data = $this->bangKeVViewRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
+        $data = $this->bangKeVViewRepository->applyIntructionTimeFromFilter($data, $this->params->intructionTimeFrom);
+        $data = $this->bangKeVViewRepository->applyIntructionTimeToFilter($data, $this->params->intructionTimeTo);
+        $data = $this->bangKeVViewRepository->applyBangKeNgoaiTruVienPhiTheoKhoaFilter($data);
+        $data = $this->bangKeVViewRepository->applyStatusFilter($data, $this->params->status);
+
+        $count = $data->count();
+        $data = $this->bangKeVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->bangKeVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        $groupBy = [
+            "total",
+            "requestDepartmentName",
+            "requestRoomName",
+            "serviceTypeName",
+            "tdlServiceName",
+        ];
         $data = $this->bangKeVViewRepository->applyGroupByField($data, $groupBy);
         return ['data' => $data, 'count' => $count];
     }
@@ -93,6 +183,38 @@ class BangKeVViewService
     {
         try {
             return $this->getBangKeNgoaiTruHaoPhi();
+        } catch (\Throwable $e) {
+            return writeAndThrowError(config('params')['db_service']['error']['bang_ke_v_view'], $e);
+        }
+    }
+    public function bangKeNgoaiTruBHYTHaoPhi()
+    {
+        try {
+            return $this->getBangKeNgoaiTruBHYTHaoPhi();
+        } catch (\Throwable $e) {
+            return writeAndThrowError(config('params')['db_service']['error']['bang_ke_v_view'], $e);
+        }
+    }
+    public function bangKeNgoaiTruVienPhiTPTB()
+    {
+        try {
+            return $this->getBangKeNgoaiTruVienPhiTPTB();
+        } catch (\Throwable $e) {
+            return writeAndThrowError(config('params')['db_service']['error']['bang_ke_v_view'], $e);
+        }
+    }
+    public function bangKeNgoaiTruBHYTTheoKhoa6556QDBYT()
+    {
+        try {
+            return $this->getBangKeNgoaiTruBHYTTheoKhoa6556QDBYT();
+        } catch (\Throwable $e) {
+            return writeAndThrowError(config('params')['db_service']['error']['bang_ke_v_view'], $e);
+        }
+    }
+    public function bangKeNgoaiTruVienPhiTheoKhoa()
+    {
+        try {
+            return $this->getBangKeNgoaiTruVienPhiTheoKhoa();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['bang_ke_v_view'], $e);
         }

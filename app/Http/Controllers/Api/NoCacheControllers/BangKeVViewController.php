@@ -21,8 +21,7 @@ class BangKeVViewController extends BaseApiCacheController
         $this->bangKeVView = $bangKeVView;
         // Kiểm tra tên trường trong bảng
         if ($this->orderBy != null) {
-            $this->orderByJoin = [
-            ];
+            $this->orderByJoin = [];
             $columns = $this->getColumnsTable($this->bangKeVView, true);
             $this->orderBy = $this->checkOrderBy($this->orderBy, $columns, $this->orderByJoin ?? []);
         }
@@ -38,8 +37,8 @@ class BangKeVViewController extends BaseApiCacheController
             $this->start,
             $this->limit,
             $request,
-            $this->appCreator, 
-            $this->appModifier, 
+            $this->appCreator,
+            $this->appModifier,
             $this->time,
             $this->treatmentId,
             $this->param,
@@ -49,6 +48,7 @@ class BangKeVViewController extends BaseApiCacheController
             $this->intructionTimeTo,
             $this->amountGreaterThan0,
             $this->tab,
+            $this->status,
         );
         $this->bangKeVViewService->withParams($this->bangKeVViewDTO);
     }
@@ -57,9 +57,9 @@ class BangKeVViewController extends BaseApiCacheController
         if ($this->checkParam()) {
             return $this->checkParam();
         }
-        if($this->keyword){
+        if ($this->keyword) {
             $data = $this->bangKeVViewService->handleDataBaseSearch();
-        }else{
+        } else {
             $data = $this->bangKeVViewService->handleDataBaseGetAll();
         }
         $paramReturn = [
@@ -82,11 +82,22 @@ class BangKeVViewController extends BaseApiCacheController
             case 'bangKeNgoaiTruHaoPhi':
                 $data = $this->bangKeVViewService->bangKeNgoaiTruHaoPhi();
                 break;
-        
+            case 'bangKeNgoaiTruBHYTHaoPhi':
+                $data = $this->bangKeVViewService->bangKeNgoaiTruBHYTHaoPhi();
+                break;
+            case 'bangKeNgoaiTruVienPhiTPTB':
+                $data = $this->bangKeVViewService->bangKeNgoaiTruVienPhiTPTB();
+                break;
+            case 'bangKeNgoaiTruBHYTTheoKhoa6556QDBYT':
+                $data = $this->bangKeVViewService->bangKeNgoaiTruBHYTTheoKhoa6556QDBYT();
+                break;
+            case 'bangKeNgoaiTruVienPhiTheoKhoa':
+                $data = $this->bangKeVViewService->bangKeNgoaiTruVienPhiTheoKhoa();
+                break;
             default:
-            return returnDataSuccess([], []);
+                return returnDataSuccess([], []);
         }
-        
+
         $paramReturn = [
             $this->getAllName => $this->getAll,
             $this->startName => $this->getAll ? null : $this->start,
@@ -103,5 +114,4 @@ class BangKeVViewController extends BaseApiCacheController
     {
         return $this->bangKeVViewService->updateBangKe($id, $request);
     }
-
 }

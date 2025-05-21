@@ -25,6 +25,7 @@ class BangKeVViewDTO
     public $intructionTimeTo;
     public $amountGreaterThan0;
     public $tab;
+    public $status;
 
     public function __construct(
         $bangKeVViewName,
@@ -48,6 +49,7 @@ class BangKeVViewDTO
         $intructionTimeTo,
         $amountGreaterThan0,
         $tab,
+        $status,
         )
     {
         $this->bangKeVViewName = $bangKeVViewName;
@@ -71,5 +73,6 @@ class BangKeVViewDTO
         $this->intructionTimeTo = $intructionTimeTo;
         $this->amountGreaterThan0 = $amountGreaterThan0;
         $this->tab = $tab;
+        $this->status = $status;
     }
 }

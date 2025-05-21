@@ -44,7 +44,8 @@ class MedicalCaseCoverListVViewRepository
                 'in_date',   
                 'tdl_patient_relative_type',
                 'tdl_patient_relative_name',     
-                'branch_id',       
+                'branch_id',   
+                'treatment_day_count',  
             ]);
         }
         return $this->medicalCaseCoverListVView
