@@ -69,8 +69,14 @@ class BangKeVViewRepository
                 "description",
                 "request_department_code",
                 "request_department_name",
+                "request_department_num_order",
+                "execute_department_code",
+                "execute_department_name",
+                "execute_department_num_order",
                 "request_room_code",
                 "request_room_name",
+                "execute_room_code",
+                "execute_room_name",
 
                 // 'json_patient_type_alter',
                 "tdl_treatment_type_id",
@@ -105,6 +111,10 @@ class BangKeVViewRepository
                 "da_thanh_toan",
             ])
         ;
+    }
+    public function addJsonPatientTypeAlter($query){
+        $query->addSelect('json_patient_type_alter');
+        return $query;
     }
     public function applyKeywordFilter($query, $keyword)
     {
@@ -253,9 +263,9 @@ class BangKeVViewRepository
                     'key' => (string)$key,
                     $originalField => (string)$key, // Hiển thị tên gốc
                     'total' => $group->count(),
-                    'amount' => $group->sum(function ($item) {
+                    'amount' => round($group->sum(function ($item) {
                         return $item['amount'] ?? 0;
-                    }),
+                    }),2), // làm tròn 2 chữ số thập phân
                     'virPriceNoExpend' => (int) round($group->first()['vir_price_no_expend']) ?? 0,
                     'price' => (int) round($group->first()['price']) ?? 0,
                     'heinPrice' => (int) round($group->first()['hein_price']) ?? 0,
@@ -285,21 +295,25 @@ class BangKeVViewRepository
                 if($currentField === 'hein_card_number'){
                     $maThe = $group->first()['hein_card_number'] ?? '';
                     $tongChiPhi = $totalVirTotalPrice;
+                    $heinCardFromTime = $group->first()['json_patient_type_alter']?->HEIN_CARD_FROM_TIME ?? null;
+                    $heinCardToTime = $group->first()['json_patient_type_alter']?->HEIN_CARD_TO_TIME ?? null;
                     $result['maTheBHYT'] = $maThe;
                     $result['mucHuongBHYT'] = getMucHuongBHYT($maThe, $tongChiPhi);
+                    $result['heinCardFromTime'] = $heinCardFromTime;
+                    $result['heinCardToTime'] = $heinCardToTime;
                 }
 
                 if($currentField === 'patient_type_name'){
                     $serviceName = $group->first()['tdl_service_name'] ?? '';
                     $serviceUnitName = $group->first()['service_unit_name'] ?? '';
-                    $requestDepartmentName = $group->first()['request_department_name'] ?? '';
-                    $requestRoomName = $group->first()['request_room_name'] ?? '';
-                    $heinRatio = $group->first()['hein_ratio'] ?? 0;
+                    $executeDepartmentName = $group->first()['execute_department_name'] ?? '';
+                    $executeRoomName = $group->first()['execute_room_name'] ?? '';
+                    $heinRatio = (float) $group->first()['hein_ratio'] ?? 0;
 
                     $result['tdlServiceName'] = $serviceName;
                     $result['serviceUnitName'] = $serviceUnitName;
-                    $result['requestDepartmentName'] = $requestDepartmentName;
-                    $result['requestRoomName'] = $requestRoomName;
+                    $result['executeDepartmentName'] = $executeDepartmentName;
+                    $result['executeRoomName'] = $executeRoomName;
                     $result['heinRatio'] = $heinRatio;
 
                 }
@@ -365,13 +379,16 @@ class BangKeVViewRepository
     }
     public function applyBangKeNgoaiTruHaoPhiFilter($query)
     {
-        $query->where('treatment_type_code', '02');
-        $query->where('is_expend', 1);
+        $query
+        ->where('treatment_type_code', '<>', '03')
+        ->where('is_expend', 1);
         return $query;
     }
     public function applyBangKeNgoaiTruBHYTHaoPhiFilter($query)
     {
-        $query->where('patient_type_code', '01')
+        $query
+        ->where('treatment_type_code', '<>', '03')
+        ->where('patient_type_code', '01')
         ->where('is_expend', 1);
         return $query;
     }
@@ -379,7 +396,7 @@ class BangKeVViewRepository
     {
         $query
         ->where(function ($query)  {
-            $query->where('treatment_type_code', '02');
+            $query->where('treatment_type_code', '<>', '03');
         })
         ->where(function ($query)  {
             $query->where('is_expend', 0)
@@ -408,7 +425,7 @@ class BangKeVViewRepository
     {
         $query
         ->where(function ($query)  {
-            $query->where('treatment_type_code', '02');
+            $query->where('treatment_type_code',  '<>', '03');
         })
         ->where('patient_type_code', '02')
         ->where(function ($query)  {
@@ -421,8 +438,24 @@ class BangKeVViewRepository
     }
     public function applyBangKeNoiTruHaoPhiFilter($query)
     {
-        $query->where('is_expend', 1)
-        ->where('treatment_type_code', '<>','02');
+        $query
+        ->where('is_expend', 1)
+        ->where('treatment_type_code', '03');
+        return $query;
+    }
+    public function applyBangKeNoiTruBHYTTheoKhoa6556QDBYTFilter($query)
+    {
+        $query
+        ->where(function ($query)  {
+            $query->where('treatment_type_code', '03');
+        })
+        ->whereNotNull('hein_card_number')
+        ->where(function ($query)  {
+            $query->where('is_expend', 0)
+            ->orWhereNull('is_expend');
+        })
+        ;
+        
         return $query;
     }
     public function applyBangKeTongHop6556KhoaPhongThanhToanFilter($query)
