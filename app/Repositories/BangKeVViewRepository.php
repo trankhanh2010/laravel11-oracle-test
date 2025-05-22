@@ -308,12 +308,16 @@ class BangKeVViewRepository
                     $serviceUnitName = $group->first()['service_unit_name'] ?? '';
                     $executeDepartmentName = $group->first()['execute_department_name'] ?? '';
                     $executeRoomName = $group->first()['execute_room_name'] ?? '';
+                    $requestDepartmentName = $group->first()['request_department_name'] ?? '';
+                    $requestRoomName = $group->first()['request_room_name'] ?? '';
                     $heinRatio = (float) $group->first()['hein_ratio'] ?? 0;
 
                     $result['tdlServiceName'] = $serviceName;
                     $result['serviceUnitName'] = $serviceUnitName;
                     $result['executeDepartmentName'] = $executeDepartmentName;
                     $result['executeRoomName'] = $executeRoomName;
+                    $result['requestDepartmentName'] = $requestDepartmentName;
+                    $result['requestRoomName'] = $requestRoomName;
                     $result['heinRatio'] = $heinRatio;
 
                 }
@@ -353,7 +357,28 @@ class BangKeVViewRepository
             return $item;
         });
     }
-    
+    function customizeBangKeNoiTruVienPhiTheoKhoa6556QDBYT($data)
+    {
+        return $data->map(function ($item) {
+            // Lặp qua để đổi các requestRoom của thuốc và vật tư thành Buồng điều trị
+            if (in_array($item->service_type_code, ['TH', 'VT', 'TT', 'PT'])) {
+                $item->request_room_name = 'Buồng điều trị';
+            }
+            // Lặp qua để đổi serviceTypeName từ Vật tư thành Vật tư y tế
+            if (in_array($item->service_type_code, ['VT'])) {
+                $item->service_type_name = 'Vật tư y tế';
+            }
+            // Lặp qua để đổi serviceTypeName từ Thuốc thành Thuốc, dịch truyền
+            if (in_array($item->service_type_code, ['TH'])) {
+                $item->service_type_name = 'Thuốc, dịch truyền';
+            }
+            // Lặp qua để đổi serviceTypeName từ Phẫu thuật || Thủ thuật thành Thủ thuật, phẫu thuật
+            if (in_array($item->service_type_code, ['TT', 'PT'])) {
+                $item->service_type_name = 'Thủ thuật, phẫu thuật';
+            }
+            return $item;
+        });
+    }
 
     public function applyStatusFilter($query, $param)
     {
@@ -450,6 +475,21 @@ class BangKeVViewRepository
             $query->where('treatment_type_code', '03');
         })
         ->whereNotNull('hein_card_number')
+        ->where(function ($query)  {
+            $query->where('is_expend', 0)
+            ->orWhereNull('is_expend');
+        })
+        ;
+        
+        return $query;
+    }
+    public function applyBangKeNoiTruVienPhiTheoKhoa6556QDBYTFilter($query)
+    {
+        $query
+        ->where(function ($query)  {
+            $query->where('treatment_type_code', '03');
+        })
+        ->where('patient_type_code', '02')
         ->where(function ($query)  {
             $query->where('is_expend', 0)
             ->orWhereNull('is_expend');
