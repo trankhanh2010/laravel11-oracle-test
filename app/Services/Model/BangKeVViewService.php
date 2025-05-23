@@ -76,7 +76,7 @@ class BangKeVViewService
             "tdlServiceName",
             "patientTypeName",
         ];
-        $data = $this->bangKeVViewRepository->applyGroupByField($data, $groupBy);
+        $data = $this->bangKeVViewRepository->applyGroupByFieldBieuMau($data, $groupBy, $this->params->tab);
         return ['data' => $data, 'count' => $count];
     }
     private function getBangKeNgoaiTruBHYTHaoPhi()
@@ -97,7 +97,7 @@ class BangKeVViewService
             "tdlServiceName",
             "patientTypeName",
         ];
-        $data = $this->bangKeVViewRepository->applyGroupByField($data, $groupBy);
+        $data = $this->bangKeVViewRepository->applyGroupByFieldBieuMau($data, $groupBy, $this->params->tab);
         return ['data' => $data, 'count' => $count];
     }
     private function getBangKeNgoaiTruVienPhiTPTB()
@@ -119,7 +119,7 @@ class BangKeVViewService
             "patientTypeName",
 
         ];
-        $data = $this->bangKeVViewRepository->applyGroupByField($data, $groupBy);
+        $data = $this->bangKeVViewRepository->applyGroupByFieldBieuMau($data, $groupBy, $this->params->tab);
         return ['data' => $data, 'count' => $count];
     }
     private function getBangKeNgoaiTruBHYTTheoKhoa6556QDBYT()
@@ -140,12 +140,13 @@ class BangKeVViewService
             "heinCardNumber",
             "executeDepartmentName",
             "executeRoomName",
-            "heinServiceTypeName",
+            "serviceTypeName",
             "tdlServiceName",
             "patientTypeName",
 
         ];
-        $data = $this->bangKeVViewRepository->applyGroupByField($data, $groupBy);
+        $data = $this->bangKeVViewRepository->customizeBangKeNgoaiTruBHYTTheoKhoa6556QDBYT($data);
+        $data = $this->bangKeVViewRepository->applyGroupByFieldBieuMau($data, $groupBy, $this->params->tab);
         return ['data' => $data, 'count' => $count];
     }
     private function getBangKeNgoaiTruVienPhiTheoKhoa()
@@ -169,7 +170,7 @@ class BangKeVViewService
             "patientTypeName",
 
         ];
-        $data = $this->bangKeVViewRepository->applyGroupByField($data, $groupBy);
+        $data = $this->bangKeVViewRepository->applyGroupByFieldBieuMau($data, $groupBy, $this->params->tab);
         return ['data' => $data, 'count' => $count];
     }
     private function getBangKeNoiTruHaoPhi()
@@ -191,7 +192,7 @@ class BangKeVViewService
             "patientTypeName",
 
         ];
-        $data = $this->bangKeVViewRepository->applyGroupByField($data, $groupBy);
+        $data = $this->bangKeVViewRepository->applyGroupByFieldBieuMau($data, $groupBy, $this->params->tab);
         return ['data' => $data, 'count' => $count];
     }
     private function getBangKeNoiTruBHYTTheoKhoa6556QDBYT()
@@ -216,7 +217,7 @@ class BangKeVViewService
             "tdlServiceName",
             "patientTypeName",
         ];
-        $data = $this->bangKeVViewRepository->applyGroupByField($data, $groupBy);
+        $data = $this->bangKeVViewRepository->applyGroupByFieldBieuMau($data, $groupBy, $this->params->tab);
         return ['data' => $data, 'count' => $count];
     }
     private function getBangKeNoiTruVienPhiTheoKhoa6556QDBYT()
@@ -241,7 +242,7 @@ class BangKeVViewService
 
         ];
         $data = $this->bangKeVViewRepository->customizeBangKeNoiTruVienPhiTheoKhoa6556QDBYT($data); // Lặp qua để đổi các requestRoom của thuốc và vật tư thành Buồng điều trị, đổi các serviceTypeName
-        $data = $this->bangKeVViewRepository->applyGroupByField($data, $groupBy);
+        $data = $this->bangKeVViewRepository->applyGroupByFieldBieuMau($data, $groupBy, $this->params->tab);
         return ['data' => $data, 'count' => $count];
     }
     private function getBangKeTongHop6556KhoaPhongThanhToan()
@@ -266,7 +267,7 @@ class BangKeVViewService
             "patientTypeName",
 
         ];
-        $data = $this->bangKeVViewRepository->applyGroupByField($data, $groupBy);
+        $data = $this->bangKeVViewRepository->applyGroupByFieldBieuMau($data, $groupBy, $this->params->tab);
         return ['data' => $data, 'count' => $count];
     }
     private function getTongHopNgoaiTruVienPhiHaoPhi()
@@ -287,7 +288,7 @@ class BangKeVViewService
             "tdlServiceName",
         ];
         $data = $this->bangKeVViewRepository->customizeHeinServiceTypeNameTongHop($data); // Lặp qua để đổi các heinServieType thành Thuốc hao phí trong phẫu thuật và Vật tư hao phí trong phẫu thuật
-        $data = $this->bangKeVViewRepository->applyGroupByField($data, $groupBy);
+        $data = $this->bangKeVViewRepository->applyGroupByFieldBieuMau($data, $groupBy, $this->params->tab);
         return ['data' => $data, 'count' => $count];
     }
     private function getDataById($id)
