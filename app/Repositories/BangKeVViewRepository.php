@@ -3,22 +3,47 @@
 namespace App\Repositories;
 
 use App\Jobs\ElasticSearch\Index\ProcessElasticIndexingJob;
+use App\Models\HIS\HeinServiceType;
 use App\Models\HIS\SereServ;
 use App\Models\View\BangKeVView;
 use App\Models\View\TreatmentFeeDetailVView;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Str;
 
 class BangKeVViewRepository
 {
     protected $bangKeVView;
     protected $sereServ;
+    protected $heinServiceType;
+    protected $heinServiceTypeVatTuTrongDanhMucNumOder;
+    protected $heinServiceTypeThuocTrongDanhMucNumOder;
     public function __construct(
         BangKeVView $bangKeVView,
         SereServ $sereServ,
+        HeinServiceType $heinServiceType,
     ) {
         $this->bangKeVView = $bangKeVView;
         $this->sereServ = $sereServ;
+        $this->heinServiceType = $heinServiceType;
+
+        $cacheKey = 'hein_service_type_vat_tu_trong_danh_muc_num_oder';
+        $cacheKeySet = "cache_keys:" . "setting"; // Set để lưu danh sách key
+        $this->heinServiceTypeVatTuTrongDanhMucNumOder = Cache::remember($cacheKey, now()->addMinutes(10080), function () {
+            $data =  $this->heinServiceType->where('hein_service_type_code', 'VT_TDM')->get();
+            return $data->value('vir_parent_num_order');
+        });
+        // Lưu key vào Redis Set để dễ xóa sau này
+        Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+
+        $cacheKey = 'hein_service_type_thuoc_trong_danh_muc_num_oder';
+        $this->heinServiceTypeThuocTrongDanhMucNumOder = Cache::remember($cacheKey, now()->addMinutes(10080), function () {
+            $data =  $this->heinServiceType->where('hein_service_type_code', 'TH_TDM')->get();
+            return $data->value('vir_parent_num_order');
+        });
+        // Lưu key vào Redis Set để dễ xóa sau này
+        Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
     }
 
     public function applyJoins()
@@ -77,6 +102,7 @@ class BangKeVViewRepository
                 "request_room_name",
                 "execute_room_code",
                 "execute_room_name",
+                "execute_room_is_exam",
 
                 // 'json_patient_type_alter',
                 "tdl_treatment_type_id",
@@ -107,6 +133,8 @@ class BangKeVViewRepository
                 "service_req_id",
                 "service_req_stt_code",
                 "service_req_stt_name",
+                "service_req_type_code",
+                "service_req_type_name",
                 "intruction_date",
                 "service_req_code",
                 "da_tam_ung",
@@ -285,9 +313,6 @@ class BangKeVViewRepository
             return $items->groupBy(function ($item) use ($currentField) {
                 return $item[$currentField] ?? null;
             })->map(function ($group, $key) use ($fields, $groupData, $originalField, $currentField, $laMauHaoPhi, $laMauBHYTHaoPhi) {
-                $totalVirTotalPriceNoExpend = round($group->sum(function ($item) {
-                    return ($item['vir_total_price_no_expend']) ?? 0;
-                }));
                 $totalThanhTienBV = round($group->sum(function ($item) {
                     return ($item['vir_total_price']) ?? 0;
                 }));
@@ -295,31 +320,19 @@ class BangKeVViewRepository
                     $totalThanhTienBV = round($group->sum(function ($item) {
                         return ($item['vir_total_price_no_expend']) ?? 0;
                     }));
-                } 
+                }
                 if ($laMauBHYTHaoPhi) {
                     $totalThanhTienBV = 0;
-                } 
+                }
 
                 $totalQuyBHYT = round($group->sum(function ($item) {
                     return ($item['vir_total_hein_price']) ?? 0;
                 }));
-                $totalVirTotalPatientPrice = round($group->sum(function ($item) {
-                    return ($item['vir_total_patient_price']) ?? 0;
-                }));
-                $totalPriceExpend = round($group->sum(function ($item) {
-                    return $item['is_expend'] ? ($item['vir_total_price_no_expend']) : 0;
-                }));
                 $totalKhac = round($group->sum(function ($item) {
                     return ($item['other_source_price']) ?? 0;
                 }));
-                $totalPatientPriceBhyt = round($group->sum(function ($item) {
-                    return ($item['patient_price_bhyt']) ?? 0;
-                }));
                 $totalThanhTienBH = round($group->sum(function ($item) {
                     return ($item['vir_hein_price']) ?? 0;
-                }));
-                $totalDiscount = round($group->sum(function ($item) {
-                    return ($item['discount']) ?? 0;
                 }));
                 $totalGiaNguoiBenhCungChiTra = round($group->sum(function ($item) {
                     return (($item['price']) ?? 0) > (($item['hein_limit_price']) ?? 0)
@@ -337,27 +350,27 @@ class BangKeVViewRepository
                         return $item['amount'] ?? 0;
                     }), 2), // làm tròn 2 chữ số thập phân
                 ];
-                if ($currentField != 'patient_type_name') {
-                    $result['totalThanhTienBV'] = $totalThanhTienBV;
-                    if($currentField != 'total'){
-                        $result['totalThanhTienBH'] = $totalThanhTienBH;
-                    }
-                    $result['totalQuyBHYT'] = $totalQuyBHYT;
-                    $result['totalGiaNguoiBenhCungChiTra'] = $totalGiaNguoiBenhCungChiTra;
-                    $result['totalGiaNguoiBenhTuTra'] = $totalGiaNguoiBenhTuTra;
-                    $result['totalKhac'] = $totalKhac;
+
+                $result['totalThanhTienBV'] = $totalThanhTienBV;
+                if ($currentField != 'total') {
+                    $result['totalThanhTienBH'] = $totalThanhTienBH;
                 }
-                if ($currentField === 'service_type_name') {
+                $result['totalQuyBHYT'] = $totalQuyBHYT;
+                $result['totalGiaNguoiBenhCungChiTra'] = $totalGiaNguoiBenhCungChiTra;
+                $result['totalGiaNguoiBenhTuTra'] = $totalGiaNguoiBenhTuTra;
+                $result['totalKhac'] = $totalKhac;
+
+                if ($currentField === 'hein_service_type_name') {
                     $firstItem = $group->first();
-                    $result['key'] = $firstItem['service_type_name'] . ' ' . $firstItem['patient_type_name'];
+                    $result['heinServiceTypeNumOrder'] = $firstItem['hein_service_type_num_order'] ? (int) $firstItem['hein_service_type_num_order'] : '';
                 }
-                if ($currentField === 'total') {
+                if (in_array($currentField, ['total', 'is_expend', 'hein_card_number'])) {
                     if ($laMauHaoPhi) {
                         $totalThanhTienBV = 0;
                         $totalGiaNguoiBenhTuTra = 0;
                         $result['totalThanhTienBV'] = $totalThanhTienBV;
                         $result['totalGiaNguoiBenhTuTra'] = $totalGiaNguoiBenhTuTra;
-                    } 
+                    }
                     $result['totalThanhTienBVToWords'] = moneyToWords($totalThanhTienBV);
                     $result['totalQuyBHYTToWords'] = moneyToWords($totalQuyBHYT);
                     $result['totalGiaNguoiBenhCungChiTraToWords'] = moneyToWords($totalGiaNguoiBenhCungChiTra);
@@ -388,17 +401,7 @@ class BangKeVViewRepository
                         : ((float) ($group->first()['original_price'])); // Nếu giá price > HEIN_LIMIT_PRICE thì dùng hein_price không thì dùng original_price // Đơn giá BH
                     $quyBHYT = (int) round($group->first()['vir_total_hein_price']) ?? 0; // Thành tiền BH
                     $khac = (float) $group->first()['other_source_price'] ?? 0;
-                    $thanhTienBV = (float) $group->first()['vir_total_price'] ?? 0;
                     $thanhTienBVHaoPhi = (float) $group->first()['vir_total_price_no_expend'] ?? 0;
-                    $thanhTienBH = (float) $group->first()['vir_hein_price'] ?? 0;
-                    $virTotalPatientPrice = (float) $group->first()['vir_total_patient_price'] ?? 0;
-                    $patientPriceBhyt  = (float) $group->first()['patient_price_bhyt'] ?? 0;
-                    $discount  = (float) $group->first()['discount'] ?? 0;
-                    $giaNguoiBenhCungChiTra = (($group->first()['price']) ?? 0) > (($group->first()['hein_limit_price']) ?? 0)
-                        ? $patientPriceBhyt
-                        : $virTotalPatientPrice; // Nếu là kỹ thuật cao thì dùng $patientPriceBhyt không thì dùng virTotalPatientPrice
-
-                    $giaNguoiBenhTuTra = $thanhTienBV - $quyBHYT - $giaNguoiBenhCungChiTra - $khac; // = Thành tiền BV - Quỹ BHYT - Người bệnh cùng chi trả - Khác
 
                     $result['tdlServiceName'] = $serviceName;
                     $result['serviceUnitName'] = $serviceUnitName;
@@ -410,17 +413,14 @@ class BangKeVViewRepository
                     $result['donGiaBV'] = (float) round($group->first()['price']) ?? 0;
                     $result['donGiaBH'] = $donGiaBH;
                     $result['tiLeThanhToanTheoDV'] = 1;
-                    $result['thanhTienBV'] = $thanhTienBV;
                     $result['tiLeThanhToanBHYT'] = $tiLeThanhToanBHYT;
-                    $result['thanhTienBH'] = $thanhTienBH;
                     $result['quyBHYT'] = $quyBHYT;
-                    $result['giaNguoiBenhCungChiTra'] = $giaNguoiBenhCungChiTra;
                     $result['khac'] = $khac;
-                    $result['giaNguoiBenhTuTra'] = $giaNguoiBenhTuTra;
 
                     if ($laMauHaoPhi) {
-                        $result['donGiaBV'] = (float) round($group->first()['price_no_expend']) ?? 0;
+                        $result['donGiaBV'] = (float) round($group->first()['vir_price_no_expend']) ?? 0;
                         $result['thanhTienBV'] = $thanhTienBVHaoPhi;
+                        $result['totalGiaNguoiBenhTuTra'] = 0;
                     }
                     if ($laMauBHYTHaoPhi) {
                         $result['donGiaBV'] = 0;
@@ -428,7 +428,11 @@ class BangKeVViewRepository
                 }
 
                 // Đem children xuống dưới để nằm dưới các trường được thêm
-                $result['children'] = $groupData($group, $fields);
+                if ($currentField === 'patient_type_name') {
+                    $result['children'] = [];
+                } else {
+                    $result['children'] = $groupData($group, $fields);
+                }
                 return $result;
             })->values();
         };
@@ -450,20 +454,33 @@ class BangKeVViewRepository
     }
     function customizeBangKeNgoaiTruBHYTTheoKhoa6556QDBYT($data)
     {
-        $kbItem = $data->firstWhere('execute_department_code', 'KB');
-        $roomName = $kbItem->execute_room_name ?? 'Phòng Khám';
-        return $data->map(function ($item) use ($roomName) {
-            // đổi tất cả executeRoom và executeDepartment về Khoa Khám Bệnh
-            $item->execute_department_name = 'Khoa Khám Bệnh';
-            $item->execute_room_name = $roomName;
-
+        return $data->map(function ($item) {
             // Lặp qua để đổi serviceTypeName từ Thuốc thành Thuốc, dịch truyền
             if (in_array($item->service_type_code, ['TH'])) {
-                $item->service_type_name = 'Thuốc, dịch truyền';
+                $item->hein_service_type_name = 'Thuốc, dịch truyền';
+                $item->hein_service_type_num_order = $this->heinServiceTypeThuocTrongDanhMucNumOder;
             }
             // Lặp qua để đổi serviceTypeName từ Phẫu thuật || Thủ thuật || Nội soi thành Thủ thuật, phẫu thuật
             if (in_array($item->service_type_code, ['TT', 'PT', 'NS'])) {
-                $item->service_type_name = 'Thủ thuật, phẫu thuật';
+                $item->hein_service_type_name = 'Thủ thuật, phẫu thuật';
+            }
+            return $item;
+        });
+    }
+    function customizeBangKeNgoaiTruVienPhiTheoKhoa6556QDBYT($data)
+    {
+        return $data->map(function ($item) {
+            if($item->request_department_name == $item->execute_department_name){
+                $item->request_room_name = $item->execute_room_name;
+            }
+            // Lặp qua để đổi serviceTypeName từ Thuốc thành Thuốc, dịch truyền
+            if (in_array($item->service_type_code, ['TH'])) {
+                $item->hein_service_type_name = 'Thuốc, dịch truyền';
+                $item->hein_service_type_num_order = $this->heinServiceTypeThuocTrongDanhMucNumOder;
+            }
+            // Lặp qua để đổi serviceTypeName từ Phẫu thuật || Thủ thuật || Nội soi thành Thủ thuật, phẫu thuật
+            if (in_array($item->service_type_code, ['TT', 'PT', 'NS'])) {
+                $item->hein_service_type_name = 'Thủ thuật, phẫu thuật';
             }
             return $item;
         });
@@ -482,24 +499,83 @@ class BangKeVViewRepository
             return $item;
         });
     }
-    function customizeBangKeNoiTruVienPhiTheoKhoa6556QDBYT($data)
+    function customizeBangKeNoiTruBHYTTheoKhoa6556QDBYT($data)
     {
         return $data->map(function ($item) {
+            if($item->request_department_name == $item->execute_department_name){
+                $item->request_room_name = $item->execute_room_name;
+            }
             // Lặp qua để đổi các requestRoom của thuốc và vật tư thành Buồng điều trị
-            if (in_array($item->service_type_code, ['TH', 'VT', 'TT', 'PT'])) {
+            if (in_array($item->service_type_code, ['TH', 'VT', 'TT', 'PT']) || !$item->hein_service_type_name) {
                 $item->request_room_name = 'Buồng điều trị';
             }
             // Lặp qua để đổi serviceTypeName từ Vật tư thành Vật tư y tế
             if (in_array($item->service_type_code, ['VT'])) {
-                $item->service_type_name = 'Vật tư y tế';
+                $item->hein_service_type_name = 'Vật tư y tế';
+                $item->hein_service_type_num_order = $this->heinServiceTypeVatTuTrongDanhMucNumOder;
             }
             // Lặp qua để đổi serviceTypeName từ Thuốc thành Thuốc, dịch truyền
             if (in_array($item->service_type_code, ['TH'])) {
-                $item->service_type_name = 'Thuốc, dịch truyền';
+                $item->hein_service_type_name = 'Thuốc, dịch truyền';
+                $item->hein_service_type_num_order = $this->heinServiceTypeThuocTrongDanhMucNumOder;
             }
             // Lặp qua để đổi serviceTypeName từ Phẫu thuật || Thủ thuật || Nội soi thành Thủ thuật, phẫu thuật
             if (in_array($item->service_type_code, ['TT', 'PT', 'NS'])) {
-                $item->service_type_name = 'Thủ thuật, phẫu thuật';
+                $item->hein_service_type_name = 'Thủ thuật, phẫu thuật';
+            }
+            return $item;
+        });
+    }
+    function customizeBangKeNoiTruVienPhiTheoKhoa6556QDBYT($data)
+    {
+        return $data->map(function ($item) {
+            if($item->request_department_name == $item->execute_department_name){
+                $item->request_room_name = $item->execute_room_name;
+            }
+            // Lặp qua để đổi các requestRoom của thuốc và vật tư thành Buồng điều trị
+            if (in_array($item->service_type_code, ['TH', 'VT', 'TT', 'PT']) || !$item->hein_service_type_name) {
+                $item->request_room_name = 'Buồng điều trị';
+            }
+            // Lặp qua để đổi serviceTypeName từ Vật tư thành Vật tư y tế
+            if (in_array($item->service_type_code, ['VT'])) {
+                $item->hein_service_type_name = 'Vật tư y tế';
+                $item->hein_service_type_num_order = $this->heinServiceTypeVatTuTrongDanhMucNumOder;
+            }
+            // Lặp qua để đổi serviceTypeName từ Thuốc thành Thuốc, dịch truyền
+            if (in_array($item->service_type_code, ['TH'])) {
+                $item->hein_service_type_name = 'Thuốc, dịch truyền';
+                $item->hein_service_type_num_order = $this->heinServiceTypeThuocTrongDanhMucNumOder;
+            }
+            // Lặp qua để đổi serviceTypeName từ Phẫu thuật || Thủ thuật || Nội soi thành Thủ thuật, phẫu thuật
+            if (in_array($item->service_type_code, ['TT', 'PT', 'NS'])) {
+                $item->hein_service_type_name = 'Thủ thuật, phẫu thuật';
+            }
+            return $item;
+        });
+    }
+    function customizeBangKeTongHop6556KhoaPhongThanhToan($data)
+    {
+        return $data->map(function ($item) {
+            if($item->request_department_name == $item->execute_department_name){
+                $item->request_room_name = $item->execute_room_name;
+            }
+            // Lặp qua để đổi các requestRoom của thuốc và vật tư thành Buồng điều trị
+            if (in_array($item->service_type_code, ['TH', 'VT', 'TT', 'PT']) || !$item->hein_service_type_name) {
+                $item->request_room_name = 'Buồng điều trị';
+            }
+            // Lặp qua để đổi serviceTypeName từ Vật tư thành Vật tư y tế
+            if (in_array($item->service_type_code, ['VT'])) {
+                $item->hein_service_type_name = 'Vật tư y tế';
+                $item->hein_service_type_num_order = $this->heinServiceTypeVatTuTrongDanhMucNumOder;
+            }
+            // Lặp qua để đổi serviceTypeName từ Thuốc thành Thuốc, dịch truyền
+            if (in_array($item->service_type_code, ['TH'])) {
+                $item->hein_service_type_name = 'Thuốc, dịch truyền';
+                $item->hein_service_type_num_order = $this->heinServiceTypeThuocTrongDanhMucNumOder;
+            }
+            // Lặp qua để đổi serviceTypeName từ Phẫu thuật || Thủ thuật || Nội soi thành Thủ thuật, phẫu thuật
+            if (in_array($item->service_type_code, ['TT', 'PT', 'NS'])) {
+                $item->hein_service_type_name = 'Thủ thuật, phẫu thuật';
             }
             return $item;
         });

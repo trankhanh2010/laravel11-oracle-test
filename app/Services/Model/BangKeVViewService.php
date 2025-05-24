@@ -138,9 +138,9 @@ class BangKeVViewService
         $groupBy = [
             "total",
             "heinCardNumber",
-            "executeDepartmentName",
-            "executeRoomName",
-            "serviceTypeName",
+            "requestDepartmentName",
+            "requestRoomName",
+            "heinServiceTypeName",
             "tdlServiceName",
             "patientTypeName",
 
@@ -149,7 +149,7 @@ class BangKeVViewService
         $data = $this->bangKeVViewRepository->applyGroupByFieldBieuMau($data, $groupBy, $this->params->tab);
         return ['data' => $data, 'count' => $count];
     }
-    private function getBangKeNgoaiTruVienPhiTheoKhoa()
+    private function getBangKeNgoaiTruVienPhiTheoKhoa6556QDBYT()
     {
         $data = $this->bangKeVViewRepository->applyJoins();
         $data = $this->bangKeVViewRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
@@ -163,13 +163,13 @@ class BangKeVViewService
         $data = $this->bangKeVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
         $groupBy = [
             "total",
-            "executeDepartmentName",
-            "executeRoomName",
-            "serviceTypeName",
+            "requestDepartmentName",
+            "requestRoomName",
+            "heinServiceTypeName",
             "tdlServiceName",
             "patientTypeName",
-
         ];
+        $data = $this->bangKeVViewRepository->customizeBangKeNgoaiTruVienPhiTheoKhoa6556QDBYT($data);
         $data = $this->bangKeVViewRepository->applyGroupByFieldBieuMau($data, $groupBy, $this->params->tab);
         return ['data' => $data, 'count' => $count];
     }
@@ -211,12 +211,13 @@ class BangKeVViewService
         $groupBy = [
             "total",
             "heinCardNumber",
-            "executeDepartmentName",
-            "executeRoomName",
-            "serviceTypeName",
+            "requestDepartmentName",
+            "requestRoomName",
+            "heinServiceTypeName",
             "tdlServiceName",
             "patientTypeName",
         ];
+        $data = $this->bangKeVViewRepository->customizeBangKeNoiTruBHYTTheoKhoa6556QDBYT($data);
         $data = $this->bangKeVViewRepository->applyGroupByFieldBieuMau($data, $groupBy, $this->params->tab);
         return ['data' => $data, 'count' => $count];
     }
@@ -236,10 +237,9 @@ class BangKeVViewService
             "total",
             "requestDepartmentName",
             "requestRoomName",
-            "serviceTypeName",
+            "heinServiceTypeName",
             "tdlServiceName",
             "patientTypeName",
-
         ];
         $data = $this->bangKeVViewRepository->customizeBangKeNoiTruVienPhiTheoKhoa6556QDBYT($data); // Lặp qua để đổi các requestRoom của thuốc và vật tư thành Buồng điều trị, đổi các serviceTypeName
         $data = $this->bangKeVViewRepository->applyGroupByFieldBieuMau($data, $groupBy, $this->params->tab);
@@ -259,14 +259,16 @@ class BangKeVViewService
         $data = $this->bangKeVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
         $groupBy = [
             "total",
-            // "heinCardNumber",
+            "heinCardNumber",
             "isExpend",
-            "executeDepartmentName",
-            "serviceTypeName",
+            "requestDepartmentName",
+            "requestRoomName",
+            "heinServiceTypeName",
             "tdlServiceName",
             "patientTypeName",
 
         ];
+        $data = $this->bangKeVViewRepository->customizeBangKeTongHop6556KhoaPhongThanhToan($data); 
         $data = $this->bangKeVViewRepository->applyGroupByFieldBieuMau($data, $groupBy, $this->params->tab);
         return ['data' => $data, 'count' => $count];
     }
@@ -339,10 +341,10 @@ class BangKeVViewService
             return writeAndThrowError(config('params')['db_service']['error']['bang_ke_v_view'], $e);
         }
     }
-    public function bangKeNgoaiTruVienPhiTheoKhoa()
+    public function bangKeNgoaiTruVienPhiTheoKhoa6556QDBYT()
     {
         try {
-            return $this->getBangKeNgoaiTruVienPhiTheoKhoa();
+            return $this->getBangKeNgoaiTruVienPhiTheoKhoa6556QDBYT();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['bang_ke_v_view'], $e);
         }
