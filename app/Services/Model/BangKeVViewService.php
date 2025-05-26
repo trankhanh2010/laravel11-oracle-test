@@ -117,8 +117,8 @@ class BangKeVViewService
             "heinServiceTypeName",
             "tdlServiceName",
             "patientTypeName",
-
         ];
+        $data = $this->bangKeVViewRepository->customizeBangKeNgoaiTruVienPhiTPTB($data); // Thêm vào 1 bản ghi nếu bản ghi có đủ patient_type_id và primary_patient_type_id
         $data = $this->bangKeVViewRepository->applyGroupByFieldBieuMau($data, $groupBy, $this->params->tab);
         return ['data' => $data, 'count' => $count];
     }
@@ -192,6 +192,28 @@ class BangKeVViewService
             "patientTypeName",
 
         ];
+        $data = $this->bangKeVViewRepository->applyGroupByFieldBieuMau($data, $groupBy, $this->params->tab);
+        return ['data' => $data, 'count' => $count];
+    }
+    private function getBangKeNoiTruVienPhiTPTB()
+    {
+        $data = $this->bangKeVViewRepository->applyJoins();
+        $data = $this->bangKeVViewRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
+        $data = $this->bangKeVViewRepository->applyIntructionTimeFromFilter($data, $this->params->intructionTimeFrom);
+        $data = $this->bangKeVViewRepository->applyIntructionTimeToFilter($data, $this->params->intructionTimeTo);
+        $data = $this->bangKeVViewRepository->applyBangKeNoiTruVienPhiTPTBFilter($data);
+        $data = $this->bangKeVViewRepository->applyStatusFilter($data, $this->params->status);
+
+        $count = null;
+        $data = $this->bangKeVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->bangKeVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        $groupBy = [
+            "total",
+            "heinServiceTypeName",
+            "tdlServiceName",
+            "patientTypeName",
+        ];
+        $data = $this->bangKeVViewRepository->customizeBangKeNoiTruVienPhiTPTB($data); // Thêm vào 1 bản ghi nếu bản ghi có đủ patient_type_id và primary_patient_type_id
         $data = $this->bangKeVViewRepository->applyGroupByFieldBieuMau($data, $groupBy, $this->params->tab);
         return ['data' => $data, 'count' => $count];
     }
@@ -353,6 +375,14 @@ class BangKeVViewService
     {
         try {
             return $this->getBangKeNoiTruHaoPhi();
+        } catch (\Throwable $e) {
+            return writeAndThrowError(config('params')['db_service']['error']['bang_ke_v_view'], $e);
+        }
+    }
+    public function bangKeNoiTruVienPhiTPTB()
+    {
+        try {
+            return $this->getBangKeNoiTruVienPhiTPTB();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['bang_ke_v_view'], $e);
         }
