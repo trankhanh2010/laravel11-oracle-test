@@ -393,13 +393,17 @@ class BangKeVViewRepository
                 if ($laMauTPTB) {
                     $totalThanhTienBV = round($group->sum(function ($item) {
                         if ($item->patient_type_id && $item->primary_patient_type_id) {
-                            return ($item['vir_total_patient_price_no_dc'] - $item['vir_total_patient_price_bhyt']) ?? 0;
+                            if($item->hein_service_type_code != 'TH_TDM'){
+                                return ($item['vir_total_patient_price_no_dc'] - $item['vir_total_patient_price_bhyt']) ?? 0;
+                            }
                         }
                         return ($item['vir_total_price']) ?? 0;
                     }));
                     $totalQuyBHYT = round($group->sum(function ($item) {
                         if ($item->patient_type_id && $item->primary_patient_type_id) {
-                            return 0;
+                            if($item->hein_service_type_code != 'TH_TDM'){
+                                return 0;
+                            }
                         }
                         return ($item['vir_total_hein_price']) ?? 0;
                     }));
@@ -538,19 +542,7 @@ class BangKeVViewRepository
     }
     function customizeBangKeNgoaiTruVienPhiTPTB($data)
     {
-        return $data->flatMap(function ($item) {
-            // Nếu có cả patient_type_id và primary_patient_type_id
-            if ($item->patient_type_id && $item->primary_patient_type_id) {
-                // Clone bản ghi và cập nhật patient_type_id
-                $cloned = clone $item;
-                $cloned->patient_type_name = $item->primary_patient_type_name;
-                // Trả về bản gốc + bản đã sửa
-                return [$item, $cloned];
-            }
-
-            // Trường hợp còn lại: chỉ trả về bản gốc
-            return [$item];
-        });
+        return $this->customizeBangKeVienPhiTPTB($data);
     }
     function customizeBangKeNgoaiTruBHYTTheoKhoa6556QDBYT($data)
     {
@@ -601,28 +593,46 @@ class BangKeVViewRepository
     }
     function customizeBangKeNoiTruVienPhiTPTB($data)
     {
+        return $this->customizeBangKeVienPhiTPTB($data);
+    }
+
+    function customizeBangKeVienPhiTPTB($data)
+    {
         $data->map(function ($item) {
-            // Nếu là thuốc trong danh mục và vật tư ngoài danh mục thì chuyển sang khác
-            if (in_array($item->hein_service_type_code, ['TH_TDM', 'VT_NDM'])) {
+            // Nếu là vật tư ngoài danh mục thì chuyển sang khác
+            if (in_array($item->hein_service_type_code, ['VT_NDM'])) {
                 $item->hein_service_type_name = '';
             }
             // Nếu là thuốc ngoài danh mục và là đơn trực thì chuyển sang khác
-            if (in_array($item->hein_service_type_code, ['TH_NDM']) && $item->service_req_type_code == 'DT') {
+            if (in_array($item->hein_service_type_code, ['TH_NDM','TH_TDM']) && $item->service_req_type_code == 'DT') {
                 $item->hein_service_type_name = '';
             }
             return $item;
         });
-
-        return $data->flatMap(function ($item) {
+        $checks = [];
+        return $data->flatMap(function ($item) use (&$checks) {
+            $results = [$item];
             // Nếu có cả patient_type_id và primary_patient_type_id
-            if ($item->patient_type_id && $item->primary_patient_type_id) {
+            if ($item->patient_type_id && $item->primary_patient_type_id && !in_array($item->hein_service_type_code, ['TH_NDM','TH_TDM'])) {
                 // Clone bản ghi và cập nhật patient_type_id
                 $cloned = clone $item;
                 $cloned->patient_type_name = $item->primary_patient_type_name;
-                // Trả về bản gốc + bản đã sửa
-                return [$item, $cloned];
-            }
+                $results[] = $cloned;
+                
+                // Nếu loại dịch vụ là XN,PT,TT thì clone thêm 1 cái có (tổng amount clone = tổng amount - 1)
+                if(in_array($item->service_type_code, ['XN', 'PT', 'TT', 'GI']) && $item->amount >= 1){
+                    if($checks[$item->tdl_service_code]??false){
+                        $cloned = clone $item;
+                        $cloned->patient_type_name = 'addPatientTypeTPTB';
 
+                        $results[] = $cloned;
+                    }else{
+                        $checks[$item->tdl_service_code] = true;
+                    }
+                }
+                // Trả về bản gốc + bản đã sửa
+                return $results;
+            }
             // Trường hợp còn lại: chỉ trả về bản gốc
             return [$item];
         });
