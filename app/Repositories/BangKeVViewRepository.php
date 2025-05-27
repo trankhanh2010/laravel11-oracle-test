@@ -139,8 +139,10 @@ class BangKeVViewRepository
                 "execute_department_is_clinical",
                 "request_room_code",
                 "request_room_name",
+                "request_room_type_code",
                 "execute_room_code",
                 "execute_room_name",
+                "execute_room_type_code",
                 "execute_room_is_exam",
                 "is_out_parent_fee",
                 
@@ -588,6 +590,9 @@ class BangKeVViewRepository
     function customizeBangKeNgoaiTruBHYTTheoKhoa6556QDBYT($data)
     {
         return $data->map(function ($item) {
+            if ($item->request_department_name == $item->execute_department_name) {
+                $item->request_room_name = $item->execute_room_name;
+            }
             // Lặp qua để đổi serviceTypeName từ Thuốc thành Thuốc, dịch truyền
             if (in_array($item->service_type_code, ['TH'])) {
                 $item->hein_service_type_name = 'Thuốc, dịch truyền';
