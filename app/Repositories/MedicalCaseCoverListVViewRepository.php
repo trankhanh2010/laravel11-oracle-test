@@ -76,6 +76,7 @@ class MedicalCaseCoverListVViewRepository
                 'free_co_paid_time',
                 'is_approve_finish',
                 'live_area_code',
+                'tinh_trang_ra_vien',
 
             ]);
         }
@@ -103,6 +104,7 @@ class MedicalCaseCoverListVViewRepository
                 'treatment_end_type_name',
                 'treatment_result_code',
                 'treatment_result_name',
+                'tinh_trang_ra_vien',
                 'death_cause_code',
                 'death_cause_name',
                 'death_within_code',

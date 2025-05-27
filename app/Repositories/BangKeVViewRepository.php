@@ -506,8 +506,8 @@ class BangKeVViewRepository
                 if ($currentField === 'hein_card_number') {
                     $maThe = $group->first()['hein_card_number'] ?? '';
                     $tongChiPhi = $totalThanhTienBV;
-                    $heinCardFromTime = $group->first()['json_patient_type_alter']?->HEIN_CARD_FROM_TIME ?? null;
-                    $heinCardToTime = $group->first()['json_patient_type_alter']?->HEIN_CARD_TO_TIME ?? null;
+                    $heinCardFromTime = (string) $group->first()['json_patient_type_alter']?->HEIN_CARD_FROM_TIME ?? null;
+                    $heinCardToTime = (string) $group->first()['json_patient_type_alter']?->HEIN_CARD_TO_TIME ?? null;
                     $result['maTheBHYT'] = $maThe;
                     $result['mucHuongBHYT'] = getMucHuongBHYT($maThe, $tongChiPhi);
                     $result['heinCardFromTime'] = $heinCardFromTime;
@@ -590,7 +590,7 @@ class BangKeVViewRepository
     function customizeBangKeNgoaiTruBHYTTheoKhoa6556QDBYT($data)
     {
         return $data->map(function ($item) {
-            if ($item->request_department_name == $item->execute_department_name) {
+            if ($item->tdl_is_main_exam) {
                 $item->request_room_name = $item->execute_room_name;
             }
             // Lặp qua để đổi serviceTypeName từ Thuốc thành Thuốc, dịch truyền
@@ -608,7 +608,7 @@ class BangKeVViewRepository
     function customizeBangKeNgoaiTruVienPhiTheoKhoa6556QDBYT($data)
     {
         return $data->map(function ($item) {
-            if ($item->request_department_name == $item->execute_department_name) {
+            if ($item->tdl_is_main_exam) {
                 $item->request_room_name = $item->execute_room_name;
             }
             // Lặp qua để đổi serviceTypeName từ Thuốc thành Thuốc, dịch truyền
@@ -686,7 +686,7 @@ class BangKeVViewRepository
     function customizeBangKeNoiTruBHYTTheoKhoa6556QDBYT($data)
     {
         return $data->map(function ($item) {
-            if ($item->request_department_name == $item->execute_department_name) {
+            if ($item->tdl_is_main_exam) {
                 $item->request_room_name = $item->execute_room_name;
             }
             // Lặp qua để đổi các requestRoom của thuốc và vật tư thành Buồng điều trị
@@ -713,7 +713,7 @@ class BangKeVViewRepository
     function customizeBangKeNoiTruVienPhiTheoKhoa6556QDBYT($data)
     {
         return $data->map(function ($item) {
-            if ($item->request_department_name == $item->execute_department_name) {
+            if ($item->tdl_is_main_exam) {
                 $item->request_room_name = $item->execute_room_name;
             }
             // Lặp qua để đổi các requestRoom của thuốc và vật tư thành Buồng điều trị
@@ -877,9 +877,10 @@ class BangKeVViewRepository
     public function applyBangKeNgoaiTruVienPhi100ptChuaThanhToanFilter($query)
     {
         $query
-            ->where(function ($query) {
-                $query->where('treatment_type_code',  '<>', '03');
-            })
+            // ->where(function ($query) {
+            //     $query->where('treatment_type_code',  '<>', '03');
+            // })
+            ->where('da_thanh_toan', '0')
             ->where('patient_type_code', '02')
             ->where(function ($query) {
                 $query->where('is_expend', 0)
