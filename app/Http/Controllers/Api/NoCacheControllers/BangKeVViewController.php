@@ -110,7 +110,12 @@ class BangKeVViewController extends BaseApiCacheController
                 $data = $this->bangKeVViewService->bangKeNoiTruVienPhiTheoKhoa6556QDBYT();
                 break;
             case 'bangKeTongHop6556KhoaPhongThanhToan':
-                $data = $this->bangKeVViewService->bangKeTongHop6556KhoaPhongThanhToan();
+                $dataChiPhi = $this->bangKeVViewService->bangKeTongHop6556KhoaPhongThanhToan();
+                $dataHaoPhi = $this->bangKeVViewService->bangKeTongHop6556KhoaPhongThanhToanPhanHaoPhi();
+                $data=[];
+                $data['data']['key'] = '';
+                $data['count'] = null;
+                $data['data']['children'] =  collect($dataChiPhi['data'])->merge($dataHaoPhi['data']);
                 break;
             case 'tongHopNgoaiTruVienPhiHaoPhi':
                 $data = $this->bangKeVViewService->tongHopNgoaiTruVienPhiHaoPhi();

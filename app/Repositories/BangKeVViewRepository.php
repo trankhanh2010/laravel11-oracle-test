@@ -132,9 +132,11 @@ class BangKeVViewRepository
                 "request_department_code",
                 "request_department_name",
                 "request_department_num_order",
+                "request_department_is_clinical",
                 "execute_department_code",
                 "execute_department_name",
                 "execute_department_num_order",
+                "execute_department_is_clinical",
                 "request_room_code",
                 "request_room_name",
                 "execute_room_code",
@@ -350,14 +352,15 @@ class BangKeVViewRepository
             $laMauHaoPhi = in_array($tab, ['bangKeNgoaiTruHaoPhi', 'bangKeNoiTruHaoPhi']);
             $laMauBHYTHaoPhi = in_array($tab, ['bangKeNgoaiTruBHYTHaoPhi']);
             $laMauTPTB = in_array($tab, ['bangKeNgoaiTruVienPhiTPTB', 'bangKeNoiTruVienPhiTPTB']);
-            $laMauTongHop = in_array($tab, ['tongHopNgoaiTruVienPhiHaoPhi']);
+            $tongHopNgoaiTruVienPhiHaoPhi = in_array($tab, ['tongHopNgoaiTruVienPhiHaoPhi']);
+            $bangKeTongHop6556KhoaPhongThanhToan = in_array($tab, ['bangKeTongHop6556KhoaPhongThanhToan']);
 
             $currentField = array_shift($fields);
             $originalField = $fieldMappings[$currentField];
 
             return $items->groupBy(function ($item) use ($currentField) {
                 return $item[$currentField] ?? null;
-            })->map(function ($group, $key) use ($fields, $groupData, $originalField, $currentField, $laMauHaoPhi, $laMauBHYTHaoPhi, $laMauTPTB, $laMauTongHop) {
+            })->map(function ($group, $key) use ($fields, $groupData, $originalField, $currentField, $laMauHaoPhi, $laMauBHYTHaoPhi, $laMauTPTB, $tongHopNgoaiTruVienPhiHaoPhi, $bangKeTongHop6556KhoaPhongThanhToan) {
                 // Nếu đang nhóm theo 'hein_service_type_name' thì sắp xếp $group theo 'tdl_service_name'
                 if ($currentField === 'hein_service_type_name') {
                     $group = $group->sortBy('tdl_service_name')->values();
@@ -392,7 +395,7 @@ class BangKeVViewRepository
                 if ($laMauBHYTHaoPhi) {
                     $totalThanhTienBV = 0;
                 }
-                if($laMauTongHop){
+                if($tongHopNgoaiTruVienPhiHaoPhi){
                     $totalThanhTienBV = round($group->sum(function ($item) {
                         // Nếu là vật tư hoặc thuốc hao phí
                         if(in_array($item->service_type_code , ['VT','TH']) && $item->is_expend == 1){
@@ -408,7 +411,24 @@ class BangKeVViewRepository
                         }
                        return ($item['vir_total_patient_price_no_dc']) ?? 0;
                     }));
+                }
+                
+                if($bangKeTongHop6556KhoaPhongThanhToan){
+                    $totalThanhTienBV = round($group->sum(function ($item) {
+                        // Nếu là hao phí
+                        if($item->is_expend == 1){
+                            return ($item['vir_total_price_no_expend']) ?? 0;
+                        }
+                        return ($item['vir_total_price']) ?? 0;
+                    }));
 
+                    $totalKhac = round($group->sum(function ($item) {
+                        // Nếu là hao phí
+                        if($item->is_expend == 1){
+                             return ($item['vir_total_price_no_expend']) ?? 0;
+                        }
+                       return ($item['other_source_price']) ?? 0;
+                    }));
                 }
 
                 if ($laMauTPTB) {
@@ -714,9 +734,37 @@ class BangKeVViewRepository
     }
     function customizeBangKeTongHop6556KhoaPhongThanhToan($data)
     {
-        return $data->map(function ($item) {
+        // Đếm số mã BHYT
+        $heinCards = collect($data)
+            ->pluck('hein_card_number')
+            ->filter()   // Bỏ null/empty
+            ->unique()   // Lấy duy nhất
+            ->values();  // Đánh lại chỉ số (index)
+        $jsonPatientTypeAlters = collect($data)
+            ->pluck('json_patient_type_alter')
+            ->filter()   // Bỏ null/empty
+            ->unique()   // Lấy duy nhất
+            ->values();  // Đánh lại chỉ số (index)
+        $totalHein = $heinCards->count();
+        if ($totalHein === 1) {
+            $heinCardNumber = $heinCards[0]??null; // hoặc ->first()
+            $jsonPatientTypeAlter = $jsonPatientTypeAlters[0]??null; // hoặc ->first()
+        } else {
+            $heinCardNumber = null; // hoặc xử lý theo ý bạn
+            $jsonPatientTypeAlter = null; // hoặc ->first()
+        } 
+
+        return $data->map(function ($item) use ($totalHein, $heinCardNumber, $jsonPatientTypeAlter) {
+            // Nếu chỉ có 1 mã thêm hein cho các bản ghi bị trống của phần chi phí
+            if($totalHein == 1 && ($item->is_expend == 0 || $item->is_expend == null) && $item->hein_card_number == null && $item->json_patient_type_alter == null){
+                $item->hein_card_number = $heinCardNumber;
+                $item->json_patient_type_alter = $jsonPatientTypeAlter;
+            }
             if ($item->request_department_name == $item->execute_department_name) {
                 $item->request_room_name = $item->execute_room_name;
+            }
+            if (!$item->request_department_is_clinical) {
+                $item->request_department_name = $item->request_room_name;
             }
             // Lặp qua để đổi các requestRoom của thuốc và vật tư thành Buồng điều trị
             if (in_array($item->service_type_code, ['TH', 'VT', 'TT', 'PT']) || !$item->hein_service_type_name) {
@@ -889,6 +937,17 @@ class BangKeVViewRepository
     }
     public function applyBangKeTongHop6556KhoaPhongThanhToanFilter($query)
     {
+        $query->where(function ($query) {
+                $query->where('is_expend', 0)
+                    ->orWhereNull('is_expend');
+            });
+        return $query;
+    }
+    public function applyBangKeTongHop6556KhoaPhongThanhToanPhanHaoPhiFilter($query)
+    {
+        $query->where(function ($query) {
+                $query->where('is_expend', 1);
+            });
         return $query;
     }
     public function applyTongHopNgoaiTruVienPhiHaoPhiFilter($query)

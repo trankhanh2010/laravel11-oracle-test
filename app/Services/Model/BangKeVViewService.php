@@ -291,6 +291,7 @@ class BangKeVViewService
     private function getBangKeTongHop6556KhoaPhongThanhToan()
     {
         $data = $this->bangKeVViewRepository->applyJoins();
+        $data = $this->bangKeVViewRepository->addJsonPatientTypeAlter($data);
         $data = $this->bangKeVViewRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
         $data = $this->bangKeVViewRepository->applyIntructionTimeFromFilter($data, $this->params->intructionTimeFrom);
         $data = $this->bangKeVViewRepository->applyIntructionTimeToFilter($data, $this->params->intructionTimeTo);
@@ -301,11 +302,34 @@ class BangKeVViewService
         $data = $this->bangKeVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
         $data = $this->bangKeVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
         $groupBy = [
-            "total",
+            "isExpend",
             "heinCardNumber",
+            "requestDepartmentName",
+            "heinServiceTypeName",
+            "tdlServiceName",
+            "patientTypeName",
+
+        ];
+        $data = $this->bangKeVViewRepository->customizeBangKeTongHop6556KhoaPhongThanhToan($data); 
+        $data = $this->bangKeVViewRepository->applyGroupByFieldBieuMau($data, $groupBy, $this->params->tab);
+        return ['data' => $data, 'count' => $count];
+    }
+    private function getBangKeTongHop6556KhoaPhongThanhToanPhanHaoPhi()
+    {
+        $data = $this->bangKeVViewRepository->applyJoins();
+        $data = $this->bangKeVViewRepository->addJsonPatientTypeAlter($data);
+        $data = $this->bangKeVViewRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
+        $data = $this->bangKeVViewRepository->applyIntructionTimeFromFilter($data, $this->params->intructionTimeFrom);
+        $data = $this->bangKeVViewRepository->applyIntructionTimeToFilter($data, $this->params->intructionTimeTo);
+        $data = $this->bangKeVViewRepository->applyBangKeTongHop6556KhoaPhongThanhToanPhanHaoPhiFilter($data);
+        $data = $this->bangKeVViewRepository->applyStatusFilter($data, $this->params->status);
+
+        $count = null;
+        $data = $this->bangKeVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->bangKeVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        $groupBy = [
             "isExpend",
             "requestDepartmentName",
-            "requestRoomName",
             "heinServiceTypeName",
             "tdlServiceName",
             "patientTypeName",
@@ -437,6 +461,14 @@ class BangKeVViewService
     {
         try {
             return $this->getBangKeTongHop6556KhoaPhongThanhToan();
+        } catch (\Throwable $e) {
+            return writeAndThrowError(config('params')['db_service']['error']['bang_ke_v_view'], $e);
+        }
+    }
+    public function bangKeTongHop6556KhoaPhongThanhToanPhanHaoPhi()
+    {
+        try {
+            return $this->getBangKeTongHop6556KhoaPhongThanhToanPhanHaoPhi();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['bang_ke_v_view'], $e);
         }

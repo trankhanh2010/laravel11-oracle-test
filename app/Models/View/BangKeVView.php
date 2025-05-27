@@ -17,6 +17,9 @@ class BangKeVView extends Model
     ];
     public function getJsonPatientTypeAlterAttribute($value)
     {
-        return json_decode($value);
+        if (is_string($value)) {
+                return json_decode($value);
+            }
+        return $value;
     }
 }
