@@ -94,7 +94,7 @@ class UpdatePriorityTypeRequest extends FormRequest
         $validator->after(function ($validator) {
             if ($this->has('bhyt_prefixs_list') && ($this->bhyt_prefixs_list[0] != null)) {
                 foreach ($this->bhyt_prefixs_list as $id) {
-                    if (!is_string($id) || !\App\Models\HIS\BHYTWhitelist::where('bhyt_whitelist_code', $id)->where('is_active', 1)->first()) {
+                    if (!is_string($id) || !\App\Models\HIS\BhytWhitelist::where('bhyt_whitelist_code', $id)->where('is_active', 1)->first()) {
                         $validator->errors()->add('bhyt_prefixs', 'Đầu mã thẻ BHYT với mã = ' . $id . config('keywords')['error']['not_find_or_not_active_in_list']);
                     }
                 }

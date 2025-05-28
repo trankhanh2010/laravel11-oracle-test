@@ -4,6 +4,7 @@ namespace App\Http\Requests\BangKe;
 
 use App\Models\HIS\PatientType;
 use App\Models\HIS\SereServ;
+use App\Models\HIS\SereServBill;
 use App\Models\HIS\Service;
 use App\Models\HIS\ServicePaty;
 use App\Models\HIS\Treatment;
@@ -27,6 +28,7 @@ class UpdateBangKeRequest extends FormRequest
     protected $servicePatyRepository;
     protected $service;
     protected $patientType;
+    protected $sereServBill;
     protected $patientTypeBHYTId;
     protected $patientTypeKSKId;
 
@@ -52,6 +54,7 @@ class UpdateBangKeRequest extends FormRequest
         $this->servicePatyRepository = new ServicePatyRepository($this->servicePaty);
         $this->service = new Service();
         $this->patientType = new PatientType();
+        $this->sereServBill = new SereServBill();
 
         $cacheKeySet = "cache_keys:" . "setting"; // Set để lưu danh sách key
         $cacheKey = 'patient_type_bhyt_id';
@@ -139,6 +142,8 @@ class UpdateBangKeRequest extends FormRequest
                             $is_no_execute = $this->has('is_no_execute') ? $this->is_no_execute : $dataBangKeVView->is_no_execute;
                             $is_not_use_bhyt = $this->has('is_not_use_bhyt') ? $this->is_not_use_bhyt : $dataBangKeVView->is_not_use_bhyt;
                             $other_pay_source_id = $this->has('other_pay_source_id') ? $this->other_pay_source_id : $dataBangKeVView->other_pay_source_id;
+
+                            $coHoaDon = $this->sereServBill->where('sere_serv_id', $id)->exists(); // check xem có bill cho dịch vụ này chưa
                             // Lưu tạm data update vào mảng 
                             $patientTypeIds[$id] = $patient_type_id;
                             $primaryPatientTypeIds[$id] = $primary_patient_type_id;
@@ -157,6 +162,11 @@ class UpdateBangKeRequest extends FormRequest
                                 $validator->errors()->add('id', 'Hồ sơ đã duyệt BHYT!');
                             }
 
+                            if($this->has('patient_type_id') || $this->has('primary_patient_type_id')){
+                                if ($coHoaDon) {
+                                    $validator->errors()->add('id', '(' . $dataBangKeVView->service_req_code . ')' . ' - ' . $dataBangKeVView->tdl_service_name   . ' dịch vụ đã tồn tại hóa đơn! Không cho phép thực hiện cập nhật giá!');
+                                }
+                            }
                             // DTTT
                             // Lấy ra giá của chính sách 
                             if ($patient_type_id) {
@@ -167,7 +177,7 @@ class UpdateBangKeRequest extends FormRequest
                                     }
                                 }
                                 if ($dataBangKeVView->da_thanh_toan) {
-                                    $validator->errors()->add('is_out_parent_fee', '(' . $dataBangKeVView->service_req_code . ')' . ' - ' . $dataBangKeVView->tdl_service_name   . ' dịch vụ đã được thanh toán!');
+                                    $validator->errors()->add('patient_type_id', '(' . $dataBangKeVView->service_req_code . ')' . ' - ' . $dataBangKeVView->tdl_service_name   . ' dịch vụ đã được thanh toán!');
                                 }
                                 $activePrice = $this->servicePatyRepository->getActivePriceByServieIdPatientTypeId($dataBangKeVView->service_id, $patient_type_id, $dataTreatment->in_time)->price ?? null;
                                 if ($activePrice === null) {
@@ -191,7 +201,7 @@ class UpdateBangKeRequest extends FormRequest
                                         $validator->errors()->add('primary_patient_type_id',  '(' . $dataBangKeVView->service_req_code . ')' . ' - ' . $dataBangKeVView->tdl_service_name   . ' đối tượng thanh toán và đối tượng phụ thu không được trùng nhau!');
                                     }
                                     if ($dataBangKeVView->da_thanh_toan) {
-                                        $validator->errors()->add('is_out_parent_fee', '(' . $dataBangKeVView->service_req_code . ')' . ' - ' . $dataBangKeVView->tdl_service_name   . ' dịch vụ đã được thanh toán!');
+                                        $validator->errors()->add('primary_patient_type_id', '(' . $dataBangKeVView->service_req_code . ')' . ' - ' . $dataBangKeVView->tdl_service_name   . ' dịch vụ đã được thanh toán!');
                                     }
                                     $activePrimaryPrice = $this->servicePatyRepository->getActivePriceByServieIdPatientTypeId($dataBangKeVView->service_id, $primary_patient_type_id, $dataTreatment->in_time)->price ?? null;
                                     if ($activePrimaryPrice === null) {
@@ -203,8 +213,10 @@ class UpdateBangKeRequest extends FormRequest
                                         $limitPrices[$id] = $activePrice;
                                         $prices[$id] = $activePrimaryPrice;
                                         $primaryPrices[$id] = $activePrimaryPrice;
-                                        $heinPrices[$id] = $activePrice;
-                                        $heinLimitPrices[$id] = $activePrice;
+                                        $heinLimitPrices[$id] = ($this->patientTypeBHYTId == $patient_type_id) ? $activePrice : null; // Nếu DTTT là BHYT thì thêm không thì là null
+                                        $heinPrices[$id] = ($this->patientTypeBHYTId == $patient_type_id) 
+                                            ? (($dataBangKeVView->total_price > $heinLimitPrices[$id]) ? $activePrice : ($originalPrices[$id] * $dataBangKeVView->hein_ratio)) // Nếu vượt trần thì lấy $activePrice còn không thì lấy original_price * hein_ratio
+                                            : null; // Nếu DTTT là BHYT thì thêm không thì là null
 
                                         $this->merge([
                                             'price' => $prices,

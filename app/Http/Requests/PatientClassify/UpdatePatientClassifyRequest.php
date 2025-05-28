@@ -122,7 +122,7 @@ class UpdatePatientClassifyRequest extends FormRequest
         $validator->after(function ($validator) {
             if ($this->has('bhyt_whitelist_ids_list') && ($this->bhyt_whitelist_ids_list[0] != null)) {
                 foreach ($this->bhyt_whitelist_ids_list as $id) {
-                    if (!is_numeric($id) || !\App\Models\HIS\BHYTWhitelist::where('id', $id)->where('is_active', 1)->first()) {
+                    if (!is_numeric($id) || !\App\Models\HIS\BhytWhitelist::where('id', $id)->where('is_active', 1)->first()) {
                         $validator->errors()->add('bhyt_whitelist_ids', 'Đầu mã BHYT với id = ' . $id . config('keywords')['error']['not_find_or_not_active_in_list']);
                     }
                 }

@@ -159,6 +159,7 @@ class BangKeVViewRepository
                 "hein_ratio",
                 "in_time",
                 "treatment_id",
+                "invoice_id",
                 "hein_price",
                 "hein_limit_price",
                 "patient_price_bhyt",
