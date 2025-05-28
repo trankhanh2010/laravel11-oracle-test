@@ -359,6 +359,7 @@ class BangKeVViewRepository
             $laMauHaoPhi = in_array($tab, ['bangKeNgoaiTruHaoPhi', 'bangKeNoiTruHaoPhi']);
             $laMauBHYTHaoPhi = in_array($tab, ['bangKeNgoaiTruBHYTHaoPhi']);
             $laMauTPTB = in_array($tab, ['bangKeNgoaiTruVienPhiTPTB', 'bangKeNoiTruVienPhiTPTB']);
+            $laMauVienPhi = in_array($tab, ['bangKeNgoaiTruVienPhiTheoKhoa6556QDBYT', 'bangKeNoiTruVienPhiTheoKhoa6556QDBYT']);
             $tongHopNgoaiTruVienPhiHaoPhi = in_array($tab, ['tongHopNgoaiTruVienPhiHaoPhi']);
             $bangKeTongHop6556KhoaPhongThanhToan = in_array($tab, ['bangKeTongHop6556KhoaPhongThanhToan']);
 
@@ -367,7 +368,7 @@ class BangKeVViewRepository
 
             return $items->groupBy(function ($item) use ($currentField) {
                 return $item[$currentField] ?? null;
-            })->map(function ($group, $key) use ($fields, $groupData, $originalField, $currentField, $laMauHaoPhi, $laMauBHYTHaoPhi, $laMauTPTB, $tongHopNgoaiTruVienPhiHaoPhi, $bangKeTongHop6556KhoaPhongThanhToan) {
+            })->map(function ($group, $key) use ($fields, $groupData, $originalField, $currentField, $laMauHaoPhi, $laMauBHYTHaoPhi, $laMauTPTB, $laMauVienPhi, $tongHopNgoaiTruVienPhiHaoPhi, $bangKeTongHop6556KhoaPhongThanhToan) {
                 // Nếu đang nhóm theo 'hein_service_type_name' thì sắp xếp $group theo 'tdl_service_name'
                 if ($currentField === 'hein_service_type_name') {
                     $group = $group->sortBy('tdl_service_name')->values();
@@ -386,12 +387,10 @@ class BangKeVViewRepository
                     return ($item['other_source_price']) ?? 0;
                 }));
                 $totalThanhTienBH = round($group->sum(function ($item) {
-                    return ($item['vir_hein_price']) ?? 0;
+                    return round((($item['original_price']) ?? 0) * (($item['amount']) ?? 0),2); 
                 }));
                 $totalGiaNguoiBenhCungChiTra = round($group->sum(function ($item) {
-                    return (($item['price']) ?? 0) > (($item['hein_limit_price']) ?? 0)
-                        ? ($item['patient_price_bhyt'] ?? 0)
-                        : ($item['vir_total_patient_price'] ?? 0); // Nếu là kỹ thuật cao thì dùng $patientPriceBhyt không thì dùng virTotalPatientPrice;
+                    return  ($item['vir_total_patient_price_bhyt'] ?? 0);
                 }));
 
                 if ($laMauHaoPhi) {
@@ -401,6 +400,9 @@ class BangKeVViewRepository
                 }
                 if ($laMauBHYTHaoPhi) {
                     $totalThanhTienBV = 0;
+                }
+                if ($laMauVienPhi) {
+                    $totalThanhTienBH = 0;
                 }
                 if($tongHopNgoaiTruVienPhiHaoPhi){
                     $totalThanhTienBV = round($group->sum(function ($item) {
@@ -459,9 +461,7 @@ class BangKeVViewRepository
                         if ($item->patient_type_id && $item->primary_patient_type_id) {
                             return 0;
                         }
-                        return (($item['price']) ?? 0) > (($item['hein_limit_price']) ?? 0)
-                            ? ($item['patient_price_bhyt'] ?? 0)
-                            : ($item['vir_total_patient_price'] ?? 0); // Nếu là kỹ thuật cao thì dùng $patientPriceBhyt không thì dùng virTotalPatientPrice;
+                        return  ($item['vir_total_patient_price_bhyt'] ?? 0);
                     }));
                     $totalKhac = round($group->sum(function ($item) {
                         if ($item->patient_type_id && $item->primary_patient_type_id) {
@@ -528,9 +528,7 @@ class BangKeVViewRepository
                     $requestDepartmentName = $group->first()['request_department_name'] ?? '';
                     $requestRoomName = $group->first()['request_room_name'] ?? '';
                     $tiLeThanhToanBHYT = (float) $group->first()['hein_ratio'] ?? 0;
-                    $donGiaBH = ((float)($group->first()['price'])) > ((float)($group->first()['hein_limit_price']))
-                        ? ((float) ($group->first()['hein_price']))
-                        : ((float) ($group->first()['original_price'])); // Nếu giá price > HEIN_LIMIT_PRICE thì dùng hein_price không thì dùng original_price // Đơn giá BH
+                    $donGiaBH = ((float) ($group->first()['original_price']));
                     $quyBHYT = (int) round($group->first()['vir_total_hein_price']) ?? 0; // Thành tiền BH
                     $khac = (float) $group->first()['other_source_price'] ?? 0;
                     $thanhTienBVHaoPhi = (float) $group->first()['vir_total_price_no_expend'] ?? 0;
@@ -561,6 +559,10 @@ class BangKeVViewRepository
                         if ($group->first()['patient_type_id'] && $group->first()['primary_patient_type_id']) {
                             $result['donGiaBV'] = (float) round($group->first()['vir_patient_price'] - $group->first()['vir_patient_price_bhyt']) ?? 0;
                         }
+                    }
+                    if ($laMauVienPhi) {
+                        $result['donGiaBH'] = 0;
+                        $result['tiLeThanhToanBHYT'] = 0;
                     }
                 }
 
