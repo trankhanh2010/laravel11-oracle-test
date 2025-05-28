@@ -2,7 +2,7 @@
 namespace App\Repositories;
 
 use App\Jobs\ElasticSearch\Index\ProcessElasticIndexingJob;
-use App\Models\HIS\BHYTParam;
+use App\Models\HIS\BhytParam;
 use Illuminate\Support\Facades\DB;
 
 class BhytParamRepository

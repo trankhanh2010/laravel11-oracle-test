@@ -95,9 +95,9 @@ class TreatmentFeeDetailVViewRepository
         // Kiểm tra nếu $item là đối tượng và có các trường cần thiết
         $maThe = isset($item->tdl_hein_card_number) ? $item->tdl_hein_card_number : null;
         $tongChiPhi = isset($item->total_price) ? $item->total_price : null;
-    
+        $thoiGianXacDinh = $item->in_time;
         // Cập nhật trường mucHuongBhyt
-        $item->mucHuongBhyt = getMucHuongBHYT($maThe, $tongChiPhi);
+        $item->mucHuongBhyt = getMucHuongBHYT($maThe, $tongChiPhi, $thoiGianXacDinh);
     
         return $item;
     }

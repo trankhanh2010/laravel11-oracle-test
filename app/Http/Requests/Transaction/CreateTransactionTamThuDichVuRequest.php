@@ -213,7 +213,7 @@ class CreateTransactionTamThuDichVuRequest extends FormRequest
         $validator->after(function ($validator) {
             if($this->treatment_id){   
                 $dataFee = $this->treatmentFeeDetailVView->find($this->treatment_id ?? 0);
-                $this->mucHuongBhyt = getMucHuongBHYT($dataFee['tdl_hein_card_number']??'', $dataFee['total_price']??0)??0;
+                $this->mucHuongBhyt = getMucHuongBHYT($dataFee['tdl_hein_card_number']??'', $dataFee['total_price']??0, $dataFee['in_time']??0)??0;
             }
             if ($this->has('sere_servs_list') && ($this->sere_servs_list[0] ?? 0 != null)) {
                 foreach ($this->sere_servs_list as $item) {

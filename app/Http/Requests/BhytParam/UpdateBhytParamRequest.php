@@ -35,7 +35,7 @@ class UpdateBhytParamRequest extends FormRequest
                                         'numeric',
                                         'regex:/^\d{1,15}(\.\d{1,4})?$/',
                                         'min:0',
-                                        Rule::unique('App\Models\HIS\BHYTParam')->ignore($this->bhyt_param),
+                                        Rule::unique('App\Models\HIS\BhytParam')->ignore($this->bhyt_param),
                                     ],   
             'min_total_by_salary' =>            'required|numeric|regex:/^\d{1,15}(\.\d{1,4})?$/|min:0', 
             'max_total_package_by_salary' =>    'required|numeric|regex:/^\d{1,15}(\.\d{1,4})?$/|min:0', 

@@ -6,12 +6,12 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Http\JsonResponse;
 use App\Models\ACS\Token;
 use App\Models\ACS\User;
+use App\Models\HIS\BhytParam;
 use App\Models\HIS\UserRoom;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Str;
-use NumberFormatter;
 
 function create_slug($string)
 {
@@ -898,11 +898,32 @@ if (!function_exists('logError')) {
          * @param int $mucLuongCoSo      Mức lương cơ sở hiện tại
          * @return float|null            Tỷ lệ được hưởng (ví dụ: 0.8, 0.95, 1.0)
          */
-        function getMucHuongBHYT($maThe, ?float $tongChiPhi = null, int $mucLuongCoSo = 2340000): ?float
+        function getMucHuongBHYT($maThe, ?float $tongChiPhi = null, $thoiGianXacDinh = 0): ?float
         {
+            if(!$thoiGianXacDinh){
+                $thoiGianXacDinh = now()->format('YmdHis');
+            }
+            $bhytParam = new BhytParam();
+            $dataBhytParam = $bhytParam
+                ->where(function ($q)  use ($thoiGianXacDinh){
+                    $q->where('from_time', '<=', $thoiGianXacDinh)
+                    ->where('to_time', '>=', $thoiGianXacDinh);
+                })
+                ->orWhere(function ($q)  use ($thoiGianXacDinh){
+                    $q->where('from_time', '<=', $thoiGianXacDinh)
+                    ->whereNull('to_time');
+                })
+                ->first();
+
+            if (!$dataBhytParam) {
+                return 0;
+            }
+            $mucLuongCoSo = (int) $dataBhytParam->base_salary??0;
+            $minTotalBySalary = $dataBhytParam->min_total_by_salary ??0.15;
             if (!$maThe) {
                 return 0;
             }
+
             $doiTuong = substr($maThe, 0, 2);
             $kyHieu = substr($maThe, 2, 1);
 
@@ -935,7 +956,7 @@ if (!function_exists('logError')) {
 
             // Áp dụng ngoại lệ: nếu là ký hiệu 3 hoặc 4 và tổng chi phí < 15% mức lương cơ sở thì hưởng 100%
             if (in_array($kyHieu, ['3', '4']) && $tongChiPhi !== null) {
-                $nguong = $mucLuongCoSo * 0.15;
+                $nguong = $mucLuongCoSo * $minTotalBySalary;
                 if ($tongChiPhi < $nguong) {
                     return 1.0;
                 }

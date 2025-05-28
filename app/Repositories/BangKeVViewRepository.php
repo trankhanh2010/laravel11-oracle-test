@@ -17,6 +17,7 @@ class BangKeVViewRepository
     protected $bangKeVView;
     protected $sereServ;
     protected $heinServiceType;
+    protected $treatmentFeeDetailVView;
     protected $heinServiceTypeVatTuTrongDanhMucNumOder;
     protected $heinServiceTypeThuocTrongDanhMucNumOder;
     protected $heinServiceTypeVatTuNgoaiDanhMucId;
@@ -28,10 +29,12 @@ class BangKeVViewRepository
         BangKeVView $bangKeVView,
         SereServ $sereServ,
         HeinServiceType $heinServiceType,
+        TreatmentFeeDetailVView $treatmentFeeDetailVView,
     ) {
         $this->bangKeVView = $bangKeVView;
         $this->sereServ = $sereServ;
         $this->heinServiceType = $heinServiceType;
+        $this->treatmentFeeDetailVView = $treatmentFeeDetailVView;
 
         $cacheKey = 'hein_service_type_vat_tu_trong_danh_muc_num_oder';
         $cacheKeySet = "cache_keys:" . "setting"; // Set để lưu danh sách key
@@ -154,6 +157,8 @@ class BangKeVViewRepository
                 "hein_service_type_code",
                 "hein_service_type_num_order",
                 "hein_ratio",
+                "in_time",
+                "treatment_id",
                 "hein_price",
                 "hein_limit_price",
                 "patient_price_bhyt",
@@ -505,11 +510,12 @@ class BangKeVViewRepository
                 }
                 if ($currentField === 'hein_card_number') {
                     $maThe = $group->first()['hein_card_number'] ?? '';
-                    $tongChiPhi = $totalThanhTienBV;
+                    $tongChiPhi = $this->treatmentFeeDetailVView->find($group->first()['treatment_id'] ?? 0)?->total_price??0;
                     $heinCardFromTime = (string) $group->first()['json_patient_type_alter']?->HEIN_CARD_FROM_TIME ?? null;
                     $heinCardToTime = (string) $group->first()['json_patient_type_alter']?->HEIN_CARD_TO_TIME ?? null;
+                    $thoiGianXacDinh = $group->first()?->in_time ?? 0;
                     $result['maTheBHYT'] = $maThe;
-                    $result['mucHuongBHYT'] = getMucHuongBHYT($maThe, $tongChiPhi);
+                    $result['mucHuongBHYT'] = getMucHuongBHYT($maThe, $tongChiPhi, $thoiGianXacDinh);
                     $result['heinCardFromTime'] = $heinCardFromTime;
                     $result['heinCardToTime'] = $heinCardToTime;
                 }
@@ -717,7 +723,7 @@ class BangKeVViewRepository
                 $item->request_room_name = $item->execute_room_name;
             }
             // Lặp qua để đổi các requestRoom của thuốc và vật tư thành Buồng điều trị
-            if (in_array($item->service_type_code, ['TH', 'VT', 'TT', 'PT']) || !$item->hein_service_type_name) {
+            if (in_array($item->service_type_code, ['TH', 'VT', 'TT', 'PT','CL','KH','CN'])) {
                 $item->request_room_name = 'Buồng điều trị';
             }
             // Lặp qua để đổi serviceTypeName từ Vật tư thành Vật tư y tế

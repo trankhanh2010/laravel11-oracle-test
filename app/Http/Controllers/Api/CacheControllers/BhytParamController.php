@@ -6,7 +6,7 @@ use App\DTOs\BhytParamDTO;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
 use App\Http\Requests\BhytParam\CreateBhytParamRequest;
 use App\Http\Requests\BhytParam\UpdateBhytParamRequest;
-use App\Models\HIS\BHYTParam;
+use App\Models\HIS\BhytParam;
 use App\Services\Elastic\ElasticsearchService;
 use App\Services\Model\BhytParamService;
 use Illuminate\Http\Request;

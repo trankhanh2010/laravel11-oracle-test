@@ -177,7 +177,7 @@ class TestServiceTypeListVViewRepository
     {
         $treatmentFeeDetailVView = new TreatmentFeeDetailVView();
         $dataFee = $treatmentFeeDetailVView->find($treatmentId ?? 0);
-        $mucHuongBhyt = getMucHuongBHYT($dataFee['tdl_hein_card_number']??'', $dataFee['total_price']??0);
+        $mucHuongBhyt = getMucHuongBHYT($dataFee['tdl_hein_card_number']??'', $dataFee['total_price']??0, $dataFee['in_time']??0);
         foreach ($data as &$item) {
             $virTotalPatientPrice = $item['vir_total_patient_price'] ?? 0;
             $virTotalHeinPrice = $item['vir_total_hein_price'] ?? 0; 
