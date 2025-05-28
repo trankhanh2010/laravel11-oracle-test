@@ -6,7 +6,7 @@ use App\DTOs\BhytWhitelistDTO;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
 use App\Http\Requests\BhytWhitelist\CreateBhytWhitelistRequest;
 use App\Http\Requests\BhytWhitelist\UpdateBhytWhitelistRequest;
-use App\Models\HIS\BHYTWhitelist;
+use App\Models\HIS\BhytWhitelist;
 use App\Services\Elastic\ElasticsearchService;
 use App\Services\Model\BhytWhitelistService;
 use Illuminate\Http\Request;

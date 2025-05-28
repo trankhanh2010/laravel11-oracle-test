@@ -34,7 +34,7 @@ class UpdateBhytWhitelistRequest extends FormRequest
                                                 'required',
                                                 'string',
                                                 'max:3',
-                                                Rule::unique('App\Models\HIS\BHYTWhitelist')->ignore($this->bhyt_whitelist),
+                                                Rule::unique('App\Models\HIS\BhytWhitelist')->ignore($this->bhyt_whitelist),
                                             ],
             'career_id' =>  [                   'nullable',
                                                 'integer',

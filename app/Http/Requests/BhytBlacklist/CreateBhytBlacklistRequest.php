@@ -26,7 +26,7 @@ class CreateBhytBlacklistRequest extends FormRequest
     public function rules()
     {
         return [
-            'hein_card_number' =>      'required|string|max:15|unique:App\Models\HIS\BHYTBlacklist,hein_card_number',            
+            'hein_card_number' =>      'required|string|max:15|unique:App\Models\HIS\BhytBlacklist,hein_card_number',            
         ];
     }
     public function messages()

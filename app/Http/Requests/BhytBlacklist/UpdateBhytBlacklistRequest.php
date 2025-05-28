@@ -34,7 +34,7 @@ class UpdateBhytBlacklistRequest extends FormRequest
                                                     'required',
                                                     'string',
                                                     'max:15',
-                                                    Rule::unique('App\Models\HIS\BHYTBlacklist')->ignore($this->bhyt_blacklist),
+                                                    Rule::unique('App\Models\HIS\BhytBlacklist')->ignore($this->bhyt_blacklist),
                                                 ],    
             'is_active' =>      'required|integer|in:0,1'
       

@@ -26,7 +26,7 @@ class CreateBhytWhitelistRequest extends FormRequest
     public function rules()
     {
         return [
-            'bhyt_whitelist_code' =>        'required|string|max:3|unique:App\Models\HIS\BHYTWhitelist,bhyt_whitelist_code',
+            'bhyt_whitelist_code' =>        'required|string|max:3|unique:App\Models\HIS\BhytWhitelist,bhyt_whitelist_code',
             'career_id' =>  [                   'nullable',
                                                 'integer',
                                                 Rule::exists('App\Models\HIS\Career', 'id')

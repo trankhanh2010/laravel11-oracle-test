@@ -2,7 +2,7 @@
 namespace App\Repositories;
 
 use App\Jobs\ElasticSearch\Index\ProcessElasticIndexingJob;
-use App\Models\HIS\BHYTWhitelist;
+use App\Models\HIS\BhytWhitelist;
 use Illuminate\Support\Facades\DB;
 
 class BhytWhitelistRepository

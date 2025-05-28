@@ -24,7 +24,7 @@ class PatientClassify extends Model
     {
         if($this->bhyt_whitelist_ids != ""){
             return Cache::remember('bhyt_whitelist_ids_' . $this->bhyt_whitelist_ids, $this->time, function () {
-                return BHYTWhitelist::whereIn('id', explode(',', $this->bhyt_whitelist_ids))->get();
+                return BhytWhitelist::whereIn('id', explode(',', $this->bhyt_whitelist_ids))->get();
             });
         }
         return null;
@@ -51,7 +51,7 @@ class PatientClassify extends Model
 
     public function BHYT_whitelists()
     {
-        return BHYTWhitelist::whereIn('id', explode(',', $this->BHYT_whitelist_ids))->get();
+        return BhytWhitelist::whereIn('id', explode(',', $this->BHYT_whitelist_ids))->get();
     }
 
     public function militarry_ranks()
