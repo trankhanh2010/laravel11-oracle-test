@@ -3,7 +3,7 @@
 namespace App\Listeners\Elastic\BhytWhitelist;
 
 use App\Events\Elastic\BhytWhitelist\InsertBhytWhitelistIndex;
-use App\Models\HIS\BHYTWhitelist;
+use App\Models\HIS\BhytWhitelist;
 use App\Repositories\BhytWhitelistRepository;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
