@@ -101,6 +101,15 @@ class MedicinePatyRepository
                 ->get();
         }
     }
+    public function getActivePriceByMedicineIdPatientTypeId($medicineId, $patientTypeId)
+    {
+        $data = $this->medicinePaty
+            ->where('medicine_id', $medicineId)
+            ->where('patient_type_id', $patientTypeId)
+            ->orderBy('modify_time', 'desc')
+            ->first();
+        return $data;
+    }
     public function getById($id)
     {
         return $this->medicinePaty->find($id);

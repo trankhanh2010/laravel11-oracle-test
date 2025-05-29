@@ -162,6 +162,8 @@ class BangKeVViewRepository
                 "in_time",
                 "treatment_id",
                 "invoice_id",
+                "medicine_id",
+                "hein_approval_id",
                 "hein_price",
                 "hein_limit_price",
                 "patient_price_bhyt",
@@ -1025,10 +1027,16 @@ class BangKeVViewRepository
                 'hein_limit_price' => $request->hein_limit_price[$id] ?? null, // phụ thu mới có
                 'equipment_set_id' => $request->equipment_set_id[$id], 
                 'equipment_set_order' => $request->equipment_set_order[$id], 
+                'parent_id' => $request->parent_id[$id], 
+                'service_condition_id' => $request->service_condition_id[$id], 
+
+                'hein_card_number' => $request->hein_card_number[$id] ?? null, // DTTT là BHYT mới có
+                'hein_ratio' => $request->hein_ratio[$id] ?? null, // DTTT là BHYT mới có
+                'json_patient_type_alter' => $request->json_patient_type_alter[$id] ?? null, // DTTT là BHYT mới có
 
             ];
             if (!$request->other_pay_source_id[$id]) {
-                $dataUpdate['other_source_price'] =  0; // khi bỏ chọn Nguồn khác thì set lại = 0
+                $dataUpdate['other_source_price'] =  null; // khi bỏ chọn Nguồn khác thì set lại = null
             }
             $this->sereServ->where('id', $id)->update($dataUpdate);
         }
