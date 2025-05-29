@@ -493,6 +493,8 @@ class BaseApiCacheController extends Controller
     protected $heinServiceTypeName = 'hein_service_type';
     protected $bhytParam;
     protected $bhytParamName = 'bhyt_param';
+    protected $equipmentSet;
+    protected $equipmentSetName = 'equipment_set';
     protected $serviceReqLView;
     protected $serviceReqLViewName = 'service_req_l_view';
     protected $sereServTeinChartsVView;

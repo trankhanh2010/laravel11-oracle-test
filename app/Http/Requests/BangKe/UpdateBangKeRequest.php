@@ -111,6 +111,17 @@ class UpdateBangKeRequest extends FormRequest
                             ->where(DB::connection('oracle_his')->raw("is_active"), 1);
                     }),
             ],
+            'equipment_set_id' => [
+                'nullable',
+                'integer',
+                Rule::exists('App\Models\HIS\EquipmentSet', 'id')
+                    ->where(function ($query) {
+                        $query = $query
+                            ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                    }),
+            ],
+            'equipment_set_order' =>                      'nullable|integer',
+
         ];
     }
 
@@ -142,9 +153,17 @@ class UpdateBangKeRequest extends FormRequest
                             $is_no_execute = $this->has('is_no_execute') ? $this->is_no_execute : $dataBangKeVView->is_no_execute;
                             $is_not_use_bhyt = $this->has('is_not_use_bhyt') ? $this->is_not_use_bhyt : $dataBangKeVView->is_not_use_bhyt;
                             $other_pay_source_id = $this->has('other_pay_source_id') ? $this->other_pay_source_id : $dataBangKeVView->other_pay_source_id;
+                            $equipment_set_id = $this->has('equipment_set_id') ? $this->equipment_set_id : $dataBangKeVView->equipment_set_id;
+                            $equipment_set_order = $this->has('equipment_set_order') ? $this->equipment_set_order : $dataBangKeVView->equipment_set_order;
 
                             $coHoaDon = $this->sereServBill->where('sere_serv_id', $id)->exists(); // check xem có bill cho dịch vụ này chưa
-                            // Lưu tạm data update vào mảng 
+
+                            // Nếu không có bộ vật tư thì order = null
+                            if(!$equipment_set_id){
+                                $equipment_set_order = null;
+                            }
+
+                            // Lưu tạm data update vào mảng để update
                             $patientTypeIds[$id] = $patient_type_id;
                             $primaryPatientTypeIds[$id] = $primary_patient_type_id;
                             $isOutParentFees[$id] = $is_out_parent_fee;
@@ -153,6 +172,8 @@ class UpdateBangKeRequest extends FormRequest
                             $isNoExecutes[$id] = $is_no_execute;
                             $isNotUseBhyts[$id] = $is_not_use_bhyt;
                             $otherPaySourceIds[$id] = $other_pay_source_id;
+                            $equipmentSetIds[$id] = $equipment_set_id;
+                            $equipmentSetOrders[$id] = $equipment_set_order;
 
 
                             if ($dataTreatment->is_active == 0) {
@@ -251,7 +272,7 @@ class UpdateBangKeRequest extends FormRequest
                                 if ($dataBangKeVView->da_thanh_toan) {
                                     $validator->errors()->add('is_expend', '(' . $dataBangKeVView->service_req_code . ')' . ' - ' . $dataBangKeVView->tdl_service_name   . ' dịch vụ đã được thanh toán!');
                                 }
-                                if (!$dataService->is_allow_expend) {
+                                if (!$dataService->is_allow_expend && $this->has('is_expend')) {
                                     $validator->errors()->add('is_expend', '(' . $dataBangKeVView->service_req_code . ')' . ' - ' . $dataBangKeVView->tdl_service_name   . ' không có quyền thực hiện chức năng này!');
                                 }
                             } else {
@@ -292,6 +313,12 @@ class UpdateBangKeRequest extends FormRequest
                                     $validator->errors()->add('other_pay_source_id', '(' . $dataBangKeVView->service_req_code . ')' . ' - ' . $dataBangKeVView->tdl_service_name   . ' dịch vụ đã được thanh toán!');
                                 }
                             }
+                            // Bộ vật tư
+                            if ($equipment_set_id || $equipment_set_order) {
+                                if ($dataBangKeVView->service_type_code != 'VT') {
+                                    $validator->errors()->add('equipment_set_id', '(' . $dataBangKeVView->service_req_code . ')' . ' - ' . $dataBangKeVView->tdl_service_name   . ' có loại dịch vụ không phải là Vật tư!');
+                                }
+                            }
                         }
                     }
                 }
@@ -306,6 +333,9 @@ class UpdateBangKeRequest extends FormRequest
                 'is_no_execute' => $isNoExecutes,
                 'is_not_use_bhyt' => $isNotUseBhyts,
                 'other_pay_source_id' => $otherPaySourceIds,
+                'equipment_set_id' => $equipmentSetIds,
+                'equipment_set_order' => $equipmentSetOrders,
+
             ]);
             } else {
                 $validator->errors()->add('id', 'Danh sách dịch vụ không hợp lệ!');

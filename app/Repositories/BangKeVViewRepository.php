@@ -120,6 +120,8 @@ class BangKeVViewRepository
                 "parent_name",
                 "equipment_set_code",
                 "equipment_set_name",
+                "equipment_set_id",
+                "equipment_set_order",
                 "service_condition_code",
                 "service_condition_name",
                 "other_pay_source_code",
@@ -974,31 +976,31 @@ class BangKeVViewRepository
         return $this->bangKeVView->find($id);
     }
 
-    public function updateBangKe($request, $data, $time, $appModifier)
-    {
-        $data->update([
-            'modify_time' => now()->format('YmdHis'),
-            'modifier' => get_loginname_with_token($request->bearerToken(), $time),
-            'app_modifier' => $appModifier,
-            'patient_type_id' => $request->patient_type_id,
-            'primary_patient_type_id' => $request->primary_patient_type_id,
-            'is_out_parent_fee' => $request->is_out_parent_fee,
-            'is_expend' => $request->is_expend,
-            'expend_type_id' => $request->expend_type_id,
-            'is_no_execute' => $request->is_no_execute,
-            'is_not_use_bhyt' => $request->is_not_use_bhyt,
-            'other_pay_source_id' => $request->other_pay_source_id,
+    // public function updateBangKe($request, $data, $time, $appModifier)
+    // {
+    //     $data->update([
+    //         'modify_time' => now()->format('YmdHis'),
+    //         'modifier' => get_loginname_with_token($request->bearerToken(), $time),
+    //         'app_modifier' => $appModifier,
+    //         'patient_type_id' => $request->patient_type_id,
+    //         'primary_patient_type_id' => $request->primary_patient_type_id,
+    //         'is_out_parent_fee' => $request->is_out_parent_fee,
+    //         'is_expend' => $request->is_expend,
+    //         'expend_type_id' => $request->expend_type_id,
+    //         'is_no_execute' => $request->is_no_execute,
+    //         'is_not_use_bhyt' => $request->is_not_use_bhyt,
+    //         'other_pay_source_id' => $request->other_pay_source_id,
 
-            'primary_price' => $request->primary_price,
-            'limit_price' => $request->limit_price,
-            'price' => $request->price,
-            'original_price' => $request->original_price,
-            'hein_price' => $request->hein_price,
-            'hein_limit_price' => $request->hein_limit_price,
+    //         'primary_price' => $request->primary_price,
+    //         'limit_price' => $request->limit_price,
+    //         'price' => $request->price,
+    //         'original_price' => $request->original_price,
+    //         'hein_price' => $request->hein_price,
+    //         'hein_limit_price' => $request->hein_limit_price,
 
-        ]);
-        return $data;
-    }
+    //     ]);
+    //     return $data;
+    // }
     public function updateBangKeIds($request, $ids, $time, $appModifier)
     {
         foreach ($ids as $id) {
@@ -1021,6 +1023,9 @@ class BangKeVViewRepository
                 'original_price' => $request->original_price[$id],
                 'hein_price' => $request->hein_price[$id] ?? null, // phụ thu mới có
                 'hein_limit_price' => $request->hein_limit_price[$id] ?? null, // phụ thu mới có
+                'equipment_set_id' => $request->equipment_set_id[$id], 
+                'equipment_set_order' => $request->equipment_set_order[$id], 
+
             ];
             if (!$request->other_pay_source_id[$id]) {
                 $dataUpdate['other_source_price'] =  0; // khi bỏ chọn Nguồn khác thì set lại = 0

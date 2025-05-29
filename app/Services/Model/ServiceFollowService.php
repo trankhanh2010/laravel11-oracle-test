@@ -29,6 +29,7 @@ class ServiceFollowService
             $data = $this->serviceFollowRepository->applyJoins();
             $data = $this->serviceFollowRepository->applyKeywordFilter($data, $this->params->keyword);
             $data = $this->serviceFollowRepository->applyIsActiveFilter($data, $this->params->isActive);
+            $data = $this->serviceFollowRepository->applyServiceIdFilter($data, $this->params->serviceId);
             $count = $data->count();
             $data = $this->serviceFollowRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
             $data = $this->serviceFollowRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
@@ -41,6 +42,7 @@ class ServiceFollowService
     {
         $data = $this->serviceFollowRepository->applyJoins();
         $data = $this->serviceFollowRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $this->serviceFollowRepository->applyServiceIdFilter($data, $this->params->serviceId);
         $count = $data->count();
         $data = $this->serviceFollowRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
         $data = $this->serviceFollowRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);

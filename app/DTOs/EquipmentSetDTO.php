@@ -2,9 +2,9 @@
 
 namespace App\DTOs;
 
-class ServiceFollowDTO
+class EquipmentSetDTO
 {
-    public $serviceFollowName;
+    public $equipmentSetName;
     public $keyword;
     public $isActive;
     public $orderBy;
@@ -19,9 +19,8 @@ class ServiceFollowDTO
     public $time;
     public $param;
     public $noCache;
-    public $serviceId;
     public function __construct(
-        $serviceFollowName,
+        $equipmentSetName,
         $keyword, 
         $isActive, 
         $orderBy, 
@@ -36,10 +35,9 @@ class ServiceFollowDTO
         $time,
         $param,
         $noCache,
-        $serviceId,
         )
     {
-        $this->serviceFollowName = $serviceFollowName;
+        $this->equipmentSetName = $equipmentSetName;
         $this->keyword = $keyword;
         $this->isActive = $isActive;
         $this->orderBy = $orderBy;
@@ -54,6 +52,5 @@ class ServiceFollowDTO
         $this->time = $time;
         $this->param = $param;
         $this->noCache = $noCache;
-        $this->serviceId = $serviceId;
     }
 }

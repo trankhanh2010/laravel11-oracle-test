@@ -17,20 +17,15 @@ class ServiceFollowRepository
     {
         return $this->serviceFollow
         ->leftJoin('his_service as service', 'service.id', '=', 'his_service_follow.service_id')
-        ->leftJoin('his_service_type as service_type', 'service_type.id', '=', 'service.service_type_id')
         ->leftJoin('his_service as service_follow', 'service_follow.id', '=', 'his_service_follow.follow_id')
-        ->leftJoin('his_service_type as service_follow_type', 'service_type.id', '=', 'service_follow.service_type_id')
 
         ->select(
             'his_service_follow.*',
             'service.service_name',
             'service.service_code',
-            'service_type.service_type_name',
-            'service_type.service_type_code',
             'service_follow.service_name as service_follow_name',
             'service_follow.service_code as service_follow_code',
-            'service_follow_type.service_type_name as service_follow_type_name',
-            'service_follow_type.service_type_code as service_follow_type_code',
+
         );
     }
     public function applyKeywordFilter($query, $keyword)
@@ -44,6 +39,13 @@ class ServiceFollowRepository
     {
         if ($isActive !== null) {
             $query->where(DB::connection('oracle_his')->raw('his_service_follow.is_active'), $isActive);
+        }
+        return $query;
+    }
+    public function applyServiceIdFilter($query, $serviceId)
+    {
+        if ($serviceId !== null) {
+            $query->where(DB::connection('oracle_his')->raw('his_service_follow.service_id'), $serviceId);
         }
         return $query;
     }

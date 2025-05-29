@@ -142,6 +142,7 @@ use App\Http\Controllers\Api\CacheControllers\DeathCauseController;
 use App\Http\Controllers\Api\CacheControllers\DocumentTypeController;
 use App\Http\Controllers\Api\CacheControllers\EmrCoverTypeController;
 use App\Http\Controllers\Api\CacheControllers\EmrFormController;
+use App\Http\Controllers\Api\CacheControllers\EquipmentSetController;
 use App\Http\Controllers\Api\CacheControllers\FundController;
 use App\Http\Controllers\Api\CacheControllers\GroupTypeController;
 use App\Http\Controllers\Api\CacheControllers\HtuController;
@@ -439,6 +440,8 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisAtcGroup->'], function () {
         Route::apiResource('v1/atc-group', AtcGroupController::class);
     });
+    /// Bộ vật tư
+    Route::apiResource('v1/equipment-set', EquipmentSetController::class);
     /// Ý thức
     Route::group(['as' => 'HIS.Desktop.Plugins.HisAwareness->'], function () {
         Route::apiResource('v1/awareness', AwarenessController::class);

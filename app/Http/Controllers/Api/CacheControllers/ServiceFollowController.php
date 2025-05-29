@@ -54,6 +54,7 @@ class ServiceFollowController extends BaseApiCacheController
             $this->time,
             $this->param,
             $this->noCache,
+            $this->serviceId,
         );
         $this->serviceFollowService->withParams($this->serviceFollowDTO);
     }
