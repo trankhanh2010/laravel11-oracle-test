@@ -900,26 +900,26 @@ if (!function_exists('logError')) {
          */
         function getMucHuongBHYT($maThe, ?float $tongChiPhi = null, $thoiGianXacDinh = 0): ?float
         {
-            if(!$thoiGianXacDinh){
+            if (!$thoiGianXacDinh) {
                 $thoiGianXacDinh = now()->format('YmdHis');
             }
             $bhytParam = new BhytParam();
             $dataBhytParam = $bhytParam
-                ->where(function ($q)  use ($thoiGianXacDinh){
+                ->where(function ($q)  use ($thoiGianXacDinh) {
                     $q->where('from_time', '<=', $thoiGianXacDinh)
-                    ->where('to_time', '>=', $thoiGianXacDinh);
+                        ->where('to_time', '>=', $thoiGianXacDinh);
                 })
-                ->orWhere(function ($q)  use ($thoiGianXacDinh){
+                ->orWhere(function ($q)  use ($thoiGianXacDinh) {
                     $q->where('from_time', '<=', $thoiGianXacDinh)
-                    ->whereNull('to_time');
+                        ->whereNull('to_time');
                 })
                 ->first();
 
             if (!$dataBhytParam) {
                 return 0;
             }
-            $mucLuongCoSo = (int) $dataBhytParam->base_salary??0;
-            $minTotalBySalary = $dataBhytParam->min_total_by_salary ??0.15;
+            $mucLuongCoSo = (int) $dataBhytParam->base_salary ?? 0;
+            $minTotalBySalary = $dataBhytParam->min_total_by_salary ?? 0.15;
             if (!$maThe) {
                 return 0;
             }

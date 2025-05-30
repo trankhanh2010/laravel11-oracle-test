@@ -1726,4 +1726,18 @@ return [
         'buyer_address' => 'Địa chỉ người thanh toán',
         'buyer_phone' => 'Số điện thoại người thanh toán',
     ],
+    // Bảng kê
+    'bang_ke' => [
+        'patient_type_id' => 'Đối tượng thanh toán',
+        'primary_patient_type_id' => 'Đối tượng phụ thu',
+        'is_out_parent_fee' => 'Là chi phí ngoài gói',
+        'is_expend' => 'Là hao phí',
+        'is_no_execute' => 'Không thực hiện',
+        'expend_type_id' => 'Là hao phí tiền giường',
+        'is_not_use_bhyt' => 'Không hưởng BHYT',
+        'other_pay_source_id' => 'Nguồn khác',
+        'equipment_set_id' => 'Bộ vật tư',
+        'parent_id' => 'Dịch vụ đi kèm',
+        'service_condition_id' => 'Điều kiện dịch vụ',
+    ],
 ];

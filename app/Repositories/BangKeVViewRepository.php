@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Jobs\ElasticSearch\Index\ProcessElasticIndexingJob;
 use App\Models\HIS\HeinServiceType;
+use App\Models\HIS\PatientType;
 use App\Models\HIS\SereServ;
 use App\Models\View\BangKeVView;
 use App\Models\View\TreatmentFeeDetailVView;
@@ -18,23 +19,27 @@ class BangKeVViewRepository
     protected $sereServ;
     protected $heinServiceType;
     protected $treatmentFeeDetailVView;
+    protected $patientType;
     protected $heinServiceTypeVatTuTrongDanhMucNumOder;
     protected $heinServiceTypeThuocTrongDanhMucNumOder;
     protected $heinServiceTypeVatTuNgoaiDanhMucId;
     protected $heinServiceTypeVatTuTrongDanhMucId;
     protected $heinServiceTypeThuocTrongDanhMucId;
     protected $heinServiceTypeThuocNgoaiDanhMucId;
+    protected $patientTypeBHYTId;
 
     public function __construct(
         BangKeVView $bangKeVView,
         SereServ $sereServ,
         HeinServiceType $heinServiceType,
         TreatmentFeeDetailVView $treatmentFeeDetailVView,
+        PatientType $patientType,
     ) {
         $this->bangKeVView = $bangKeVView;
         $this->sereServ = $sereServ;
         $this->heinServiceType = $heinServiceType;
         $this->treatmentFeeDetailVView = $treatmentFeeDetailVView;
+        $this->patientType = $patientType;
 
         $cacheKey = 'hein_service_type_vat_tu_trong_danh_muc_num_oder';
         $cacheKeySet = "cache_keys:" . "setting"; // Set để lưu danh sách key
@@ -84,6 +89,14 @@ class BangKeVViewRepository
         });
         // Lưu key vào Redis Set để dễ xóa sau này
         Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+
+        $cacheKey = 'patient_type_bhyt_id';
+        $this->patientTypeBHYTId = Cache::remember($cacheKey, now()->addMinutes(10080), function () {
+            $data = $this->patientType->where('patient_type_code', '01')->get();
+            return $data->value('id');
+        });
+        // Lưu key vào Redis Set để dễ xóa sau này
+        Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
     }
 
     public function applyJoins()
@@ -116,12 +129,14 @@ class BangKeVViewRepository
                 "is_no_execute",
                 "is_not_use_bhyt",
                 "parent_service_req_code",
+                "parent_id",
                 "parent_code",
                 "parent_name",
                 "equipment_set_code",
                 "equipment_set_name",
                 "equipment_set_id",
                 "equipment_set_order",
+                "service_condition_id",
                 "service_condition_code",
                 "service_condition_name",
                 "other_pay_source_code",
@@ -150,7 +165,7 @@ class BangKeVViewRepository
                 "execute_room_type_code",
                 "execute_room_is_exam",
                 "is_out_parent_fee",
-                
+
                 // 'json_patient_type_alter',
                 "tdl_treatment_type_id",
                 "treatment_type_code",
@@ -164,6 +179,8 @@ class BangKeVViewRepository
                 "invoice_id",
                 "medicine_id",
                 "hein_approval_id",
+                "expired_date",
+                "package_number",
                 "hein_price",
                 "hein_limit_price",
                 "patient_price_bhyt",
@@ -182,6 +199,7 @@ class BangKeVViewRepository
                 "vir_patient_price",
                 "vir_patient_price_bhyt",
                 "vir_total_patient_price_bhyt",
+                "vir_price",
                 "discount",
                 "original_price",
                 "vir_price_no_expend",
@@ -379,7 +397,7 @@ class BangKeVViewRepository
                     $group = $group->sortBy('tdl_service_name')->values();
                 }
 
-                
+
                 $totalThanhTienBV = round($group->sum(function ($item) {
                     return ($item['vir_total_price']) ?? 0;
                 }));
@@ -392,10 +410,10 @@ class BangKeVViewRepository
                     return ($item['other_source_price']) ?? 0;
                 }));
                 $totalThanhTienBH = round($group->sum(function ($item) {
-                    return round((($item['original_price']) ?? 0) * (($item['amount']) ?? 0),2); 
+                    return round((($item['original_price']) ?? 0) * (($item['amount']) ?? 0), 2);
                 }));
                 $totalGiaNguoiBenhCungChiTra = round($group->sum(function ($item) {
-                    return  ($item['vir_total_patient_price_bhyt'] ?? 0);
+                    return ($item['vir_total_patient_price_bhyt'] ?? 0);
                 }));
 
                 if ($laMauHaoPhi) {
@@ -409,10 +427,10 @@ class BangKeVViewRepository
                 if ($laMauVienPhi) {
                     $totalThanhTienBH = 0;
                 }
-                if($tongHopNgoaiTruVienPhiHaoPhi){
+                if ($tongHopNgoaiTruVienPhiHaoPhi) {
                     $totalThanhTienBV = round($group->sum(function ($item) {
                         // Nếu là vật tư hoặc thuốc hao phí
-                        if(in_array($item->service_type_code , ['VT','TH']) && $item->is_expend == 1){
+                        if (in_array($item->service_type_code, ['VT', 'TH']) && $item->is_expend == 1) {
                             return ($item['vir_total_price_no_expend']) ?? 0;
                         }
                         return ($item['vir_total_price']) ?? 0;
@@ -420,17 +438,17 @@ class BangKeVViewRepository
 
                     $totalKhac = round($group->sum(function ($item) {
                         // Nếu là vật tư hoặc thuốc hao phí
-                        if(in_array($item->service_type_code , ['VT','TH']) && $item->is_expend == 1){
-                             return ($item['other_source_price']) ?? 0;
+                        if (in_array($item->service_type_code, ['VT', 'TH']) && $item->is_expend == 1) {
+                            return ($item['other_source_price']) ?? 0;
                         }
-                       return ($item['vir_total_patient_price_no_dc']) ?? 0;
+                        return ($item['vir_total_patient_price_no_dc']) ?? 0;
                     }));
                 }
-                
-                if($bangKeTongHop6556KhoaPhongThanhToan){
+
+                if ($bangKeTongHop6556KhoaPhongThanhToan) {
                     $totalThanhTienBV = round($group->sum(function ($item) {
                         // Nếu là hao phí
-                        if($item->is_expend == 1){
+                        if ($item->is_expend == 1) {
                             return ($item['vir_total_price_no_expend']) ?? 0;
                         }
                         return ($item['vir_total_price']) ?? 0;
@@ -438,17 +456,17 @@ class BangKeVViewRepository
 
                     $totalKhac = round($group->sum(function ($item) {
                         // Nếu là hao phí
-                        if($item->is_expend == 1){
-                             return ($item['vir_total_price_no_expend']) ?? 0;
+                        if ($item->is_expend == 1) {
+                            return ($item['vir_total_price_no_expend']) ?? 0;
                         }
-                       return ($item['other_source_price']) ?? 0;
+                        return ($item['other_source_price']) ?? 0;
                     }));
                 }
 
                 if ($laMauTPTB) {
                     $totalThanhTienBV = round($group->sum(function ($item) {
                         if ($item->patient_type_id && $item->primary_patient_type_id) {
-                            if($item->hein_service_type_code != 'TH_TDM'){
+                            if ($item->hein_service_type_code != 'TH_TDM') {
                                 return ($item['vir_total_patient_price_no_dc'] - $item['vir_total_patient_price_bhyt']) ?? 0;
                             }
                         }
@@ -456,7 +474,7 @@ class BangKeVViewRepository
                     }));
                     $totalQuyBHYT = round($group->sum(function ($item) {
                         if ($item->patient_type_id && $item->primary_patient_type_id) {
-                            if($item->hein_service_type_code != 'TH_TDM'){
+                            if ($item->hein_service_type_code != 'TH_TDM') {
                                 return 0;
                             }
                         }
@@ -466,7 +484,7 @@ class BangKeVViewRepository
                         if ($item->patient_type_id && $item->primary_patient_type_id) {
                             return 0;
                         }
-                        return  ($item['vir_total_patient_price_bhyt'] ?? 0);
+                        return ($item['vir_total_patient_price_bhyt'] ?? 0);
                     }));
                     $totalKhac = round($group->sum(function ($item) {
                         if ($item->patient_type_id && $item->primary_patient_type_id) {
@@ -515,7 +533,7 @@ class BangKeVViewRepository
                 }
                 if ($currentField === 'hein_card_number') {
                     $maThe = $group->first()['hein_card_number'] ?? '';
-                    $tongChiPhi = $this->treatmentFeeDetailVView->find($group->first()['treatment_id'] ?? 0)?->total_price??0;
+                    $tongChiPhi = $this->treatmentFeeDetailVView->find($group->first()['treatment_id'] ?? 0)?->total_price ?? 0;
                     $heinCardFromTime = (string) $group->first()['json_patient_type_alter']?->HEIN_CARD_FROM_TIME ?? null;
                     $heinCardToTime = (string) $group->first()['json_patient_type_alter']?->HEIN_CARD_TO_TIME ?? null;
                     $thoiGianXacDinh = $group->first()?->in_time ?? 0;
@@ -545,7 +563,7 @@ class BangKeVViewRepository
                     $result['requestDepartmentName'] = $requestDepartmentName;
                     $result['requestRoomName'] = $requestRoomName;
 
-                    $result['donGiaBV'] = (float) round($group->first()['price']) ?? 0;
+                    $result['donGiaBV'] = (float) round($group->first()['vir_price']) ?? 0;
                     $result['donGiaBH'] = $donGiaBH;
                     $result['tiLeThanhToanTheoDV'] = 1;
                     $result['tiLeThanhToanBHYT'] = $tiLeThanhToanBHYT;
@@ -663,7 +681,7 @@ class BangKeVViewRepository
                 $item->hein_service_type_name = '';
             }
             // Nếu là thuốc ngoài danh mục và là đơn trực thì chuyển sang khác
-            if (in_array($item->hein_service_type_code, ['TH_NDM','TH_TDM']) && $item->service_req_type_code == 'DT') {
+            if (in_array($item->hein_service_type_code, ['TH_NDM', 'TH_TDM']) && $item->service_req_type_code == 'DT') {
                 $item->hein_service_type_name = '';
             }
             return $item;
@@ -672,20 +690,20 @@ class BangKeVViewRepository
         return $data->flatMap(function ($item) use (&$checks) {
             $results = [$item];
             // Nếu có cả patient_type_id và primary_patient_type_id
-            if ($item->patient_type_id && $item->primary_patient_type_id && !in_array($item->hein_service_type_code, ['TH_NDM','TH_TDM'])) {
+            if ($item->patient_type_id && $item->primary_patient_type_id && !in_array($item->hein_service_type_code, ['TH_NDM', 'TH_TDM'])) {
                 // Clone bản ghi và cập nhật patient_type_id
                 $cloned = clone $item;
                 $cloned->patient_type_name = $item->primary_patient_type_name;
                 $results[] = $cloned;
-                
+
                 // Nếu loại dịch vụ là XN,PT,TT thì clone thêm 1 cái có (tổng amount clone = tổng amount - 1)
-                if(in_array($item->service_type_code, ['XN', 'PT', 'TT', 'GI']) && $item->amount >= 1){
-                    if($checks[$item->tdl_service_code]??false){
+                if (in_array($item->service_type_code, ['XN', 'PT', 'TT', 'GI']) && $item->amount >= 1) {
+                    if ($checks[$item->tdl_service_code] ?? false) {
                         $cloned = clone $item;
                         $cloned->patient_type_name = 'addPatientTypeTPTB';
 
                         $results[] = $cloned;
-                    }else{
+                    } else {
                         $checks[$item->tdl_service_code] = true;
                     }
                 }
@@ -730,7 +748,7 @@ class BangKeVViewRepository
                 $item->request_room_name = $item->execute_room_name;
             }
             // Lặp qua để đổi các requestRoom của thuốc và vật tư thành Buồng điều trị
-            if (in_array($item->service_type_code, ['TH', 'VT', 'TT', 'PT','CL','KH','CN'])) {
+            if (in_array($item->service_type_code, ['TH', 'VT', 'TT', 'PT', 'CL', 'KH', 'CN'])) {
                 $item->request_room_name = 'Buồng điều trị';
             }
             // Lặp qua để đổi serviceTypeName từ Vật tư thành Vật tư y tế
@@ -765,16 +783,16 @@ class BangKeVViewRepository
             ->values();  // Đánh lại chỉ số (index)
         $totalHein = $heinCards->count();
         if ($totalHein === 1) {
-            $heinCardNumber = $heinCards[0]??null; // hoặc ->first()
-            $jsonPatientTypeAlter = $jsonPatientTypeAlters[0]??null; // hoặc ->first()
+            $heinCardNumber = $heinCards[0] ?? null; // hoặc ->first()
+            $jsonPatientTypeAlter = $jsonPatientTypeAlters[0] ?? null; // hoặc ->first()
         } else {
             $heinCardNumber = null; // hoặc xử lý theo ý bạn
             $jsonPatientTypeAlter = null; // hoặc ->first()
-        } 
+        }
 
         return $data->map(function ($item) use ($totalHein, $heinCardNumber, $jsonPatientTypeAlter) {
             // Nếu chỉ có 1 mã thêm hein cho các bản ghi bị trống của phần chi phí
-            if($totalHein == 1 && ($item->is_expend == 0 || $item->is_expend == null) && $item->hein_card_number == null && $item->json_patient_type_alter == null){
+            if ($totalHein == 1 && ($item->is_expend == 0 || $item->is_expend == null) && $item->hein_card_number == null && $item->json_patient_type_alter == null) {
                 $item->hein_card_number = $heinCardNumber;
                 $item->json_patient_type_alter = $jsonPatientTypeAlter;
             }
@@ -957,16 +975,16 @@ class BangKeVViewRepository
     public function applyBangKeTongHop6556KhoaPhongThanhToanFilter($query)
     {
         $query->where(function ($query) {
-                $query->where('is_expend', 0)
-                    ->orWhereNull('is_expend');
-            });
+            $query->where('is_expend', 0)
+                ->orWhereNull('is_expend');
+        });
         return $query;
     }
     public function applyBangKeTongHop6556KhoaPhongThanhToanPhanHaoPhiFilter($query)
     {
         $query->where(function ($query) {
-                $query->where('is_expend', 1);
-            });
+            $query->where('is_expend', 1);
+        });
         return $query;
     }
     public function applyTongHopNgoaiTruVienPhiHaoPhiFilter($query)
@@ -1003,42 +1021,82 @@ class BangKeVViewRepository
     //     ]);
     //     return $data;
     // }
+    public function getSereServPatientTypeBHYT($treatmentId)
+    {
+        $data = $this->sereServ->where('patient_type_id', $this->patientTypeBHYTId)
+            ->where('tdl_treatment_id', $treatmentId)
+            ->get();
+        return $data;
+    }
+    public function getTotalPriceBhSereServIds($ids)
+    {
+        return $this->sereServ
+            ->whereIn('id', $ids)
+            ->whereNotNull('SERVICE_REQ_ID')
+            ->where(function ($query) {
+                $query->whereNull('IS_DELETE')
+                    ->orWhere('IS_DELETE', '<>', 1);
+            })
+            ->sum(DB::connection('oracle_his')->raw('NVL(VIR_TOTAL_PRICE, 0)'));
+    }
+
     public function updateBangKeIds($request, $ids, $time, $appModifier)
     {
-        foreach ($ids as $id) {
-            $dataUpdate = [
-                'modify_time' => now()->format('YmdHis'),
-                'modifier' => get_loginname_with_token($request->bearerToken(), $time),
-                'app_modifier' => $appModifier,
-                'patient_type_id' => $request->patient_type_id[$id],
-                'primary_patient_type_id' => $request->primary_patient_type_id[$id],
-                'is_out_parent_fee' => $request->is_out_parent_fee[$id] == 0 ? null : $request->is_out_parent_fee[$id], // buộc để null để cột vir không tính sai giá
-                'is_expend' => $request->is_expend[$id] == 0 ? null : $request->is_expend[$id], // buộc để null để cột vir không tính sai giá
-                'expend_type_id' => $request->expend_type_id[$id],
-                'is_no_execute' => $request->is_no_execute[$id] == 0 ? null : $request->is_no_execute[$id], // buộc để null để cột vir không tính sai giá
-                'is_not_use_bhyt' => $request->is_not_use_bhyt[$id] == 0 ? null : $request->is_not_use_bhyt[$id], // buộc để null để cột vir không tính sai giá
-                'other_pay_source_id' => $request->other_pay_source_id[$id],
+        if (!$ids) return;
+        DB::connection('oracle_his')->transaction(function () use ($request, $ids, $time, $appModifier) {
+            foreach ($ids as $id) {
+                $dataUpdate = [
+                    'modify_time' => now()->format('YmdHis'),
+                    'modifier' => get_loginname_with_token($request->bearerToken(), $time),
+                    'app_modifier' => $appModifier,
+                    'patient_type_id' => $request->patient_type_id[$id],
+                    'primary_patient_type_id' => $request->primary_patient_type_id[$id],
+                    'is_out_parent_fee' => $request->is_out_parent_fee[$id] == 0 ? null : $request->is_out_parent_fee[$id], // buộc để null để cột vir không tính sai giá
+                    'is_expend' => $request->is_expend[$id] == 0 ? null : $request->is_expend[$id], // buộc để null để cột vir không tính sai giá
+                    'expend_type_id' => $request->expend_type_id[$id],
+                    'is_no_execute' => $request->is_no_execute[$id] == 0 ? null : $request->is_no_execute[$id], // buộc để null để cột vir không tính sai giá
+                    'is_not_use_bhyt' => $request->is_not_use_bhyt[$id] == 0 ? null : $request->is_not_use_bhyt[$id], // buộc để null để cột vir không tính sai giá
+                    'other_pay_source_id' => $request->other_pay_source_id[$id],
 
-                'primary_price' => $request->primary_price[$id],
-                'limit_price' => $request->limit_price[$id] ?? null, // phụ thu mới có
-                'price' => $request->price[$id],
-                'original_price' => $request->original_price[$id],
-                'hein_price' => $request->hein_price[$id] ?? null, // phụ thu mới có
-                'hein_limit_price' => $request->hein_limit_price[$id] ?? null, // phụ thu mới có
-                'equipment_set_id' => $request->equipment_set_id[$id], 
-                'equipment_set_order' => $request->equipment_set_order[$id], 
-                'parent_id' => $request->parent_id[$id], 
-                'service_condition_id' => $request->service_condition_id[$id], 
+                    'primary_price' => $request->primary_price[$id],
+                    'limit_price' => $request->limit_price[$id] ?? null, // phụ thu mới có
+                    'price' => $request->price[$id],
+                    'original_price' => $request->original_price[$id],
+                    'hein_price' => $request->hein_price[$id] ?? null, // phụ thu mới có
+                    'hein_limit_price' => $request->hein_limit_price[$id] ?? null, // phụ thu mới có
+                    'equipment_set_id' => $request->equipment_set_id[$id],
+                    'equipment_set_order' => $request->equipment_set_order[$id],
+                    'parent_id' => $request->parent_id[$id],
+                    'service_condition_id' => $request->service_condition_id[$id],
 
-                'hein_card_number' => $request->hein_card_number[$id] ?? null, // DTTT là BHYT mới có
-                'hein_ratio' => $request->hein_ratio[$id] ?? null, // DTTT là BHYT mới có
-                'json_patient_type_alter' => $request->json_patient_type_alter[$id] ?? null, // DTTT là BHYT mới có
+                    'hein_card_number' => $request->hein_card_number[$id] ?? null, // DTTT là BHYT mới có
+                    'hein_ratio' => $request->hein_ratio[$id] ?? null, // DTTT là BHYT mới có
+                    'json_patient_type_alter' => $request->json_patient_type_alter[$id] ?? null, // DTTT là BHYT mới có
 
-            ];
-            if (!$request->other_pay_source_id[$id]) {
-                $dataUpdate['other_source_price'] =  null; // khi bỏ chọn Nguồn khác thì set lại = null
+                ];
+                if (!$request->other_pay_source_id[$id]) {
+                    $dataUpdate['other_source_price'] =  null; // khi bỏ chọn Nguồn khác thì set lại = null
+                }
+                $this->sereServ->where('id', $id)->update($dataUpdate);
             }
-            $this->sereServ->where('id', $id)->update($dataUpdate);
-        }
+
+            // // Cập nhật lại hein_ratio của các dịch vụ có DTTT là BHYT
+            // $sereServPatientTypeBHYT = $this->getSereServPatientTypeBHYT($request->treatment_id);
+            // $sereServPatientTypeBHYTIds = $sereServPatientTypeBHYT->pluck('id');
+            // if (!$sereServPatientTypeBHYT) return;
+            // $totalPriceSereServPatientTypeBHYT = $this->getTotalPriceBhSereServIds($sereServPatientTypeBHYTIds);
+            // $dataFee = $this->treatmentFeeDetailVView->find($request->treatment_id ?? 0);
+            // foreach ($sereServPatientTypeBHYT as $data) {
+            //     $heinRatio = getMucHuongBHYT($dataFee['tdl_hein_card_number'], $totalPriceSereServPatientTypeBHYT, $dataFee['in_time']);
+            //     $dataUpdate = [
+            //         'hein_ratio' => $heinRatio,
+            //     ];
+            //     if ($data->primary_patient_type_id) {
+            //         $heinPrice = ($data->original_price * $heinRatio);
+            //         $dataUpdate['hein_price'] = $heinPrice;
+            //     }
+            //     $data->update($dataUpdate);
+            // }
+        });
     }
 }

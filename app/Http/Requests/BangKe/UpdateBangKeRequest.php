@@ -19,6 +19,7 @@ use App\Repositories\ServicePatyRepository;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Support\Carbon;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -137,8 +138,16 @@ class UpdateBangKeRequest extends FormRequest
                     }),
             ],
             'equipment_set_order' =>                      'nullable|integer',
-            'parent_id' =>                                'nullable',
-            'service_condition_id' =>                     'nullable',
+            'parent_id' =>                                'nullable|integer',
+            'service_condition_id' => [
+                'nullable',
+                'integer',
+                Rule::exists('App\Models\HIS\ServiceCondition', 'id')
+                    ->where(function ($query) {
+                        $query = $query
+                            ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                    }),
+            ],
 
         ];
     }
@@ -158,10 +167,13 @@ class UpdateBangKeRequest extends FormRequest
                         $validator->errors()->add('id', 'ID SereServ không tồn tại!');
                     } else {
                         $dataTreatment = $this->treatment->find($dataBangKeVView->tdl_treatment_id);
-
+                        $tenThuoc = $dataBangKeVView->service_type_code == 'TH' ? ' (HSD: '. Carbon::createFromFormat('YmdHis', $dataBangKeVView->expired_date )->format('d/m/Y') . ', số lô: '. $dataBangKeVView->package_number.')'  : '';
                         if (!$dataTreatment) {
                             $validator->errors()->add('id', 'Hồ sơ không tồn tại!');
                         } else {
+                            $this->merge([
+                                'treatment_id' => $dataTreatment->id,
+                            ]);
                             // Lấy data từ DB 
                             $patient_type_id = $this->has('patient_type_id') ? $this->patient_type_id : $dataBangKeVView->patient_type_id;
                             $primary_patient_type_id = $this->has('primary_patient_type_id') ? $this->primary_patient_type_id : $dataBangKeVView->primary_patient_type_id;
@@ -176,10 +188,15 @@ class UpdateBangKeRequest extends FormRequest
                             $parent_id = $this->has('parent_id') ? $this->parent_id : $dataBangKeVView->parent_id;
                             $service_condition_id = $this->has('service_condition_id') ? $this->service_condition_id : $dataBangKeVView->service_condition_id;
 
-                            $coHoaDon = $this->sereServBill->where('sere_serv_id', $id)->exists(); // check xem có bill cho dịch vụ này chưa
+                            $coHoaDon = $this->sereServBill
+                                ->where('sere_serv_id', $id)
+                                ->where(function ($q) {
+                                    $q->where('is_cancel', 0)->orWhereNull('is_cancel');
+                                })
+                                ->exists(); // check xem có bill cho dịch vụ này chưa
 
-                            $heinCardNumberApproval = $this->heinApproval->find($dataBangKeVView->hein_approval_id)->hein_card_number ?? '';
-                            $jsonDataPatientTypeAlter = $this->patientTypeAlterRepository->getJsonByHeinCardNumberAndPatientTypeId($heinCardNumberApproval, $patient_type_id, $dataTreatment->id);
+                            $heinCardNumber = $dataTreatment->tdl_hein_card_number ?? '';
+                            $jsonDataPatientTypeAlter = $this->patientTypeAlterRepository->getJsonByHeinCardNumberAndPatientTypeId($heinCardNumber, $patient_type_id, $dataTreatment->id);
 
                             // Nếu không có bộ vật tư thì order = null
                             if (!$equipment_set_id) {
@@ -233,7 +250,7 @@ class UpdateBangKeRequest extends FormRequest
                                 }
                                 // Check khi chọn đối tượng thanh toán là BHYT
                                 if ($patient_type_id == $this->patientTypeBHYTId) {
-                                    if (!$heinCardNumberApproval) {
+                                    if (!$heinCardNumber) {
                                         $validator->errors()->add('patient_type_id',  '(' . $dataBangKeVView->service_req_code . ')' . ' - ' . $dataBangKeVView->tdl_service_name   . ' không tìm thấy thông tin duyệt BHYT!');
                                     }
                                 }
@@ -248,7 +265,7 @@ class UpdateBangKeRequest extends FormRequest
                                         $activePrice = $this->servicePatyRepository->getActivePriceByServieIdPatientTypeId($dataBangKeVView->service_id, $patient_type_id, $dataTreatment->in_time)->price ?? null;
                                 }
                                 if ($activePrice === null) {
-                                    $validator->errors()->add('patient_type_id',  '(' . $dataBangKeVView->service_req_code . ')' . ' - ' . $dataBangKeVView->tdl_service_name   . ' không tìm thấy chính sách giá cho đối tượng thanh toán!');
+                                    $validator->errors()->add('patient_type_id',  '(' . $dataBangKeVView->service_req_code . ')' . ' - ' . $dataBangKeVView->tdl_service_name   . $tenThuoc. ' không tìm thấy chính sách giá cho đối tượng thanh toán!');
                                 } else {
                                     $primaryPrices[$id] = $activePrice;
                                     $prices[$id] = $activePrice;
@@ -262,11 +279,11 @@ class UpdateBangKeRequest extends FormRequest
 
                                     // Nếu DTTT là BHYT thì thêm thông tin
                                     if ($patient_type_id == $this->patientTypeBHYTId) {
-                                        $heinCardNumbers[$id] = $heinCardNumberApproval;
+                                        $heinCardNumbers[$id] = $heinCardNumber;
                                         $dataFee = $this->treatmentFeeDetailVView->find($dataTreatment->id ?? 0);
-                                        $heinRatios[$id] = getMucHuongBHYT($dataFee['tdl_hein_card_number']??'', $dataFee['total_price']??0, $dataFee['in_time']??0)??0;
+                                        $heinRatios[$id] = getMucHuongBHYT($dataFee['tdl_hein_card_number'] ?? '', $dataFee['total_price'] ?? 0, $dataFee['in_time'] ?? 0) ?? 0;
                                         $jsonPatientTypeAlters[$id] = $jsonDataPatientTypeAlter;
-                                        $this->merge([  
+                                        $this->merge([
                                             'hein_card_number' => $heinCardNumbers,
                                             'hein_ratio' => $heinRatios,
                                             'json_patient_type_alter' => $jsonPatientTypeAlters,
@@ -290,7 +307,7 @@ class UpdateBangKeRequest extends FormRequest
                                             $activePrimaryPrice = $this->servicePatyRepository->getActivePriceByServieIdPatientTypeId($dataBangKeVView->service_id, $primary_patient_type_id, $dataTreatment->in_time)->price ?? null;
                                     }
                                     if ($activePrimaryPrice === null) {
-                                        $validator->errors()->add('primary_patient_type_id',  '(' . $dataBangKeVView->service_req_code . ')' . ' - ' . $dataBangKeVView->tdl_service_name   . ' không tìm thấy chính sách giá cho đối tượng phụ thu!');
+                                        $validator->errors()->add('primary_patient_type_id',  '(' . $dataBangKeVView->service_req_code . ')' . ' - ' . $dataBangKeVView->tdl_service_name  . $tenThuoc . ' không tìm thấy chính sách giá cho đối tượng phụ thu!');
                                     } else {
                                         if ($dataBangKeVView->service_type_code != 'TH') { // nếu loại dịch vụ không là thuốc thì cập nhật lại các trường giá
                                             if ($activePrimaryPrice <= $activePrice) {
@@ -301,10 +318,10 @@ class UpdateBangKeRequest extends FormRequest
                                             $primaryPrices[$id] = $activePrimaryPrice;
                                             $heinLimitPrices[$id] = ($this->patientTypeBHYTId == $patient_type_id) ? $activePrice : null; // Nếu DTTT là BHYT thì thêm không thì là null
                                             $heinPrices[$id] = ($this->patientTypeBHYTId == $patient_type_id)
-                                                ? (($dataBangKeVView->total_price > $heinLimitPrices[$id]) ? $activePrice : ($originalPrices[$id] * $dataBangKeVView->hein_ratio)) // Nếu vượt trần thì lấy $activePrice còn không thì lấy original_price * hein_ratio
+                                                ? ($originalPrices[$id] * $heinRatios[$id]) 
                                                 : null; // Nếu DTTT là BHYT thì thêm không thì là null
 
-                                            $this->merge([
+                                                $this->merge([
                                                 'price' => $prices,
                                                 'primary_price' => $primaryPrices,
                                                 'limit_price' => $limitPrices,
@@ -409,6 +426,43 @@ class UpdateBangKeRequest extends FormRequest
                 $validator->errors()->add('id', 'Danh sách dịch vụ không hợp lệ!');
             }
         });
+    }
+    public function messages()
+    {
+        return [
+            'patient_type_id.integer'       => config('keywords')['bang_ke']['patient_type_id'] . config('keywords')['error']['integer'],
+            'patient_type_id.exists'        => config('keywords')['bang_ke']['patient_type_id'] . ' không tồn tại hoặc đang bị khóa!',
+
+            'primary_patient_type_id.integer'       => config('keywords')['bang_ke']['primary_patient_type_id'] . config('keywords')['error']['integer'],
+            'primary_patient_type_id.exists'        => config('keywords')['bang_ke']['primary_patient_type_id'] . ' không tồn tại hoặc đang bị khóa!',
+
+            'is_out_parent_fee.integer'     => config('keywords')['bang_ke']['is_out_parent_fee'] . config('keywords')['error']['integer'],
+            'is_out_parent_fee.in'          => config('keywords')['bang_ke']['is_out_parent_fee'] . config('keywords')['error']['in'],
+
+            'is_expend.integer'     => config('keywords')['bang_ke']['is_expend'] . config('keywords')['error']['integer'],
+            'is_expend.in'          => config('keywords')['bang_ke']['is_expend'] . config('keywords')['error']['in'],
+
+            'is_no_execute.integer'     => config('keywords')['bang_ke']['is_no_execute'] . config('keywords')['error']['integer'],
+            'is_no_execute.in'          => config('keywords')['bang_ke']['is_no_execute'] . config('keywords')['error']['in'],
+
+            'expend_type_id.integer'     => config('keywords')['bang_ke']['expend_type_id'] . config('keywords')['error']['integer'],
+            'expend_type_id.in'          => config('keywords')['bang_ke']['expend_type_id'] . config('keywords')['error']['in'],
+
+            'is_not_use_bhyt.integer'     => config('keywords')['bang_ke']['is_not_use_bhyt'] . config('keywords')['error']['integer'],
+            'is_not_use_bhyt.in'          => config('keywords')['bang_ke']['is_not_use_bhyt'] . config('keywords')['error']['in'],
+
+            'equipment_set_id.integer'       => config('keywords')['bang_ke']['equipment_set_id'] . config('keywords')['error']['integer'],
+            'equipment_set_id.exists'        => config('keywords')['bang_ke']['equipment_set_id'] . ' không tồn tại hoặc đang bị khóa!',
+
+            'other_pay_source_id.integer'       => config('keywords')['bang_ke']['other_pay_source_id'] . config('keywords')['error']['integer'],
+            'other_pay_source_id.exists'        => config('keywords')['bang_ke']['other_pay_source_id'] . ' không tồn tại hoặc đang bị khóa!',
+
+            'parent_id.integer'       => config('keywords')['bang_ke']['parent_id'] . config('keywords')['error']['integer'],
+            'parent_id.exists'        => config('keywords')['bang_ke']['parent_id'] . ' không tồn tại hoặc đang bị khóa!',
+
+            'service_condition_id.integer'       => config('keywords')['bang_ke']['service_condition_id'] . config('keywords')['error']['integer'],
+            'service_condition_id.exists'        => config('keywords')['bang_ke']['service_condition_id'] . ' không tồn tại hoặc đang bị khóa!',
+        ];
     }
     public function failedValidation(Validator $validator)
     {
