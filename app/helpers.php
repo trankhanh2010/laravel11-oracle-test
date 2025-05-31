@@ -966,6 +966,68 @@ if (!function_exists('logError')) {
         }
     }
 
+    if (!function_exists('getTyLeThanhToanDichVuBHYT')) {
+        /**
+         * Xác định tỷ lệ thanh toán BHYT của 1 dịch vụ trong 1 bảng kê
+         *
+         * @param string $maThe          Mã thẻ BHYT 
+         * @param string $levelCode      Tuyến
+         * @param float $tongChiPhi      Tổng chi phí dịch vụ BHYT trong lần điều trị
+         * @param bool $isBHYTCovered    Dịch vụ có nằm trong phạm vi BHYT không?
+         * @param bool $isRightRoute     Có đúng tuyến không?
+         * @param bool $isEmergency      Có phải cấp cứu không?
+         * @param int|string $thoiGianXacDinh  Thời gian xác định (YmdHis)
+         * @param float|null $tyLeRiengCuaDV   Tỷ lệ riêng biệt của dịch vụ c
+         *
+         * @return float Tỷ lệ thanh toán (0 → 1.0)
+         */
+        function getTyLeThanhToanDichVuBHYT(
+            string $maThe,
+            string $levelCode,
+            float $tongChiPhi,
+            bool $isBHYTCovered,
+            bool $isRightRoute,
+            bool $isEmergency,
+            $thoiGianXacDinh,
+            ?float $tyLeRiengCuaDV = null
+        ): float {
+            if (!$isBHYTCovered) {
+                return 0.0; // Không thuộc phạm vi hưởng → không thanh toán
+            }
+
+            // Bước 1: Tính mức hưởng theo thẻ
+            $mucHuong = getMucHuongBHYT($maThe, $tongChiPhi, $thoiGianXacDinh); // Trả về 0.8, 0.95, 1.0
+
+            if ($mucHuong == null) {
+                return 0.0;
+            }
+
+            // Bước 2: Nếu dịch vụ có tỷ lệ riêng → áp dụng luôn
+            if ($tyLeRiengCuaDV !== null) {
+                return min($tyLeRiengCuaDV, 1.0); // Không vượt quá 100%
+            }
+
+            // Bước 3: Áp dụng theo tuyến và tình trạng cấp cứu
+            if ($isRightRoute || $isEmergency) {
+                return $mucHuong;
+            } else {
+                // Trái tuyến
+                return getTyLeThanhToanTruongHopTraiTuyen($levelCode, $mucHuong);
+            }
+        }
+    }
+
+    if (!function_exists('getTyLeThanhToanTruongHopTraiTuyen')) {
+        function getTyLeThanhToanTruongHopTraiTuyen(string $levelCode, float $mucHuong): float
+        {
+                return match ($levelCode) {
+                '3' => $mucHuong,                    // Tuyến huyện => hưởng 100% mức hưởng
+                '2' => round($mucHuong * 0.6, 2),    // Tuyến tỉnh => 60%
+                '1' => round($mucHuong * 0.4, 2),    // Tuyến trung ương => 40% (nếu áp dụng)
+                default => round($mucHuong * 0.6, 2),// Mặc định giả định tuyến tỉnh
+            };
+        }
+    }
     if (!function_exists('moneyToWords')) {
         function moneyToWords($number): string
         {

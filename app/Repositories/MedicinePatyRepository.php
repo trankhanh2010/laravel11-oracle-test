@@ -108,7 +108,7 @@ class MedicinePatyRepository
             ->where('patient_type_id', $patientTypeId)
             ->orderBy('modify_time', 'desc')
             ->first();
-        return $data;
+        return $data?$data->exp_price*(1+$data->exp_vat_ratio):null;
     }
     public function getById($id)
     {

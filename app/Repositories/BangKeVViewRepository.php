@@ -179,8 +179,13 @@ class BangKeVViewRepository
                 "invoice_id",
                 "medicine_id",
                 "hein_approval_id",
-                "expired_date",
-                "package_number",
+                "medicine_expired_date",
+                "medicine_package_number",
+                "material_id",
+                "material_expired_date",
+                "material_package_number",
+                "career_code",
+                "career_name",
                 "hein_price",
                 "hein_limit_price",
                 "patient_price_bhyt",
@@ -1028,10 +1033,11 @@ class BangKeVViewRepository
             ->get();
         return $data;
     }
-    public function getTotalPriceBhSereServIds($ids)
+    public function getTotalPriceSereServBHYT($treatmentId)
     {
         return $this->sereServ
-            ->whereIn('id', $ids)
+            ->where('tdl_treatment_id', $treatmentId)
+            ->where('patient_type_id', $this->patientTypeBHYTId)
             ->whereNotNull('SERVICE_REQ_ID')
             ->where(function ($query) {
                 $query->whereNull('IS_DELETE')
@@ -1080,23 +1086,33 @@ class BangKeVViewRepository
                 $this->sereServ->where('id', $id)->update($dataUpdate);
             }
 
-            // // Cập nhật lại hein_ratio của các dịch vụ có DTTT là BHYT
-            // $sereServPatientTypeBHYT = $this->getSereServPatientTypeBHYT($request->treatment_id);
-            // $sereServPatientTypeBHYTIds = $sereServPatientTypeBHYT->pluck('id');
-            // if (!$sereServPatientTypeBHYT) return;
-            // $totalPriceSereServPatientTypeBHYT = $this->getTotalPriceBhSereServIds($sereServPatientTypeBHYTIds);
-            // $dataFee = $this->treatmentFeeDetailVView->find($request->treatment_id ?? 0);
-            // foreach ($sereServPatientTypeBHYT as $data) {
-            //     $heinRatio = getMucHuongBHYT($dataFee['tdl_hein_card_number'], $totalPriceSereServPatientTypeBHYT, $dataFee['in_time']);
-            //     $dataUpdate = [
-            //         'hein_ratio' => $heinRatio,
-            //     ];
-            //     if ($data->primary_patient_type_id) {
-            //         $heinPrice = ($data->original_price * $heinRatio);
-            //         $dataUpdate['hein_price'] = $heinPrice;
-            //     }
-            //     $data->update($dataUpdate);
-            // }
+            // Cập nhật lại hein_ratio của các dịch vụ có DTTT là BHYT
+            $sereServPatientTypeBHYT = $this->getSereServPatientTypeBHYT($request->treatment_id);
+            if (!$sereServPatientTypeBHYT) return;
+            // $totalPriceSereServPatientTypeBHYT = $this->getTotalPriceSereServBHYT($request->treatment_id);
+            $dataFee = $this->treatmentFeeDetailVView->find($request->treatment_id ?? 0);
+            foreach ($sereServPatientTypeBHYT as $data) {
+                $jsonDataPatientTypeAlter = $data->json_patient_type_alter;
+                // $heinRatio = getMucHuongBHYT($dataFee['tdl_hein_card_number'], $this->getTotalPriceSereServBHYT($request->treatment_id), $dataFee['in_time']);
+                $heinRatio = getTyLeThanhToanDichVuBHYT(
+                    $dataFee['tdl_hein_card_number'] ?? '',
+                    $jsonDataPatientTypeAlter ? json_decode($jsonDataPatientTypeAlter)->LEVEL_CODE : '',
+                    $this->getTotalPriceSereServBHYT($request->treatment_id) ?? 0,
+                    $data->tdl_hein_service_bhyt_code,
+                    json_decode($jsonDataPatientTypeAlter)->RIGHT_ROUTE_CODE == 'DT',
+                    json_decode($jsonDataPatientTypeAlter)->RIGHT_ROUTE_TYPE_CODE == 'CC',
+                    $dataFee['in_time'],
+                    tyLeRiengCuaDV: null
+                );
+                $dataUpdate = [
+                    'hein_ratio' => $heinRatio,
+                ];
+                if ($data->primary_patient_type_id) {
+                    $heinPrice = ($data->original_price * $heinRatio);
+                    $dataUpdate['hein_price'] = $heinPrice;
+                }
+                $data->update($dataUpdate);
+            }
         });
     }
 }
