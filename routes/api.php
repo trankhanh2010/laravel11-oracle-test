@@ -224,6 +224,7 @@ use App\Http\Controllers\Api\NoCacheControllers\TreatmentFeeListVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TreatmentListVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TreatmentRoomGroupVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\UserAccountBookVViewController;
+use App\Http\Controllers\Api\NoCacheControllers\YeuCauKhamClsPtttVViewController;
 // Base Api
 use App\Http\Controllers\BaseControllers\CacheController;
 use App\Http\Controllers\BaseControllers\ElasticSearchController;
@@ -1239,4 +1240,6 @@ Route::group([
     Route::apiResource('v1/bang-ke-v-view', BangKeVViewController::class)->only(['index', 'update']);
     /// Bảng kê biểu mẫu
     Route::get('v1/bang-ke-bieu-mau', [BangKeVViewController::class, "handleBieuMau"]);
+    /// Yêu cầu khám cls/pttt
+    Route::apiResource('v1/yeu-cau-kham-cls-pttt-v-view', YeuCauKhamClsPtttVViewController::class)->only(['index', 'show']);
 });

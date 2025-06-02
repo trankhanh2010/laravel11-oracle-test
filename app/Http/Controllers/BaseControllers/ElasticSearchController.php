@@ -329,6 +329,7 @@ class ElasticSearchController extends BaseApiCacheController
     }
     public function indexRecordsToElasticsearch(Request $request)
     {
+        $requestSetMaxResultWindow = new Request(['max' => 2000000]);
         $output = '';
         // Tăng thời gian chờ lên 
         set_time_limit(3600);
@@ -363,8 +364,12 @@ class ElasticSearchController extends BaseApiCacheController
             Artisan::call('app:index-records-to-elasticsearch', [
                 '--table' => 'all'
             ]);
+
             // Lấy kết quả từ command 
             $output = Artisan::output();
+
+            // Cập nhật lại max result window
+            $this->setMaxResultWindow($requestSetMaxResultWindow);
             return response()->json([
                 'status'    => 200,
                 'message' => 'Xong!',
@@ -375,6 +380,10 @@ class ElasticSearchController extends BaseApiCacheController
         // Nếu có Ids
         if ($this->ids != null) {
             $this->indexRecordsToElasticsearchByIds();
+
+            // Cập nhật lại max result window
+            $this->setMaxResultWindow($requestSetMaxResultWindow);
+
             return response()->json([
                 'status'    => 200,
                 'message' => 'Xong!',
@@ -384,13 +393,17 @@ class ElasticSearchController extends BaseApiCacheController
 
         // Không thì lấy danh sách bảng cần index
         $table = implode(",", $this->table);
+
         // Gọi command với Artisan::call
         Artisan::call('app:index-records-to-elasticsearch', [
             '--table' => $table
         ]);
+
         // Lấy kết quả từ command 
         $output = Artisan::output();
 
+        // Cập nhật lại max result window
+        $this->setMaxResultWindow($requestSetMaxResultWindow);
         return response()->json([
             'status'    => 200,
             'message' => 'Xong!',
@@ -495,7 +508,18 @@ class ElasticSearchController extends BaseApiCacheController
     }
     public function setMaxResultWindow(Request $request)
     {
-        $table = $this->all_table;
+        // $table = $this->all_table;
+        $table = $this->client->cat()->indices([
+            'h' => 'index',
+            'format' => 'json',
+        ]); // Lấy các index đang có bên elastic
+        $table = json_decode($table->getBody(), true);
+        $table = array_column($table, 'index');
+        // Lọc bỏ các index bắt đầu bằng dấu "."
+        $table = array_filter($table, function ($name) {
+            return strpos($name, '.') !== 0;
+        });
+
 
         $tables = explode(",", $request->tables);
         if ($request->tables == null) {

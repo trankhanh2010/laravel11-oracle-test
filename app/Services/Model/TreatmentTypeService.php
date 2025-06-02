@@ -29,6 +29,7 @@ class TreatmentTypeService
             $data = $this->treatmentTypeRepository->applyJoins();
             $data = $this->treatmentTypeRepository->applyKeywordFilter($data, $this->params->keyword);
             $data = $this->treatmentTypeRepository->applyIsActiveFilter($data, $this->params->isActive);
+            $data = $this->treatmentTypeRepository->applyTabFilter($data, $this->params->tab);
             $count = $data->count();
             $data = $this->treatmentTypeRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
             $data = $this->treatmentTypeRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
@@ -41,6 +42,7 @@ class TreatmentTypeService
     {
         $data = $this->treatmentTypeRepository->applyJoins();
         $data = $this->treatmentTypeRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $this->treatmentTypeRepository->applyTabFilter($data, $this->params->tab);
         $count = $data->count();
         $data = $this->treatmentTypeRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
         $data = $this->treatmentTypeRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);

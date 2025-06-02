@@ -35,6 +35,15 @@ class TreatmentTypeRepository
         }
         return $query;
     }
+    public function applyTabFilter($query, $param)
+    {
+        switch ($param) {
+            case 'yeuCauKhamClsPttt':
+                return $query->whereIn('treatment_type_code',['01','02','03']);
+            default:
+                return $query;
+        }
+    }
     public function applyOrdering($query, $orderBy, $orderByJoin)
     {
         if ($orderBy != null) {

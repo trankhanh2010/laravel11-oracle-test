@@ -77,6 +77,14 @@ class BaseApiCacheController extends Controller
     protected $accountBookCodeName = 'AccountBookCode';
     protected $transReqCode;
     protected $transReqCodeName = 'TransReqCode';
+    protected $bedCode;
+    protected $bedCodeName = 'BedCode';
+    protected $trangThai;
+    protected $trangThaiName = 'TrangThai';
+    protected $trangThaiVienPhi;
+    protected $trangThaiVienPhiName = 'TrangThaiVienPhi';
+    protected $trangThaiKeThuoc;
+    protected $trangThaiKeThuocName = 'TrangThaiKeThuoc';
     protected $tdlTreatmentId;
     protected $tdlTreatmentIdName = 'TdlTreatmentId';
     protected $documentTypeId;
@@ -263,6 +271,10 @@ class BaseApiCacheController extends Controller
     protected $hasExecuteName = 'HasExecute';
     protected $intructionTimeTo;
     protected $intructionTimeToName = 'IntructionTimeTo';
+    protected $intructionTimeDay;
+    protected $intructionTimeDayName = 'IntructionTimeDay';
+    protected $intructionTimeMonth;
+    protected $intructionTimeMonthName = 'IntructionTimeMonth';
     protected $debateTimeTo;
     protected $debateTimeToName = 'DebateTimeTo';
     protected $debateTimeFrom;
@@ -739,6 +751,8 @@ class BaseApiCacheController extends Controller
     protected $accountBookVViewName = 'account_book_v_view';
     protected $userAccountBookVView;
     protected $userAccountBookVViewName = 'user_account_book_v_view';
+    protected $yeuCauKhamClsPtttVView;
+    protected $yeuCauKhamClsPtttVViewName = 'yeu_cau_kham_cls_pttt_v_view_name';
     protected $treatmentRoomGroupVView;
     protected $treatmentRoomGroupVViewName = 'treatment_room_group_v_view';
     protected $medicalCaseCoverListVView;
@@ -1144,7 +1158,10 @@ class BaseApiCacheController extends Controller
         if ($request->input('param') !== null) {
             // Thay thế dấu + và / nếu bị thay đổi thành khoảng trắng hoặc các ký tự khác
             $encodedParam  = str_replace([' ', '+', '/'], ['+', '+', '/'], $request->input('param'));
-            $this->paramRequest = json_decode(base64_decode($encodedParam), true) ?? null;
+            // Lọc bỏ các đoạn comment kiểu /* ... */
+            $cleanBase64Decode = preg_replace('#/\*.*?\*/#s', '', base64_decode($encodedParam));
+
+            $this->paramRequest = json_decode($cleanBase64Decode, true) ?? null;
             if ($this->paramRequest === null) {
                 $this->errors['param'] = $this->messDecodeParam;
             }
@@ -1363,6 +1380,38 @@ class BaseApiCacheController extends Controller
             if (!is_string($this->branchCode)) {
                 $this->errors[$this->branchCodeName] = $this->messFormat;
                 $this->branchCode = null;
+            }
+        }
+
+        $this->bedCode = $this->paramRequest['ApiData']['BedCode'] ?? null;
+        if ($this->bedCode !== null) {
+            if (!is_string($this->bedCode)) {
+                $this->errors[$this->bedCodeName] = $this->messFormat;
+                $this->bedCode = null;
+            }
+        }
+
+        $this->trangThai = $this->paramRequest['ApiData']['TrangThai'] ?? null;
+        if ($this->trangThai !== null) {
+            if (!is_string($this->trangThai)) {
+                $this->errors[$this->trangThaiName] = $this->messFormat;
+                $this->trangThai = null;
+            }
+        }
+
+        $this->trangThaiVienPhi = $this->paramRequest['ApiData']['TrangThaiVienPhi'] ?? null;
+        if ($this->trangThaiVienPhi !== null) {
+            if (!is_string($this->trangThaiVienPhi)) {
+                $this->errors[$this->trangThaiVienPhiName] = $this->messFormat;
+                $this->trangThaiVienPhi = null;
+            }
+        }
+
+        $this->trangThaiKeThuoc = $this->paramRequest['ApiData']['TrangThaiKeThuoc'] ?? null;
+        if ($this->trangThaiKeThuoc !== null) {
+            if (!is_string($this->trangThaiKeThuoc)) {
+                $this->errors[$this->trangThaiKeThuocName] = $this->messFormat;
+                $this->trangThaiKeThuoc = null;
             }
         }
 
@@ -2085,6 +2134,28 @@ class BaseApiCacheController extends Controller
             if (!preg_match('/^\d{14}$/',  $this->intructionTimeFrom)) {
                 $this->errors[$this->intructionTimeFromName] = $this->messFormat;
                 $this->intructionTimeFrom = null;
+            }
+        }
+        $this->intructionTimeDay = $this->paramRequest['ApiData']['IntructionTimeDay'] ?? null;
+        if ($this->intructionTimeDay != null) {
+            if (!preg_match('/^\d{14}$/',  $this->intructionTimeDay)) {
+                $this->errors[$this->intructionTimeDayName] = $this->messFormat;
+                $this->intructionTimeDay = null;
+            }else{
+                $day = substr($this->intructionTimeDay, 0, 8); // Lấy yyyyMMdd
+                $this->intructionTimeFrom = $day . '000000'; // Đầu ngày
+                $this->intructionTimeTo = $day . '235959';   // Cuối ngày
+            }
+        }
+        $this->intructionTimeMonth = $this->paramRequest['ApiData']['IntructionTimeMonth'] ?? null;
+        if ($this->intructionTimeMonth != null) {
+            if (!preg_match('/^\d{14}$/',  $this->intructionTimeMonth)) {
+                $this->errors[$this->intructionTimeMonthName] = $this->messFormat;
+                $this->intructionTimeMonth = null;
+            }else{
+                $month = substr($this->intructionTimeMonth, 0, 6); // Lấy yyyyMM
+                $this->intructionTimeFrom = $month . '01000000'; // Đầu tháng
+                $this->intructionTimeTo = $month . '31235959';   // Cuối tháng
             }
         }
         $this->debateTimeTo = $this->paramRequest['ApiData']['DebateTimeTo'] ?? null;

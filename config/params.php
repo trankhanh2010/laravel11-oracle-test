@@ -453,6 +453,7 @@ return [
             'phieutdvacsbnc2_phieumau' => 'Có lỗi khi thực hiện thao tác với bảng Phieutdvacsbnc2Phieumau!',
             'user_account_book_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm UserAccountBook!',
             'bang_ke_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm Bảng kê!',
+            'yeu_cau_kham_cls_pttt_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm Yêu cầu khám CLS PTTT!',
 
 
         ],
