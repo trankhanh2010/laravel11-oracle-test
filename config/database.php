@@ -15,7 +15,8 @@ return [
     |
     */
 
-    'default' => env('DB_CONNECTION', 'oracle'),
+    // 'default' => env('DB_CONNECTION', 'oracle'),
+    'default' => 'oracle_his',
 
     /*
     |--------------------------------------------------------------------------
@@ -287,7 +288,7 @@ return [
     |
     */
 
-    'migrations' => 'migrations',
+    'migrations' => 'xa_migrations_laravel',
 
     /*
     |--------------------------------------------------------------------------

@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Validator;
+
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -47,6 +48,12 @@ class AppServiceProvider extends ServiceProvider
         Validator::replacer('rgb_color', function ($message, $attribute, $rule, $parameters) {
             return str_replace(':attribute', $attribute, ':attribute phải là mã màu RGB hợp lệ (ví dụ: 255,192,192)!');
         });
+
+        // Tùy chỉnh để Migration chạy các file trong thư mục phụ
+        $this->loadMigrationsFrom([
+            database_path('migrations'),
+            database_path('migrations/His/Views'),
+            database_path('migrations/Emr/Views'),
+        ]);
     }
-    
 }
