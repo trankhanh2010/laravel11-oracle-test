@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\NoCacheControllers;
 use App\DTOs\YeuCauKhamClsPtttVViewDTO;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
 use App\Models\View\YeuCauKhamClsPtttVView;
+use App\Services\Model\ServiceRoomService;
 use App\Services\Model\YeuCauKhamClsPtttVViewService;
 use Illuminate\Http\Request;
 
@@ -13,7 +14,11 @@ class YeuCauKhamClsPtttVViewController extends BaseApiCacheController
 {
     protected $yeuCauKhamClsPtttVViewService;
     protected $yeuCauKhamClsPtttVViewDTO;
-    public function __construct(Request $request, YeuCauKhamClsPtttVViewService $yeuCauKhamClsPtttVViewService, YeuCauKhamClsPtttVView $yeuCauKhamClsPtttVView)
+    public function __construct(
+        Request $request, 
+        YeuCauKhamClsPtttVViewService $yeuCauKhamClsPtttVViewService, 
+        YeuCauKhamClsPtttVView $yeuCauKhamClsPtttVView,
+        )
     {
         parent::__construct($request); // Gọi constructor của BaseController
         $this->yeuCauKhamClsPtttVViewService = $yeuCauKhamClsPtttVViewService;
@@ -54,6 +59,8 @@ class YeuCauKhamClsPtttVViewController extends BaseApiCacheController
             $this->trangThai,
             $this->trangThaiVienPhi,
             $this->trangThaiKeThuoc,
+            $this->kskContractId,
+            $this->serviceIds,
         );
         $this->yeuCauKhamClsPtttVViewService->withParams($this->yeuCauKhamClsPtttVViewDTO);
     }

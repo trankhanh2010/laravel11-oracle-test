@@ -60,6 +60,8 @@ SELECT
     exit_department.department_name as exit_department_name,
     exit_department.department_code as exit_department_code,
     exit_department.bhyt_code as exit_department_bhyt_code,
+    hospitalize_department.department_code as hospitalize_department_code,
+    hospitalize_department.department_name as hospitalize_department_name,
     treatment_end_type.treatment_end_type_code,
     treatment_end_type.treatment_end_type_name,
 
@@ -315,6 +317,7 @@ FROM his_treatment treatment
     LEFT JOIN his_department last_department on last_department.id = treatment.last_department_id
     LEFT JOIN his_department end_department on end_department.id = treatment.end_department_id
     LEFT JOIN his_department exit_department on exit_department.id = treatment.exit_department_id
+    LEFT JOIN his_department hospitalize_department  on hospitalize_department.id = treatment.hospitalize_department_id
     LEFT JOIN his_patient_type patient_type on patient_type.id = treatment.tdl_patient_type_id
     LEFT JOIN his_treatment_end_type treatment_end_type on treatment_end_type.id = treatment.treatment_end_type_id
     LEFT JOIN his_treatment_result treatment_result on treatment_result.id = treatment.treatment_result_id

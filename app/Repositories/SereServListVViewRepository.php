@@ -44,82 +44,145 @@ class SereServListVViewRepository
                 "patient_code",
             ]);
     }
+    public function applyJoinsDichVuYeuCau()
+    {
+        return $this->sereServListVView
+            ->leftJoin('his_machine', 'xa_v_his_sere_serv_list.machine_id', '=','his_machine.id')
+            ->select([
+                "xa_v_his_sere_serv_list.id",     
+                "xa_v_his_sere_serv_list.is_no_execute",
+                "xa_v_his_sere_serv_list.is_delete",
+                "xa_v_his_sere_serv_list.amount",
+                "xa_v_his_sere_serv_list.service_code",
+                "xa_v_his_sere_serv_list.service_name",
+                "xa_v_his_sere_serv_list.service_unit_name",
+                "xa_v_his_sere_serv_list.service_req_code",
+                "xa_v_his_sere_serv_list.treatment_id",
+                "xa_v_his_sere_serv_list.tracking_id",
+                "xa_v_his_sere_serv_list.service_type_code",
+                "xa_v_his_sere_serv_list.service_type_name",
+                "xa_v_his_sere_serv_list.block",
+                "his_machine.machine_code",
+                "his_machine.machine_name",
+            ])
+            ;
+    }
+    
+    public function applyJoinsDichVuChiDinh()
+    {
+        return $this->sereServListVView
+            ->select([
+                "id as key",
+                "id",     
+                "is_no_execute",
+                "is_delete",
+                "amount",
+                "service_req_id",
+                "service_code",
+                "service_name",
+                "service_req_code",
+                "service_type_code",
+                "service_type_name",
+                "service_req_stt_code",
+                "service_req_stt_name",
+                "service_unit_code",
+                "service_unit_name",
+                "execute_room_code",
+                "execute_room_name",
+                "execute_department_code",
+                "execute_department_name",
+            ]);
+    }
     public function applyKeywordFilter($query, $keyword)
     {
         return $query->where(function ($query) use ($keyword) {
-            $query->where(('sere_serv_list_code'), 'like', '%'. $keyword . '%')
-            ->orWhere(('lower(sere_serv_list_name)'), 'like', '%'. strtolower($keyword) . '%');
+            $query->where(('xa_v_his_sere_serv_list.sere_serv_list_code'), 'like', '%'. $keyword . '%')
+            ->orWhere(('xa_v_his_sere_serv_list.lower(sere_serv_list_name)'), 'like', '%'. strtolower($keyword) . '%');
         });
     }
     public function applyIsActiveFilter($query, $isActive)
     {
         if ($isActive !== null) {
-            $query->where(('is_active'), $isActive);
+            $query->where(('xa_v_his_sere_serv_list.is_active'), $isActive);
         }
         return $query;
     }
     public function applyIsDeleteFilter($query, $isDelete)
     {
         if ($isDelete !== null) {
-            $query->where(('is_delete'), $isDelete);
+            $query->where(('xa_v_his_sere_serv_list.is_delete'), $isDelete);
         }
         return $query;
     }
     public function applyIsNoExecuteFilter($query)
     {
         $query->where(function ($q) {
-            $q->where('IS_NO_EXECUTE', 0)
-              ->orWhereNull('IS_NO_EXECUTE');
+            $q->where('xa_v_his_sere_serv_list.IS_NO_EXECUTE', 0)
+              ->orWhereNull('xa_v_his_sere_serv_list.IS_NO_EXECUTE');
         });
         return $query;
     }
     public function applyServiceReqIsNoExecuteFilter($query)
     {
         $query->where(function ($q) {
-            $q->where('SERVICE_REQ_IS_NO_EXECUTE', 0)
-              ->orWhereNull('SERVICE_REQ_IS_NO_EXECUTE');
+            $q->where('xa_v_his_sere_serv_list.SERVICE_REQ_IS_NO_EXECUTE', 0)
+              ->orWhereNull('xa_v_his_sere_serv_list.SERVICE_REQ_IS_NO_EXECUTE');
         });
         return $query;
     }
     public function applyTreatmentIdFilter($query, $param)
     {
         if ($param !== null) {
-            $query->where(('treatment_id'), $param);
+            $query->where(('xa_v_his_sere_serv_list.treatment_id'), $param);
         }
         return $query;
     }
     public function applyPatientCodeFilter($query, $param)
     {
         if ($param !== null) {
-            $query->where(('patient_code'), $param);
+            $query->where(('xa_v_his_sere_serv_list.patient_code'), $param);
         }
         return $query;
     }
     public function applyServiceTypeCodesFilter($query, $param)
     {
         if ($param !== null) {
-            $query->whereIn(('service_type_code'), $param);
+            $query->whereIn(('xa_v_his_sere_serv_list.service_type_code'), $param);
         }
         return $query;
     }
     public function applyTrackingIdFilter($query, $param)
     {
         if ($param !== null) {
-            $query->where(('tracking_id'), $param);
+            $query->where(('xa_v_his_sere_serv_list.tracking_id'), $param);
         }
         return $query;
     }
     public function applyNotInTrackingFilter($query, $param)
     {
         if ($param == true) {
-            $query->whereNull(('tracking_id'));
+            $query->whereNull(('xa_v_his_sere_serv_list.tracking_id'));
         }
         return $query;
     }
     public function applyServiceReqIdFilter($query, $param)
     {
         if ($param !== null) {
-            $query->where(('service_req_id'), $param);
+            $query->where(('xa_v_his_sere_serv_list.service_req_id'), $param);
+        }
+        return $query;
+    }
+    public function applyServiceIdsFilter($query, $param)
+    {
+        if ($param != null) {
+            $query->whereIn(('xa_v_his_sere_serv_list.service_id'), $param);
+        }
+        return $query;
+    }
+    public function applyNotInServiceIdsFilter($query, $param)
+    {
+        if ($param != null) {
+            $query->whereNotIn(('xa_v_his_sere_serv_list.service_id'), $param);
         }
         return $query;
     }
@@ -169,6 +232,59 @@ class SereServListVViewRepository
                     'total' => $group->count(),
                     'data' => $groupData($group, $fields),
                 ];
+            })->values();
+        };
+    
+        return $groupData(collect($data), $snakeFields);
+    }
+    public function applyGroupByFieldYeuCauClsPttt($data, $groupByFields = [])
+    {
+        if (empty($groupByFields)) {
+            return $data;
+        }
+
+        // Chuyển các field thành snake_case trước khi nhóm
+        $fieldMappings = [];
+        foreach ($groupByFields as $field) {
+            $snakeField = Str::snake($field);
+            $fieldMappings[$snakeField] = $field;
+        }
+    
+        $snakeFields = array_keys($fieldMappings);
+    
+        // Đệ quy nhóm dữ liệu theo thứ tự fields đã convert
+        $groupData = function ($items, $fields) use (&$groupData, $fieldMappings) {
+            if (empty($fields)) {
+                return $items->values(); // Hết field nhóm -> Trả về danh sách gốc
+            }
+    
+            $currentField = array_shift($fields);
+            $originalField = $fieldMappings[$currentField];
+    
+            return $items->groupBy(function ($item) use ($currentField) {
+                return $item[$currentField] ?? null;
+            })->map(function ($group, $key) use ($fields, $groupData, $originalField, $currentField) {
+                $result = [
+                    'key' => (string)$key,
+                    $originalField => (string)$key, // Hiển thị tên gốc
+                    'total' => $group->filter(function ($item) {
+                        return $item;
+                    })->pluck('service_req_code')->unique()->count(),
+                    'totalServiceReqCode03' => $group->filter(function ($item) {
+                        return $item['service_req_stt_code'] == '03';
+                    })->pluck('service_req_code')->unique()->count(),
+                ];
+            
+                if ($currentField === 'service_req_code') {
+                    $firstItem = $group->first();
+                    $result['key'] = $firstItem['service_req_code'].$firstItem['execute_room_name'].$firstItem['execute_department_name'] ?? null;
+                    $result['executeRoomName'] = $firstItem['execute_room_name'] ?? null;
+                    $result['executeDepartmentName'] = $firstItem['execute_department_name'] ?? null;
+                    $result['serviceReqId'] = $firstItem['service_req_id'] ?? null;
+                }
+
+                $result['children']  = $groupData($group, $fields);
+                return $result;
             })->values();
         };
     

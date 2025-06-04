@@ -87,6 +87,67 @@ class UserRoomVViewService
                 ]
             ];
         }
+        if ($this->params->tab == 'executeRoom') {
+            $data =  [
+                "bool" => [
+                    "filter" => [
+                        ["term" => ["loginname.keyword" => get_loginname_with_token($this->params->request->bearerToken(), $this->params->time)]],
+                        $this->params->departmentCode ? ["term" => ["department_code.keyword" => $this->params->departmentCode]] : "",
+                        ["term" => ["is_active" => 1]],
+                        ["term" => ["is_delete" => 0]],
+                        [
+                            "bool" => [
+                                "should" => [
+                                    ["term" => ["room_type_code.keyword" => "XL"]]
+                                ],
+                                "minimum_should_match" => 1
+                            ]
+                        ],
+                        [
+                            "bool" => [
+                                "should" => [
+                                    ["term" => ["is_pause" => 0]],
+                                    ["bool" => ["must_not" => ["exists" => ["field" => "is_pause"]]]]
+                                ],
+                                "minimum_should_match" => 1
+                            ]
+                        ],
+                        [
+                            "bool" => [
+                                "should" => [
+                                    ["bool" => [
+                                        "must" => [
+                                            ["term" => ["room_type_code.keyword" => "XL"]],
+                                            ["term" => ["is_exam" => 1]]
+                                        ]
+                                    ]],
+                                    ["bool" => [
+                                        "must_not" => [
+                                            ["term" => ["room_type_code.keyword" => "XL"]]
+                                        ]
+                                    ]]
+                                ],
+                                "minimum_should_match" => 1
+                            ]
+                        ]
+                    ],
+                    "must" => [
+                        [
+                            "bool" => [
+                                "should" => [
+                                    ["wildcard" => ["room_name.keyword" => "*" . $this->params->keyword . "*"]],
+                                    ["match_phrase" => ["room_name" => $this->params->keyword]],
+                                    ["match_phrase_prefix" => ["room_name" => $this->params->keyword]],
+
+                                    ["match_phrase_prefix" => ["room_code" => $this->params->keyword]]
+                                ],
+                                "minimum_should_match" => 1
+                            ]
+                        ]
+                    ]
+                ]
+            ];
+        }
 
         return $data;
     }
@@ -116,10 +177,10 @@ class UserRoomVViewService
     private function getDataById($id)
     {
         $data = $this->userRoomVViewRepository->applyJoins()
-        ->where('id', $id);
-    $data = $this->userRoomVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-    $data = $data->first();
-    return $data;
+            ->where('id', $id);
+        $data = $this->userRoomVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $data->first();
+        return $data;
     }
     public function handleDataBaseGetAll()
     {

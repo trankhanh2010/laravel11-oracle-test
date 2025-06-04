@@ -31,6 +31,8 @@ class YeuCauKhamClsPtttVViewDTO
     public $trangThai;
     public $trangThaiVienPhi;
     public $trangThaiKeThuoc;
+    public $kskContractId;
+    public $serviceIds;
     public function __construct(
         $yeuCauKhamClsPtttVViewName,
         $keyword, 
@@ -59,6 +61,8 @@ class YeuCauKhamClsPtttVViewDTO
         $trangThai,
         $trangThaiVienPhi,
         $trangThaiKeThuoc,
+        $kskContractId,
+        $serviceIds,
         )
     {
         $this->yeuCauKhamClsPtttVViewName = $yeuCauKhamClsPtttVViewName;
@@ -88,5 +92,7 @@ class YeuCauKhamClsPtttVViewDTO
         $this->trangThai = $trangThai;
         $this->trangThaiVienPhi = $trangThaiVienPhi;
         $this->trangThaiKeThuoc = $trangThaiKeThuoc;
+        $this->kskContractId = $kskContractId;
+        $this->serviceIds = $serviceIds;
     }
 }

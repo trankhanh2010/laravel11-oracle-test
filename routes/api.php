@@ -148,6 +148,7 @@ use App\Http\Controllers\Api\CacheControllers\GroupTypeController;
 use App\Http\Controllers\Api\CacheControllers\HtuController;
 use App\Http\Controllers\Api\CacheControllers\IcdListVViewController;
 use App\Http\Controllers\Api\CacheControllers\ImpSourceController;
+use App\Http\Controllers\Api\CacheControllers\KskContractController;
 use App\Http\Controllers\Api\CacheControllers\MedicineController;
 use App\Http\Controllers\Api\CacheControllers\MedicineTypeController;
 use App\Http\Controllers\Api\CacheControllers\MaterialTypeController;
@@ -1242,4 +1243,6 @@ Route::group([
     Route::get('v1/bang-ke-bieu-mau', [BangKeVViewController::class, "handleBieuMau"]);
     /// Yêu cầu khám cls/pttt
     Route::apiResource('v1/yeu-cau-kham-cls-pttt-v-view', YeuCauKhamClsPtttVViewController::class)->only(['index', 'show']);
+    /// Hợp đồng khám sức khỏe
+    Route::apiResource('v1/ksk-contract', KskContractController::class)->only(['index']);
 });

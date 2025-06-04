@@ -1,23 +1,19 @@
 <?php
 
-namespace App\Models\View;
+namespace App\Models\HIS;
 
-use App\Models\HIS\SereServ;
 use App\Traits\dinh_dang_ten_truong;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
-class YeuCauKhamClsPtttVView extends Model
+class KskContract extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
     protected $connection = 'oracle_his'; 
-    protected $table = 'xa_v_his_yeu_cau_kham_cls_pttt';
+    protected $table = 'his_ksk_contract';
     public $timestamps = false;
     protected $guarded = [
         'id',
     ];
-    public function sereServs()
-    {
-        return $this->hasMany(SereServ::class, 'service_req_id', 'id');
-    }
 }

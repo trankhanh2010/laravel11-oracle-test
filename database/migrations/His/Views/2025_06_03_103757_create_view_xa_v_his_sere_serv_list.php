@@ -30,6 +30,7 @@ SELECT
      sere_serv.amount,
      sere_serv.service_req_id,
      sere_serv.exp_mest_medicine_id,
+     sere_serv.service_id,
      service.service_code,
      service.service_name,
      service_unit.service_unit_code,
@@ -45,6 +46,8 @@ SELECT
      patient_type.patient_type_name,
      request_department.department_code as request_department_code,
      request_department.department_name as request_department_name,
+     execute_department.department_code as execute_department_code,
+     execute_department.department_name as execute_department_name,
      department.department_code,
      department.department_name,
      exp_mest_medicine.tutorial,
@@ -53,7 +56,11 @@ SELECT
      service_type.service_type_name,
      service_req_stt.service_req_stt_code,
      service_req_stt.service_req_stt_name,
-     patient.patient_code
+     patient.patient_code,
+     service_req.block,
+     service_req.machine_id,
+     execute_room.room_code as execute_room_code,
+     execute_room.room_name as execute_room_name
 
     FROM his_sere_serv sere_serv
     LEFT JOIN his_service service on service.id = sere_serv.service_id
@@ -61,6 +68,7 @@ SELECT
     LEFT JOIN his_service_req service_req on service_req.id = sere_serv.service_req_id
     LEFT JOIN his_patient_type patient_type on patient_type.id = sere_serv.patient_type_id
     LEFT JOIN his_department request_department on request_department.id = service_req.request_department_id
+    LEFT JOIN his_department execute_department on execute_department.id = service_req.execute_department_id
     LEFT JOIN his_tracking tracking on tracking.id = service_req.tracking_id
     LEFT JOIN his_department department on department.id = tracking.department_id
     LEFT JOIN his_exp_mest_medicine exp_mest_medicine on exp_mest_medicine.id = sere_serv.exp_mest_medicine_id
@@ -68,6 +76,7 @@ SELECT
     LEFT JOIN his_service_type service_type on service_type.id = service.service_type_id
     LEFT JOIN his_service_req_stt service_req_stt on service_req_stt.id = service_req.service_req_stt_id
     LEFT JOIN his_patient patient on patient.id = sere_serv.tdl_patient_id
+    LEFT JOIN v_his_room execute_room on execute_room.id = service_req.execute_room_id
 SQL
         );
     }

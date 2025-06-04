@@ -25,9 +25,9 @@ SELECT
      service_req_stt.service_req_stt_code,
      service_req_stt.service_req_stt_name,
      service_req.treatment_id,
-     service_req.TDL_PATIENT_NAME,
-     service_req.TDL_PATIENT_DOB,
-     service_req.TDL_PATIENT_CODE,
+     service_req.tdl_patient_name,
+     service_req.tdl_patient_dob,
+     service_req.tdl_patient_code,
      treatment.treatment_code,
      service_req.service_req_code,
      service_req.TDL_PATIENT_GENDER_NAME,
@@ -50,9 +50,31 @@ SELECT
      service_req.TDL_TREATMENT_TYPE_ID,
      bed.bed_code,
      bed.bed_name,
+     service_req.note,
+     service_req.exam_end_type, /*Loai xu tri ket thuc kham. 1: Kham them, 2: Nhap vien, 3: Ket thuc dieu tri, 4: Ket thuc kham */
      service_req.CALL_COUNT,
      service_req.IS_NOT_IN_DEBT,
-     service_req.IS_ENOUGH_SUBCLINICAL_PRES
+     service_req.IS_ENOUGH_SUBCLINICAL_PRES,
+     service_req.tdl_ksk_contract_id,
+     service_req.tdl_service_ids,
+
+     service_req.DHST_ID,
+     service_req.HOSPITALIZATION_REASON,
+     service_req.NEXT_TREATMENT_INSTRUCTION,
+     service_req.PATHOLOGICAL_PROCESS,
+     service_req.PATHOLOGICAL_HISTORY,
+     service_req.PROVISIONAL_DIAGNOSIS,
+     service_req.SUBCLINICAL,
+     service_req.FULL_EXAM,
+     service_req.PART_EXAM,
+     service_req.icd_code,
+     service_req.icd_name,
+     service_req.icd_cause_code,
+     service_req.icd_cause_name,
+     service_req.icd_sub_code,
+     service_req.icd_text
+
+
 FROM his_service_req service_req
 LEFT JOIN HIS_TREATMENT treatment ON treatment.id = service_req.treatment_id
 LEFT JOIN HIS_SERVICE_REQ_STT service_req_stt ON service_req_stt.id = service_req.service_req_stt_id

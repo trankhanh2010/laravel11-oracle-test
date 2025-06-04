@@ -243,6 +243,8 @@ class BaseApiCacheController extends Controller
     protected $isApproveStoreName = 'IsApproveStore';
     protected $executeRoomId;
     protected $executeRoomIdName = 'ExecuteRoomId';
+    protected $kskContractId;
+    protected $kskContractIdName = 'KskContractId';
     protected $patientTypeAllowId;
     protected $patientTypeAllowIdName = 'PatientTypeAllowId';
     protected $activeIngredientId;
@@ -521,6 +523,8 @@ class BaseApiCacheController extends Controller
     protected $medicinePatyName = 'medicine_paty';
     protected $accidentBodyPart;
     protected $accidentBodyPartName = 'accident_body_part';
+    protected $kskContract;
+    protected $kskContractName = 'ksk_contract';
     protected $repayReason;
     protected $repayReasonName = 'repay_reason';
     protected $tranPatiForm;
@@ -1846,6 +1850,14 @@ class BaseApiCacheController extends Controller
             if (!is_numeric($this->serviceId)) {
                 $this->errors[$this->serviceIdName] = $this->messFormat;
                 $this->serviceId = null;
+            } 
+        }
+        $this->kskContractId = $this->paramRequest['ApiData']['KskContractId'] ?? null;
+        if ($this->kskContractId !== null) {
+            // Kiểm tra xem ID có tồn tại trong bảng  hay không
+            if (!is_numeric($this->kskContractId)) {
+                $this->errors[$this->kskContractIdName] = $this->messFormat;
+                $this->kskContractId = null;
             } 
         }
         $this->billId = $this->paramRequest['ApiData']['BillId'] ?? null;
