@@ -7,15 +7,17 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    protected $connection = 'oracle_his';
     /**
      * Run the migrations.
      */
     public function up(): void
     {
-        DB::connection('oracle_his')->statement(
+        DB::statement(
             <<<SQL
 CREATE OR REPLACE VIEW XA_V_HIS_YEU_CAU_KHAM_CLS_PTTT AS
 SELECT
+     service_req.id as key,
      service_req.id,
      service_req.is_active,
      service_req.is_delete,
@@ -70,6 +72,6 @@ SQL
      */
     public function down(): void
     {
-        DB::connection('oracle_his')->statement("DROP VIEW XA_V_HIS_YEU_CAU_KHAM_CLS_PTTT");
+        DB::statement("DROP VIEW XA_V_HIS_YEU_CAU_KHAM_CLS_PTTT");
     }
 };

@@ -7,12 +7,13 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    protected $connection = 'oracle_emr';
     /**
      * Run the migrations.
      */
     public function up(): void
     {
-        DB::connection('oracle_emr')->statement(
+        DB::statement(
             <<<SQL
 CREATE OR REPLACE VIEW XA_V_EMR_DOCUMENT_LIST AS
 SELECT
@@ -98,6 +99,6 @@ SQL
      */
     public function down(): void
     {
-        DB::connection('oracle_emr')->statement("DROP VIEW XA_V_EMR_DOCUMENT_LIST");
+        DB::statement("DROP VIEW XA_V_EMR_DOCUMENT_LIST");
     }
 };

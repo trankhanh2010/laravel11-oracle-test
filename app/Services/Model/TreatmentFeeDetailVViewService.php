@@ -42,57 +42,57 @@ class TreatmentFeeDetailVViewService
         $data = $this->treatmentFeeDetailVViewRepository->applyTreatmentCodeFilter($data, $this->params->treatmentCode);
         $count = null;
         $data = $data->first();
-        // nếu có dữ liệu, kiểm tra xem có khóa viện phí không
-        if($data){
-            // nếu có khóa viện phí thì kiểm tra xem có giao dịch nào có mã 1000 không
-            if($data->is_active == 0){
-                $listPayment = $this->treatmentMomoPaymentsRepository->getAllPayment1000($data->id);
-                // nếu có mã 1000 thì gọi lại việc lấy link để tạo lại, cập nhật bản ghi, => nếu đã khóa viện phí thì link sẽ k được trả về
-                // lặp qua từng bản ghi để kiểm tra
-                if($listPayment->isNotEmpty()){
-                    foreach ($listPayment as $key => $item){
-                        switch ($item->request_type) {
-                            case 'captureWallet':
-                                $requestType = 'ThanhToanQRCode';
-                                break;
-                            case 'payWithCC':
-                                $requestType = 'ThanhToanTheQuocTe';
-                                break;
-                            case 'payWithATM':
-                                $requestType = 'ThanhToanTheATMNoiDia';
-                                break;
-                            default:
-                                $requestType = '';
-                        }
+        // // nếu có dữ liệu, kiểm tra xem có khóa viện phí không
+        // if($data){
+        //     // nếu có khóa viện phí thì kiểm tra xem có giao dịch nào có mã 1000 không
+        //     if($data->is_active == 0){
+        //         $listPayment = $this->treatmentMomoPaymentsRepository->getAllPayment1000($data->id);
+        //         // nếu có mã 1000 thì gọi lại việc lấy link để tạo lại, cập nhật bản ghi, => nếu đã khóa viện phí thì link sẽ k được trả về
+        //         // lặp qua từng bản ghi để kiểm tra
+        //         if($listPayment->isNotEmpty()){
+        //             foreach ($listPayment as $key => $item){
+        //                 switch ($item->request_type) {
+        //                     case 'captureWallet':
+        //                         $requestType = 'ThanhToanQRCode';
+        //                         break;
+        //                     case 'payWithCC':
+        //                         $requestType = 'ThanhToanTheQuocTe';
+        //                         break;
+        //                     case 'payWithATM':
+        //                         $requestType = 'ThanhToanTheATMNoiDia';
+        //                         break;
+        //                     default:
+        //                         $requestType = '';
+        //                 }
 
-                        $this->treatmentFeePaymentDTO = new TreatmentFeePaymentDTO(
-                            'MOS_v2',
-                            'MOS_v2',
-                            'MoMo',
-                            $requestType,
-                            null,
-                            $data->treatment_code,
-                            $item->transaction_type_code,
-                            $item->deposit_req_code,
-                            $this->params->param,
-                            false,
-                            "MOS_v2"
-                        );
-                        $this->treatmentFeePaymentService->withParams($this->treatmentFeePaymentDTO);
+        //                 $this->treatmentFeePaymentDTO = new TreatmentFeePaymentDTO(
+        //                     'MOS_v2',
+        //                     'MOS_v2',
+        //                     'MoMo',
+        //                     $requestType,
+        //                     null,
+        //                     $data->treatment_code,
+        //                     $item->transaction_type_code,
+        //                     $item->deposit_req_code,
+        //                     $this->params->param,
+        //                     false,
+        //                     "MOS_v2"
+        //                 );
+        //                 $this->treatmentFeePaymentService->withParams($this->treatmentFeePaymentDTO);
 
-                        // nếu là link thanh toán viện phí còn thiếu => gọi handleCreatePayment
-                        if($item->deposit_req_code == null){
-                            $this->treatmentFeePaymentService->handleCreatePayment();
-                        }
+        //                 // nếu là link thanh toán viện phí còn thiếu => gọi handleCreatePayment
+        //                 if($item->deposit_req_code == null){
+        //                     $this->treatmentFeePaymentService->handleCreatePayment();
+        //                 }
 
-                        // nếu là link thanh toán yêu cầu tạm ứng => gọi handleCreatePaymentDepositReq
-                        if($item->deposit_req_code != null){
-                            $this->treatmentFeePaymentService->handleCreatePaymentDepositReq();
-                        }
-                    }
-                }
-            }
-        }
+        //                 // nếu là link thanh toán yêu cầu tạm ứng => gọi handleCreatePaymentDepositReq
+        //                 if($item->deposit_req_code != null){
+        //                     $this->treatmentFeePaymentService->handleCreatePaymentDepositReq();
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
         $data = $this->treatmentFeeDetailVViewRepository->themMucHuongBHYT($data);
         return ['data' => $data, 'count' => $count];
     }
