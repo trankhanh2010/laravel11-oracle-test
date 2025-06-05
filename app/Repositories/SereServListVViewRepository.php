@@ -61,6 +61,8 @@ class SereServListVViewRepository
                 "xa_v_his_sere_serv_list.tracking_id",
                 "xa_v_his_sere_serv_list.service_type_code",
                 "xa_v_his_sere_serv_list.service_type_name",
+                "xa_v_his_sere_serv_list.tdl_instruction_note",
+                "xa_v_his_sere_serv_list.vir_total_price",
                 "xa_v_his_sere_serv_list.block",
                 "his_machine.machine_code",
                 "his_machine.machine_name",
@@ -277,10 +279,12 @@ class SereServListVViewRepository
             
                 if ($currentField === 'service_req_code') {
                     $firstItem = $group->first();
-                    $result['key'] = $firstItem['service_req_code'].$firstItem['execute_room_name'].$firstItem['execute_department_name'] ?? null;
+                    $result['key'] = $firstItem['service_req_code'].$firstItem['execute_room_name'].$firstItem['execute_department_name'].$firstItem['id'] ?? null;
                     $result['executeRoomName'] = $firstItem['execute_room_name'] ?? null;
                     $result['executeDepartmentName'] = $firstItem['execute_department_name'] ?? null;
                     $result['serviceReqId'] = $firstItem['service_req_id'] ?? null;
+                    $result['serviceReqSttCode'] = $firstItem['service_req_stt_code'] ?? null;
+                    $result['serviceReqSttName'] = $firstItem['service_req_stt_name'] ?? null;
                 }
 
                 $result['children']  = $groupData($group, $fields);

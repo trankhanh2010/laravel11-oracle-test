@@ -61,6 +61,7 @@ class YeuCauKhamClsPtttVViewController extends BaseApiCacheController
             $this->trangThaiKeThuoc,
             $this->kskContractId,
             $this->serviceIds,
+            $this->tab,
         );
         $this->yeuCauKhamClsPtttVViewService->withParams($this->yeuCauKhamClsPtttVViewDTO);
     }

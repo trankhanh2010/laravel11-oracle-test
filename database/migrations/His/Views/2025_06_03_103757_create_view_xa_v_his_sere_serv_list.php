@@ -28,6 +28,7 @@ SELECT
      sere_serv.is_active,
      sere_serv.is_delete,
      sere_serv.amount,
+     sere_serv.vir_total_price,
      sere_serv.service_req_id,
      sere_serv.exp_mest_medicine_id,
      sere_serv.service_id,
@@ -59,6 +60,7 @@ SELECT
      patient.patient_code,
      service_req.block,
      service_req.machine_id,
+     service_req.TDL_INSTRUCTION_NOTE, /*ghi chu cua nguoi chi dinh */
      execute_room.room_code as execute_room_code,
      execute_room.room_name as execute_room_name
 

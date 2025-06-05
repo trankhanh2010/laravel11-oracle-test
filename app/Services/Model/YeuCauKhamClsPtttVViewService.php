@@ -98,6 +98,7 @@ class YeuCauKhamClsPtttVViewService
             ->where('id', $treatmentId);
         $data = $this->medicalCaseCoverListVViewRepository->applyIsDeleteFilter($data, 0);
         $data = $data->first();
+        $data = $this->medicalCaseCoverListVViewRepository->themMucHuongBHYT($data);
         return $data;
     }
     private function getDataDanhMucDichVuYeuCauCuaPhong($executeRoomId = -1)
@@ -108,14 +109,27 @@ class YeuCauKhamClsPtttVViewService
         $data = $this->serviceRoomRepository->fetchData($data, true, $this->params->start, $this->params->limit);
         return $data;
     }
-    private function getDataDanhSachDichVuChiDinhCuaLanDieuTri($treatmentId = -1, $serviceIds)
+    private function getDataDanhSachDichVuChiDinhCuaLanDieuTri($treatmentId = -1, $serviceIds, $tab = 'tatCa', $serviceReqId)
     {
         $data = $this->sereServListVViewRepository->applyJoinsDichVuChiDinh();
         $data = $this->sereServListVViewRepository->applyIsDeleteFilter($data, 0);
         $data = $this->sereServListVViewRepository->applyIsNoExecuteFilter($data);
         $data = $this->sereServListVViewRepository->applyServiceReqIsNoExecuteFilter($data);
-        $data = $this->sereServListVViewRepository->applyTreatmentIdFilter($data, $treatmentId);
-        $data = $this->sereServListVViewRepository->applyNotInServiceIdsFilter($data, $serviceIds);
+        switch ($tab) {
+            case 'tatCa':
+                $data = $this->sereServListVViewRepository->applyTreatmentIdFilter($data, $treatmentId);
+                break;
+            case 'tatCaKhongBaoGomDichVuNoiTru':
+                $data = $this->sereServListVViewRepository->applyNotInServiceIdsFilter($data, $serviceIds);
+                $data = $this->sereServListVViewRepository->applyTreatmentIdFilter($data, $treatmentId);
+                break;
+            case 'cacChiDinhDangDuocChon':
+                $data = $this->sereServListVViewRepository->applyTreatmentIdFilter($data, $treatmentId);
+                break;
+            default:
+                $data = $this->sereServListVViewRepository->applyTreatmentIdFilter($data, $treatmentId);
+                break;
+        }
         $data = $this->sereServListVViewRepository->applyOrdering($data, ['service_code' => 'asc'], []);
         $data = $this->sereServListVViewRepository->fetchData($data, true, $this->params->start, $this->params->limit);
         // Group theo field
@@ -159,7 +173,7 @@ class YeuCauKhamClsPtttVViewService
             if ($dataYeuCau) {
                 $dataThongTinKhamBenh = $this->getDataKhamBenh($dataYeuCau->treatment_id);
                 $dataIdDanhMucDichVuYeuCauCuaPhong = $this->getDataDanhMucDichVuYeuCauCuaPhong($dataYeuCau->execute_room_id)->pluck('service_id');
-                $dataDanhSachDichVuChiDinhCuaLanDieuTri = $this->getDataDanhSachDichVuChiDinhCuaLanDieuTri($dataYeuCau->treatment_id, $dataIdDanhMucDichVuYeuCauCuaPhong);
+                $dataDanhSachDichVuChiDinhCuaLanDieuTri = $this->getDataDanhSachDichVuChiDinhCuaLanDieuTri($dataYeuCau->treatment_id, $dataIdDanhMucDichVuYeuCauCuaPhong, $this->params->tab, $id);
                 $dataDanhSachDichVuYeuCauCuaLanDieuTri = $this->getDataDanhSachDichVuYeuCauCuaLanDieuTri($dataYeuCau->treatment_id, $dataIdDanhMucDichVuYeuCauCuaPhong);
                 $dataKhamBenh = $dataYeuCau;
             }

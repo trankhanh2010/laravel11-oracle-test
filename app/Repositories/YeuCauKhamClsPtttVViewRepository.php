@@ -79,6 +79,7 @@ class YeuCauKhamClsPtttVViewRepository
                     "his_dhst.PULSE",
                     "his_dhst.TEMPERATURE",
                     "his_dhst.BLOOD_PRESSURE_MAX",
+                    "his_dhst.BLOOD_PRESSURE_MIN",
                     "his_dhst.BREATH_RATE",
                     "his_dhst.WEIGHT",
                     "his_dhst.HEIGHT",
