@@ -104,6 +104,15 @@ class YeuCauKhamClsPtttVViewService
         $data = $data->first();
         return $data;
     }
+    private function getDuLieu($serviceReqCode)
+    {
+        $data = $this->yeuCauKhamClsPtttVViewRepository->applyJoinsLayDuLieu();
+        $data = $data->where('XA_V_HIS_YEU_CAU_KHAM_CLS_PTTT.service_req_code', $serviceReqCode);
+        $data = $this->yeuCauKhamClsPtttVViewRepository->applyIsActiveFilter($data, 1);
+        $data = $this->yeuCauKhamClsPtttVViewRepository->applyIsDeleteFilter($data, 0);
+        $data = $data->first();
+        return $data;
+    }
     private function getDataKhamBenh($treatmentId)
     {
         $data = $this->medicalCaseCoverListVViewRepository->applyJoinsYeuCauKhamClsPttt()
@@ -205,6 +214,20 @@ class YeuCauKhamClsPtttVViewService
             $data['dichVuYeuCau'] = $dataDanhSachDichVuYeuCauCuaLanDieuTri;
             $data['dichVuChiDinh'] = $dataDanhSachDichVuChiDinhCuaLanDieuTri;
             $data['khamBenh'] = $dataKhamBenh;
+
+
+            return $data;
+        } catch (\Throwable $e) {
+            return writeAndThrowError(config('params')['db_service']['error']['yeu_cau_kham_cls_pttt_v_view'], $e);
+        }
+    }
+    public function handleDataBaseLayDuLieu($serviceReqCode)
+    {
+        try {
+            $duLieu = $this->getDuLieu($serviceReqCode);
+            $data = [];
+
+            $data['khamBenh'] = $duLieu;
 
 
             return $data;

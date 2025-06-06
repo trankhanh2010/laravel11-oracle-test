@@ -227,6 +227,7 @@ use App\Http\Controllers\Api\NoCacheControllers\TreatmentFeeListVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TreatmentListVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TreatmentRoomGroupVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\UserAccountBookVViewController;
+use App\Http\Controllers\Api\NoCacheControllers\YeuCauKhamClsPtttDataController;
 use App\Http\Controllers\Api\NoCacheControllers\YeuCauKhamClsPtttVViewController;
 // Base Api
 use App\Http\Controllers\BaseControllers\CacheController;
@@ -1245,6 +1246,7 @@ Route::group([
     Route::get('v1/bang-ke-bieu-mau', [BangKeVViewController::class, "handleBieuMau"]);
     /// Yêu cầu khám cls/pttt
     Route::apiResource('v1/yeu-cau-kham-cls-pttt-v-view', YeuCauKhamClsPtttVViewController::class)->only(['index', 'show']);
+    Route::apiResource('v1/yeu-cau-kham-cls-pttt-data', YeuCauKhamClsPtttDataController::class)->only(['show']);
     /// Hợp đồng khám sức khỏe
     Route::apiResource('v1/ksk-contract', KskContractController::class)->only(['index']);
     /// Hướng điều trị tiếp theo

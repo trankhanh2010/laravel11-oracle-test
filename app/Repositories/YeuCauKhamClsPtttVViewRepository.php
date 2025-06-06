@@ -98,6 +98,126 @@ class YeuCauKhamClsPtttVViewRepository
                 ]
             );
     }
+
+    public function applyJoinsLayDuLieu()
+    {
+        return $this->yeuCauKhamClsPtttVView
+            ->leftJoin('his_dhst', 'his_dhst.id', '=', 'xa_v_his_yeu_cau_kham_cls_pttt.dhst_id')
+            ->leftJoin('his_patient_case', 'his_patient_case.id', '=', 'xa_v_his_yeu_cau_kham_cls_pttt.patient_case_id')
+            ->leftJoin('his_health_exam_rank', 'his_health_exam_rank.id', '=', 'xa_v_his_yeu_cau_kham_cls_pttt.health_exam_rank_id')
+            ->select(
+                [
+                    "xa_v_his_yeu_cau_kham_cls_pttt.id",
+                    "xa_v_his_yeu_cau_kham_cls_pttt.treatment_id",
+                    "xa_v_his_yeu_cau_kham_cls_pttt.service_req_code",
+                    "xa_v_his_yeu_cau_kham_cls_pttt.SICK_DAY", // vào ngày thứ mấy của bệnh
+                    "xa_v_his_yeu_cau_kham_cls_pttt.patient_case_id",   // trường hợp bệnh
+
+                    "his_patient_case.patient_case_code",
+                    "his_patient_case.patient_case_name",
+
+                    "xa_v_his_yeu_cau_kham_cls_pttt.HOSPITALIZATION_REASON", // lý do nhập viện
+                    "xa_v_his_yeu_cau_kham_cls_pttt.PATHOLOGICAL_PROCESS", // quá trình bệnh lý
+                    "xa_v_his_yeu_cau_kham_cls_pttt.PATHOLOGICAL_HISTORY", // tiền sử bệnh
+                    "xa_v_his_yeu_cau_kham_cls_pttt.PATHOLOGICAL_HISTORY_FAMILY", // tiền sử bệnh gia đình
+
+                    "his_dhst.EXECUTE_TIME", // thời gian
+                    "his_dhst.PULSE",
+                    "his_dhst.BLOOD_PRESSURE_MAX",
+                    "his_dhst.BLOOD_PRESSURE_MIN",
+                    "his_dhst.WEIGHT",
+                    "his_dhst.HEIGHT",
+                    "his_dhst.NOTE as dhst_note",
+                    "his_dhst.VIR_BMI",
+                    "his_dhst.SPO2",
+                    "his_dhst.TEMPERATURE",
+                    "his_dhst.BREATH_RATE",
+                    "his_dhst.CHEST",
+                    "his_dhst.BELLY",
+                    "his_dhst.VIR_BODY_SURFACE_AREA",
+
+                    "xa_v_his_yeu_cau_kham_cls_pttt.FULL_EXAM", // toàn thân
+                    "xa_v_his_yeu_cau_kham_cls_pttt.PART_EXAM", // bộ phận chung chung
+                    "xa_v_his_yeu_cau_kham_cls_pttt.PART_EXAM_CIRCULATION", // tuần hoàn
+                    "xa_v_his_yeu_cau_kham_cls_pttt.PART_EXAM_RESPIRATORY", // hô hấp
+                    "xa_v_his_yeu_cau_kham_cls_pttt.PART_EXAM_DIGESTION", // tiêu hóa
+                    "xa_v_his_yeu_cau_kham_cls_pttt.PART_EXAM_KIDNEY_UROLOGY", // thận tiết niệu
+                    "xa_v_his_yeu_cau_kham_cls_pttt.PART_EXAM_NEUROLOGICAL", // thần kinh
+                    "xa_v_his_yeu_cau_kham_cls_pttt.PART_EXAM_MUSCLE_BONE", // cơ xương khớp
+                    "xa_v_his_yeu_cau_kham_cls_pttt.PART_EXAM_ENT", // tai mũi họng
+                    "xa_v_his_yeu_cau_kham_cls_pttt.PART_EXAM_EAR", // tai
+                    "xa_v_his_yeu_cau_kham_cls_pttt.PART_EXAM_NOSE", // mũi
+                    "xa_v_his_yeu_cau_kham_cls_pttt.PART_EXAM_THROAT", // họng
+                    "xa_v_his_yeu_cau_kham_cls_pttt.PART_EXAM_EAR_RIGHT_NORMAL", // tai phải nói thường
+                    "xa_v_his_yeu_cau_kham_cls_pttt.PART_EXAM_EAR_RIGHT_WHISPER", // tai phải nói thầm
+                    "xa_v_his_yeu_cau_kham_cls_pttt.PART_EXAM_EAR_LEFT_NORMAL", // tai trái nói thường
+                    "xa_v_his_yeu_cau_kham_cls_pttt.PART_EXAM_EAR_LEFT_WHISPER", // tai trái nói thầm
+                    "xa_v_his_yeu_cau_kham_cls_pttt.PART_EXAM_STOMATOLOGY", // răng hàm mặt
+                    "xa_v_his_yeu_cau_kham_cls_pttt.PART_EXAM_UPPER_JAW", // hàm trên
+                    "xa_v_his_yeu_cau_kham_cls_pttt.PART_EXAM_LOWER_JAW", // hàm dưới
+                    "xa_v_his_yeu_cau_kham_cls_pttt.PART_EXAM_EYE", // mắt
+                    "xa_v_his_yeu_cau_kham_cls_pttt.PART_EXAM_EYE_BLIND_COLOR", // sắc giác  1: Binh thuong; 2: Mu mau toan bo; 3: Mu mau do; 4: Mu mau xanh la; 5: Mu mau vang 
+                    "xa_v_his_yeu_cau_kham_cls_pttt.PART_EXAM_EYE_ST_PLUS", // ST+
+                    "xa_v_his_yeu_cau_kham_cls_pttt.PART_EXAM_EYE_ST_MINUS", // ST-
+                    "xa_v_his_yeu_cau_kham_cls_pttt.PART_EXAM_EYE_TENSION", // các đo nhãn áp
+                    "xa_v_his_yeu_cau_kham_cls_pttt.PART_EXAM_EYE_TENSION_RIGHT", // nhãn áp mắt phải
+                    "xa_v_his_yeu_cau_kham_cls_pttt.PART_EXAM_EYESIGHT_RIGHT", // thị lực mắt phải
+                    "xa_v_his_yeu_cau_kham_cls_pttt.PART_EXAM_HOLE_GLASS_RIGHT", // thị lực kính lỗ phải
+                    "xa_v_his_yeu_cau_kham_cls_pttt.PART_EXAM_EYE_COUNT_FINGER", // đếm ngón tai
+                    "xa_v_his_yeu_cau_kham_cls_pttt.PART_EXAM_EYE_TENSION_LEFT", // nhãn áp mắt trái
+                    "xa_v_his_yeu_cau_kham_cls_pttt.PART_EXAM_EYESIGHT_LEFT", // thị lực mắt trái
+                    "xa_v_his_yeu_cau_kham_cls_pttt.PART_EXAM_HOLE_GLASS_LEFT", // thị lực kính lỗ trái
+                    "xa_v_his_yeu_cau_kham_cls_pttt.PART_EXAM_HORIZONTAL_SIGHT", // thị trường ngang 1: Binh thuong; 2: Han che 
+                    "xa_v_his_yeu_cau_kham_cls_pttt.PART_EXAM_VERTICAL_SIGHT", // thị trường đứng 1: Binh thuong; 2: Han che 
+                    "xa_v_his_yeu_cau_kham_cls_pttt.PART_EYE_GLASS_OLD_SPH_RIGHT", // SPH kính cũ mắt phải
+                    "xa_v_his_yeu_cau_kham_cls_pttt.PART_EYE_GLASS_OLD_SPH_LEFT", // SPH kính cữ mắt trái
+                    "xa_v_his_yeu_cau_kham_cls_pttt.PART_EYE_GLASS_SPH_RIGHT", // SPH kính mới mắt phải
+                    "xa_v_his_yeu_cau_kham_cls_pttt.PART_EYE_GLASS_SPH_LEFT", // SPH kính mới mắt trái
+                    "xa_v_his_yeu_cau_kham_cls_pttt.PART_EYE_GLASS_OLD_CYL_RIGHT", // CYL kính cũ mắt phải
+                    "xa_v_his_yeu_cau_kham_cls_pttt.PART_EYE_GLASS_OLD_CYL_LEFT", // CYL kính cũ mắt trái
+                    "xa_v_his_yeu_cau_kham_cls_pttt.PART_EYE_GLASS_CYL_RIGHT", // CYL kính mới mắt phải
+                    "xa_v_his_yeu_cau_kham_cls_pttt.PART_EYE_GLASS_CYL_LEFT", // CYL kính mới mắt trái
+                    "xa_v_his_yeu_cau_kham_cls_pttt.PART_EYE_GLASS_OLD_AXE_RIGHT", // AXE kính cũ mắt phải
+                    "xa_v_his_yeu_cau_kham_cls_pttt.PART_EYE_GLASS_OLD_AXE_LEFT", // AXE kính cũ mắt trái
+                    "xa_v_his_yeu_cau_kham_cls_pttt.PART_EYE_GLASS_AXE_RIGHT", // AXE kính mới mắt phải
+                    "xa_v_his_yeu_cau_kham_cls_pttt.PART_EYE_GLASS_AXE_LEFT", // AXE kính mới mắt trái
+                    "xa_v_his_yeu_cau_kham_cls_pttt.PART_EYESIGHT_GLASS_OLD_RIGHT", // thị lực kính cũ mắt phải
+                    "xa_v_his_yeu_cau_kham_cls_pttt.PART_EYESIGHT_GLASS_OLD_LEFT", // thị lực kính mới mắt phải
+                    "xa_v_his_yeu_cau_kham_cls_pttt.PART_EXAM_EYESIGHT_GLASS_RIGHT", // thị lực kính mới mắt phải
+                    "xa_v_his_yeu_cau_kham_cls_pttt.PART_EXAM_EYESIGHT_GLASS_LEFT", // thị lực kính mới mắt trái
+                    "xa_v_his_yeu_cau_kham_cls_pttt.PART_EYE_GLASS_OLD_KCDT_RIGHT", // KCDT kính cũ mắt phải
+                    "xa_v_his_yeu_cau_kham_cls_pttt.PART_EYE_GLASS_OLD_KCDT_LEFT", // KCDT kính cũ mắt trái
+                    "xa_v_his_yeu_cau_kham_cls_pttt.PART_EYE_GLASS_KCDT_RIGHT", // KCDT kính mới mắt phải
+                    "xa_v_his_yeu_cau_kham_cls_pttt.PART_EYE_GLASS_KCDT_LEFT", // KCDT kính mới mắt trái
+                    "xa_v_his_yeu_cau_kham_cls_pttt.PART_EYE_GLASS_OLD_ADD_RIGHT", // ADD kính cũ mắt phải
+                    "xa_v_his_yeu_cau_kham_cls_pttt.PART_EYE_GLASS_OLD_ADD_LEFT", // ADD kính cũ mắt trái
+                    "xa_v_his_yeu_cau_kham_cls_pttt.PART_EYE_GLASS_ADD_RIGHT", // ADD kính mới mắt phải
+                    "xa_v_his_yeu_cau_kham_cls_pttt.PART_EYE_GLASS_ADD_LEFT", // ADD kính mới mắt trái
+                    "xa_v_his_yeu_cau_kham_cls_pttt.PART_EXAM_OEND", // nội tiết
+                    "xa_v_his_yeu_cau_kham_cls_pttt.PART_EXAM_MENTAL", // tâm thần
+                    "xa_v_his_yeu_cau_kham_cls_pttt.PART_EXAM_NUTRITION", // dinh dưỡng
+                    "xa_v_his_yeu_cau_kham_cls_pttt.PART_EXAM_MOTION", // vận động
+                    "xa_v_his_yeu_cau_kham_cls_pttt.PART_EXAM_OBSTETRIC", // sản phụ khoa
+                    "xa_v_his_yeu_cau_kham_cls_pttt.PART_EXAM_DERMATOLOGY", // da liễu
+                    "xa_v_his_yeu_cau_kham_cls_pttt.SUBCLINICAL", // tóm tắt cls
+                    "xa_v_his_yeu_cau_kham_cls_pttt.TREATMENT_INSTRUCTION", // phương pháp điều trị
+                    "xa_v_his_yeu_cau_kham_cls_pttt.PROVISIONAL_DIAGNOSIS", // chẩn đoán sơ bộ
+                    "xa_v_his_yeu_cau_kham_cls_pttt.NOTE", // chú ý
+                    "xa_v_his_yeu_cau_kham_cls_pttt.NEXT_TREAT_INTR_CODE", // mã hướng điều trị tiếp theo
+                    "xa_v_his_yeu_cau_kham_cls_pttt.NEXT_TREATMENT_INSTRUCTION", // hướng điều trị tiếp theo
+                    "xa_v_his_yeu_cau_kham_cls_pttt.health_exam_rank_id", // xếp loại khám sức khỏe
+                    "his_health_exam_rank.health_exam_rank_code", // mã xếp loại khám sức khỏe
+                    "his_health_exam_rank.health_exam_rank_name", // tên xếp loại khám sức khỏe
+
+                    "xa_v_his_yeu_cau_kham_cls_pttt.icd_code", // cd 9
+                    "xa_v_his_yeu_cau_kham_cls_pttt.icd_name",
+                    "xa_v_his_yeu_cau_kham_cls_pttt.icd_cause_code", // nguyên nhân ngoài
+                    "xa_v_his_yeu_cau_kham_cls_pttt.icd_cause_name",
+                    "xa_v_his_yeu_cau_kham_cls_pttt.icd_sub_code", // cd phụ 
+                    "xa_v_his_yeu_cau_kham_cls_pttt.icd_text",
+                ]
+            );
+    }
     public function applyKeywordFilter($query, $keyword)
     {
         if ($keyword != null) {
@@ -132,10 +252,10 @@ class YeuCauKhamClsPtttVViewRepository
     }
     public function applyIsNoExecuteFilter($query)
     {
-            return $query->where(function ($query) {
-                $query->where('XA_V_HIS_YEU_CAU_KHAM_CLS_PTTT.is_no_execute', 0)
+        return $query->where(function ($query) {
+            $query->where('XA_V_HIS_YEU_CAU_KHAM_CLS_PTTT.is_no_execute', 0)
                 ->orWhereNull('XA_V_HIS_YEU_CAU_KHAM_CLS_PTTT.is_no_execute');
-            });
+        });
     }
     public function applyIntructionTimeFromFilter($query, $param)
     {
@@ -217,7 +337,7 @@ class YeuCauKhamClsPtttVViewRepository
                 return $query->whereNotNull('finish_time');
             case 'goiNho':
                 return $query->where('call_count', '>=', 1)
-                ->where('service_req_stt_code', '01');
+                    ->where('service_req_stt_code', '01');
             default:
                 return $query;
         }
