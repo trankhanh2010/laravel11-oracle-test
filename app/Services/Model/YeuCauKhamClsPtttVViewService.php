@@ -101,6 +101,7 @@ class YeuCauKhamClsPtttVViewService
         $data = $data->where('XA_V_HIS_YEU_CAU_KHAM_CLS_PTTT.id', $id);
         $data = $this->yeuCauKhamClsPtttVViewRepository->applyIsActiveFilter($data, 1);
         $data = $this->yeuCauKhamClsPtttVViewRepository->applyIsDeleteFilter($data, 0);
+        $data = $this->yeuCauKhamClsPtttVViewRepository->applyIsNoExecuteFilter($data);
         $data = $data->first();
         return $data;
     }
@@ -110,7 +111,44 @@ class YeuCauKhamClsPtttVViewService
         $data = $data->where('XA_V_HIS_YEU_CAU_KHAM_CLS_PTTT.service_req_code', $serviceReqCode);
         $data = $this->yeuCauKhamClsPtttVViewRepository->applyIsActiveFilter($data, 1);
         $data = $this->yeuCauKhamClsPtttVViewRepository->applyIsDeleteFilter($data, 0);
+        $data = $this->yeuCauKhamClsPtttVViewRepository->applyIsNoExecuteFilter($data);
         $data = $data->first();
+        return $data;
+    }
+    private function getDataLichSuKham($patientId, $treatmentId)
+    {
+        $data = $this->yeuCauKhamClsPtttVViewRepository->applyJoinsLichSuKham();
+        $data = $data
+        ->whereNotIn('XA_V_HIS_YEU_CAU_KHAM_CLS_PTTT.treatment_id', [$treatmentId])
+        ->where('XA_V_HIS_YEU_CAU_KHAM_CLS_PTTT.patient_id', $patientId)
+        ->where('XA_V_HIS_YEU_CAU_KHAM_CLS_PTTT.service_req_type_code', 'KH')
+        ->whereNull('XA_V_HIS_YEU_CAU_KHAM_CLS_PTTT.parent_id');
+        $data = $this->yeuCauKhamClsPtttVViewRepository->applyIsActiveFilter($data, 1);
+        $data = $this->yeuCauKhamClsPtttVViewRepository->applyIsDeleteFilter($data, 0);
+        $data = $this->yeuCauKhamClsPtttVViewRepository->applyIsNoExecuteFilter($data);
+        $orderBy = [
+            'intruction_date' => 'desc',
+            'priority' => 'desc',
+            'num_order' => 'asc'
+        ];
+        $data = $this->yeuCauKhamClsPtttVViewRepository->applyOrdering($data, $orderBy, []);
+        $data = $data->get();
+        return $data;
+    }
+    private function getDataDotKhamHienTai($treatmentId)
+    {
+        $data = $this->yeuCauKhamClsPtttVViewRepository->applyJoinsDotKhamHienTai();
+        $data = $data
+        ->whereIn('XA_V_HIS_YEU_CAU_KHAM_CLS_PTTT.treatment_id', [$treatmentId])
+        ->where('XA_V_HIS_YEU_CAU_KHAM_CLS_PTTT.service_req_type_code', 'KH');
+        $data = $this->yeuCauKhamClsPtttVViewRepository->applyIsActiveFilter($data, 1);
+        $data = $this->yeuCauKhamClsPtttVViewRepository->applyIsDeleteFilter($data, 0);
+        $data = $this->yeuCauKhamClsPtttVViewRepository->applyIsNoExecuteFilter($data);
+        $orderBy = [
+            'intruction_time' => 'desc',
+        ];
+        $data = $this->yeuCauKhamClsPtttVViewRepository->applyOrdering($data, $orderBy, []);
+        $data = $data->get();
         return $data;
     }
     private function getDataKhamBenh($treatmentId)
@@ -226,9 +264,15 @@ class YeuCauKhamClsPtttVViewService
         try {
             $duLieu = $this->getDuLieu($serviceReqCode);
             $data = [];
-
+            $dataLichSuKham = [];
+            $dataDotKhamHienTai = [];
+            if($duLieu){
+                $dataLichSuKham = $this->getDataLichSuKham($duLieu->patient_id, $duLieu->treatment_id);
+                $dataDotKhamHienTai = $this->getDataDotKhamHienTai($duLieu->treatment_id);
+            }
             $data['khamBenh'] = $duLieu;
-
+            $data['lichSuKham'] = $dataLichSuKham;
+            $data['dotKhamHienTai'] = $dataDotKhamHienTai;
 
             return $data;
         } catch (\Throwable $e) {

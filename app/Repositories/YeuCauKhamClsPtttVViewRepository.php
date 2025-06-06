@@ -98,7 +98,39 @@ class YeuCauKhamClsPtttVViewRepository
                 ]
             );
     }
-
+   public function applyJoinsLichSuKham()
+    {
+        return $this->yeuCauKhamClsPtttVView
+            ->select(
+                [
+                    "xa_v_his_yeu_cau_kham_cls_pttt.id as key",
+                    "xa_v_his_yeu_cau_kham_cls_pttt.id",
+                    "xa_v_his_yeu_cau_kham_cls_pttt.intruction_time",
+                    "xa_v_his_yeu_cau_kham_cls_pttt.finish_time",
+                    "xa_v_his_yeu_cau_kham_cls_pttt.execute_room_code",
+                    "xa_v_his_yeu_cau_kham_cls_pttt.execute_room_name",
+                    "xa_v_his_yeu_cau_kham_cls_pttt.icd_code",
+                    "xa_v_his_yeu_cau_kham_cls_pttt.icd_name",
+                ]
+            );
+    }
+    public function applyJoinsDotKhamHienTai()
+    {
+        return $this->yeuCauKhamClsPtttVView
+            ->select(
+                [
+                    "xa_v_his_yeu_cau_kham_cls_pttt.id as key",
+                    "xa_v_his_yeu_cau_kham_cls_pttt.id",
+                    "xa_v_his_yeu_cau_kham_cls_pttt.service_req_stt_code",
+                    "xa_v_his_yeu_cau_kham_cls_pttt.service_req_stt_name",
+                    "xa_v_his_yeu_cau_kham_cls_pttt.intruction_time",
+                    "xa_v_his_yeu_cau_kham_cls_pttt.execute_room_code",
+                    "xa_v_his_yeu_cau_kham_cls_pttt.execute_room_name",
+                    "xa_v_his_yeu_cau_kham_cls_pttt.icd_code",
+                    "xa_v_his_yeu_cau_kham_cls_pttt.icd_name",
+                ]
+            );
+    }
     public function applyJoinsLayDuLieu()
     {
         return $this->yeuCauKhamClsPtttVView
@@ -109,7 +141,11 @@ class YeuCauKhamClsPtttVViewRepository
                 [
                     "xa_v_his_yeu_cau_kham_cls_pttt.id",
                     "xa_v_his_yeu_cau_kham_cls_pttt.treatment_id",
+                    "xa_v_his_yeu_cau_kham_cls_pttt.patient_id",
+                    "xa_v_his_yeu_cau_kham_cls_pttt.intruction_time",
                     "xa_v_his_yeu_cau_kham_cls_pttt.service_req_code",
+                    "xa_v_his_yeu_cau_kham_cls_pttt.service_req_stt_code",
+                    "xa_v_his_yeu_cau_kham_cls_pttt.service_req_stt_name",
                     "xa_v_his_yeu_cau_kham_cls_pttt.SICK_DAY", // vào ngày thứ mấy của bệnh
                     "xa_v_his_yeu_cau_kham_cls_pttt.patient_case_id",   // trường hợp bệnh
 
