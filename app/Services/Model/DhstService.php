@@ -30,9 +30,17 @@ class DhstService
             $data = $this->dhstRepository->applyKeywordFilter($data, $this->params->keyword);
             $data = $this->dhstRepository->applyIsActiveFilter($data, $this->params->isActive);
             $data = $this->dhstRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+            $data = $this->dhstRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
             $count = $data->count();
-            $data = $this->dhstRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
-            $data = $this->dhstRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+            $orderBy = [
+                'create_time' => 'desc',
+            ];
+            $data = $this->dhstRepository->applyOrdering($data, $orderBy, []);
+            if ($this->params->tab == 'chieuCaoCanNangMoiNhat') {
+                $data = $data->first();
+            } else {
+                $data = $this->dhstRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+            }
             return ['data' => $data, 'count' => $count];
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['dhst'], $e);
@@ -44,20 +52,29 @@ class DhstService
         $data = $this->dhstRepository->applyWith($data);
         $data = $this->dhstRepository->applyIsActiveFilter($data, $this->params->isActive);
         $data = $this->dhstRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+        $data = $this->dhstRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
         $count = $data->count();
-        $data = $this->dhstRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
-        $data = $this->dhstRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        $orderBy = [
+            'create_time' => 'desc',
+        ];
+        $data = $this->dhstRepository->applyOrdering($data, $orderBy, []);
+        if ($this->params->tab == 'chieuCaoCanNangMoiNhat') {
+            $data = $data->first();
+        } else {
+            $data = $this->dhstRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        }
         return ['data' => $data, 'count' => $count];
     }
     private function getDataById($id)
     {
         $data = $this->dhstRepository->applyJoins()
-        ->where('his_dhst.id', $id);
-    $data = $this->dhstRepository->applyWith($data);
-    $data = $this->dhstRepository->applyIsActiveFilter($data, $this->params->isActive);
-    $data = $this->dhstRepository->applyIsDeleteFilter($data, $this->params->isDelete);
-    $data = $data->first();
-    return $data;
+            ->where('his_dhst.id', $id);
+        $data = $this->dhstRepository->applyWith($data);
+        $data = $this->dhstRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $this->dhstRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+        $data = $this->dhstRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
+        $data = $data->first();
+        return $data;
     }
     public function handleDataBaseGetAll()
     {

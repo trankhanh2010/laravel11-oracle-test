@@ -72,8 +72,9 @@ SELECT
      service_req.icd_cause_code,
      service_req.icd_cause_name,
      service_req.icd_sub_code,
-     service_req.icd_text
-
+     service_req.icd_text,
+     service_req.num_order,
+     service_req.priority
 
 FROM his_service_req service_req
 LEFT JOIN HIS_TREATMENT treatment ON treatment.id = service_req.treatment_id

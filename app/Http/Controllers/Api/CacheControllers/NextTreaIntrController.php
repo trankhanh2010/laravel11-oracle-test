@@ -1,40 +1,39 @@
 <?php
 
-namespace App\Http\Controllers\Api\NoCacheControllers;
+namespace App\Http\Controllers\Api\CacheControllers;
 
-use App\DTOs\DhstDTO;
+use App\DTOs\NextTreaIntrDTO;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
-use App\Http\Requests\Dhst\CreateDhstRequest;
-use App\Http\Requests\Dhst\UpdateDhstRequest;
-use App\Models\HIS\Dhst;
+use App\Http\Requests\NextTreaIntr\CreateNextTreaIntrRequest;
+use App\Http\Requests\NextTreaIntr\UpdateNextTreaIntrRequest;
+use App\Models\HIS\NextTreaIntr;
 use App\Services\Elastic\ElasticsearchService;
-use App\Services\Model\DhstService;
+use App\Services\Model\NextTreaIntrService;
 use Illuminate\Http\Request;
 
 
-class DhstController extends BaseApiCacheController
+class NextTreaIntrController extends BaseApiCacheController
 {
-    protected $dhstService;
-    protected $dhstDTO;
-    public function __construct(Request $request, ElasticsearchService $elasticSearchService, DhstService $dhstService, Dhst $dhst)
+    protected $nextTreaIntrService;
+    protected $nextTreaIntrDTO;
+    public function __construct(Request $request, ElasticsearchService $elasticSearchService, NextTreaIntrService $nextTreaIntrService, NextTreaIntr $nextTreaIntr)
     {
         parent::__construct($request); // Gọi constructor của BaseController
         $this->elasticSearchService = $elasticSearchService;
-        $this->dhstService = $dhstService;
-        $this->dhst = $dhst;
+        $this->nextTreaIntrService = $nextTreaIntrService;
+        $this->nextTreaIntr = $nextTreaIntr;
         // Kiểm tra tên trường trong bảng
         if ($this->orderBy != null) {
             $this->orderByJoin = [
             ];
-            $columns = $this->getColumnsTable($this->dhst);
+            $columns = $this->getColumnsTable($this->nextTreaIntr);
             $this->orderBy = $this->checkOrderBy($this->orderBy, $columns, $this->orderByJoin ?? []);
         }
         // Thêm tham số vào service
-        $this->dhstDTO = new DhstDTO(
-            $this->dhstName,
+        $this->nextTreaIntrDTO = new NextTreaIntrDTO(
+            $this->nextTreaIntrName,
             $this->keyword,
             $this->isActive,
-            $this->isDelete,
             $this->orderBy,
             $this->orderByJoin,
             $this->orderByString,
@@ -47,10 +46,8 @@ class DhstController extends BaseApiCacheController
             $this->time,
             $this->param,
             $this->noCache,
-            $this->treatmentId,
-            $this->tab,
         );
-        $this->dhstService->withParams($this->dhstDTO);
+        $this->nextTreaIntrService->withParams($this->nextTreaIntrDTO);
     }
     public function index()
     {
@@ -60,15 +57,15 @@ class DhstController extends BaseApiCacheController
         $keyword = $this->keyword;
         if (($keyword != null || $this->elasticSearchType != null) && !$this->cache) {
             if ($this->elasticSearchType != null) {
-                $data = $this->elasticSearchService->handleElasticSearchSearch($this->dhstName);
+                $data = $this->elasticSearchService->handleElasticSearchSearch($this->nextTreaIntrName);
             } else {
-                $data = $this->dhstService->handleDataBaseSearch();
+                $data = $this->nextTreaIntrService->handleDataBaseSearch();
             }
         } else {
             if ($this->elastic) {
-                $data = $this->elasticSearchService->handleElasticSearchGetAll($this->dhstName);
+                $data = $this->elasticSearchService->handleElasticSearchGetAll($this->nextTreaIntrName);
             } else {
-                $data = $this->dhstService->handleDataBaseGetAll();
+                $data = $this->nextTreaIntrService->handleDataBaseGetAll();
             }
         }
         $paramReturn = [
@@ -89,15 +86,15 @@ class DhstController extends BaseApiCacheController
             return $this->checkParam();
         }
         if ($id !== null) {
-            $validationError = $this->validateAndCheckId($id, $this->dhst, $this->dhstName);
+            $validationError = $this->validateAndCheckId($id, $this->nextTreaIntr, $this->nextTreaIntrName);
             if ($validationError) {
                 return $validationError;
             }
         }
         if ($this->elastic) {
-            $data = $this->elasticSearchService->handleElasticSearchGetWithId($this->dhstName, $id);
+            $data = $this->elasticSearchService->handleElasticSearchGetWithId($this->nextTreaIntrName, $id);
         } else {
-            $data = $this->dhstService->handleDataBaseGetWithId($id);
+            $data = $this->nextTreaIntrService->handleDataBaseGetWithId($id);
         }
         $paramReturn = [
             $this->idName => $id,

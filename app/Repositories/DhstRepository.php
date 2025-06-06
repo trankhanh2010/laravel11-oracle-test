@@ -60,6 +60,13 @@ class DhstRepository
         }
         return $query;
     }
+    public function applyTreatmentIdFilter($query, $param)
+    {
+        if ($param != null) {
+            $query->where(DB::connection('oracle_his')->raw('his_dhst.treatment_id'), $param);
+        }
+        return $query;
+    }
     public function applyOrdering($query, $orderBy, $orderByJoin)
     {
         if ($orderBy != null) {

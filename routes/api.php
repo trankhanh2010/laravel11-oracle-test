@@ -145,6 +145,7 @@ use App\Http\Controllers\Api\CacheControllers\EmrFormController;
 use App\Http\Controllers\Api\CacheControllers\EquipmentSetController;
 use App\Http\Controllers\Api\CacheControllers\FundController;
 use App\Http\Controllers\Api\CacheControllers\GroupTypeController;
+use App\Http\Controllers\Api\CacheControllers\HealthExamRankController;
 use App\Http\Controllers\Api\CacheControllers\HtuController;
 use App\Http\Controllers\Api\CacheControllers\IcdListVViewController;
 use App\Http\Controllers\Api\CacheControllers\ImpSourceController;
@@ -156,6 +157,7 @@ use App\Http\Controllers\Api\CacheControllers\MaterialTypeMapController;
 use App\Http\Controllers\Api\CacheControllers\MedicalContractController;
 use App\Http\Controllers\Api\CacheControllers\MemaGroupController;
 use App\Http\Controllers\Api\CacheControllers\ModuleController;
+use App\Http\Controllers\Api\CacheControllers\NextTreaIntrController;
 use App\Http\Controllers\Api\CacheControllers\PackingTypeController;
 use App\Http\Controllers\Api\CacheControllers\PayFormController;
 use App\Http\Controllers\Api\CacheControllers\Phieutdvacsbnc2PhieumauController;
@@ -1245,4 +1247,8 @@ Route::group([
     Route::apiResource('v1/yeu-cau-kham-cls-pttt-v-view', YeuCauKhamClsPtttVViewController::class)->only(['index', 'show']);
     /// Hợp đồng khám sức khỏe
     Route::apiResource('v1/ksk-contract', KskContractController::class)->only(['index']);
+    /// Hướng điều trị tiếp theo
+    Route::apiResource('v1/next-trea-intr', NextTreaIntrController::class)->only(['index', 'show']);
+    /// Xếp loại khám sức khỏe
+    Route::apiResource('v1/health-exam-rank', HealthExamRankController::class)->only(['index', 'show']);
 });

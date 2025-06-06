@@ -43,6 +43,7 @@ class YeuCauKhamClsPtttVViewService
             $data = $this->yeuCauKhamClsPtttVViewRepository->applyKeywordFilter($data, $this->params->keyword);
             $data = $this->yeuCauKhamClsPtttVViewRepository->applyIsActiveFilter($data, 1);
             $data = $this->yeuCauKhamClsPtttVViewRepository->applyIsDeleteFilter($data, 0);
+            $data = $this->yeuCauKhamClsPtttVViewRepository->applyIsNoExecuteFilter($data);
             $data = $this->yeuCauKhamClsPtttVViewRepository->applyIntructionTimeFromFilter($data, $this->params->intructionTimeFrom);
             $data = $this->yeuCauKhamClsPtttVViewRepository->applyIntructionTimeToFilter($data, $this->params->intructionTimeTo);
             $data = $this->yeuCauKhamClsPtttVViewRepository->applyExecuteRoomIdFilter($data, $this->params->executeRoomId);
@@ -55,7 +56,12 @@ class YeuCauKhamClsPtttVViewService
             $data = $this->yeuCauKhamClsPtttVViewRepository->applyTrangThaiVienPhiFilter($data, $this->params->trangThaiVienPhi);
             $data = $this->yeuCauKhamClsPtttVViewRepository->applyTrangThaiKeThuocFilter($data, $this->params->trangThaiKeThuoc);
             $count = $data->count();
-            $data = $this->yeuCauKhamClsPtttVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+            $orderBy = [
+                'intruction_date' => 'desc',
+                'priority' => 'desc',
+                'num_order' => 'asc'
+            ];
+            $data = $this->yeuCauKhamClsPtttVViewRepository->applyOrdering($data, $orderBy, []);
             $data = $this->yeuCauKhamClsPtttVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
             return ['data' => $data, 'count' => $count];
         } catch (\Throwable $e) {
@@ -67,6 +73,7 @@ class YeuCauKhamClsPtttVViewService
         $data = $this->yeuCauKhamClsPtttVViewRepository->applyJoins();
         $data = $this->yeuCauKhamClsPtttVViewRepository->applyIsActiveFilter($data, 1);
         $data = $this->yeuCauKhamClsPtttVViewRepository->applyIsDeleteFilter($data, 0);
+        $data = $this->yeuCauKhamClsPtttVViewRepository->applyIsNoExecuteFilter($data);
         $data = $this->yeuCauKhamClsPtttVViewRepository->applyIntructionTimeFromFilter($data, $this->params->intructionTimeFrom);
         $data = $this->yeuCauKhamClsPtttVViewRepository->applyIntructionTimeToFilter($data, $this->params->intructionTimeTo);
         $data = $this->yeuCauKhamClsPtttVViewRepository->applyExecuteRoomIdFilter($data, $this->params->executeRoomId);
@@ -79,7 +86,12 @@ class YeuCauKhamClsPtttVViewService
         $data = $this->yeuCauKhamClsPtttVViewRepository->applyTrangThaiVienPhiFilter($data, $this->params->trangThaiVienPhi);
         $data = $this->yeuCauKhamClsPtttVViewRepository->applyTrangThaiKeThuocFilter($data, $this->params->trangThaiKeThuoc);
         $count = $data->count();
-        $data = $this->yeuCauKhamClsPtttVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $orderBy = [
+            'intruction_date' => 'desc',
+            'priority' => 'desc',
+            'num_order' => 'asc'
+        ];
+        $data = $this->yeuCauKhamClsPtttVViewRepository->applyOrdering($data, $orderBy, []);
         $data = $this->yeuCauKhamClsPtttVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
         return ['data' => $data, 'count' => $count];
     }
@@ -120,11 +132,11 @@ class YeuCauKhamClsPtttVViewService
                 $data = $this->sereServListVViewRepository->applyTreatmentIdFilter($data, $treatmentId);
                 break;
             case 'tatCaKhongBaoGomDichVuNoiTru':
-                $data = $this->sereServListVViewRepository->applyNotInServiceIdsFilter($data, $serviceIds);
+                $data = $this->sereServListVViewRepository->applyNotInDichVuNoiTruFilter($data);
                 $data = $this->sereServListVViewRepository->applyTreatmentIdFilter($data, $treatmentId);
                 break;
             case 'cacChiDinhDangDuocChon':
-                $data = $this->sereServListVViewRepository->applyTreatmentIdFilter($data, $treatmentId);
+                $data = $this->sereServListVViewRepository->applyServiceReqIdFilter($data, $serviceReqId);
                 break;
             default:
                 $data = $this->sereServListVViewRepository->applyTreatmentIdFilter($data, $treatmentId);

@@ -26,7 +26,7 @@ class IcdService
     public function handleCustomParamElasticSearch()
     {
         $data = null;
-        if ($this->params->tab == 'select') {
+        if (in_array($this->params->tab, ['select', 'selectNguyenNhanNgoai'])) {
             $data =  [
                 "bool" => [
                     "filter" => [
@@ -49,6 +49,9 @@ class IcdService
                     ]
                 ]
             ];
+            if($this->params->tab == 'selectNguyenNhanNgoai'){
+                $data['bool']['filter'][] = ["term" => ["is_cause" => 1]];
+            }
         }
 
         return $data;

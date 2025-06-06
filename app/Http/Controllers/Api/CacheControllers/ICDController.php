@@ -60,6 +60,8 @@ class IcdController extends BaseApiCacheController
             'id',
             'icd_code',
             'icd_name',
+            'icd_group_code',
+            'icd_group_name',
         ];
         $this->elasticCustom = $this->icdService->handleCustomParamElasticSearch();
         if ($this->elasticSearchType || $this->elastic) {

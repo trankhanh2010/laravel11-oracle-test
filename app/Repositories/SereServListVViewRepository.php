@@ -49,6 +49,7 @@ class SereServListVViewRepository
         return $this->sereServListVView
             ->leftJoin('his_machine', 'xa_v_his_sere_serv_list.machine_id', '=','his_machine.id')
             ->select([
+                "xa_v_his_sere_serv_list.id as key",     
                 "xa_v_his_sere_serv_list.id",     
                 "xa_v_his_sere_serv_list.is_no_execute",
                 "xa_v_his_sere_serv_list.is_delete",
@@ -137,6 +138,14 @@ class SereServListVViewRepository
         if ($param !== null) {
             $query->where(('xa_v_his_sere_serv_list.treatment_id'), $param);
         }
+        return $query;
+    }
+    public function applyNotInDichVuNoiTruFilter($query)
+    {
+        $query->where(function ($q) {
+            $q->whereNotIn('xa_v_his_sere_serv_list.exam_end_type', [2])
+              ->whereNotNull('xa_v_his_sere_serv_list.exam_end_type');
+        });
         return $query;
     }
     public function applyPatientCodeFilter($query, $param)

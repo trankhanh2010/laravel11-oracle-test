@@ -62,7 +62,8 @@ SELECT
      service_req.machine_id,
      service_req.TDL_INSTRUCTION_NOTE, /*ghi chu cua nguoi chi dinh */
      execute_room.room_code as execute_room_code,
-     execute_room.room_name as execute_room_name
+     execute_room.room_name as execute_room_name,
+     service_req.EXAM_END_TYPE  
 
     FROM his_sere_serv sere_serv
     LEFT JOIN his_service service on service.id = sere_serv.service_id

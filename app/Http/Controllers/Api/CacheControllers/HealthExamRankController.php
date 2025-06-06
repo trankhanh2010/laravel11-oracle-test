@@ -1,40 +1,39 @@
 <?php
 
-namespace App\Http\Controllers\Api\NoCacheControllers;
+namespace App\Http\Controllers\Api\CacheControllers;
 
-use App\DTOs\DhstDTO;
+use App\DTOs\HealthExamRankDTO;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
-use App\Http\Requests\Dhst\CreateDhstRequest;
-use App\Http\Requests\Dhst\UpdateDhstRequest;
-use App\Models\HIS\Dhst;
+use App\Http\Requests\HealthExamRank\CreateHealthExamRankRequest;
+use App\Http\Requests\HealthExamRank\UpdateHealthExamRankRequest;
+use App\Models\HIS\HealthExamRank;
 use App\Services\Elastic\ElasticsearchService;
-use App\Services\Model\DhstService;
+use App\Services\Model\HealthExamRankService;
 use Illuminate\Http\Request;
 
 
-class DhstController extends BaseApiCacheController
+class HealthExamRankController extends BaseApiCacheController
 {
-    protected $dhstService;
-    protected $dhstDTO;
-    public function __construct(Request $request, ElasticsearchService $elasticSearchService, DhstService $dhstService, Dhst $dhst)
+    protected $healthExamRankService;
+    protected $healthExamRankDTO;
+    public function __construct(Request $request, ElasticsearchService $elasticSearchService, HealthExamRankService $healthExamRankService, HealthExamRank $healthExamRank)
     {
         parent::__construct($request); // Gọi constructor của BaseController
         $this->elasticSearchService = $elasticSearchService;
-        $this->dhstService = $dhstService;
-        $this->dhst = $dhst;
+        $this->healthExamRankService = $healthExamRankService;
+        $this->healthExamRank = $healthExamRank;
         // Kiểm tra tên trường trong bảng
         if ($this->orderBy != null) {
             $this->orderByJoin = [
             ];
-            $columns = $this->getColumnsTable($this->dhst);
+            $columns = $this->getColumnsTable($this->healthExamRank);
             $this->orderBy = $this->checkOrderBy($this->orderBy, $columns, $this->orderByJoin ?? []);
         }
         // Thêm tham số vào service
-        $this->dhstDTO = new DhstDTO(
-            $this->dhstName,
+        $this->healthExamRankDTO = new HealthExamRankDTO(
+            $this->healthExamRankName,
             $this->keyword,
             $this->isActive,
-            $this->isDelete,
             $this->orderBy,
             $this->orderByJoin,
             $this->orderByString,
@@ -47,10 +46,8 @@ class DhstController extends BaseApiCacheController
             $this->time,
             $this->param,
             $this->noCache,
-            $this->treatmentId,
-            $this->tab,
         );
-        $this->dhstService->withParams($this->dhstDTO);
+        $this->healthExamRankService->withParams($this->healthExamRankDTO);
     }
     public function index()
     {
@@ -60,15 +57,15 @@ class DhstController extends BaseApiCacheController
         $keyword = $this->keyword;
         if (($keyword != null || $this->elasticSearchType != null) && !$this->cache) {
             if ($this->elasticSearchType != null) {
-                $data = $this->elasticSearchService->handleElasticSearchSearch($this->dhstName);
+                $data = $this->elasticSearchService->handleElasticSearchSearch($this->healthExamRankName);
             } else {
-                $data = $this->dhstService->handleDataBaseSearch();
+                $data = $this->healthExamRankService->handleDataBaseSearch();
             }
         } else {
             if ($this->elastic) {
-                $data = $this->elasticSearchService->handleElasticSearchGetAll($this->dhstName);
+                $data = $this->elasticSearchService->handleElasticSearchGetAll($this->healthExamRankName);
             } else {
-                $data = $this->dhstService->handleDataBaseGetAll();
+                $data = $this->healthExamRankService->handleDataBaseGetAll();
             }
         }
         $paramReturn = [
@@ -89,15 +86,15 @@ class DhstController extends BaseApiCacheController
             return $this->checkParam();
         }
         if ($id !== null) {
-            $validationError = $this->validateAndCheckId($id, $this->dhst, $this->dhstName);
+            $validationError = $this->validateAndCheckId($id, $this->healthExamRank, $this->healthExamRankName);
             if ($validationError) {
                 return $validationError;
             }
         }
         if ($this->elastic) {
-            $data = $this->elasticSearchService->handleElasticSearchGetWithId($this->dhstName, $id);
+            $data = $this->elasticSearchService->handleElasticSearchGetWithId($this->healthExamRankName, $id);
         } else {
-            $data = $this->dhstService->handleDataBaseGetWithId($id);
+            $data = $this->healthExamRankService->handleDataBaseGetWithId($id);
         }
         $paramReturn = [
             $this->idName => $id,

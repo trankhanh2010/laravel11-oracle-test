@@ -57,6 +57,8 @@ class YeuCauKhamClsPtttVViewRepository
                     "is_not_in_debt",
                     "is_enough_subclinical_pres",
                     "tdl_ksk_contract_id",
+                    "num_order",
+                    "priority",
                 ]
             );
     }
@@ -127,6 +129,13 @@ class YeuCauKhamClsPtttVViewRepository
             $query->where(('XA_V_HIS_YEU_CAU_KHAM_CLS_PTTT.is_delete'), $isDelete);
         }
         return $query;
+    }
+    public function applyIsNoExecuteFilter($query)
+    {
+            return $query->where(function ($query) {
+                $query->where('XA_V_HIS_YEU_CAU_KHAM_CLS_PTTT.is_no_execute', 0)
+                ->orWhereNull('XA_V_HIS_YEU_CAU_KHAM_CLS_PTTT.is_no_execute');
+            });
     }
     public function applyIntructionTimeFromFilter($query, $param)
     {
@@ -207,7 +216,8 @@ class YeuCauKhamClsPtttVViewRepository
             case 'ketThuc':
                 return $query->whereNotNull('finish_time');
             case 'goiNho':
-                return $query->where('call_count', '>=', 1);
+                return $query->where('call_count', '>=', 1)
+                ->where('service_req_stt_code', '01');
             default:
                 return $query;
         }

@@ -2,12 +2,11 @@
 
 namespace App\DTOs;
 
-class DhstDTO
+class NextTreaIntrDTO
 {
-    public $dhstName;
+    public $nextTreaIntrName;
     public $keyword;
     public $isActive;
-    public $isDelete;
     public $orderBy;
     public $orderByJoin;
     public $orderByString;
@@ -20,13 +19,10 @@ class DhstDTO
     public $time;
     public $param;
     public $noCache;
-    public $treatmentId;
-    public $tab;
     public function __construct(
-        $dhstName,
+        $nextTreaIntrName,
         $keyword, 
         $isActive, 
-        $isDelete,
         $orderBy, 
         $orderByJoin, 
         $orderByString, 
@@ -39,14 +35,11 @@ class DhstDTO
         $time,
         $param,
         $noCache,
-        $treatmentId,
-        $tab,
         )
     {
-        $this->dhstName = $dhstName;
+        $this->nextTreaIntrName = $nextTreaIntrName;
         $this->keyword = $keyword;
         $this->isActive = $isActive;
-        $this->isDelete = $isDelete;
         $this->orderBy = $orderBy;
         $this->orderByJoin = $orderByJoin;
         $this->orderByString = $orderByString;
@@ -59,7 +52,5 @@ class DhstDTO
         $this->time = $time;
         $this->param = $param;
         $this->noCache = $noCache;
-        $this->treatmentId = $treatmentId;
-        $this->tab = $tab;
     }
 }

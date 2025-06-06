@@ -16,8 +16,11 @@ class IcdRepository
     public function applyJoins()
     {
         return $this->icd
+            ->leftJoin('his_icd_group', 'his_icd_group.id', '=', 'his_icd.icd_group_id')
             ->select(
-                'his_icd.*'
+                'his_icd.*',
+                'his_icd_group.icd_group_code',
+                'his_icd_group.icd_group_name',
             );
     }
     public function applyKeywordFilter($query, $keyword)
