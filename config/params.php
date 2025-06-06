@@ -242,6 +242,7 @@ return [
             'apply_resource' => 'Có lỗi khi điều chỉnh tên trường trả về với DB!',
             'transaction' => 'Có lỗi trong Transaction!',
             'accident_body_part' => 'Có lỗi khi thực hiện thao tác với bảng Bộ phận thương tích!',
+            'allergenic' => 'Có lỗi khi thực hiện thao tác với bảng Dị ứng thuốc!',
             'accident_care' => 'Có lỗi khi thực hiện thao tác với bảng Xử lý sau tai nạn!',
             'accident_hurt_type' => 'Có lỗi khi thực hiện thao tác với bảng Nguyên nhân tai nạn!',
             'accident_location' => 'Có lỗi khi thực hiện thao tác với bảng Địa điểm tai nạn!',

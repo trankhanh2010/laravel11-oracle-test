@@ -6,6 +6,7 @@ use App\DTOs\YeuCauKhamClsPtttVViewDTO;
 use App\Events\Cache\DeleteCache;
 use App\Events\Elastic\YeuCauKhamClsPtttVView\InsertYeuCauKhamClsPtttVViewIndex;
 use App\Events\Elastic\DeleteIndex;
+use App\Repositories\AllergenicRepository;
 use App\Repositories\MedicalCaseCoverListVViewRepository;
 use App\Repositories\SereServListVViewRepository;
 use App\Repositories\ServiceRoomRepository;
@@ -19,17 +20,20 @@ class YeuCauKhamClsPtttVViewService
     protected $serviceRoomRepository;
     protected $sereServListVViewRepository;
     protected $medicalCaseCoverListVViewRepository;
+    protected $allergenicRepository;
     protected $params;
     public function __construct(
         YeuCauKhamClsPtttVViewRepository $yeuCauKhamClsPtttVViewRepository,
         ServiceRoomRepository $serviceRoomRepository,
         SereServListVViewRepository $sereServListVViewRepository,
         MedicalCaseCoverListVViewRepository $medicalCaseCoverListVViewRepository,
+        AllergenicRepository $allergenicRepository,
     ) {
         $this->yeuCauKhamClsPtttVViewRepository = $yeuCauKhamClsPtttVViewRepository;
         $this->serviceRoomRepository = $serviceRoomRepository;
         $this->sereServListVViewRepository = $sereServListVViewRepository;
         $this->medicalCaseCoverListVViewRepository = $medicalCaseCoverListVViewRepository;
+        $this->allergenicRepository = $allergenicRepository;
     }
     public function withParams(YeuCauKhamClsPtttVViewDTO $params)
     {
@@ -151,6 +155,19 @@ class YeuCauKhamClsPtttVViewService
         $data = $data->get();
         return $data;
     }
+    private function getDataDiUngThuoc($patientId)
+    {
+        $data = $this->allergenicRepository->applyJoinsDataDiUngThuoc();
+        $data = $this->allergenicRepository->applyIsActiveFilter($data, 1);
+        $data = $this->allergenicRepository->applyIsDeleteFilter($data, 0);
+        $data = $this->allergenicRepository->applyPatientIdFilter($data, $patientId);
+        $orderBy = [
+            'modify_time' => 'desc',
+        ];
+        $data = $this->allergenicRepository->applyOrdering($data, $orderBy, []);
+        $data = $data->get();
+        return $data;
+    }
     private function getDataKhamBenh($treatmentId)
     {
         $data = $this->medicalCaseCoverListVViewRepository->applyJoinsYeuCauKhamClsPttt()
@@ -266,13 +283,16 @@ class YeuCauKhamClsPtttVViewService
             $data = [];
             $dataLichSuKham = [];
             $dataDotKhamHienTai = [];
+            $dataDiUngThuoc = [];
             if($duLieu){
                 $dataLichSuKham = $this->getDataLichSuKham($duLieu->patient_id, $duLieu->treatment_id);
                 $dataDotKhamHienTai = $this->getDataDotKhamHienTai($duLieu->treatment_id);
+                $dataDiUngThuoc = $this->getDataDiUngThuoc($duLieu->patient_id);
             }
             $data['khamBenh'] = $duLieu;
             $data['lichSuKham'] = $dataLichSuKham;
             $data['dotKhamHienTai'] = $dataDotKhamHienTai;
+            $data['diUngThuoc'] = $dataDiUngThuoc;
 
             return $data;
         } catch (\Throwable $e) {
