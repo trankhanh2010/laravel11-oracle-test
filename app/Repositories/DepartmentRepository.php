@@ -54,6 +54,15 @@ class DepartmentRepository
 
         return $query;
     }
+    public function applyTreatmentIdFilter($query, $param)
+    {
+        if ($param != null) {
+            if($param){
+                $query->where(DB::connection('oracle_his')->raw('his_department.allow_treatment_type_ids'),'like', '%'.$param.',%');
+            }
+        }
+        return $query;
+    }
     public function applyOrdering($query, $orderBy, $orderByJoin)
     {
         if ($orderBy != null) {

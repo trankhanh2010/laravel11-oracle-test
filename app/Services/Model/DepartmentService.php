@@ -60,6 +60,7 @@ class DepartmentService
             $data = $this->departmentRepository->applyKeywordFilter($data, $this->params->keyword);
             $data = $this->departmentRepository->applyIsActiveFilter($data, $this->params->isActive);
             $data = $this->departmentRepository->applyIsClinicalFilter($data, $this->params->isClinical);
+            $data = $this->departmentRepository->applyTreatmentIdFilter($data, $this->params->treatmentTypeId);
             $count = $data->count();
             $data = $this->departmentRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
             $data = $this->departmentRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
@@ -73,6 +74,7 @@ class DepartmentService
         $data = $this->departmentRepository->applyJoins();
         $data = $this->departmentRepository->applyIsActiveFilter($data, $this->params->isActive);
         $data = $this->departmentRepository->applyIsClinicalFilter($data, $this->params->isClinical);
+        $data = $this->departmentRepository->applyTreatmentIdFilter($data, $this->params->treatmentTypeId);
         $count = $data->count();
         $data = $this->departmentRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
         $data = $this->departmentRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);

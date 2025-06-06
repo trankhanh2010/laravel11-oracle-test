@@ -163,6 +163,8 @@ class BaseApiCacheController extends Controller
     protected $roomTypeIdName = 'RoomTypeId';
     protected $debateId;
     protected $debateIdName = 'DebateId';
+    protected $treatmentTypeId;
+    protected $treatmentTypeIdName = 'TreatmentTypeId';
     protected $isAddition;
     protected $isAdditionName = 'IsAddition';
     protected $isDeposit;
@@ -2065,6 +2067,14 @@ class BaseApiCacheController extends Controller
             if (!is_numeric($this->debateId)) {
                 $this->errors[$this->debateIdName] = $this->messFormat;
                 $this->debateId = null;
+            } 
+        }
+        $this->treatmentTypeId = $this->paramRequest['ApiData']['TreatmentTypeId'] ?? null;
+        if ($this->treatmentTypeId != null) {
+            // Kiểm tra xem ID có tồn tại trong bảng  hay không
+            if (!is_numeric($this->treatmentTypeId)) {
+                $this->errors[$this->treatmentTypeIdName] = $this->messFormat;
+                $this->treatmentTypeId = null;
             } 
         }
         $this->serviceReqSttIds = $this->paramRequest['ApiData']['ServiceReqSttIds'] ?? null;

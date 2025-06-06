@@ -55,6 +55,7 @@ class DepartmentController extends BaseApiCacheController
             $this->param,
             $this->noCache,
             $this->isClinical,
+            $this->treatmentTypeId,
         );
         $this->departmentService->withParams($this->departmentDTO);
     }

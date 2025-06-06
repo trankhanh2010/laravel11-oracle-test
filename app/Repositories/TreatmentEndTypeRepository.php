@@ -34,6 +34,16 @@ class TreatmentEndTypeRepository
         }
         return $query;
     }
+    public function applyTabFilter($query, $param)
+    {
+        if ($param == 'nhapVien') {
+            $query->where(DB::connection('oracle_his')->raw('his_treatment_end_type.IS_FOR_IN_PATIENT'), 1);
+        }
+        if ($param == 'kham') {
+            $query->where(DB::connection('oracle_his')->raw('his_treatment_end_type.IS_FOR_OUT_PATIENT'), 1);
+        }
+        return $query;
+    }
     public function applyOrdering($query, $orderBy, $orderByJoin)
     {
         if ($orderBy != null) {
