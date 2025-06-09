@@ -280,6 +280,7 @@ use App\Http\Controllers\Api\ValidateControllers\DeviceGetOtpController;
 use App\Http\Controllers\Api\ValidateControllers\OtpController;
 use App\Http\Controllers\BaseControllers\ConvertController;
 use App\Http\Controllers\BaseControllers\DigitalCertificateController;
+use App\Http\Controllers\BaseControllers\XmlController;
 
 /*
 |--------------------------------------------------------------------------
@@ -413,6 +414,9 @@ Route::group([
     Route::get('v1/device-get-otp-treatment-fee-list', [DeviceGetOtpController::class, "getDeviceGetOtpTreatmentFeeList"]);
     /// Mở khóa thiết bị đang bị chặn nhận mã OTP xem viện phí
     Route::get('v1/unlock-device-get-otp-treatment-fee-list', [DeviceGetOtpController::class, "unlockDeviceLimitTotalRequestSendOtp"]);
+
+    /// Xml 130
+    Route::get("v1/insert-data-from-xml-130-to-db", [XmlController::class, "insertDataFromXml130ToDb"])->name('.insert_data_from_xml130_to_db');
 
     /// Bộ phận thương tích
     Route::group(['as' => 'HIS.Desktop.Plugins.HisAccidentBodyPart->'], function () {
