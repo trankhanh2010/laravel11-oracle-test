@@ -28,8 +28,8 @@ SELECT
      service_req.tdl_patient_name,
      service_req.tdl_patient_dob,
      service_req.tdl_patient_code,
-     treatment.treatment_code,
-     treatment.patient_id,
+     service_req.tdl_treatment_code as treatment_code,
+     service_req.tdl_patient_id as patient_id,
      service_req.service_req_type_id,
      service_req.parent_id,
      service_req_type.service_req_type_code,
@@ -153,7 +153,7 @@ SELECT
 
 
 FROM his_service_req service_req
-LEFT JOIN HIS_TREATMENT treatment ON treatment.id = service_req.treatment_id
+--LEFT JOIN HIS_TREATMENT treatment ON treatment.id = service_req.treatment_id
 LEFT JOIN HIS_SERVICE_REQ_STT service_req_stt ON service_req_stt.id = service_req.service_req_stt_id
 LEFT JOIN HIS_DEPARTMENT request_department ON request_department.id = service_req.request_department_id
 LEFT JOIN V_HIS_ROOM request_room ON request_room.id = service_req.request_room_id
@@ -161,7 +161,7 @@ LEFT JOIN V_HIS_ROOM execute_room ON execute_room.id = service_req.execute_room_
 LEFT JOIN HIS_PATIENT_CLASSIFY patient_classify ON patient_classify.id = service_req.TDL_PATIENT_CLASSIFY_ID
 LEFT JOIN HIS_PATIENT_TYPE patient_type ON patient_type.id = service_req.TDL_PATIENT_TYPE_ID
 LEFT JOIN HIS_MACHINE machine ON machine.id = service_req.machine_id
-LEFT JOIN HIS_TREATMENT_BED_ROOM treatment_bed_room ON treatment_bed_room.treatment_id = treatment.id AND remove_time IS NULL
+LEFT JOIN HIS_TREATMENT_BED_ROOM treatment_bed_room ON treatment_bed_room.treatment_id = service_req.treatment_id AND remove_time IS NULL
 LEFT JOIN HIS_BED bed ON bed.id = treatment_bed_room.bed_id
 LEFT JOIN HIS_SERVICE_REQ_TYPE service_req_type ON service_req_type.id = service_req.service_req_type_id
 SQL

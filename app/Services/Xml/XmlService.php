@@ -2,12 +2,24 @@
 
 namespace App\Services\Xml;
 
+use App\Jobs\Xml\ProcessXmlChunkJob;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Validator;
 
 class XmlService
 {
+    protected $listDataInsert;
+    protected $listDataErr;
+    protected $currentFileName;
+    protected $currentPatientCode;
+    protected $currentTreatmentCode;
+    public function __construct()
+    {
+        $this->listDataInsert = [];
+        $this->listDataErr = [];
+    }
     public function insertDataFromXml130ToDB()
     {
         $this->readFileXml130();
@@ -21,24 +33,60 @@ class XmlService
             throw new \Exception("Thư mục không tồn tại: $directory");
         }
 
-        // Lấy tất cả file .xml
         $files = File::files($directory);
+        $filePaths = array_map(fn($file) => $file->getRealPath(), $files);
 
-        foreach ($files as $file) {
-            $xmlContent = File::get($file);
-            $xml = simplexml_load_string($xmlContent);
+        // Chia chunk mỗi 20 file
+        $chunks = array_chunk($filePaths, 20);
 
-            if (!$xml) {
-                Log::error("Không thể parse XML: {$file->getFilename()}");
-                continue;
-            }
-            $danhSachHoSo = $xml->xpath('//DANHSACHHOSO'); // Lấy cái DANHSACHHOSO bất kể cấp bậc, vị trí
-            DB::connection('oracle_his')->transaction(function () use ($danhSachHoSo) {
-                $this->insertDBXML($danhSachHoSo);
-            });
+        foreach ($chunks as $chunk) {
+            (new ProcessXmlChunkJob($chunk))->handle(); // chạy luôn test
+            // ProcessXmlChunkJob::dispatch($chunk); // Đưa job vào queue
         }
     }
+    public function getFileNameFromPath($filePath)
+    {
+        $filename = pathinfo($filePath, PATHINFO_FILENAME);
+        $this->currentFileName = $filename;
+        return $filename;
+    }
+    public function getPartFileNameFromFileName($fileName)
+    {
+        return explode('_', $fileName);
+    }
+    public function setCurrentParam($partFileName)
+    {
+        $this->currentPatientCode = $partFileName[3];
+        $this->currentTreatmentCode = $partFileName[2];
+    }
+    public function getPartFileName($file)
+    {
+        $filename = $file->getFilename(); // "27.05.2025_10.33.04_000000461124_0000400613.xml"
+        $nameWithoutExt = pathinfo($filename, PATHINFO_FILENAME); // bỏ phần .xml
+        $parts = explode('_', $nameWithoutExt); // tách theo dấu _   // 0-ngày tạo, 1-giờ tạo, 2-mã điều trị, 3-mã bệnh nhân
+        return $parts;
+    }
+    public function getCurrentFileName()
+    {
+        return $this->currentFileName;
+    }
+    public function getCurrentPatientCode()
+    {
+        return $this->currentPatientCode;
+    }
 
+    public function getCurrentTreatmentCode()
+    {
+        return $this->currentTreatmentCode;
+    }
+    public function getListDataInsert()
+    {
+        return $this->listDataInsert;
+    }
+    public function getListDataErr()
+    {
+        return $this->listDataErr;
+    }
     public function handleDecodeBase64NoiDungFile($noiDungBase64)
     {
         // Giải mã base64
@@ -47,7 +95,7 @@ class XmlService
         return $data;
     }
 
-    public function insertDBXML($danhSachHoSo)
+    public function checkDBXML($danhSachHoSo)
     {
         foreach ($danhSachHoSo as $hoSo) {
             foreach ($hoSo as $fileHoSo) {
@@ -56,49 +104,49 @@ class XmlService
                     $noiDungFile = $this->handleDecodeBase64NoiDungFile($item->NOIDUNGFILE);
                     switch ($loaiHoSo) {
                         case 'XML1':
-                            $this->handleInsertDBXML1($noiDungFile); // Tổng hợp
+                            $this->handleCheckDBXML1($noiDungFile); // Tổng hợp
                             break;
                         case 'XML2':
-                            $this->handleInsertDBXML2($noiDungFile); // Thuốc
+                            $this->handleCheckDBXML2($noiDungFile); // Thuốc
                             break;
                         case 'XML3':
-                            $this->handleInsertDBXML3($noiDungFile); // Dịch vụ kỹ thuật, Vật tư y tế
+                            $this->handleCheckDBXML3($noiDungFile); // Dịch vụ kỹ thuật, Vật tư y tế
                             break;
                         case 'XML4':
-                            $this->handleInsertDBXML4($noiDungFile); // Dịch vụ CLS
+                            $this->handleCheckDBXML4($noiDungFile); // Dịch vụ CLS
                             break;
                         case 'XML5':
-                            $this->handleInsertDBXML5($noiDungFile); // Diễn biến lâm sàng
+                            $this->handleCheckDBXML5($noiDungFile); // Diễn biến lâm sàng
                             break;
                         case 'XML6':
-                            $this->handleInsertDBXML6($noiDungFile); // HIV-AIDS
+                            $this->handleCheckDBXML6($noiDungFile); // HIV-AIDS
                             break;
                         case 'XML7':
-                            $this->handleInsertDBXML7($noiDungFile); // Giấy ra viện
+                            $this->handleCheckDBXML7($noiDungFile); // Giấy ra viện
                             break;
                         case 'XML8':
-                            $this->handleInsertDBXML8($noiDungFile); // Tóm tắt hồ sơ bệnh án
+                            $this->handleCheckDBXML8($noiDungFile); // Tóm tắt hồ sơ bệnh án
                             break;
                         case 'XML9':
-                            $this->handleInsertDBXML9($noiDungFile); // Giấy chứng sinh
+                            $this->handleCheckDBXML9($noiDungFile); // Giấy chứng sinh
                             break;
                         case 'XML10':
-                            $this->handleInsertDBXML10($noiDungFile); // Bảng nghỉ dưỡng thai
+                            $this->handleCheckDBXML10($noiDungFile); // Bảng nghỉ dưỡng thai
                             break;
                         case 'XML11':
-                            $this->handleInsertDBXML11($noiDungFile); // Giấy nghỉ hưởng BHXH
+                            $this->handleCheckDBXML11($noiDungFile); // Giấy nghỉ hưởng BHXH
                             break;
                         case 'XML12':
-                            $this->handleInsertDBXML12($noiDungFile); // Dữ liệu giám định y khoa
+                            $this->handleCheckDBXML12($noiDungFile); // Dữ liệu giám định y khoa
                             break;
                         case 'XML13':
-                            $this->handleInsertDBXML13($noiDungFile); // Giấy chuyển tuyến BHYT
+                            $this->handleCheckDBXML13($noiDungFile); // Giấy chuyển tuyến BHYT
                             break;
                         case 'XML14':
-                            $this->handleInsertDBXML14($noiDungFile); // Giấy hẹn khám lại
+                            $this->handleCheckDBXML14($noiDungFile); // Giấy hẹn khám lại
                             break;
                         case 'XML15':
-                            $this->handleInsertDBXML15($noiDungFile); // Lao
+                            $this->handleCheckDBXML15($noiDungFile); // Lao
                             break;
                         default:
                             break;
@@ -107,76 +155,245 @@ class XmlService
             }
         }
     }
-    public function handleInsertDBXML1($noiDungFile)
+    public function handleCheckDBXML1($noiDungFile)
     {
-        $maLienKet = (string) $noiDungFile->MA_LK;
-        $stt = (int) $noiDungFile->STT;
-        $maBenhNhan = (string) $noiDungFile->MA_BN;
-        $hoTen = (string) $noiDungFile->HO_TEN;
-        $soCCCD = (string) $noiDungFile->SO_CCCD;
-        $ngaySinh = (int) $noiDungFile->NGAY_SINH;
-        $gioiTinh = (int) $noiDungFile->GIOI_TINH;
-        $nhomMau = (string) $noiDungFile->NHOM_MAU;
-        $maQuocTich = (int) $noiDungFile->MA_QUOC_TICH;
-        $maDanToc = (int) $noiDungFile->MA_DAN_TOC;
-        $maNgheNghiep = (string) $noiDungFile->MA_NGHE_NGHIEP;
-        $diaChi = (string) $noiDungFile->DIA_CHI;
-        $maTinhCuTru = (string) $noiDungFile->MATINH_CU_TRU;
-        $maHuyenCuTru = (string) $noiDungFile->MAHUYEN_CU_TRU;
-        $maXaCuTru = (string) $noiDungFile->MAXA_CU_TRU;
-        $dienThoai = (string) $noiDungFile->DIEN_THOAI;
-        $maTheBHYT = (string) $noiDungFile->MA_THE_BHYT;
-        $maDKBD = (string) $noiDungFile->MA_DKBD;
-        $giaTriTheTu = (string) $noiDungFile->GT_THE_TU;
-        $giaTriTheDen = (string) $noiDungFile->GT_THE_DEN;
-        $ngayMienCungChiTra = (int) $noiDungFile->NGAY_MIEN_CCT;
-        $lyDoVaoVien = (string) $noiDungFile->LY_DO_VV;
-        $lyDoVaoNoiTru = (string) $noiDungFile->LY_DO_VNT;
-        $maLyDoVaoNoiTru = (string) $noiDungFile->MA_LY_DO_VNT;
-        $chanDoanVao = (string) $noiDungFile->CHAN_DOAN_VAO;
-        $chanDoanRaVien = (string) $noiDungFile->CHAN_DOAN_RV;
-        $maBenhChinh = (string) $noiDungFile->MA_BENH_CHINH;
-        $maBenhKemTheo = (string) $noiDungFile->MA_BENH_KT;
-        $maBenhYHCT = (string) $noiDungFile->MA_BENH_YHCT;
-        $maPTTTQuaTrinh = (string) $noiDungFile->MA_PTTT_QT;
-        $maDoiTuongKhamChuaBenh = (string) $noiDungFile->MA_DOITUONG_KCB;
-        $maNoiDi = (string) $noiDungFile->MA_NOI_DI;
-        $maNoiDen = (string) $noiDungFile->MA_NOI_DEN;
-        $maTaiNan = (string) $noiDungFile->MA_TAI_NAN;
-        $ngayVao = (int) $noiDungFile->NGAY_VAO;
-        $ngayVaoNoiTru = (int) $noiDungFile->NGAY_VAO_NOI_TRU;
-        $ngayRa = (int) $noiDungFile->NGAY_RA;
-        $giayChuyenTuyen = (string) $noiDungFile->GIAY_CHUYEN_TUYEN;
-        $soNgayDieuTri = (int) $noiDungFile->SO_NGAY_DIEU_TRI;
-        $phuongPhapDieuTri = (string) $noiDungFile->PP_DIEU_TRI;
-        $ketQuaDieuTri = (int) $noiDungFile->KET_QUA_DTRI;
-        $maLoaiRaVien = (int) $noiDungFile->MA_LOAI_RV;
-        $ghiChu = (string) $noiDungFile->GHI_CHU;
-        $ngayThanhToan = (int) $noiDungFile->NGAY_TTOAN;
-        $tienThuoc = (float) $noiDungFile->T_THUOC;
-        $tienVatTuYTe = (float) $noiDungFile->T_VTYT;
-        $tienTongChiBenhVien = (float) $noiDungFile->T_TONGCHI_BV;
-        $tienTongChiBaoHiem = (float) $noiDungFile->T_TONGCHI_BH;
-        $tienBenhNhanTuTra = (float) $noiDungFile->T_BNTT;
-        $tienBenhNhanCungChiTra = (float) $noiDungFile->T_BNCCT;
-        $tienBaoHiemThanhToan = (float) $noiDungFile->T_BHTT;
-        $tienNguonKhac = (float) $noiDungFile->T_NGUOCKHAC;
-        $tienBaoHiemThanhToanGoiDichVu = (float) $noiDungFile->T_BHTT_GDV;
-        $namQuyetToan = (int) $noiDungFile->NAM_QT;
-        $thangQuyetToan = (int) $noiDungFile->THANG_QT;
-        $maLoaiKhamChuaBenh = (string) $noiDungFile->MA_LOAI_KCB;
-        $maKhoa = (string) $noiDungFile->MA_KHOA;
-        $maCoSoKhamChuaBenh = (string) $noiDungFile->MA_CSKCB;
-        $maKhuVuc = (string) $noiDungFile->MA_KHUVUC;
-        $canNang = (string) $noiDungFile->CAN_NANG;
-        $canNangCon = (string) $noiDungFile->CAN_NANG_CON;
-        $namNamLienTuc = (int) $noiDungFile->NAM_NAM_LIEN_TUC;
-        $ngayTaiKham = (string) $noiDungFile->NGAY_TAI_KHAM;
-        $maHoSoBenhAn = (string) $noiDungFile->MA_HSBA;
-        $maThuTruongDonVi = (string) $noiDungFile->MA_TTDV;
-        $duPhong = (string) $noiDungFile->DU_PHONG;
+        $data = $this->getRawDataXML1($noiDungFile);
+        // Validate
+        $validator = Validator::make($data, $this->getRuleXML1(), $this->getMessageErrXML1Custom());
+        if ($validator->fails()) {
+            Log::error('File: '.$this->currentFileName.' XML1 không hợp lệ', [
+                'errors' => $validator->errors()->all(),
+            ]);
+            $this->listDataErr[$this->currentFileName]['XML1'] = $validator->errors();
+        } else {
+            $this->listDataInsert[$this->currentFileName]['XML1'] = $data;
+        }
     }
-    public function handleInsertDBXML2($noiDungFile)
+    public function getRawDataXML1($noiDungFile)
+    {
+        $data = [
+            'maLienKet' => isEmptyXml($noiDungFile->MA_LK) ? null : (string) $noiDungFile->MA_LK,
+            'stt' => isEmptyXml($noiDungFile->STT) ? null : (int) $noiDungFile->STT,
+            'maBenhNhan' => isEmptyXml($noiDungFile->MA_BN) ? null : (string) $noiDungFile->MA_BN,
+            'hoTen' => isEmptyXml($noiDungFile->HO_TEN) ? null : (string) $noiDungFile->HO_TEN,
+            'soCCCD' => isEmptyXml($noiDungFile->SO_CCCD) ? null : (string) $noiDungFile->SO_CCCD,
+            'ngaySinh' => isEmptyXml($noiDungFile->NGAY_SINH) ? null : (int) $noiDungFile->NGAY_SINH,
+            'gioiTinh' => isEmptyXml($noiDungFile->GIOI_TINH) ? null : (int) $noiDungFile->GIOI_TINH,
+            'nhomMau' => isEmptyXml($noiDungFile->NHOM_MAU) ? null : (string) $noiDungFile->NHOM_MAU,
+            'maQuocTich' => isEmptyXml($noiDungFile->MA_QUOCTICH) ? null : (string) $noiDungFile->MA_QUOCTICH,
+            'maDanToc' => isEmptyXml($noiDungFile->MA_DANTOC) ? null : (string) $noiDungFile->MA_DANTOC,
+            'maNgheNghiep' => isEmptyXml($noiDungFile->MA_NGHE_NGHIEP) ? null : (string) $noiDungFile->MA_NGHE_NGHIEP,
+            'diaChi' => isEmptyXml($noiDungFile->DIA_CHI) ? null : (string) $noiDungFile->DIA_CHI,
+            'maTinhCuTru' => isEmptyXml($noiDungFile->MATINH_CU_TRU) ? null : (string) $noiDungFile->MATINH_CU_TRU,
+            'maHuyenCuTru' => isEmptyXml($noiDungFile->MAHUYEN_CU_TRU) ? null : (string) $noiDungFile->MAHUYEN_CU_TRU,
+            'maXaCuTru' => isEmptyXml($noiDungFile->MAXA_CU_TRU) ? null : (string) $noiDungFile->MAXA_CU_TRU,
+            'dienThoai' => isEmptyXml($noiDungFile->DIEN_THOAI) ? null : (string) $noiDungFile->DIEN_THOAI,
+            'maTheBHYT' => isEmptyXml($noiDungFile->MA_THE_BHYT) ? null : (string) $noiDungFile->MA_THE_BHYT,
+            'maDKBD' => isEmptyXml($noiDungFile->MA_DKBD) ? null : (string) $noiDungFile->MA_DKBD,
+            'giaTriTheTu' => isEmptyXml($noiDungFile->GT_THE_TU) ? null : (string) $noiDungFile->GT_THE_TU,
+            'giaTriTheDen' => isEmptyXml($noiDungFile->GT_THE_DEN) ? null : (string) $noiDungFile->GT_THE_DEN,
+            'ngayMienCungChiTra' => isEmptyXml($noiDungFile->NGAY_MIEN_CCT) ? null : (string) $noiDungFile->NGAY_MIEN_CCT,
+            'lyDoVaoVien' => isEmptyXml($noiDungFile->LY_DO_VV) ? null : (string) $noiDungFile->LY_DO_VV,
+            'lyDoVaoNoiTru' => isEmptyXml($noiDungFile->LY_DO_VNT) ? null : (string) $noiDungFile->LY_DO_VNT,
+            'maLyDoVaoNoiTru' => isEmptyXml($noiDungFile->MA_LY_DO_VNT) ? null : (string) $noiDungFile->MA_LY_DO_VNT,
+            'chanDoanVao' => isEmptyXml($noiDungFile->CHAN_DOAN_VAO) ? null : (string) $noiDungFile->CHAN_DOAN_VAO,
+            'chanDoanRaVien' => isEmptyXml($noiDungFile->CHAN_DOAN_RV) ? null : (string) $noiDungFile->CHAN_DOAN_RV,
+            'maBenhChinh' => isEmptyXml($noiDungFile->MA_BENH_CHINH) ? null : (string) $noiDungFile->MA_BENH_CHINH,
+            'maBenhKemTheo' => isEmptyXml($noiDungFile->MA_BENH_KT) ? null : (string) $noiDungFile->MA_BENH_KT,
+            'maBenhYHCT' => isEmptyXml($noiDungFile->MA_BENH_YHCT) ? null : (string) $noiDungFile->MA_BENH_YHCT,
+            'maPTTTQuaTrinh' => isEmptyXml($noiDungFile->MA_PTTT_QT) ? null : (string) $noiDungFile->MA_PTTT_QT,
+            'maDoiTuongKhamChuaBenh' => isEmptyXml($noiDungFile->MA_DOITUONG_KCB) ? null : (string) $noiDungFile->MA_DOITUONG_KCB,
+            'maNoiDi' => isEmptyXml($noiDungFile->MA_NOI_DI) ? null : (string) $noiDungFile->MA_NOI_DI,
+            'maNoiDen' => isEmptyXml($noiDungFile->MA_NOI_DEN) ? null : (string) $noiDungFile->MA_NOI_DEN,
+            'maTaiNan' => isEmptyXml($noiDungFile->MA_TAI_NAN) ? null : (string) $noiDungFile->MA_TAI_NAN,
+            'ngayVao' => isEmptyXml($noiDungFile->NGAY_VAO) ? null : (int) $noiDungFile->NGAY_VAO,
+            'ngayVaoNoiTru' => isEmptyXml($noiDungFile->NGAY_VAO_NOI_TRU) ? null : (int) $noiDungFile->NGAY_VAO_NOI_TRU,
+            'ngayRa' => isEmptyXml($noiDungFile->NGAY_RA) ? null : (int) $noiDungFile->NGAY_RA,
+            'giayChuyenTuyen' => isEmptyXml($noiDungFile->GIAY_CHUYEN_TUYEN) ? null : (string) $noiDungFile->GIAY_CHUYEN_TUYEN,
+            'soNgayDieuTri' => isEmptyXml($noiDungFile->SO_NGAY_DTRI) ? null : (int) $noiDungFile->SO_NGAY_DTRI,
+            'phuongPhapDieuTri' => isEmptyXml($noiDungFile->PP_DIEU_TRI) ? null : (string) $noiDungFile->PP_DIEU_TRI,
+            'ketQuaDieuTri' => isEmptyXml($noiDungFile->KET_QUA_DTRI) ? null : (int) $noiDungFile->KET_QUA_DTRI,
+            'maLoaiRaVien' => isEmptyXml($noiDungFile->MA_LOAI_RV) ? null : (int) $noiDungFile->MA_LOAI_RV,
+            'ghiChu' => isEmptyXml($noiDungFile->GHI_CHU) ? null : (string) $noiDungFile->GHI_CHU,
+            'ngayThanhToan' => isEmptyXml($noiDungFile->NGAY_TTOAN) ? null : (int) $noiDungFile->NGAY_TTOAN,
+            'tienThuoc' => isEmptyXml($noiDungFile->T_THUOC) ? null : (float) $noiDungFile->T_THUOC,
+            'tienVatTuYTe' => isEmptyXml($noiDungFile->T_VTYT) ? null : (float) $noiDungFile->T_VTYT,
+            'tienTongChiBenhVien' => isEmptyXml($noiDungFile->T_TONGCHI_BV) ? null : (float) $noiDungFile->T_TONGCHI_BV,
+            'tienTongChiBaoHiem' => isEmptyXml($noiDungFile->T_TONGCHI_BH) ? null : (float) $noiDungFile->T_TONGCHI_BH,
+            'tienBenhNhanTuTra' => isEmptyXml($noiDungFile->T_BNTT) ? null : (float) $noiDungFile->T_BNTT,
+            'tienBenhNhanCungChiTra' => isEmptyXml($noiDungFile->T_BNCCT) ? null : (float) $noiDungFile->T_BNCCT,
+            'tienBaoHiemThanhToan' => isEmptyXml($noiDungFile->T_BHTT) ? null : (float) $noiDungFile->T_BHTT,
+            'tienNguonKhac' => isEmptyXml($noiDungFile->T_NGUONKHAC) ? null : (float) $noiDungFile->T_NGUONKHAC,
+            'tienBaoHiemThanhToanGoiDichVu' => isEmptyXml($noiDungFile->T_BHTT_GDV) ? null : (float) $noiDungFile->T_BHTT_GDV,
+            'namQuyetToan' => isEmptyXml($noiDungFile->NAM_QT) ? null : (string) $noiDungFile->NAM_QT,
+            'thangQuyetToan' => isEmptyXml($noiDungFile->THANG_QT) ? null : (string) $noiDungFile->THANG_QT,
+            'maLoaiKhamChuaBenh' => isEmptyXml($noiDungFile->MA_LOAI_KCB) ? null : (string) $noiDungFile->MA_LOAI_KCB,
+            'maKhoa' => isEmptyXml($noiDungFile->MA_KHOA) ? null : (string) $noiDungFile->MA_KHOA,
+            'maCoSoKhamChuaBenh' => isEmptyXml($noiDungFile->MA_CSKCB) ? null : (string) $noiDungFile->MA_CSKCB,
+            'maKhuVuc' => isEmptyXml($noiDungFile->MA_KHUVUC) ? null : (string) $noiDungFile->MA_KHUVUC,
+            'canNang' => isEmptyXml($noiDungFile->CAN_NANG) ? null : (string) $noiDungFile->CAN_NANG,
+            'canNangCon' => isEmptyXml($noiDungFile->CAN_NANG_CON) ? null : (string) $noiDungFile->CAN_NANG_CON,
+            'namNamLienTuc' => isEmptyXml($noiDungFile->NAM_NAM_LIEN_TUC) ? null : (int) $noiDungFile->NAM_NAM_LIEN_TUC,
+            'ngayTaiKham' => isEmptyXml($noiDungFile->NGAY_TAI_KHAM) ? null : (string) $noiDungFile->NGAY_TAI_KHAM,
+            'maHoSoBenhAn' => isEmptyXml($noiDungFile->MA_HSBA) ? null : (string) $noiDungFile->MA_HSBA,
+            'maThuTruongDonVi' => isEmptyXml($noiDungFile->MA_TTDV) ? null : (string) $noiDungFile->MA_TTDV,
+            'duPhong' => isEmptyXml($noiDungFile->DU_PHONG) ? null : (string) $noiDungFile->DU_PHONG,
+        ];
+        return $data;
+    }
+    public function getRuleXML1()
+    {
+        $data = [
+            'maLienKet' =>                      'required|string|max:100',
+            'stt' =>                            'nullable|integer|max:9999999999',
+            'maBenhNhan' =>                     'required|string|max:100',
+            'hoTen' =>                          'required|string|max:255',
+            'soCCCD' =>                         'nullable|string|max:15',
+            'ngaySinh' =>                       'required|numeric|regex:/^\d{12}$/',
+            'gioiTinh' =>                       'required|integer|in:1,2,3',
+            'nhomMau' =>                        'nullable|string|max:10',
+            'maQuocTich' =>                     'required|string|max:3',
+            'maDanToc' =>                       'required|string|max:2',
+            'maNgheNghiep' =>                   'required|string|max:5',
+            'diaChi' =>                         'required|string|max:1024',
+            'maTinhCuTru' =>                    'required|string|max:3',
+            'maHuyenCuTru' =>                   'required|string|max:3',
+            'maXaCuTru' =>                      'required|string|max:5',
+            'dienThoai' =>                      'nullable|string|max:15',
+            'maTheBHYT' =>                      'nullable|string',
+            'maDKBD' =>                         'nullable|string',
+            'giaTriTheTu' =>                    'nullable|string',
+            'giaTriTheDen' =>                   'nullable|string',
+            'ngayMienCungChiTra' =>             'nullable|numeric|regex:/^\d{12}$/',
+            'lyDoVaoVien' =>                    'required|string',
+            'lyDoVaoNoiTru' =>                  'nullable|string',
+            'maLyDoVaoNoiTru' =>                'nullable|string|max:5',
+            'chanDoanVao' =>                    'required|string',
+            'chanDoanRaVien' =>                 'required|string',
+            'maBenhChinh' =>                    'required|string|max:7',
+            'maBenhKemTheo' =>                  'nullable|string|max:100',
+            'maBenhYHCT' =>                     'nullable|string|max:255',
+            'maPTTTQuaTrinh' =>                 'nullable|string|max:125',
+            'maDoiTuongKhamChuaBenh' =>         'required|string|max:5',
+            'maNoiDi' =>                        'nullable|string|max:5',
+            'maNoiDen' =>                       'nullable|string|max:5',
+            'maTaiNan' =>                       'nullable|string|max:2',
+            'ngayVao' =>                        'required|numeric|regex:/^\d{12}$/',
+            'ngayVaoNoiTru' =>                  'nullable|numeric|regex:/^\d{12}$/|gte:ngayVao',
+            'ngayRa' =>                         'required|numeric|regex:/^\d{12}$/',
+            'giayChuyenTuyen' =>                'nullable|string|max:50',
+            'soNgayDieuTri' =>                  'required|integer|max:999',
+            'phuongPhapDieuTri' =>              'nullable|string',
+            'ketQuaDieuTri' =>                  'required|integer|max:9',
+            'maLoaiRaVien' =>                   'required|integer|max:9',
+            'ghiChu' =>                         'nullable|string',
+            'ngayThanhToan' =>                  'nullable|numeric|regex:/^\d{12}$/',
+            'tienThuoc' =>                      'required|numeric|max:999999999999999',
+            'tienVatTuYTe' =>                   'required|numeric|max:999999999999999',
+            'tienTongChiBenhVien' =>            'required|numeric|max:999999999999999',
+            'tienTongChiBaoHiem' =>             'required|numeric|max:999999999999999',
+            'tienBenhNhanTuTra' =>              'required|numeric|max:999999999999999',
+            'tienBenhNhanCungChiTra' =>         'required|numeric|max:999999999999999',
+            'tienBaoHiemThanhToan' =>           'required|numeric|max:999999999999999',
+            'tienNguonKhac' =>                  'required|numeric|max:999999999999999',
+            'tienBaoHiemThanhToanGoiDichVu' =>  'required|numeric|max:999999999999999',
+            'namQuyetToan' =>                   'required|string|regex:/^\d{4}$/',
+            'thangQuyetToan' =>                 'required|string|in:01,02,03,04,05,06,07,08,09,10,11,12',
+            'maLoaiKhamChuaBenh' =>             'required|string|max:2',
+            'maKhoa' =>                         'required|string|max:50',
+            'maCoSoKhamChuaBenh' =>             'required|string|max:5',
+            'maKhuVuc' =>                       'nullable|string|max:2',
+            'canNang' =>                        'required|string|max:6',
+            'canNangCon' =>                     'nullable|string|max:100',
+            'namNamLienTuc' =>                  'nullable|numeric|regex:/^\d{8}$/',
+            'ngayTaiKham' =>                    'nullable|string|max:50',
+            'maHoSoBenhAn' =>                   'required|string|max:100',
+            'maThuTruongDonVi' =>               'nullable|string|max:10',
+            'duPhong' =>                        'nullable|string',
+        ];
+        return $data;
+    }
+    public function getMessageErrXML1Custom()
+    {
+        $data = [
+            'maLienKet.required' => 'Mã liên kết' . config('keywords')['error']['required'],
+            'maLienKet.string' => 'Mã liên kết' . config('keywords')['error']['string'],
+            'maLienKet.max' => 'Mã liên kết' . config('keywords')['error']['string_max'],
+
+            'stt.integer' => 'Số thứ tự' . config('keywords')['error']['integer'],
+            'stt.max' => 'Số thứ tự' . config('keywords')['error']['integer_max'],
+
+            'maBenhNhan.required' => 'Mã bệnh nhân' . config('keywords')['error']['required'],
+            'maBenhNhan.string' => 'Mã bệnh nhân' . config('keywords')['error']['string'],
+            'maBenhNhan.max' => 'Mã bệnh nhân' . config('keywords')['error']['string_max'],
+
+            'hoTen' =>                          'required|string|max:255',
+            'soCCCD' =>                         'nullable|string|max:15',
+            'ngaySinh' =>                       'required|numeric|regex:/^\d{12}$/',
+            'gioiTinh' =>                       'required|integer|in:1,2,3',
+            'nhomMau' =>                        'nullable|string|max:10',
+            'maQuocTich' =>                     'required|string|max:3',
+            'maDanToc' =>                       'required|string|max:2',
+            'maNgheNghiep' =>                   'required|string|max:5',
+            'diaChi' =>                         'required|string|max:1024',
+            'maTinhCuTru' =>                    'required|string|max:3',
+            'maHuyenCuTru' =>                   'required|string|max:3',
+            'maXaCuTru' =>                      'required|string|max:5',
+            'dienThoai' =>                      'nullable|string|max:15',
+            'maTheBHYT' =>                      'nullable|string',
+            'maDKBD' =>                         'nullable|string',
+            'giaTriTheTu' =>                    'nullable|string',
+            'giaTriTheDen' =>                   'nullable|string',
+            'ngayMienCungChiTra' =>             'nullable|numeric|regex:/^\d{12}$/',
+            'lyDoVaoVien' =>                    'required|string',
+            'lyDoVaoNoiTru' =>                  'nullable|string',
+            'maLyDoVaoNoiTru' =>                'nullable|string|max:5',
+            'chanDoanVao' =>                    'required|string',
+            'chanDoanRaVien' =>                 'required|string',
+            'maBenhChinh' =>                    'required|string|max:7',
+            'maBenhKemTheo' =>                  'nullable|string|max:100',
+            'maBenhYHCT' =>                     'nullable|string|max:255',
+            'maPTTTQuaTrinh' =>                 'nullable|string|max:125',
+            'maDoiTuongKhamChuaBenh' =>         'required|string|max:5',
+            'maNoiDi' =>                        'nullable|string|max:5',
+            'maNoiDen' =>                       'nullable|string|max:5',
+            'maTaiNan' =>                       'nullable|string|max:2',
+            'ngayVao' =>                        'required|numeric|regex:/^\d{12}$/',
+            'ngayVaoNoiTru' =>                  'nullable|numeric|regex:/^\d{12}$/|gte:ngayVao',
+            'ngayRa' =>                         'required|numeric|regex:/^\d{12}$/',
+            'giayChuyenTuyen' =>                'nullable|string|max:50',
+            'soNgayDieuTri' =>                  'required|integer|max:999',
+            'phuongPhapDieuTri' =>              'nullable|string',
+            'ketQuaDieuTri' =>                  'required|integer|max:9',
+            'maLoaiRaVien' =>                   'required|integer|max:9',
+            'ghiChu' =>                         'nullable|string',
+            'ngayThanhToan' =>                  'nullable|numeric|regex:/^\d{12}$/',
+            'tienThuoc' =>                      'required|numeric|max:999999999999999',
+            'tienVatTuYTe' =>                   'required|numeric|max:999999999999999',
+            'tienTongChiBenhVien' =>            'required|numeric|max:999999999999999',
+            'tienTongChiBaoHiem' =>             'required|numeric|max:999999999999999',
+            'tienBenhNhanTuTra' =>              'required|numeric|max:999999999999999',
+            'tienBenhNhanCungChiTra' =>         'required|numeric|max:999999999999999',
+            'tienBaoHiemThanhToan' =>           'required|numeric|max:999999999999999',
+            'tienNguonKhac' =>                  'required|numeric|max:999999999999999',
+            'tienBaoHiemThanhToanGoiDichVu' =>  'required|numeric|max:999999999999999',
+            'namQuyetToan' =>                   'required|string|regex:/^\d{4}$/',
+            'thangQuyetToan' =>                 'required|string|in:01,02,03,04,05,06,07,08,09,10,11,12',
+            'maLoaiKhamChuaBenh' =>             'required|string|max:2',
+            'maKhoa' =>                         'required|string|max:50',
+            'maCoSoKhamChuaBenh' =>             'required|string|max:5',
+            'maKhuVuc' =>                       'nullable|string|max:2',
+            'canNang' =>                        'required|string|max:6',
+            'canNangCon' =>                     'nullable|string|max:100',
+            'namNamLienTuc' =>                  'nullable|numeric|regex:/^\d{8}$/',
+            'ngayTaiKham' =>                    'nullable|string|max:50',
+            'maHoSoBenhAn' =>                   'required|string|max:100',
+            'maThuTruongDonVi' =>               'nullable|string|max:10',
+            'duPhong' =>                        'nullable|string',
+        ];
+        return $data;
+    }
+    public function handleCheckDBXML2($noiDungFile)
     {
         foreach ($noiDungFile as $danhSachChiTietThuoc) {
             foreach ($danhSachChiTietThuoc as $chiTietThuoc) {
@@ -222,7 +439,7 @@ class XmlService
             }
         }
     }
-    public function handleInsertDBXML3($noiDungFile)
+    public function handleCheckDBXML3($noiDungFile)
     {
         foreach ($noiDungFile as $danhSachChiTietDichVuKyThuat) {
             foreach ($danhSachChiTietDichVuKyThuat as $chiTietDichVuKyThuat) {
@@ -276,7 +493,7 @@ class XmlService
             }
         }
     }
-    public function handleInsertDBXML4($noiDungFile)
+    public function handleCheckDBXML4($noiDungFile)
     {
         foreach ($noiDungFile as $danhSachChiTietCLS) {
             foreach ($danhSachChiTietCLS as $chiTietCLS) {
@@ -295,7 +512,7 @@ class XmlService
             }
         }
     }
-    public function handleInsertDBXML5($noiDungFile)
+    public function handleCheckDBXML5($noiDungFile)
     {
         foreach ($noiDungFile as $danhSachChiTietDienBienBenh) {
             foreach ($danhSachChiTietDienBienBenh as $chiTietDienBienBenh) {
@@ -311,7 +528,7 @@ class XmlService
             }
         }
     }
-    public function handleInsertDBXML6($noiDungFile)
+    public function handleCheckDBXML6($noiDungFile)
     {
         $maLienKet = (string) $noiDungFile->MA_LK;
         $maTheBHYT = (string) $noiDungFile->MA_THE_BHYT;
@@ -361,7 +578,7 @@ class XmlService
         $maCoSoKhamChuaBenh = (string) $noiDungFile->MA_CSKCB;
         $duPhong = (string) $noiDungFile->DU_PHONG;
     }
-    public function handleInsertDBXML7($noiDungFile)
+    public function handleCheckDBXML7($noiDungFile)
     {
         $maLienKet = (string) $noiDungFile->MA_LK;
         $soLuuTru = (string) $noiDungFile->SO_LUU_TRU;
@@ -390,7 +607,7 @@ class XmlService
         $ngoaiTruDenNgay = (int) $noiDungFile->NGOAITRU_DENNGAY;
         $duPhong = (string) $noiDungFile->DU_PHONG;
     }
-    public function handleInsertDBXML8($noiDungFile)
+    public function handleCheckDBXML8($noiDungFile)
     {
         $maLienKet = (string) $noiDungFile->MA_LK;
         $maLoaiKCB = (string) $noiDungFile->MA_LOAI_KCB;
@@ -415,7 +632,7 @@ class XmlService
         $maTheTam = (string) $noiDungFile->MA_THE_TAM;
         $duPhong = (string) $noiDungFile->DU_PHONG;
     }
-    public function handleInsertDBXML9($noiDungFile)
+    public function handleCheckDBXML9($noiDungFile)
     {
         foreach ($noiDungFile as $danhSachChiTietGiayChungSinh) {
             foreach ($danhSachChiTietGiayChungSinh as $chiTietGiayChungSinh) {
@@ -457,7 +674,7 @@ class XmlService
             }
         }
     }
-    public function handleInsertDBXML10($noiDungFile)
+    public function handleCheckDBXML10($noiDungFile)
     {
         $maLienKet = (string) $noiDungFile->MA_LK;
         $soSeri = (string) $noiDungFile->SO_SERI;
@@ -473,7 +690,7 @@ class XmlService
         $ngayChungTu = (int) $noiDungFile->NGAY_CT;
         $duPhong = (string) $noiDungFile->DU_PHONG;
     }
-    public function handleInsertDBXML11($noiDungFile)
+    public function handleCheckDBXML11($noiDungFile)
     {
         $maLienKet = (string) $noiDungFile->MA_LK;
         $soChungTuTaiCSKCB = (string) $noiDungFile->SO_CT;
@@ -499,7 +716,7 @@ class XmlService
         $mauSo = (string) $noiDungFile->MAU_SO;
         $duPhong = (string) $noiDungFile->DU_PHONG;
     }
-    public function handleInsertDBXML12($noiDungFile)
+    public function handleCheckDBXML12($noiDungFile)
     {
         $nguoiChuTri = (string) $noiDungFile->NGUOI_CHU_TRI;
         $chucVu = (int) $noiDungFile->CHUC_VU;
@@ -537,7 +754,7 @@ class XmlService
         $duocXacDinh = (string) $noiDungFile->DUOC_XACDINH;
         $duPhong = (string) $noiDungFile->DU_PHONG;
     }
-    public function handleInsertDBXML13($noiDungFile)
+    public function handleCheckDBXML13($noiDungFile)
     {
         $maLienKet = (string) $noiDungFile->MA_LK;
         $soHoSo = (string) $noiDungFile->SO_HOSO;
@@ -579,7 +796,7 @@ class XmlService
         $maThuTruongDonVi = (string) $noiDungFile->MA_TTDV;
         $duPhong = (string) $noiDungFile->DU_PHONG;
     }
-    public function handleInsertDBXML14($noiDungFile)
+    public function handleCheckDBXML14($noiDungFile)
     {
         $maLienKet = (string) $noiDungFile->MA_LK;
         $soGiayHenKhamLai = (string) $noiDungFile->SO_GIAYHEN_KL;
@@ -604,7 +821,7 @@ class XmlService
         $ngayChungTu = (int) $noiDungFile->NGAY_CT;
         $duPhong = (string) $noiDungFile->DU_PHONG;
     }
-    public function handleInsertDBXML15($noiDungFile)
+    public function handleCheckDBXML15($noiDungFile)
     {
         $maLienKet = (string) $noiDungFile->MA_LK;
         $stt = (int) $noiDungFile->STT;

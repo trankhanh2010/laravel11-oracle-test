@@ -1020,11 +1020,11 @@ if (!function_exists('logError')) {
     if (!function_exists('getTyLeThanhToanTruongHopTraiTuyen')) {
         function getTyLeThanhToanTruongHopTraiTuyen(string $levelCode, float $mucHuong): float
         {
-                return match ($levelCode) {
+            return match ($levelCode) {
                 '3' => $mucHuong,                    // Tuyến huyện => hưởng 100% mức hưởng
                 '2' => round($mucHuong * 0.6, 2),    // Tuyến tỉnh => 60%
                 '1' => round($mucHuong * 0.4, 2),    // Tuyến trung ương => 40% (nếu áp dụng)
-                default => round($mucHuong * 0.6, 2),// Mặc định giả định tuyến tỉnh
+                default => round($mucHuong * 0.6, 2), // Mặc định giả định tuyến tỉnh
             };
         }
     }
@@ -1048,6 +1048,13 @@ if (!function_exists('logError')) {
 
             // Fix một số chữ viết hoa đầu câu và bổ sung hậu tố "đồng"
             return ucfirst($words) . ' đồng';
+        }
+    }
+    if (!function_exists('isEmptyXml')) {
+        function isEmptyXml($xmlField)
+        {
+            $value = trim((string) $xmlField);
+            return $value === '';
         }
     }
 }

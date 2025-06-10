@@ -4,7 +4,7 @@ return [
     // Lỗi
     'error' => [
         'required' => ' không được bỏ trống!',
-        'string' => ' phải là chuỗi tring!',
+        'string' => ' phải là chuỗi!',
         'string_max' => ' có số kí tự tối đa là :max!',
         'unique' => ' = :input đã tồn tại!',
         'exists' => ' = :input không tồn tại hoặc đang bị tạm khóa!',

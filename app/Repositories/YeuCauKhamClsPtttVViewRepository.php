@@ -157,6 +157,7 @@ class YeuCauKhamClsPtttVViewRepository
                     "xa_v_his_yeu_cau_kham_cls_pttt.PATHOLOGICAL_HISTORY", // tiền sử bệnh
                     "xa_v_his_yeu_cau_kham_cls_pttt.PATHOLOGICAL_HISTORY_FAMILY", // tiền sử bệnh gia đình
 
+                    "his_dhst.id as dhst_id",
                     "his_dhst.EXECUTE_TIME", // thời gian
                     "his_dhst.PULSE",
                     "his_dhst.BLOOD_PRESSURE_MAX",
