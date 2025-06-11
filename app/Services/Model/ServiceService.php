@@ -26,13 +26,31 @@ class ServiceService
     public function handleDataBaseSearch()
     {
         try {
-            $data = $this->serviceRepository->applyJoins();
+            if ($this->params->tab == 'chiDinhDichVuKyThuat') {
+                $data = $this->serviceRepository->applyJoinsDichVuChiDinh();
+            } else {
+                $data = $this->serviceRepository->applyJoinsDichVuChiDinh();
+            }
             $data = $this->serviceRepository->applyKeywordFilter($data, $this->params->keyword);
             $data = $this->serviceRepository->applyIsActiveFilter($data, $this->params->isActive);
             $data = $this->serviceRepository->applyServiceTypeIdFilter($data, $this->params->serviceTypeId);
-            $count = $data->count();
-            $data = $this->serviceRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+            $data = $this->serviceRepository->applyServiceGroupIdsFilter($data, $this->params->serviceGroupIds);
+            $data = $this->serviceRepository->applyTabFilter($data, $this->params->tab);
+            $count = null;
+            if ($this->params->tab == 'chiDinhDichVuKyThuat') {
+                $orderBy = [
+                    'service_type_name' => 'asc',
+                    'service_name' => 'asc',
+                ];
+                $orderByJoin = ['service_type_name'];
+                $data = $this->serviceRepository->applyOrdering($data, $orderBy, $orderByJoin);
+            } else {
+                $data = $this->serviceRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+            }
             $data = $this->serviceRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+            if ($this->params->tab == 'chiDinhDichVuKyThuat') {
+                $data = $this->serviceRepository->buildTreeGroupByServiceTypeName($data);
+            }
             return ['data' => $data, 'count' => $count];
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['service'], $e);
@@ -40,12 +58,30 @@ class ServiceService
     }
     private function getAllDataFromDatabase()
     {
-        $data = $this->serviceRepository->applyJoins();
+        if ($this->params->tab == 'chiDinhDichVuKyThuat') {
+            $data = $this->serviceRepository->applyJoinsDichVuChiDinh();
+        } else {
+            $data = $this->serviceRepository->applyJoinsDichVuChiDinh();
+        }
         $data = $this->serviceRepository->applyIsActiveFilter($data, $this->params->isActive);
         $data = $this->serviceRepository->applyServiceTypeIdFilter($data, $this->params->serviceTypeId);
-        $count = $data->count();
-        $data = $this->serviceRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->serviceRepository->applyServiceGroupIdsFilter($data, $this->params->serviceGroupIds);
+        $data = $this->serviceRepository->applyTabFilter($data, $this->params->tab);
+        $count = null;
+        if ($this->params->tab == 'chiDinhDichVuKyThuat') {
+            $orderBy = [
+                'service_type_name' => 'asc',
+                'service_name' => 'asc',
+            ];
+            $orderByJoin = ['service_type_name'];
+            $data = $this->serviceRepository->applyOrdering($data, $orderBy, $orderByJoin);
+        } else {
+            $data = $this->serviceRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        }
         $data = $this->serviceRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        if ($this->params->tab == 'chiDinhDichVuKyThuat') {
+            $data = $this->serviceRepository->buildTreeGroupByServiceTypeName($data);
+        }
         return ['data' => $data, 'count' => $count];
     }
     private function getDataById($id)

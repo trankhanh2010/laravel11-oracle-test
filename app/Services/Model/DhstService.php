@@ -60,6 +60,7 @@ class DhstService
         $data = $this->dhstRepository->applyOrdering($data, $orderBy, []);
         if ($this->params->tab == 'chieuCaoCanNangMoiNhat') {
             $data = $data->first();
+            $data ['xepLoaiBMI'] = xepLoaiBMI($data->virBmi);
         } else {
             $data = $this->dhstRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
         }

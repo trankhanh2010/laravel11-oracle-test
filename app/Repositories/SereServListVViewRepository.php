@@ -18,30 +18,30 @@ class SereServListVViewRepository
     {
         return $this->sereServListVView
             ->select([
-                "id",     
-                "is_no_execute",
-                "is_delete",
-                "amount",
-                "service_req_id",
-                "service_code",
-                "service_name",
-                "service_unit_name",
-                "service_req_code",
-                "treatment_id",
-                "tracking_id",
-                "intruction_time",
-                "intruction_date",
-                "vir_intruction_month",
-                "patient_type_name",
-                "request_department_name",
-                "department_name",
-                "tutorial",
-                "tracking_creator",
-                "service_type_code",
-                "service_type_name",
-                "service_req_stt_code",
-                "service_req_stt_name",
-                "patient_code",
+                "xa_v_his_sere_serv_list.id",     
+                "xa_v_his_sere_serv_list.is_no_execute",
+                "xa_v_his_sere_serv_list.is_delete",
+                "xa_v_his_sere_serv_list.amount",
+                "xa_v_his_sere_serv_list.service_req_id",
+                "xa_v_his_sere_serv_list.service_code",
+                "xa_v_his_sere_serv_list.service_name",
+                "xa_v_his_sere_serv_list.service_unit_name",
+                "xa_v_his_sere_serv_list.service_req_code",
+                "xa_v_his_sere_serv_list.treatment_id",
+                "xa_v_his_sere_serv_list.tracking_id",
+                "xa_v_his_sere_serv_list.intruction_time",
+                "xa_v_his_sere_serv_list.intruction_date",
+                "xa_v_his_sere_serv_list.vir_intruction_month",
+                "xa_v_his_sere_serv_list.patient_type_name",
+                "xa_v_his_sere_serv_list.request_department_name",
+                "xa_v_his_sere_serv_list.department_name",
+                "xa_v_his_sere_serv_list.tutorial",
+                "xa_v_his_sere_serv_list.tracking_creator",
+                "xa_v_his_sere_serv_list.service_type_code",
+                "xa_v_his_sere_serv_list.service_type_name",
+                "xa_v_his_sere_serv_list.service_req_stt_code",
+                "xa_v_his_sere_serv_list.service_req_stt_name",
+                "xa_v_his_sere_serv_list.patient_code",
             ]);
     }
     public function applyJoinsDichVuYeuCau()
@@ -186,7 +186,12 @@ class SereServListVViewRepository
     public function applyServiceIdsFilter($query, $param)
     {
         if ($param != null) {
-            $query->whereIn(('xa_v_his_sere_serv_list.service_id'), $param);
+            $query->leftJoin('v_his_room request_room', 'request_room.id', '=', 'xa_v_his_sere_serv_list.request_room_id')
+            ->addSelect([
+                'request_room.room_code as request_room_code',
+                'request_room.room_name as request_room_name',
+                ])
+            ->whereIn(('xa_v_his_sere_serv_list.service_id'), $param);
         }
         return $query;
     }

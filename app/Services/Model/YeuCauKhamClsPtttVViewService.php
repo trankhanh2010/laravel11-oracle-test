@@ -285,6 +285,7 @@ class YeuCauKhamClsPtttVViewService
             $dataDotKhamHienTai = [];
             $dataDiUngThuoc = [];
             if($duLieu){
+                $duLieu['xepLoaiBMI'] = xepLoaiBMI($duLieu->virBmi);
                 $dataLichSuKham = $this->getDataLichSuKham($duLieu->patient_id, $duLieu->treatment_id);
                 $dataDotKhamHienTai = $this->getDataDotKhamHienTai($duLieu->treatment_id);
                 $dataDiUngThuoc = $this->getDataDiUngThuoc($duLieu->patient_id);

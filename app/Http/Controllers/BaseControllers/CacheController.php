@@ -49,6 +49,7 @@ class CacheController extends BaseApiCacheController
                 "repay_reason",
                 "fund",
                 "service_paty",
+                "service",
             ];
         }
         // Nếu xóa theo param

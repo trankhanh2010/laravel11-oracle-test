@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Jobs\ElasticSearch\Index\ProcessElasticIndexingJob;
 use App\Models\HIS\Service;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class ServiceRepository
 {
@@ -77,6 +78,43 @@ class ServiceRepository
                 'default_patient_type.patient_type_name as default_patient_type_name',
             );
     }
+    public function applyJoinsDichVuChiDinh()
+    {
+        return $this->service
+            ->leftJoin('his_service_type as service_type', 'service_type.id', '=', 'his_service.service_type_id')
+            ->leftJoin('his_service as parent', 'parent.id', '=', 'his_service.parent_id')
+            ->leftJoin('his_pttt_group as pttt_group', 'pttt_group.id', '=', 'his_service.pttt_group_id')
+            ->leftJoin('his_package_detail as package_detail', function ($join) {
+                $join->on('package_detail.package_id', '=', 'his_service.package_id')
+                    ->on('package_detail.service_id', '=', 'his_service.id');
+            })
+            ->select(
+                'his_service.id as key',
+                'his_service.id',
+                'his_service.service_code',
+                'his_service.HEIN_SERVICE_BHYT_CODE',
+                'his_service.service_name',
+
+                'pttt_group.pttt_group_code',
+                'pttt_group.pttt_group_name',
+
+                'his_service.NOTICE',
+                'his_service.IS_ALLOW_EXPEND', // cho phép tích hao phí
+                'his_service.IS_OUT_PARENT_FEE',
+
+                'package_detail.AMOUNT  as package_detail_AMOUNT',
+                'his_service.DO_NOT_USE_BHYT', // không cho hưởng bhyt khi chỉ định từ phòng khám
+
+                'service_type.service_type_code',
+                'service_type.service_type_name',
+
+                'his_service.parent_id',
+                'parent.service_code as parent_service_code',
+                'parent.service_name as parent_service_name',
+
+                'his_service.is_leaf',
+            );
+    }
     public function applyKeywordFilter($query, $keyword)
     {
         return $query->where(function ($query) use ($keyword) {
@@ -98,6 +136,73 @@ class ServiceRepository
         }
         return $query;
     }
+    public function applyTabFilter($query, $param)
+    {
+        switch ($param) {
+            case 'chiDinhDichVuKyThuat':
+                $query->whereIn('service_type.service_type_code', ['HA', 'GI', 'CL', 'KH', 'NS', 'PT', 'SA', 'CN', 'TT', 'XN'])
+                    ->where('his_service.is_active', 1)
+                    ->where('his_service.is_delete', 0);
+                return $query;
+            default:
+                return $query;
+        }
+    }
+    public function applyServiceGroupIdsFilter($query, $param)
+    {
+        if ($param != null) {
+            $query->join('his_serv_segr as serv_segr', 'serv_segr.service_id', '=', 'his_service.id')
+                ->whereIn('serv_segr.service_group_id', (array) $param);
+        }
+        return $query;
+    }
+    public function buildTreeGroupByServiceTypeName($collection)
+    {
+        // Nhóm theo serviceTypeName
+        $grouped = $collection->groupBy('service_type_name');
+
+        $result = collect();
+
+        foreach ($grouped as $typeName => $group) {
+            // Duyệt từng nhóm và build cây theo parent_id
+            $tree = $this->buildTreeByParentId($group);
+
+            $result->push([
+                'serviceTypeName' => $typeName,
+                'children' => $tree,
+            ]);
+        }
+
+        return $result;
+    }
+    public function buildTreeByParentId($collection)
+    {
+        // nhóm đệ qui
+        $items = $collection->keyBy('id');
+        $tree = collect();
+
+        foreach ($items as $item) {
+            if (empty($item->parent_id) && ($item->is_leaf == null)) {
+                $tree->push($item);
+            } else {
+                $parentId = $item->parent_id;
+                if ($items->has($parentId) && ($items[$parentId]->is_leaf == null)) {
+                    // Gán children object-style
+                    $items[$parentId]->children ??= collect();
+                    $items[$parentId]->children->push($item);
+
+                    // Gán children trống nếu k phải là lá
+                    if ($item->is_leaf == null) {
+                        $item->children = collect();
+                    }
+                }
+            }
+        }
+
+        return $tree;
+    }
+
+
     public function applyOrdering($query, $orderBy, $orderByJoin)
     {
         if ($orderBy != null) {

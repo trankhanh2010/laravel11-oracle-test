@@ -28,6 +28,7 @@ class SereServListVViewDTO
     public $param;
     public $noCache;
     public $treatmentCode;
+    public $serviceIds;
 
     public function __construct(
         $sereServListVViewName,
@@ -54,6 +55,7 @@ class SereServListVViewDTO
         $param,
         $noCache,
         $treatmentCode,
+        $serviceIds,
         )
     {
         $this->sereServListVViewName = $sereServListVViewName;
@@ -80,5 +82,6 @@ class SereServListVViewDTO
         $this->param = $param;
         $this->noCache = $noCache;
         $this->treatmentCode = $treatmentCode;
+        $this->serviceIds = $serviceIds;
     }
 }

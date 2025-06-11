@@ -32,6 +32,8 @@ SELECT
      sere_serv.service_req_id,
      sere_serv.exp_mest_medicine_id,
      sere_serv.service_id,
+     service_req.execute_room_id,
+     service_req.request_room_id,
      service.service_code,
      service.service_name,
      service_unit.service_unit_code,

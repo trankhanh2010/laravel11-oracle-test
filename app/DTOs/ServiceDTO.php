@@ -20,6 +20,9 @@ class ServiceDTO
     public $serviceTypeId;
     public $param;
     public $noCache;
+    public $groupBy;
+    public $tab;
+    public $serviceGroupIds;
     public function __construct(
         $serviceName,
         $keyword, 
@@ -37,6 +40,9 @@ class ServiceDTO
         $serviceTypeId,
         $param,
         $noCache,
+        $groupBy,
+        $tab,
+        $serviceGroupIds,
         )
     {
         $this->serviceName = $serviceName;
@@ -55,5 +61,8 @@ class ServiceDTO
         $this->serviceTypeId = $serviceTypeId;
         $this->param = $param;
         $this->noCache = $noCache;
+        $this->groupBy = $groupBy;
+        $this->tab = $tab;
+        $this->serviceGroupIds = $serviceGroupIds;
     }
 }

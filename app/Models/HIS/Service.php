@@ -269,4 +269,9 @@ class Service extends Model
     {
         return PatientType::whereIn('id', explode(',', $this->min_proc_time_except_paty_ids))->get();
     }
+
+    public function serv_segr()
+    {
+        return $this->hasMany(ServSegr::class);
+    }
 }

@@ -53,6 +53,7 @@ class SereServListVViewController extends BaseApiCacheController
             $this->param,
             $this->noCache,
             $this->treatmentCode,
+            $this->serviceIds,
         );
         $this->sereServListVViewService->withParams($this->sereServListVViewDTO);
     }

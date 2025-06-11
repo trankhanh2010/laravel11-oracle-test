@@ -33,6 +33,7 @@ class SereServListVViewService
             $data = $this->sereServListVViewRepository->applyServiceReqIsNoExecuteFilter($data);
             $data = $this->sereServListVViewRepository->applyTrackingIdFilter($data, $this->params->trackingId);
             $data = $this->sereServListVViewRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
+            $data = $this->sereServListVViewRepository->applyServiceIdsFilter($data, $this->params->serviceIds);
             $data = $this->sereServListVViewRepository->applyPatientCodeFilter($data, $this->params->patientCode);
             $data = $this->sereServListVViewRepository->applyServiceTypeCodesFilter($data, $this->params->serviceTypeCodes);
             $data = $this->sereServListVViewRepository->applyServiceReqIdFilter($data, $this->params->serviceReqId);
@@ -57,6 +58,7 @@ class SereServListVViewService
         $data = $this->sereServListVViewRepository->applyServiceReqIsNoExecuteFilter($data);
         $data = $this->sereServListVViewRepository->applyTrackingIdFilter($data, $this->params->trackingId);
         $data = $this->sereServListVViewRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
+        $data = $this->sereServListVViewRepository->applyServiceIdsFilter($data, $this->params->serviceIds);
         $data = $this->sereServListVViewRepository->applyPatientCodeFilter($data, $this->params->patientCode);
         $data = $this->sereServListVViewRepository->applyServiceTypeCodesFilter($data, $this->params->serviceTypeCodes);
         $data = $this->sereServListVViewRepository->applyServiceReqIdFilter($data, $this->params->serviceReqId);

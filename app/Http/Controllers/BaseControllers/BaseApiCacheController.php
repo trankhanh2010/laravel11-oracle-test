@@ -63,6 +63,8 @@ class BaseApiCacheController extends Controller
     protected $idsName = 'Ids';
     protected $documentIds;
     protected $documentIdsName = 'DocumentIds';
+    protected $serviceGroupIds;
+    protected $serviceGroupIdsName = 'ServiceGroupIds';
     protected $testIndexIds;
     protected $testIndexIdsName = 'TestIndexIds';
     protected $executeRoomIds;
@@ -1599,6 +1601,17 @@ class BaseApiCacheController extends Controller
         }
         if ($this->treatmentTypeIds != null) {
             $this->treatmentTypeIdsString = arrayToCustomStringNotKey($this->treatmentTypeIds);
+        }
+
+        $this->serviceGroupIds = $this->paramRequest['ApiData']['ServiceGroupIds'] ?? null;
+        if ($this->serviceGroupIds != null) {
+            foreach ($this->serviceGroupIds as $key => $item) {
+                // Kiểm tra xem ID có tồn tại trong bảng  hay không
+                if (!is_numeric($item)) {
+                    $this->errors[$this->serviceGroupIdsName] = $this->messFormat;
+                    unset($this->serviceGroupIds[$key]);
+                } 
+            }
         }
 
         $this->patientClassifyIds = $this->paramRequest['ApiData']['PatientClassifyIds'] ?? null;

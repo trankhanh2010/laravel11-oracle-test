@@ -1057,4 +1057,16 @@ if (!function_exists('logError')) {
             return $value === '';
         }
     }
+
+    if (!function_exists('xepLoaiBMI')) {
+        function xepLoaiBMI($bmi = 0)
+        {
+            if ($bmi < 18.5) return 'Gầy';
+            if ($bmi < 25) return 'Bình thường';
+            if ($bmi < 30) return 'Thừa cân';
+            if ($bmi < 35) return 'Béo phì độ I';
+            if ($bmi < 40) return 'Béo phì độ II';
+            return 'Béo phì độ III';
+        }
+    }
 }
