@@ -62,6 +62,7 @@ class ServicePatyController extends BaseApiCacheController
             $this->effective,
             $this->param,
             $this->noCache,
+            $this->tab,
         );
         $this->servicePatyService->withParams($this->servicePatyDTO);
     }

@@ -2,9 +2,9 @@
 
 namespace App\DTOs;
 
-class ServicePatyDTO
+class TreatmentEndTypeExtDTO
 {
-    public $servicePatyName;
+    public $treatmentEndTypeExtName;
     public $keyword;
     public $isActive;
     public $orderBy;
@@ -17,16 +17,10 @@ class ServicePatyDTO
     public $appCreator;
     public $appModifier;
     public $time;
-    public $serviceTypeIds;
-    public $patientTypeIds;
-    public $serviceId;
-    public $packageId;
-    public $effective;
     public $param;
     public $noCache;
-    public $tab;
     public function __construct(
-        $servicePatyName,
+        $treatmentEndTypeExtName,
         $keyword, 
         $isActive, 
         $orderBy, 
@@ -39,17 +33,11 @@ class ServicePatyDTO
         $appCreator,
         $appModifier,
         $time,
-        $serviceTypeIds,
-        $patientTypeIds,
-        $serviceId,
-        $packageId,
-        $effective,
         $param,
         $noCache,
-        $tab,
         )
     {
-        $this->servicePatyName = $servicePatyName;
+        $this->treatmentEndTypeExtName = $treatmentEndTypeExtName;
         $this->keyword = $keyword;
         $this->isActive = $isActive;
         $this->orderBy = $orderBy;
@@ -62,13 +50,7 @@ class ServicePatyDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
-        $this->serviceTypeIds = $serviceTypeIds;
-        $this->patientTypeIds = $patientTypeIds;
-        $this->serviceId = $serviceId;
-        $this->packageId = $packageId;
-        $this->effective= $effective;
         $this->param = $param;
         $this->noCache = $noCache;
-        $this->tab = $tab;
     }
 }

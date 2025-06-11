@@ -48,6 +48,7 @@ class CacheController extends BaseApiCacheController
                 "speed_unit",
                 "repay_reason",
                 "fund",
+                "service_paty",
             ];
         }
         // Nếu xóa theo param

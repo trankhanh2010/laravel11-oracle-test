@@ -87,6 +87,29 @@ class ServicePatyRepository
         }
         return $query;
     }
+    public function applyTabFilter($query, $param)
+    {
+        switch ($param) {
+            case 'selectDTTT':
+                $query->select([
+                    'his_service_paty.patient_type_id',
+                    'patient_type.patient_type_code',
+                    'patient_type.patient_type_name',
+                ])->distinct();
+                return $query;
+            case 'selectDTPT':
+                $query->select([
+                    'his_service_paty.patient_type_id',
+                    'patient_type.patient_type_code',
+                    'patient_type.patient_type_name',
+                ])
+                ->where('patient_type.IS_ADDITION', 1)
+                ->distinct();
+                return $query;
+            default:
+                return $query;
+        }
+    }
     public function applyPackageIdFilter($query, $id)
     {
         if ($id !== null) {

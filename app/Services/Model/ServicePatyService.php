@@ -33,6 +33,7 @@ class ServicePatyService
             $data = $this->servicePatyRepository->applyPatientTypeIdsFilter($data, $this->params->patientTypeIds);
             $data = $this->servicePatyRepository->applyServiceIdFilter($data, $this->params->serviceId);
             $data = $this->servicePatyRepository->applyPackageIdFilter($data, $this->params->packageId);
+            $data = $this->servicePatyRepository->applyTabFilter($data, $this->params->tab);
             $data = $this->servicePatyRepository->applyEffectiveFilter($data, $this->params->effective);
             $count = $data->count();
             $data = $this->servicePatyRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
@@ -50,6 +51,7 @@ class ServicePatyService
         $data = $this->servicePatyRepository->applyPatientTypeIdsFilter($data, $this->params->patientTypeIds);
         $data = $this->servicePatyRepository->applyServiceIdFilter($data, $this->params->serviceId);
         $data = $this->servicePatyRepository->applyPackageIdFilter($data, $this->params->packageId);
+        $data = $this->servicePatyRepository->applyTabFilter($data, $this->params->tab);
         $data = $this->servicePatyRepository->applyEffectiveFilter($data, $this->params->effective);
         $count = $data->count();
         $data = $this->servicePatyRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);

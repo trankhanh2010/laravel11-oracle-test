@@ -171,6 +171,7 @@ use App\Http\Controllers\Api\CacheControllers\TestIndexGroupController;
 use App\Http\Controllers\Api\CacheControllers\TranPatiFormController;
 use App\Http\Controllers\Api\TransactionControllers\TransactionTamUngController;
 use App\Http\Controllers\Api\CacheControllers\TransactionTypeController;
+use App\Http\Controllers\Api\CacheControllers\TreatmentEndTypeExtController;
 use App\Http\Controllers\Api\CacheControllers\TreatmentResultController;
 use App\Http\Controllers\Api\CacheControllers\VaccineTypeController;
 use App\Http\Controllers\Api\NoCacheControllers\AccountBookVViewController;
@@ -1257,4 +1258,6 @@ Route::group([
     Route::apiResource('v1/next-trea-intr', NextTreaIntrController::class)->only(['index', 'show']);
     /// Xếp loại khám sức khỏe
     Route::apiResource('v1/health-exam-rank', HealthExamRankController::class)->only(['index', 'show']);
+    /// Thông tin bổ sung
+    Route::apiResource('v1/treatment-end-type-ext', TreatmentEndTypeExtController::class)->only(['index']);
 });

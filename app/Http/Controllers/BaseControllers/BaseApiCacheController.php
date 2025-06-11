@@ -351,6 +351,8 @@ class BaseApiCacheController extends Controller
     protected $treatmentTypeName = "treatment_type";
     protected $mediOrg;
     protected $mediOrgName = "medi_org";
+    protected $treatmentEndTypeExt;
+    protected $treatmentEndTypeExtName = 'treatment_end_type_ext';
     protected $testIndexGroup;
     protected $testIndexGroupName = 'test_index_group';
     protected $branch;
