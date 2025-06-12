@@ -19,6 +19,9 @@ class ExecuteRoomDTO
     public $time;
     public $param;
     public $noCache;
+    public $cungKhoa;
+    public $cungCoSo;
+    public $roomId;
     public function __construct(
         $executeRoomName,
         $keyword, 
@@ -35,6 +38,9 @@ class ExecuteRoomDTO
         $time,
         $param,
         $noCache,
+        $cungKhoa,
+        $cungCoSo,
+        $roomId,
         )
     {
         $this->executeRoomName = $executeRoomName;
@@ -52,5 +58,8 @@ class ExecuteRoomDTO
         $this->time = $time;
         $this->param = $param;
         $this->noCache = $noCache;
+        $this->cungKhoa = $cungKhoa;
+        $this->cungCoSo = $cungCoSo;
+        $this->roomId = $roomId;
     }
 }

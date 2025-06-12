@@ -3,15 +3,32 @@
 namespace App\Repositories;
 
 use App\Jobs\ElasticSearch\Index\ProcessElasticIndexingJob;
+use App\Models\HIS\PatientType;
 use App\Models\HIS\ServicePaty;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Redis;
 
 class ServicePatyRepository
 {
     protected $servicePaty;
-    public function __construct(ServicePaty $servicePaty)
+    protected $patientType;
+    protected $patientTypeVienPhiId;
+
+    public function __construct(
+        ServicePaty $servicePaty,
+        )
     {
         $this->servicePaty = $servicePaty;
+        $this->patientType = new PatientType();
+        $cacheKeySet = "cache_keys:" . "setting"; // Set để lưu danh sách key
+        $cacheKey = 'patient_type_vien_phi_id';
+        $this->patientTypeVienPhiId = Cache::remember($cacheKey, now()->addMinutes(10080), function () {
+            $data = $this->patientType->where('patient_type_code', '02')->get();
+            return $data->value('id');
+        });
+        // Lưu key vào Redis Set để dễ xóa sau này
+        Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
     }
 
     public function applyJoins()
@@ -205,6 +222,9 @@ class ServicePatyRepository
             ->orderBy('from_time', 'desc')
             ->first();
         return $data;
+    }
+    public function getDonGiaVienPhi($serviceId, $inTime){
+        return $this->getActivePriceByServieIdPatientTypeId($serviceId, $this->patientTypeVienPhiId, $inTime);
     }
     public function create($request, $time, $appCreator, $appModifier, $branchId, $patientTypeId)
     {

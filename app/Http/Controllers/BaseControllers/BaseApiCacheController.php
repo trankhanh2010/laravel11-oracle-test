@@ -253,6 +253,10 @@ class BaseApiCacheController extends Controller
     protected $patientTypeAllowIdName = 'PatientTypeAllowId';
     protected $activeIngredientId;
     protected $activeIngredientIdName = 'ActiveIngredientId';
+    protected $cungKhoa;
+    protected $cungKhoaName = 'CungKhoa';
+    protected $cungCoSo;
+    protected $cungCoSoName = 'CungCoSo';
     protected $testServiceTypeId;
     protected $testServiceTypeIdName = 'TestServiceTypeId';
     protected $treatmentId;
@@ -1849,6 +1853,20 @@ class BaseApiCacheController extends Controller
             if (!is_bool($this->isClinical)) {
                 $this->errors[$this->isClinicalName] = $this->messFormat;
                 $this->isClinical = null;
+            }
+        }
+        $this->cungKhoa = $this->paramRequest['ApiData']['CungKhoa'] ?? null;
+        if ($this->cungKhoa !== null) {
+            if (!is_bool($this->cungKhoa)) {
+                $this->errors[$this->cungKhoaName] = $this->messFormat;
+                $this->cungKhoa = null;
+            }
+        }
+        $this->cungCoSo = $this->paramRequest['ApiData']['CungCoSo'] ?? null;
+        if ($this->cungCoSo !== null) {
+            if (!is_bool($this->cungCoSo)) {
+                $this->errors[$this->cungCoSoName] = $this->messFormat;
+                $this->cungCoSo = null;
             }
         }
         $this->isCoTreatDepartment = $this->paramRequest['ApiData']['IsCoTreatDepartment'] ?? null;

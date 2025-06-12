@@ -29,6 +29,8 @@ class ExecuteRoomService
             $data = $this->executeRoomRepository->applyJoins();
             $data = $this->executeRoomRepository->applyKeywordFilter($data, $this->params->keyword);
             $data = $this->executeRoomRepository->applyIsActiveFilter($data, $this->params->isActive);
+            $data = $this->executeRoomRepository->applyCungKhoaFilter($data, $this->params->cungKhoa, $this->params->roomId);
+            $data = $this->executeRoomRepository->applyCungCoSoFilter($data, $this->params->cungCoSo, $this->params->roomId);
             $count = $data->count();
             $data = $this->executeRoomRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
             $data = $this->executeRoomRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
@@ -41,6 +43,8 @@ class ExecuteRoomService
     {
         $data = $this->executeRoomRepository->applyJoins();
         $data = $this->executeRoomRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $this->executeRoomRepository->applyCungKhoaFilter($data, $this->params->cungKhoa, $this->params->roomId);
+        $data = $this->executeRoomRepository->applyCungCoSoFilter($data, $this->params->cungCoSo, $this->params->roomId);
         $count = $data->count();
         $data = $this->executeRoomRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
         $data = $this->executeRoomRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);

@@ -7,7 +7,7 @@ use App\Http\Controllers\BaseControllers\BaseApiCacheController;
 use App\Http\Requests\ServicePaty\CreateServicePatyRequest;
 use App\Http\Requests\ServicePaty\UpdateServicePatyRequest;
 use App\Models\HIS\ServicePaty;
-use App\Services\Elastic\ElasticsearchService;
+use App\Models\HIS\Treatment;
 use App\Services\Model\ServicePatyService;
 use Illuminate\Http\Request;
 
@@ -16,12 +16,17 @@ class ServicePatyController extends BaseApiCacheController
 {
     protected $servicePatyService;
     protected $servicePatyDTO;
-    public function __construct(Request $request, ElasticsearchService $elasticSearchService, ServicePatyService $servicePatyService, ServicePaty $servicePaty)
-    {
+    protected $treatment;
+    public function __construct(
+        Request $request,
+        ServicePatyService $servicePatyService,
+        ServicePaty $servicePaty,
+        Treatment $treatment,
+    ) {
         parent::__construct($request); // Gọi constructor của BaseController
-        $this->elasticSearchService = $elasticSearchService;
         $this->servicePatyService = $servicePatyService;
         $this->servicePaty = $servicePaty;
+        $this->treatment = $treatment;
         // Kiểm tra tên trường trong bảng
         if ($this->orderBy != null) {
             $this->orderByJoin = [
@@ -71,19 +76,23 @@ class ServicePatyController extends BaseApiCacheController
         if ($this->checkParam()) {
             return $this->checkParam();
         }
-        $keyword = $this->keyword;
-        if (($keyword != null || $this->elasticSearchType != null) && !$this->cache) {
-            if ($this->elasticSearchType != null) {
-                $data = $this->elasticSearchService->handleElasticSearchSearch($this->servicePatyName);
-            } else {
-                $data = $this->servicePatyService->handleDataBaseSearch();
+        if ($this->tab == 'donGiaVienPhi') {
+            if (!$this->serviceId) {
+                $this->errors[$this->serviceIdName] = "Thiếu dịch vụ chỉ định!";
             }
+            if (!$this->treatmentId) {
+                $this->errors[$this->treatmentIdName] = "Thiếu lần điều trị!";
+            }
+            $treatmentData = $this->treatment->find($this->treatmentId);
+            if (!$treatmentData) {
+                $this->errors[$this->treatmentIdName] = "Không tìm thấy lần điều trị!";
+            }
+            if ($this->checkParam()) {
+                return $this->checkParam();
+            }
+            $data = $this->servicePatyService->getDonGiaVienPhi($this->serviceId, $treatmentData->in_time);
         } else {
-            if ($this->elastic) {
-                $data = $this->elasticSearchService->handleElasticSearchGetAll($this->servicePatyName);
-            } else {
-                $data = $this->servicePatyService->handleDataBaseGetAll();
-            }
+            $data = $this->servicePatyService->handleDataBaseGetAll();
         }
         $paramReturn = [
             $this->getAllName => $this->getAll,
@@ -108,11 +117,7 @@ class ServicePatyController extends BaseApiCacheController
                 return $validationError;
             }
         }
-        if ($this->elastic) {
-            $data = $this->elasticSearchService->handleElasticSearchGetWithId($this->servicePatyName, $id);
-        } else {
-            $data = $this->servicePatyService->handleDataBaseGetWithId($id);
-        }
+        $data = $this->servicePatyService->handleDataBaseGetWithId($id);
         $paramReturn = [
             $this->idName => $id,
             $this->isActiveName => $this->isActive,

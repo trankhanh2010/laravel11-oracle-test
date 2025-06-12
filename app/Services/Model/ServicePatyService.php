@@ -170,4 +170,13 @@ class ServicePatyService
             return writeAndThrowError(config('params')['db_service']['error']['service_paty'], $e);
         }
     }
+    public function getDonGiaVienPhi($serviceId, $inTime)
+    {
+        try {
+            $data = $this->servicePatyRepository->getDonGiaVienPhi($serviceId, $inTime);
+            return ['data' => $data, 'count' => null];
+        } catch (\Throwable $e) {
+            return writeAndThrowError(config('params')['db_service']['error']['service_paty'], $e);
+        }
+    }
 }

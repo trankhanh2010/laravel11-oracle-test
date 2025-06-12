@@ -22,6 +22,7 @@ class ExecuteRoomRepository
         return $this->executeRoom
             ->leftJoin('his_room as room', 'room.id', '=', 'his_execute_room.room_id')
             ->leftJoin('his_department as department', 'department.id', '=', 'room.department_id')
+            ->leftJoin('his_branch as branch', 'department.branch_id', '=', 'branch.id')
             ->leftJoin('his_area as area', 'area.id', '=', 'room.area_id')
             ->leftJoin('his_room_group as room_group', 'room_group.id', '=', 'room.room_group_id')
             ->leftJoin('his_room_type as room_type', 'room_type.id', '=', 'room.room_type_id')
@@ -66,6 +67,30 @@ class ExecuteRoomRepository
     {
         if ($isActive !== null) {
             $query->where(DB::connection('oracle_his')->raw('his_execute_room.is_active'), $isActive);
+        }
+
+        return $query;
+    }
+    public function applyCungKhoaFilter($query, $param, $roomId)
+    {
+        if ($param != null) {
+            if($param){
+                $departmentId = $this->room->where('his_room.id', $roomId)->first()->department_id??0;
+                $query->where(DB::connection('oracle_his')->raw('department.id'), $departmentId);
+            }
+        }
+
+        return $query;
+    }
+    public function applyCungCoSoFilter($query, $param, $roomId)
+    {
+        if ($param != null) {
+            if($param){
+                $branchId = $this->room->where('his_room.id', $roomId)            
+                ->leftJoin('his_department as department', 'department.id', '=', 'his_room.department_id')
+                ->first()->branch_id??0;
+                $query->where(DB::connection('oracle_his')->raw('branch.id'), $branchId);
+            }
         }
 
         return $query;

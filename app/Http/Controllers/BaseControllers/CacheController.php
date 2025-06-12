@@ -50,6 +50,7 @@ class CacheController extends BaseApiCacheController
                 "fund",
                 "service_paty",
                 "service",
+                "execute_room",
             ];
         }
         // Nếu xóa theo param

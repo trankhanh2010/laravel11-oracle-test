@@ -8,7 +8,9 @@ use Illuminate\Support\Facades\DB;
 class DepartmentRepository
 {
     protected $department;
-    public function __construct(Department $department)
+    public function __construct(
+        Department $department,
+        )
     {
         $this->department = $department;
     }
