@@ -4,15 +4,35 @@ namespace App\Repositories;
 
 use App\Jobs\ElasticSearch\Index\ProcessElasticIndexingJob;
 use App\Models\HIS\Service;
+use App\Models\HIS\ServiceGroup;
+use App\Models\HIS\ServicePaty;
+use App\Models\HIS\ServiceRoom;
+use App\Models\HIS\ServSegr;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class ServiceRepository
 {
     protected $service;
-    public function __construct(Service $service)
-    {
+    protected $servicePaty;
+    protected $servSegr;
+    protected $serviceGroup;
+    protected $serviceRoom;
+    public function __construct(
+        Service $service,
+        ServicePaty $servicePaty,
+        ServSegr $servSegr,
+        ServiceGroup $serviceGroup,
+        ServiceRoom $serviceRoom,
+    ) {
         $this->service = $service;
+        $this->servicePaty = $servicePaty;
+        $this->servSegr = $servSegr;
+        $this->serviceGroup = $serviceGroup;
+        $this->serviceRoom = $serviceRoom;
     }
 
     public function applyJoins()
@@ -156,6 +176,90 @@ class ServiceRepository
         }
         return $query;
     }
+    public function checkServiceGroupIds($servicePatyIds)
+    {
+        $data = [
+            'servicePatyIds' => $servicePatyIds,
+        ];
+        $rules = [];
+
+        $validator = Validator::make($data, $rules);
+        $validator->after(function ($validator) use ($servicePatyIds) {
+            foreach ($servicePatyIds as $index => $value) {
+                $name = $this->serviceGroup->find($value)->service_group_name ?? '';
+                $serviceIds = $this->servSegr->where('service_group_id', $value)->pluck('service_id')->toArray();
+                if(!$serviceIds){
+                        $validator->errors()->add("servicePatyIds", "Nhóm dịch vụ $name không chứa dịch vụ nào!");
+                }else{
+                    $exitServicePaty = $this->servicePaty
+                    ->whereIn('service_id', $serviceIds)
+                    ->where('is_active', 1)
+                    ->where('is_delete', 0)
+                    ->exists(); 
+                    if(!$exitServicePaty){
+                        $validator->errors()->add("servicePatyIds", "Nhóm dịch vụ $name chứa các dịch vụ không tồn tại chính sách giá!");
+                    }
+
+                    $exitServiceRoom = $this->serviceRoom
+                    ->whereIn('service_id', $serviceIds)
+                    ->where('is_active', 1)
+                    ->where('is_delete', 0)
+                    ->exists(); 
+                    if(!$exitServiceRoom){
+                        $validator->errors()->add("servicePatyIds", "Nhóm dịch vụ $name chứa các dịch vụ không tồn tại cấu hình dịch vụ phòng!");
+                    }
+                }
+
+            }
+        });
+        if ($validator->fails()) {
+
+            throw new HttpResponseException(response()->json([
+                'success'   => false,
+                'message'   => 'Dữ liệu không hợp lệ!',
+                'data'      => $validator->errors()
+            ], 422));
+        }
+    }
+    public function applyGroupByField($data, $groupByFields = [])
+    {
+        if (empty($groupByFields)) {
+            return $data;
+        }
+
+        // Chuyển các field thành snake_case trước khi nhóm
+        $fieldMappings = [];
+        foreach ($groupByFields as $field) {
+            $snakeField = Str::snake($field);
+            $fieldMappings[$snakeField] = $field;
+        }
+
+        $snakeFields = array_keys($fieldMappings);
+
+        // Đệ quy nhóm dữ liệu theo thứ tự fields đã convert
+        $groupData = function ($items, $fields) use (&$groupData, $fieldMappings) {
+            if (empty($fields)) {
+                return $items->values(); // Hết field nhóm -> Trả về danh sách gốc
+            }
+
+            $currentField = array_shift($fields);
+            $originalField = $fieldMappings[$currentField];
+
+            return $items->groupBy(function ($item) use ($currentField) {
+                return $item[$currentField] ?? null;
+            })->map(function ($group, $key) use ($fields, $groupData, $originalField) {
+                $result =  [
+                    'key' => (string)$key,
+                    $originalField => (string)$key, // Hiển thị tên gốc
+                    'total' => $group->count(),
+                ];
+                $result['children'] = $groupData($group, $fields);
+                return $result;
+            })->values();
+        };
+
+        return $groupData(collect($data), $snakeFields);
+    }
     public function buildTreeGroupByServiceTypeName($collection)
     {
         // Nhóm theo serviceTypeName
@@ -164,11 +268,35 @@ class ServiceRepository
         $result = collect();
 
         foreach ($grouped as $typeName => $group) {
+            // Chuẩn hóa từng item trước khi build cây
+            $processedGroup = $group->map(function ($item) {
+                if ($item->is_leaf) {
+                    return $item; // giữ nguyên nếu là lá
+                }
+                // bỏ các trường thừa
+                unset(
+                    $item->hein_service_bhyt_code,
+                    $item->pttt_group_code,
+                    $item->pttt_group_name,
+                    $item->notice,
+                    $item->is_allow_expend,
+                    $item->is_out_parent_fee,
+                    $item->package_detail_amount,
+                    $item->do_not_use_bhyt,
+                    $item->service_type_code,
+                    $item->service_type_name,
+                    $item->parent_service_code,
+                    $item->parent_service_name,
+                );
+                return $item;
+            });
             // Duyệt từng nhóm và build cây theo parent_id
-            $tree = $this->buildTreeByParentId($group);
+            $tree = $this->buildTreeByParentId($processedGroup);
 
             $result->push([
+                'key' => (string) $typeName,
                 'serviceTypeName' => $typeName,
+                'total' => $group->count(),
                 'children' => $tree,
             ]);
         }

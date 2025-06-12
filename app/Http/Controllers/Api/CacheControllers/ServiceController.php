@@ -95,6 +95,9 @@ class ServiceController extends BaseApiCacheController
         if ($this->checkParam()) {
             return $this->checkParam();
         }
+        if($this->serviceService->checkServiceGroupIds()){
+            return $this->serviceService->checkServiceGroupIds();
+        }
         $keyword = $this->keyword;
         if (($keyword != null || $this->elasticSearchType != null) && !$this->cache) {
             if ($this->elasticSearchType != null) {

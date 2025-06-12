@@ -34,6 +34,21 @@ class ServiceGroupRepository
         }
         return $query;
     }
+    public function applyTabFilter($query, $param, $currentLoginname = '')
+    {
+        switch ($param) {
+            case 'chiDinhDichVuKyThuat':
+               $query
+               ->where('is_active', 1)
+               ->where(function ($q) use ($currentLoginname) {
+                    $q->where('creator', $currentLoginname)
+                        ->orWhere('is_public', 1);
+                });
+                return $query;
+            default:
+                return $query;
+        }
+    }
     public function applyOrdering($query, $orderBy, $orderByJoin)
     {
         if ($orderBy != null) {

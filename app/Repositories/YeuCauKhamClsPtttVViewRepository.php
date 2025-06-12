@@ -137,9 +137,19 @@ class YeuCauKhamClsPtttVViewRepository
             ->leftJoin('his_dhst', 'his_dhst.id', '=', 'xa_v_his_yeu_cau_kham_cls_pttt.dhst_id')
             ->leftJoin('his_patient_case', 'his_patient_case.id', '=', 'xa_v_his_yeu_cau_kham_cls_pttt.patient_case_id')
             ->leftJoin('his_health_exam_rank', 'his_health_exam_rank.id', '=', 'xa_v_his_yeu_cau_kham_cls_pttt.health_exam_rank_id')
+            ->leftJoin('his_sere_serv as sere_serv', function ($join) {
+                $join->on('xa_v_his_yeu_cau_kham_cls_pttt.id', '=', 'sere_serv.service_req_id')
+                    ->where('sere_serv.is_active', 1)
+                    ->where('sere_serv.is_delete', 0)
+                    ->where(function ($query) {
+                        $query->where('sere_serv.is_no_execute', 0)
+                            ->orWhereNull('sere_serv.is_no_execute');
+                    });
+            })
             ->select(
                 [
                     "xa_v_his_yeu_cau_kham_cls_pttt.id",
+                    "sere_serv.id as current_sere_serv_id",
                     "xa_v_his_yeu_cau_kham_cls_pttt.treatment_id",
                     "xa_v_his_yeu_cau_kham_cls_pttt.patient_id",
                     "xa_v_his_yeu_cau_kham_cls_pttt.intruction_time",

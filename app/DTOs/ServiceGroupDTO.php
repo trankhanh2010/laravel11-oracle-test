@@ -19,6 +19,8 @@ class ServiceGroupDTO
     public $time;
     public $param;
     public $noCache;
+    public $tab;
+    public $currentLoginname;
     public function __construct(
         $serviceGroupName,
         $keyword, 
@@ -35,6 +37,8 @@ class ServiceGroupDTO
         $time,
         $param,
         $noCache,
+        $tab,
+        $currentLoginname,
         )
     {
         $this->serviceGroupName = $serviceGroupName;
@@ -52,5 +56,7 @@ class ServiceGroupDTO
         $this->time = $time;
         $this->param = $param;
         $this->noCache = $noCache;
+        $this->tab = $tab;
+        $this->currentLoginname = $currentLoginname;
     }
 }

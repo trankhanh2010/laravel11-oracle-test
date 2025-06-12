@@ -29,6 +29,7 @@ class ServiceGroupService
             $data = $this->serviceGroupRepository->applyJoins();
             $data = $this->serviceGroupRepository->applyKeywordFilter($data, $this->params->keyword);
             $data = $this->serviceGroupRepository->applyIsActiveFilter($data, $this->params->isActive);
+            $data = $this->serviceGroupRepository->applyTabFilter($data, $this->params->tab, $this->params->currentLoginname);
             $count = $data->count();
             $data = $this->serviceGroupRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
             $data = $this->serviceGroupRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
@@ -41,6 +42,7 @@ class ServiceGroupService
     {
         $data = $this->serviceGroupRepository->applyJoins();
         $data = $this->serviceGroupRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $this->serviceGroupRepository->applyTabFilter($data, $this->params->tab, $this->params->currentLoginname);
         $count = $data->count();
         $data = $this->serviceGroupRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
         $data = $this->serviceGroupRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);

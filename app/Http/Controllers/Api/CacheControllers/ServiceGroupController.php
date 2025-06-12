@@ -46,6 +46,8 @@ class ServiceGroupController extends BaseApiCacheController
             $this->time,
             $this->param,
             $this->noCache,
+            $this->tab,
+            $this->currentLoginname,
         );
         $this->serviceGroupService->withParams($this->serviceGroupDTO);
     }

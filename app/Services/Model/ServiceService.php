@@ -50,6 +50,8 @@ class ServiceService
             $data = $this->serviceRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
             if ($this->params->tab == 'chiDinhDichVuKyThuat') {
                 $data = $this->serviceRepository->buildTreeGroupByServiceTypeName($data);
+            } else {
+                $data = $this->serviceRepository->applyGroupByField($data, $this->params->groupBy);
             }
             return ['data' => $data, 'count' => $count];
         } catch (\Throwable $e) {
@@ -81,6 +83,8 @@ class ServiceService
         $data = $this->serviceRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
         if ($this->params->tab == 'chiDinhDichVuKyThuat') {
             $data = $this->serviceRepository->buildTreeGroupByServiceTypeName($data);
+        } else {
+            $data = $this->serviceRepository->applyGroupByField($data, $this->params->groupBy);
         }
         return ['data' => $data, 'count' => $count];
     }
@@ -189,6 +193,12 @@ class ServiceService
             return returnDataDeleteSuccess();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['service'], $e);
+        }
+    }
+
+    public function checkServiceGroupIds(){
+        if($this->params->serviceGroupIds){
+            return $this->serviceRepository->checkServiceGroupIds($this->params->serviceGroupIds);
         }
     }
 }
