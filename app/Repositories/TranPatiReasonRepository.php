@@ -1,47 +1,36 @@
-<?php
-
+<?php 
 namespace App\Repositories;
 
 use App\Jobs\ElasticSearch\Index\ProcessElasticIndexingJob;
-use App\Models\HIS\MediOrg;
+use App\Models\HIS\TranPatiReason;
 use Illuminate\Support\Facades\DB;
 
-class MediOrgRepository
+class TranPatiReasonRepository
 {
-    protected $mediOrg;
-    public function __construct(MediOrg $mediOrg)
+    protected $tranPatiReason;
+    public function __construct(TranPatiReason $tranPatiReason)
     {
-        $this->mediOrg = $mediOrg;
+        $this->tranPatiReason = $tranPatiReason;
     }
 
     public function applyJoins()
     {
-        return $this->mediOrg
+        return $this->tranPatiReason
             ->select(
-                'his_medi_org.*'
+                'his_tran_pati_reason.*'
             );
-    }
-    public function applyJoinsChuyenVien()
-    {
-        return $this->mediOrg
-            ->select([
-                'his_medi_org.id',
-                'his_medi_org.medi_org_code',
-                'his_medi_org.medi_org_name',
-                'his_medi_org.address',
-            ]);
     }
     public function applyKeywordFilter($query, $keyword)
     {
         return $query->where(function ($query) use ($keyword) {
-            $query->where(DB::connection('oracle_his')->raw('his_medi_org.medi_org_code'), 'like', $keyword . '%')
-                ->orWhere(DB::connection('oracle_his')->raw('his_medi_org.medi_org_name'), 'like', $keyword . '%');
+            $query->where(DB::connection('oracle_his')->raw('his_tran_pati_reason.tran_pati_reason_code'), 'like', $keyword . '%')
+                ->orWhere(DB::connection('oracle_his')->raw('his_tran_pati_reason.tran_pati_reason_name'), 'like', $keyword . '%');
         });
     }
     public function applyIsActiveFilter($query, $isActive)
     {
         if ($isActive !== null) {
-            $query->where(DB::connection('oracle_his')->raw('his_medi_org.is_active'), $isActive);
+            $query->where(DB::connection('oracle_his')->raw('his_tran_pati_reason.is_active'), $isActive);
         }
         return $query;
     }
@@ -51,7 +40,7 @@ class MediOrgRepository
             foreach ($orderBy as $key => $item) {
                 if (in_array($key, $orderByJoin)) {
                 } else {
-                    $query->orderBy('his_medi_org.' . $key, $item);
+                    $query->orderBy('his_tran_pati_reason.' . $key, $item);
                 }
             }
         }
@@ -73,54 +62,35 @@ class MediOrgRepository
     }
     public function getById($id)
     {
-        return $this->mediOrg->find($id);
+        return $this->tranPatiReason->find($id);
     }
-    public function create($request, $time, $appCreator, $appModifier)
-    {
-        $data = $this->mediOrg::create([
+    public function create($request, $time, $appCreator, $appModifier){
+        $data = $this->tranPatiReason::create([
             'create_time' => now()->format('YmdHis'),
             'modify_time' => now()->format('YmdHis'),
             'creator' => get_loginname_with_token($request->bearerToken(), $time),
             'modifier' => get_loginname_with_token($request->bearerToken(), $time),
             'app_creator' => $appCreator,
             'app_modifier' => $appModifier,
-            'medi_org_code' => $request->medi_org_code,
-            'medi_org_name' => $request->medi_org_name,
-            'province_code' => $request->province_code,
-            'province_name' => $request->province_name,
-            'district_code' => $request->district_code,
-            'district_name' => $request->district_name,
-            'commune_code' => $request->commune_code,
-            'commune_name' => $request->commune_name,
-            'address' => $request->address,
-            'rank_code' => $request->rank_code,
-            'level_code' => $request->level_code,
+            'is_active' => 1,
+            'is_delete' => 0,
+            'tran_pati_reason_code' => $request->tran_pati_reason_code,
+            'tran_pati_reason_name' => $request->tran_pati_reason_name,
         ]);
         return $data;
     }
-    public function update($request, $data, $time, $appModifier)
-    {
+    public function update($request, $data, $time, $appModifier){
         $data->update([
             'modify_time' => now()->format('YmdHis'),
             'modifier' => get_loginname_with_token($request->bearerToken(), $time),
             'app_modifier' => $appModifier,
-            'medi_org_code' => $request->medi_org_code,
-            'medi_org_name' => $request->medi_org_name,
-            'province_code' => $request->province_code,
-            'province_name' => $request->province_name,
-            'district_code' => $request->district_code,
-            'district_name' => $request->district_name,
-            'commune_code' => $request->commune_code,
-            'commune_name' => $request->commune_name,
-            'address' => $request->address,
-            'rank_code' => $request->rank_code,
-            'level_code' => $request->level_code,
-            'is_active' => $request->is_active,
+            'tran_pati_reason_code' => $request->tran_pati_reason_code,
+            'tran_pati_reason_name' => $request->tran_pati_reason_name,
+            'is_active' => $request->is_active
         ]);
         return $data;
     }
-    public function delete($data)
-    {
+    public function delete($data){
         $data->delete();
         return $data;
     }
@@ -128,15 +98,15 @@ class MediOrgRepository
     {
         $numJobs = config('queue')['num_queue_worker']; // Số lượng job song song
         if ($id != null) {
-            $data = $this->applyJoins()->where('his_medi_org.id', '=', $id)->first();
+            $data = $this->applyJoins()->where('his_tran_pati_reason.id', '=', $id)->first();
             if ($data) {
                 $data = $data->getAttributes();
                 return $data;
             }
         } else {
             // Xác định min và max id
-            $minId = $this->applyJoins()->min('his_medi_org.id');
-            $maxId = $this->applyJoins()->max('his_medi_org.id');
+            $minId = $this->applyJoins()->min('his_tran_pati_reason.id');
+            $maxId = $this->applyJoins()->max('his_tran_pati_reason.id');
             $chunkSize = ceil(($maxId - $minId + 1) / $numJobs);
             for ($i = 0; $i < $numJobs; $i++) {
                 $startId = $minId + ($i * $chunkSize);
@@ -146,7 +116,7 @@ class MediOrgRepository
                     $endId = $maxId;
                 }
                 // Dispatch job cho mỗi phạm vi id
-                ProcessElasticIndexingJob::dispatch('medi_org', 'his_medi_org', $startId, $endId, $batchSize);
+                ProcessElasticIndexingJob::dispatch('tran_pati_reason', 'his_tran_pati_reason', $startId, $endId, $batchSize);
             }
         }
     }

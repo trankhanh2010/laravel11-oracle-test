@@ -139,6 +139,7 @@ use App\Http\Controllers\Api\CacheControllers\AgeTypeController;
 use App\Http\Controllers\Api\CacheControllers\AtcController;
 use App\Http\Controllers\Api\CacheControllers\BidController;
 use App\Http\Controllers\Api\CacheControllers\DeathCauseController;
+use App\Http\Controllers\Api\CacheControllers\DeathCertBookController;
 use App\Http\Controllers\Api\CacheControllers\DocumentTypeController;
 use App\Http\Controllers\Api\CacheControllers\EmrCoverTypeController;
 use App\Http\Controllers\Api\CacheControllers\EmrFormController;
@@ -169,6 +170,7 @@ use App\Http\Controllers\Api\CacheControllers\StorageConditionController;
 use App\Http\Controllers\Api\CacheControllers\SuimIndexUnitController;
 use App\Http\Controllers\Api\CacheControllers\TestIndexGroupController;
 use App\Http\Controllers\Api\CacheControllers\TranPatiFormController;
+use App\Http\Controllers\Api\CacheControllers\TranPatiReasonController;
 use App\Http\Controllers\Api\TransactionControllers\TransactionTamUngController;
 use App\Http\Controllers\Api\CacheControllers\TransactionTypeController;
 use App\Http\Controllers\Api\CacheControllers\TreatmentEndTypeExtController;
@@ -1260,4 +1262,8 @@ Route::group([
     Route::apiResource('v1/health-exam-rank', HealthExamRankController::class)->only(['index', 'show']);
     /// Thông tin bổ sung
     Route::apiResource('v1/treatment-end-type-ext', TreatmentEndTypeExtController::class)->only(['index']);
+    /// Sổ chứng tử
+    Route::apiResource('v1/death-cert-book', DeathCertBookController::class)->only(['index']);
+    /// Lý do chuyển viện
+    Route::apiResource('v1/tran-pati-reason', TranPatiReasonController::class)->only(['index']);
 });

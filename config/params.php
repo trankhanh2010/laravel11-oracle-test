@@ -460,6 +460,8 @@ return [
             'yeu_cau_kham_cls_pttt_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm Yêu cầu khám CLS PTTT!',
             'ksk_contract' => 'Có lỗi khi thực hiện thao tác với bảng Hợp đồng khám sức khỏe!',
             'treatment_end_type_ext' => 'Có lỗi khi thực hiện thao tác với bảng Thông tin ra viện bổ sung!',
+            'death_cert_book' => 'Có lỗi khi thực hiện thao tác với bảng Sổ chứng tử!',
+            'tran_pati_reason' => 'Có lỗi khi thực hiện thao tác với bảng Lý do chuyển viện!',
 
         ],
         'table' => [

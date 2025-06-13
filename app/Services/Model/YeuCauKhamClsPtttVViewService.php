@@ -6,6 +6,7 @@ use App\DTOs\YeuCauKhamClsPtttVViewDTO;
 use App\Events\Cache\DeleteCache;
 use App\Events\Elastic\YeuCauKhamClsPtttVView\InsertYeuCauKhamClsPtttVViewIndex;
 use App\Events\Elastic\DeleteIndex;
+use App\Models\HIS\Treatment;
 use App\Repositories\AllergenicRepository;
 use App\Repositories\MedicalCaseCoverListVViewRepository;
 use App\Repositories\PatientRepository;
@@ -25,6 +26,7 @@ class YeuCauKhamClsPtttVViewService
     protected $allergenicRepository;
     protected $patientRepository;
     protected $patientTypeAlterRepository;
+    protected $treatment;
     protected $params;
     public function __construct(
         YeuCauKhamClsPtttVViewRepository $yeuCauKhamClsPtttVViewRepository,
@@ -34,6 +36,7 @@ class YeuCauKhamClsPtttVViewService
         AllergenicRepository $allergenicRepository,
         PatientRepository $patientRepository,
         PatientTypeAlterRepository $patientTypeAlterRepository,
+        Treatment $treatment,
     ) {
         $this->yeuCauKhamClsPtttVViewRepository = $yeuCauKhamClsPtttVViewRepository;
         $this->serviceRoomRepository = $serviceRoomRepository;
@@ -42,6 +45,7 @@ class YeuCauKhamClsPtttVViewService
         $this->allergenicRepository = $allergenicRepository;
         $this->patientRepository = $patientRepository;
         $this->patientTypeAlterRepository = $patientTypeAlterRepository;
+        $this->treatment = $treatment;
     }
     public function withParams(YeuCauKhamClsPtttVViewDTO $params)
     {
@@ -197,6 +201,26 @@ class YeuCauKhamClsPtttVViewService
         $data = $data->get();
         return $data;
     }
+    private function getDataTreatment($treatmentId)
+    {
+        $data = $this->treatment
+        ->leftJoin('his_branch','his_branch.id', '=', 'his_treatment.branch_id')
+        ->leftJoin('his_patient','his_patient.id', '=', 'his_treatment.patient_id')
+        ->select([
+            'his_treatment.in_code',
+            'his_branch.branch_code',
+            'his_branch.branch_name',
+            'his_treatment.in_time',
+            'his_treatment.tdl_patient_relative_name',
+            'his_treatment.tdl_patient_relative_phone',
+            'his_treatment.tdl_patient_relative_address',
+            'his_patient.career_id',
+            'his_patient.career_code',
+            'his_patient.career_name',
+            ])
+        ->find($treatmentId);
+        return $data;
+    }
     private function getDataKhamBenh($treatmentId)
     {
         $data = $this->medicalCaseCoverListVViewRepository->applyJoinsYeuCauKhamClsPttt()
@@ -320,6 +344,7 @@ class YeuCauKhamClsPtttVViewService
                 $dataLichSuKham = $this->getDataLichSuKham($duLieu->patient_id, $duLieu->treatment_id);
                 $dataXuTriKham = $this->getDataXuTriKham($duLieu->patient_id)->toArray();
                 $dataXuTriKham['isMainExam'] = $duLieu->is_main_exam;
+                $dataXuTriKham += $this->getDataTreatment($duLieu->treatment_id)->toArray();
                 $dataXuTriKham += $this->getPrimaryPatientType($duLieu->treatment_id, $duLieu->tdl_hein_card_number)->toArray();
                 $dataDotKhamHienTai = $this->getDataDotKhamHienTai($duLieu->treatment_id);
                 $dataDiUngThuoc = $this->getDataDiUngThuoc($duLieu->patient_id);

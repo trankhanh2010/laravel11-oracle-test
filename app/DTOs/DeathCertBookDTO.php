@@ -2,9 +2,9 @@
 
 namespace App\DTOs;
 
-class MediOrgDTO
+class DeathCertBookDTO
 {
-    public $mediOrgName;
+    public $deathCertBookName;
     public $keyword;
     public $isActive;
     public $orderBy;
@@ -19,9 +19,8 @@ class MediOrgDTO
     public $time;
     public $param;
     public $noCache;
-    public $tab;
     public function __construct(
-        $mediOrgName,
+        $deathCertBookName,
         $keyword, 
         $isActive, 
         $orderBy, 
@@ -36,10 +35,9 @@ class MediOrgDTO
         $time,
         $param,
         $noCache,
-        $tab,
         )
     {
-        $this->mediOrgName = $mediOrgName;
+        $this->deathCertBookName = $deathCertBookName;
         $this->keyword = $keyword;
         $this->isActive = $isActive;
         $this->orderBy = $orderBy;
@@ -54,6 +52,5 @@ class MediOrgDTO
         $this->time = $time;
         $this->param = $param;
         $this->noCache = $noCache;
-        $this->tab = $tab;
     }
 }

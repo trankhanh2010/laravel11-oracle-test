@@ -2,36 +2,34 @@
 
 namespace App\Http\Controllers\Api\CacheControllers;
 
-use App\DTOs\MediOrgDTO;
+use App\DTOs\TranPatiReasonDTO;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
-use App\Http\Requests\MediOrg\CreateMediOrgRequest;
-use App\Http\Requests\MediOrg\UpdateMediOrgRequest;
-use App\Models\HIS\MediOrg;
-use App\Services\Elastic\ElasticsearchService;
-use App\Services\Model\MediOrgService;
+use App\Http\Requests\TranPatiReason\CreateTranPatiReasonRequest;
+use App\Http\Requests\TranPatiReason\UpdateTranPatiReasonRequest;
+use App\Models\HIS\TranPatiReason;
+use App\Services\Model\TranPatiReasonService;
 use Illuminate\Http\Request;
 
 
-class MediOrgController extends BaseApiCacheController
+class TranPatiReasonController extends BaseApiCacheController
 {
-    protected $mediOrgService;
-    protected $mediOrgDTO;
-    public function __construct(Request $request, ElasticsearchService $elasticSearchService, MediOrgService $mediOrgService, MediOrg $mediOrg)
+    protected $tranPatiReasonService;
+    protected $tranPatiReasonDTO;
+    public function __construct(Request $request, TranPatiReasonService $tranPatiReasonService, TranPatiReason $tranPatiReason)
     {
         parent::__construct($request); // Gọi constructor của BaseController
-        $this->elasticSearchService = $elasticSearchService;
-        $this->mediOrgService = $mediOrgService;
-        $this->mediOrg = $mediOrg;
+        $this->tranPatiReasonService = $tranPatiReasonService;
+        $this->tranPatiReason = $tranPatiReason;
         // Kiểm tra tên trường trong bảng
         if ($this->orderBy != null) {
             $this->orderByJoin = [
             ];
-            $columns = $this->getColumnsTable($this->mediOrg);
+            $columns = $this->getColumnsTable($this->tranPatiReason);
             $this->orderBy = $this->checkOrderBy($this->orderBy, $columns, $this->orderByJoin ?? []);
         }
         // Thêm tham số vào service
-        $this->mediOrgDTO = new MediOrgDTO(
-            $this->mediOrgName,
+        $this->tranPatiReasonDTO = new TranPatiReasonDTO(
+            $this->tranPatiReasonName,
             $this->keyword,
             $this->isActive,
             $this->orderBy,
@@ -46,9 +44,8 @@ class MediOrgController extends BaseApiCacheController
             $this->time,
             $this->param,
             $this->noCache,
-            $this->tab,
         );
-        $this->mediOrgService->withParams($this->mediOrgDTO);
+        $this->tranPatiReasonService->withParams($this->tranPatiReasonDTO);
     }
     public function index()
     {
@@ -58,15 +55,15 @@ class MediOrgController extends BaseApiCacheController
         $keyword = $this->keyword;
         if (($keyword != null || $this->elasticSearchType != null) && !$this->cache) {
             if ($this->elasticSearchType != null) {
-                $data = $this->elasticSearchService->handleElasticSearchSearch($this->mediOrgName);
+                $data = $this->elasticSearchService->handleElasticSearchSearch($this->tranPatiReasonName);
             } else {
-                $data = $this->mediOrgService->handleDataBaseSearch();
+                $data = $this->tranPatiReasonService->handleDataBaseSearch();
             }
         } else {
             if ($this->elastic) {
-                $data = $this->elasticSearchService->handleElasticSearchGetAll($this->mediOrgName);
+                $data = $this->elasticSearchService->handleElasticSearchGetAll($this->tranPatiReasonName);
             } else {
-                $data = $this->mediOrgService->handleDataBaseGetAll();
+                $data = $this->tranPatiReasonService->handleDataBaseGetAll();
             }
         }
         $paramReturn = [
@@ -87,32 +84,20 @@ class MediOrgController extends BaseApiCacheController
             return $this->checkParam();
         }
         if ($id !== null) {
-            $validationError = $this->validateAndCheckId($id, $this->mediOrg, $this->mediOrgName);
+            $validationError = $this->validateAndCheckId($id, $this->tranPatiReason, $this->tranPatiReasonName);
             if ($validationError) {
                 return $validationError;
             }
         }
         if ($this->elastic) {
-            $data = $this->elasticSearchService->handleElasticSearchGetWithId($this->mediOrgName, $id);
+            $data = $this->elasticSearchService->handleElasticSearchGetWithId($this->tranPatiReasonName, $id);
         } else {
-            $data = $this->mediOrgService->handleDataBaseGetWithId($id);
+            $data = $this->tranPatiReasonService->handleDataBaseGetWithId($id);
         }
         $paramReturn = [
             $this->idName => $id,
             $this->isActiveName => $this->isActive,
         ];
         return returnDataSuccess($paramReturn, $data);
-    }
-    public function store(CreateMediOrgRequest $request)
-    {
-        return $this->mediOrgService->createMediOrg($request);
-    }
-    public function update(UpdateMediOrgRequest $request, $id)
-    {
-        return $this->mediOrgService->updateMediOrg($id, $request);
-    }
-    public function destroy($id)
-    {
-        return $this->mediOrgService->deleteMediOrg($id);
     }
 }

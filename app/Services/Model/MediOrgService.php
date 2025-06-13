@@ -26,7 +26,11 @@ class MediOrgService
     public function handleDataBaseSearch()
     {
         try {
-            $data = $this->mediOrgRepository->applyJoins();
+            if ($this->params->tab == 'chuyenVien') {
+                $data = $this->mediOrgRepository->applyJoinsChuyenVien();
+            } else {
+                $data = $this->mediOrgRepository->applyJoins();
+            }
             $data = $this->mediOrgRepository->applyKeywordFilter($data, $this->params->keyword);
             $data = $this->mediOrgRepository->applyIsActiveFilter($data, $this->params->isActive);
             $count = $data->count();
@@ -39,7 +43,11 @@ class MediOrgService
     }
     private function getAllDataFromDatabase()
     {
-        $data = $this->mediOrgRepository->applyJoins();
+        if ($this->params->tab == 'chuyenVien') {
+            $data = $this->mediOrgRepository->applyJoinsChuyenVien();
+        } else {
+            $data = $this->mediOrgRepository->applyJoins();
+        }
         $data = $this->mediOrgRepository->applyIsActiveFilter($data, $this->params->isActive);
         $count = $data->count();
         $data = $this->mediOrgRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
