@@ -3,16 +3,20 @@ namespace App\Repositories;
 
 use App\Jobs\ElasticSearch\Index\ProcessElasticIndexingJob;
 use App\Models\HIS\Department;
+use App\Models\HIS\Room;
 use Illuminate\Support\Facades\DB;
 
 class DepartmentRepository
 {
     protected $department;
+    protected $room;
     public function __construct(
         Department $department,
+        Room $room,
         )
     {
         $this->department = $department;
+        $this->room = $room;
     }
 
     public function applyJoins()
@@ -63,6 +67,29 @@ class DepartmentRepository
                 $query->where(DB::connection('oracle_his')->raw('his_department.allow_treatment_type_ids'),'like', '%'.$param.',%');
             }
         }
+        return $query;
+    }
+    public function applyTabFilter($query, $param)
+    {
+        switch ($param) {
+            case 'chiDinhDichVuKyThuat':
+                $query->where('is_clinical', 1);
+                return $query;
+            default:
+                return $query;
+        }
+    }
+    public function applyCungCoSoFilter($query, $param, $roomId)
+    {
+        if ($param != null) {
+            if($param){
+                $branchId = $this->room->where('his_room.id', $roomId)            
+                ->leftJoin('his_department as department', 'department.id', '=', 'his_room.department_id')
+                ->first()->branch_id??0;
+                $query->where(DB::connection('oracle_his')->raw('his_department.branch_id'), $branchId);
+            }
+        }
+
         return $query;
     }
     public function applyOrdering($query, $orderBy, $orderByJoin)

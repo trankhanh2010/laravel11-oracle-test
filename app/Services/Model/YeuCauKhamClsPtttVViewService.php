@@ -8,6 +8,8 @@ use App\Events\Elastic\YeuCauKhamClsPtttVView\InsertYeuCauKhamClsPtttVViewIndex;
 use App\Events\Elastic\DeleteIndex;
 use App\Repositories\AllergenicRepository;
 use App\Repositories\MedicalCaseCoverListVViewRepository;
+use App\Repositories\PatientRepository;
+use App\Repositories\PatientTypeAlterRepository;
 use App\Repositories\SereServListVViewRepository;
 use App\Repositories\ServiceRoomRepository;
 use Illuminate\Support\Facades\Cache;
@@ -21,6 +23,8 @@ class YeuCauKhamClsPtttVViewService
     protected $sereServListVViewRepository;
     protected $medicalCaseCoverListVViewRepository;
     protected $allergenicRepository;
+    protected $patientRepository;
+    protected $patientTypeAlterRepository;
     protected $params;
     public function __construct(
         YeuCauKhamClsPtttVViewRepository $yeuCauKhamClsPtttVViewRepository,
@@ -28,12 +32,16 @@ class YeuCauKhamClsPtttVViewService
         SereServListVViewRepository $sereServListVViewRepository,
         MedicalCaseCoverListVViewRepository $medicalCaseCoverListVViewRepository,
         AllergenicRepository $allergenicRepository,
+        PatientRepository $patientRepository,
+        PatientTypeAlterRepository $patientTypeAlterRepository,
     ) {
         $this->yeuCauKhamClsPtttVViewRepository = $yeuCauKhamClsPtttVViewRepository;
         $this->serviceRoomRepository = $serviceRoomRepository;
         $this->sereServListVViewRepository = $sereServListVViewRepository;
         $this->medicalCaseCoverListVViewRepository = $medicalCaseCoverListVViewRepository;
         $this->allergenicRepository = $allergenicRepository;
+        $this->patientRepository = $patientRepository;
+        $this->patientTypeAlterRepository = $patientTypeAlterRepository;
     }
     public function withParams(YeuCauKhamClsPtttVViewDTO $params)
     {
@@ -139,6 +147,27 @@ class YeuCauKhamClsPtttVViewService
         $data = $data->get();
         return $data;
     }
+    private function getDataXuTriKham($patientId)
+    {
+        $data = $this->patientRepository->applyJoinsXutriKham()
+        ->where('his_patient.id', $patientId)
+        ->where('his_patient.is_delete', 0);
+        $data = $data->first();
+        return $data;
+    }
+    private function getPrimaryPatientType($treatmentId, $heinCardNumber)
+    {
+        $data = $this->patientTypeAlterRepository->applyJoinsXutriKham()
+        ->where('his_patient_type_alter.treatment_id', $treatmentId)
+        ->where('his_patient_type_alter.hein_card_number', $heinCardNumber)
+        ->where('his_patient_type_alter.is_delete', 0);
+        $orderBy = [
+            'modify_time' => 'desc',
+        ];
+        $data = $this->patientTypeAlterRepository->applyOrdering($data, $orderBy, []);
+        $data = $data->first();
+        return $data;
+    }
     private function getDataDotKhamHienTai($treatmentId)
     {
         $data = $this->yeuCauKhamClsPtttVViewRepository->applyJoinsDotKhamHienTai();
@@ -216,7 +245,7 @@ class YeuCauKhamClsPtttVViewService
         $data = $this->sereServListVViewRepository->applyGroupByFieldYeuCauClsPttt($data, $groupBy);
         return $data;
     }
-    private function getDataDanhSachDichVuYeuCauCuaLanDieuTri($treatmentId = -1, $serviceIds)
+    private function getDataDanhSachDichVuYeuCauCuaLanDieuTri($treatmentId = -1, $serviceIds, $serviceReqId)
     {
         $data = $this->sereServListVViewRepository->applyJoinsDichVuYeuCau();
         $data = $this->sereServListVViewRepository->applyIsDeleteFilter($data, 0);
@@ -224,6 +253,7 @@ class YeuCauKhamClsPtttVViewService
         $data = $this->sereServListVViewRepository->applyServiceReqIsNoExecuteFilter($data);
         $data = $this->sereServListVViewRepository->applyTreatmentIdFilter($data, $treatmentId);
         $data = $this->sereServListVViewRepository->applyServiceIdsFilter($data, $serviceIds);
+        $data = $this->sereServListVViewRepository->applyServiceReqIdFilter($data, $serviceReqId);
         $data = $this->sereServListVViewRepository->applyOrdering($data, ['service_code' => 'asc'], []);
         $data = $this->sereServListVViewRepository->fetchData($data, true, $this->params->start, $this->params->limit);
         return $data;
@@ -250,7 +280,7 @@ class YeuCauKhamClsPtttVViewService
                 $dataThongTinKhamBenh = $this->getDataKhamBenh($dataYeuCau->treatment_id);
                 $dataIdDanhMucDichVuYeuCauCuaPhong = $this->getDataDanhMucDichVuYeuCauCuaPhong($dataYeuCau->execute_room_id)->pluck('service_id');
                 $dataDanhSachDichVuChiDinhCuaLanDieuTri = $this->getDataDanhSachDichVuChiDinhCuaLanDieuTri($dataYeuCau->treatment_id, $dataIdDanhMucDichVuYeuCauCuaPhong, $this->params->tab, $id);
-                $dataDanhSachDichVuYeuCauCuaLanDieuTri = $this->getDataDanhSachDichVuYeuCauCuaLanDieuTri($dataYeuCau->treatment_id, $dataIdDanhMucDichVuYeuCauCuaPhong);
+                $dataDanhSachDichVuYeuCauCuaLanDieuTri = $this->getDataDanhSachDichVuYeuCauCuaLanDieuTri($dataYeuCau->treatment_id, $dataIdDanhMucDichVuYeuCauCuaPhong, $id);
                 $dataKhamBenh = $dataYeuCau;
             }
 
@@ -282,16 +312,21 @@ class YeuCauKhamClsPtttVViewService
             $duLieu = $this->getDuLieu($serviceReqCode);
             $data = [];
             $dataLichSuKham = [];
+            $dataXuTriKham = [];
             $dataDotKhamHienTai = [];
             $dataDiUngThuoc = [];
             if($duLieu){
                 $duLieu['xepLoaiBMI'] = xepLoaiBMI($duLieu->virBmi);
                 $dataLichSuKham = $this->getDataLichSuKham($duLieu->patient_id, $duLieu->treatment_id);
+                $dataXuTriKham = $this->getDataXuTriKham($duLieu->patient_id)->toArray();
+                $dataXuTriKham['isMainExam'] = $duLieu->is_main_exam;
+                $dataXuTriKham += $this->getPrimaryPatientType($duLieu->treatment_id, $duLieu->tdl_hein_card_number)->toArray();
                 $dataDotKhamHienTai = $this->getDataDotKhamHienTai($duLieu->treatment_id);
                 $dataDiUngThuoc = $this->getDataDiUngThuoc($duLieu->patient_id);
             }
             $data['khamBenh'] = $duLieu;
             $data['lichSuKham'] = $dataLichSuKham;
+            $data['xuTriKham'] = $dataXuTriKham;
             $data['dotKhamHienTai'] = $dataDotKhamHienTai;
             $data['diUngThuoc'] = $dataDiUngThuoc;
 

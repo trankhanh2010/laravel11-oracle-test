@@ -22,6 +22,8 @@ class DepartmentDTO
     public $noCache;
     public $isClinical; 
     public $treatmentTypeId;
+    public $roomId;
+    public $cungCoSo;
     public function __construct(
         $departmentName,
         $keyword, 
@@ -41,6 +43,8 @@ class DepartmentDTO
         $noCache,
         $isClinical,
         $treatmentTypeId,
+        $roomId,
+        $cungCoSo,
         )
     {
         $this->departmentName = $departmentName;
@@ -61,5 +65,7 @@ class DepartmentDTO
         $this->noCache = $noCache;
         $this->isClinical = $isClinical;
         $this->treatmentTypeId = $treatmentTypeId;
+        $this->roomId = $roomId;
+        $this->cungCoSo = $cungCoSo;
     }
 }

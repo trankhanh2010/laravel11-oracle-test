@@ -149,7 +149,9 @@ SELECT
      service_req.TREATMENT_INSTRUCTION, 
      service_req.NOTE, 
      service_req.NEXT_TREAT_INTR_CODE, 
-     service_req.health_exam_rank_id 
+     service_req.health_exam_rank_id,
+     service_req.is_main_exam,
+     service_req.tdl_hein_card_number
 
 
 FROM his_service_req service_req

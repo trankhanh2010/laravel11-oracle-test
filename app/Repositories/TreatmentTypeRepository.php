@@ -40,6 +40,8 @@ class TreatmentTypeRepository
         switch ($param) {
             case 'yeuCauKhamClsPttt':
                 return $query->whereIn('treatment_type_code',['01','02','03']);
+            case 'nhapVien':
+                return $query->whereNotIn('treatment_type_code',['01']);
             default:
                 return $query;
         }

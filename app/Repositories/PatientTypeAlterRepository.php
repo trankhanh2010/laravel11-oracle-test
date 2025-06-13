@@ -21,6 +21,16 @@ class PatientTypeAlterRepository
                 'his_patient_type_alter.*'
             );
     }
+    public function applyJoinsXuTriKham()
+    {
+        return $this->patientTypeAlter
+        ->leftJoin('his_patient_type primary_patient_type', 'primary_patient_type.id', '=', 'his_patient_type_alter.primary_patient_type_id')
+            ->select([
+                'his_patient_type_alter.primary_patient_type_id',
+                'primary_patient_type.patient_type_code as primary_patient_type_code',
+                'primary_patient_type.patient_type_name as primary_patient_type_name',
+            ]);
+    }
     public function applyKeywordFilter($query, $keyword)
     {
         return $query->where(function ($query) use ($keyword) {

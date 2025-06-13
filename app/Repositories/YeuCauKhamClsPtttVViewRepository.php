@@ -262,6 +262,8 @@ class YeuCauKhamClsPtttVViewRepository
                     "xa_v_his_yeu_cau_kham_cls_pttt.icd_cause_name",
                     "xa_v_his_yeu_cau_kham_cls_pttt.icd_sub_code", // cd phụ 
                     "xa_v_his_yeu_cau_kham_cls_pttt.icd_text",
+                    "xa_v_his_yeu_cau_kham_cls_pttt.is_main_exam",
+                    "xa_v_his_yeu_cau_kham_cls_pttt.tdl_hein_card_number",
                 ]
             );
     }

@@ -20,6 +20,13 @@ class PatientRepository
                 'his_patient.*'
             );
     }
+    public function applyJoinsXuTriKham()
+    {
+        return $this->patient
+            ->select(
+                'his_patient.note'
+            );
+    }
     public function applyKeywordFilter($query, $keyword)
     {
         return $query->where(function ($query) use ($keyword) {

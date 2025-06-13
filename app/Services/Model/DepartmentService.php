@@ -61,6 +61,8 @@ class DepartmentService
             $data = $this->departmentRepository->applyIsActiveFilter($data, $this->params->isActive);
             $data = $this->departmentRepository->applyIsClinicalFilter($data, $this->params->isClinical);
             $data = $this->departmentRepository->applyTreatmentIdFilter($data, $this->params->treatmentTypeId);
+            $data = $this->departmentRepository->applyTabFilter($data, $this->params->tab);
+            $data = $this->departmentRepository->applyCungCoSoFilter($data, $this->params->cungCoSo, $this->params->roomId);
             $count = $data->count();
             $data = $this->departmentRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
             $data = $this->departmentRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
@@ -75,6 +77,8 @@ class DepartmentService
         $data = $this->departmentRepository->applyIsActiveFilter($data, $this->params->isActive);
         $data = $this->departmentRepository->applyIsClinicalFilter($data, $this->params->isClinical);
         $data = $this->departmentRepository->applyTreatmentIdFilter($data, $this->params->treatmentTypeId);
+        $data = $this->departmentRepository->applyTabFilter($data, $this->params->tab);
+        $data = $this->departmentRepository->applyCungCoSoFilter($data, $this->params->cungCoSo, $this->params->roomId);
         $count = $data->count();
         $data = $this->departmentRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
         $data = $this->departmentRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
