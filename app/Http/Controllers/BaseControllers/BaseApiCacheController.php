@@ -207,6 +207,8 @@ class BaseApiCacheController extends Controller
     protected $isNoExcuteName = 'IsNoExcute';
     protected $tab;
     protected $tabName = 'Tab';
+    protected $type;
+    protected $typeName = 'Type';
     protected $reportTypeCode;
     protected $reportTypeCodeName = 'ReportTypeCode';
     protected $patientTypeId;
@@ -267,6 +269,8 @@ class BaseApiCacheController extends Controller
     protected $treatmentCodeName = 'TreatmentCode';
     protected $departmentIds;
     protected $departmentIdsName = 'DepartmentIds';
+    protected $mediStockIds;
+    protected $mediStockIdsName = 'MediStockIds';
     protected $serviceReqSttIds;
     protected $serviceReqSttIdsName = 'ServiceReqSttIds';
     protected $isNotKskRequriedAprovalOrIsKskApprove;
@@ -533,6 +537,10 @@ class BaseApiCacheController extends Controller
     protected $medicinePatyName = 'medicine_paty';
     protected $accidentBodyPart;
     protected $accidentBodyPartName = 'accident_body_part';
+    protected $appointmentPeriod;
+    protected $appointmentPeriodName = 'appointment_period';
+    protected $config;
+    protected $configName = 'config';
     protected $deathCertBook;
     protected $deathCertBookName = 'death_cert_book';
     protected $tranPatiReason;
@@ -773,6 +781,8 @@ class BaseApiCacheController extends Controller
     protected $accountBookVViewName = 'account_book_v_view';
     protected $userAccountBookVView;
     protected $userAccountBookVViewName = 'user_account_book_v_view';
+    protected $thuocVatTuBeanVView;
+    protected $thuocVatTuBeanVViewName = 'thuoc_vat_tu_bean_v_view';
     protected $yeuCauKhamClsPtttVView;
     protected $yeuCauKhamClsPtttVViewName = 'yeu_cau_kham_cls_pttt_v_view_name';
     protected $treatmentRoomGroupVView;
@@ -1761,6 +1771,13 @@ class BaseApiCacheController extends Controller
                 $this->tab = null;
             }
         }
+        $this->type = $this->paramRequest['ApiData']['Type']  ?? null;
+        if ($this->type !== null) {
+            if (!is_string($this->type)) {
+                $this->errors[$this->typeName] = $this->messFormat;
+                $this->type = null;
+            }
+        }
         $this->reportTypeCode = $this->paramRequest['ApiData']['ReportTypeCode'] ?? null;
         if ($this->reportTypeCode !== null) {
             if (!is_string($this->reportTypeCode)) {
@@ -2020,6 +2037,16 @@ class BaseApiCacheController extends Controller
                 if (!is_numeric($item)) {
                     $this->errors[$this->departmentIdsName] = $this->messFormat;
                     unset($this->departmentIds[$key]);
+                } 
+            }
+        }
+        $this->mediStockIds = $this->paramRequest['ApiData']['MediStockIds'] ?? null;
+        if ($this->mediStockIds != null) {
+            foreach ($this->mediStockIds as $key => $item) {
+                // Kiểm tra xem ID có tồn tại trong bảng  hay không
+                if (!is_numeric($item)) {
+                    $this->errors[$this->mediStockIdsName] = $this->messFormat;
+                    unset($this->mediStockIds[$key]);
                 } 
             }
         }

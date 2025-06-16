@@ -2,9 +2,9 @@
 
 namespace App\DTOs;
 
-class MedicineDTO
+class ConfigDTO
 {
-    public $medicineName;
+    public $configName;
     public $keyword;
     public $isActive;
     public $orderBy;
@@ -20,10 +20,8 @@ class MedicineDTO
     public $param;
     public $noCache;
     public $tab;
-    public $mediStockIds;
-    public $type;
     public function __construct(
-        $medicineName,
+        $configName,
         $keyword, 
         $isActive, 
         $orderBy, 
@@ -39,11 +37,9 @@ class MedicineDTO
         $param,
         $noCache,
         $tab,
-        $mediStockIds,
-        $type,
         )
     {
-        $this->medicineName = $medicineName;
+        $this->configName = $configName;
         $this->keyword = $keyword;
         $this->isActive = $isActive;
         $this->orderBy = $orderBy;
@@ -59,7 +55,5 @@ class MedicineDTO
         $this->param = $param;
         $this->noCache = $noCache;
         $this->tab = $tab;
-        $this->mediStockIds = $mediStockIds;
-        $this->type = $type;
     }
 }

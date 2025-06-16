@@ -30,26 +30,25 @@ class MedicineRepository
     public function applyJoinsKeDonThuocPhongKham()
     {
         // Lấy nhóm đầu
-        $danhMucChaIds = $this->medicineType
+        $danhMucThuocChaIds = $this->medicineType
             ->whereNull('parent_id')
             ->whereNull('is_leaf')
             ->pluck('id')->toArray();
-
         // Lấy nhóm thứ 2
-        $parentIds = $this->medicineType
-            ->whereIn('parent_id', $danhMucChaIds)
+        $parentThuocIds = $this->medicineType
+            ->whereIn('parent_id', $danhMucThuocChaIds)
             ->whereNull('is_leaf')
             ->pluck('id')->toArray();
         return $this->medicine
             ->leftJoin('his_medicine_type', 'his_medicine.medicine_type_id', '=', 'his_medicine_type.id')
-            ->join('his_medicine_type as parent', function ($join) use ($parentIds) {
+            ->join('his_medicine_type as parent', function ($join) use ($parentThuocIds) {
                 $join->on('parent.id', '=', 'his_medicine_type.parent_id')
-                    ->whereIn('parent.id', $parentIds)
+                    ->whereIn('parent.id', $parentThuocIds)
                     ->where('his_medicine_type.is_leaf', 1);  // Chỉ lấy ra các lá đã được join thằng cha
             })
             ->leftJoin('his_manufacturer', 'his_manufacturer.id', '=', 'his_medicine_type.manufacturer_id')
             ->leftJoin('his_service_unit', 'his_service_unit.id', '=', 'his_medicine_type.tdl_service_unit_id')
-            ->leftJoin('his_medicine_bean', function ($join) use ($parentIds) {
+            ->leftJoin('his_medicine_bean', function ($join) {
                 $join->on('his_medicine_bean.medicine_id', '=', 'his_medicine.id')
                     ->where('his_medicine_bean.is_active', 1)
                     ->where('his_medicine_bean.is_delete', 0);
@@ -72,6 +71,7 @@ class MedicineRepository
                 'his_medicine_bean.tdl_package_number',
                 'his_medicine_bean.tdl_medicine_register_number',
                 'his_medicine_bean.tdl_medicine_expired_date',
+                'his_medicine.national_name',
                 'his_medicine_type.last_exp_price',
                 'his_medicine_type.last_exp_vat_ratio',
                 'his_medi_stock.medi_stock_code',
@@ -95,6 +95,24 @@ class MedicineRepository
             $query->where(DB::connection('oracle_his')->raw('his_medicine.is_active'), $isActive);
         }
         return $query;
+    }
+    public function applyMediStockIdsFilter($query, $param)
+    {
+        if ($param != null) {
+            $query->whereIn('his_medicine_bean.medi_stock_id', $param);
+        }
+        return $query;
+    }
+    public function applyTypeKeDonThuocPhongKhamFilter($query, $param)
+    {
+        switch ($param) {
+            case 'thuocVatTuTrongKho':
+                return $query;
+            case 'thuocVatTuMuaNgoai':
+                return $query->where('his_medicine_type.IS_OUT_HOSPITAL', 1);
+            default:
+                return $query;
+        }
     }
     public function applyOrdering($query, $orderBy, $orderByJoin)
     {
@@ -179,6 +197,7 @@ class MedicineRepository
                     $result['tdlPackageNumber'] = $firstItem['tdl_package_number'];
                     $result['tdlMedicineRegisterNumber'] = $firstItem['tdl_medicine_register_number'];
                     $result['tdlMedicineExpiredDate'] = $firstItem['tdl_medicine_expired_date'];
+                    $result['nationalName'] = $firstItem['national_name'];
                     $result['manufacturerCode'] = $firstItem['manufacturer_code'];
                     $result['manufacturerName'] = $firstItem['manufacturer_name'];
                     $result['medicineTypeCode'] = $firstItem['medicine_type_code'];

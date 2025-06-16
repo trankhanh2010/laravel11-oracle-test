@@ -462,6 +462,9 @@ return [
             'treatment_end_type_ext' => 'Có lỗi khi thực hiện thao tác với bảng Thông tin ra viện bổ sung!',
             'death_cert_book' => 'Có lỗi khi thực hiện thao tác với bảng Sổ chứng tử!',
             'tran_pati_reason' => 'Có lỗi khi thực hiện thao tác với bảng Lý do chuyển viện!',
+            'thuoc_vat_tu_bean_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm Thuốc, Vật tư!',
+            'appointment_period' => 'Có lỗi khi thực hiện thao tác với bảng Khung giờ hẹn khám!',
+            'config' => 'Có lỗi khi thực hiện thao tác với bảng Cấu hình hệ thống!',
 
         ],
         'table' => [

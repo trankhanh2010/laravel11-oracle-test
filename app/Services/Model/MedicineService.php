@@ -28,6 +28,8 @@ class MedicineService
         try {
             if ($this->params->tab == 'keDonThuocPhongKham') {
                 $data = $this->medicineRepository->applyJoinsKeDonThuocPhongKham();
+                $data = $this->medicineRepository->applyMediStockIdsFilter($data, $this->params->mediStockIds);
+                $data = $this->medicineRepository->applyTypeKeDonThuocPhongKhamFilter($data, $this->params->type);
             } else {
                 $data = $this->medicineRepository->applyJoins();
             }
@@ -61,6 +63,8 @@ class MedicineService
     {
         if ($this->params->tab == 'keDonThuocPhongKham') {
             $data = $this->medicineRepository->applyJoinsKeDonThuocPhongKham();
+            $data = $this->medicineRepository->applyMediStockIdsFilter($data, $this->params->mediStockIds);
+            $data = $this->medicineRepository->applyTypeKeDonThuocPhongKhamFilter($data, $this->params->type);
         } else {
             $data = $this->medicineRepository->applyJoins();
         }

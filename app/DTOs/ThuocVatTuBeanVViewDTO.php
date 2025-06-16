@@ -2,11 +2,12 @@
 
 namespace App\DTOs;
 
-class MedicineDTO
+class ThuocVatTuBeanVViewDTO
 {
-    public $medicineName;
+    public $thuocVatTuBeanVViewName;
     public $keyword;
     public $isActive;
+    public $isDelete;
     public $orderBy;
     public $orderByJoin;
     public $orderByString;
@@ -19,13 +20,14 @@ class MedicineDTO
     public $time;
     public $param;
     public $noCache;
-    public $tab;
     public $mediStockIds;
+    public $tab;
     public $type;
     public function __construct(
-        $medicineName,
+        $thuocVatTuBeanVViewName,
         $keyword, 
         $isActive, 
+        $isDelete,
         $orderBy, 
         $orderByJoin, 
         $orderByString, 
@@ -38,14 +40,15 @@ class MedicineDTO
         $time,
         $param,
         $noCache,
-        $tab,
         $mediStockIds,
+        $tab,
         $type,
         )
     {
-        $this->medicineName = $medicineName;
+        $this->thuocVatTuBeanVViewName = $thuocVatTuBeanVViewName;
         $this->keyword = $keyword;
         $this->isActive = $isActive;
+        $this->isDelete = $isDelete;
         $this->orderBy = $orderBy;
         $this->orderByJoin = $orderByJoin;
         $this->orderByString = $orderByString;
@@ -58,8 +61,8 @@ class MedicineDTO
         $this->time = $time;
         $this->param = $param;
         $this->noCache = $noCache;
-        $this->tab = $tab;
         $this->mediStockIds = $mediStockIds;
+        $this->tab = $tab;
         $this->type = $type;
     }
 }

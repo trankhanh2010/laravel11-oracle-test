@@ -4,6 +4,7 @@ use App\Events\Job\JobIndexElasticInfo;
 use App\Events\Transaction\MoMoNotificationTamUngReceived;
 use App\Http\Controllers\Api\AuthControllers\CheckTokenController;
 use App\Http\Controllers\Api\NoCacheControllers\SereServExtController;
+use App\Http\Controllers\Api\NoCacheControllers\ThuocVatTuBeanVViewController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\HISController;
@@ -136,8 +137,10 @@ use App\Http\Controllers\Api\CacheControllers\TestIndexUnitController;
 use App\Http\Controllers\Api\CacheControllers\DebateTypeController;
 use App\Http\Controllers\Api\CacheControllers\IcdGroupController;
 use App\Http\Controllers\Api\CacheControllers\AgeTypeController;
+use App\Http\Controllers\Api\CacheControllers\AppointmentPeriodController;
 use App\Http\Controllers\Api\CacheControllers\AtcController;
 use App\Http\Controllers\Api\CacheControllers\BidController;
+use App\Http\Controllers\Api\CacheControllers\ConfigController;
 use App\Http\Controllers\Api\CacheControllers\DeathCauseController;
 use App\Http\Controllers\Api\CacheControllers\DeathCertBookController;
 use App\Http\Controllers\Api\CacheControllers\DocumentTypeController;
@@ -1266,4 +1269,10 @@ Route::group([
     Route::apiResource('v1/death-cert-book', DeathCertBookController::class)->only(['index']);
     /// Lý do chuyển viện
     Route::apiResource('v1/tran-pati-reason', TranPatiReasonController::class)->only(['index']);
+    /// Thuốc - Vật tư kê đơn
+    Route::apiResource('v1/thuoc-vat-tu-bean', ThuocVatTuBeanVViewController::class)->only(['index']);
+    /// Khung giờ hẹn khám
+    Route::apiResource('v1/appointment-period', AppointmentPeriodController::class)->only(['index']);
+    /// Cấu hình hệ thống
+    Route::apiResource('v1/config', ConfigController::class)->only(['index']);
 });

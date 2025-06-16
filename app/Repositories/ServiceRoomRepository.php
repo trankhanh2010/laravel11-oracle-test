@@ -35,6 +35,7 @@ class ServiceRoomRepository
             ->leftJoin('his_station as station', 'his_room.id', '=', 'station.room_id')
 
             ->select(
+                'his_service_room.id as key',
                 'his_service_room.*',
                 'service.service_name',
                 'service.service_code',

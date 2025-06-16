@@ -47,11 +47,18 @@ class MedicineController extends BaseApiCacheController
             $this->param,
             $this->noCache,
             $this->tab,
+            $this->mediStockIds,
+            $this->type,
         );
         $this->medicineService->withParams($this->medicineDTO);
     }
     public function index()
     {
+        if($this->tab == 'keDonThuocPhongKham'){
+            if(!$this->mediStockIds){
+                $this->errors[$this->mediStockIdsName] = "Chưa chọn kho xuất!";
+            }
+        }
         if ($this->checkParam()) {
             return $this->checkParam();
         }
