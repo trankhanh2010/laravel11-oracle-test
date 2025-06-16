@@ -29,7 +29,7 @@ class MedicineTypeService
             $data = $this->medicineTypeRepository->applyJoins();
             $data = $this->medicineTypeRepository->applyKeywordFilter($data, $this->params->keyword);
             $data = $this->medicineTypeRepository->applyIsActiveFilter($data, $this->params->isActive);
-            $count = $data->count();
+            $count = null;
             $data = $this->medicineTypeRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
             $data = $this->medicineTypeRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
             return ['data' => $data, 'count' => $count];
@@ -41,7 +41,7 @@ class MedicineTypeService
     {
         $data = $this->medicineTypeRepository->applyJoins();
         $data = $this->medicineTypeRepository->applyIsActiveFilter($data, $this->params->isActive);
-        $count = $data->count();
+        $count = null;
         $data = $this->medicineTypeRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
         $data = $this->medicineTypeRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
         return ['data' => $data, 'count' => $count];

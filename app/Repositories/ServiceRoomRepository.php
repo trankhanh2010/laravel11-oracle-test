@@ -44,6 +44,7 @@ class ServiceRoomRepository
                 'room_type.room_type_code',
                 'department.department_name',
                 'department.department_code',
+                'his_room.DEFAULT_INSTR_PATIENT_TYPE_ID',
                 DB::connection('oracle_his')->raw('NVL(bed.bed_room_name, 
     NVL(cashier.cashier_room_name, 
     NVL(execute.execute_room_name, 

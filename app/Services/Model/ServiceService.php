@@ -26,10 +26,16 @@ class ServiceService
     public function handleDataBaseSearch()
     {
         try {
-            if ($this->params->tab == 'chiDinhDichVuKyThuat') {
-                $data = $this->serviceRepository->applyJoinsDichVuChiDinh();
-            } else {
-                $data = $this->serviceRepository->applyJoinsDichVuChiDinh();
+            switch ($this->params->tab) {
+                case 'chiDinhDichVuKyThuat':
+                    $data = $this->serviceRepository->applyJoinsDichVuChiDinh();
+                    break;
+                case 'keDonThuocPhongKham':
+                    $data = $this->serviceRepository->applyJoinsKeDonThuocPhongKham();
+                    break;
+                default:
+                    $data = $this->serviceRepository->applyJoinsDichVuChiDinh();
+                    break;
             }
             $data = $this->serviceRepository->applyKeywordFilter($data, $this->params->keyword);
             $data = $this->serviceRepository->applyIsActiveFilter($data, $this->params->isActive);
@@ -37,21 +43,42 @@ class ServiceService
             $data = $this->serviceRepository->applyServiceGroupIdsFilter($data, $this->params->serviceGroupIds);
             $data = $this->serviceRepository->applyTabFilter($data, $this->params->tab);
             $count = null;
-            if ($this->params->tab == 'chiDinhDichVuKyThuat') {
-                $orderBy = [
-                    'service_type_name' => 'asc',
-                    'service_name' => 'asc',
-                ];
-                $orderByJoin = ['service_type_name'];
-                $data = $this->serviceRepository->applyOrdering($data, $orderBy, $orderByJoin);
-            } else {
-                $data = $this->serviceRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+            switch ($this->params->tab) {
+                case 'chiDinhDichVuKyThuat':
+                    $orderBy = [
+                        'service_type_name' => 'asc',
+                        'service_name' => 'asc',
+                    ];
+                    $orderByJoin = ['service_type_name'];
+                    $data = $this->serviceRepository->applyOrdering($data, $orderBy, $orderByJoin);
+                    break;
+                case 'keDonThuocPhongKham':
+                    $orderBy = [
+                        'parent_name' => 'asc',
+                    ];
+                    $orderByJoin = ['parent_name'];
+                    $data = $this->serviceRepository->applyOrdering($data, $orderBy, $orderByJoin);
+                    break;
+                default:
+                    $data = $this->serviceRepository->applyOrdering(
+                        $data,
+                        $this->params->orderBy,
+                        $this->params->orderByJoin
+                    );
+                    break;
             }
             $data = $this->serviceRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
             if ($this->params->tab == 'chiDinhDichVuKyThuat') {
                 $data = $this->serviceRepository->buildTreeGroupByServiceTypeName($data);
             } else {
-                $data = $this->serviceRepository->applyGroupByField($data, $this->params->groupBy);
+                if ($this->params->tab == 'keDonThuocPhongKham') {
+                    $groupBy = [
+                        'parentName',
+                    ];
+                    $data = $this->serviceRepository->applyGroupByField($data, $groupBy);
+                } else {
+                    $data = $this->serviceRepository->applyGroupByField($data, $this->params->groupBy);
+                }
             }
             return ['data' => $data, 'count' => $count];
         } catch (\Throwable $e) {
@@ -60,31 +87,60 @@ class ServiceService
     }
     private function getAllDataFromDatabase()
     {
-        if ($this->params->tab == 'chiDinhDichVuKyThuat') {
-            $data = $this->serviceRepository->applyJoinsDichVuChiDinh();
-        } else {
-            $data = $this->serviceRepository->applyJoinsDichVuChiDinh();
+        switch ($this->params->tab) {
+            case 'chiDinhDichVuKyThuat':
+                $data = $this->serviceRepository->applyJoinsDichVuChiDinh();
+                break;
+            case 'keDonThuocPhongKham':
+                $data = $this->serviceRepository->applyJoinsKeDonThuocPhongKham();
+                break;
+            default:
+                $data = $this->serviceRepository->applyJoinsDichVuChiDinh();
+                break;
         }
+
         $data = $this->serviceRepository->applyIsActiveFilter($data, $this->params->isActive);
         $data = $this->serviceRepository->applyServiceTypeIdFilter($data, $this->params->serviceTypeId);
         $data = $this->serviceRepository->applyServiceGroupIdsFilter($data, $this->params->serviceGroupIds);
         $data = $this->serviceRepository->applyTabFilter($data, $this->params->tab);
         $count = null;
-        if ($this->params->tab == 'chiDinhDichVuKyThuat') {
-            $orderBy = [
-                'service_type_name' => 'asc',
-                'service_name' => 'asc',
-            ];
-            $orderByJoin = ['service_type_name'];
-            $data = $this->serviceRepository->applyOrdering($data, $orderBy, $orderByJoin);
-        } else {
-            $data = $this->serviceRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        switch ($this->params->tab) {
+            case 'chiDinhDichVuKyThuat':
+                $orderBy = [
+                    'service_type_name' => 'asc',
+                    'service_name' => 'asc',
+                ];
+                $orderByJoin = ['service_type_name'];
+                $data = $this->serviceRepository->applyOrdering($data, $orderBy, $orderByJoin);
+                break;
+            case 'keDonThuocPhongKham':
+                $orderBy = [
+                    'parent_name' => 'asc',
+                ];
+                $orderByJoin = ['parent_name'];
+                $data = $this->serviceRepository->applyOrdering($data, $orderBy, $orderByJoin);
+                break;
+            default:
+                $data = $this->serviceRepository->applyOrdering(
+                    $data,
+                    $this->params->orderBy,
+                    $this->params->orderByJoin
+                );
+                break;
         }
+
         $data = $this->serviceRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
         if ($this->params->tab == 'chiDinhDichVuKyThuat') {
             $data = $this->serviceRepository->buildTreeGroupByServiceTypeName($data);
         } else {
-            $data = $this->serviceRepository->applyGroupByField($data, $this->params->groupBy);
+            if ($this->params->tab == 'keDonThuocPhongKham') {
+                $groupBy = [
+                    'parentName',
+                ];
+                $data = $this->serviceRepository->applyGroupByField($data, $groupBy);
+            } else {
+                $data = $this->serviceRepository->applyGroupByField($data, $this->params->groupBy);
+            }
         }
         return ['data' => $data, 'count' => $count];
     }
@@ -196,8 +252,9 @@ class ServiceService
         }
     }
 
-    public function checkServiceGroupIds(){
-        if($this->params->serviceGroupIds){
+    public function checkServiceGroupIds()
+    {
+        if ($this->params->serviceGroupIds) {
             return $this->serviceRepository->checkServiceGroupIds($this->params->serviceGroupIds);
         }
     }

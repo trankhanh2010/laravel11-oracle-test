@@ -28,6 +28,7 @@ SELECT
      service_req.tdl_patient_name,
      service_req.tdl_patient_dob,
      service_req.tdl_patient_code,
+     service_req.tdl_treatment_code,
      service_req.tdl_treatment_code as treatment_code,
      service_req.tdl_patient_id as patient_id,
      service_req.service_req_type_id,
@@ -151,7 +152,9 @@ SELECT
      service_req.NEXT_TREAT_INTR_CODE, 
      service_req.health_exam_rank_id,
      service_req.is_main_exam,
-     service_req.tdl_hein_card_number
+     service_req.tdl_hein_card_number,
+     service_req.is_auto_finished,
+     service_req.is_wait_child
 
 
 FROM his_service_req service_req

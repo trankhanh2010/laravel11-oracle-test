@@ -59,6 +59,7 @@ class YeuCauKhamClsPtttVViewRepository
                     "tdl_ksk_contract_id",
                     "num_order",
                     "priority",
+                    "is_wait_child",
                 ]
             );
     }
@@ -152,6 +153,10 @@ class YeuCauKhamClsPtttVViewRepository
                     "sere_serv.id as current_sere_serv_id",
                     "xa_v_his_yeu_cau_kham_cls_pttt.treatment_id",
                     "xa_v_his_yeu_cau_kham_cls_pttt.patient_id",
+                    "xa_v_his_yeu_cau_kham_cls_pttt.tdl_treatment_code",
+                    "xa_v_his_yeu_cau_kham_cls_pttt.tdl_patient_code",
+                    "xa_v_his_yeu_cau_kham_cls_pttt.tdl_patient_dob",
+                    "xa_v_his_yeu_cau_kham_cls_pttt.tdl_patient_gender_name",
                     "xa_v_his_yeu_cau_kham_cls_pttt.intruction_time",
                     "xa_v_his_yeu_cau_kham_cls_pttt.service_req_code",
                     "xa_v_his_yeu_cau_kham_cls_pttt.service_req_stt_code",
@@ -264,6 +269,7 @@ class YeuCauKhamClsPtttVViewRepository
                     "xa_v_his_yeu_cau_kham_cls_pttt.icd_text",
                     "xa_v_his_yeu_cau_kham_cls_pttt.is_main_exam",
                     "xa_v_his_yeu_cau_kham_cls_pttt.tdl_hein_card_number",
+                    "xa_v_his_yeu_cau_kham_cls_pttt.is_auto_finished",
                 ]
             );
     }

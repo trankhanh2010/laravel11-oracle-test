@@ -34,13 +34,15 @@ class MediStockRepository
                 'parent.medi_stock_code as parent_code'
             );
     }
-    public function applyWith($query){
+    public function applyWith($query)
+    {
         return $query->with($this->paramWith());
     }
-    public function paramWith(){
+    public function paramWith()
+    {
         return [
-                'exp_mest_types:exp_mest_type_code,exp_mest_type_name',
-                'imp_mest_types:imp_mest_type_code,imp_mest_type_name'
+            'exp_mest_types:exp_mest_type_code,exp_mest_type_name',
+            'imp_mest_types:imp_mest_type_code,imp_mest_type_name'
         ];
     }
     public function applyKeywordFilter($query, $keyword)
@@ -56,6 +58,19 @@ class MediStockRepository
             $query->where(DB::connection('oracle_his')->raw('his_medi_stock.is_active'), $isActive);
         }
         return $query;
+    }
+    public function applyTabFilter($query, $param)
+    {
+        switch ($param) {
+            case 'khoXuatKeDonThuocPhongKham':
+                $query->whereIn('his_medi_stock.medi_stock_code', ['NT', 'KNGT', 'KTD']);
+                return $query;
+            case 'nhaThuocKeDonThuocPhongKham':
+                $query->where('his_medi_stock.IS_DRUG_STORE', 1);
+                return $query;
+            default:
+                return $query;
+        }
     }
     public function applyOrdering($query, $orderBy, $orderByJoin)
     {
@@ -245,8 +260,7 @@ class MediStockRepository
                 $dataToSync_medi_stock_exty[$id]['is_auto_execute'] = $item->is_auto_execute;
             }
             $data->exp_mest_types()->sync($dataToSync_medi_stock_exty);
-        }
-        else{
+        } else {
             $data->exp_mest_types()->sync([]);
         }
         if ($request->medi_stock_imty !== null) {
@@ -261,7 +275,7 @@ class MediStockRepository
                 $dataToSync_medi_stock_imty[$id]['is_auto_execute'] = $item->is_auto_execute;
             }
             $data->imp_mest_types()->sync($dataToSync_medi_stock_imty);
-        }else{
+        } else {
             $data->imp_mest_types()->sync([]);
         }
         DB::connection('oracle_his')->commit();

@@ -344,6 +344,8 @@ class YeuCauKhamClsPtttVViewService
                 $dataLichSuKham = $this->getDataLichSuKham($duLieu->patient_id, $duLieu->treatment_id);
                 $dataXuTriKham = $this->getDataXuTriKham($duLieu->patient_id)->toArray();
                 $dataXuTriKham['isMainExam'] = $duLieu->is_main_exam;
+                $dataXuTriKham['isAutoFinished'] = $duLieu->is_auto_finished;
+                $dataXuTriKham['tdlHeinCardNumber'] = $duLieu->tdl_hein_card_number;
                 $dataXuTriKham += $this->getDataTreatment($duLieu->treatment_id)->toArray();
                 $dataXuTriKham += $this->getPrimaryPatientType($duLieu->treatment_id, $duLieu->tdl_hein_card_number)->toArray();
                 $dataDotKhamHienTai = $this->getDataDotKhamHienTai($duLieu->treatment_id);

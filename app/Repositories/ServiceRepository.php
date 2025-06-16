@@ -133,7 +133,42 @@ class ServiceRepository
                 'parent.service_name as parent_service_name',
 
                 'his_service.is_leaf',
+                'his_service.default_patient_type_id',
             );
+    }
+
+    public function applyJoinsKeDonThuocPhongKham()
+    {
+        // Lấy nhóm đầu
+        $danhMucChaIds = $this->service
+            ->leftJoin('his_service_type', 'his_service_type.id', '=', 'his_service.service_type_id')
+            ->where('his_service_type.service_type_code','TH')
+            ->whereNull('his_service.parent_id')
+            ->whereNull('his_service.is_leaf')
+            ->pluck('his_service.id')->toArray();
+        // Lấy nhóm thứ 2
+        $parentIds = $this->service
+            ->whereIn('his_service.parent_id', $danhMucChaIds)
+            ->whereNull('his_service.is_leaf')
+            ->pluck('his_service.id')->toArray();
+                    dd($parentIds);
+
+        return $this->service
+            ->join('his_service as parent', function ($join) use ($parentIds) {
+                $join->on('parent.id', '=', 'his_service.parent_id')
+                    ->whereIn('parent.id', $parentIds);  // Chỉ lấy ra các lá đã được join thằng cha
+            })
+            ->leftJoin('his_service_type as service_type', 'service_type.id', '=', 'his_service.service_type_id')
+            ->select([
+                'his_service.id as key',
+                'his_service.id',
+                'his_service.service_code',
+                'his_service.service_name',
+                'his_service.parent_id',
+                'his_service.is_leaf',
+                'parent.service_code as parent_code',
+                'parent.service_name as parent_name',
+            ]);
     }
     public function applyKeywordFilter($query, $keyword)
     {
@@ -161,6 +196,13 @@ class ServiceRepository
         switch ($param) {
             case 'chiDinhDichVuKyThuat':
                 $query->whereIn('service_type.service_type_code', ['HA', 'GI', 'CL', 'KH', 'NS', 'PT', 'SA', 'CN', 'TT', 'XN'])
+                    ->where('his_service.is_active', 1)
+                    ->where('his_service.is_delete', 0);
+                return $query;
+            case 'keDonThuocPhongKham':
+                $query->whereIn('service_type.service_type_code', ['TH'])
+                    ->whereNotNull('his_service.parent_id')
+                    ->where('his_service.is_leaf', 1)
                     ->where('his_service.is_active', 1)
                     ->where('his_service.is_delete', 0);
                 return $query;
@@ -336,6 +378,9 @@ class ServiceRepository
         if ($orderBy != null) {
             foreach ($orderBy as $key => $item) {
                 if (in_array($key, $orderByJoin)) {
+                    if (in_array($key, ['parent_name', 'parent_code'])) {
+                        $query->orderBy($key, $item);
+                    }
                     if (in_array($key, ['service_type_code', 'service_type_name'])) {
                         $query->orderBy('service_type.' . $key, $item);
                     }

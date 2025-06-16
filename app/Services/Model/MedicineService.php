@@ -26,12 +26,32 @@ class MedicineService
     public function handleDataBaseSearch()
     {
         try {
-            $data = $this->medicineRepository->applyJoins();
+            if ($this->params->tab == 'keDonThuocPhongKham') {
+                $data = $this->medicineRepository->applyJoinsKeDonThuocPhongKham();
+            } else {
+                $data = $this->medicineRepository->applyJoins();
+            }
             $data = $this->medicineRepository->applyKeywordFilter($data, $this->params->keyword);
             $data = $this->medicineRepository->applyIsActiveFilter($data, $this->params->isActive);
             $count = $data->count();
-            $data = $this->medicineRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+            if ($this->params->tab == 'keDonThuocPhongKham') {
+                $orderBy = [
+                    'parent_name' => 'asc',
+                ];
+                $orderByJoin = ['parent_name'];
+                $data = $this->medicineRepository->applyOrdering($data, $orderBy, $orderByJoin);
+            } else {
+                $data = $this->medicineRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+            }
             $data = $this->medicineRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+            if ($this->params->tab == 'keDonThuocPhongKham') {
+                $groupBy = [
+                    'parentName',
+                    'medicineTypeName',
+                    'mediStockName',
+                ];
+                $data = $this->medicineRepository->applyGroupByField($data, $groupBy);
+            }
             return ['data' => $data, 'count' => $count];
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['medicine'], $e);
@@ -39,11 +59,31 @@ class MedicineService
     }
     private function getAllDataFromDatabase()
     {
-        $data = $this->medicineRepository->applyJoins();
+        if ($this->params->tab == 'keDonThuocPhongKham') {
+            $data = $this->medicineRepository->applyJoinsKeDonThuocPhongKham();
+        } else {
+            $data = $this->medicineRepository->applyJoins();
+        }
         $data = $this->medicineRepository->applyIsActiveFilter($data, $this->params->isActive);
         $count = $data->count();
-        $data = $this->medicineRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        if ($this->params->tab == 'keDonThuocPhongKham') {
+            $orderBy = [
+                'parent_name' => 'asc',
+            ];
+            $orderByJoin = ['parent_name'];
+            $data = $this->medicineRepository->applyOrdering($data, $orderBy, $orderByJoin);
+        } else {
+            $data = $this->medicineRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        }
         $data = $this->medicineRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        if ($this->params->tab == 'keDonThuocPhongKham') {
+            $groupBy = [
+                'parentName',
+                'medicineTypeName',
+                'mediStockName',
+            ];
+            $data = $this->medicineRepository->applyGroupByField($data, $groupBy);
+        }
         return ['data' => $data, 'count' => $count];
     }
     private function getDataById($id)

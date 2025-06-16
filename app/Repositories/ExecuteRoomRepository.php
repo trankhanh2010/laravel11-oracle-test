@@ -33,6 +33,7 @@ class ExecuteRoomRepository
             ->leftJoin('his_account_book as deposit_account_book', 'deposit_account_book.id', '=', 'room.deposit_account_book_id')
             ->leftJoin('his_account_book as bill_account_book', 'bill_account_book.id', '=', 'room.bill_account_book_id')
             ->select(
+                                'his_execute_room.id as key',
                 'his_execute_room.*',
                 'department.department_code',
                 'department.department_name',

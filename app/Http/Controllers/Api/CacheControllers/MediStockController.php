@@ -52,6 +52,7 @@ class MediStockController extends BaseApiCacheController
             $this->time,
             $this->param,
             $this->noCache,
+            $this->tab,
         );
         $this->mediStockService->withParams($this->mediStockDTO);
     }

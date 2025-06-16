@@ -46,6 +46,7 @@ class MedicineController extends BaseApiCacheController
             $this->time,
             $this->param,
             $this->noCache,
+            $this->tab,
         );
         $this->medicineService->withParams($this->medicineDTO);
     }

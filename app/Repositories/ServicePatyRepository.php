@@ -112,6 +112,7 @@ class ServicePatyRepository
                     'his_service_paty.patient_type_id',
                     'patient_type.patient_type_code',
                     'patient_type.patient_type_name',
+                    'patient_type.is_addition_required',
                 ])->distinct();
                 return $query;
             case 'selectDTPT':
