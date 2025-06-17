@@ -56,9 +56,11 @@ class ServicePatyRepository
     public function applyJoinsGetData()
     {
         return $this->servicePaty
+            ->leftJoin('his_patient_type as patient_type', 'patient_type.id', '=', 'his_service_paty.patient_type_id')
             ->select([
                 'his_service_paty.service_id',
                 'his_service_paty.patient_type_id',
+                'patient_type.patient_type_code',
                 'his_service_paty.price',
                 'his_service_paty.vat_ratio',
                 'his_service_paty.treatment_from_time',

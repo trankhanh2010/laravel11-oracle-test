@@ -1,0 +1,59 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    protected $connection = 'oracle_his';
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        DB::statement(
+            <<<SQL
+CREATE OR REPLACE VIEW XA_V_HIS_MAU_DON_TH_VT_DETAIL AS
+(
+SELECT 
+emte_material_type.EXP_MEST_TEMPLATE_ID,
+emte_material_type.MATERIAL_TYPE_ID as m_type_id,
+emte_material_type.MATERIAL_TYPE_NAME as m_type_name,
+'VT' as service_type_code,
+emte_material_type.AMOUNT,
+emte_material_type.IS_EXPEND,
+emte_material_type.IS_OUT_MEDI_STOCK,
+emte_material_type.SERVICE_UNIT_NAME
+
+FROM HIS_EMTE_MATERIAL_TYPE emte_material_type     
+
+  UNION ALL
+
+SELECT 
+emte_medicine_type.EXP_MEST_TEMPLATE_ID,
+emte_medicine_type.MEDICINE_TYPE_ID as m_type_id,
+emte_medicine_type.MEDICINE_TYPE_NAME as m_type_name,
+'TH' as service_type_code,
+emte_medicine_type.AMOUNT,
+emte_medicine_type.IS_EXPEND,
+emte_medicine_type.IS_OUT_MEDI_STOCK,
+emte_medicine_type.SERVICE_UNIT_NAME
+
+FROM HIS_EMTE_MEDICINE_TYPE emte_medicine_type     
+
+
+)
+SQL
+        );
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        DB::statement("DROP VIEW XA_V_HIS_MAU_DON_TH_VT_DETAIL");
+    }
+};

@@ -147,6 +147,7 @@ use App\Http\Controllers\Api\CacheControllers\DocumentTypeController;
 use App\Http\Controllers\Api\CacheControllers\EmrCoverTypeController;
 use App\Http\Controllers\Api\CacheControllers\EmrFormController;
 use App\Http\Controllers\Api\CacheControllers\EquipmentSetController;
+use App\Http\Controllers\Api\CacheControllers\ExpMestTemplateController;
 use App\Http\Controllers\Api\CacheControllers\FundController;
 use App\Http\Controllers\Api\CacheControllers\GroupTypeController;
 use App\Http\Controllers\Api\CacheControllers\HealthExamRankController;
@@ -1275,4 +1276,6 @@ Route::group([
     Route::apiResource('v1/appointment-period', AppointmentPeriodController::class)->only(['index']);
     /// Cấu hình hệ thống
     Route::apiResource('v1/config', ConfigController::class)->only(['index']);
+    /// Mẫu đơn 
+    Route::apiResource('v1/exp-mest-template', ExpMestTemplateController::class)->only(['index', 'show']);
 });

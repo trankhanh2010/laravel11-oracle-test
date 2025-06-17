@@ -8,6 +8,7 @@ use App\Events\Elastic\YeuCauKhamClsPtttVView\InsertYeuCauKhamClsPtttVViewIndex;
 use App\Events\Elastic\DeleteIndex;
 use App\Models\HIS\Treatment;
 use App\Repositories\AllergenicRepository;
+use App\Repositories\AppointmentServRepository;
 use App\Repositories\MedicalCaseCoverListVViewRepository;
 use App\Repositories\PatientRepository;
 use App\Repositories\PatientTypeAlterRepository;
@@ -26,6 +27,7 @@ class YeuCauKhamClsPtttVViewService
     protected $allergenicRepository;
     protected $patientRepository;
     protected $patientTypeAlterRepository;
+    protected $appointmentServRepository;
     protected $treatment;
     protected $params;
     public function __construct(
@@ -36,6 +38,7 @@ class YeuCauKhamClsPtttVViewService
         AllergenicRepository $allergenicRepository,
         PatientRepository $patientRepository,
         PatientTypeAlterRepository $patientTypeAlterRepository,
+        AppointmentServRepository $appointmentServRepository,
         Treatment $treatment,
     ) {
         $this->yeuCauKhamClsPtttVViewRepository = $yeuCauKhamClsPtttVViewRepository;
@@ -45,6 +48,7 @@ class YeuCauKhamClsPtttVViewService
         $this->allergenicRepository = $allergenicRepository;
         $this->patientRepository = $patientRepository;
         $this->patientTypeAlterRepository = $patientTypeAlterRepository;
+        $this->appointmentServRepository = $appointmentServRepository;
         $this->treatment = $treatment;
     }
     public function withParams(YeuCauKhamClsPtttVViewDTO $params)
@@ -157,6 +161,11 @@ class YeuCauKhamClsPtttVViewService
         ->where('his_patient.id', $patientId)
         ->where('his_patient.is_delete', 0);
         $data = $data->first();
+        return $data;
+    }
+    private function getDanhSachDichVuKhamDaChon($treatmentId)
+    {
+        $data = $this->appointmentServRepository->getByTreatmentId($treatmentId);
         return $data;
     }
     private function getPrimaryPatientType($treatmentId, $heinCardNumber)
@@ -346,6 +355,7 @@ class YeuCauKhamClsPtttVViewService
                 $dataXuTriKham['isMainExam'] = $duLieu->is_main_exam;
                 $dataXuTriKham['isAutoFinished'] = $duLieu->is_auto_finished;
                 $dataXuTriKham['tdlHeinCardNumber'] = $duLieu->tdl_hein_card_number;
+                $dataXuTriKham['danhSachDichVuKhamDaChon'] = $this->getDanhSachDichVuKhamDaChon($duLieu->treatment_id);
                 $dataXuTriKham += $this->getDataTreatment($duLieu->treatment_id)->toArray();
                 $dataXuTriKham += $this->getPrimaryPatientType($duLieu->treatment_id, $duLieu->tdl_hein_card_number)->toArray();
                 $dataDotKhamHienTai = $this->getDataDotKhamHienTai($duLieu->treatment_id);

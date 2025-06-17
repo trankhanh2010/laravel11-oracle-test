@@ -465,6 +465,7 @@ return [
             'thuoc_vat_tu_bean_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm Thuốc, Vật tư!',
             'appointment_period' => 'Có lỗi khi thực hiện thao tác với bảng Khung giờ hẹn khám!',
             'config' => 'Có lỗi khi thực hiện thao tác với bảng Cấu hình hệ thống!',
+            'exp_mest_template' => 'Có lỗi khi thực hiện thao tác với bảng Mẫu đơn!',
 
         ],
         'table' => [
