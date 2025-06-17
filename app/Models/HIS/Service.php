@@ -54,68 +54,68 @@ class Service extends Model
     // ];
     public function getBodyPartsAttribute()
     {
-        if($this->body_part_ids != null){
-            return Cache::remember('body_part_ids_' . $this->body_part_ids, $this->time, function ()  {
+        if ($this->body_part_ids != null) {
+            return Cache::remember('body_part_ids_' . $this->body_part_ids, $this->time, function () {
                 $data = BodyPart::select(['body_part_code', 'body_part_name'])->whereIn('id', explode(',', $this->body_part_ids))->get();
                 return $data;
-        });
+            });
         }
         return null;
     }
     public function getAppliedPatientTypesAttribute()
     {
-        if($this->applied_patient_type_ids != null){
-            return Cache::remember('applied_patient_type_ids_' . $this->applied_patient_type_ids, $this->time, function ()  {
+        if ($this->applied_patient_type_ids != null) {
+            return Cache::remember('applied_patient_type_ids_' . $this->applied_patient_type_ids, $this->time, function () {
                 $data = PatientType::select(['patient_type_code', 'patient_type_name'])->whereIn('id', explode(',', $this->applied_patient_type_ids))->get();
                 return $data;
-        });
+            });
         }
         return null;
     }
     public function getAppliedPatientClassifysAttribute()
     {
-        if($this->applied_patient_classify_ids != null){
-            return Cache::remember('applied_patient_classify_ids_' . $this->applied_patient_classify_ids, $this->time, function ()  {
+        if ($this->applied_patient_classify_ids != null) {
+            return Cache::remember('applied_patient_classify_ids_' . $this->applied_patient_classify_ids, $this->time, function () {
                 $data = PatientClassify::select(['patient_classify_code', 'patient_classify_name'])->whereIn('id', explode(',', $this->applied_patient_classify_ids))->get();
                 return $data;
-        });
+            });
         }
         return null;
     }
     public function getMinProcTimeExceptPatysAttribute()
     {
-        if($this->min_proc_time_except_paty_ids != null){
-            return Cache::remember('min_proc_time_except_paty_ids_' . $this->min_proc_time_except_paty_ids, $this->time, function ()  {
+        if ($this->min_proc_time_except_paty_ids != null) {
+            return Cache::remember('min_proc_time_except_paty_ids_' . $this->min_proc_time_except_paty_ids, $this->time, function () {
                 $data = PatientType::select(['patient_type_code', 'patient_type_name'])->whereIn('id', explode(',', $this->min_proc_time_except_paty_ids))->get();
                 return $data;
-        });
+            });
         }
         return null;
     }
     public function getMaxProcTimeExceptPatysAttribute()
     {
-        if($this->max_proc_time_except_paty_ids != null){
-            return Cache::remember('max_proc_time_except_paty_ids_' . $this->max_proc_time_except_paty_ids, $this->time, function ()  {
+        if ($this->max_proc_time_except_paty_ids != null) {
+            return Cache::remember('max_proc_time_except_paty_ids_' . $this->max_proc_time_except_paty_ids, $this->time, function () {
                 $data = PatientType::select(['patient_type_code', 'patient_type_name'])->whereIn('id', explode(',', $this->max_proc_time_except_paty_ids))->get();
                 return $data;
-        });
+            });
         }
         return null;
     }
     public function getTotalTimeExceptPatysAttribute()
     {
-        if($this->total_time_except_paty_ids != null){
-            return Cache::remember('total_time_except_paty_ids_' . $this->total_time_except_paty_ids, $this->time, function ()  {
+        if ($this->total_time_except_paty_ids != null) {
+            return Cache::remember('total_time_except_paty_ids_' . $this->total_time_except_paty_ids, $this->time, function () {
                 $data = PatientType::select(['patient_type_code', 'patient_type_name'])->whereIn('id', explode(',', $this->total_time_except_paty_ids))->get();
                 return $data;
-        });
+            });
         }
         return null;
     }
     public function patient_types()
     {
         return $this->belongsToMany(PatientType::class, ServicePaty::class, 'service_id', 'patient_type_id')
-        ->withPivot('price','vat_ratio');
+            ->withPivot('price', 'vat_ratio');
     }
 
     public function machines()
@@ -273,5 +273,16 @@ class Service extends Model
     public function serv_segr()
     {
         return $this->hasMany(ServSegr::class);
+    }
+    public function list_select_patient_types()
+    {
+        return $this->belongsToMany(
+            PatientType::class,
+            'his_service_paty', // tên bảng trung gian
+            'service_id',
+            'patient_type_id'
+        )->select('his_patient_type.id', 'his_patient_type.patient_type_code', 'his_patient_type.patient_type_name')
+            ->orderBy('his_patient_type.patient_type_code')
+            ->distinct(); 
     }
 }

@@ -17,8 +17,7 @@ class ServicePatyRepository
 
     public function __construct(
         ServicePaty $servicePaty,
-        )
-    {
+    ) {
         $this->servicePaty = $servicePaty;
         $this->patientType = new PatientType();
         $cacheKeySet = "cache_keys:" . "setting"; // Set để lưu danh sách key
@@ -53,6 +52,18 @@ class ServicePatyRepository
                 'service_type.service_type_name',
                 'service_type.service_type_code'
             );
+    }
+    public function applyJoinsGetData()
+    {
+        return $this->servicePaty
+            ->select([
+                'his_service_paty.service_id',
+                'his_service_paty.patient_type_id',
+                'his_service_paty.price',
+                'his_service_paty.vat_ratio',
+                'his_service_paty.treatment_from_time',
+                'his_service_paty.treatment_to_time',
+            ]);
     }
     public function applyKeywordFilter($query, $keyword)
     {
@@ -121,8 +132,8 @@ class ServicePatyRepository
                     'patient_type.patient_type_code',
                     'patient_type.patient_type_name',
                 ])
-                ->where('patient_type.IS_ADDITION', 1)
-                ->distinct();
+                    ->where('patient_type.IS_ADDITION', 1)
+                    ->distinct();
                 return $query;
             default:
                 return $query;
@@ -224,7 +235,8 @@ class ServicePatyRepository
             ->first();
         return $data;
     }
-    public function getDonGiaVienPhi($serviceId, $inTime){
+    public function getDonGiaVienPhi($serviceId, $inTime)
+    {
         return $this->getActivePriceByServieIdPatientTypeId($serviceId, $this->patientTypeVienPhiId, $inTime);
     }
     public function create($request, $time, $appCreator, $appModifier, $branchId, $patientTypeId)

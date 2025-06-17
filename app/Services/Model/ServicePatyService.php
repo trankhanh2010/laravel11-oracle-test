@@ -26,7 +26,11 @@ class ServicePatyService
     public function handleDataBaseSearch()
     {
         try {
-            $data = $this->servicePatyRepository->applyJoins();
+            if ($this->params->tab == 'getData') {
+                $data = $this->servicePatyRepository->applyJoinsGetData();
+            } else {
+                $data = $this->servicePatyRepository->applyJoins();
+            }
             $data = $this->servicePatyRepository->applyKeywordFilter($data, $this->params->keyword);
             $data = $this->servicePatyRepository->applyIsActiveFilter($data, $this->params->isActive);
             $data = $this->servicePatyRepository->applyServiceTypeIdsFilter($data, $this->params->serviceTypeIds);
@@ -35,7 +39,11 @@ class ServicePatyService
             $data = $this->servicePatyRepository->applyPackageIdFilter($data, $this->params->packageId);
             $data = $this->servicePatyRepository->applyTabFilter($data, $this->params->tab);
             $data = $this->servicePatyRepository->applyEffectiveFilter($data, $this->params->effective);
-            $count = $data->count();
+            if ($this->params->tab == 'getData') {
+                $count = null;
+            } else {
+                $count = $data->count();
+            }
             $data = $this->servicePatyRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
             $data = $this->servicePatyRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
             return ['data' => $data, 'count' => $count];
@@ -45,7 +53,11 @@ class ServicePatyService
     }
     private function getAllDataFromDatabase()
     {
-        $data = $this->servicePatyRepository->applyJoins();
+        if ($this->params->tab == 'getData') {
+            $data = $this->servicePatyRepository->applyJoinsGetData();
+        } else {
+            $data = $this->servicePatyRepository->applyJoins();
+        }
         $data = $this->servicePatyRepository->applyIsActiveFilter($data, $this->params->isActive);
         $data = $this->servicePatyRepository->applyServiceTypeIdsFilter($data, $this->params->serviceTypeIds);
         $data = $this->servicePatyRepository->applyPatientTypeIdsFilter($data, $this->params->patientTypeIds);
@@ -53,7 +65,11 @@ class ServicePatyService
         $data = $this->servicePatyRepository->applyPackageIdFilter($data, $this->params->packageId);
         $data = $this->servicePatyRepository->applyTabFilter($data, $this->params->tab);
         $data = $this->servicePatyRepository->applyEffectiveFilter($data, $this->params->effective);
-        $count = $data->count();
+        if ($this->params->tab == 'getData') {
+            $count = null;
+        } else {
+            $count = $data->count();
+        }
         $data = $this->servicePatyRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
         $data = $this->servicePatyRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
         return ['data' => $data, 'count' => $count];

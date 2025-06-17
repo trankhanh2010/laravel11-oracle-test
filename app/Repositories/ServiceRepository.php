@@ -101,6 +101,8 @@ class ServiceRepository
     public function applyJoinsDichVuChiDinh()
     {
         return $this->service
+            ->with('list_select_patient_types:id,patient_type_code,patient_type_name')
+
             ->leftJoin('his_service_type as service_type', 'service_type.id', '=', 'his_service.service_type_id')
             ->leftJoin('his_service as parent', 'parent.id', '=', 'his_service.parent_id')
             ->leftJoin('his_pttt_group as pttt_group', 'pttt_group.id', '=', 'his_service.pttt_group_id')
@@ -365,6 +367,8 @@ class ServiceRepository
                     if ($item->is_leaf == null) {
                         $item->children = collect();
                     }
+                }else{
+                    $tree->push($item);
                 }
             }
         }
@@ -450,7 +454,11 @@ class ServiceRepository
     {
         if ($getAll) {
             // Lấy tất cả dữ liệu
-            return $query->get();
+            $data = $query->get();
+            $data->each(function ($service) {
+                $service->list_select_patient_types->each->makeHidden('pivot');
+            });
+            return $data;
         } else {
             // Lấy dữ liệu phân trang
             return $query
