@@ -539,6 +539,8 @@ class BaseApiCacheController extends Controller
     protected $medicinePatyName = 'medicine_paty';
     protected $accidentBodyPart;
     protected $accidentBodyPartName = 'accident_body_part';
+    protected $tranPatiTemp;
+    protected $tranPatiTempName = 'tran_pati_temp';
     protected $documentBook;
     protected $documentBookName = 'document_book';
     protected $expMestTemplate;
@@ -785,6 +787,8 @@ class BaseApiCacheController extends Controller
     protected $documentListVViewName = 'document_list_v_view';
     protected $accountBookVView;
     protected $accountBookVViewName = 'account_book_v_view';
+    protected $donVView;
+    protected $donVViewName = 'don_v_view';
     protected $userAccountBookVView;
     protected $userAccountBookVViewName = 'user_account_book_v_view';
     protected $thuocVatTuBeanVView;

@@ -176,6 +176,7 @@ use App\Http\Controllers\Api\CacheControllers\SuimIndexUnitController;
 use App\Http\Controllers\Api\CacheControllers\TestIndexGroupController;
 use App\Http\Controllers\Api\CacheControllers\TranPatiFormController;
 use App\Http\Controllers\Api\CacheControllers\TranPatiReasonController;
+use App\Http\Controllers\Api\CacheControllers\TranPatiTempController;
 use App\Http\Controllers\Api\TransactionControllers\TransactionTamUngController;
 use App\Http\Controllers\Api\CacheControllers\TransactionTypeController;
 use App\Http\Controllers\Api\CacheControllers\TreatmentEndTypeExtController;
@@ -194,6 +195,7 @@ use App\Http\Controllers\Api\NoCacheControllers\DebateVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\DepositReqListVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\DhstController;
 use App\Http\Controllers\Api\NoCacheControllers\DocumentListVViewController;
+use App\Http\Controllers\Api\NoCacheControllers\DonVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\MedicalCaseCoverListVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\MedicineListVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\PatientTypeAlterVViewController;
@@ -1281,4 +1283,8 @@ Route::group([
     Route::apiResource('v1/exp-mest-template', ExpMestTemplateController::class)->only(['index', 'show']);
     /// Sổ chứng từ
     Route::apiResource('v1/document-book', DocumentBookController::class)->only(['index']);
+    /// Đơn
+    Route::apiResource('v1/don-v-view', DonVViewController::class)->only(['index', 'show']);
+    /// Mẫu chuyển viện
+    Route::apiResource('v1/tran-pati-temp', TranPatiTempController::class)->only(['index', 'show']);
 });

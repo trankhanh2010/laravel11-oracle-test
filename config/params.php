@@ -467,6 +467,8 @@ return [
             'config' => 'Có lỗi khi thực hiện thao tác với bảng Cấu hình hệ thống!',
             'exp_mest_template' => 'Có lỗi khi thực hiện thao tác với bảng Mẫu đơn!',
             'document_book' => 'Có lỗi khi thực hiện thao tác với bảng Sổ chứng từ!',
+            'don_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm Đơn!',
+            'tran_pati_temp' => 'Có lỗi khi thực hiện thao tác với bảng Mẫu thông tin chuyển viện!',
 
         ],
         'table' => [
