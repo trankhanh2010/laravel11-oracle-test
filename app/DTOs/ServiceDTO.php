@@ -23,6 +23,7 @@ class ServiceDTO
     public $groupBy;
     public $tab;
     public $serviceGroupIds;
+    public $serviceReqId;
     public function __construct(
         $serviceName,
         $keyword, 
@@ -43,6 +44,7 @@ class ServiceDTO
         $groupBy,
         $tab,
         $serviceGroupIds,
+        $serviceReqId,
         )
     {
         $this->serviceName = $serviceName;
@@ -64,5 +66,6 @@ class ServiceDTO
         $this->groupBy = $groupBy;
         $this->tab = $tab;
         $this->serviceGroupIds = $serviceGroupIds;
+        $this->serviceReqId = $serviceReqId;
     }
 }

@@ -37,10 +37,12 @@ SELECT
      service_req.CONCLUSION_SUBCLINICAL,
      service_req_stt.service_req_stt_code,
      service_req_stt.service_req_stt_name,
-
-
+     service_req.tdl_patient_id,
+     service_req.request_loginname,
+     service_req.request_username,
      request_department.department_code as request_department_code,
-     request_department.department_name as request_department_name
+     request_department.department_name as request_department_name,
+     service_req.service_req_type_id
     FROM his_service_req service_req
     LEFT JOIN his_department request_department on request_department.id = service_req.request_department_id
     LEFT JOIN his_service_req_stt service_req_stt on service_req_stt.id = service_req.service_req_stt_id

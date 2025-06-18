@@ -4,10 +4,7 @@ namespace App\Http\Controllers\Api\NoCacheControllers;
 
 use App\DTOs\ServiceReqListVViewDTO;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
-use App\Http\Requests\ServiceReqListVView\CreateServiceReqListVViewRequest;
-use App\Http\Requests\ServiceReqListVView\UpdateServiceReqListVViewRequest;
 use App\Models\View\ServiceReqListVView;
-use App\Services\Elastic\ElasticsearchService;
 use App\Services\Model\ServiceReqListVViewService;
 use Illuminate\Http\Request;
 
@@ -16,16 +13,14 @@ class ServiceReqListVViewController extends BaseApiCacheController
 {
     protected $serviceReqListVViewService;
     protected $serviceReqListVViewDTO;
-    public function __construct(Request $request, ElasticsearchService $elasticSearchService, ServiceReqListVViewService $serviceReqListVViewService, ServiceReqListVView $serviceReqListVView)
+    public function __construct(Request $request, ServiceReqListVViewService $serviceReqListVViewService, ServiceReqListVView $serviceReqListVView)
     {
         parent::__construct($request); // Gọi constructor của BaseController
-        $this->elasticSearchService = $elasticSearchService;
         $this->serviceReqListVViewService = $serviceReqListVViewService;
         $this->serviceReqListVView = $serviceReqListVView;
         // Kiểm tra tên trường trong bảng
         if ($this->orderBy != null) {
-            $this->orderByJoin = [
-            ];
+            $this->orderByJoin = [];
             $columns = $this->getColumnsTable($this->serviceReqListVView, true);
             $this->orderBy = $this->checkOrderBy($this->orderBy, $columns, $this->orderByJoin ?? []);
         }
@@ -42,8 +37,8 @@ class ServiceReqListVViewController extends BaseApiCacheController
             $this->start,
             $this->limit,
             $request,
-            $this->appCreator, 
-            $this->appModifier, 
+            $this->appCreator,
+            $this->appModifier,
             $this->time,
             $this->groupBy,
             $this->trackingId,
@@ -51,6 +46,8 @@ class ServiceReqListVViewController extends BaseApiCacheController
             $this->param,
             $this->noCache,
             $this->treatmentCode,
+            $this->tab,
+            $this->patientId,
         );
         $this->serviceReqListVViewService->withParams($this->serviceReqListVViewDTO);
     }
@@ -59,20 +56,27 @@ class ServiceReqListVViewController extends BaseApiCacheController
         if ($this->checkParam()) {
             return $this->checkParam();
         }
-        $keyword = $this->keyword;
-        if (($keyword != null || $this->elasticSearchType != null) && !$this->cache) {
-            if ($this->elasticSearchType != null) {
-                $data = $this->elasticSearchService->handleElasticSearchSearch($this->serviceReqListVViewName);
-            } else {
-                $data = $this->serviceReqListVViewService->handleDataBaseSearch();
-            }
-        } else {
-            if ($this->elastic) {
-                $data = $this->elasticSearchService->handleElasticSearchGetAll($this->serviceReqListVViewName);
-            } else {
-                $data = $this->serviceReqListVViewService->handleDataBaseGetAll();
-            }
+
+        switch ($this->tab) {
+            case 'chiDinhCuChiDinhDichVuKyThuat':
+                if ($this->patientId == null) {
+                    $this->errors[$this->patientIdName] = "Thiếu thời gian";
+                }
+                if ($this->checkParam()) {
+                    return $this->checkParam();
+                }
+                $data = $this->serviceReqListVViewService->handleDataBaseGetAllChiDinhCuChiDinhDichVuKyThuat();
+                break;
+            default:
+                $keyword = $this->keyword;
+                if (($keyword != null || $this->elasticSearchType != null) && !$this->cache) {
+                    $data = $this->serviceReqListVViewService->handleDataBaseSearch();
+                } else {
+                    $data = $this->serviceReqListVViewService->handleDataBaseGetAll();
+                }
+                break;
         }
+
         $paramReturn = [
             $this->getAllName => $this->getAll,
             $this->startName => $this->getAll ? null : $this->start,

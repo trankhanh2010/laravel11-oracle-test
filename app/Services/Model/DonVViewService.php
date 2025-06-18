@@ -36,6 +36,15 @@ class DonVViewService
             $count = $data->count();
             $data = $this->donVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
             $data = $this->donVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+            if ($this->params->tab == 'donCuKeDonThuocPhongKham') {
+                $groupBy = [
+                    'expMestCode',
+                    'tdlServiceReqCode'
+                ];
+                $data = $this->donVViewRepository->applyGroupByField($data, $groupBy);
+            } else {
+                $data = $this->donVViewRepository->applyGroupByField($data, $this->params->groupBy);
+            }
             return ['data' => $data, 'count' => $count];
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['don_v_view'], $e);
@@ -53,6 +62,15 @@ class DonVViewService
         $count = $data->count();
         $data = $this->donVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
         $data = $this->donVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        if ($this->params->tab == 'donCuKeDonThuocPhongKham') {
+            $groupBy = [
+                'expMestCode',
+                'tdlServiceReqCode'
+            ];
+            $data = $this->donVViewRepository->applyGroupByField($data, $groupBy);
+        } else {
+            $data = $this->donVViewRepository->applyGroupByField($data, $this->params->groupBy);
+        }
         return ['data' => $data, 'count' => $count];
     }
     private function getDataById($id)

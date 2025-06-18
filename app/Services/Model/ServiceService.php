@@ -29,6 +29,9 @@ class ServiceService
             switch ($this->params->tab) {
                 case 'chiDinhDichVuKyThuat':
                     $data = $this->serviceRepository->applyJoinsDichVuChiDinh();
+                    if ($this->params->serviceReqId) {
+                        $data = $this->serviceRepository->applyChiDinhCuFilter($data, $this->params->serviceReqId); // Nếu lấy theo chỉ định cũ thì rightJoin service_req
+                    }
                     break;
                 case 'keDonThuocPhongKham':
                     $data = $this->serviceRepository->applyJoinsKeDonThuocPhongKham();
@@ -90,6 +93,9 @@ class ServiceService
         switch ($this->params->tab) {
             case 'chiDinhDichVuKyThuat':
                 $data = $this->serviceRepository->applyJoinsDichVuChiDinh();
+                if ($this->params->serviceReqId) {
+                    $data = $this->serviceRepository->applyChiDinhCuFilter($data, $this->params->serviceReqId); // Nếu lấy theo chỉ định cũ thì rightJoin service_req
+                }
                 break;
             case 'keDonThuocPhongKham':
                 $data = $this->serviceRepository->applyJoinsKeDonThuocPhongKham();
@@ -158,7 +164,7 @@ class ServiceService
             // set tăng bộ nhớ
             ini_set('memory_limit', '256M');
             // Nếu không lưu cache
-            if ($this->params->noCache) {
+            if ($this->params->noCache || $this->params->serviceReqId) {
                 return $this->getAllDataFromDatabase();
             } else {
                 $cacheKey = $this->params->serviceName . '_' . $this->params->param;

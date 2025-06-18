@@ -33,7 +33,7 @@ trait dinh_dang_ten_truong
             $convertedKey = $this->snakeToCamel($key);
             // Ép kiểu riêng cho những trường muốn là số
             if (in_array($convertedKey, ['key',])) {
-                $convertedArray[$convertedKey] = (int) $value;
+                $convertedArray[$convertedKey] = (((int) $value) > 0) ?((int) $value) : $value; // Nếu có thể chuyển sang số thì chuyển , không thì giữ nguyên
             } else {
                 $convertedArray[$convertedKey] = $value;
             }

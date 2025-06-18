@@ -46,6 +46,7 @@ class DonVViewController extends BaseApiCacheController
             $this->intructionTimeFrom,
             $this->intructionTimeTo,
             $this->patientId,
+            $this->groupBy,
         );
         $this->donVViewService->withParams($this->donVViewDTO);
     }

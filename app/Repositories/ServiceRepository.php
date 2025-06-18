@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Jobs\ElasticSearch\Index\ProcessElasticIndexingJob;
+use App\Models\HIS\SereServ;
 use App\Models\HIS\Service;
 use App\Models\HIS\ServiceGroup;
 use App\Models\HIS\ServicePaty;
@@ -184,6 +185,13 @@ class ServiceRepository
         if ($isActive !== null) {
             $query->where(DB::connection('oracle_his')->raw('his_service.is_active'), $isActive);
         }
+        return $query;
+    }
+    public function applyChiDinhCuFilter($query, $serviceReqId)
+    {
+        $sereServ = new SereServ();
+        $serviceIds = $sereServ->select('service_id')->where('service_req_id', $serviceReqId)->get()->toArray();
+        $query->whereIn('his_service.id', $serviceIds);
         return $query;
     }
     public function applyServiceTypeIdFilter($query, $id)

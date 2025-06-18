@@ -78,8 +78,8 @@ class ServiceController extends BaseApiCacheController
             $this->start,
             $this->limit,
             $request,
-            $this->appCreator, 
-            $this->appModifier, 
+            $this->appCreator,
+            $this->appModifier,
             $this->time,
             $this->serviceTypeId,
             $this->param,
@@ -87,6 +87,7 @@ class ServiceController extends BaseApiCacheController
             $this->groupBy,
             $this->tab,
             $this->serviceGroupIds,
+            $this->serviceReqId,
         );
         $this->serviceService->withParams($this->serviceDTO);
     }
@@ -95,22 +96,14 @@ class ServiceController extends BaseApiCacheController
         if ($this->checkParam()) {
             return $this->checkParam();
         }
-        if($this->serviceService->checkServiceGroupIds()){
+        if ($this->serviceService->checkServiceGroupIds()) {
             return $this->serviceService->checkServiceGroupIds();
         }
         $keyword = $this->keyword;
         if (($keyword != null || $this->elasticSearchType != null) && !$this->cache) {
-            if ($this->elasticSearchType != null) {
-                $data = $this->elasticSearchService->handleElasticSearchSearch($this->serviceName);
-            } else {
-                $data = $this->serviceService->handleDataBaseSearch();
-            }
+            $data = $this->serviceService->handleDataBaseSearch();
         } else {
-            if ($this->elastic) {
-                $data = $this->elasticSearchService->handleElasticSearchGetAll($this->serviceName);
-            } else {
-                $data = $this->serviceService->handleDataBaseGetAll();
-            }
+            $data = $this->serviceService->handleDataBaseGetAll();
         }
         $paramReturn = [
             $this->getAllName => $this->getAll,
@@ -135,11 +128,7 @@ class ServiceController extends BaseApiCacheController
                 return $validationError;
             }
         }
-        if ($this->elastic) {
-            $data = $this->elasticSearchService->handleElasticSearchGetWithId($this->serviceName, $id);
-        } else {
-            $data = $this->serviceService->handleDataBaseGetWithId($id);
-        }
+        $data = $this->serviceService->handleDataBaseGetWithId($id);
         $paramReturn = [
             $this->idName => $id,
             $this->isActiveName => $this->isActive,

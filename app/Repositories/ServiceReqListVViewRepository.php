@@ -1,4 +1,5 @@
-<?php 
+<?php
+
 namespace App\Repositories;
 
 use App\Jobs\ElasticSearch\Index\ProcessElasticIndexingJob;
@@ -18,7 +19,46 @@ class ServiceReqListVViewRepository
     public function applyJoins()
     {
         return $this->serviceReqListVView
-            ->select();
+            ->select(
+                'xa_v_his_service_req_list.id',
+                'xa_v_his_service_req_list.create_time',
+                'xa_v_his_service_req_list.modify_time',
+                'xa_v_his_service_req_list.creator',
+                'xa_v_his_service_req_list.modifier',
+                'xa_v_his_service_req_list.app_creator',
+                'xa_v_his_service_req_list.app_modifier',
+                'xa_v_his_service_req_list.is_active',
+                'xa_v_his_service_req_list.is_delete',
+                'xa_v_his_service_req_list.is_no_execute',
+                'xa_v_his_service_req_list.intruction_time',
+                'xa_v_his_service_req_list.intruction_date',
+                'xa_v_his_service_req_list.treatment_id',
+                'xa_v_his_service_req_list.tracking_id',
+                'xa_v_his_service_req_list.service_req_code',
+                'xa_v_his_service_req_list.note',
+                'xa_v_his_service_req_list.CONCLUSION_CLINICAL',
+                'xa_v_his_service_req_list.CONCLUSION_SUBCLINICAL',
+                'xa_v_his_service_req_list.service_req_stt_code',
+                'xa_v_his_service_req_list.service_req_stt_name',
+                'xa_v_his_service_req_list.tdl_patient_id',
+                'xa_v_his_service_req_list.request_department_code',
+                'xa_v_his_service_req_list.request_department_name',
+            );
+    }
+    public function applyJoinsChiDinhCuChiDinhDichVuKyThuat()
+    {
+        return $this->serviceReqListVView
+        ->leftJoin('his_service_req_type', 'his_service_req_type.id', '=', 'xa_v_his_service_req_list.service_req_type_id')
+            ->select([
+                'xa_v_his_service_req_list.id',
+                'xa_v_his_service_req_list.service_req_code',
+                'xa_v_his_service_req_list.intruction_time',
+                'xa_v_his_service_req_list.intruction_date',
+                'xa_v_his_service_req_list.request_loginname',
+                'xa_v_his_service_req_list.request_username',
+                'his_service_req_type.service_req_type_code',
+                'his_service_req_type.service_req_type_name',
+            ]);
     }
     public function applyWithParam($query)
     {
@@ -34,43 +74,48 @@ class ServiceReqListVViewRepository
     public function applyKeywordFilter($query, $keyword)
     {
         return $query->where(function ($query) use ($keyword) {
-            $query->where(('service_req_list_code'), 'like', '%'. $keyword . '%')
-            ->orWhere(('lower(service_req_list_name)'), 'like', '%'. strtolower($keyword) . '%');
+            $query->where(('service_req_list_code'), 'like', '%' . $keyword . '%')
+                ->orWhere(('lower(service_req_list_name)'), 'like', '%' . strtolower($keyword) . '%');
         });
     }
     public function applyIsActiveFilter($query, $isActive)
     {
         if ($isActive !== null) {
-            $query->where(('is_active'), $isActive);
+            $query->where(('xa_v_his_service_req_list.is_active'), $isActive);
         }
         return $query;
     }
     public function applyIsDeleteFilter($query, $isDelete)
     {
         if ($isDelete !== null) {
-            $query->where(('is_delete'), $isDelete);
+            $query->where(('xa_v_his_service_req_list.is_delete'), $isDelete);
         }
+        return $query;
+    }
+    public function applyPatientIdFilter($query, $param)
+    {
+        $query->where(('xa_v_his_service_req_list.tdl_patient_id'), $param);
         return $query;
     }
     public function applyIsNoExecuteFilter($query)
     {
         $query->where(function ($q) {
-            $q->where('IS_NO_EXECUTE', 0)
-              ->orWhereNull('IS_NO_EXECUTE');
+            $q->where('xa_v_his_service_req_list.IS_NO_EXECUTE', 0)
+                ->orWhereNull('xa_v_his_service_req_list.IS_NO_EXECUTE');
         });
         return $query;
     }
     public function applyTrackingIdFilter($query, $param)
     {
         if ($param !== null) {
-            $query->where(('tracking_id'), $param);
+            $query->where(('xa_v_his_service_req_list.tracking_id'), $param);
         }
         return $query;
     }
     public function applyTreatmentIdFilter($query, $param)
     {
         if ($param !== null) {
-            $query->where(('treatment_id'), $param);
+            $query->where(('xa_v_his_service_req_list.treatment_id'), $param);
         }
         return $query;
     }
@@ -79,25 +124,25 @@ class ServiceReqListVViewRepository
         if (empty($groupByFields)) {
             return $data;
         }
-    
+
         // Chuyển các field thành snake_case trước khi nhóm
         $fieldMappings = [];
         foreach ($groupByFields as $field) {
             $snakeField = Str::snake($field);
             $fieldMappings[$snakeField] = $field;
         }
-    
+
         $snakeFields = array_keys($fieldMappings);
-    
+
         // Đệ quy nhóm dữ liệu theo thứ tự fields đã convert
         $groupData = function ($items, $fields) use (&$groupData, $fieldMappings) {
             if (empty($fields)) {
                 return $items->values(); // Hết field nhóm -> Trả về danh sách gốc
             }
-    
+
             $currentField = array_shift($fields);
             $originalField = $fieldMappings[$currentField];
-    
+
             return $items->groupBy(function ($item) use ($currentField) {
                 return $item[$currentField] ?? null;
             })->map(function ($group, $key) use ($fields, $groupData, $originalField) {
@@ -108,10 +153,10 @@ class ServiceReqListVViewRepository
                 ];
             })->values();
         };
-    
+
         return $groupData(collect($data), $snakeFields);
     }
-    
+
 
     public function applyOrdering($query, $orderBy, $orderByJoin)
     {
@@ -119,7 +164,7 @@ class ServiceReqListVViewRepository
             foreach ($orderBy as $key => $item) {
                 if (in_array($key, $orderByJoin)) {
                 } else {
-                    $query->orderBy('' . $key, $item);
+                    $query->orderBy($key, $item);
                 }
             }
         }
