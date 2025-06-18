@@ -82,13 +82,24 @@ class ThuocVatTuBeanVViewRepository
         }
         return $query;
     }
+    public function applyKeDonThuocPhongKhamFilter($query, $thoiGianChiDinh)
+    {
+        // Lấy theo thời gian chỉ định chưa hết hạn hoặc không có thời gian hết hạn
+        $query->where(function ($q) use ($thoiGianChiDinh) {
+            $q->whereNull('xa_v_his_thuoc_vat_tu_bean.tdl_medicine_expired_date')
+            ->orWhere('xa_v_his_thuoc_vat_tu_bean.tdl_medicine_expired_date', '>=', $thoiGianChiDinh);
+        });
+
+        return $query;
+    }
+
     public function applyTypeKeDonThuocPhongKhamFilter($query, $param)
     {
         switch ($param) {
             case 'thuocVatTuTrongKho':
-                return $query;
+                return $query->whereIn('xa_v_his_thuoc_vat_tu_bean.medi_stock_code', ['NT', 'KNGT', 'KTD']);
             case 'thuocVatTuMuaNgoai':
-                return $query->where('xa_v_his_thuoc_vat_tu_bean.IS_OUT_HOSPITAL', 1);
+                return $query->where('xa_v_his_thuoc_vat_tu_bean.IS_DRUG_STORE', 1);
             default:
                 return $query;
         }

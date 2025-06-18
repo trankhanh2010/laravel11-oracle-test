@@ -19,30 +19,42 @@ CREATE OR REPLACE VIEW XA_V_HIS_MAU_DON_TH_VT_DETAIL AS
 (
 SELECT 
 emte_material_type.EXP_MEST_TEMPLATE_ID,
+emte_material_type.IS_ACTIVE,
+emte_material_type.IS_DELETE,
+null as concentra,
+null as active_ingr_bhyt_name,
 emte_material_type.MATERIAL_TYPE_ID as m_type_id,
 emte_material_type.MATERIAL_TYPE_NAME as m_type_name,
 'VT' as service_type_code,
 emte_material_type.AMOUNT,
 emte_material_type.IS_EXPEND,
 emte_material_type.IS_OUT_MEDI_STOCK,
-emte_material_type.SERVICE_UNIT_NAME
+emte_material_type.SERVICE_UNIT_NAME,
+null as TUTORIAL
 
 FROM HIS_EMTE_MATERIAL_TYPE emte_material_type     
+LEFT JOIN HIS_SERVICE  service on material_type.service_id = service.id
 
   UNION ALL
 
 SELECT 
 emte_medicine_type.EXP_MEST_TEMPLATE_ID,
+emte_medicine_type.IS_ACTIVE,
+emte_medicine_type.IS_DELETE,
+medicine_type.concentra,
+medicine_type.active_ingr_bhyt_name,
 emte_medicine_type.MEDICINE_TYPE_ID as m_type_id,
 emte_medicine_type.MEDICINE_TYPE_NAME as m_type_name,
 'TH' as service_type_code,
 emte_medicine_type.AMOUNT,
 emte_medicine_type.IS_EXPEND,
 emte_medicine_type.IS_OUT_MEDI_STOCK,
-emte_medicine_type.SERVICE_UNIT_NAME
+emte_medicine_type.SERVICE_UNIT_NAME,
+emte_medicine_type.TUTORIAL
 
 FROM HIS_EMTE_MEDICINE_TYPE emte_medicine_type     
-
+LEFT JOIN HIS_MEDICINE_TYPE  medicine_type on medicine_type.id = emte_medicine_type.medicine_type_id
+LEFT JOIN HIS_SERVICE  service on medicine_type.service_id = service.id
 
 )
 SQL

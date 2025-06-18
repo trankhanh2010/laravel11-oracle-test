@@ -1,4 +1,5 @@
-<?php 
+<?php
+
 namespace App\Repositories;
 
 use App\Jobs\ElasticSearch\Index\ProcessElasticIndexingJob;
@@ -23,10 +24,10 @@ class PatientRepository
     public function applyJoinsXuTriKham()
     {
         return $this->patient
-            ->select(
+            ->select([
                 'his_patient.note',
-                'his_patient.social_insurance_number'
-            );
+                'his_patient.work_place',
+            ]);
     }
     public function applyKeywordFilter($query, $keyword)
     {

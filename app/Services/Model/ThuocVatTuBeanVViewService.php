@@ -64,6 +64,7 @@ class ThuocVatTuBeanVViewService
         if ($this->params->tab == 'keDonThuocPhongKham') {
             $data = $this->thuocVatTuBeanVViewRepository->applyJoinsKeDonThuocPhongKham();
             $data = $this->thuocVatTuBeanVViewRepository->applyMediStockIdsFilter($data, $this->params->mediStockIds);
+            $data = $this->thuocVatTuBeanVViewRepository->applyKeDonThuocPhongKhamFilter($data, $this->params->intructionTime);
             $data = $this->thuocVatTuBeanVViewRepository->applyTypeKeDonThuocPhongKhamFilter($data, $this->params->type);
         } else {
             $data = $this->thuocVatTuBeanVViewRepository->applyJoins();

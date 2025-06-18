@@ -8,15 +8,21 @@ use App\Events\Elastic\ExpMestTemplate\InsertExpMestTemplateIndex;
 use App\Events\Elastic\DeleteIndex;
 use Illuminate\Support\Facades\Cache;
 use App\Repositories\ExpMestTemplateRepository;
+use App\Repositories\MauDonThVtDetailVViewRepository;
 use Illuminate\Support\Facades\Redis;
 
 class ExpMestTemplateService
 {
     protected $expMestTemplateRepository;
+    protected $mauDonThVtDetailVViewRepository;
     protected $params;
-    public function __construct(ExpMestTemplateRepository $expMestTemplateRepository)
+    public function __construct(
+        ExpMestTemplateRepository $expMestTemplateRepository,
+        MauDonThVtDetailVViewRepository $mauDonThVtDetailVViewRepository,
+        )
     {
         $this->expMestTemplateRepository = $expMestTemplateRepository;
+        $this->mauDonThVtDetailVViewRepository = $mauDonThVtDetailVViewRepository;
     }
     public function withParams(ExpMestTemplateDTO $params)
     {
@@ -63,6 +69,12 @@ class ExpMestTemplateService
             ->where('his_exp_mest_template.id', $id);
         $data = $this->expMestTemplateRepository->applyIsActiveFilter($data, 1);
         $data = $data->first();
+        $data['danhSachThuocVatTu'] = $this->getDanhSachThuocVatTu($id);
+        return $data;
+    }
+    private function getDanhSachThuocVatTu($expMestTemplateId)
+    {
+        $data = $this->mauDonThVtDetailVViewRepository->getByExpMestTemplateId($expMestTemplateId);
         return $data;
     }
     public function handleDataBaseGetAllDataFromDatabaseSelectByLoginname()

@@ -23,6 +23,7 @@ class ThuocVatTuBeanVViewDTO
     public $mediStockIds;
     public $tab;
     public $type;
+    public $intructionTime;
     public function __construct(
         $thuocVatTuBeanVViewName,
         $keyword, 
@@ -43,6 +44,7 @@ class ThuocVatTuBeanVViewDTO
         $mediStockIds,
         $tab,
         $type,
+        $intructionTime,
         )
     {
         $this->thuocVatTuBeanVViewName = $thuocVatTuBeanVViewName;
@@ -64,5 +66,6 @@ class ThuocVatTuBeanVViewDTO
         $this->mediStockIds = $mediStockIds;
         $this->tab = $tab;
         $this->type = $type;
+        $this->intructionTime = $intructionTime;
     }
 }

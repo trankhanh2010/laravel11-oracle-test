@@ -17,27 +17,27 @@ class MauDonThVtDetailVViewRepository
     {
         return $this->mauDonThVtDetailVView
             ->select(
-                'xa_v_hismau_don_th_tt_detail.*'
+                'xa_v_his_mau_don_th_tt_detail.*'
             );
     }
     public function applyKeywordFilter($query, $keyword)
     {
         return $query->where(function ($query) use ($keyword) {
-            $query->where(DB::connection('oracle_his')->raw('xa_v_hismau_don_th_tt_detail.mau_don_th_tt_detail_code'), 'like', '%'. $keyword . '%')
-            ->orWhere(DB::connection('oracle_his')->raw('lower(xa_v_hismau_don_th_tt_detail.mau_don_th_tt_detail_name)'), 'like', '%'. strtolower($keyword) . '%');
+            $query->where(DB::connection('oracle_his')->raw('xa_v_his_mau_don_th_tt_detail.mau_don_th_tt_detail_code'), 'like', '%'. $keyword . '%')
+            ->orWhere(DB::connection('oracle_his')->raw('lower(xa_v_his_mau_don_th_tt_detail.mau_don_th_tt_detail_name)'), 'like', '%'. strtolower($keyword) . '%');
         });
     }
     public function applyIsActiveFilter($query, $isActive)
     {
         if ($isActive !== null) {
-            $query->where(DB::connection('oracle_his')->raw('xa_v_hismau_don_th_tt_detail.is_active'), $isActive);
+            $query->where(DB::connection('oracle_his')->raw('xa_v_his_mau_don_th_tt_detail.is_active'), $isActive);
         }
         return $query;
     }
     public function applyIsDeleteFilter($query, $isDelete)
     {
         if ($isDelete !== null) {
-            $query->where(DB::connection('oracle_his')->raw('xa_v_hismau_don_th_tt_detail.is_delete'), $isDelete);
+            $query->where(DB::connection('oracle_his')->raw('xa_v_his_mau_don_th_tt_detail.is_delete'), $isDelete);
         }
         return $query;
     }
@@ -45,10 +45,10 @@ class MauDonThVtDetailVViewRepository
     {
         if ($param !== null) {
             if($param == 1){
-                $query->where(DB::connection('oracle_his')->raw('xa_v_hismau_don_th_tt_detail.is_for_bill'), $param);
+                $query->where(DB::connection('oracle_his')->raw('xa_v_his_mau_don_th_tt_detail.is_for_bill'), $param);
             }else{
-                $query->whereNull(DB::connection('oracle_his')->raw('xa_v_hismau_don_th_tt_detail.is_for_bill'))
-                ->orWhereNull(DB::connection('oracle_his')->raw('xa_v_hismau_don_th_tt_detail.is_for_bill'), $param);
+                $query->whereNull(DB::connection('oracle_his')->raw('xa_v_his_mau_don_th_tt_detail.is_for_bill'))
+                ->orWhereNull(DB::connection('oracle_his')->raw('xa_v_his_mau_don_th_tt_detail.is_for_bill'), $param);
             }
         }
         return $query;
@@ -57,10 +57,10 @@ class MauDonThVtDetailVViewRepository
     {
         if ($param !== null) {
             if($param == 1){
-                $query->where(DB::connection('oracle_his')->raw('xa_v_hismau_don_th_tt_detail.is_for_repay'), $param);
+                $query->where(DB::connection('oracle_his')->raw('xa_v_his_mau_don_th_tt_detail.is_for_repay'), $param);
             }else{
-                $query->whereNull(DB::connection('oracle_his')->raw('xa_v_hismau_don_th_tt_detail.is_for_repay'))
-                ->orWhereNull(DB::connection('oracle_his')->raw('xa_v_hismau_don_th_tt_detail.is_for_repay'), $param);
+                $query->whereNull(DB::connection('oracle_his')->raw('xa_v_his_mau_don_th_tt_detail.is_for_repay'))
+                ->orWhereNull(DB::connection('oracle_his')->raw('xa_v_his_mau_don_th_tt_detail.is_for_repay'), $param);
             }
         }
         return $query;
@@ -69,10 +69,10 @@ class MauDonThVtDetailVViewRepository
     {
         if ($param !== null) {
             if($param == 1){
-                $query->where(DB::connection('oracle_his')->raw('xa_v_hismau_don_th_tt_detail.is_for_deposit'), $param);
+                $query->where(DB::connection('oracle_his')->raw('xa_v_his_mau_don_th_tt_detail.is_for_deposit'), $param);
             }else{
-                $query->whereNull(DB::connection('oracle_his')->raw('xa_v_hismau_don_th_tt_detail.is_for_deposit'))
-                ->orWhereNull(DB::connection('oracle_his')->raw('xa_v_hismau_don_th_tt_detail.is_for_deposit'), $param);
+                $query->whereNull(DB::connection('oracle_his')->raw('xa_v_his_mau_don_th_tt_detail.is_for_deposit'))
+                ->orWhereNull(DB::connection('oracle_his')->raw('xa_v_his_mau_don_th_tt_detail.is_for_deposit'), $param);
             }
         }
         return $query;
@@ -80,7 +80,7 @@ class MauDonThVtDetailVViewRepository
     public function applyDebateIdFilter($query, $id)
     {
         if ($id !== null) {
-            $query->where(DB::connection('oracle_his')->raw('xa_v_hismau_don_th_tt_detail.debate_id'), $id);
+            $query->where(DB::connection('oracle_his')->raw('xa_v_his_mau_don_th_tt_detail.debate_id'), $id);
         }
         return $query;
     }
@@ -90,7 +90,7 @@ class MauDonThVtDetailVViewRepository
             foreach ($orderBy as $key => $item) {
                 if (in_array($key, $orderByJoin)) {
                 } else {
-                    $query->orderBy('xa_v_hismau_don_th_tt_detail.' . $key, $item);
+                    $query->orderBy('xa_v_his_mau_don_th_tt_detail.' . $key, $item);
                 }
             }
         }
@@ -113,6 +113,27 @@ class MauDonThVtDetailVViewRepository
     public function getById($id)
     {
         return $this->mauDonThVtDetailVView->find($id);
+    }
+    public function getByExpMestTemplateId($expMestTemplateId)
+    {
+        return $this->mauDonThVtDetailVView
+        ->select([
+            'xa_v_his_mau_don_th_vt_detail.m_type_id',
+            'xa_v_his_mau_don_th_vt_detail.m_type_name',
+            'xa_v_his_mau_don_th_vt_detail.concentra',
+            'xa_v_his_mau_don_th_vt_detail.active_ingr_bhyt_name',
+            'xa_v_his_mau_don_th_vt_detail.service_type_code',
+            'xa_v_his_mau_don_th_vt_detail.amount',
+            'xa_v_his_mau_don_th_vt_detail.is_expend',
+            'xa_v_his_mau_don_th_vt_detail.is_out_medi_stock',
+            'xa_v_his_mau_don_th_vt_detail.service_unit_name',
+            'xa_v_his_mau_don_th_vt_detail.tutorial',
+
+        ])
+        ->where('xa_v_his_mau_don_th_vt_detail.exp_mest_template_id', $expMestTemplateId)
+        ->where('xa_v_his_mau_don_th_vt_detail.is_active', 1)
+        ->where('xa_v_his_mau_don_th_vt_detail.is_delete', 0)
+        ->get();
     }
     // public function create($request, $time, $appCreator, $appModifier){
     //     $data = $this->mauDonThVtDetailVView::create([
@@ -148,15 +169,15 @@ class MauDonThVtDetailVViewRepository
     {
         $numJobs = config('queue')['num_queue_worker']; // Số lượng job song song
         if ($id != null) {
-            $data = $this->applyJoins()->where('xa_v_hismau_don_th_tt_detail.id', '=', $id)->first();
+            $data = $this->applyJoins()->where('xa_v_his_mau_don_th_tt_detail.id', '=', $id)->first();
             if ($data) {
                 $data = $data->getAttributes();
                 return $data;
             }
         } else {
             // Xác định min và max id
-            $minId = $this->applyJoins()->min('xa_v_hismau_don_th_tt_detail.id');
-            $maxId = $this->applyJoins()->max('xa_v_hismau_don_th_tt_detail.id');
+            $minId = $this->applyJoins()->min('xa_v_his_mau_don_th_tt_detail.id');
+            $maxId = $this->applyJoins()->max('xa_v_his_mau_don_th_tt_detail.id');
             $chunkSize = ceil(($maxId - $minId + 1) / $numJobs);
             for ($i = 0; $i < $numJobs; $i++) {
                 $startId = $minId + ($i * $chunkSize);
@@ -166,7 +187,7 @@ class MauDonThVtDetailVViewRepository
                     $endId = $maxId;
                 }
                 // Dispatch job cho mỗi phạm vi id
-                ProcessElasticIndexingJob::dispatch('mau_don_th_tt_detail_v_view', 'xa_v_hismau_don_th_tt_detail', $startId, $endId, $batchSize);
+                ProcessElasticIndexingJob::dispatch('mau_don_th_tt_detail_v_view', 'xa_v_his_mau_don_th_tt_detail', $startId, $endId, $batchSize);
             }
         }
     }

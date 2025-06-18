@@ -115,6 +115,8 @@ class BaseApiCacheController extends Controller
     protected $patientClassifyIdsString;
     protected $isOut;
     protected $isOutName = 'IsOut';
+    protected $intructionTime;
+    protected $intructionTimeName = 'IntructionTime';
     protected $addLoginname;
     protected $addLoginnameName = 'AddLoginname';
     protected $depositReqCode;
@@ -1850,6 +1852,13 @@ class BaseApiCacheController extends Controller
             if (!preg_match('/^\d{14}$/',  $this->inTimeFrom)) {
                 $this->errors[$this->inTimeFromName] = $this->messFormat;
                 $this->inTimeFrom = null;
+            }
+        }
+        $this->intructionTime = $this->paramRequest['ApiData']['IntructionTime'] ?? null;
+        if ($this->intructionTime != null) {
+            if (!preg_match('/^\d{14}$/',  $this->intructionTime)) {
+                $this->errors[$this->intructionTimeName] = $this->messFormat;
+                $this->intructionTime = null;
             }
         }
         $this->isInRoom = $this->paramRequest['ApiData']['IsInRoom'] ?? null;
