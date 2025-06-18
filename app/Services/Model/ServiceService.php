@@ -87,6 +87,9 @@ class ServiceService
     }
     private function getAllDataFromDatabase()
     {
+        // set tăng bộ nhớ
+        ini_set('memory_limit', '256M');
+
         switch ($this->params->tab) {
             case 'chiDinhDichVuKyThuat':
                 $data = $this->serviceRepository->applyJoinsDichVuChiDinh();

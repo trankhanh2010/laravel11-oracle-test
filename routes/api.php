@@ -143,6 +143,7 @@ use App\Http\Controllers\Api\CacheControllers\BidController;
 use App\Http\Controllers\Api\CacheControllers\ConfigController;
 use App\Http\Controllers\Api\CacheControllers\DeathCauseController;
 use App\Http\Controllers\Api\CacheControllers\DeathCertBookController;
+use App\Http\Controllers\Api\CacheControllers\DocumentBookController;
 use App\Http\Controllers\Api\CacheControllers\DocumentTypeController;
 use App\Http\Controllers\Api\CacheControllers\EmrCoverTypeController;
 use App\Http\Controllers\Api\CacheControllers\EmrFormController;
@@ -1278,4 +1279,6 @@ Route::group([
     Route::apiResource('v1/config', ConfigController::class)->only(['index']);
     /// Mẫu đơn 
     Route::apiResource('v1/exp-mest-template', ExpMestTemplateController::class)->only(['index', 'show']);
+    /// Sổ chứng từ
+    Route::apiResource('v1/document-book', DocumentBookController::class)->only(['index']);
 });

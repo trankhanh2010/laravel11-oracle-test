@@ -466,6 +466,7 @@ return [
             'appointment_period' => 'Có lỗi khi thực hiện thao tác với bảng Khung giờ hẹn khám!',
             'config' => 'Có lỗi khi thực hiện thao tác với bảng Cấu hình hệ thống!',
             'exp_mest_template' => 'Có lỗi khi thực hiện thao tác với bảng Mẫu đơn!',
+            'document_book' => 'Có lỗi khi thực hiện thao tác với bảng Sổ chứng từ!',
 
         ],
         'table' => [

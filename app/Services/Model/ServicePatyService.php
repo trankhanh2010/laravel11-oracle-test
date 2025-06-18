@@ -53,6 +53,9 @@ class ServicePatyService
     }
     private function getAllDataFromDatabase()
     {
+        // set tăng bộ nhớ
+        ini_set('memory_limit', '256M');
+
         if ($this->params->tab == 'getData') {
             $data = $this->servicePatyRepository->applyJoinsGetData();
         } else {

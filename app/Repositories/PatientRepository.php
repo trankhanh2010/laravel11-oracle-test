@@ -24,7 +24,8 @@ class PatientRepository
     {
         return $this->patient
             ->select(
-                'his_patient.note'
+                'his_patient.note',
+                'his_patient.social_insurance_number'
             );
     }
     public function applyKeywordFilter($query, $keyword)
