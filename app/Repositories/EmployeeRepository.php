@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Jobs\ElasticSearch\Index\ProcessElasticIndexingJob;
 use App\Models\HIS\Employee;
+use App\Models\HIS\Room;
 use Illuminate\Support\Facades\DB;
 
 class EmployeeRepository
@@ -77,6 +78,16 @@ class EmployeeRepository
     {
         if ($param !== null) {
             $query->where(DB::connection('oracle_his')->raw('his_employee.is_delete'), $param);
+        }
+
+        return $query;
+    }
+    public function applyCungKhoaFilter($query, $param, $roomId)
+    {
+        if ($param != null && $roomId) {
+            $room = new Room();
+            $departmentId = $room->find($roomId)->department_id ?? 0;
+            $query->where(DB::connection('oracle_his')->raw('his_employee.department_id'), $departmentId);
         }
 
         return $query;

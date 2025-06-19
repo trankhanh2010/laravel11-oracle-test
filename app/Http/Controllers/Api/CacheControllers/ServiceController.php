@@ -88,6 +88,7 @@ class ServiceController extends BaseApiCacheController
             $this->tab,
             $this->serviceGroupIds,
             $this->serviceReqId,
+            $this->serviceReqIds,
         );
         $this->serviceService->withParams($this->serviceDTO);
     }

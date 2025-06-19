@@ -67,6 +67,7 @@ class EmployeeService
             $data = $this->employeeRepository->applyIsActiveFilter($data, $this->params->isActive);
             $data = $this->employeeRepository->applyIsDeleteFilter($data, 0);
             $data = $this->employeeRepository->applyTabFilter($data, $this->params->tab);
+            $data = $this->employeeRepository->applyCungKhoaFilter($data, $this->params->cungKhoa, $this->params->roomId);
             $count = $data->count();
             $data = $this->employeeRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
             $data = $this->employeeRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
@@ -81,6 +82,7 @@ class EmployeeService
         $data = $this->employeeRepository->applyIsActiveFilter($data, $this->params->isActive);
         $data = $this->employeeRepository->applyIsDeleteFilter($data, 0);
         $data = $this->employeeRepository->applyTabFilter($data, $this->params->tab);
+        $data = $this->employeeRepository->applyCungKhoaFilter($data, $this->params->cungKhoa, $this->params->roomId);
         $count = $data->count();
         $data = $this->employeeRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
         $data = $this->employeeRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);

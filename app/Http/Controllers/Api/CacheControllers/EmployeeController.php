@@ -58,6 +58,8 @@ class EmployeeController extends BaseApiCacheController
             $this->param,
             $this->noCache,
             $this->tab,
+            $this->cungKhoa,
+            $this->roomId,
         );
         $this->employeeService->withParams($this->employeeDTO);
     }

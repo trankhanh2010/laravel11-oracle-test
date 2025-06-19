@@ -194,6 +194,13 @@ class ServiceRepository
         $query->whereIn('his_service.id', $serviceIds);
         return $query;
     }
+    public function applyChiDinhCusFilter($query, $serviceReqIds)
+    {
+        $sereServ = new SereServ();
+        $serviceIds = $sereServ->select('service_id')->whereIn('service_req_id', $serviceReqIds)->get()->toArray();
+        $query->whereIn('his_service.id', $serviceIds);
+        return $query;
+    }
     public function applyServiceTypeIdFilter($query, $id)
     {
         if ($id !== null) {

@@ -20,6 +20,8 @@ class EmployeeDTO
     public $param;
     public $noCache;
     public $tab;
+    public $cungKhoa;
+    public $roomId;
     public function __construct(
         $employeeName,
         $keyword, 
@@ -37,6 +39,8 @@ class EmployeeDTO
         $param,
         $noCache,
         $tab,
+        $cungKhoa,
+        $roomId,
         )
     {
         $this->employeeName = $employeeName;
@@ -55,5 +59,7 @@ class EmployeeDTO
         $this->param = $param;
         $this->noCache = $noCache;
         $this->tab = $tab;
+        $this->cungKhoa = $cungKhoa;
+        $this->roomId = $roomId;
     }
 }

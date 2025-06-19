@@ -32,6 +32,9 @@ class ServiceService
                     if ($this->params->serviceReqId) {
                         $data = $this->serviceRepository->applyChiDinhCuFilter($data, $this->params->serviceReqId); // Nếu lấy theo chỉ định cũ thì rightJoin service_req
                     }
+                    if ($this->params->serviceReqIds) {
+                        $data = $this->serviceRepository->applyChiDinhCusFilter($data, $this->params->serviceReqIds); // Nếu lấy theo chỉ định cũ thì rightJoin service_req
+                    }
                     break;
                 case 'keDonThuocPhongKham':
                     $data = $this->serviceRepository->applyJoinsKeDonThuocPhongKham();
@@ -71,7 +74,7 @@ class ServiceService
                     break;
             }
             $data = $this->serviceRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
-            if ($this->params->tab == 'chiDinhDichVuKyThuat') {
+            if ($this->params->tab == 'chiDinhDichVuKyThuat' && !$this->params->serviceReqId && !$this->params->serviceReqIds) { // Nếu đang lấy theo chỉ định cũ thì k cần nhóm lại 
                 $data = $this->serviceRepository->buildTreeGroupByServiceTypeName($data);
             } else {
                 if ($this->params->tab == 'keDonThuocPhongKham') {
@@ -95,6 +98,9 @@ class ServiceService
                 $data = $this->serviceRepository->applyJoinsDichVuChiDinh();
                 if ($this->params->serviceReqId) {
                     $data = $this->serviceRepository->applyChiDinhCuFilter($data, $this->params->serviceReqId); // Nếu lấy theo chỉ định cũ thì rightJoin service_req
+                }
+                if ($this->params->serviceReqIds) {
+                    $data = $this->serviceRepository->applyChiDinhCusFilter($data, $this->params->serviceReqIds); // Nếu lấy theo chỉ định cũ thì rightJoin service_req
                 }
                 break;
             case 'keDonThuocPhongKham':
@@ -136,7 +142,7 @@ class ServiceService
         }
 
         $data = $this->serviceRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
-        if ($this->params->tab == 'chiDinhDichVuKyThuat') {
+        if ($this->params->tab == 'chiDinhDichVuKyThuat' && !$this->params->serviceReqId && !$this->params->serviceReqIds) { // Nếu đang lấy theo chỉ định cũ thì k cần nhóm lại 
             $data = $this->serviceRepository->buildTreeGroupByServiceTypeName($data);
         } else {
             if ($this->params->tab == 'keDonThuocPhongKham') {
@@ -164,7 +170,7 @@ class ServiceService
             // set tăng bộ nhớ
             ini_set('memory_limit', '256M');
             // Nếu không lưu cache
-            if ($this->params->noCache || $this->params->serviceReqId) {
+            if (($this->params->noCache || $this->params->serviceReqId) && $this->params->tab == 'chiDinhDichVuKyThuat') {
                 return $this->getAllDataFromDatabase();
             } else {
                 $cacheKey = $this->params->serviceName . '_' . $this->params->param;

@@ -27,6 +27,12 @@ class PatientRepository
             ->select([
                 'his_patient.note',
                 'his_patient.work_place',
+                'his_patient.cccd_number',
+                'his_patient.cccd_date',
+                'his_patient.cccd_place',
+                'his_patient.cmnd_number',
+                'his_patient.cmnd_date',
+                'his_patient.cmnd_place',
             ]);
     }
     public function applyKeywordFilter($query, $keyword)
