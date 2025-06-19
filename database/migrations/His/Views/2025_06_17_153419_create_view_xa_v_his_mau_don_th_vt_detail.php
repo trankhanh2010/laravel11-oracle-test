@@ -30,9 +30,11 @@ emte_material_type.AMOUNT,
 emte_material_type.IS_EXPEND,
 emte_material_type.IS_OUT_MEDI_STOCK,
 emte_material_type.SERVICE_UNIT_NAME,
-null as TUTORIAL
+null as TUTORIAL,
+material_type.DESCRIPTION --ghi chú lúc rê chuột vào
 
 FROM HIS_EMTE_MATERIAL_TYPE emte_material_type     
+LEFT JOIN HIS_MATERIAL_TYPE  material_type on material_type.id = emte_material_type.material_type_id
 
   UNION ALL
 
@@ -49,7 +51,8 @@ emte_medicine_type.AMOUNT,
 emte_medicine_type.IS_EXPEND,
 emte_medicine_type.IS_OUT_MEDI_STOCK,
 emte_medicine_type.SERVICE_UNIT_NAME,
-emte_medicine_type.TUTORIAL
+emte_medicine_type.TUTORIAL,
+medicine_type.DESCRIPTION --ghi chú lúc rê chuột vào
 
 FROM HIS_EMTE_MEDICINE_TYPE emte_medicine_type     
 LEFT JOIN HIS_MEDICINE_TYPE  medicine_type on medicine_type.id = emte_medicine_type.medicine_type_id

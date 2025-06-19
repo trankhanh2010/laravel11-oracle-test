@@ -26,6 +26,7 @@ class ServiceReqListVViewDTO
     public $treatmentCode;
     public $tab;
     public $patientId;
+    public $serviceReqIds;
     public function __construct(
         $serviceReqLisyVViewName,
         $keyword, 
@@ -49,6 +50,7 @@ class ServiceReqListVViewDTO
         $treatmentCode,
         $tab,
         $patientId,
+        $serviceReqIds,
         )
     {
         $this->serviceReqLisyVViewName = $serviceReqLisyVViewName;
@@ -73,5 +75,6 @@ class ServiceReqListVViewDTO
         $this->treatmentCode = $treatmentCode;
         $this->tab = $tab;
         $this->patientId  = $patientId;
+        $this->serviceReqIds = $serviceReqIds;
     }
 }

@@ -48,7 +48,7 @@ class ServiceReqListVViewRepository
     public function applyJoinsChiDinhCuChiDinhDichVuKyThuat()
     {
         return $this->serviceReqListVView
-        ->leftJoin('his_service_req_type', 'his_service_req_type.id', '=', 'xa_v_his_service_req_list.service_req_type_id')
+            ->leftJoin('his_service_req_type', 'his_service_req_type.id', '=', 'xa_v_his_service_req_list.service_req_type_id')
             ->select([
                 'xa_v_his_service_req_list.id',
                 'xa_v_his_service_req_list.service_req_code',
@@ -58,6 +58,17 @@ class ServiceReqListVViewRepository
                 'xa_v_his_service_req_list.request_username',
                 'his_service_req_type.service_req_type_code',
                 'his_service_req_type.service_req_type_name',
+            ]);
+    }
+    public function applyJoinsChiTietDon()
+    {
+        return $this->serviceReqListVView
+            ->with(['chi_tiet_don'])
+            ->select([
+                'xa_v_his_service_req_list.id',
+                'xa_v_his_service_req_list.service_req_code',
+                'xa_v_his_service_req_list.intruction_time',
+                'xa_v_his_service_req_list.intruction_date',
             ]);
     }
     public function applyWithParam($query)
@@ -109,6 +120,13 @@ class ServiceReqListVViewRepository
     {
         if ($param !== null) {
             $query->where(('xa_v_his_service_req_list.tracking_id'), $param);
+        }
+        return $query;
+    }
+    public function applyServiceReqIdsFilter($query, $param)
+    {
+        if ($param != null) {
+            $query->whereIn(('xa_v_his_service_req_list.id'), $param);
         }
         return $query;
     }
@@ -171,6 +189,19 @@ class ServiceReqListVViewRepository
 
         return $query;
     }
+    function addThongTinDon($data)
+    {
+        foreach ($data as &$item) {
+            $firstChiTiet = $item['chi_tiet_don'][0] ?? null;
+
+            $item['expMestCode'] = $firstChiTiet['exp_mest_code'] ?? null;
+            $item['expMestMediStockCode'] = $firstChiTiet['exp_mest_medi_stock_code'] ?? null;
+            $item['expMestMediStockName'] = $firstChiTiet['exp_mest_medi_stock_name'] ?? null;
+        }
+
+        return $data;
+    }
+
     public function fetchData($query, $getAll, $start, $limit)
     {
         if ($getAll) {

@@ -73,6 +73,21 @@ class ServiceReqListVViewService
         $data = $this->serviceReqListVViewRepository->applyGroupByField($data, $this->params->groupBy);
         return ['data' => $data, 'count' => $count];
     }
+    private function getAllDataFromDatabaseWithChiTietDon()
+    {
+        $data = $this->serviceReqListVViewRepository->applyJoinsChiTietDon();
+        $data = $this->serviceReqListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $this->serviceReqListVViewRepository->applyIsDeleteFilter($data, 0);
+        $data = $this->serviceReqListVViewRepository->applyIsNoExecuteFilter($data);
+        $data = $this->serviceReqListVViewRepository->applyServiceReqIdsFilter($data, $this->params->serviceReqIds);
+        $count = null;
+        $data = $this->serviceReqListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->serviceReqListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        $data = $this->serviceReqListVViewRepository->addThongTinDon($data);
+        // Group theo field
+        $data = $this->serviceReqListVViewRepository->applyGroupByField($data, $this->params->groupBy);
+        return ['data' => $data, 'count' => $count];
+    }
     private function getDataById($id)
     {
         $data = $this->serviceReqListVViewRepository->applyJoins()
@@ -83,6 +98,14 @@ class ServiceReqListVViewService
         $data = $this->serviceReqListVViewRepository->applyIsNoExecuteFilter($data);
         $data = $data->first();
         return $data;
+    }
+    public function handleDataBaseGetAllWithChiTietDon()
+    {
+        try {
+            return $this->getAllDataFromDatabaseWithChiTietDon();
+        } catch (\Throwable $e) {
+            return writeAndThrowError(config('params')['db_service']['error']['service_req_list_v_view'], $e);
+        }
     }
     public function handleDataBaseGetAllChiDinhCuChiDinhDichVuKyThuat()
     {

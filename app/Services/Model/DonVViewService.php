@@ -33,12 +33,21 @@ class DonVViewService
             $data = $this->donVViewRepository->applyPatientIdFilter($data, $this->params->patientId);
             $data = $this->donVViewRepository->applyIntructionTimeFromFilter($data, $this->params->intructionTimeFrom);
             $data = $this->donVViewRepository->applyIntructionTimeToFilter($data, $this->params->intructionTimeTo);
-            $count = $data->count();
-            $data = $this->donVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+            $count = null;
+            if ($this->params->tab == 'donCuKeDonThuocPhongKham') {
+                $orderBy = [
+                    "tdl_intruction_time" => "desc",
+                    "tdl_service_req_code" => "desc",
+                    "num_order" => "asc",
+                ];
+                $data = $this->donVViewRepository->applyOrdering($data, $orderBy, []);
+            } else {
+                $data = $this->donVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+            }
             $data = $this->donVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
             if ($this->params->tab == 'donCuKeDonThuocPhongKham') {
                 $groupBy = [
-                    'expMestCode',
+                    'reqRoomName',
                     'tdlServiceReqCode'
                 ];
                 $data = $this->donVViewRepository->applyGroupByField($data, $groupBy);
@@ -59,12 +68,21 @@ class DonVViewService
         $data = $this->donVViewRepository->applyPatientIdFilter($data, $this->params->patientId);
         $data = $this->donVViewRepository->applyIntructionTimeFromFilter($data, $this->params->intructionTimeFrom);
         $data = $this->donVViewRepository->applyIntructionTimeToFilter($data, $this->params->intructionTimeTo);
-        $count = $data->count();
-        $data = $this->donVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $count = null;
+        if ($this->params->tab == 'donCuKeDonThuocPhongKham') {
+            $orderBy = [
+                "tdl_intruction_time" => "desc",
+                "tdl_service_req_code" => "desc",
+                "num_order" => "asc",
+            ];
+            $data = $this->donVViewRepository->applyOrdering($data, $orderBy, []);
+        } else {
+            $data = $this->donVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        }
         $data = $this->donVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
         if ($this->params->tab == 'donCuKeDonThuocPhongKham') {
             $groupBy = [
-                'expMestCode',
+                'reqRoomName',
                 'tdlServiceReqCode'
             ];
             $data = $this->donVViewRepository->applyGroupByField($data, $groupBy);

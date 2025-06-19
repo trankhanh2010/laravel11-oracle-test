@@ -48,6 +48,7 @@ class ServiceReqListVViewController extends BaseApiCacheController
             $this->treatmentCode,
             $this->tab,
             $this->patientId,
+            $this->serviceReqIds,
         );
         $this->serviceReqListVViewService->withParams($this->serviceReqListVViewDTO);
     }
@@ -60,12 +61,22 @@ class ServiceReqListVViewController extends BaseApiCacheController
         switch ($this->tab) {
             case 'chiDinhCuChiDinhDichVuKyThuat':
                 if ($this->patientId == null) {
-                    $this->errors[$this->patientIdName] = "Thiếu thời gian";
+                    $this->errors[$this->patientIdName] = "Thiếu Id bệnh nhân!";
                 }
                 if ($this->checkParam()) {
                     return $this->checkParam();
                 }
                 $data = $this->serviceReqListVViewService->handleDataBaseGetAllChiDinhCuChiDinhDichVuKyThuat();
+                break;
+
+            case 'chiTietDon':
+                if ($this->serviceReqIds == null) {
+                    $this->errors[$this->serviceReqIdsName] = "Thiếu danh sách Id y lệnh!";
+                }
+                if ($this->checkParam()) {
+                    return $this->checkParam();
+                }
+                $data = $this->serviceReqListVViewService->handleDataBaseGetAllWithChiTietDon();
                 break;
             default:
                 $keyword = $this->keyword;

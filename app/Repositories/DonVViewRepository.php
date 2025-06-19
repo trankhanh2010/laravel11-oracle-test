@@ -145,8 +145,9 @@ class DonVViewRepository
                     'total' => $group->count(),
                 ];
 
-                if ($currentField === 'exp_mest_code') {
+                if ($currentField === 'req_room_name') {
                     $firstItem = $group->first();
+                    $result['expMestCode'] = $firstItem['exp_mest_code'];
                     $result['reqRoomCode'] = $firstItem['req_room_code'];
                     $result['reqRoomName'] = $firstItem['req_room_name'];
                     $result['reqLoginname'] = $firstItem['req_loginname'];
@@ -155,6 +156,7 @@ class DonVViewRepository
                 
                 if ($currentField === 'tdl_service_req_code') {
                     $firstItem = $group->first();
+                    $result['serviceReqId'] = $firstItem['service_req_id'];
                     $result['expMestMediStockCode'] = $firstItem['exp_mest_medi_stock_code'];
                     $result['expMestMediStockName'] = $firstItem['exp_mest_medi_stock_name'];
                 }

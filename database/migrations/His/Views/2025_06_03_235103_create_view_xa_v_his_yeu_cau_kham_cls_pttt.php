@@ -154,7 +154,8 @@ SELECT
      service_req.is_main_exam,
      service_req.tdl_hein_card_number,
      service_req.is_auto_finished,
-     service_req.is_wait_child
+     service_req.is_wait_child,
+     service_req.treatment_type_id
 
 
 FROM his_service_req service_req

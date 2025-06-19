@@ -20,4 +20,10 @@ class ServiceReqListVView extends Model
     {
         return $this->hasMany(SereServ::class, 'service_req_id', 'id');
     }
+    public function chi_tiet_don()
+    {
+        return $this->hasMany(DonChiTietVView::class, 'service_req_id', 'id')
+         ->where('xa_v_his_don_chi_tiet.is_delete', 0)
+         ->orderBy('xa_v_his_don_chi_tiet.num_order');;
+    }
 }
