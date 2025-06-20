@@ -168,7 +168,7 @@ class ServiceService
     {
         try {
             // set tăng bộ nhớ
-            ini_set('memory_limit', '256M');
+            ini_set('memory_limit', '512M');
             // Nếu không lưu cache
             if (($this->params->noCache || $this->params->serviceReqId) && $this->params->tab == 'chiDinhDichVuKyThuat') {
                 return $this->getAllDataFromDatabase();

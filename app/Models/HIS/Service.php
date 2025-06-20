@@ -2,6 +2,7 @@
 
 namespace App\Models\HIS;
 
+use App\Models\View\RoomVView;
 use App\Traits\dinh_dang_ten_truong;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -283,6 +284,22 @@ class Service extends Model
             'patient_type_id'
         )->select('his_patient_type.id', 'his_patient_type.patient_type_code', 'his_patient_type.patient_type_name')
             ->orderBy('his_patient_type.patient_type_code')
-            ->distinct(); 
+            ->distinct();
+    }
+    public function list_select_service_room()
+    {
+        return $this->belongsToMany(
+            RoomVView::class,
+            'his_service_room', // tên bảng trung gian
+            'service_id',
+            'room_id'
+        )->select('v_his_room.id', 'v_his_room.room_code', 'v_his_room.room_name')
+            ->where(function ($query) {
+                $query->whereNull('v_his_room.is_pause')
+                    ->orWhere('v_his_room.is_pause', 0);
+            })
+            ->where('v_his_room.is_active', 1)
+            ->orderBy('v_his_room.room_code')
+            ->distinct();
     }
 }

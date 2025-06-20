@@ -103,6 +103,7 @@ class ServiceRepository
     {
         return $this->service
             ->with('list_select_patient_types:id,patient_type_code,patient_type_name')
+            ->with('list_select_service_room:id,room_code,room_name')
 
             ->leftJoin('his_service_type as service_type', 'service_type.id', '=', 'his_service.service_type_id')
             ->leftJoin('his_service as parent', 'parent.id', '=', 'his_service.parent_id')
@@ -472,6 +473,7 @@ class ServiceRepository
             $data = $query->get();
             $data->each(function ($service) {
                 $service->list_select_patient_types->each->makeHidden('pivot');
+                $service->list_select_service_room->each->makeHidden('pivot');
             });
             return $data;
         } else {
