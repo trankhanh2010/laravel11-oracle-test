@@ -145,7 +145,7 @@ class DonVViewRepository
                     'total' => $group->count(),
                 ];
 
-                if ($currentField === 'req_room_name') {
+                if ($currentField === 'tdl_intruction_time') {
                     $firstItem = $group->first();
                     $result['expMestCode'] = $firstItem['exp_mest_code'];
                     $result['reqRoomCode'] = $firstItem['req_room_code'];

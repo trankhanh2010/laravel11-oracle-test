@@ -23,12 +23,22 @@ exp_mest_material.id,
 'VT' || exp_mest_material.id AS key,
 exp_mest_material.IS_ACTIVE,
 exp_mest_material.IS_DELETE,
+exp_mest.id as exp_mest_id,
 exp_mest.EXP_MEST_CODE, -- mã xuất
 material_type.material_type_code as m_type_code,
 material_type.material_type_name as m_type_name,
 exp_mest_material.amount,
 service_unit.service_unit_code,
 service_unit.service_unit_name,
+exp_mest_material.is_expend, -- hao phí
+exp_mest_material.EXPEND_TYPE_ID, -- loại hao phí, hiện chỉ có hao phí tiền giường
+exp_mest_material.IS_OUT_PARENT_FEE, -- chi phí ngoài gói  
+exp_mest_material.EXCEED_LIMIT_IN_PRES_REASON,-- ly do ke thuoc/vat tu vuot qua so luong toi da/don  
+exp_mest_material.EXCEED_LIMIT_IN_DAY_REASON,--    ly do ke thuoc/vat tu vuot qua so luong toi da/ngay  
+null as ODD_PRES_REASON,--   ly do ke thuoc le  
+null as OVER_RESULT_TEST_REASON,--  ly do ke thuoc vuot ket qua xet nghiem  
+null as OVER_KIDNEY_REASON,--   Ly do ke thuoc vuot liêu theo chưc nang than  
+null as EXCEED_LIMIT_IN_TREAT_REASON,--   ly do ke thuoc vuot qua so luong toi da/ho so 
 null as tutorial,
 exp_mest_type.exp_mest_type_code,
 exp_mest_type.exp_mest_type_name,
@@ -68,12 +78,22 @@ exp_mest_medicine.id,
 'TH' || exp_mest_medicine.id AS key,
 exp_mest_medicine.IS_ACTIVE,
 exp_mest_medicine.IS_DELETE,
+exp_mest.id as exp_mest_id,
 exp_mest.EXP_MEST_CODE, -- mã xuất
 medicine_type.medicine_type_code as m_type_code,
 medicine_type.medicine_type_name as m_type_name,
 exp_mest_medicine.amount,
 service_unit.service_unit_code,
 service_unit.service_unit_name,
+exp_mest_medicine.is_expend, -- hao phí
+exp_mest_medicine.EXPEND_TYPE_ID, -- loại hao phí, hiện chỉ có hao phí tiền giường
+exp_mest_medicine.IS_OUT_PARENT_FEE, -- chi phí ngoài gói  
+exp_mest_medicine.EXCEED_LIMIT_IN_PRES_REASON,-- ly do ke thuoc/vat tu vuot qua so luong toi da/don  
+exp_mest_medicine.EXCEED_LIMIT_IN_DAY_REASON,--    ly do ke thuoc/vat tu vuot qua so luong toi da/ngay  
+exp_mest_medicine.ODD_PRES_REASON,--   ly do ke thuoc le  
+exp_mest_medicine.OVER_RESULT_TEST_REASON,--  ly do ke thuoc vuot ket qua xet nghiem  
+exp_mest_medicine.OVER_KIDNEY_REASON,--   Ly do ke thuoc vuot liêu theo chưc nang than  
+exp_mest_medicine.EXCEED_LIMIT_IN_TREAT_REASON,--   ly do ke thuoc vuot qua so luong toi da/ho so 
 medicine_type.tutorial,
 exp_mest_type.exp_mest_type_code,
 exp_mest_type.exp_mest_type_name,
@@ -114,12 +134,22 @@ service_req_mety.id,
 'REQ_TH' || service_req_mety.id AS key,
 service_req_mety.IS_ACTIVE,
 service_req_mety.IS_DELETE,
+null as exp_mest_id,
 null as EXP_MEST_CODE, -- mã xuất
 medicine_type.medicine_type_code as m_type_code,
 medicine_type.medicine_type_name as m_type_name,
 service_req_mety.amount,
 null as service_unit_code,
 service_req_mety.unit_name as service_unit_name,
+null as is_expend, -- hao phí
+null as EXPEND_TYPE_ID, -- loại hao phí, hiện chỉ có hao phí tiền giường
+null as IS_OUT_PARENT_FEE, -- chi phí ngoài gói  
+service_req_mety.EXCEED_LIMIT_IN_PRES_REASON,-- ly do ke thuoc/vat tu vuot qua so luong toi da/don  
+service_req_mety.EXCEED_LIMIT_IN_DAY_REASON,--    ly do ke thuoc/vat tu vuot qua so luong toi da/ngay  
+service_req_mety.ODD_PRES_REASON,--   ly do ke thuoc le  
+service_req_mety.OVER_RESULT_TEST_REASON,--  ly do ke thuoc vuot ket qua xet nghiem  
+service_req_mety.OVER_KIDNEY_REASON,--   Ly do ke thuoc vuot liêu theo chưc nang than  
+service_req_mety.EXCEED_LIMIT_IN_TREAT_REASON,--   ly do ke thuoc vuot qua so luong toi da/ho so 
 medicine_type.tutorial,
 null as exp_mest_type_code,
 null as exp_mest_type_name,
@@ -156,12 +186,22 @@ service_req_maty.id,
 'REQ_TH' || service_req_maty.id AS key,
 service_req_maty.IS_ACTIVE,
 service_req_maty.IS_DELETE,
+null as exp_mest_id,
 null as EXP_MEST_CODE, -- mã xuất
 material_type.material_type_code as m_type_code,
 material_type.material_type_name as m_type_name,
 service_req_maty.amount,
 null as service_unit_code,
 service_req_maty.unit_name as service_unit_name,
+null as is_expend, -- hao phí
+null as EXPEND_TYPE_ID, -- loại hao phí, hiện chỉ có hao phí tiền giường
+null as IS_OUT_PARENT_FEE, -- chi phí ngoài gói  
+service_req_maty.EXCEED_LIMIT_IN_PRES_REASON,-- ly do ke thuoc/vat tu vuot qua so luong toi da/don  
+service_req_maty.EXCEED_LIMIT_IN_DAY_REASON,--    ly do ke thuoc/vat tu vuot qua so luong toi da/ngay  
+null as ODD_PRES_REASON,--   ly do ke thuoc le  
+null as OVER_RESULT_TEST_REASON,--  ly do ke thuoc vuot ket qua xet nghiem  
+null as OVER_KIDNEY_REASON,--   Ly do ke thuoc vuot liêu theo chưc nang than  
+null as EXCEED_LIMIT_IN_TREAT_REASON,--   ly do ke thuoc vuot qua so luong toi da/ho so 
 null as tutorial,
 null as exp_mest_type_code,
 null as exp_mest_type_name,

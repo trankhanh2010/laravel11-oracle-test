@@ -19,10 +19,12 @@ CREATE OR REPLACE VIEW XA_V_HIS_THUOC_VAT_TU_BEAN AS
 (
 SELECT 
     medicine.id,
+    medicine_bean.id as bean_id,
     medicine.is_active,
     medicine.is_delete,
     medicine_type.is_leaf,
     medicine_type.parent_id,
+    medicine.medicine_type_id as m_type_id,
     medicine_type.medicine_type_code as m_type_code,
     medicine_type.medicine_type_name as m_type_name,
     medicine_type.service_id,
@@ -71,10 +73,12 @@ LEFT JOIN HIS_MEDI_STOCK medi_stock on medi_stock.id = medicine_bean.medi_stock_
 
 SELECT 
     material.id,
+    material_bean.id as bean_id,
     material.is_active,
     material.is_delete,
     material_type.is_leaf,
     material_type.parent_id,
+    material.material_type_id as m_type_id,
     material_type.material_type_code as m_type_code,
     material_type.material_type_name as m_type_name,
     material_type.service_id,

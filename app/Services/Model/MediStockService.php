@@ -37,7 +37,7 @@ class MediStockService
     {
         try {
             $data = $this->mediStockRepository->applyJoins();
-            // $data = $this->mediStockRepository->applyWith($data);
+            // $data = $this->mediStockRepository->applyWith($data, $this->params->tab);
             $data = $this->mediStockRepository->applyKeywordFilter($data, $this->params->keyword);
             $data = $this->mediStockRepository->applyIsActiveFilter($data, $this->params->isActive);
             $data = $this->mediStockRepository->applyTabFilter($data, $this->params->tab);
@@ -53,7 +53,7 @@ class MediStockService
     private function getAllDataFromDatabase()
     {
         $data = $this->mediStockRepository->applyJoins();
-        // $data = $this->mediStockRepository->applyWith($data);
+        // $data = $this->mediStockRepository->applyWith($data, $this->params->tab);
         $data = $this->mediStockRepository->applyIsActiveFilter($data, $this->params->isActive);
         $data = $this->mediStockRepository->applyTabFilter($data, $this->params->tab);
         $count = $data->count();
@@ -66,7 +66,7 @@ class MediStockService
     {
         $data = $this->mediStockRepository->applyJoins()
             ->where('his_medi_stock.id', $id);
-        $data = $this->mediStockRepository->applyWith($data);
+        // $data = $this->mediStockRepository->applyWith($data);
         $data = $this->mediStockRepository->applyIsActiveFilter($data, $this->params->isActive);
         $data = $data->first();
         $data = $this->applyResource($data);

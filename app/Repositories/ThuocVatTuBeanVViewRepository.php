@@ -27,6 +27,7 @@ class ThuocVatTuBeanVViewRepository
         return $this->thuocVatTuBeanVView->select([
             'xa_v_his_thuoc_vat_tu_bean.id as key',
             'xa_v_his_thuoc_vat_tu_bean.id',
+            'xa_v_his_thuoc_vat_tu_bean.m_type_id',
             'xa_v_his_thuoc_vat_tu_bean.m_type_code',
             'xa_v_his_thuoc_vat_tu_bean.m_type_name',
             'xa_v_his_thuoc_vat_tu_bean.service_id',
@@ -44,6 +45,7 @@ class ThuocVatTuBeanVViewRepository
             'xa_v_his_thuoc_vat_tu_bean.national_name',
             'xa_v_his_thuoc_vat_tu_bean.last_exp_price',
             'xa_v_his_thuoc_vat_tu_bean.last_exp_vat_ratio',
+            'xa_v_his_thuoc_vat_tu_bean.medi_stock_id',
             'xa_v_his_thuoc_vat_tu_bean.medi_stock_code',
             'xa_v_his_thuoc_vat_tu_bean.medi_stock_name',
             'xa_v_his_thuoc_vat_tu_bean.is_drug_store',
@@ -169,7 +171,8 @@ class ThuocVatTuBeanVViewRepository
                     $firstItem = $group->first();
                     $result['key'] = $firstItem['key'];
                     $result['id'] = $firstItem['id'];
-                    $result['serviceId'] = $firstItem['serviceId'];
+                    $result['serviceId'] = $firstItem['service_id'];
+                    $result['mTypeId'] = $firstItem['m_type_id'];
                     $result['mTypeName'] = $firstItem['m_type_name'];
                     $result['serviceUnitCode'] = $firstItem['service_unit_code'];
                     $result['serviceUnitName'] = $firstItem['service_unit_code'];
@@ -177,6 +180,7 @@ class ThuocVatTuBeanVViewRepository
                     $result['activeIngrBhytCode'] = $firstItem['active_ingr_bhyt_code'];
                     $result['activeIngrBhytName'] = $firstItem['active_ingr_bhyt_name'];
                     $result['beanAmount'] = $group->sum('bean_amount');
+                    $result['mediStockId'] = $firstItem['medi_stock_id'];
                     $result['mediStockCode'] = $firstItem['medi_stock_code'];
                     $result['mediStockName'] = $firstItem['medi_stock_name'];
                     $result['lastExpPrice'] = $firstItem['last_exp_price'];

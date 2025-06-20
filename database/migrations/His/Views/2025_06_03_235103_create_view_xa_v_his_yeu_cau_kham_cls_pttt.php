@@ -50,6 +50,7 @@ SELECT
      patient_classify.patient_classify_code,
      patient_classify.patient_classify_name,
      service_req.finish_time,
+     service_req.tdl_patient_type_id,
      patient_type.patient_type_code,
      patient_type.patient_type_name,
      machine.machine_code,

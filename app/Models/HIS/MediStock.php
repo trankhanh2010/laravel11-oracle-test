@@ -18,9 +18,9 @@ class MediStock extends Model
         'id',
     ];
     public $timestamps = false;
-    protected $appends = [
-        'patient_classifys',
-    ];
+    // protected $appends = [
+    //     'patient_classifys',
+    // ];
     /// Chạy Scope để thêm điều kiện is_delete = 0 hoặc null
     // protected static function booted()
     // {
@@ -32,17 +32,17 @@ class MediStock extends Model
     // {
     //     return with(new static)->newQueryWithoutScope(new IsDeleteScope)->where('is_delete', 1);
     // }
-    public function getPatientClassifysAttribute()
-    {
-        if($this->patient_classify_ids != null){
-            return Cache::remember('patient_classify_ids_' . $this->patient_classify_ids, $this->time, function ()  {
-                $data = PatientClassify::select(['patient_Classify_Code', 'patient_Classify_Name'])->whereIn('id', explode(',', $this->patient_classify_ids))->get();
-                return $data;
-        });
-        }
-        return null;
+    // public function getPatientClassifysAttribute()
+    // {
+    //     if($this->patient_classify_ids != null){
+    //         return Cache::remember('patient_classify_ids_' . $this->patient_classify_ids, $this->time, function ()  {
+    //             $data = PatientClassify::select(['patient_Classify_Code', 'patient_Classify_Name'])->whereIn('id', explode(',', $this->patient_classify_ids))->get();
+    //             return $data;
+    //     });
+    //     }
+    //     return null;
 
-    }
+    // }
     public function room()
     {
         return $this->belongsTo(Room::class, 'room_id');

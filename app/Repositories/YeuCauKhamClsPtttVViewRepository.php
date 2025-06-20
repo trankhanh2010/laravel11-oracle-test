@@ -274,6 +274,10 @@ class YeuCauKhamClsPtttVViewRepository
 
                     "his_treatment_type.treatment_type_code", // Diện điều trị
                     "his_treatment_type.treatment_type_name",
+                    "xa_v_his_yeu_cau_kham_cls_pttt.tdl_patient_type_id",
+                    "xa_v_his_yeu_cau_kham_cls_pttt.patient_type_code",
+                    "xa_v_his_yeu_cau_kham_cls_pttt.patient_type_name",
+
                 ]
             );
     }

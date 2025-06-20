@@ -34,7 +34,7 @@ class MediStockRepository
                 'parent.medi_stock_code as parent_code'
             );
     }
-    public function applyWith($query)
+    public function applyWith($query, $tab)
     {
         return $query->with($this->paramWith());
     }

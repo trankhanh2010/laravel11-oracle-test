@@ -47,7 +47,7 @@ class DonVViewService
             $data = $this->donVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
             if ($this->params->tab == 'donCuKeDonThuocPhongKham') {
                 $groupBy = [
-                    'reqRoomName',
+                    'tdlIntructionTime',
                     'tdlServiceReqCode'
                 ];
                 $data = $this->donVViewRepository->applyGroupByField($data, $groupBy);
@@ -82,7 +82,7 @@ class DonVViewService
         $data = $this->donVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
         if ($this->params->tab == 'donCuKeDonThuocPhongKham') {
             $groupBy = [
-                'reqRoomName',
+                'tdlIntructionTime',
                 'tdlServiceReqCode'
             ];
             $data = $this->donVViewRepository->applyGroupByField($data, $groupBy);
