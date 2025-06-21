@@ -65,4 +65,8 @@ class ServicePaty extends Model
     {
         return $this->belongsTo(RationTime::class, 'ration_time_id');
     }
+    public function select_service_condition()
+    {
+        return $this->belongsTo(ServiceCondition::class, 'service_condition_id', 'id');
+    }
 }

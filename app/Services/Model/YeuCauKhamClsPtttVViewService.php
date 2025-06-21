@@ -14,6 +14,7 @@ use App\Repositories\PatientRepository;
 use App\Repositories\PatientTypeAlterRepository;
 use App\Repositories\SereServListVViewRepository;
 use App\Repositories\ServiceRoomRepository;
+use App\Repositories\TreatmentFeeDetailVViewRepository;
 use Illuminate\Support\Facades\Cache;
 use App\Repositories\YeuCauKhamClsPtttVViewRepository;
 use Illuminate\Support\Facades\DB;
@@ -29,6 +30,7 @@ class YeuCauKhamClsPtttVViewService
     protected $patientTypeAlterRepository;
     protected $appointmentServRepository;
     protected $treatment;
+    protected $treatmentFeeDetailVViewRepository;
     protected $params;
     public function __construct(
         YeuCauKhamClsPtttVViewRepository $yeuCauKhamClsPtttVViewRepository,
@@ -40,6 +42,7 @@ class YeuCauKhamClsPtttVViewService
         PatientTypeAlterRepository $patientTypeAlterRepository,
         AppointmentServRepository $appointmentServRepository,
         Treatment $treatment,
+        TreatmentFeeDetailVViewRepository $treatmentFeeDetailVViewRepository,
     ) {
         $this->yeuCauKhamClsPtttVViewRepository = $yeuCauKhamClsPtttVViewRepository;
         $this->serviceRoomRepository = $serviceRoomRepository;
@@ -50,6 +53,7 @@ class YeuCauKhamClsPtttVViewService
         $this->patientTypeAlterRepository = $patientTypeAlterRepository;
         $this->appointmentServRepository = $appointmentServRepository;
         $this->treatment = $treatment;
+        $this->treatmentFeeDetailVViewRepository = $treatmentFeeDetailVViewRepository;
     }
     public function withParams(YeuCauKhamClsPtttVViewDTO $params)
     {
@@ -230,6 +234,10 @@ class YeuCauKhamClsPtttVViewService
         ->find($treatmentId);
         return $data;
     }
+    public function getDataVienPhi($duLieu){
+        $data = $this->treatmentFeeDetailVViewRepository->getDataVienPhi($duLieu->treatment_id);
+        return $data;
+    }
     private function getDataKhamBenh($treatmentId)
     {
         $data = $this->medicalCaseCoverListVViewRepository->applyJoinsYeuCauKhamClsPttt()
@@ -348,6 +356,7 @@ class YeuCauKhamClsPtttVViewService
             $dataXuTriKham = [];
             $dataDotKhamHienTai = [];
             $dataDiUngThuoc = [];
+            $thongTinVienPhi = [];
             if($duLieu){
                 $duLieu['xepLoaiBMI'] = xepLoaiBMI($duLieu->virBmi);
                 $dataLichSuKham = $this->getDataLichSuKham($duLieu->patient_id, $duLieu->treatment_id);
@@ -361,12 +370,14 @@ class YeuCauKhamClsPtttVViewService
                 $dataXuTriKham += $this->getPrimaryPatientType($duLieu->treatment_id, $duLieu->tdl_hein_card_number)->toArray();
                 $dataDotKhamHienTai = $this->getDataDotKhamHienTai($duLieu->treatment_id);
                 $dataDiUngThuoc = $this->getDataDiUngThuoc($duLieu->patient_id);
+                $thongTinVienPhi = $this->getDataVienPhi($duLieu);
             }
             $data['khamBenh'] = $duLieu;
             $data['lichSuKham'] = $dataLichSuKham;
             $data['xuTriKham'] = $dataXuTriKham;
             $data['dotKhamHienTai'] = $dataDotKhamHienTai;
             $data['diUngThuoc'] = $dataDiUngThuoc;
+            $data['khamBenh']['thongTinVienPhi'] = $thongTinVienPhi;
 
             return $data;
         } catch (\Throwable $e) {

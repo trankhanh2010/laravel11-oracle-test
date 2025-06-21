@@ -57,7 +57,9 @@ class ServicePatyRepository
     {
         return $this->servicePaty
             ->leftJoin('his_patient_type as patient_type', 'patient_type.id', '=', 'his_service_paty.patient_type_id')
+            ->with('select_service_condition:id,service_condition_code,service_condition_name,service_id,hein_ratio,hein_price')
             ->select([
+                'his_service_paty.id',
                 'his_service_paty.service_id',
                 'his_service_paty.patient_type_id',
                 'patient_type.patient_type_code',
@@ -65,6 +67,7 @@ class ServicePatyRepository
                 'his_service_paty.vat_ratio',
                 'his_service_paty.treatment_from_time',
                 'his_service_paty.treatment_to_time',
+                'his_service_paty.service_condition_id',
             ]);
     }
     public function applyKeywordFilter($query, $keyword)

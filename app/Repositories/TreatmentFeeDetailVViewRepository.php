@@ -101,7 +101,13 @@ class TreatmentFeeDetailVViewRepository
     
         return $item;
     }
-    
+    public function getDataVienPhi($treatmentId){
+        $data = $this->applyJoins();
+        $data = $this->applyTreatmentIdFilter($data, $treatmentId);
+        $data = $data->first();
+        $data = $this->themMucHuongBHYT($data);
+        return $data;
+    }
     public function getById($id)
     {
         return $this->treatmentFeeDetailVView->find($id);

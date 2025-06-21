@@ -20,4 +20,8 @@ class YeuCauKhamClsPtttVView extends Model
     {
         return $this->hasMany(SereServ::class, 'service_req_id', 'id');
     }
+    public function thong_tin_vien_phi()
+    {
+        return $this->belongsTo(TreatmentFeeDetailVView::class, 'treatment_id', 'id');
+    }
 }

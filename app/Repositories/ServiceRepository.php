@@ -102,9 +102,6 @@ class ServiceRepository
     public function applyJoinsDichVuChiDinh()
     {
         return $this->service
-            ->with('list_select_patient_types:id,patient_type_code,patient_type_name')
-            ->with('list_select_service_room:id,room_code,room_name')
-
             ->leftJoin('his_service_type as service_type', 'service_type.id', '=', 'his_service.service_type_id')
             ->leftJoin('his_service as parent', 'parent.id', '=', 'his_service.parent_id')
             ->leftJoin('his_pttt_group as pttt_group', 'pttt_group.id', '=', 'his_service.pttt_group_id')
@@ -140,13 +137,18 @@ class ServiceRepository
                 'his_service.default_patient_type_id',
             );
     }
-
+    public function applyWithChiDinhDichVuKyThuat($query)
+    {
+        return $query
+            ->with('list_select_patient_types:id,patient_type_code,patient_type_name')
+            ->with('list_select_service_room:id,room_code,room_name');
+    }
     public function applyJoinsKeDonThuocPhongKham()
     {
         // Lấy nhóm đầu
         $danhMucChaIds = $this->service
             ->leftJoin('his_service_type', 'his_service_type.id', '=', 'his_service.service_type_id')
-            ->where('his_service_type.service_type_code','TH')
+            ->where('his_service_type.service_type_code', 'TH')
             ->whereNull('his_service.parent_id')
             ->whereNull('his_service.is_leaf')
             ->pluck('his_service.id')->toArray();
@@ -155,7 +157,7 @@ class ServiceRepository
             ->whereIn('his_service.parent_id', $danhMucChaIds)
             ->whereNull('his_service.is_leaf')
             ->pluck('his_service.id')->toArray();
-                    dd($parentIds);
+        dd($parentIds);
 
         return $this->service
             ->join('his_service as parent', function ($join) use ($parentIds) {
@@ -248,28 +250,27 @@ class ServiceRepository
             foreach ($servicePatyIds as $index => $value) {
                 $name = $this->serviceGroup->find($value)->service_group_name ?? '';
                 $serviceIds = $this->servSegr->where('service_group_id', $value)->pluck('service_id')->toArray();
-                if(!$serviceIds){
-                        $validator->errors()->add("servicePatyIds", "Nhóm dịch vụ $name không chứa dịch vụ nào!");
-                }else{
+                if (!$serviceIds) {
+                    $validator->errors()->add("servicePatyIds", "Nhóm dịch vụ $name không chứa dịch vụ nào!");
+                } else {
                     $exitServicePaty = $this->servicePaty
-                    ->whereIn('service_id', $serviceIds)
-                    ->where('is_active', 1)
-                    ->where('is_delete', 0)
-                    ->exists(); 
-                    if(!$exitServicePaty){
+                        ->whereIn('service_id', $serviceIds)
+                        ->where('is_active', 1)
+                        ->where('is_delete', 0)
+                        ->exists();
+                    if (!$exitServicePaty) {
                         $validator->errors()->add("servicePatyIds", "Nhóm dịch vụ $name chứa các dịch vụ không tồn tại chính sách giá!");
                     }
 
                     $exitServiceRoom = $this->serviceRoom
-                    ->whereIn('service_id', $serviceIds)
-                    ->where('is_active', 1)
-                    ->where('is_delete', 0)
-                    ->exists(); 
-                    if(!$exitServiceRoom){
+                        ->whereIn('service_id', $serviceIds)
+                        ->where('is_active', 1)
+                        ->where('is_delete', 0)
+                        ->exists();
+                    if (!$exitServiceRoom) {
                         $validator->errors()->add("servicePatyIds", "Nhóm dịch vụ $name chứa các dịch vụ không tồn tại cấu hình dịch vụ phòng!");
                     }
                 }
-
             }
         });
         if ($validator->fails()) {
@@ -383,7 +384,7 @@ class ServiceRepository
                     if ($item->is_leaf == null) {
                         $item->children = collect();
                     }
-                }else{
+                } else {
                     $tree->push($item);
                 }
             }

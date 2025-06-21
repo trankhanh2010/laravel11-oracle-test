@@ -100,11 +100,25 @@ class ServiceController extends BaseApiCacheController
         if ($this->serviceService->checkServiceGroupIds()) {
             return $this->serviceService->checkServiceGroupIds();
         }
-        $keyword = $this->keyword;
-        if (($keyword != null || $this->elasticSearchType != null) && !$this->cache) {
-            $data = $this->serviceService->handleDataBaseSearch();
+        if ($this->tab == 'chiDinhDichVuKyThuat') {
+            $data = $this->serviceService->handleDataBaseGetAllChiDinhDichVuKyThuat();
+            $paramReturn = [
+                $this->getAllName => $this->getAll,
+                $this->startName => $this->getAll ? null : $this->start,
+                $this->limitName => $this->getAll ? null : $this->limit,
+                $this->countName => null,
+                $this->isActiveName => $this->isActive,
+                $this->keywordName => $this->keyword,
+                $this->orderByName => $this->orderByRequest
+            ];
+            return returnDataSuccess($paramReturn, $data);
         } else {
-            $data = $this->serviceService->handleDataBaseGetAll();
+            $keyword = $this->keyword;
+            if (($keyword != null || $this->elasticSearchType != null) && !$this->cache) {
+                $data = $this->serviceService->handleDataBaseSearch();
+            } else {
+                $data = $this->serviceService->handleDataBaseGetAll();
+            }
         }
         $paramReturn = [
             $this->getAllName => $this->getAll,
