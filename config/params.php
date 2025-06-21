@@ -469,6 +469,7 @@ return [
             'document_book' => 'Có lỗi khi thực hiện thao tác với bảng Sổ chứng từ!',
             'don_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm Đơn!',
             'tran_pati_temp' => 'Có lỗi khi thực hiện thao tác với bảng Mẫu thông tin chuyển viện!',
+            'exp_mest_type' => 'Có lỗi khi thực hiện thao tác với bảng Loại đơn!',
 
         ],
         'table' => [

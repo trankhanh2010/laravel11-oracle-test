@@ -149,6 +149,7 @@ use App\Http\Controllers\Api\CacheControllers\EmrCoverTypeController;
 use App\Http\Controllers\Api\CacheControllers\EmrFormController;
 use App\Http\Controllers\Api\CacheControllers\EquipmentSetController;
 use App\Http\Controllers\Api\CacheControllers\ExpMestTemplateController;
+use App\Http\Controllers\Api\CacheControllers\ExpMestTypeController;
 use App\Http\Controllers\Api\CacheControllers\FundController;
 use App\Http\Controllers\Api\CacheControllers\GroupTypeController;
 use App\Http\Controllers\Api\CacheControllers\HealthExamRankController;
@@ -1287,4 +1288,6 @@ Route::group([
     Route::apiResource('v1/don-v-view', DonVViewController::class)->only(['index', 'show']);
     /// Mẫu chuyển viện
     Route::apiResource('v1/tran-pati-temp', TranPatiTempController::class)->only(['index', 'show']);
+    /// Loại đơn
+    Route::apiResource('v1/exp-mest-type', ExpMestTypeController::class)->only(['index']);
 });

@@ -202,6 +202,7 @@ class CacheController extends BaseApiCacheController
                 'debate',
                 'debate_v_view',
                 'user_room_v_view',
+                'exp_mest_type',
             ];
         }
         // Nếu xóa theo param
