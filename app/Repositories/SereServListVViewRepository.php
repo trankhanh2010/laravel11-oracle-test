@@ -18,6 +18,7 @@ class SereServListVViewRepository
     {
         return $this->sereServListVView
             ->select([
+                "xa_v_his_sere_serv_list.id as key",     
                 "xa_v_his_sere_serv_list.id",     
                 "xa_v_his_sere_serv_list.is_no_execute",
                 "xa_v_his_sere_serv_list.is_delete",

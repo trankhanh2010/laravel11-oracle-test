@@ -37,7 +37,7 @@ class ThuocVatTuBeanVViewService
             $count = null;
             if ($this->params->tab == 'keDonThuocPhongKham') {
                 $orderBy = [
-                    'service_type_code' => 'desc',
+                    'service_type_code' => 'asc',
                     'm_parent_name' => 'asc',
                 ];
                 $orderByJoin = ['parent_name'];
@@ -73,7 +73,7 @@ class ThuocVatTuBeanVViewService
         $count = null;
         if ($this->params->tab == 'keDonThuocPhongKham') {
             $orderBy = [
-                'service_type_code' => 'desc',
+                'service_type_code' => 'asc',
                 'm_parent_name' => 'asc',
             ];
             $orderByJoin = ['parent_name'];
@@ -85,10 +85,12 @@ class ThuocVatTuBeanVViewService
         if ($this->params->tab == 'keDonThuocPhongKham') {
             $groupBy = [
                 'mParentName',
-                'mTypeName',
+                'mTypeName',    
                 'mediStockName',
             ];
             $data = $this->thuocVatTuBeanVViewRepository->applyGroupByField($data, $groupBy);
+            // Bỏ tầng `m_type_name`:
+            $data = $this->thuocVatTuBeanVViewRepository->flattenGroupLevel($data);
         }
         return ['data' => $data, 'count' => $count];
     }

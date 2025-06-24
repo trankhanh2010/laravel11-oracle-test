@@ -72,6 +72,15 @@ class ExecuteRoomRepository
 
         return $query;
     }
+    public function applyTabFilter($query, $param)
+    {
+        switch ($param) {
+            case 'phongKham':
+                return $query->where('his_execute_room.is_exam', 1);
+            default:
+                return $query;
+        }
+    }
     public function applyCungKhoaFilter($query, $param, $roomId)
     {
         if ($param != null) {

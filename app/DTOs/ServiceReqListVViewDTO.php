@@ -27,6 +27,13 @@ class ServiceReqListVViewDTO
     public $tab;
     public $patientId;
     public $serviceReqIds;
+    public $patientCode;
+    public $serviceReqCode;
+    public $intructionTimeFrom;
+    public $intructionTimeTo;
+    public $executeRoomId;
+    public $serviceReqTypeIds;
+    public $serviceReqSttIds;
     public function __construct(
         $serviceReqLisyVViewName,
         $keyword, 
@@ -51,6 +58,13 @@ class ServiceReqListVViewDTO
         $tab,
         $patientId,
         $serviceReqIds,
+        $patientCode,
+        $serviceReqCode,
+        $intructionTimeFrom,
+        $intructionTimeTo,
+        $executeRoomId,
+        $serviceReqTypeIds,
+        $serviceReqSttIds,
         )
     {
         $this->serviceReqLisyVViewName = $serviceReqLisyVViewName;
@@ -76,5 +90,12 @@ class ServiceReqListVViewDTO
         $this->tab = $tab;
         $this->patientId  = $patientId;
         $this->serviceReqIds = $serviceReqIds;
+        $this->patientCode = $patientCode;
+        $this->serviceReqCode = $serviceReqCode;
+        $this->intructionTimeFrom = $intructionTimeFrom;
+        $this->intructionTimeTo = $intructionTimeTo;
+        $this->executeRoomId = $executeRoomId;
+        $this->serviceReqTypeIds = $serviceReqTypeIds;
+        $this->serviceReqSttIds = $serviceReqSttIds;
     }
 }

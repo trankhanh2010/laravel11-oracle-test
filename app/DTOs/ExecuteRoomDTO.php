@@ -22,6 +22,7 @@ class ExecuteRoomDTO
     public $cungKhoa;
     public $cungCoSo;
     public $roomId;
+    public $tab;
     public function __construct(
         $executeRoomName,
         $keyword, 
@@ -41,6 +42,7 @@ class ExecuteRoomDTO
         $cungKhoa,
         $cungCoSo,
         $roomId,
+        $tab,
         )
     {
         $this->executeRoomName = $executeRoomName;
@@ -61,5 +63,6 @@ class ExecuteRoomDTO
         $this->cungKhoa = $cungKhoa;
         $this->cungCoSo = $cungCoSo;
         $this->roomId = $roomId;
+        $this->tab = $tab;
     }
 }

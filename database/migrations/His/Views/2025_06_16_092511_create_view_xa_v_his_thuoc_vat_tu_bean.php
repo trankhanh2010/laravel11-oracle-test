@@ -42,6 +42,7 @@ SELECT
     medicine.national_name,
     medicine_type.last_exp_price,
     medicine_type.last_exp_vat_ratio,
+    medicine_type.last_imp_vat_ratio,
     medicine_bean.medi_stock_id,
     medi_stock.medi_stock_code,
     medi_stock.medi_stock_name,
@@ -57,7 +58,7 @@ JOIN HIS_MEDICINE_TYPE parent
     AND parent.id in (
         SELECT ID FROM HIS_MEDICINE_TYPE m1
         WHERE m1.parent_id in (
-            SELECT ID FROM HIS_MEDICINE_TYPE m2 WHERE m2.is_leaf is null
+            SELECT ID FROM HIS_MEDICINE_TYPE m2 WHERE m2.is_leaf is null and m2.parent_id is null
         )
         AND m1.is_leaf is null
     )
@@ -96,6 +97,7 @@ SELECT
     material.national_name,
     material_type.last_exp_price,
     material_type.last_exp_vat_ratio,
+    material_type.last_imp_vat_ratio,
     material_bean.medi_stock_id,
     medi_stock.medi_stock_code,
     medi_stock.medi_stock_name,
@@ -109,11 +111,7 @@ LEFT JOIN HIS_MATERIAL_TYPE material_type on material_type.id = material.materia
 JOIN HIS_MATERIAL_TYPE parent 
     on parent.id = material_type.parent_id 
     AND parent.id in (
-        SELECT ID FROM HIS_MATERIAL_TYPE m1
-        WHERE m1.parent_id in (
-            SELECT ID FROM HIS_MATERIAL_TYPE m2 WHERE m2.is_leaf is null
-        )
-        AND m1.is_leaf is null
+        SELECT ID FROM HIS_MATERIAL_TYPE m2 WHERE m2.is_leaf is null and m2.parent_id is null -- lấy theo nhóm lớn
     )
 LEFT JOIN HIS_MANUFACTURER manufacturer on manufacturer.id = material_type.manufacturer_id
 LEFT JOIN HIS_SERVICE_UNIT service_unit on service_unit.id = material_type.tdl_service_unit_id

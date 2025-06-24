@@ -30,19 +30,35 @@ SELECT
      service_req.intruction_time,
      service_req.intruction_date,
      service_req.treatment_id,
+     service_req.tdl_treatment_code,
      service_req.tracking_id,
      service_req.service_req_code,
      service_req.note,
      service_req.CONCLUSION_CLINICAL,
      service_req.CONCLUSION_SUBCLINICAL,
+     service_req.service_req_stt_id,
      service_req_stt.service_req_stt_code,
      service_req_stt.service_req_stt_name,
      service_req.tdl_patient_id,
+     service_req.tdl_patient_code,
      service_req.request_loginname,
      service_req.request_username,
+     service_req.execute_loginname,
+     service_req.execute_username,
      request_department.department_code as request_department_code,
      request_department.department_name as request_department_name,
-     service_req.service_req_type_id
+     service_req.request_department_id,
+     service_req.execute_department_id,
+     service_req.service_req_type_id,
+     service_req.is_main_exam,
+     service_req.request_room_id,
+     service_req.execute_room_id,
+     service_req.ration_time_id,
+     service_req.tdl_patient_dob,
+     service_req.tdl_patient_name,
+     service_req.tdl_patient_gender_name,
+     service_req.num_order
+
     FROM his_service_req service_req
     LEFT JOIN his_department request_department on request_department.id = service_req.request_department_id
     LEFT JOIN his_service_req_stt service_req_stt on service_req_stt.id = service_req.service_req_stt_id

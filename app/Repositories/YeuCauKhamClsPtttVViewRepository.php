@@ -141,6 +141,7 @@ class YeuCauKhamClsPtttVViewRepository
             ->leftJoin('his_patient_case', 'his_patient_case.id', '=', 'xa_v_his_yeu_cau_kham_cls_pttt.patient_case_id')
             ->leftJoin('his_health_exam_rank', 'his_health_exam_rank.id', '=', 'xa_v_his_yeu_cau_kham_cls_pttt.health_exam_rank_id')
             ->leftJoin('his_treatment_type', 'his_treatment_type.id', '=', 'xa_v_his_yeu_cau_kham_cls_pttt.treatment_type_id')
+            ->leftJoin('his_treatment', 'his_treatment.id', '=', 'xa_v_his_yeu_cau_kham_cls_pttt.treatment_id')
             ->leftJoin('his_sere_serv as sere_serv', function ($join) {
                 $join->on('xa_v_his_yeu_cau_kham_cls_pttt.id', '=', 'sere_serv.service_req_id')
                     ->where('sere_serv.is_active', 1)
@@ -284,6 +285,8 @@ class YeuCauKhamClsPtttVViewRepository
                     "xa_v_his_yeu_cau_kham_cls_pttt.patient_type_code",
                     "xa_v_his_yeu_cau_kham_cls_pttt.patient_type_name",
 
+                    "his_treatment.tdl_hein_card_from_time",
+                    "his_treatment.tdl_hein_card_to_time",
                 ]
             );
     }

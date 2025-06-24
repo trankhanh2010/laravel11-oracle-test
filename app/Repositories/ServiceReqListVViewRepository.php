@@ -71,6 +71,59 @@ class ServiceReqListVViewRepository
                 'xa_v_his_service_req_list.intruction_date',
             ]);
     }
+    public function applyJoinsChiDinh()
+    {
+        return $this->serviceReqListVView
+            ->leftJoin('his_service_req_type', 'his_service_req_type.id', '=', 'xa_v_his_service_req_list.service_req_type_id')
+            ->leftJoin('v_his_room as request_room', 'request_room.id', '=', 'xa_v_his_service_req_list.request_room_id')
+            ->leftJoin('v_his_room as execute_room', 'execute_room.id', '=', 'xa_v_his_service_req_list.execute_room_id')
+            ->leftJoin('his_ration_time as ration_time', 'ration_time.id', '=', 'xa_v_his_service_req_list.ration_time_id')
+            ->leftJoin('his_department as execute_department', 'execute_department.id', '=', 'xa_v_his_service_req_list.execute_department_id')
+
+            ->select([
+                'xa_v_his_service_req_list.id',
+                'xa_v_his_service_req_list.is_active',
+                'xa_v_his_service_req_list.is_delete',
+                'xa_v_his_service_req_list.is_no_execute',
+
+                'xa_v_his_service_req_list.service_req_code',
+                'xa_v_his_service_req_list.tdl_treatment_code',
+                'xa_v_his_service_req_list.tdl_patient_code',
+                'his_service_req_type.service_req_type_code',
+                'his_service_req_type.service_req_type_name',
+                'xa_v_his_service_req_list.tdl_patient_name',
+
+                'xa_v_his_service_req_list.execute_room_id',
+                'execute_room.room_code as execute_room_code',
+                'execute_room.room_name as execute_room_name',
+                'xa_v_his_service_req_list.request_room_id',
+                'request_room.room_code as request_room_code',
+                'request_room.room_name as request_room_name',
+
+                'xa_v_his_service_req_list.is_main_exam',
+                'xa_v_his_service_req_list.intruction_time',
+
+                'xa_v_his_service_req_list.request_loginname',
+                'xa_v_his_service_req_list.request_username',
+                'xa_v_his_service_req_list.execute_loginname',
+                'xa_v_his_service_req_list.execute_username',
+
+                'ration_time.ration_time_code',
+                'ration_time.ration_time_name',
+                'xa_v_his_service_req_list.tdl_patient_dob',
+                'xa_v_his_service_req_list.create_time',
+                'xa_v_his_service_req_list.creator',
+                'xa_v_his_service_req_list.modify_time',
+                'xa_v_his_service_req_list.modifier',
+
+                'xa_v_his_service_req_list.tdl_patient_gender_name',
+                'execute_department.department_code as execute_department_code',
+                'execute_department.department_name as execute_department_name',
+                'xa_v_his_service_req_list.num_order',
+                'xa_v_his_service_req_list.tdl_patient_id',
+
+            ]);
+    }
     public function applyWithParam($query)
     {
         return $query->with([
@@ -81,13 +134,31 @@ class ServiceReqListVViewRepository
             'sere_serv.exp_mest_medicine:id,tutorial',
         ]);
     }
+    public function applyWithParamChiDinh($query)
+    {
+        return $query->with([
+            'danh_sach_dich_vu_chi_dinh',
+            'list_card',
+        ]);
+    }
 
     public function applyKeywordFilter($query, $keyword)
     {
-        return $query->where(function ($query) use ($keyword) {
-            $query->where(('service_req_list_code'), 'like', '%' . $keyword . '%')
-                ->orWhere(('lower(service_req_list_name)'), 'like', '%' . strtolower($keyword) . '%');
-        });
+        if ($keyword != null) {
+            return $query->where(function ($query) use ($keyword) {
+                $query->whereRaw("
+                REGEXP_LIKE(
+                    NLSSORT(xa_v_his_service_req_list.tdl_patient_name, 'NLS_SORT=GENERIC_M_AI'),
+                    NLSSORT(?, 'NLS_SORT=GENERIC_M_AI'),
+                    'i'
+                )
+            ", [$keyword])
+                    ->orWhere(('xa_v_his_service_req_list.tdl_patient_code'), 'like', '%' . $keyword . '%')
+                    ->orWhere(('xa_v_his_service_req_list.tdl_treatment_code'), 'like', '%' . $keyword . '%')
+                    ->orWhere(('xa_v_his_service_req_list.service_req_code'), 'like', '%' . $keyword . '%');
+            });
+        }
+        return $query;
     }
     public function applyIsActiveFilter($query, $isActive)
     {
@@ -134,6 +205,55 @@ class ServiceReqListVViewRepository
     {
         if ($param !== null) {
             $query->where(('xa_v_his_service_req_list.treatment_id'), $param);
+        }
+        return $query;
+    }
+    public function applyPatientCodeFilter($query, $param)
+    {
+        if ($param != null) {
+            $query->where(('xa_v_his_service_req_list.tdl_patient_code'), $param);
+        }
+        return $query;
+    }
+    public function applyServiceReqCodeFilter($query, $param)
+    {
+        if ($param != null) {
+            $query->where(('xa_v_his_service_req_list.service_req_code'), $param);
+        }
+        return $query;
+    }
+    public function applyIntructionTimeFromFilter($query, $param)
+    {
+        if ($param != null) {
+            $query->where(('xa_v_his_service_req_list.intruction_time'), '>=', $param);
+        }
+        return $query;
+    }
+    public function applyIntructionTimeToFilter($query, $param)
+    {
+        if ($param != null) {
+            $query->where(('xa_v_his_service_req_list.intruction_time'), '<=', $param);
+        }
+        return $query;
+    }
+    public function applyExecuteRoomIdFilter($query, $param)
+    {
+        if ($param != null) {
+            $query->where(('xa_v_his_service_req_list.execute_room_id'), $param);
+        }
+        return $query;
+    }
+    public function applyServiceReqTypeIdsFilter($query, $param)
+    {
+        if ($param != null) {
+            $query->whereIn(('xa_v_his_service_req_list.service_req_type_id'), $param);
+        }
+        return $query;
+    }
+    public function applyServiceReqSttIdsFilter($query, $param)
+    {
+        if ($param != null) {
+            $query->whereIn(('xa_v_his_service_req_list.service_req_stt_id'), $param);
         }
         return $query;
     }
