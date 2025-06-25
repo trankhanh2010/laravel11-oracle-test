@@ -76,10 +76,6 @@ class MediStockRepository
                 ->where('room_type.room_type_code', 'KH')
                 ->where('room.department_id', $departmentId);
                 return $query;
-            case 'nhaThuocKeDonThuocTuTruc':
-                // $query->where('his_medi_stock.IS_DRUG_STORE', 1)
-                // ->where('room.department_id', $departmentId);
-                return $query;
             default:
                 return $query;
         }

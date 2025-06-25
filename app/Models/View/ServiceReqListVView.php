@@ -3,6 +3,7 @@
 namespace App\Models\View;
 
 use App\Models\HIS\Card;
+use App\Models\HIS\ExpMest;
 use App\Models\HIS\SereServ;
 use App\Traits\dinh_dang_ten_truong;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -32,6 +33,7 @@ class ServiceReqListVView extends Model
         return $this->hasMany(SereServ::class, 'service_req_id', 'id')
             ->leftJoin('his_patient_type', 'his_patient_type.id', '=', 'his_sere_serv.patient_type_id')
             ->leftJoin('his_service_unit', 'his_service_unit.id', '=', 'his_sere_serv.tdl_service_unit_id')
+            ->leftJoin('his_service_unit convert', 'convert.id', '=', 'his_service_unit.convert_id')
             ->leftJoin('his_service', 'his_service.id', '=', 'his_sere_serv.service_id')
             ->leftJoin('his_pttt_group', 'his_pttt_group.id', '=', 'his_service.pttt_group_id')
             ->select([
@@ -44,12 +46,32 @@ class ServiceReqListVView extends Model
                 'his_sere_serv.amount',
                 'his_service_unit.service_unit_code',
                 'his_service_unit.service_unit_name',
+                'his_service_unit.convert_ratio',
+                'convert.service_unit_code as convert_code',
+                'convert.service_unit_name as convert_name',
                 'his_pttt_group.pttt_group_code',
                 'his_pttt_group.pttt_group_name',
             ]);
     }
-    public function list_card()
+    public function the_kcb_thong_minh()
     {
         return $this->hasMany(Card::class,  'patient_id', 'tdl_patient_id');
+    }
+    public function don_xuat()
+    {
+        return $this->hasMany(ExpMest::class,  'service_req_id', 'id')
+        ->leftJoin('his_medi_stock', 'his_medi_stock.id', '=', 'his_exp_mest.medi_stock_id')
+        ->leftJoin('his_exp_mest aggr_exp_mest', 'aggr_exp_mest.id', '=', 'his_exp_mest.aggr_exp_mest_id')
+        ->where('his_exp_mest.is_delete', 0)
+        ->select([
+            'his_exp_mest.id',
+            'his_exp_mest.service_req_id',
+            'his_medi_stock.medi_stock_code',
+            'his_medi_stock.medi_stock_name',
+            'his_exp_mest.exp_mest_code',
+            'aggr_exp_mest.exp_mest_code as aggr_exp_mest_code', // mã phiếu lĩnh
+            'his_exp_mest.IS_HOME_PRES', // đơn mang về
+            'his_exp_mest.IS_KIDNEY', // đơn chạy thận
+        ]);
     }
 }

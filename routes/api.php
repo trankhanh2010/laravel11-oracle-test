@@ -1222,7 +1222,7 @@ Route::group([
     /// Treatment Room Group
     Route::apiResource('v1/treatment-bed-room-group-v-view', TreatmentRoomGroupVViewController::class)->only(['index']);
     /// ServiceReqList danh sách y lệnh
-    Route::apiResource('v1/service-req-list-v-view', ServiceReqListVViewController::class)->only(['index']);
+    Route::apiResource('v1/service-req-list-v-view', ServiceReqListVViewController::class)->only(['index', 'show']);
     /// Tracking List
     Route::apiResource('v1/tracking-list-v-view', TrackingListVViewController::class)->only(['index', 'show']);
     /// SereServ List

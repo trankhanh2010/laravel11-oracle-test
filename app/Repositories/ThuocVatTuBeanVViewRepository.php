@@ -57,6 +57,8 @@ class ThuocVatTuBeanVViewRepository
             'xa_v_his_thuoc_vat_tu_bean.service_type_code',
             'xa_v_his_thuoc_vat_tu_bean.service_type_name',
             'xa_v_his_thuoc_vat_tu_bean.is_kidney',
+            'xa_v_his_thuoc_vat_tu_bean.description', // ghi chú lúc rê chuột vào
+
         ])
             ->where('xa_v_his_thuoc_vat_tu_bean.is_leaf', 1);
     }
@@ -166,26 +168,19 @@ class ThuocVatTuBeanVViewRepository
                 $result = [
                     $originalField => (string)$key, // Trả về tên field gốc
                     'key' => (string)$key,
-                    'title' => (string)$key,
-                    'value' => (string)$key,
                     'total' => $group->count(),
                     'beanAmount' => $group->sum('bean_amount'),
                 ];
 
                 if ($currentField === 'm_parent_name') {
-                    $result['selectable'] = false;
                 }
                 if ($currentField === 'm_type_name') {
-                    $result['selectable'] = false;
                 }
 
                 // Nếu group theo mediStockName 
                 if ($currentField === 'medi_stock_name') {
                     $firstItem = $group->first();
-                    $result['title'] = $firstItem['m_type_name'];
-                    $result['value'] = $firstItem['key'];
                     $result['key'] = $firstItem['m_type_id'].'-'.$firstItem['medi_stock_id'];
-                    $result['selectable'] = true;
                     $result['id'] = $firstItem['id'];
                     $result['serviceId'] = $firstItem['service_id'];
                     $result['mTypeId'] = $firstItem['m_type_id'];
@@ -214,6 +209,7 @@ class ThuocVatTuBeanVViewRepository
                     $result['serviceTypeCode'] = $firstItem['service_type_code'];
                     $result['serviceTypeName'] = $firstItem['service_type_name'];
                     $result['isKidney'] = $firstItem['is_kidney'];
+                    $result['description'] = $firstItem['description'];
                 }
 
                 if ($currentField === 'medi_stock_name') {

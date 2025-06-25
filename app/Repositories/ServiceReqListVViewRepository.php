@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Jobs\ElasticSearch\Index\ProcessElasticIndexingJob;
+use App\Models\HIS\Room;
 use App\Models\View\ServiceReqListVView;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -11,6 +12,7 @@ use Illuminate\Support\Str;
 class ServiceReqListVViewRepository
 {
     protected $serviceReqListVView;
+    protected $room;
     public function __construct(ServiceReqListVView $serviceReqListVView)
     {
         $this->serviceReqListVView = $serviceReqListVView;
@@ -79,12 +81,66 @@ class ServiceReqListVViewRepository
             ->leftJoin('v_his_room as execute_room', 'execute_room.id', '=', 'xa_v_his_service_req_list.execute_room_id')
             ->leftJoin('his_ration_time as ration_time', 'ration_time.id', '=', 'xa_v_his_service_req_list.ration_time_id')
             ->leftJoin('his_department as execute_department', 'execute_department.id', '=', 'xa_v_his_service_req_list.execute_department_id')
+            ->leftJoin('his_department as request_department', 'request_department.id', '=', 'xa_v_his_service_req_list.request_department_id')
 
             ->select([
                 'xa_v_his_service_req_list.id',
                 'xa_v_his_service_req_list.is_active',
                 'xa_v_his_service_req_list.is_delete',
                 'xa_v_his_service_req_list.is_no_execute',
+                'xa_v_his_service_req_list.service_req_stt_code',
+                'xa_v_his_service_req_list.service_req_stt_name',
+
+                'xa_v_his_service_req_list.service_req_code',
+                'xa_v_his_service_req_list.tdl_treatment_code',
+                'xa_v_his_service_req_list.tdl_patient_code',
+                'his_service_req_type.service_req_type_code',
+                'his_service_req_type.service_req_type_name',
+                'xa_v_his_service_req_list.tdl_patient_name',
+
+                'xa_v_his_service_req_list.execute_room_id',
+                'execute_room.room_code as execute_room_code',
+                'execute_room.room_name as execute_room_name',
+                'xa_v_his_service_req_list.request_room_id',
+                'request_room.room_code as request_room_code',
+                'request_room.room_name as request_room_name',
+
+                'xa_v_his_service_req_list.is_main_exam',
+                'xa_v_his_service_req_list.intruction_time',
+
+                'xa_v_his_service_req_list.request_loginname',
+                'xa_v_his_service_req_list.request_username',
+                'xa_v_his_service_req_list.execute_loginname',
+                'xa_v_his_service_req_list.execute_username',
+
+                'ration_time.ration_time_code',
+                'ration_time.ration_time_name',
+                'xa_v_his_service_req_list.tdl_patient_dob',
+                'xa_v_his_service_req_list.create_time',
+                'xa_v_his_service_req_list.creator',
+                'xa_v_his_service_req_list.modify_time',
+                'xa_v_his_service_req_list.modifier',
+
+            ]);
+    }
+
+    public function applyJoinsChiDinhChiTiet()
+    {
+        return $this->serviceReqListVView
+            ->leftJoin('his_service_req_type', 'his_service_req_type.id', '=', 'xa_v_his_service_req_list.service_req_type_id')
+            ->leftJoin('v_his_room as request_room', 'request_room.id', '=', 'xa_v_his_service_req_list.request_room_id')
+            ->leftJoin('v_his_room as execute_room', 'execute_room.id', '=', 'xa_v_his_service_req_list.execute_room_id')
+            ->leftJoin('his_ration_time as ration_time', 'ration_time.id', '=', 'xa_v_his_service_req_list.ration_time_id')
+            ->leftJoin('his_department as execute_department', 'execute_department.id', '=', 'xa_v_his_service_req_list.execute_department_id')
+            ->leftJoin('his_department as request_department', 'request_department.id', '=', 'xa_v_his_service_req_list.request_department_id')
+
+            ->select([
+                'xa_v_his_service_req_list.id',
+                'xa_v_his_service_req_list.is_active',
+                'xa_v_his_service_req_list.is_delete',
+                'xa_v_his_service_req_list.is_no_execute',
+                'xa_v_his_service_req_list.service_req_stt_code',
+                'xa_v_his_service_req_list.service_req_stt_name',
 
                 'xa_v_his_service_req_list.service_req_code',
                 'xa_v_his_service_req_list.tdl_treatment_code',
@@ -122,6 +178,10 @@ class ServiceReqListVViewRepository
                 'xa_v_his_service_req_list.num_order',
                 'xa_v_his_service_req_list.tdl_patient_id',
 
+                'xa_v_his_service_req_list.is_sent_ext', // đã gửi yêu cầu
+                'xa_v_his_service_req_list.barcode',
+                'xa_v_his_service_req_list.session_code', // mã lượt chỉ định 
+                'xa_v_his_service_req_list.remedy_count', // Số thang
             ]);
     }
     public function applyWithParam($query)
@@ -138,7 +198,8 @@ class ServiceReqListVViewRepository
     {
         return $query->with([
             'danh_sach_dich_vu_chi_dinh',
-            'list_card',
+            'the_kcb_thong_minh',
+            'don_xuat',
         ]);
     }
 
@@ -256,6 +317,26 @@ class ServiceReqListVViewRepository
             $query->whereIn(('xa_v_his_service_req_list.service_req_stt_id'), $param);
         }
         return $query;
+    }
+    public function applyTypeFilter($query, $param, $currentRoomId, $currentLoginname)
+    {
+        $this->room = new Room();
+        $departmentId = $this->room->find($currentRoomId)->department_id ?? 0;
+        switch ($param) {
+            case 'tatCa':
+                return $query;
+            case 'toiTao':
+                return $query->where(('xa_v_his_service_req_list.creator'), $currentLoginname);
+            case 'phongChiDinh':
+                return $query->where(('xa_v_his_service_req_list.request_room_id'), $currentRoomId);
+            case 'khoaChiDinh':
+                return $query->where(('xa_v_his_service_req_list.request_department_id'), $departmentId);;
+            case 'khoaThucHien':
+                return $query->where(('xa_v_his_service_req_list.execute_department_id'), $departmentId);;
+            default:
+                return $query;
+        }
+
     }
     public function applyGroupByField($data, $groupByFields = [])
     {

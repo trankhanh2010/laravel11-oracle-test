@@ -57,7 +57,11 @@ SELECT
      service_req.tdl_patient_dob,
      service_req.tdl_patient_name,
      service_req.tdl_patient_gender_name,
-     service_req.num_order
+     service_req.num_order,
+     service_req.IS_SENT_EXT,
+     service_req.BARCODE,
+     service_req.SESSION_CODE,
+     service_req.remedy_count  
 
     FROM his_service_req service_req
     LEFT JOIN his_department request_department on request_department.id = service_req.request_department_id

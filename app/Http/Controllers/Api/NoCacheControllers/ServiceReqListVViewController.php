@@ -56,6 +56,9 @@ class ServiceReqListVViewController extends BaseApiCacheController
             $this->executeRoomId,
             $this->serviceReqTypeIds,
             $this->serviceReqSttIds,
+            $this->type,
+            $this->currentLoginname,
+            $this->roomId,
         );
         $this->serviceReqListVViewService->withParams($this->serviceReqListVViewDTO);
     }
@@ -128,7 +131,15 @@ class ServiceReqListVViewController extends BaseApiCacheController
                 return $validationError;
             }
         }
-        $data = $this->serviceReqListVViewService->handleDataBaseGetWithId($id);
+          switch ($this->tab) {
+            case 'chiDinh':
+                $data = $this->serviceReqListVViewService->handleDataBaseGetWithIdChiDinh($id);
+                break;
+
+            default:
+                $data = $this->serviceReqListVViewService->handleDataBaseGetWithId($id);
+                break;
+        }
         $paramReturn = [
             $this->idName => $id,
             $this->isActiveName => $this->isActive,

@@ -93,7 +93,8 @@ class ServiceReqListVViewService
     private function getAllDataFromDatabaseChiDinh()
     {
         $data = $this->serviceReqListVViewRepository->applyJoinsChiDinh();
-        $data = $this->serviceReqListVViewRepository->applyWithParamChiDinh($data);
+        // $data = $this->serviceReqListVViewRepository->applyWithParamChiDinh($data);
+        $data = $this->serviceReqListVViewRepository->applyKeywordFilter($data, $this->params->keyword);
         $data = $this->serviceReqListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
         $data = $this->serviceReqListVViewRepository->applyIsDeleteFilter($data, 0);
         $data = $this->serviceReqListVViewRepository->applyIsNoExecuteFilter($data);
@@ -106,6 +107,7 @@ class ServiceReqListVViewService
         $data = $this->serviceReqListVViewRepository->applyExecuteRoomIdFilter($data, $this->params->executeRoomId);
         $data = $this->serviceReqListVViewRepository->applyServiceReqTypeIdsFilter($data, $this->params->serviceReqTypeIds);
         $data = $this->serviceReqListVViewRepository->applyServiceReqSttIdsFilter($data, $this->params->serviceReqSttIds);
+        $data = $this->serviceReqListVViewRepository->applyTypeFilter($data, $this->params->type, $this->params->roomId, $this->params->currentLoginname);
         $count = $data->count();
         $data = $this->serviceReqListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
         $data = $this->serviceReqListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
@@ -116,8 +118,19 @@ class ServiceReqListVViewService
     private function getDataById($id)
     {
         $data = $this->serviceReqListVViewRepository->applyJoins()
-            ->where('id', $id);
+            ->where('xa_v_his_service_req_list.id', $id);
         $data = $this->serviceReqListVViewRepository->applyWithParam($data);
+        $data = $this->serviceReqListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $this->serviceReqListVViewRepository->applyIsDeleteFilter($data, 0);
+        $data = $this->serviceReqListVViewRepository->applyIsNoExecuteFilter($data);
+        $data = $data->first();
+        return $data;
+    }
+    private function getDataByIdChiDinh($id)
+    {
+        $data = $this->serviceReqListVViewRepository->applyJoinsChiDinhChiTiet()
+            ->where('xa_v_his_service_req_list.id', $id);
+        $data = $this->serviceReqListVViewRepository->applyWithParamChiDinh($data);
         $data = $this->serviceReqListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
         $data = $this->serviceReqListVViewRepository->applyIsDeleteFilter($data, 0);
         $data = $this->serviceReqListVViewRepository->applyIsNoExecuteFilter($data);
@@ -164,7 +177,14 @@ class ServiceReqListVViewService
             return writeAndThrowError(config('params')['db_service']['error']['service_req_list_v_view'], $e);
         }
     }
-
+    public function handleDataBaseGetWithIdChiDinh($id)
+    {
+        try {
+            return $this->getDataByIdChiDinh($id);
+        } catch (\Throwable $e) {
+            return writeAndThrowError(config('params')['db_service']['error']['service_req_list_v_view'], $e);
+        }
+    }
     // public function createServiceReqListVView($request)
     // {
     //     try {
