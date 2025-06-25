@@ -59,14 +59,26 @@ class MediStockRepository
         }
         return $query;
     }
-    public function applyTabFilter($query, $param)
+    public function applyTabFilter($query, $param, $currentRoomId)
     {
+        $departmentId = $this->room->find($currentRoomId)->department_id ?? 0; // khoa của phòng hienejt ại
+
         switch ($param) {
             case 'khoXuatKeDonThuocPhongKham':
                 $query->whereIn('his_medi_stock.medi_stock_code', ['NT', 'KNGT', 'KTD']);
                 return $query;
             case 'nhaThuocKeDonThuocPhongKham':
                 $query->where('his_medi_stock.IS_DRUG_STORE', 1);
+                return $query;
+            case 'khoXuatKeDonThuocTuTruc':
+                $query->where('his_medi_stock.is_cabinet', 1)
+                ->where('his_medi_stock.is_odd', 1)
+                ->where('room_type.room_type_code', 'KH')
+                ->where('room.department_id', $departmentId);
+                return $query;
+            case 'nhaThuocKeDonThuocTuTruc':
+                // $query->where('his_medi_stock.IS_DRUG_STORE', 1)
+                // ->where('room.department_id', $departmentId);
                 return $query;
             default:
                 return $query;

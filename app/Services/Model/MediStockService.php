@@ -40,7 +40,7 @@ class MediStockService
             // $data = $this->mediStockRepository->applyWith($data, $this->params->tab);
             $data = $this->mediStockRepository->applyKeywordFilter($data, $this->params->keyword);
             $data = $this->mediStockRepository->applyIsActiveFilter($data, $this->params->isActive);
-            $data = $this->mediStockRepository->applyTabFilter($data, $this->params->tab);
+            $data = $this->mediStockRepository->applyTabFilter($data, $this->params->tab, $this->params->roomId);
             $count = $data->count();
             $data = $this->mediStockRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
             $data = $this->mediStockRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
@@ -55,7 +55,7 @@ class MediStockService
         $data = $this->mediStockRepository->applyJoins();
         // $data = $this->mediStockRepository->applyWith($data, $this->params->tab);
         $data = $this->mediStockRepository->applyIsActiveFilter($data, $this->params->isActive);
-        $data = $this->mediStockRepository->applyTabFilter($data, $this->params->tab);
+        $data = $this->mediStockRepository->applyTabFilter($data, $this->params->tab, $this->params->roomId);
         $count = $data->count();
         $data = $this->mediStockRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
         $data = $this->mediStockRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);

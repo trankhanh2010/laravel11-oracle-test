@@ -50,7 +50,8 @@ SELECT
     manufacturer.manufacturer_code,
     manufacturer.manufacturer_name,
     service_type.service_type_code,
-    service_type.service_type_name
+    service_type.service_type_name,
+    medicine_type.IS_KIDNEY 
 FROM HIS_MEDICINE medicine     
 LEFT JOIN HIS_MEDICINE_TYPE medicine_type on medicine_type.id = medicine.medicine_type_id   
 JOIN HIS_MEDICINE_TYPE parent 
@@ -105,7 +106,9 @@ SELECT
     manufacturer.manufacturer_code,
     manufacturer.manufacturer_name,
     service_type.service_type_code,
-    service_type.service_type_name
+    service_type.service_type_name,
+    null as IS_KIDNEY 
+
 FROM HIS_MATERIAL material     
 LEFT JOIN HIS_MATERIAL_TYPE material_type on material_type.id = material.material_type_id   
 JOIN HIS_MATERIAL_TYPE parent 

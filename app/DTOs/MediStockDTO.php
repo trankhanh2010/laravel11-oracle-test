@@ -20,6 +20,7 @@ class MediStockDTO
     public $param;
     public $noCache;
     public $tab;
+    public $roomId;
     public function __construct(
         $mediStockName,
         $keyword, 
@@ -37,6 +38,7 @@ class MediStockDTO
         $param,
         $noCache,
         $tab,
+        $roomId,
         )
     {
         $this->mediStockName = $mediStockName;
@@ -55,5 +57,6 @@ class MediStockDTO
         $this->param = $param;
         $this->noCache = $noCache;
         $this->tab = $tab;
+        $this->roomId = $roomId;
     }
 }

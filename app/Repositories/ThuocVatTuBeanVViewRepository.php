@@ -56,6 +56,7 @@ class ThuocVatTuBeanVViewRepository
             'xa_v_his_thuoc_vat_tu_bean.manufacturer_name',
             'xa_v_his_thuoc_vat_tu_bean.service_type_code',
             'xa_v_his_thuoc_vat_tu_bean.service_type_name',
+            'xa_v_his_thuoc_vat_tu_bean.is_kidney',
         ])
             ->where('xa_v_his_thuoc_vat_tu_bean.is_leaf', 1);
     }
@@ -102,7 +103,7 @@ class ThuocVatTuBeanVViewRepository
     {
         switch ($param) {
             case 'thuocVatTuTrongKho':
-                return $query->whereIn('xa_v_his_thuoc_vat_tu_bean.medi_stock_code', ['NT', 'KNGT', 'KTD']);
+                return $query;
             case 'thuocVatTuMuaNgoai':
                 return $query->where('xa_v_his_thuoc_vat_tu_bean.IS_DRUG_STORE', 1);
             default:
@@ -164,26 +165,26 @@ class ThuocVatTuBeanVViewRepository
             })->map(function ($group, $key) use ($fields, $groupData, $originalField, $currentField) {
                 $result = [
                     $originalField => (string)$key, // Trả về tên field gốc
-                    // 'key' => (string)$key,
-                    // 'title' => (string)$key,
-                    // 'value' => (string)$key,
+                    'key' => (string)$key,
+                    'title' => (string)$key,
+                    'value' => (string)$key,
                     'total' => $group->count(),
                     'beanAmount' => $group->sum('bean_amount'),
                 ];
 
                 if ($currentField === 'm_parent_name') {
-                    // $result['selectable'] = false;
+                    $result['selectable'] = false;
                 }
                 if ($currentField === 'm_type_name') {
-                    // $result['selectable'] = false;
+                    $result['selectable'] = false;
                 }
 
                 // Nếu group theo mediStockName 
                 if ($currentField === 'medi_stock_name') {
                     $firstItem = $group->first();
-                    // $result['title'] = $firstItem['m_type_name'];
-                    // $result['value'] = $firstItem['key'];
-                    // $result['key'] = $firstItem['key'];
+                    $result['title'] = $firstItem['m_type_name'];
+                    $result['value'] = $firstItem['key'];
+                    $result['key'] = $firstItem['m_type_id'].'-'.$firstItem['medi_stock_id'];
                     $result['selectable'] = true;
                     $result['id'] = $firstItem['id'];
                     $result['serviceId'] = $firstItem['service_id'];
@@ -212,6 +213,7 @@ class ThuocVatTuBeanVViewRepository
                     $result['mParentName'] = $firstItem['m_parent_name'];
                     $result['serviceTypeCode'] = $firstItem['service_type_code'];
                     $result['serviceTypeName'] = $firstItem['service_type_name'];
+                    $result['isKidney'] = $firstItem['is_kidney'];
                 }
 
                 if ($currentField === 'medi_stock_name') {
