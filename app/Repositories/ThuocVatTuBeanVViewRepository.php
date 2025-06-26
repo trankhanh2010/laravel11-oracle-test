@@ -56,8 +56,16 @@ class ThuocVatTuBeanVViewRepository
             'xa_v_his_thuoc_vat_tu_bean.manufacturer_name',
             'xa_v_his_thuoc_vat_tu_bean.service_type_code',
             'xa_v_his_thuoc_vat_tu_bean.service_type_name',
-            'xa_v_his_thuoc_vat_tu_bean.is_kidney',
             'xa_v_his_thuoc_vat_tu_bean.description', // ghi chú lúc rê chuột vào
+            'xa_v_his_thuoc_vat_tu_bean.medicine_use_form_id',
+            'xa_v_his_thuoc_vat_tu_bean.medicine_use_form_name',
+            'xa_v_his_thuoc_vat_tu_bean.medicine_use_form_code',
+            'xa_v_his_thuoc_vat_tu_bean.ALERT_MAX_IN_PRESCRIPTION',
+            'xa_v_his_thuoc_vat_tu_bean.ALERT_MAX_IN_DAY',
+            'xa_v_his_thuoc_vat_tu_bean.ALERT_MAX_IN_TREATMENT',
+            'xa_v_his_thuoc_vat_tu_bean.IS_BLOCK_MAX_IN_PRESCRIPTION',
+            'xa_v_his_thuoc_vat_tu_bean.IS_BLOCK_MAX_IN_DAY',
+            'xa_v_his_thuoc_vat_tu_bean.IS_BLOCK_MAX_IN_TREATMENT',
 
         ])
             ->where('xa_v_his_thuoc_vat_tu_bean.is_leaf', 1);
@@ -208,8 +216,17 @@ class ThuocVatTuBeanVViewRepository
                     $result['mParentName'] = $firstItem['m_parent_name'];
                     $result['serviceTypeCode'] = $firstItem['service_type_code'];
                     $result['serviceTypeName'] = $firstItem['service_type_name'];
-                    $result['isKidney'] = $firstItem['is_kidney'];
                     $result['description'] = $firstItem['description'];
+                    $result['medicineUseFormId'] = $firstItem['medicine_use_form_id'];
+                    $result['medicineUseFormName'] = $firstItem['medicine_use_form_name'];
+                    $result['medicineUseFormCode'] = $firstItem['medicine_use_form_code'];
+                    $result['alertMaxInPrescription'] = $firstItem['alert_max_in_prescription'];
+                    $result['alertMaxInDay'] = $firstItem['alert_max_in_day'];
+                    $result['alertMaxInTreatment'] = $firstItem['alert_max_in_treatment'];
+                    $result['isBlockMaxInPrescription'] = $firstItem['is_block_max_in_prescription'];
+                    $result['isBlockMaxInDay'] = $firstItem['is_block_max_in_day'];
+                    $result['isBlockMaxInTreatment'] = $firstItem['is_block_max_in_treatment'];
+
                 }
 
                 if ($currentField === 'medi_stock_name') {

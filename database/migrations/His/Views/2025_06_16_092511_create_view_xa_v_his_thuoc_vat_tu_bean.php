@@ -51,8 +51,16 @@ SELECT
     manufacturer.manufacturer_name,
     service_type.service_type_code,
     service_type.service_type_name,
-    medicine_type.IS_KIDNEY,
-    medicine_type.DESCRIPTION --ghi chú lúc rê chuột vào
+    medicine_type.DESCRIPTION, --ghi chú lúc rê chuột vào
+    medicine_type.medicine_use_form_id,
+    medicine_use_form.medicine_use_form_name,
+    medicine_use_form.medicine_use_form_code,
+    medicine_type.ALERT_MAX_IN_PRESCRIPTION, -- số lượng max kê trên 1 đơn 
+    medicine_type.ALERT_MAX_IN_DAY, -- số lượng max kê trên 1 ngày 
+    medicine_type.ALERT_MAX_IN_TREATMENT, -- số lượng max kê cho 1 hồ sơ điều trị
+    medicine_type.IS_BLOCK_MAX_IN_PRESCRIPTION, -- chặn khi kê quá số lượng trên 1 đơn 
+    medicine_type.IS_BLOCK_MAX_IN_DAY, -- chặn khi kê quá số lượng trên 1 ngày 
+    medicine_type.IS_BLOCK_MAX_IN_TREATMENT -- chặn khi kê quá số lượng 1 hồ sơ điều trị
 
 FROM HIS_MEDICINE medicine     
 LEFT JOIN HIS_MEDICINE_TYPE medicine_type on medicine_type.id = medicine.medicine_type_id   
@@ -72,6 +80,7 @@ LEFT JOIN HIS_SERVICE_TYPE service_type on service_type.id = service.service_typ
 LEFT JOIN HIS_MEDICINE_BEAN medicine_bean 
 on medicine_bean.medicine_id = medicine.id and medicine_bean.is_active = 1 and medicine_bean.is_delete = 0
 LEFT JOIN HIS_MEDI_STOCK medi_stock on medi_stock.id = medicine_bean.medi_stock_id
+LEFT JOIN HIS_MEDICINE_USE_FORM medicine_use_form on medicine_use_form.id = medicine_type.medicine_use_form_id
 
   UNION ALL
 
@@ -109,9 +118,17 @@ SELECT
     manufacturer.manufacturer_name,
     service_type.service_type_code,
     service_type.service_type_name,
-    null as IS_KIDNEY,
-    material_type.DESCRIPTION --ghi chú lúc rê chuột vào
- 
+    material_type.DESCRIPTION, --ghi chú lúc rê chuột vào
+    null as medicine_use_form_id,
+    null as medicine_use_form_name,
+    null as medicine_use_form_code,
+    material_type.ALERT_MAX_IN_PRESCRIPTION, -- số lượng max kê trên 1 đơn 
+    material_type.ALERT_MAX_IN_DAY, -- số lượng max kê trên 1 ngày 
+    null as ALERT_MAX_IN_TREATMENT, -- số lượng max kê cho 1 hồ sơ điều trị
+    null as IS_BLOCK_MAX_IN_PRESCRIPTION, -- chặn khi kê quá số lượng trên 1 đơn 
+    null as IS_BLOCK_MAX_IN_DAY, -- chặn khi kê quá số lượng trên 1 ngày 
+    null as IS_BLOCK_MAX_IN_TREATMENT -- chặn khi kê quá số lượng 1 hồ sơ điều trị
+
 FROM HIS_MATERIAL material     
 LEFT JOIN HIS_MATERIAL_TYPE material_type on material_type.id = material.material_type_id   
 JOIN HIS_MATERIAL_TYPE parent 
