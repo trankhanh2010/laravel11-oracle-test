@@ -470,6 +470,7 @@ return [
             'don_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm Đơn!',
             'tran_pati_temp' => 'Có lỗi khi thực hiện thao tác với bảng Mẫu thông tin chuyển viện!',
             'exp_mest_type' => 'Có lỗi khi thực hiện thao tác với bảng Loại đơn!',
+            'acin_interactive' => 'Có lỗi khi thực hiện thao tác với bảng Hoạt chất - Tương tác!',
 
         ],
         'table' => [

@@ -119,6 +119,7 @@ use App\Http\Controllers\Api\CacheControllers\SupplierController;
 use App\Http\Controllers\Api\CacheControllers\DeathWithinController;
 use App\Http\Controllers\Api\CacheControllers\LocationStoreController;
 use App\Http\Controllers\Api\CacheControllers\AccidentCareController;
+use App\Http\Controllers\Api\CacheControllers\AcinInteractiveController;
 use App\Http\Controllers\Api\CacheControllers\PtttTableController;
 use App\Http\Controllers\Api\CacheControllers\EmotionlessMethodController;
 use App\Http\Controllers\Api\CacheControllers\PtttCatastropheController;
@@ -1290,4 +1291,6 @@ Route::group([
     Route::apiResource('v1/tran-pati-temp', TranPatiTempController::class)->only(['index', 'show']);
     /// Loại đơn
     Route::apiResource('v1/exp-mest-type', ExpMestTypeController::class)->only(['index']);
+    /// Loại đơn
+    Route::apiResource('v1/acin-interactive', AcinInteractiveController::class)->only(['index']);
 });

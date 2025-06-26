@@ -2,9 +2,9 @@
 
 namespace App\DTOs;
 
-class MedicineTypeAcinDTO
+class AcinInteractiveDTO
 {
-    public $medicineTypeAcinName;
+    public $acinInteractiveName;
     public $keyword;
     public $isActive;
     public $orderBy;
@@ -17,13 +17,11 @@ class MedicineTypeAcinDTO
     public $appCreator;
     public $appModifier;
     public $time;
-    public $medicineTypeId;
-    public $activeIngredientId;
     public $param;
     public $noCache;
     public $groupBy;
     public function __construct(
-        $medicineTypeAcinName,
+        $acinInteractiveName,
         $keyword, 
         $isActive, 
         $orderBy, 
@@ -36,14 +34,12 @@ class MedicineTypeAcinDTO
         $appCreator,
         $appModifier,
         $time,
-        $medicineTypeId,
-        $activeIngredientId,
         $param,
         $noCache,
         $groupBy,
         )
     {
-        $this->medicineTypeAcinName = $medicineTypeAcinName;
+        $this->acinInteractiveName = $acinInteractiveName;
         $this->keyword = $keyword;
         $this->isActive = $isActive;
         $this->orderBy = $orderBy;
@@ -56,8 +52,6 @@ class MedicineTypeAcinDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
-        $this->medicineTypeId = $medicineTypeId;
-        $this->activeIngredientId = $activeIngredientId;
         $this->param = $param;
         $this->noCache = $noCache;
         $this->groupBy = $groupBy;

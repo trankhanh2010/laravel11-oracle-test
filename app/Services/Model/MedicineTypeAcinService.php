@@ -41,6 +41,7 @@ class MedicineTypeAcinService
             $count = $data->count();
             $data = $this->medicineTypeAcinRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
             $data = $this->medicineTypeAcinRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+            $data = $this->medicineTypeAcinRepository->applyGroupByField($data, $this->params->groupBy);
             return ['data' => $data, 'count' => $count];
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['medicine_type_acin'], $e);
@@ -55,6 +56,7 @@ class MedicineTypeAcinService
         $count = $data->count();
         $data = $this->medicineTypeAcinRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
         $data = $this->medicineTypeAcinRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        $data = $this->medicineTypeAcinRepository->applyGroupByField($data, $this->params->groupBy);
         return ['data' => $data, 'count' => $count];
     }
     private function getDataById($id)

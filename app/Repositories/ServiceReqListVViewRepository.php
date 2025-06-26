@@ -133,6 +133,7 @@ class ServiceReqListVViewRepository
             ->leftJoin('his_ration_time as ration_time', 'ration_time.id', '=', 'xa_v_his_service_req_list.ration_time_id')
             ->leftJoin('his_department as execute_department', 'execute_department.id', '=', 'xa_v_his_service_req_list.execute_department_id')
             ->leftJoin('his_department as request_department', 'request_department.id', '=', 'xa_v_his_service_req_list.request_department_id')
+            ->leftJoin('his_test_sample_type as test_sample_type', 'test_sample_type.id', '=', 'xa_v_his_service_req_list.test_sample_type_id')
 
             ->select([
                 'xa_v_his_service_req_list.id',
@@ -182,6 +183,12 @@ class ServiceReqListVViewRepository
                 'xa_v_his_service_req_list.barcode',
                 'xa_v_his_service_req_list.session_code', // mã lượt chỉ định 
                 'xa_v_his_service_req_list.remedy_count', // Số thang
+                'xa_v_his_service_req_list.SAMPLER_LOGINNAME', // người lấy mẫu               
+                'xa_v_his_service_req_list.SAMPLER_USERNAME',                
+                'xa_v_his_service_req_list.RECEIVE_SAMPLE_LOGINNAME', // người nhận mẫu                
+                'xa_v_his_service_req_list.RECEIVE_SAMPLE_USERNAME',
+                'test_sample_type.test_sample_type_code',
+                'test_sample_type.test_sample_type_name',
             ]);
     }
     public function applyWithParam($query)

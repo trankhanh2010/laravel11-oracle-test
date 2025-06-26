@@ -2,40 +2,36 @@
 
 namespace App\Http\Controllers\Api\CacheControllers;
 
-use App\DTOs\MedicineTypeAcinDTO;
+use App\DTOs\AcinInteractiveDTO;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
-use App\Http\Requests\MedicineTypeAcin\CreateMedicineTypeAcinRequest;
-use App\Http\Requests\MedicineTypeAcin\UpdateMedicineTypeAcinRequest;
-use App\Models\HIS\MedicineTypeAcin;
+use App\Http\Requests\AcinInteractive\CreateAcinInteractiveRequest;
+use App\Http\Requests\AcinInteractive\UpdateAcinInteractiveRequest;
+use App\Models\HIS\AcinInteractive;
 use App\Services\Elastic\ElasticsearchService;
-use App\Services\Model\MedicineTypeAcinService;
+use App\Services\Model\AcinInteractiveService;
 use Illuminate\Http\Request;
 
 
-class MedicineTypeAcinController extends BaseApiCacheController
+class AcinInteractiveController extends BaseApiCacheController
 {
-    protected $medicineTypeAcinService;
-    protected $medicineTypeAcinDTO;
-    public function __construct(Request $request, ElasticsearchService $elasticSearchService, MedicineTypeAcinService $medicineTypeAcinService, MedicineTypeAcin $medicineTypeAcin)
+    protected $acinInteractiveService;
+    protected $acinInteractiveDTO;
+    public function __construct(Request $request, ElasticsearchService $elasticSearchService, AcinInteractiveService $acinInteractiveService, AcinInteractive $acinInteractive)
     {
         parent::__construct($request); // Gọi constructor của BaseController
         $this->elasticSearchService = $elasticSearchService;
-        $this->medicineTypeAcinService = $medicineTypeAcinService;
-        $this->medicineTypeAcin = $medicineTypeAcin;
+        $this->acinInteractiveService = $acinInteractiveService;
+        $this->acinInteractive = $acinInteractive;
         // Kiểm tra tên trường trong bảng
         if ($this->orderBy != null) {
             $this->orderByJoin = [
-                'medicine_type_code',
-                'medicine_type_name',
-                'active_ingredient_code',
-                'active_ingredient_name',
             ];
-            $columns = $this->getColumnsTable($this->medicineTypeAcin);
+            $columns = $this->getColumnsTable($this->acinInteractive);
             $this->orderBy = $this->checkOrderBy($this->orderBy, $columns, $this->orderByJoin ?? []);
         }
         // Thêm tham số vào service
-        $this->medicineTypeAcinDTO = new MedicineTypeAcinDTO(
-            $this->medicineTypeAcinName,
+        $this->acinInteractiveDTO = new AcinInteractiveDTO(
+            $this->acinInteractiveName,
             $this->keyword,
             $this->isActive,
             $this->orderBy,
@@ -48,13 +44,11 @@ class MedicineTypeAcinController extends BaseApiCacheController
             $this->appCreator, 
             $this->appModifier, 
             $this->time,
-            $this->medicineTypeId,
-            $this->activeIngredientId,
             $this->param,
             $this->noCache,
             $this->groupBy,
         );
-        $this->medicineTypeAcinService->withParams($this->medicineTypeAcinDTO);
+        $this->acinInteractiveService->withParams($this->acinInteractiveDTO);
     }
     public function index()
     {
@@ -64,15 +58,15 @@ class MedicineTypeAcinController extends BaseApiCacheController
         $keyword = $this->keyword;
         if (($keyword != null || $this->elasticSearchType != null) && !$this->cache) {
             if ($this->elasticSearchType != null) {
-                $data = $this->elasticSearchService->handleElasticSearchSearch($this->medicineTypeAcinName);
+                $data = $this->elasticSearchService->handleElasticSearchSearch($this->acinInteractiveName);
             } else {
-                $data = $this->medicineTypeAcinService->handleDataBaseSearch();
+                $data = $this->acinInteractiveService->handleDataBaseSearch();
             }
         } else {
             if ($this->elastic) {
-                $data = $this->elasticSearchService->handleElasticSearchGetAll($this->medicineTypeAcinName);
+                $data = $this->elasticSearchService->handleElasticSearchGetAll($this->acinInteractiveName);
             } else {
-                $data = $this->medicineTypeAcinService->handleDataBaseGetAll();
+                $data = $this->acinInteractiveService->handleDataBaseGetAll();
             }
         }
         $paramReturn = [
@@ -93,24 +87,20 @@ class MedicineTypeAcinController extends BaseApiCacheController
             return $this->checkParam();
         }
         if ($id !== null) {
-            $validationError = $this->validateAndCheckId($id, $this->medicineTypeAcin, $this->medicineTypeAcinName);
+            $validationError = $this->validateAndCheckId($id, $this->acinInteractive, $this->acinInteractiveName);
             if ($validationError) {
                 return $validationError;
             }
         }
         if ($this->elastic) {
-            $data = $this->elasticSearchService->handleElasticSearchGetWithId($this->medicineTypeAcinName, $id);
+            $data = $this->elasticSearchService->handleElasticSearchGetWithId($this->acinInteractiveName, $id);
         } else {
-            $data = $this->medicineTypeAcinService->handleDataBaseGetWithId($id);
+            $data = $this->acinInteractiveService->handleDataBaseGetWithId($id);
         }
         $paramReturn = [
             $this->idName => $id,
             $this->isActiveName => $this->isActive,
         ];
         return returnDataSuccess($paramReturn, $data);
-    }
-    public function store(CreateMedicineTypeAcinRequest $request)
-    {
-        return $this->medicineTypeAcinService->createMedicineTypeAcin($request);
     }
 }

@@ -36,7 +36,8 @@ null as DAY_COUNT,
 null as MORNING,
 null as NOON,
 null as AFTERNOON,
-null as EVENING  
+null as EVENING,
+material_type.service_id
 
 FROM HIS_EMTE_MATERIAL_TYPE emte_material_type     
 LEFT JOIN HIS_MATERIAL_TYPE  material_type on material_type.id = emte_material_type.material_type_id
@@ -62,7 +63,8 @@ emte_medicine_type.DAY_COUNT,
 emte_medicine_type.MORNING,
 emte_medicine_type.NOON,
 emte_medicine_type.AFTERNOON,
-emte_medicine_type.EVENING     
+emte_medicine_type.EVENING,
+medicine_type.service_id
 
 FROM HIS_EMTE_MEDICINE_TYPE emte_medicine_type     
 LEFT JOIN HIS_MEDICINE_TYPE  medicine_type on medicine_type.id = emte_medicine_type.medicine_type_id

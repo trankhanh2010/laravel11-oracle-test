@@ -118,22 +118,7 @@ class MauDonThVtDetailVViewRepository
     {
         return $this->mauDonThVtDetailVView
         ->select([
-            'xa_v_his_mau_don_th_vt_detail.m_type_id',
-            'xa_v_his_mau_don_th_vt_detail.m_type_name',
-            'xa_v_his_mau_don_th_vt_detail.concentra',
-            'xa_v_his_mau_don_th_vt_detail.active_ingr_bhyt_name',
-            'xa_v_his_mau_don_th_vt_detail.service_type_code',
-            'xa_v_his_mau_don_th_vt_detail.amount',
-            'xa_v_his_mau_don_th_vt_detail.is_expend',
-            'xa_v_his_mau_don_th_vt_detail.is_out_medi_stock',
-            'xa_v_his_mau_don_th_vt_detail.service_unit_name',
-            'xa_v_his_mau_don_th_vt_detail.tutorial',
-            'xa_v_his_mau_don_th_vt_detail.DAY_COUNT',
-            'xa_v_his_mau_don_th_vt_detail.MORNING',
-            'xa_v_his_mau_don_th_vt_detail.NOON',
-            'xa_v_his_mau_don_th_vt_detail.AFTERNOON',
-            'xa_v_his_mau_don_th_vt_detail.EVENING',
-
+            'xa_v_his_mau_don_th_vt_detail.*',
         ])
         ->where('xa_v_his_mau_don_th_vt_detail.exp_mest_template_id', $expMestTemplateId)
         ->where('xa_v_his_mau_don_th_vt_detail.is_active', 1)

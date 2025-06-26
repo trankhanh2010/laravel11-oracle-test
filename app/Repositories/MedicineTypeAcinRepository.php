@@ -4,6 +4,7 @@ namespace App\Repositories;
 use App\Jobs\ElasticSearch\Index\ProcessElasticIndexingJob;
 use App\Models\HIS\MedicineTypeAcin;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class MedicineTypeAcinRepository
 {
@@ -19,6 +20,7 @@ class MedicineTypeAcinRepository
         ->leftJoin('his_medicine_type as medicine_type', 'medicine_type.id', '=', 'his_medicine_type_acin.medicine_type_id')
         ->leftJoin('his_active_ingredient as active_ingredient', 'active_ingredient.id', '=', 'his_medicine_type_acin.active_ingredient_id')
             ->select(
+                'his_medicine_type_acin.id as key',
                 'his_medicine_type_acin.*',
                 'medicine_type.medicine_type_code',
                 'medicine_type.medicine_type_name',
@@ -87,6 +89,45 @@ class MedicineTypeAcinRepository
                 ->take($limit)
                 ->get();
         }
+    }
+    public function applyGroupByField($data, $groupByFields = [])
+    {
+        if (empty($groupByFields)) {
+            return $data;
+        }
+
+        // Chuyển các field thành snake_case trước khi nhóm
+        $fieldMappings = [];
+        foreach ($groupByFields as $field) {
+            $snakeField = Str::snake($field);
+            $fieldMappings[$snakeField] = $field;
+        }
+
+        $snakeFields = array_keys($fieldMappings);
+
+        // Đệ quy nhóm dữ liệu theo thứ tự fields đã convert
+        $groupData = function ($items, $fields) use (&$groupData, $fieldMappings) {
+            if (empty($fields)) {
+                return $items->values(); // Hết field nhóm -> Trả về danh sách gốc
+            }
+
+            $currentField = array_shift($fields);
+            $originalField = $fieldMappings[$currentField];
+
+            return $items->groupBy(function ($item) use ($currentField) {
+                return $item[$currentField] ?? null;
+            })->map(function ($group, $key) use ($fields, $groupData, $originalField, $currentField) {
+                $result = [
+                    $originalField => (string)$key, // Trả về tên field gốc
+                    'key' => (string)$key,
+                    'total' => $group->count(),
+                ];
+                $result['children'] = $groupData($group, $fields);
+                return $result;
+            })->values();
+        };
+
+        return $groupData(collect($data), $snakeFields);
     }
     public function getById($id)
     {
