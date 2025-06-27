@@ -119,6 +119,8 @@ class BaseApiCacheController extends Controller
     protected $isOutName = 'IsOut';
     protected $intructionTime;
     protected $intructionTimeName = 'IntructionTime';
+    protected $intructionDate;
+    protected $intructionDateName = 'IntructionDate';
     protected $addLoginname;
     protected $addLoginnameName = 'AddLoginname';
     protected $depositReqCode;
@@ -1880,6 +1882,13 @@ class BaseApiCacheController extends Controller
             if (!preg_match('/^\d{14}$/',  $this->intructionTime)) {
                 $this->errors[$this->intructionTimeName] = $this->messFormat;
                 $this->intructionTime = null;
+            }
+        }
+        $this->intructionDate = $this->paramRequest['ApiData']['IntructionDate'] ?? null;
+        if ($this->intructionDate != null) {
+            if (!preg_match('/^\d{14}$/',  $this->intructionDate)) {
+                $this->errors[$this->intructionDateName] = $this->messFormat;
+                $this->intructionDate = null;
             }
         }
         $this->isInRoom = $this->paramRequest['ApiData']['IsInRoom'] ?? null;

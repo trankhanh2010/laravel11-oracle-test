@@ -25,6 +25,7 @@ class DonVViewDTO
     public $intructionTimeTo;
     public $patientId;
     public $groupBy;
+    public $intructionDate;
     public function __construct(
         $donVViewName,
         $keyword, 
@@ -47,6 +48,7 @@ class DonVViewDTO
         $intructionTimeTo,
         $patientId,
         $groupBy,
+        $intructionDate,
         )
     {
         $this->donVViewName = $donVViewName;
@@ -70,5 +72,6 @@ class DonVViewDTO
         $this->intructionTimeTo = $intructionTimeTo;
         $this->patientId = $patientId;
         $this->groupBy = $groupBy;
+        $this->intructionDate = $intructionDate;
     }
 }

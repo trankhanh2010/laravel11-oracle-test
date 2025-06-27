@@ -47,12 +47,13 @@ class DonVViewController extends BaseApiCacheController
             $this->intructionTimeTo,
             $this->patientId,
             $this->groupBy,
+            $this->intructionDate,
         );
         $this->donVViewService->withParams($this->donVViewDTO);
     }
     public function index()
     {
-        if ($this->tab == 'donCuKeDonThuocPhongKham') {
+        if (in_array($this->tab, ['donCuKeDonThuocPhongKham', 'thuocDaKeTrongNgay'])) {
             if (!$this->patientId) {
                 $this->errors[$this->patientIdName] = "Thiếu Id bệnh nhân!";
             }
@@ -60,11 +61,16 @@ class DonVViewController extends BaseApiCacheController
         if ($this->checkParam()) {
             return $this->checkParam();
         }
-        $keyword = $this->keyword;
-        if (($keyword != null) && !$this->cache) {
-            $data = $this->donVViewService->handleDataBaseSearch();
-        } else {
-            $data = $this->donVViewService->handleDataBaseGetAll();
+        switch ($this->tab) {
+            case 'donCuKeDonThuocPhongKham':
+                $data = $this->donVViewService->handleDataBaseGetAllDonCuKeDonThuocPhongKham();
+                break;
+            case 'thuocDaKeTrongNgay':
+                $data = $this->donVViewService->handleDataBaseGetAllThuocDaKeTrongNgay();
+                break;
+            default:
+                $data = $this->donVViewService->handleDataBaseGetAll();
+                break;
         }
         $paramReturn = [
             $this->getAllName => $this->getAll,

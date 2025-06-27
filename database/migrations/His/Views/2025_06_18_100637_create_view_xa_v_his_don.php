@@ -25,6 +25,7 @@ exp_mest_material.IS_ACTIVE,
 exp_mest_material.IS_DELETE,
 exp_mest.id as exp_mest_id,
 exp_mest.EXP_MEST_CODE, -- mã xuất
+exp_mest_material.tdl_material_type_id as m_type_id,
 material_type.material_type_code as m_type_code,
 material_type.material_type_name as m_type_name,
 exp_mest_material.amount,
@@ -59,7 +60,9 @@ exp_mest.icd_code,
 exp_mest.icd_name,
 exp_mest.icd_sub_code,
 exp_mest.icd_text,
-exp_mest_material.num_order  
+exp_mest_material.num_order,
+null as ACTIVE_INGR_BHYT_CODE,
+null as ACTIVE_INGR_BHYT_NAME    
 
 FROM HIS_EXP_MEST_MATERIAL exp_mest_material     
 LEFT JOIN HIS_EXP_MEST exp_mest on exp_mest.id = exp_mest_material.exp_mest_id and exp_mest.is_delete = 0
@@ -80,6 +83,7 @@ exp_mest_medicine.IS_ACTIVE,
 exp_mest_medicine.IS_DELETE,
 exp_mest.id as exp_mest_id,
 exp_mest.EXP_MEST_CODE, -- mã xuất
+exp_mest_medicine.tdl_medicine_type_id as m_type_id,
 medicine_type.medicine_type_code as m_type_code,
 medicine_type.medicine_type_name as m_type_name,
 exp_mest_medicine.amount,
@@ -114,8 +118,9 @@ exp_mest.icd_code,
 exp_mest.icd_name,
 exp_mest.icd_sub_code,
 exp_mest.icd_text,
-exp_mest_medicine.num_order  
-
+exp_mest_medicine.num_order,
+medicine_type.ACTIVE_INGR_BHYT_CODE,
+medicine_type.ACTIVE_INGR_BHYT_NAME     
 
 FROM HIS_EXP_MEST_MEDICINE exp_mest_medicine     
 LEFT JOIN HIS_EXP_MEST exp_mest on exp_mest.id = exp_mest_medicine.exp_mest_id and exp_mest.is_delete = 0
@@ -136,6 +141,7 @@ service_req_mety.IS_ACTIVE,
 service_req_mety.IS_DELETE,
 null as exp_mest_id,
 null as EXP_MEST_CODE, -- mã xuất
+service_req_mety.medicine_type_id as m_type_id,
 medicine_type.medicine_type_code as m_type_code,
 medicine_type.medicine_type_name as m_type_name,
 service_req_mety.amount,
@@ -170,7 +176,9 @@ service_req.icd_code,
 service_req.icd_name,
 service_req.icd_sub_code,
 service_req.icd_text,
-service_req_mety.num_order  
+service_req_mety.num_order,
+medicine_type.ACTIVE_INGR_BHYT_CODE,
+medicine_type.ACTIVE_INGR_BHYT_NAME      
 
 FROM HIS_SERVICE_REQ_METY service_req_mety     
 LEFT JOIN HIS_MEDICINE_TYPE medicine_type on medicine_type.id = service_req_mety.medicine_type_id
@@ -188,6 +196,7 @@ service_req_maty.IS_ACTIVE,
 service_req_maty.IS_DELETE,
 null as exp_mest_id,
 null as EXP_MEST_CODE, -- mã xuất
+service_req_maty.material_type_id as m_type_id,
 material_type.material_type_code as m_type_code,
 material_type.material_type_name as m_type_name,
 service_req_maty.amount,
@@ -222,7 +231,9 @@ service_req.icd_code,
 service_req.icd_name,
 service_req.icd_sub_code,
 service_req.icd_text,
-service_req_maty.num_order  
+service_req_maty.num_order,
+null as ACTIVE_INGR_BHYT_CODE,
+null as ACTIVE_INGR_BHYT_NAME      
 
 FROM HIS_SERVICE_REQ_MATY service_req_maty     
 LEFT JOIN HIS_MATERIAL_TYPE material_type on material_type.id = service_req_maty.material_type_id
