@@ -162,15 +162,37 @@ class ServiceService
         try {
             // set tăng bộ nhớ
             ini_set('memory_limit', '512M');
-            $data = [];
-            // $duLieuTree = $this->getAllDataFromDatabaseChiDinhDichVuKyThuatTree();
-            $duLieuFull = $this->getAllDataFromDatabaseChiDinhDichVuKyThuat();
+            // $data = [];
+            // // $duLieuTree = $this->getAllDataFromDatabaseChiDinhDichVuKyThuatTree();
+            // $duLieuFull = $this->getAllDataFromDatabaseChiDinhDichVuKyThuat();
 
-            // $data['tree'] = $duLieuTree;
-            // $data['chiTiet'] = $duLieuFull;
+            // // $data['tree'] = $duLieuTree;
+            // // $data['chiTiet'] = $duLieuFull;
 
-            // return $data;
-            return $duLieuFull;
+            // // return $data;
+            // return $duLieuFull;
+
+            // Nếu không lưu cache
+            if ($this->params->noCache) {
+                return $this->getAllDataFromDatabaseChiDinhDichVuKyThuat();
+            } else {
+                $cacheKey = $this->params->serviceName . '_' . $this->params->param;
+                $cacheKeySet = "cache_keys:" . $this->params->serviceName; // Set để lưu danh sách key
+
+                $data = Cache::remember($cacheKey, 3600, function () {
+                    // **Nén dữ liệu trước khi lưu cache**
+                    return base64_encode(gzcompress(serialize($this->getAllDataFromDatabaseChiDinhDichVuKyThuat())));
+                });
+                // Lưu key vào Redis Set để dễ xóa sau này
+                Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+                // **Giải nén khi lấy dữ liệu từ cache**
+                if ($data && is_string($data)) {
+                    $decompressedData = @gzuncompress(base64_decode($data));
+                    $data = $decompressedData !== false ? unserialize($decompressedData) : ['data' => [], 'count' => 0];
+                }
+
+                return $data;
+            }
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['service'], $e);
         }

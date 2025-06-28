@@ -135,6 +135,10 @@ class ServiceRepository
 
                 'his_service.is_leaf',
                 'his_service.default_patient_type_id',
+                'his_service.IS_MULTI_REQUEST', // = 1 cho phép chỉ định số lượng lớn hơn 1
+                'his_service.age_from', // giới hạn tuổi từ - tính theo tháng
+                'his_service.age_to', // giới hạn tuổi đến - tính theo tháng
+
             );
     }
     public function applyWithChiDinhDichVuKyThuat($query)
