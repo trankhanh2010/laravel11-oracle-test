@@ -4,124 +4,98 @@ namespace App\Repositories;
 
 use App\Jobs\ElasticSearch\Index\ProcessElasticIndexingJob;
 use App\Models\HIS\MediStock;
-use App\Models\View\ThuocVatTuBeanVView;
+use App\Models\View\ThuocVatTuTuMuaVView;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
-class ThuocVatTuBeanVViewRepository
+class ThuocVatTuTuMuaVViewRepository
 {
-    protected $thuocVatTuBeanVView;
+    protected $thuocVatTuTuMuaVView;
+    protected $mediStock;
     public function __construct(
-        ThuocVatTuBeanVView $thuocVatTuBeanVView,
+        ThuocVatTuTuMuaVView $thuocVatTuTuMuaVView,
+        MediStock $mediStock,
         )
     {
-        $this->thuocVatTuBeanVView = $thuocVatTuBeanVView;
+        $this->thuocVatTuTuMuaVView = $thuocVatTuTuMuaVView;
+        $this->mediStock = $mediStock;
     }
 
     public function applyJoins()
     {
-        return $this->thuocVatTuBeanVView
+        return $this->thuocVatTuTuMuaVView
             ->select(
-                'xa_v_his_thuoc_vat_tu_bean.*'
+                'xa_v_his_thuoc_vat_tu_tu_mua.*'
             );
     }
     public function applyJoinsKeDonThuocPhongKham()
     {
-        return $this->thuocVatTuBeanVView->select([
-            'xa_v_his_thuoc_vat_tu_bean.id as key',
-            'xa_v_his_thuoc_vat_tu_bean.id as value',
-            'xa_v_his_thuoc_vat_tu_bean.service_type_name as title',
-            'xa_v_his_thuoc_vat_tu_bean.id',
-            'xa_v_his_thuoc_vat_tu_bean.m_type_id',
-            'xa_v_his_thuoc_vat_tu_bean.m_type_code',
-            'xa_v_his_thuoc_vat_tu_bean.m_type_name',
-            'xa_v_his_thuoc_vat_tu_bean.service_id',
-            'xa_v_his_thuoc_vat_tu_bean.m_parent_code',
-            'xa_v_his_thuoc_vat_tu_bean.m_parent_name',
-            'xa_v_his_thuoc_vat_tu_bean.CONCENTRA',
-            'xa_v_his_thuoc_vat_tu_bean.ACTIVE_INGR_BHYT_CODE',
-            'xa_v_his_thuoc_vat_tu_bean.ACTIVE_INGR_BHYT_NAME',
-            'xa_v_his_thuoc_vat_tu_bean.service_unit_code',
-            'xa_v_his_thuoc_vat_tu_bean.service_unit_name',
-            'xa_v_his_thuoc_vat_tu_bean.bean_amount',
-            'xa_v_his_thuoc_vat_tu_bean.tdl_package_number',
-            'xa_v_his_thuoc_vat_tu_bean.tdl_medicine_register_number',
-            'xa_v_his_thuoc_vat_tu_bean.tdl_medicine_expired_date',
-            'xa_v_his_thuoc_vat_tu_bean.national_name',
-            'xa_v_his_thuoc_vat_tu_bean.last_exp_price',
-            'xa_v_his_thuoc_vat_tu_bean.last_exp_vat_ratio',
-            'xa_v_his_thuoc_vat_tu_bean.last_imp_vat_ratio',
-            'xa_v_his_thuoc_vat_tu_bean.medi_stock_id',
-            'xa_v_his_thuoc_vat_tu_bean.medi_stock_code',
-            'xa_v_his_thuoc_vat_tu_bean.medi_stock_name',
-            'xa_v_his_thuoc_vat_tu_bean.is_drug_store',
-            'xa_v_his_thuoc_vat_tu_bean.manufacturer_code',
-            'xa_v_his_thuoc_vat_tu_bean.manufacturer_name',
-            'xa_v_his_thuoc_vat_tu_bean.service_type_code',
-            'xa_v_his_thuoc_vat_tu_bean.service_type_name',
-            'xa_v_his_thuoc_vat_tu_bean.description', // ghi chú lúc rê chuột vào
-            'xa_v_his_thuoc_vat_tu_bean.medicine_use_form_id',
-            'xa_v_his_thuoc_vat_tu_bean.medicine_use_form_name',
-            'xa_v_his_thuoc_vat_tu_bean.medicine_use_form_code',
-            'xa_v_his_thuoc_vat_tu_bean.ALERT_MAX_IN_PRESCRIPTION',
-            'xa_v_his_thuoc_vat_tu_bean.ALERT_MAX_IN_DAY',
-            'xa_v_his_thuoc_vat_tu_bean.ALERT_MAX_IN_TREATMENT',
-            'xa_v_his_thuoc_vat_tu_bean.IS_BLOCK_MAX_IN_PRESCRIPTION',
-            'xa_v_his_thuoc_vat_tu_bean.IS_BLOCK_MAX_IN_DAY',
-            'xa_v_his_thuoc_vat_tu_bean.IS_BLOCK_MAX_IN_TREATMENT',
+        return $this->thuocVatTuTuMuaVView->select([
+            'xa_v_his_thuoc_vat_tu_tu_mua.id as key',
+            'xa_v_his_thuoc_vat_tu_tu_mua.id as value',
+            'xa_v_his_thuoc_vat_tu_tu_mua.service_type_name as title',
+            'xa_v_his_thuoc_vat_tu_tu_mua.id',
+            'xa_v_his_thuoc_vat_tu_tu_mua.m_type_id',
+            'xa_v_his_thuoc_vat_tu_tu_mua.m_type_code',
+            'xa_v_his_thuoc_vat_tu_tu_mua.m_type_name',
+            'xa_v_his_thuoc_vat_tu_tu_mua.service_id',
+            'xa_v_his_thuoc_vat_tu_tu_mua.m_parent_code',
+            'xa_v_his_thuoc_vat_tu_tu_mua.m_parent_name',
+            'xa_v_his_thuoc_vat_tu_tu_mua.CONCENTRA',
+            'xa_v_his_thuoc_vat_tu_tu_mua.ACTIVE_INGR_BHYT_CODE',
+            'xa_v_his_thuoc_vat_tu_tu_mua.ACTIVE_INGR_BHYT_NAME',
+            'xa_v_his_thuoc_vat_tu_tu_mua.service_unit_code',
+            'xa_v_his_thuoc_vat_tu_tu_mua.service_unit_name',
+            'xa_v_his_thuoc_vat_tu_tu_mua.bean_amount',
+            'xa_v_his_thuoc_vat_tu_tu_mua.tdl_package_number',
+            'xa_v_his_thuoc_vat_tu_tu_mua.tdl_medicine_register_number',
+            'xa_v_his_thuoc_vat_tu_tu_mua.tdl_medicine_expired_date',
+            'xa_v_his_thuoc_vat_tu_tu_mua.national_name',
+            'xa_v_his_thuoc_vat_tu_tu_mua.last_exp_price',
+            'xa_v_his_thuoc_vat_tu_tu_mua.last_exp_vat_ratio',
+            'xa_v_his_thuoc_vat_tu_tu_mua.last_imp_vat_ratio',
+            'xa_v_his_thuoc_vat_tu_tu_mua.medi_stock_id',
+            'xa_v_his_thuoc_vat_tu_tu_mua.medi_stock_code',
+            'xa_v_his_thuoc_vat_tu_tu_mua.medi_stock_name',
+            'xa_v_his_thuoc_vat_tu_tu_mua.is_drug_store',
+            'xa_v_his_thuoc_vat_tu_tu_mua.manufacturer_code',
+            'xa_v_his_thuoc_vat_tu_tu_mua.manufacturer_name',
+            'xa_v_his_thuoc_vat_tu_tu_mua.service_type_code',
+            'xa_v_his_thuoc_vat_tu_tu_mua.service_type_name',
+            'xa_v_his_thuoc_vat_tu_tu_mua.description', // ghi chú lúc rê chuột vào
+            'xa_v_his_thuoc_vat_tu_tu_mua.medicine_use_form_id',
+            'xa_v_his_thuoc_vat_tu_tu_mua.medicine_use_form_name',
+            'xa_v_his_thuoc_vat_tu_tu_mua.medicine_use_form_code',
+            'xa_v_his_thuoc_vat_tu_tu_mua.ALERT_MAX_IN_PRESCRIPTION',
+            'xa_v_his_thuoc_vat_tu_tu_mua.ALERT_MAX_IN_DAY',
+            'xa_v_his_thuoc_vat_tu_tu_mua.ALERT_MAX_IN_TREATMENT',
+            'xa_v_his_thuoc_vat_tu_tu_mua.IS_BLOCK_MAX_IN_PRESCRIPTION',
+            'xa_v_his_thuoc_vat_tu_tu_mua.IS_BLOCK_MAX_IN_DAY',
+            'xa_v_his_thuoc_vat_tu_tu_mua.IS_BLOCK_MAX_IN_TREATMENT',
 
         ])
-            ->where('xa_v_his_thuoc_vat_tu_bean.is_leaf', 1);
+            ->where('xa_v_his_thuoc_vat_tu_tu_mua.is_leaf', 1);
     }
     public function applyKeywordFilter($query, $keyword)
     {
         return $query->where(function ($query) use ($keyword) {
-            $query->where(DB::connection('oracle_his')->raw('xa_v_his_thuoc_vat_tu_bean.thuoc_vat_tu_bean_code'), 'like', '%' . $keyword . '%')
-                ->orWhere(DB::connection('oracle_his')->raw('lower(xa_v_his_thuoc_vat_tu_bean.thuoc_vat_tu_bean_name)'), 'like', '%' . strtolower($keyword) . '%');
+            $query->where(DB::connection('oracle_his')->raw('xa_v_his_thuoc_vat_tu_tu_mua.thuoc_vat_tu_tu_mua_code'), 'like', '%' . $keyword . '%')
+                ->orWhere(DB::connection('oracle_his')->raw('lower(xa_v_his_thuoc_vat_tu_tu_mua.thuoc_vat_tu_tu_mua_name)'), 'like', '%' . strtolower($keyword) . '%');
         });
     }
     public function applyIsActiveFilter($query, $isActive)
     {
         if ($isActive !== null) {
-            $query->where(DB::connection('oracle_his')->raw('xa_v_his_thuoc_vat_tu_bean.is_active'), $isActive);
+            $query->where(DB::connection('oracle_his')->raw('xa_v_his_thuoc_vat_tu_tu_mua.is_active'), $isActive);
         }
         return $query;
     }
     public function applyIsDeleteFilter($query, $isDelete)
     {
         if ($isDelete !== null) {
-            $query->where(DB::connection('oracle_his')->raw('xa_v_his_thuoc_vat_tu_bean.is_delete'), $isDelete);
+            $query->where(DB::connection('oracle_his')->raw('xa_v_his_thuoc_vat_tu_tu_mua.is_delete'), $isDelete);
         }
         return $query;
-    }
-    public function applyMediStockIdsFilter($query, $param)
-    {
-        if ($param != null) {
-            $query->whereIn('xa_v_his_thuoc_vat_tu_bean.medi_stock_id', $param);
-        }
-        return $query;
-    }
-    public function applyKeDonThuocPhongKhamFilter($query, $thoiGianChiDinh)
-    {
-        // Lấy theo thời gian chỉ định chưa hết hạn hoặc không có thời gian hết hạn
-        $query->where(function ($q) use ($thoiGianChiDinh) {
-            $q->whereNull('xa_v_his_thuoc_vat_tu_bean.tdl_medicine_expired_date')
-                ->orWhere('xa_v_his_thuoc_vat_tu_bean.tdl_medicine_expired_date', '>=', $thoiGianChiDinh);
-        });
-
-        return $query;
-    }
-
-    public function applyTypeKeDonThuocPhongKhamFilter($query, $param)
-    {
-        switch ($param) {
-            case 'thuocVatTuTrongKho':
-                return $query;
-            case 'thuocVatTuMuaNgoai':
-                return $query->where('xa_v_his_thuoc_vat_tu_bean.IS_DRUG_STORE', 1);
-            default:
-                return $query;
-        }
     }
     public function applyOrdering($query, $orderBy, $orderByJoin)
     {
@@ -129,7 +103,7 @@ class ThuocVatTuBeanVViewRepository
             foreach ($orderBy as $key => $item) {
                 if (in_array($key, $orderByJoin)) {
                 } else {
-                    $query->orderBy('xa_v_his_thuoc_vat_tu_bean.' . $key, $item);
+                    $query->orderBy('xa_v_his_thuoc_vat_tu_tu_mua.' . $key, $item);
                 }
             }
         }
@@ -264,22 +238,22 @@ public function flattenGroupLevel($items)
 
     public function getById($id)
     {
-        return $this->thuocVatTuBeanVView->find($id);
+        return $this->thuocVatTuTuMuaVView->find($id);
     }
 
     public function getDataFromDbToElastic($batchSize = 5000, $id = null)
     {
         $numJobs = config('queue')['num_queue_worker']; // Số lượng job song song
         if ($id != null) {
-            $data = $this->applyJoins()->where('xa_v_his_thuoc_vat_tu_bean.id', '=', $id)->first();
+            $data = $this->applyJoins()->where('xa_v_his_thuoc_vat_tu_tu_mua.id', '=', $id)->first();
             if ($data) {
                 $data = $data->getAttributes();
                 return $data;
             }
         } else {
             // Xác định min và max id
-            $minId = $this->applyJoins()->min('xa_v_his_thuoc_vat_tu_bean.id');
-            $maxId = $this->applyJoins()->max('xa_v_his_thuoc_vat_tu_bean.id');
+            $minId = $this->applyJoins()->min('xa_v_his_thuoc_vat_tu_tu_mua.id');
+            $maxId = $this->applyJoins()->max('xa_v_his_thuoc_vat_tu_tu_mua.id');
             $chunkSize = ceil(($maxId - $minId + 1) / $numJobs);
             for ($i = 0; $i < $numJobs; $i++) {
                 $startId = $minId + ($i * $chunkSize);
@@ -289,7 +263,7 @@ public function flattenGroupLevel($items)
                     $endId = $maxId;
                 }
                 // Dispatch job cho mỗi phạm vi id
-                ProcessElasticIndexingJob::dispatch('thuoc_vat_tu_bean_v_view', 'xa_v_his_thuoc_vat_tu_bean', $startId, $endId, $batchSize);
+                ProcessElasticIndexingJob::dispatch('thuoc_vat_tu_tu_mua_v_view', 'xa_v_his_thuoc_vat_tu_tu_mua', $startId, $endId, $batchSize);
             }
         }
     }

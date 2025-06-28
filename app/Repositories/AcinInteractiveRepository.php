@@ -18,10 +18,16 @@ class AcinInteractiveRepository
     {
         return $this->acinInteractive
             ->leftJoin('his_interactive_grade', 'his_interactive_grade.id', '=', 'his_acin_interactive.interactive_grade_id')
+            ->leftJoin('his_active_ingredient as active_ingredient', 'active_ingredient.id', '=', 'his_acin_interactive.active_ingredient_id')
+            ->leftJoin('his_active_ingredient as conflict_acin', 'conflict_acin.id', '=', 'his_acin_interactive.conflict_id')
             ->select(
                 'his_acin_interactive.*',
                 'his_interactive_grade.interactive_grade',
                 'his_interactive_grade.interactive_grade_name',
+                'active_ingredient.active_ingredient_name',
+                'active_ingredient.active_ingredient_code',
+                'conflict_acin.active_ingredient_name as conflict_acin_name',
+                'conflict_acin.active_ingredient_code as conflict_acin_code',
             );
     }
     public function applyKeywordFilter($query, $keyword)

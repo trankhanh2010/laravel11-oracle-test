@@ -6,16 +6,25 @@ use App\DTOs\ThuocVatTuBeanVViewDTO;
 use App\Events\Cache\DeleteCache;
 use App\Events\Elastic\ThuocVatTuBeanVView\InsertThuocVatTuBeanVViewIndex;
 use App\Events\Elastic\DeleteIndex;
+use App\Models\HIS\MediStock;
 use Illuminate\Support\Facades\Cache;
 use App\Repositories\ThuocVatTuBeanVViewRepository;
+use App\Repositories\ThuocVatTuTuMuaVViewRepository;
 
 class ThuocVatTuBeanVViewService
 {
     protected $thuocVatTuBeanVViewRepository;
+    protected $thuocVatTuTuMuaVViewRepository;
+    protected $mediStock;
     protected $params;
-    public function __construct(ThuocVatTuBeanVViewRepository $thuocVatTuBeanVViewRepository)
-    {
+    public function __construct(
+        ThuocVatTuBeanVViewRepository $thuocVatTuBeanVViewRepository,
+        ThuocVatTuTuMuaVViewRepository $thuocVatTuTuMuaVViewRepository,
+        MediStock $mediStock,
+    ) {
         $this->thuocVatTuBeanVViewRepository = $thuocVatTuBeanVViewRepository;
+        $this->thuocVatTuTuMuaVViewRepository = $thuocVatTuTuMuaVViewRepository;
+        $this->mediStock = $mediStock;
     }
     public function withParams(ThuocVatTuBeanVViewDTO $params)
     {
@@ -85,12 +94,45 @@ class ThuocVatTuBeanVViewService
         if ($this->params->tab == 'keDonThuocPhongKham') {
             $groupBy = [
                 'mParentName',
-                'mTypeName',    
+                'mTypeName',
                 'mediStockName',
             ];
             $data = $this->thuocVatTuBeanVViewRepository->applyGroupByField($data, $groupBy);
             // Bỏ tầng `m_type_name`:
             $data = $this->thuocVatTuBeanVViewRepository->flattenGroupLevel($data);
+        }
+        return ['data' => $data, 'count' => $count];
+    }
+
+    private function getAllDataFromDatabaseThuocMuaNgoai()
+    {
+        if ($this->params->tab == 'keDonThuocPhongKham') {
+            $data = $this->thuocVatTuTuMuaVViewRepository->applyJoinsKeDonThuocPhongKham();
+        } else {
+            $data = $this->thuocVatTuTuMuaVViewRepository->applyJoins();
+        }
+        $data = $this->thuocVatTuTuMuaVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $count = null;
+        if ($this->params->tab == 'keDonThuocPhongKham') {
+            $orderBy = [
+                'service_type_code' => 'asc',
+                'm_parent_name' => 'asc',
+            ];
+            $orderByJoin = ['parent_name'];
+            $data = $this->thuocVatTuTuMuaVViewRepository->applyOrdering($data, $orderBy, $orderByJoin);
+        } else {
+            $data = $this->thuocVatTuTuMuaVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        }
+        $data = $this->thuocVatTuTuMuaVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        if ($this->params->tab == 'keDonThuocPhongKham') {
+            $groupBy = [
+                'mParentName',
+                'mTypeName',
+                'mediStockName',
+            ];
+            $data = $this->thuocVatTuTuMuaVViewRepository->applyGroupByField($data, $groupBy);
+            // Bỏ tầng `m_type_name`:
+            $data = $this->thuocVatTuTuMuaVViewRepository->flattenGroupLevel($data);
         }
         return ['data' => $data, 'count' => $count];
     }
@@ -106,7 +148,21 @@ class ThuocVatTuBeanVViewService
     public function handleDataBaseGetAll()
     {
         try {
-            return $this->getAllDataFromDatabase();
+            if ($this->params->mediStockIds && $this->params->type == 'thuocVatTuMuaNgoai') {
+                $exitsAllNhaThuoc = !$this->mediStock->whereIn('id', $this->params->mediStockIds)
+                ->where(function ($q) {
+                    $q->whereNull('IS_DRUG_STORE')
+                        ->orWhere('IS_DRUG_STORE', 0);
+                })->exists();
+            } else {
+                $exitsAllNhaThuoc = false;
+            }
+            // Nếu có chọn nhà thuốc và đúng là nhà thuốc thì lọc mua ngoài theo nhà thuốc (giống trong kho), không thì lấy toàn bộ danh sách
+            if ($this->params->type == 'thuocVatTuMuaNgoai' && !$exitsAllNhaThuoc) {
+                return $this->getAllDataFromDatabaseThuocMuaNgoai(); // toàn bộ danh sách
+            } else {
+                return $this->getAllDataFromDatabase(); // lấy kho
+            }
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['thuoc_vat_tu_bean_v_view'], $e);
         }
