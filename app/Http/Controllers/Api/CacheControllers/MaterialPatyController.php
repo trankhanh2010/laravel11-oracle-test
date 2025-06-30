@@ -2,31 +2,31 @@
 
 namespace App\Http\Controllers\Api\CacheControllers;
 
-use App\DTOs\MedicinePatyDTO;
+use App\DTOs\MaterialPatyDTO;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
-use App\Http\Requests\MedicinePaty\CreateMedicinePatyRequest;
-use App\Http\Requests\MedicinePaty\UpdateMedicinePatyRequest;
-use App\Models\HIS\MedicinePaty;
+use App\Http\Requests\MaterialPaty\CreateMaterialPatyRequest;
+use App\Http\Requests\MaterialPaty\UpdateMaterialPatyRequest;
+use App\Models\HIS\MaterialPaty;
 use App\Services\Elastic\ElasticsearchService;
-use App\Services\Model\MedicinePatyService;
+use App\Services\Model\MaterialPatyService;
 use Illuminate\Http\Request;
 
 
-class MedicinePatyController extends BaseApiCacheController
+class MaterialPatyController extends BaseApiCacheController
 {
-    protected $medicinePatyService;
-    protected $medicinePatyDTO;
-    public function __construct(Request $request, ElasticsearchService $elasticSearchService, MedicinePatyService $medicinePatyService, MedicinePaty $medicinePaty)
+    protected $materialPatyService;
+    protected $materialPatyDTO;
+    public function __construct(Request $request, ElasticsearchService $elasticSearchService, MaterialPatyService $materialPatyService, MaterialPaty $materialPaty)
     {
         parent::__construct($request); // Gọi constructor của BaseController
         $this->elasticSearchService = $elasticSearchService;
-        $this->medicinePatyService = $medicinePatyService;
-        $this->medicinePaty = $medicinePaty;
+        $this->materialPatyService = $materialPatyService;
+        $this->materialPaty = $materialPaty;
         // Kiểm tra tên trường trong bảng
         if ($this->orderBy != null) {
             $this->orderByJoin = [
-                'medicine_type_code',
-                'medicine_type_name',
+                'material_type_code',
+                'material_type_name',
                 'patient_type_code',
                 'patient_type_name',
                 'contract_price',
@@ -40,12 +40,12 @@ class MedicinePatyController extends BaseApiCacheController
                 'vir_imp_price',
                 'internal_price'
             ];
-            $columns = $this->getColumnsTable($this->medicinePaty);
+            $columns = $this->getColumnsTable($this->materialPaty);
             $this->orderBy = $this->checkOrderBy($this->orderBy, $columns, $this->orderByJoin ?? []);
         }
         // Thêm tham số vào service
-        $this->medicinePatyDTO = new MedicinePatyDTO(
-            $this->medicinePatyName,
+        $this->materialPatyDTO = new MaterialPatyDTO(
+            $this->materialPatyName,
             $this->keyword,
             $this->isActive,
             $this->orderBy,
@@ -62,7 +62,7 @@ class MedicinePatyController extends BaseApiCacheController
             $this->noCache,
             $this->tab,
         );
-        $this->medicinePatyService->withParams($this->medicinePatyDTO);
+        $this->materialPatyService->withParams($this->materialPatyDTO);
     }
     public function index()
     {
@@ -72,15 +72,15 @@ class MedicinePatyController extends BaseApiCacheController
         $keyword = $this->keyword;
         if (($keyword != null || $this->elasticSearchType != null) && !$this->cache) {
             if ($this->elasticSearchType != null) {
-                $data = $this->elasticSearchService->handleElasticSearchSearch($this->medicinePatyName);
+                $data = $this->elasticSearchService->handleElasticSearchSearch($this->materialPatyName);
             } else {
-                $data = $this->medicinePatyService->handleDataBaseSearch();
+                $data = $this->materialPatyService->handleDataBaseSearch();
             }
         } else {
             if ($this->elastic) {
-                $data = $this->elasticSearchService->handleElasticSearchGetAll($this->medicinePatyName);
+                $data = $this->elasticSearchService->handleElasticSearchGetAll($this->materialPatyName);
             } else {
-                $data = $this->medicinePatyService->handleDataBaseGetAll();
+                $data = $this->materialPatyService->handleDataBaseGetAll();
             }
         }
         $paramReturn = [
@@ -101,15 +101,15 @@ class MedicinePatyController extends BaseApiCacheController
             return $this->checkParam();
         }
         if ($id !== null) {
-            $validationError = $this->validateAndCheckId($id, $this->medicinePaty, $this->medicinePatyName);
+            $validationError = $this->validateAndCheckId($id, $this->materialPaty, $this->materialPatyName);
             if ($validationError) {
                 return $validationError;
             }
         }
         if ($this->elastic) {
-            $data = $this->elasticSearchService->handleElasticSearchGetWithId($this->medicinePatyName, $id);
+            $data = $this->elasticSearchService->handleElasticSearchGetWithId($this->materialPatyName, $id);
         } else {
-            $data = $this->medicinePatyService->handleDataBaseGetWithId($id);
+            $data = $this->materialPatyService->handleDataBaseGetWithId($id);
         }
         $paramReturn = [
             $this->idName => $id,
@@ -117,16 +117,16 @@ class MedicinePatyController extends BaseApiCacheController
         ];
         return returnDataSuccess($paramReturn, $data);
     }
-    public function store(CreateMedicinePatyRequest $request)
-    {
-        return $this->medicinePatyService->createMedicinePaty($request);
-    }
-    public function update(UpdateMedicinePatyRequest $request, $id)
-    {
-        return $this->medicinePatyService->updateMedicinePaty($id, $request);
-    }
-    public function destroy($id)
-    {
-        return $this->medicinePatyService->deleteMedicinePaty($id);
-    }
+    // public function store(CreateMaterialPatyRequest $request)
+    // {
+    //     return $this->materialPatyService->createMaterialPaty($request);
+    // }
+    // public function update(UpdateMaterialPatyRequest $request, $id)
+    // {
+    //     return $this->materialPatyService->updateMaterialPaty($id, $request);
+    // }
+    // public function destroy($id)
+    // {
+    //     return $this->materialPatyService->deleteMaterialPaty($id);
+    // }
 }

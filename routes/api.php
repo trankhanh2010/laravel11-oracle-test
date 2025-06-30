@@ -158,6 +158,7 @@ use App\Http\Controllers\Api\CacheControllers\HtuController;
 use App\Http\Controllers\Api\CacheControllers\IcdListVViewController;
 use App\Http\Controllers\Api\CacheControllers\ImpSourceController;
 use App\Http\Controllers\Api\CacheControllers\KskContractController;
+use App\Http\Controllers\Api\CacheControllers\MaterialPatyController;
 use App\Http\Controllers\Api\CacheControllers\MedicineController;
 use App\Http\Controllers\Api\CacheControllers\MedicineTypeController;
 use App\Http\Controllers\Api\CacheControllers\MaterialTypeController;
@@ -718,6 +719,8 @@ Route::group([
     Route::group(['as' => 'HIS.Desktop.Plugins.HisMedicinePaty->'], function () {
         Route::apiResource('v1/medicine-paty', MedicinePatyController::class);
     });
+    /// Chính sách giá vật tư
+    Route::apiResource('v1/material-paty', MaterialPatyController::class);
     /// Loại thuốc - Hoạt chất
     Route::group(['as' => 'HIS.Desktop.Plugins.MedicineTypeActiveIngredient->'], function () {
         Route::apiResource('v1/medicine-type-acin', MedicineTypeAcinController::class)->only(['index', 'show', 'store']);

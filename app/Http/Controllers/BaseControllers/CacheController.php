@@ -204,6 +204,7 @@ class CacheController extends BaseApiCacheController
                 'user_room_v_view',
                 'exp_mest_type',
                 'acin_interactive',
+                'material_paty',
             ];
         }
         // Nếu xóa theo param

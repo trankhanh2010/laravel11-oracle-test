@@ -41,6 +41,22 @@ class MedicinePatyRepository
                 'medicine.internal_price'
             );
     }
+    public function applyJoinsGetData()
+    {
+        $data = $this->medicinePaty
+            ->leftJoin('his_patient_type as patient_type', 'patient_type.id', '=', 'his_medicine_paty.patient_type_id')
+            ->leftJoin('his_medicine as medicine', 'medicine.id', '=', 'his_medicine_paty.medicine_id')
+            ->select([
+                'his_medicine_paty.id',
+                'his_medicine_paty.medicine_id',
+                'medicine.medicine_type_id',
+                'his_medicine_paty.patient_type_id',
+                'patient_type.patient_type_code',
+                'his_medicine_paty.exp_price',
+                'his_medicine_paty.exp_vat_ratio',
+            ]);
+        return $data;
+    }
     public function applyKeywordFilter($query, $keyword)
     {
         return $query->where(function ($query) use ($keyword) {

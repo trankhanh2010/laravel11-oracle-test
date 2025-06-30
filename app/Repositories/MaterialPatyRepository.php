@@ -1,4 +1,5 @@
-<?php 
+<?php
+
 namespace App\Repositories;
 
 use App\Jobs\ElasticSearch\Index\ProcessElasticIndexingJob;
@@ -20,6 +21,21 @@ class MaterialPatyRepository
                 'his_material_paty.*'
             );
     }
+    public function applyJoinsGetData()
+    {
+        return $this->materialPaty
+            ->leftJoin('his_patient_type as patient_type', 'patient_type.id', '=', 'his_material_paty.patient_type_id')
+            ->leftJoin('his_material as material', 'material.id', '=', 'his_material_paty.material_id')
+            ->select([
+                'his_material_paty.id',
+                'his_material_paty.material_id',
+                'material.material_type_id',
+                'his_material_paty.patient_type_id',
+                'patient_type.patient_type_code',
+                'his_material_paty.exp_price',
+                'his_material_paty.exp_vat_ratio',
+            ]);
+    }
     public function applyKeywordFilter($query, $keyword)
     {
         return $query->where(function ($query) use ($keyword) {
@@ -39,6 +55,9 @@ class MaterialPatyRepository
         if ($orderBy != null) {
             foreach ($orderBy as $key => $item) {
                 if (in_array($key, $orderByJoin)) {
+                    if (in_array($key, ['patient_type_code', 'patient_type_name'])) {
+                        $query->orderBy('patient_type.' . $key, $item);
+                    }
                 } else {
                     $query->orderBy('his_material_paty.' . $key, $item);
                 }
@@ -71,7 +90,7 @@ class MaterialPatyRepository
             ->where('patient_type_id', $patientTypeId)
             ->orderBy('modify_time', 'desc')
             ->first();
-        return $data?$data->exp_price*(1+$data->exp_vat_ratio):null;
+        return $data ? $data->exp_price * (1 + $data->exp_vat_ratio) : null;
     }
     // public function create($request, $time, $appCreator, $appModifier){
     //     $data = $this->materialPaty::create([

@@ -2,9 +2,9 @@
 
 namespace App\DTOs;
 
-class MedicinePatyDTO
+class MaterialPatyDTO
 {
-    public $medicinePatyName;
+    public $materialPatyName;
     public $keyword;
     public $isActive;
     public $orderBy;
@@ -21,7 +21,7 @@ class MedicinePatyDTO
     public $noCache;
     public $tab;
     public function __construct(
-        $medicinePatyName,
+        $materialPatyName,
         $keyword, 
         $isActive, 
         $orderBy, 
@@ -39,7 +39,7 @@ class MedicinePatyDTO
         $tab,
         )
     {
-        $this->medicinePatyName = $medicinePatyName;
+        $this->materialPatyName = $materialPatyName;
         $this->keyword = $keyword;
         $this->isActive = $isActive;
         $this->orderBy = $orderBy;

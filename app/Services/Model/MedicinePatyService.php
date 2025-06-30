@@ -26,10 +26,18 @@ class MedicinePatyService
     public function handleDataBaseSearch()
     {
         try {
-            $data = $this->medicinePatyRepository->applyJoins();
+            if ($this->params->tab == 'getData') {
+                $data = $this->medicinePatyRepository->applyJoinsGetData();
+            } else {
+                $data = $this->medicinePatyRepository->applyJoins();
+            }
             $data = $this->medicinePatyRepository->applyKeywordFilter($data, $this->params->keyword);
             $data = $this->medicinePatyRepository->applyIsActiveFilter($data, $this->params->isActive);
-            $count = $data->count();
+            if ($this->params->tab == 'getData') {
+                $count = null;
+            } else {
+                $count = $data->count();
+            }
             $data = $this->medicinePatyRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
             $data = $this->medicinePatyRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
             return ['data' => $data, 'count' => $count];
@@ -39,9 +47,17 @@ class MedicinePatyService
     }
     private function getAllDataFromDatabase()
     {
-        $data = $this->medicinePatyRepository->applyJoins();
+        if ($this->params->tab == 'getData') {
+            $data = $this->medicinePatyRepository->applyJoinsGetData();
+        } else {
+            $data = $this->medicinePatyRepository->applyJoins();
+        }
         $data = $this->medicinePatyRepository->applyIsActiveFilter($data, $this->params->isActive);
-        $count = $data->count();
+        if ($this->params->tab == 'getData') {
+            $count = null;
+        } else {
+            $count = $data->count();
+        }
         $data = $this->medicinePatyRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
         $data = $this->medicinePatyRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
         return ['data' => $data, 'count' => $count];
