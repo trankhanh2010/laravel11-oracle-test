@@ -6,6 +6,7 @@ use App\DTOs\EquipmentSetDTO;
 use App\Events\Cache\DeleteCache;
 use App\Events\Elastic\EquipmentSet\InsertEquipmentSetIndex;
 use App\Events\Elastic\DeleteIndex;
+use App\Repositories\BoVatTuDetailVViewRepository;
 use Illuminate\Support\Facades\Cache;
 use App\Repositories\EquipmentSetRepository;
 use Illuminate\Support\Facades\Redis;
@@ -13,10 +14,15 @@ use Illuminate\Support\Facades\Redis;
 class EquipmentSetService
 {
     protected $equipmentSetRepository;
+    protected $boVatTuDetailVViewRepository;
     protected $params;
-    public function __construct(EquipmentSetRepository $equipmentSetRepository)
+    public function __construct(
+        EquipmentSetRepository $equipmentSetRepository,
+        BoVatTuDetailVViewRepository $boVatTuDetailVViewRepository,
+        )
     {
         $this->equipmentSetRepository = $equipmentSetRepository;
+        $this->boVatTuDetailVViewRepository = $boVatTuDetailVViewRepository;
     }
     public function withParams(EquipmentSetDTO $params)
     {
@@ -47,12 +53,18 @@ class EquipmentSetService
         $data = $this->equipmentSetRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
         return ['data' => $data, 'count' => $count];
     }
-    private function getDataById($id)
+    public function getDataById($id)
     {
         $data = $this->equipmentSetRepository->applyJoins()
             ->where('his_equipment_set.id', $id);
         $data = $this->equipmentSetRepository->applyIsActiveFilter($data, $this->params->isActive);
         $data = $data->first();
+        $data['danhSachThuocVatTu'] = $this->getDanhSachThuocVatTu($id);
+        return $data;
+    }
+        private function getDanhSachThuocVatTu($equipment_set_id)
+    {
+        $data = $this->boVatTuDetailVViewRepository->getByEquipmentSetId($equipment_set_id);
         return $data;
     }
     public function handleDataBaseGetAll()

@@ -48,6 +48,7 @@ class DonVViewController extends BaseApiCacheController
             $this->patientId,
             $this->groupBy,
             $this->intructionDate,
+            $this->sessionCodes,
         );
         $this->donVViewService->withParams($this->donVViewDTO);
     }
@@ -67,6 +68,9 @@ class DonVViewController extends BaseApiCacheController
                 break;
             case 'thuocDaKeTrongNgay':
                 $data = $this->donVViewService->handleDataBaseGetAllThuocDaKeTrongNgay();
+                break;
+            case 'suDungDonCu':
+                $data = $this->donVViewService->handleDataBaseGetAllSuDungDonCu();
                 break;
             default:
                 $data = $this->donVViewService->handleDataBaseGetAll();

@@ -73,6 +73,8 @@ class BaseApiCacheController extends Controller
     protected $executeRoomIdsName = 'ExecuteRoomIds';
     protected $serviceTypeCodes;
     protected $serviceTypeCodesName = 'ServiceTypeCodes';
+    protected $sessionCodes;
+    protected $sessionCodesName = 'SessionCodes';
     protected $serviceReqSttCodes;
     protected $serviceReqSttCodesName = 'ServiceReqSttCodes';
     protected $serviceCodes;
@@ -1730,6 +1732,16 @@ class BaseApiCacheController extends Controller
                 if (!is_string($item)) {
                     $this->errors[$this->serviceReqSttCodesName] = $this->messFormat;
                     unset($this->serviceReqSttCodes[$key]);
+                } 
+            }
+        }
+
+        $this->sessionCodes = $this->paramRequest['ApiData']['SessionCodes'] ?? null;
+        if ($this->sessionCodes != null) {
+            foreach ($this->sessionCodes as $key => $item) {
+                if (!is_string($item)) {
+                    $this->errors[$this->sessionCodesName] = $this->messFormat;
+                    unset($this->sessionCodes[$key]);
                 } 
             }
         }

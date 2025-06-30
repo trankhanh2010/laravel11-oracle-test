@@ -62,7 +62,8 @@ exp_mest.icd_sub_code,
 exp_mest.icd_text,
 exp_mest_material.num_order,
 null as ACTIVE_INGR_BHYT_CODE,
-null as ACTIVE_INGR_BHYT_NAME    
+null as ACTIVE_INGR_BHYT_NAME,
+service_req.session_code    
 
 FROM HIS_EXP_MEST_MATERIAL exp_mest_material     
 LEFT JOIN HIS_EXP_MEST exp_mest on exp_mest.id = exp_mest_material.exp_mest_id and exp_mest.is_delete = 0
@@ -72,6 +73,7 @@ LEFT JOIN HIS_EXP_MEST_TYPE exp_mest_type on exp_mest_type.id = exp_mest.exp_mes
 LEFT JOIN HIS_MEDI_STOCK exp_mest_medi_stock on exp_mest_medi_stock.id = exp_mest.medi_stock_id
 --LEFT JOIN HIS_MEDI_STOCK m_medi_stock on m_medi_stock.id = exp_mest_material.tdl_medi_stock_id
 LEFT JOIN V_HIS_ROOM req_room on req_room.id = exp_mest.req_room_id
+LEFT JOIN HIS_SERVICE_REQ service_req on service_req.id = exp_mest.service_req_id
 
   UNION ALL
 
@@ -120,7 +122,8 @@ exp_mest.icd_sub_code,
 exp_mest.icd_text,
 exp_mest_medicine.num_order,
 medicine_type.ACTIVE_INGR_BHYT_CODE,
-medicine_type.ACTIVE_INGR_BHYT_NAME     
+medicine_type.ACTIVE_INGR_BHYT_NAME,
+service_req.session_code    
 
 FROM HIS_EXP_MEST_MEDICINE exp_mest_medicine     
 LEFT JOIN HIS_EXP_MEST exp_mest on exp_mest.id = exp_mest_medicine.exp_mest_id and exp_mest.is_delete = 0
@@ -130,6 +133,7 @@ LEFT JOIN HIS_EXP_MEST_TYPE exp_mest_type on exp_mest_type.id = exp_mest.exp_mes
 LEFT JOIN HIS_MEDI_STOCK exp_mest_medi_stock on exp_mest_medi_stock.id = exp_mest.medi_stock_id
 --LEFT JOIN HIS_MEDI_STOCK m_medi_stock on m_medi_stock.id = exp_mest_medicine.tdl_medi_stock_id
 LEFT JOIN V_HIS_ROOM req_room on req_room.id = exp_mest.req_room_id
+LEFT JOIN HIS_SERVICE_REQ service_req on service_req.id = exp_mest.service_req_id
 
   UNION ALL
 
@@ -178,7 +182,8 @@ service_req.icd_sub_code,
 service_req.icd_text,
 service_req_mety.num_order,
 medicine_type.ACTIVE_INGR_BHYT_CODE,
-medicine_type.ACTIVE_INGR_BHYT_NAME      
+medicine_type.ACTIVE_INGR_BHYT_NAME,
+service_req.session_code    
 
 FROM HIS_SERVICE_REQ_METY service_req_mety     
 LEFT JOIN HIS_MEDICINE_TYPE medicine_type on medicine_type.id = service_req_mety.medicine_type_id
@@ -233,7 +238,8 @@ service_req.icd_sub_code,
 service_req.icd_text,
 service_req_maty.num_order,
 null as ACTIVE_INGR_BHYT_CODE,
-null as ACTIVE_INGR_BHYT_NAME      
+null as ACTIVE_INGR_BHYT_NAME,
+service_req.session_code    
 
 FROM HIS_SERVICE_REQ_MATY service_req_maty     
 LEFT JOIN HIS_MATERIAL_TYPE material_type on material_type.id = service_req_maty.material_type_id

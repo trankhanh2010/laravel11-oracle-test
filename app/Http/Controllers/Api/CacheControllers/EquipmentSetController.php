@@ -70,5 +70,22 @@ class EquipmentSetController extends BaseApiCacheController
         ];
         return returnDataSuccess($paramReturn, $data['data']);
     }
-
+    public function show($id)
+    {
+        if ($this->checkParam()) {
+            return $this->checkParam();
+        }
+        if ($id !== null) {
+            $validationError = $this->validateAndCheckId($id, $this->equipmentSet, $this->equipmentSetName);
+            if ($validationError) {
+                return $validationError;
+            }
+        }
+        $data = $this->equipmentSetService->getDataById($id);
+        $paramReturn = [
+            $this->idName => $id,
+            $this->isActiveName => $this->isActive,
+        ];
+        return returnDataSuccess($paramReturn, $data);
+    }
 }
