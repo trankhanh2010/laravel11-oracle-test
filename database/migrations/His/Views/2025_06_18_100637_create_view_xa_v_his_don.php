@@ -40,7 +40,6 @@ null as ODD_PRES_REASON,--   ly do ke thuoc le
 null as OVER_RESULT_TEST_REASON,--  ly do ke thuoc vuot ket qua xet nghiem  
 null as OVER_KIDNEY_REASON,--   Ly do ke thuoc vuot liêu theo chưc nang than  
 null as EXCEED_LIMIT_IN_TREAT_REASON,--   ly do ke thuoc vuot qua so luong toi da/ho so 
-null as tutorial,
 exp_mest_type.exp_mest_type_code,
 exp_mest_type.exp_mest_type_name,
 exp_mest.service_req_id,
@@ -63,7 +62,18 @@ exp_mest.icd_text,
 exp_mest_material.num_order,
 null as ACTIVE_INGR_BHYT_CODE,
 null as ACTIVE_INGR_BHYT_NAME,
-service_req.session_code    
+service_req.session_code,
+null as concentra,
+'VT' as service_type_code,
+null as tutorial,    
+null as description,    
+null as day_count,    
+null as morning,
+null as noon,
+null as afternoon,
+null as evening,
+material_type.service_id,
+null as medicine_use_form_id
 
 FROM HIS_EXP_MEST_MATERIAL exp_mest_material     
 LEFT JOIN HIS_EXP_MEST exp_mest on exp_mest.id = exp_mest_material.exp_mest_id and exp_mest.is_delete = 0
@@ -100,7 +110,6 @@ exp_mest_medicine.ODD_PRES_REASON,--   ly do ke thuoc le
 exp_mest_medicine.OVER_RESULT_TEST_REASON,--  ly do ke thuoc vuot ket qua xet nghiem  
 exp_mest_medicine.OVER_KIDNEY_REASON,--   Ly do ke thuoc vuot liêu theo chưc nang than  
 exp_mest_medicine.EXCEED_LIMIT_IN_TREAT_REASON,--   ly do ke thuoc vuot qua so luong toi da/ho so 
-medicine_type.tutorial,
 exp_mest_type.exp_mest_type_code,
 exp_mest_type.exp_mest_type_name,
 exp_mest.service_req_id,
@@ -123,7 +132,18 @@ exp_mest.icd_text,
 exp_mest_medicine.num_order,
 medicine_type.ACTIVE_INGR_BHYT_CODE,
 medicine_type.ACTIVE_INGR_BHYT_NAME,
-service_req.session_code    
+service_req.session_code,
+medicine_type.concentra,
+'TH' as service_type_code,
+exp_mest_medicine.tutorial,    
+exp_mest_medicine.description,    
+exp_mest_medicine.day_count,    
+exp_mest_medicine.morning,
+exp_mest_medicine.noon,
+exp_mest_medicine.afternoon,
+exp_mest_medicine.evening,
+medicine_type.service_id,
+medicine_type.medicine_use_form_id
 
 FROM HIS_EXP_MEST_MEDICINE exp_mest_medicine     
 LEFT JOIN HIS_EXP_MEST exp_mest on exp_mest.id = exp_mest_medicine.exp_mest_id and exp_mest.is_delete = 0
@@ -160,7 +180,6 @@ service_req_mety.ODD_PRES_REASON,--   ly do ke thuoc le
 service_req_mety.OVER_RESULT_TEST_REASON,--  ly do ke thuoc vuot ket qua xet nghiem  
 service_req_mety.OVER_KIDNEY_REASON,--   Ly do ke thuoc vuot liêu theo chưc nang than  
 service_req_mety.EXCEED_LIMIT_IN_TREAT_REASON,--   ly do ke thuoc vuot qua so luong toi da/ho so 
-medicine_type.tutorial,
 null as exp_mest_type_code,
 null as exp_mest_type_name,
 service_req_mety.service_req_id,
@@ -183,7 +202,18 @@ service_req.icd_text,
 service_req_mety.num_order,
 medicine_type.ACTIVE_INGR_BHYT_CODE,
 medicine_type.ACTIVE_INGR_BHYT_NAME,
-service_req.session_code    
+service_req.session_code,
+medicine_type.concentra,
+'TH' as service_type_code,
+service_req_mety.tutorial,    
+null as description,    
+service_req_mety.day_count,    
+service_req_mety.morning,
+service_req_mety.noon,
+service_req_mety.afternoon,
+service_req_mety.evening,
+medicine_type.service_id,
+medicine_type.medicine_use_form_id
 
 FROM HIS_SERVICE_REQ_METY service_req_mety     
 LEFT JOIN HIS_MEDICINE_TYPE medicine_type on medicine_type.id = service_req_mety.medicine_type_id
@@ -216,7 +246,6 @@ null as ODD_PRES_REASON,--   ly do ke thuoc le
 null as OVER_RESULT_TEST_REASON,--  ly do ke thuoc vuot ket qua xet nghiem  
 null as OVER_KIDNEY_REASON,--   Ly do ke thuoc vuot liêu theo chưc nang than  
 null as EXCEED_LIMIT_IN_TREAT_REASON,--   ly do ke thuoc vuot qua so luong toi da/ho so 
-null as tutorial,
 null as exp_mest_type_code,
 null as exp_mest_type_name,
 service_req_maty.service_req_id,
@@ -239,7 +268,18 @@ service_req.icd_text,
 service_req_maty.num_order,
 null as ACTIVE_INGR_BHYT_CODE,
 null as ACTIVE_INGR_BHYT_NAME,
-service_req.session_code    
+service_req.session_code,
+null as concentra,
+'VT' as service_type_code,
+null as tutorial,    
+null as description,    
+null as day_count,    
+null as morning,
+null as noon,
+null as afternoon,
+null as evening,
+material_type.service_id,
+null as medicine_use_form_id
 
 FROM HIS_SERVICE_REQ_MATY service_req_maty     
 LEFT JOIN HIS_MATERIAL_TYPE material_type on material_type.id = service_req_maty.material_type_id
