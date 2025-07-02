@@ -144,8 +144,8 @@ class ServiceRepository
     public function applyWithChiDinhDichVuKyThuat($query)
     {
         return $query
-            ->with('list_select_patient_types:id,patient_type_code,patient_type_name')
-            ->with('list_select_service_room:id,room_code,room_name');
+            ->with('list_select_patient_types')
+            ->with('list_select_service_room');
     }
     public function applyJoinsKeDonThuocPhongKham()
     {

@@ -293,10 +293,18 @@ class Service extends Model
             'his_service_room', // tên bảng trung gian
             'service_id',
             'room_id'
-        )->select('v_his_room.id', 'v_his_room.room_code', 'v_his_room.room_name')
+        )->select(
+            'v_his_room.id', 
+        'v_his_room.room_code', 
+        'v_his_room.room_name',
+        )
             ->where(function ($query) {
                 $query->whereNull('v_his_room.is_pause')
                     ->orWhere('v_his_room.is_pause', 0);
+            })
+            ->where(function ($query) { // Kiểm soát phòng xử lý theo dịch vụ
+                $query->whereNull('v_his_room.IS_RESTRICT_EXECUTE_ROOM')
+                    ->orWhere('v_his_room.IS_RESTRICT_EXECUTE_ROOM', 0);
             })
             ->where('v_his_room.is_active', 1)
             ->orderBy('v_his_room.room_code')
