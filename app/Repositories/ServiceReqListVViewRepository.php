@@ -84,6 +84,8 @@ class ServiceReqListVViewRepository
             ->leftJoin('his_department as request_department', 'request_department.id', '=', 'xa_v_his_service_req_list.request_department_id')
 
             ->select([
+                'xa_v_his_service_req_list.id as key',
+
                 'xa_v_his_service_req_list.id',
                 'xa_v_his_service_req_list.is_active',
                 'xa_v_his_service_req_list.is_delete',
@@ -120,6 +122,8 @@ class ServiceReqListVViewRepository
                 'xa_v_his_service_req_list.creator',
                 'xa_v_his_service_req_list.modify_time',
                 'xa_v_his_service_req_list.modifier',
+
+                'xa_v_his_service_req_list.session_code',
 
             ]);
     }
@@ -322,6 +326,14 @@ class ServiceReqListVViewRepository
     {
         if ($param != null) {
             $query->whereIn(('xa_v_his_service_req_list.service_req_stt_id'), $param);
+        }
+        return $query;
+    }
+    public function applyStoreCodeFilter($query, $param)
+    {
+        if ($param != null) {
+             $query->join('his_treatment', 'his_treatment.id', '=', 'xa_v_his_service_req_list.treatment_id')
+            ->where(('his_treatment.store_code'), $param);
         }
         return $query;
     }

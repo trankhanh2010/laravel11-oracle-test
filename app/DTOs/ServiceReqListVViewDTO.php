@@ -37,6 +37,7 @@ class ServiceReqListVViewDTO
     public $type;
     public $currentLoginname;
     public $roomId;
+    public $storeCode;
     public function __construct(
         $serviceReqLisyVViewName,
         $keyword, 
@@ -71,6 +72,7 @@ class ServiceReqListVViewDTO
         $type,
         $currentLoginname,
         $roomId,
+        $storeCode,
         )
     {
         $this->serviceReqLisyVViewName = $serviceReqLisyVViewName;
@@ -106,5 +108,6 @@ class ServiceReqListVViewDTO
         $this->type = $type;
         $this->currentLoginname = $currentLoginname;
         $this->roomId = $roomId;
+        $this->storeCode = $storeCode;
     }
 }

@@ -107,6 +107,7 @@ class ServiceReqListVViewService
         $data = $this->serviceReqListVViewRepository->applyExecuteRoomIdFilter($data, $this->params->executeRoomId);
         $data = $this->serviceReqListVViewRepository->applyServiceReqTypeIdsFilter($data, $this->params->serviceReqTypeIds);
         $data = $this->serviceReqListVViewRepository->applyServiceReqSttIdsFilter($data, $this->params->serviceReqSttIds);
+        $data = $this->serviceReqListVViewRepository->applyStoreCodeFilter($data, $this->params->storeCode);
         $data = $this->serviceReqListVViewRepository->applyTypeFilter($data, $this->params->type, $this->params->roomId, $this->params->currentLoginname);
         $count = $data->count();
         $data = $this->serviceReqListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);

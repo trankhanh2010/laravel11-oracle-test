@@ -83,6 +83,8 @@ class BaseApiCacheController extends Controller
     protected $accountBookCodeName = 'AccountBookCode';
     protected $transReqCode;
     protected $transReqCodeName = 'TransReqCode';
+    protected $storeCode;
+    protected $storeCodeName = 'StoreCode';
     protected $bedCode;
     protected $bedCodeName = 'BedCode';
     protected $trangThai;
@@ -1489,6 +1491,13 @@ class BaseApiCacheController extends Controller
             if (!is_string($this->accountBookCode)) {
                 $this->errors[$this->accountBookCodeName] = $this->messFormat;
                 $this->accountBookCode = null;
+            }
+        }
+        $this->storeCode = $this->paramRequest['ApiData']['StoreCode'] ?? null;
+        if ($this->storeCode !== null) {
+            if (!is_string($this->storeCode)) {
+                $this->errors[$this->storeCodeName] = $this->messFormat;
+                $this->storeCode = null;
             }
         }
         $this->transReqCode = $this->paramRequest['ApiData']['TransReqCode'] ?? null;

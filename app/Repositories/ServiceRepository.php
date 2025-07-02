@@ -358,9 +358,12 @@ class ServiceRepository
             // Duyệt từng nhóm và build cây theo parent_id
             $tree = $this->buildTreeByParentId($processedGroup);
 
+            $serviceTypeCode = $group->first()->service_type_code ?? null; // lấy serviceTypeCode
+
             $result->push([
                 'key' => (string) $typeName,
                 'serviceTypeName' => $typeName,
+                'serviceTypeCode' => $serviceTypeCode,
                 'total' => $group->count(),
                 'children' => $tree,
             ]);

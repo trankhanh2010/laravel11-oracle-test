@@ -59,6 +59,7 @@ class ServiceReqListVViewController extends BaseApiCacheController
             $this->type,
             $this->currentLoginname,
             $this->roomId,
+            $this->storeCode,
         );
         $this->serviceReqListVViewService->withParams($this->serviceReqListVViewDTO);
     }
