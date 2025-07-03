@@ -80,7 +80,7 @@ class DonVViewService
     {
         $data = $this->donVViewRepository->applyJoinsDonCuKeDonThuocPhongKham();
         $data = $this->donVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-        $data = $this->donVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+        $data = $this->donVViewRepository->applyIsDeleteFilter($data, 0);
         $data = $this->donVViewRepository->applyTabFilter($data, $this->params->tab);
         $data = $this->donVViewRepository->applyPatientIdFilter($data, $this->params->patientId);
         $data = $this->donVViewRepository->applyIntructionTimeFromFilter($data, $this->params->intructionTimeFrom);
@@ -106,10 +106,33 @@ class DonVViewService
     {
         $data = $this->donVViewRepository->applyJoinsSuDungDonCu();
         $data = $this->donVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-        $data = $this->donVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+        $data = $this->donVViewRepository->applyIsDeleteFilter($data, 0);
         $data = $this->donVViewRepository->applyTabFilter($data, $this->params->tab);
         $data = $this->donVViewRepository->applyPatientIdFilter($data, $this->params->patientId);
         $data = $this->donVViewRepository->applySessionCodesFilter($data, $this->params->sessionCodes);
+        $data = $this->donVViewRepository->applyIntructionTimeFromFilter($data, $this->params->intructionTimeFrom);
+        $data = $this->donVViewRepository->applyIntructionTimeToFilter($data, $this->params->intructionTimeTo);
+        $data = $this->donVViewRepository->applyIntructionDateFilter($data, $this->params->intructionDate);
+        $count = null;
+        $orderBy = [
+            "tdl_intruction_time" => "desc",
+            "tdl_service_req_code" => "desc",
+            "num_order" => "asc",
+        ];
+        $data = $this->donVViewRepository->applyOrdering($data, $orderBy, []);
+
+        $data = $this->donVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        $data = $this->donVViewRepository->applyGroupByField($data, $this->params->groupBy);
+        return ['data' => $data, 'count' => $count];
+    }
+    private function getAllDataFromDatabaseSuaDon()
+    {
+        $data = $this->donVViewRepository->applyJoinsSuaDon();
+        $data = $this->donVViewRepository->applyWithSuaDon($data);
+        $data = $this->donVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $this->donVViewRepository->applyIsDeleteFilter($data, 0);
+        $data = $this->donVViewRepository->applyTabFilter($data, $this->params->tab);
+        $data = $this->donVViewRepository->applyServiceReqIdFilter($data, $this->params->serviceReqId);
         $data = $this->donVViewRepository->applyIntructionTimeFromFilter($data, $this->params->intructionTimeFrom);
         $data = $this->donVViewRepository->applyIntructionTimeToFilter($data, $this->params->intructionTimeTo);
         $data = $this->donVViewRepository->applyIntructionDateFilter($data, $this->params->intructionDate);
@@ -129,7 +152,7 @@ class DonVViewService
     {
         $data = $this->donVViewRepository->applyJoinsThuocDaKeTrongNgay();
         $data = $this->donVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
-        $data = $this->donVViewRepository->applyIsDeleteFilter($data, $this->params->isDelete);
+        $data = $this->donVViewRepository->applyIsDeleteFilter($data, 0);
         $data = $this->donVViewRepository->applyTabFilter($data, $this->params->tab);
         $data = $this->donVViewRepository->applyPatientIdFilter($data, $this->params->patientId);
         $data = $this->donVViewRepository->applyIntructionTimeFromFilter($data, $this->params->intructionTimeFrom);
@@ -181,6 +204,14 @@ class DonVViewService
     {
         try {
             return $this->getAllDataFromDatabaseSuDungDonCu();
+        } catch (\Throwable $e) {
+            return writeAndThrowError(config('params')['db_service']['error']['don_v_view'], $e);
+        }
+    }
+    public function handleDataBaseGetAllSuaDon()
+    {
+        try {
+            return $this->getAllDataFromDatabaseSuaDon();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['don_v_view'], $e);
         }

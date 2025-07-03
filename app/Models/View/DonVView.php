@@ -15,4 +15,14 @@ class DonVView extends Model
     protected $guarded = [
         'id',
     ];
+    public function beans()
+    {
+        // Lấy ra danh bean(medicine/material) khi sửa đơn
+        return $this->hasMany(ThuocVatTuBeanVView::class, 'exp_mest_m_id', 'id')
+        ->select([
+            'bean_id',
+            'exp_mest_m_id',
+        ])
+        ; 
+    }
 }

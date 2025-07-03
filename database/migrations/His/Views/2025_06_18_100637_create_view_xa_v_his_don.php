@@ -44,6 +44,7 @@ exp_mest_type.exp_mest_type_code,
 exp_mest_type.exp_mest_type_name,
 exp_mest.service_req_id,
 exp_mest.tdl_service_req_code,
+exp_mest_medi_stock.id as exp_mest_medi_stock_id,
 exp_mest_medi_stock.medi_stock_code as exp_mest_medi_stock_code, -- kho xuất của đơn
 exp_mest_medi_stock.medi_stock_name as exp_mest_medi_stock_name,
 --m_medi_stock.medi_stock_code as m_medi_stock_code, -- kho xuất của vật tư
@@ -74,7 +75,8 @@ null as noon,
 null as afternoon,
 null as evening,
 material_type.service_id,
-null as medicine_use_form_id
+null as medicine_use_form_id,
+exp_mest_material.price
 
 FROM HIS_EXP_MEST_MATERIAL exp_mest_material     
 LEFT JOIN HIS_EXP_MEST exp_mest on exp_mest.id = exp_mest_material.exp_mest_id and exp_mest.is_delete = 0
@@ -115,6 +117,7 @@ exp_mest_type.exp_mest_type_code,
 exp_mest_type.exp_mest_type_name,
 exp_mest.service_req_id,
 exp_mest.tdl_service_req_code,
+exp_mest_medi_stock.id as exp_mest_medi_stock_id,
 exp_mest_medi_stock.medi_stock_code as exp_mest_medi_stock_code, -- kho xuất của đơn
 exp_mest_medi_stock.medi_stock_name as exp_mest_medi_stock_name,
 --m_medi_stock.medi_stock_code as m_medi_stock_code, -- kho xuất của thuốc
@@ -145,7 +148,8 @@ exp_mest_medicine.noon,
 exp_mest_medicine.afternoon,
 exp_mest_medicine.evening,
 medicine_type.service_id,
-medicine_type.medicine_use_form_id
+medicine_type.medicine_use_form_id,
+exp_mest_medicine.price
 
 FROM HIS_EXP_MEST_MEDICINE exp_mest_medicine     
 LEFT JOIN HIS_EXP_MEST exp_mest on exp_mest.id = exp_mest_medicine.exp_mest_id and exp_mest.is_delete = 0
@@ -186,6 +190,7 @@ null as exp_mest_type_code,
 null as exp_mest_type_name,
 service_req_mety.service_req_id,
 service_req.service_req_code as tdl_service_req_code,
+null as exp_mest_medi_stock_id,
 null as exp_mest_medi_stock_code, -- kho xuất của đơn
 null as exp_mest_medi_stock_name,
 --null as m_medi_stock_code, -- kho xuất của thuốc
@@ -216,7 +221,8 @@ service_req_mety.noon,
 service_req_mety.afternoon,
 service_req_mety.evening,
 medicine_type.service_id,
-medicine_type.medicine_use_form_id
+medicine_type.medicine_use_form_id,
+service_req_mety.price
 
 FROM HIS_SERVICE_REQ_METY service_req_mety     
 LEFT JOIN HIS_MEDICINE_TYPE medicine_type on medicine_type.id = service_req_mety.medicine_type_id
@@ -253,6 +259,7 @@ null as exp_mest_type_code,
 null as exp_mest_type_name,
 service_req_maty.service_req_id,
 service_req.service_req_code as tdl_service_req_code,
+null as exp_mest_medi_stock_id,
 null as exp_mest_medi_stock_code, -- kho xuất của đơn
 null as exp_mest_medi_stock_name,
 --null as m_medi_stock_code, -- kho xuất của thuốc
@@ -283,7 +290,8 @@ null as noon,
 null as afternoon,
 null as evening,
 material_type.service_id,
-null as medicine_use_form_id
+null as medicine_use_form_id,
+service_req_maty.price
 
 FROM HIS_SERVICE_REQ_MATY service_req_maty     
 LEFT JOIN HIS_MATERIAL_TYPE material_type on material_type.id = service_req_maty.material_type_id

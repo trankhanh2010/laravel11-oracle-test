@@ -42,6 +42,7 @@ class ThuocVatTuBeanVViewService
                 $data = $this->thuocVatTuBeanVViewRepository->applyJoins();
             }
             $data = $this->thuocVatTuBeanVViewRepository->applyKeywordFilter($data, $this->params->keyword);
+            $data = $this->thuocVatTuBeanVViewRepository->applyBeanIsActive1BeanIsDelete0Filter($data);
             $data = $this->thuocVatTuBeanVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
             $count = null;
             if ($this->params->tab == 'keDonThuocPhongKham') {
@@ -78,6 +79,7 @@ class ThuocVatTuBeanVViewService
         } else {
             $data = $this->thuocVatTuBeanVViewRepository->applyJoins();
         }
+        $data = $this->thuocVatTuBeanVViewRepository->applyBeanIsActive1BeanIsDelete0Filter($data);
         $data = $this->thuocVatTuBeanVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
         $count = null;
         if ($this->params->tab == 'keDonThuocPhongKham') {

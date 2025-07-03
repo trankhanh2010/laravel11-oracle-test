@@ -43,6 +43,9 @@ class ServiceReqListVView extends Model
                     ->whereColumn('XA_V_HIS_DON.m_type_id', '=', 'his_medicine_type.id')
                     ->whereColumn('XA_V_HIS_DON.is_delete', '=', 0);
             })
+
+            ->where('his_sere_serv.is_delete',0)
+
             ->select([
                 'his_sere_serv.id',
                 'his_service_type.service_type_code',

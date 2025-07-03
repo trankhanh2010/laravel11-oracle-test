@@ -22,6 +22,8 @@ SELECT
     medicine_bean.id as bean_id,
     medicine.is_active,
     medicine.is_delete,
+    medicine_bean.is_active as bean_is_active,
+    medicine_bean.is_delete as bean_is_delete,
     medicine_type.is_leaf,
     medicine_type.parent_id,
     medicine.medicine_type_id as m_type_id,
@@ -60,8 +62,8 @@ SELECT
     medicine_type.ALERT_MAX_IN_TREATMENT, -- số lượng max kê cho 1 hồ sơ điều trị
     medicine_type.IS_BLOCK_MAX_IN_PRESCRIPTION, -- chặn khi kê quá số lượng trên 1 đơn 
     medicine_type.IS_BLOCK_MAX_IN_DAY, -- chặn khi kê quá số lượng trên 1 ngày 
-    medicine_type.IS_BLOCK_MAX_IN_TREATMENT -- chặn khi kê quá số lượng 1 hồ sơ điều trị
-
+    medicine_type.IS_BLOCK_MAX_IN_TREATMENT, -- chặn khi kê quá số lượng 1 hồ sơ điều trị
+    medicine_bean.exp_mest_medicine_id as exp_mest_m_id
 FROM HIS_MEDICINE medicine     
 LEFT JOIN HIS_MEDICINE_TYPE medicine_type on medicine_type.id = medicine.medicine_type_id   
 JOIN HIS_MEDICINE_TYPE parent 
@@ -78,7 +80,8 @@ LEFT JOIN HIS_SERVICE_UNIT service_unit on service_unit.id = medicine_type.tdl_s
 LEFT JOIN HIS_SERVICE service on service.id = medicine.tdl_service_id
 LEFT JOIN HIS_SERVICE_TYPE service_type on service_type.id = service.service_type_id
 LEFT JOIN HIS_MEDICINE_BEAN medicine_bean 
-on medicine_bean.medicine_id = medicine.id and medicine_bean.is_active = 1 and medicine_bean.is_delete = 0
+on medicine_bean.medicine_id = medicine.id 
+--and medicine_bean.is_active = 1 and medicine_bean.is_delete = 0
 LEFT JOIN HIS_MEDI_STOCK medi_stock on medi_stock.id = medicine_bean.medi_stock_id
 LEFT JOIN HIS_MEDICINE_USE_FORM medicine_use_form on medicine_use_form.id = medicine_type.medicine_use_form_id
 
@@ -89,6 +92,8 @@ SELECT
     material_bean.id as bean_id,
     material.is_active,
     material.is_delete,
+    material_bean.is_active as bean_is_active,
+    material_bean.is_delete as bean_is_delete,
     material_type.is_leaf,
     material_type.parent_id,
     material.material_type_id as m_type_id,
@@ -127,7 +132,8 @@ SELECT
     null as ALERT_MAX_IN_TREATMENT, -- số lượng max kê cho 1 hồ sơ điều trị
     null as IS_BLOCK_MAX_IN_PRESCRIPTION, -- chặn khi kê quá số lượng trên 1 đơn 
     null as IS_BLOCK_MAX_IN_DAY, -- chặn khi kê quá số lượng trên 1 ngày 
-    null as IS_BLOCK_MAX_IN_TREATMENT -- chặn khi kê quá số lượng 1 hồ sơ điều trị
+    null as IS_BLOCK_MAX_IN_TREATMENT, -- chặn khi kê quá số lượng 1 hồ sơ điều trị
+    material_bean.exp_mest_material_id as exp_mest_m_id
 
 FROM HIS_MATERIAL material     
 LEFT JOIN HIS_MATERIAL_TYPE material_type on material_type.id = material.material_type_id   
@@ -141,7 +147,8 @@ LEFT JOIN HIS_SERVICE_UNIT service_unit on service_unit.id = material_type.tdl_s
 LEFT JOIN HIS_SERVICE service on service.id = material.tdl_service_id
 LEFT JOIN HIS_SERVICE_TYPE service_type on service_type.id = service.service_type_id
 LEFT JOIN HIS_MATERIAL_BEAN material_bean 
-on material_bean.material_id = material.id and material_bean.is_active = 1 and material_bean.is_delete = 0
+on material_bean.material_id = material.id 
+--and material_bean.is_active = 1 and material_bean.is_delete = 0
 LEFT JOIN HIS_MEDI_STOCK medi_stock on medi_stock.id = material_bean.medi_stock_id
 )
 SQL

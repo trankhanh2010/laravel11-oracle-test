@@ -27,6 +27,7 @@ class DonVViewDTO
     public $groupBy;
     public $intructionDate;
     public $sessionCodes;
+    public $serviceReqId;
     public function __construct(
         $donVViewName,
         $keyword, 
@@ -51,6 +52,7 @@ class DonVViewDTO
         $groupBy,
         $intructionDate,
         $sessionCodes,
+        $serviceReqId,
         )
     {
         $this->donVViewName = $donVViewName;
@@ -76,5 +78,6 @@ class DonVViewDTO
         $this->groupBy = $groupBy;
         $this->intructionDate = $intructionDate;
         $this->sessionCodes = $sessionCodes;
+        $this->serviceReqId = $serviceReqId;
     }
 }

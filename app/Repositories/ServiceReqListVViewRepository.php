@@ -125,6 +125,7 @@ class ServiceReqListVViewRepository
 
                 'xa_v_his_service_req_list.session_code',
                 'xa_v_his_service_req_list.use_time',
+                'xa_v_his_service_req_list.parent_id',
 
             ]);
     }

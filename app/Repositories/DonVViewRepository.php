@@ -53,6 +53,38 @@ class DonVViewRepository
                 "xa_v_his_don.medicine_use_form_id",
             ]);
     }
+    public function applyJoinsSuaDon()
+    {
+        return $this->donVView
+            ->select([
+                "xa_v_his_don.id",
+                "xa_v_his_don.session_code",
+                "xa_v_his_don.is_active",
+                "xa_v_his_don.is_delete",
+                "xa_v_his_don.concentra",
+                "xa_v_his_don.active_ingr_bhyt_name",
+                "xa_v_his_don.m_type_id",
+                "xa_v_his_don.m_type_name",
+                "xa_v_his_don.service_type_code",
+                "xa_v_his_don.amount",
+                "xa_v_his_don.price",
+                "xa_v_his_don.is_expend",
+                "xa_v_his_don.service_unit_name",
+                "xa_v_his_don.tutorial",
+                "xa_v_his_don.description",
+                "xa_v_his_don.day_count",
+                "xa_v_his_don.morning",
+                "xa_v_his_don.noon",
+                "xa_v_his_don.afternoon",
+                "xa_v_his_don.evening",
+                "xa_v_his_don.service_id",
+                "xa_v_his_don.medicine_use_form_id",
+                "xa_v_his_don.exp_mest_medi_stock_id",
+                "xa_v_his_don.exp_mest_medi_stock_code",
+                "xa_v_his_don.exp_mest_medi_stock_name",
+
+            ]);
+    }
     public function applyJoinsThuocDaKeTrongNgay()
     {
         return $this->donVView
@@ -64,6 +96,12 @@ class DonVViewRepository
                 'xa_v_his_don.active_ingr_bhyt_name',
                 'xa_v_his_don.amount',
             ]);
+    }
+    public function applyWithSuaDon($query){
+        $query->with([
+            'beans'
+        ]);
+        return $query;
     }
     public function applyKeywordFilter($query, $keyword)
     {
@@ -91,6 +129,13 @@ class DonVViewRepository
     {
         if ($param != null) {
             $query->where(DB::connection('oracle_his')->raw('xa_v_his_don.tdl_patient_id'), $param);
+        }
+        return $query;
+    }
+    public function applyServiceReqIdFilter($query, $param)
+    {
+        if ($param != null) {
+            $query->where(DB::connection('oracle_his')->raw('xa_v_his_don.service_req_id'), $param);
         }
         return $query;
     }

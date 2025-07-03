@@ -94,6 +94,12 @@ class ThuocVatTuBeanVViewRepository
         }
         return $query;
     }
+    public function applyBeanIsActive1BeanIsDelete0Filter($query)
+    {
+        $query->where('xa_v_his_thuoc_vat_tu_bean.BEAN_IS_ACTIVE', 1)
+        ->where('xa_v_his_thuoc_vat_tu_bean.BEAN_IS_DELETE', 0);
+        return $query;
+    }
     public function applyMediStockIdsFilter($query, $param)
     {
         if ($param != null) {

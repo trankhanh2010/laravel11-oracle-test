@@ -49,6 +49,7 @@ class DonVViewController extends BaseApiCacheController
             $this->groupBy,
             $this->intructionDate,
             $this->sessionCodes,
+            $this->serviceReqId,
         );
         $this->donVViewService->withParams($this->donVViewDTO);
     }
@@ -63,14 +64,19 @@ class DonVViewController extends BaseApiCacheController
             return $this->checkParam();
         }
         switch ($this->tab) {
-            case 'donCuKeDonThuocPhongKham':
+            case 'donCuKeDonThuocPhongKham': // lấy danh sách
                 $data = $this->donVViewService->handleDataBaseGetAllDonCuKeDonThuocPhongKham();
                 break;
             case 'thuocDaKeTrongNgay':
                 $data = $this->donVViewService->handleDataBaseGetAllThuocDaKeTrongNgay();
                 break;
-            case 'suDungDonCu':
+            case 'suDungDonCu': // trong kê đơn 
                 $data = $this->donVViewService->handleDataBaseGetAllSuDungDonCu();
+                break;
+            case 'suaDon': // trong danh sách y lệnh => sửa
+                // check Treatment có đang khóa không (is_pause phải khác 1)
+                // check xem đơn có phải là đơn không lấy không (exp_mest.is_not_taken phải khác 1)
+                $data = $this->donVViewService->handleDataBaseGetAllSuaDon();
                 break;
             default:
                 $data = $this->donVViewService->handleDataBaseGetAll();

@@ -67,7 +67,8 @@ SELECT
      service_req.RECEIVE_SAMPLE_LOGINNAME,
      service_req.RECEIVE_SAMPLE_USERNAME,
      service_req.test_sample_type_id,
-     service_req.use_time  
+     service_req.use_time,
+     service_req.parent_id  
 
     FROM his_service_req service_req
     LEFT JOIN his_department request_department on request_department.id = service_req.request_department_id
