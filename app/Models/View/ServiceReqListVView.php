@@ -8,6 +8,7 @@ use App\Models\HIS\SereServ;
 use App\Traits\dinh_dang_ten_truong;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class ServiceReqListVView extends Model
 {
@@ -48,6 +49,7 @@ class ServiceReqListVView extends Model
 
             ->select([
                 'his_sere_serv.id',
+                'XA_V_HIS_DON.m_type',
                 'his_service_type.service_type_code',
                 'his_service_type.service_type_name',
                 'his_sere_serv.service_req_id',
@@ -56,6 +58,40 @@ class ServiceReqListVView extends Model
                 'his_patient_type.patient_type_code',
                 'his_patient_type.patient_type_name',
                 'his_sere_serv.amount',
+                'his_service_unit.service_unit_code',
+                'his_service_unit.service_unit_name',
+                'his_service_unit.convert_ratio',
+                'convert.service_unit_code as convert_code',
+                'convert.service_unit_name as convert_name',
+                'his_pttt_group.pttt_group_code',
+                'his_pttt_group.pttt_group_name',
+                'XA_V_HIS_DON.speed',
+                'XA_V_HIS_DON.tutorial',
+            ]);
+    }
+    public function danh_sach_don()
+    {
+        return $this->hasMany(DonVView::class, 'service_req_id', 'id')
+            ->leftJoin('his_service', 'his_service.id', '=', 'XA_V_HIS_DON.service_id')
+            ->leftJoin('his_service_unit', 'his_service_unit.id', '=', 'his_service.service_unit_id')
+            ->leftJoin('his_service_unit convert', 'convert.id', '=', 'his_service_unit.convert_id')
+            ->leftJoin('his_service_type', 'his_service_type.id', '=', 'his_service.service_type_id')
+            ->leftJoin('his_pttt_group', 'his_pttt_group.id', '=', 'his_service.pttt_group_id')
+            ->leftJoin('his_medicine_type', 'his_medicine_type.service_id', '=', 'his_service.id')
+
+            ->where('XA_V_HIS_DON.is_delete',0)
+
+            ->select([
+                'XA_V_HIS_DON.id',
+                'XA_V_HIS_DON.m_type',
+                'his_service_type.service_type_code',
+                'his_service_type.service_type_name',
+                'XA_V_HIS_DON.service_req_id',
+                'his_service.service_code as tdl_service_code',
+                'his_service.service_name as tdl_service_name',
+                DB::connection('oracle_his')->raw("CAST(NULL AS VARCHAR2(100)) as patient_type_code"),
+                DB::connection('oracle_his')->raw("CAST(NULL AS VARCHAR2(100)) as patient_type_name"),
+                'XA_V_HIS_DON.amount',
                 'his_service_unit.service_unit_code',
                 'his_service_unit.service_unit_name',
                 'his_service_unit.convert_ratio',

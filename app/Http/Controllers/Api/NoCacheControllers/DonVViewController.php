@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api\NoCacheControllers;
 
 use App\DTOs\DonVViewDTO;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
+use App\Models\HIS\ServiceReq;
+use App\Models\HIS\Treatment;
 use App\Models\View\DonVView;
 use App\Services\Model\DonVViewService;
 use Illuminate\Http\Request;
@@ -13,11 +15,20 @@ class DonVViewController extends BaseApiCacheController
 {
     protected $donVViewService;
     protected $donVViewDTO;
-    public function __construct(Request $request, DonVViewService $donVViewService, DonVView $donVView)
-    {
+    protected $treatment;
+    protected $serviceReq;
+    public function __construct(
+        Request $request,
+        DonVViewService $donVViewService,
+        DonVView $donVView,
+        Treatment $treatment,
+        ServiceReq $serviceReq,
+    ) {
         parent::__construct($request); // Gọi constructor của BaseController
         $this->donVViewService = $donVViewService;
         $this->donVView = $donVView;
+        $this->treatment = $treatment;
+        $this->serviceReq = $serviceReq;
         // Kiểm tra tên trường trong bảng
         if ($this->orderBy != null) {
             $this->orderByJoin = [];
@@ -74,9 +85,36 @@ class DonVViewController extends BaseApiCacheController
                 $data = $this->donVViewService->handleDataBaseGetAllSuDungDonCu();
                 break;
             case 'suaDon': // trong danh sách y lệnh => sửa
-                // check Treatment có đang khóa không (is_pause phải khác 1)
-                // check xem đơn có phải là đơn không lấy không (exp_mest.is_not_taken phải khác 1)
+                //check Treatment có đang khóa không (is_pause phải khác 1)
+                if ($this->serviceReqId) {
+                    $dataServiceReq = $this->serviceReq->find($this->serviceReqId);
+                    $dataTreatment = $this->treatment->find($dataServiceReq->treatment_id ?? 0);
+
+                    if ($dataTreatment) {
+                        if ($dataTreatment->is_pause) {
+                            $this->errors[$this->treatmentIdName] = "Hồ sơ điều trị đang bị khóa!";
+                        }
+                    } else {
+                        $this->errors[$this->treatmentIdName] = "không tìm thấy hồ sơ điều trị!";
+                    }
+                } else {
+                    $this->errors[$this->serviceReqIdName] = "Thiếu mã y lệnh!";
+                }
+                if ($this->checkParam()) {
+                    return $this->checkParam();
+                }
+
                 $data = $this->donVViewService->handleDataBaseGetAllSuaDon();
+                
+                // check xem đơn có phải là đơn không lấy không (exp_mest.is_not_taken phải khác 1)
+                foreach ($data['data'] as $key => $item) {
+                    if ($item->is_not_taken) {
+                        $this->errors['donKhongLay'] = "Đơn không lấy không thể sửa!";
+                    }
+                }
+                if ($this->checkParam()) {
+                    return $this->checkParam();
+                }
                 break;
             default:
                 $data = $this->donVViewService->handleDataBaseGetAll();

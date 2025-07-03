@@ -69,6 +69,9 @@ class DonVViewRepository
                 "xa_v_his_don.amount",
                 "xa_v_his_don.price",
                 "xa_v_his_don.is_expend",
+                "xa_v_his_don.expend_type_id",
+                "xa_v_his_don.is_out_parent_fee",
+                "xa_v_his_don.other_pay_source_id",
                 "xa_v_his_don.service_unit_name",
                 "xa_v_his_don.tutorial",
                 "xa_v_his_don.description",
@@ -82,7 +85,16 @@ class DonVViewRepository
                 "xa_v_his_don.exp_mest_medi_stock_id",
                 "xa_v_his_don.exp_mest_medi_stock_code",
                 "xa_v_his_don.exp_mest_medi_stock_name",
-
+                "xa_v_his_don.num_order",
+                "xa_v_his_don.EXCEED_LIMIT_IN_PRES_REASON",
+                "xa_v_his_don.EXCEED_LIMIT_IN_DAY_REASON",
+                "xa_v_his_don.ODD_PRES_REASON",
+                "xa_v_his_don.OVER_RESULT_TEST_REASON",
+                "xa_v_his_don.OVER_KIDNEY_REASON",
+                "xa_v_his_don.EXCEED_LIMIT_IN_TREAT_REASON",
+                "xa_v_his_don.htu_id",
+                "xa_v_his_don.htu_ids",
+                "xa_v_his_don.IS_NOT_TAKEN",
             ]);
     }
     public function applyJoinsThuocDaKeTrongNgay()

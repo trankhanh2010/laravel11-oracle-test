@@ -212,6 +212,7 @@ class ServiceReqListVViewRepository
     {
         return $query->with([
             'danh_sach_dich_vu_chi_dinh',
+            'danh_sach_don',
             'the_kcb_thong_minh',
             'don_xuat',
         ]);

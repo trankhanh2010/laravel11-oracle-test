@@ -34,6 +34,7 @@ service_unit.service_unit_name,
 exp_mest_material.is_expend, -- hao phí
 exp_mest_material.EXPEND_TYPE_ID, -- loại hao phí, hiện chỉ có hao phí tiền giường
 exp_mest_material.IS_OUT_PARENT_FEE, -- chi phí ngoài gói  
+exp_mest_material.other_pay_source_id,
 exp_mest_material.EXCEED_LIMIT_IN_PRES_REASON,-- ly do ke thuoc/vat tu vuot qua so luong toi da/don  
 exp_mest_material.EXCEED_LIMIT_IN_DAY_REASON,--    ly do ke thuoc/vat tu vuot qua so luong toi da/ngay  
 null as ODD_PRES_REASON,--   ly do ke thuoc le  
@@ -76,7 +77,11 @@ null as afternoon,
 null as evening,
 material_type.service_id,
 null as medicine_use_form_id,
-exp_mest_material.price
+exp_mest_material.price,
+null as htu_id,
+null as htu_ids,
+exp_mest_material.pres_amount,
+exp_mest.IS_NOT_TAKEN -- Đơn không lấy (phòng khám) => đơn không lấy thì k cho sửa đơn
 
 FROM HIS_EXP_MEST_MATERIAL exp_mest_material     
 LEFT JOIN HIS_EXP_MEST exp_mest on exp_mest.id = exp_mest_material.exp_mest_id and exp_mest.is_delete = 0
@@ -107,6 +112,7 @@ service_unit.service_unit_name,
 exp_mest_medicine.is_expend, -- hao phí
 exp_mest_medicine.EXPEND_TYPE_ID, -- loại hao phí, hiện chỉ có hao phí tiền giường
 exp_mest_medicine.IS_OUT_PARENT_FEE, -- chi phí ngoài gói  
+exp_mest_medicine.other_pay_source_id,
 exp_mest_medicine.EXCEED_LIMIT_IN_PRES_REASON,-- ly do ke thuoc/vat tu vuot qua so luong toi da/don  
 exp_mest_medicine.EXCEED_LIMIT_IN_DAY_REASON,--    ly do ke thuoc/vat tu vuot qua so luong toi da/ngay  
 exp_mest_medicine.ODD_PRES_REASON,--   ly do ke thuoc le  
@@ -149,7 +155,11 @@ exp_mest_medicine.afternoon,
 exp_mest_medicine.evening,
 medicine_type.service_id,
 medicine_type.medicine_use_form_id,
-exp_mest_medicine.price
+exp_mest_medicine.price,
+exp_mest_medicine.htu_id,
+exp_mest_medicine.htu_ids,
+exp_mest_medicine.pres_amount,
+exp_mest.IS_NOT_TAKEN -- Đơn không lấy (phòng khám) => đơn không lấy thì k cho sửa đơn
 
 FROM HIS_EXP_MEST_MEDICINE exp_mest_medicine     
 LEFT JOIN HIS_EXP_MEST exp_mest on exp_mest.id = exp_mest_medicine.exp_mest_id and exp_mest.is_delete = 0
@@ -180,6 +190,7 @@ service_req_mety.unit_name as service_unit_name,
 null as is_expend, -- hao phí
 null as EXPEND_TYPE_ID, -- loại hao phí, hiện chỉ có hao phí tiền giường
 null as IS_OUT_PARENT_FEE, -- chi phí ngoài gói  
+null as other_pay_source_id,
 service_req_mety.EXCEED_LIMIT_IN_PRES_REASON,-- ly do ke thuoc/vat tu vuot qua so luong toi da/don  
 service_req_mety.EXCEED_LIMIT_IN_DAY_REASON,--    ly do ke thuoc/vat tu vuot qua so luong toi da/ngay  
 service_req_mety.ODD_PRES_REASON,--   ly do ke thuoc le  
@@ -222,7 +233,11 @@ service_req_mety.afternoon,
 service_req_mety.evening,
 medicine_type.service_id,
 medicine_type.medicine_use_form_id,
-service_req_mety.price
+service_req_mety.price,
+service_req_mety.htu_id,
+null as htu_ids,
+service_req_mety.pres_amount,
+null as IS_NOT_TAKEN -- Đơn không lấy (phòng khám) => đơn không lấy thì k cho sửa đơn
 
 FROM HIS_SERVICE_REQ_METY service_req_mety     
 LEFT JOIN HIS_MEDICINE_TYPE medicine_type on medicine_type.id = service_req_mety.medicine_type_id
@@ -249,6 +264,7 @@ service_req_maty.unit_name as service_unit_name,
 null as is_expend, -- hao phí
 null as EXPEND_TYPE_ID, -- loại hao phí, hiện chỉ có hao phí tiền giường
 null as IS_OUT_PARENT_FEE, -- chi phí ngoài gói  
+null as other_pay_source_id,
 service_req_maty.EXCEED_LIMIT_IN_PRES_REASON,-- ly do ke thuoc/vat tu vuot qua so luong toi da/don  
 service_req_maty.EXCEED_LIMIT_IN_DAY_REASON,--    ly do ke thuoc/vat tu vuot qua so luong toi da/ngay  
 null as ODD_PRES_REASON,--   ly do ke thuoc le  
@@ -291,7 +307,11 @@ null as afternoon,
 null as evening,
 material_type.service_id,
 null as medicine_use_form_id,
-service_req_maty.price
+service_req_maty.price,
+null as htu_id,
+null as htu_ids,
+service_req_maty.pres_amount,
+null as IS_NOT_TAKEN -- Đơn không lấy (phòng khám) => đơn không lấy thì k cho sửa đơn
 
 FROM HIS_SERVICE_REQ_MATY service_req_maty     
 LEFT JOIN HIS_MATERIAL_TYPE material_type on material_type.id = service_req_maty.material_type_id
