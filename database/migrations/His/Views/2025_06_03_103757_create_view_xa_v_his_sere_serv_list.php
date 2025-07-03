@@ -65,7 +65,13 @@ SELECT
      service_req.TDL_INSTRUCTION_NOTE, /*ghi chu cua nguoi chi dinh */
      execute_room.room_code as execute_room_code,
      execute_room.room_name as execute_room_name,
-     service_req.EXAM_END_TYPE  
+     service_req.EXAM_END_TYPE,
+     sere_serv.is_expend,
+     sere_serv.is_out_parent_fee, 
+     sere_serv.is_not_use_bhyt,
+     sere_serv.patient_type_id,
+     sere_serv.primary_patient_type_id,
+     sere_serv.assign_num_order
 
     FROM his_sere_serv sere_serv
     LEFT JOIN his_service service on service.id = sere_serv.service_id

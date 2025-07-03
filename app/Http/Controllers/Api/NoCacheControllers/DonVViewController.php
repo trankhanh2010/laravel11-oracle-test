@@ -95,7 +95,7 @@ class DonVViewController extends BaseApiCacheController
                             $this->errors[$this->treatmentIdName] = "Hồ sơ điều trị đang bị khóa!";
                         }
                     } else {
-                        $this->errors[$this->treatmentIdName] = "không tìm thấy hồ sơ điều trị!";
+                        $this->errors[$this->treatmentIdName] = "Không tìm thấy hồ sơ điều trị!";
                     }
                 } else {
                     $this->errors[$this->serviceReqIdName] = "Thiếu mã y lệnh!";
@@ -105,7 +105,7 @@ class DonVViewController extends BaseApiCacheController
                 }
 
                 $data = $this->donVViewService->handleDataBaseGetAllSuaDon();
-                
+
                 // check xem đơn có phải là đơn không lấy không (exp_mest.is_not_taken phải khác 1)
                 foreach ($data['data'] as $key => $item) {
                     if ($item->is_not_taken) {

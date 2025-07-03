@@ -71,6 +71,28 @@ class SereServListVViewService
         $data = $this->sereServListVViewRepository->applyGroupByField($data, $this->params->groupBy);
         return ['data' => $data, 'count' => $count];
     }
+    private function getAllDataFromDatabaseSuaChiDinh()
+    {
+        $data = $this->sereServListVViewRepository->applyJoinsSuaChiDinh();
+        $data = $this->sereServListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $this->sereServListVViewRepository->applyIsDeleteFilter($data, 0);
+        $data = $this->sereServListVViewRepository->applyIsNoExecuteFilter($data);
+        $data = $this->sereServListVViewRepository->applyServiceReqIsNoExecuteFilter($data);
+        $data = $this->sereServListVViewRepository->applyTrackingIdFilter($data, $this->params->trackingId);
+        $data = $this->sereServListVViewRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
+        $data = $this->sereServListVViewRepository->applyServiceIdsFilter($data, $this->params->serviceIds);
+        $data = $this->sereServListVViewRepository->applyPatientCodeFilter($data, $this->params->patientCode);
+        $data = $this->sereServListVViewRepository->applyServiceTypeCodesFilter($data, $this->params->serviceTypeCodes);
+        $data = $this->sereServListVViewRepository->applyServiceReqIdFilter($data, $this->params->serviceReqId);
+        $data = $this->sereServListVViewRepository->applyNotInTrackingFilter($data, $this->params->notInTracking);
+        
+        $count = $data->count();
+        $data = $this->sereServListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->sereServListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        // Group theo field
+        $data = $this->sereServListVViewRepository->applyGroupByField($data, $this->params->groupBy);
+        return ['data' => $data, 'count' => $count];
+    }
     private function getDataById($id)
     {
         $data = $this->sereServListVViewRepository->applyJoins()
@@ -86,6 +108,14 @@ class SereServListVViewService
     {
         try {
             return $this->getAllDataFromDatabase();
+        } catch (\Throwable $e) {
+            return writeAndThrowError(config('params')['db_service']['error']['sere_serv_list_v_view'], $e);
+        }
+    }
+    public function handleDataBaseGetAllSuaChiDinh()
+    {
+        try {
+            return $this->getAllDataFromDatabaseSuaChiDinh();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['sere_serv_list_v_view'], $e);
         }

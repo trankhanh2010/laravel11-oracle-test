@@ -97,6 +97,44 @@ class SereServListVViewRepository
                 "execute_department_name",
             ]);
     }
+    public function applyJoinsSuaChiDinh()
+    {
+        return $this->sereServListVView
+            ->select([
+                "xa_v_his_sere_serv_list.id as key",     
+                "xa_v_his_sere_serv_list.id",     
+                "xa_v_his_sere_serv_list.is_no_execute",
+                "xa_v_his_sere_serv_list.is_delete",
+                "xa_v_his_sere_serv_list.amount",
+                "xa_v_his_sere_serv_list.service_req_id",
+                "xa_v_his_sere_serv_list.service_code",
+                "xa_v_his_sere_serv_list.service_name",
+                "xa_v_his_sere_serv_list.service_unit_name",
+                "xa_v_his_sere_serv_list.service_req_code",
+                "xa_v_his_sere_serv_list.treatment_id",
+                "xa_v_his_sere_serv_list.tracking_id",
+                "xa_v_his_sere_serv_list.intruction_time",
+                "xa_v_his_sere_serv_list.intruction_date",
+                "xa_v_his_sere_serv_list.vir_intruction_month",
+                "xa_v_his_sere_serv_list.patient_type_name",
+                "xa_v_his_sere_serv_list.request_department_name",
+                "xa_v_his_sere_serv_list.department_name",
+                "xa_v_his_sere_serv_list.tutorial",
+                "xa_v_his_sere_serv_list.tracking_creator",
+                "xa_v_his_sere_serv_list.service_type_code",
+                "xa_v_his_sere_serv_list.service_type_name",
+                "xa_v_his_sere_serv_list.service_req_stt_code",
+                "xa_v_his_sere_serv_list.service_req_stt_name",
+                "xa_v_his_sere_serv_list.patient_code",
+
+                "xa_v_his_sere_serv_list.is_expend",
+                "xa_v_his_sere_serv_list.is_out_parent_fee",
+                "xa_v_his_sere_serv_list.is_not_use_bhyt",
+                "xa_v_his_sere_serv_list.patient_type_id",
+                "xa_v_his_sere_serv_list.primary_patient_type_id",
+                "xa_v_his_sere_serv_list.assign_num_order",
+            ]);
+    }
     public function applyKeywordFilter($query, $keyword)
     {
         return $query->where(function ($query) use ($keyword) {

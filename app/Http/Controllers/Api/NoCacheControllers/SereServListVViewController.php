@@ -15,11 +15,18 @@ class SereServListVViewController extends BaseApiCacheController
 {
     protected $sereServListVViewService;
     protected $sereServListVViewDTO;
-    public function __construct(Request $request, SereServListVViewService $sereServListVViewService, SereServListVView $sereServListVView)
+    protected $serviceReq;
+    public function __construct(
+        Request $request, 
+        SereServListVViewService $sereServListVViewService, 
+        SereServListVView $sereServListVView,
+        ServiceReq $serviceReq,
+        )
     {
         parent::__construct($request); // Gọi constructor của BaseController
         $this->sereServListVViewService = $sereServListVViewService;
         $this->sereServListVView = $sereServListVView;
+        $this->serviceReq = $serviceReq;
         // Kiểm tra tên trường trong bảng
         if ($this->orderBy != null) {
             $this->orderByJoin = [
@@ -54,6 +61,7 @@ class SereServListVViewController extends BaseApiCacheController
             $this->noCache,
             $this->treatmentCode,
             $this->serviceIds,
+            $this->tab,
         );
         $this->sereServListVViewService->withParams($this->sereServListVViewDTO);
     }
@@ -71,7 +79,33 @@ class SereServListVViewController extends BaseApiCacheController
         if($this->treatmentCode == null && $this->treatmentId == null && $this->trackingId == null && $this->serviceReqId == null){
             return returnDataSuccess(null, []);
         }
-        $data = $this->sereServListVViewService->handleDataBaseGetAll();
+        switch ($this->tab) {
+            case 'suaChiDinh': // trong danh sách y lệnh => sửa
+                //check y lệnh có bắt đầu chưa service_req_stt_code == 01
+                // if ($this->serviceReqId) {
+                //     $dataServiceReq = $this->serviceReq
+                //     ->leftJoin('his_service_req_stt', 'his_service_req_stt.id', '=', 'his_service_req.service_req_stt_id')
+                //     ->find($this->serviceReqId);
+                //     if ($dataServiceReq) {
+                //         if ($dataServiceReq->service_req_stt_code != '01') {
+                //             $this->errors[$this->serviceReqIdName] = "Không thể sửa y lệnh khi y lệnh đã bắt đầu!";
+                //         }
+                //     } else {
+                //         $this->errors[$this->serviceReqIdName] = "Không tìm thấy y lệnh!";
+                //     }
+                // } else {
+                //     $this->errors[$this->serviceReqIdName] = "Thiếu mã y lệnh!";
+                // }
+                // if ($this->checkParam()) {
+                //     return $this->checkParam();
+                // }
+
+                $data = $this->sereServListVViewService->handleDataBaseGetAllSuaChiDinh();
+                break;
+            default:
+                $data = $this->sereServListVViewService->handleDataBaseGetAll();
+                break;
+        }
         $paramReturn = [
             $this->getAllName => $this->getAll,
             $this->startName => $this->getAll ? null : $this->start,
