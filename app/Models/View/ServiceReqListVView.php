@@ -35,9 +35,18 @@ class ServiceReqListVView extends Model
             ->leftJoin('his_service_unit', 'his_service_unit.id', '=', 'his_sere_serv.tdl_service_unit_id')
             ->leftJoin('his_service_unit convert', 'convert.id', '=', 'his_service_unit.convert_id')
             ->leftJoin('his_service', 'his_service.id', '=', 'his_sere_serv.service_id')
+            ->leftJoin('his_service_type', 'his_service_type.id', '=', 'his_sere_serv.tdl_service_type_id')
             ->leftJoin('his_pttt_group', 'his_pttt_group.id', '=', 'his_service.pttt_group_id')
+            ->leftJoin('his_medicine_type', 'his_medicine_type.service_id', '=', 'his_service.id')
+            ->leftJoin('XA_V_HIS_DON', function ($join) {
+                $join->on('XA_V_HIS_DON.service_req_id', '=', 'his_sere_serv.service_req_id')
+                    ->whereColumn('XA_V_HIS_DON.m_type_id', '=', 'his_medicine_type.id')
+                    ->whereColumn('XA_V_HIS_DON.is_delete', '=', 0);
+            })
             ->select([
                 'his_sere_serv.id',
+                'his_service_type.service_type_code',
+                'his_service_type.service_type_name',
                 'his_sere_serv.service_req_id',
                 'his_sere_serv.tdl_service_code',
                 'his_sere_serv.tdl_service_name',
@@ -51,6 +60,8 @@ class ServiceReqListVView extends Model
                 'convert.service_unit_name as convert_name',
                 'his_pttt_group.pttt_group_code',
                 'his_pttt_group.pttt_group_name',
+                'XA_V_HIS_DON.speed',
+                'XA_V_HIS_DON.tutorial',
             ]);
     }
     public function the_kcb_thong_minh()

@@ -124,6 +124,7 @@ class ServiceReqListVViewRepository
                 'xa_v_his_service_req_list.modifier',
 
                 'xa_v_his_service_req_list.session_code',
+                'xa_v_his_service_req_list.use_time',
 
             ]);
     }
@@ -186,12 +187,13 @@ class ServiceReqListVViewRepository
                 'xa_v_his_service_req_list.is_sent_ext', // đã gửi yêu cầu
                 'xa_v_his_service_req_list.barcode',
                 'xa_v_his_service_req_list.session_code', // mã lượt chỉ định 
+                'xa_v_his_service_req_list.use_time',
                 'xa_v_his_service_req_list.remedy_count', // Số thang
                 'xa_v_his_service_req_list.SAMPLER_LOGINNAME', // người lấy mẫu               
                 'xa_v_his_service_req_list.SAMPLER_USERNAME',                
                 'xa_v_his_service_req_list.RECEIVE_SAMPLE_LOGINNAME', // người nhận mẫu                
                 'xa_v_his_service_req_list.RECEIVE_SAMPLE_USERNAME',
-                'test_sample_type.test_sample_type_code',
+                'test_sample_type.test_sample_type_code', // Loại mẫu
                 'test_sample_type.test_sample_type_name',
             ]);
     }

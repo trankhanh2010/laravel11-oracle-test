@@ -25,6 +25,8 @@ class ServiceDTO
     public $serviceGroupIds;
     public $serviceReqId;
     public $serviceReqIds;
+    public $serviceTypeCode;
+    public $executeRoomId;
 
     public function __construct(
         $serviceName,
@@ -48,6 +50,8 @@ class ServiceDTO
         $serviceGroupIds,
         $serviceReqId,
         $serviceReqIds,
+        $serviceTypeCode,
+        $executeRoomId,
         )
     {
         $this->serviceName = $serviceName;
@@ -71,5 +75,7 @@ class ServiceDTO
         $this->serviceGroupIds = $serviceGroupIds;
         $this->serviceReqId = $serviceReqId;
         $this->serviceReqIds = $serviceReqIds;
+        $this->serviceTypeCode = $serviceTypeCode;
+        $this->executeRoomId = $executeRoomId;
     }
 }

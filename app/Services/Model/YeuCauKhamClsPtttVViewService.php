@@ -370,14 +370,14 @@ class YeuCauKhamClsPtttVViewService
                 $dataXuTriKham += $this->getPrimaryPatientType($duLieu->treatment_id, $duLieu->tdl_hein_card_number)->toArray();
                 $dataDotKhamHienTai = $this->getDataDotKhamHienTai($duLieu->treatment_id);
                 $dataDiUngThuoc = $this->getDataDiUngThuoc($duLieu->patient_id);
-                $thongTinVienPhi = $this->getDataVienPhi($duLieu);
+                // $thongTinVienPhi = $this->getDataVienPhi($duLieu);
             }
             $data['khamBenh'] = $duLieu;
             $data['lichSuKham'] = $dataLichSuKham;
             $data['xuTriKham'] = $dataXuTriKham;
             $data['dotKhamHienTai'] = $dataDotKhamHienTai;
             $data['diUngThuoc'] = $dataDiUngThuoc;
-            $data['khamBenh']['thongTinVienPhi'] = $thongTinVienPhi;
+            // $data['khamBenh']['thongTinVienPhi'] = $thongTinVienPhi;
 
             return $data;
         } catch (\Throwable $e) {

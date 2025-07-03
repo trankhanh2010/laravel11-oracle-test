@@ -83,6 +83,8 @@ class ServiceService
         $data = $this->serviceRepository->applyIsActiveFilter($data, $this->params->isActive);
         $data = $this->serviceRepository->applyServiceTypeIdFilter($data, $this->params->serviceTypeId);
         $data = $this->serviceRepository->applyServiceGroupIdsFilter($data, $this->params->serviceGroupIds);
+        $data = $this->serviceRepository->applyServiceTypeCodeFilter($data, $this->params->serviceTypeCode);
+        $data = $this->serviceRepository->applyExecuteRoomIdFilter($data, $this->params->executeRoomId);
         $data = $this->serviceRepository->applyTabFilter($data, $this->params->tab);
         $count = null;
         $orderBy = [

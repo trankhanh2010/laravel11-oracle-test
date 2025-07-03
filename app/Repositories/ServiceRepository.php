@@ -215,6 +215,21 @@ class ServiceRepository
         }
         return $query;
     }
+    public function applyServiceTypeCodeFilter($query, $param)
+    {
+        if ($param != null) {
+            $query->where(DB::connection('oracle_his')->raw('service_type.service_type_code'), $param);
+        }
+        return $query;
+    }
+    public function applyExecuteRoomIdFilter($query, $param)
+    {
+        if ($param != null) {
+            $query->join('his_service_room', 'his_service_room.service_id', '=', 'his_service.id')
+            ->where(DB::connection('oracle_his')->raw('his_service_room.room_id'), $param);
+        }
+        return $query;
+    }
     public function applyTabFilter($query, $param)
     {
         switch ($param) {
