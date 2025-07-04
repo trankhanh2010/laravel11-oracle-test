@@ -54,7 +54,7 @@ class ThuocVatTuBeanVViewController extends BaseApiCacheController
     public function index()
     {
         if ($this->tab == 'keDonThuocPhongKham') {
-            if (!$this->mediStockIds) {
+            if (!$this->mediStockIds && $this->type == 'thuocVatTuTrongKho') {
                 $this->errors[$this->mediStockIdsName] = "Chưa chọn kho xuất!";
             }
             if (!$this->intructionTime) {
