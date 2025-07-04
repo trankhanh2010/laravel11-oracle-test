@@ -307,7 +307,6 @@ class Service extends Model
                     ->orWhere('v_his_room.IS_RESTRICT_EXECUTE_ROOM', 0);
             })
             ->where('v_his_room.is_active', 1)
-            ->orderBy('v_his_room.room_code')
-            ->distinct();
+            ->orderBy('v_his_room.room_code');
     }
 }

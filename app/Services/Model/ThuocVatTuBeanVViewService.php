@@ -150,17 +150,8 @@ class ThuocVatTuBeanVViewService
     public function handleDataBaseGetAll()
     {
         try {
-            if ($this->params->mediStockIds && $this->params->type == 'thuocVatTuMuaNgoai') {
-                $exitsAllNhaThuoc = !$this->mediStock->whereIn('id', $this->params->mediStockIds)
-                ->where(function ($q) {
-                    $q->whereNull('IS_DRUG_STORE')
-                        ->orWhere('IS_DRUG_STORE', 0);
-                })->exists();
-            } else {
-                $exitsAllNhaThuoc = false;
-            }
-            // Nếu có chọn nhà thuốc và đúng là nhà thuốc thì lọc mua ngoài theo nhà thuốc (giống trong kho), không thì lấy toàn bộ danh sách
-            if ($this->params->type == 'thuocVatTuMuaNgoai' && !$exitsAllNhaThuoc) {
+            // rỗng => lấy mảng phẳng
+            if (!$this->params->mediStockIds) {
                 return $this->getAllDataFromDatabaseThuocMuaNgoai(); // toàn bộ danh sách
             } else {
                 return $this->getAllDataFromDatabase(); // lấy kho

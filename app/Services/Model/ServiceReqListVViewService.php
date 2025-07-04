@@ -97,7 +97,7 @@ class ServiceReqListVViewService
         $data = $this->serviceReqListVViewRepository->applyKeywordFilter($data, $this->params->keyword);
         $data = $this->serviceReqListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
         $data = $this->serviceReqListVViewRepository->applyIsDeleteFilter($data, 0);
-        $data = $this->serviceReqListVViewRepository->applyIsNoExecuteFilter($data);
+        // $data = $this->serviceReqListVViewRepository->applyIsNoExecuteFilter($data); // Xem danh sách y lệnh thì k cần lọc is_no_execute, = 1 thì hiện gạch ngang
         $data = $this->serviceReqListVViewRepository->applyTrackingIdFilter($data, $this->params->trackingId);
         $data = $this->serviceReqListVViewRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
         $data = $this->serviceReqListVViewRepository->applyPatientCodeFilter($data, $this->params->patientCode);
@@ -134,7 +134,7 @@ class ServiceReqListVViewService
         $data = $this->serviceReqListVViewRepository->applyWithParamChiDinh($data);
         $data = $this->serviceReqListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
         $data = $this->serviceReqListVViewRepository->applyIsDeleteFilter($data, 0);
-        $data = $this->serviceReqListVViewRepository->applyIsNoExecuteFilter($data);
+        // $data = $this->serviceReqListVViewRepository->applyIsNoExecuteFilter($data); // Xem danh sách y lệnh thì k cần lọc is_no_execute, = 1 thì hiện gạch ngang
         $data = $data->first();
         return $data;
     }

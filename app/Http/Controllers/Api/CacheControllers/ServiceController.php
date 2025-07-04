@@ -7,7 +7,6 @@ use App\Http\Controllers\BaseControllers\BaseApiCacheController;
 use App\Http\Requests\Service\CreateServiceRequest;
 use App\Http\Requests\Service\UpdateServiceRequest;
 use App\Models\HIS\Service;
-use App\Services\Elastic\ElasticsearchService;
 use App\Services\Model\ServiceService;
 use Illuminate\Http\Request;
 
@@ -16,10 +15,9 @@ class ServiceController extends BaseApiCacheController
 {
     protected $serviceService;
     protected $serviceDTO;
-    public function __construct(Request $request, ElasticsearchService $elasticSearchService, ServiceService $serviceService, Service $service)
+    public function __construct(Request $request, ServiceService $serviceService, Service $service)
     {
         parent::__construct($request); // Gọi constructor của BaseController
-        $this->elasticSearchService = $elasticSearchService;
         $this->serviceService = $serviceService;
         $this->service = $service;
         // Kiểm tra tên trường trong bảng
