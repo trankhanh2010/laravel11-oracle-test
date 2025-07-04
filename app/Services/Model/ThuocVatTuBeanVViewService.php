@@ -151,7 +151,7 @@ class ThuocVatTuBeanVViewService
     {
         try {
             // rỗng => lấy mảng phẳng
-            if (!$this->params->mediStockIds) {
+            if (!$this->params->mediStockIds && $this->params->type == 'thuocVatTuMuaNgoai') {
                 return $this->getAllDataFromDatabaseThuocMuaNgoai(); // toàn bộ danh sách
             } else {
                 return $this->getAllDataFromDatabase(); // lấy kho
