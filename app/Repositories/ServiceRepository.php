@@ -507,6 +507,37 @@ class ServiceRepository
                 ->get();
         }
     }
+    public function fetchAllChunkedChiDinhDichVuKyThuat($query, $chunkSize = 2000)
+    {
+        $result = collect();
+
+        $query->chunk($chunkSize, function ($items) use (&$result) {
+            foreach ($items as $service) {
+                // Ẩn các trường không cần thiết trong quan hệ
+                $service->list_select_patient_types->each->makeHidden('pivot');
+                $service->list_select_service_room->each->makeHidden('pivot');
+
+                $result->push($service);
+            }
+        });
+
+        return $result;
+    }
+    
+    public function benchmarkChunkSize($query, $sizes = [2000, 3000, 4000, 5000])
+    {
+        // Test tìm số lượng bản ghi trong chunk
+        foreach ($sizes as $size) {
+            $start = microtime(true);
+            $query->clone()->chunk($size, function ($rows) {
+                // Không làm gì
+            });
+            $duration = round(microtime(true) - $start, 2);
+            dump("Chunk size $size took $duration seconds.\n");
+        }
+        dd();
+    }
+
     public function getById($id)
     {
         return $this->service->find($id);

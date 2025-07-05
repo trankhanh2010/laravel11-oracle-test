@@ -94,7 +94,10 @@ class ServiceService
         $orderByJoin = ['service_type_name'];
         $data = $this->serviceRepository->applyOrdering($data, $orderBy, $orderByJoin);
 
-        $data = $this->serviceRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        // $data = $this->serviceRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        // chia theo chunk
+        // $data = $this->serviceRepository->benchmarkChunkSize($data);
+        $data = $this->serviceRepository->fetchAllChunkedChiDinhDichVuKyThuat($data);
         $data = $this->serviceRepository->buildTreeGroupByServiceTypeName($data);
         return $data;
     }
