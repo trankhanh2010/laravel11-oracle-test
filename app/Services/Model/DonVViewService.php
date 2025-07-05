@@ -122,7 +122,9 @@ class DonVViewService
         $data = $this->donVViewRepository->applyOrdering($data, $orderBy, []);
 
         $data = $this->donVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
-        $data = $this->donVViewRepository->applyGroupByField($data, $this->params->groupBy);
+
+        // Nhóm lại theo mTypeName, nếu k nhóm thì hiện 2 dòng thuốc- vật tư giống nhau
+        $data = $this->donVViewRepository->applyGroupByFieldDonCu($data);
         return ['data' => $data, 'count' => $count];
     }
     private function getAllDataFromDatabaseSuaDon()

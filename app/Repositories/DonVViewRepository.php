@@ -109,7 +109,8 @@ class DonVViewRepository
                 'xa_v_his_don.amount',
             ]);
     }
-    public function applyWithSuaDon($query){
+    public function applyWithSuaDon($query)
+    {
         $query->with([
             'beans'
         ]);
@@ -330,6 +331,75 @@ class DonVViewRepository
                 }
 
                 // $result['children'] = $groupData($group, $fields);
+                return $result;
+            })->values();
+        };
+
+        return $groupData(collect($data), $snakeFields);
+    }
+
+    public function applyGroupByFieldDonCu($data, $groupByFields = ["mTypeName"])
+    {
+        // nhóm lại theo tên thuốc- vật tư
+        if (empty($groupByFields)) {
+            return $data;
+        }
+
+        // Chuyển các field thành snake_case trước khi nhóm
+        $fieldMappings = [];
+        foreach ($groupByFields as $field) {
+            $snakeField = Str::snake($field);
+            $fieldMappings[$snakeField] = $field;
+        }
+
+        $snakeFields = array_keys($fieldMappings);
+
+        // Đệ quy nhóm dữ liệu theo thứ tự fields đã convert
+        $groupData = function ($items, $fields) use (&$groupData, $fieldMappings) {
+            if (empty($fields)) {
+                return $items->values(); // Hết field nhóm -> Trả về danh sách gốc
+            }
+
+            $currentField = array_shift($fields);
+            $originalField = $fieldMappings[$currentField];
+
+            return $items->groupBy(function ($item) use ($currentField) {
+                return $item[$currentField] ?? null;
+            })->map(function ($group, $key) use ($fields, $groupData, $originalField, $currentField) {
+                $result =  [
+                    'key' => (string)$key,
+                    $originalField => (string)$key, // Hiển thị tên gốc
+                    'total' => $group->count(),
+                    'amount' => $group->sum('amount'), // đếm tổng số lượng
+                ];
+
+                if ($currentField === 'm_type_name') {
+                    $firstItem = $group->first();
+                    $result['sessionCode'] = $firstItem['session_code'];
+                    $result['isActive'] = $firstItem['is_active'];
+                    $result['isDelete'] = $firstItem['is_delete'];
+                    $result['concentra'] = $firstItem['concentra'];
+                    $result['activeIngrBhytName'] = $firstItem['active_ingr_bhyt_name'];
+                    $result['mTypeId'] = $firstItem['m_type_id'];
+                    $result['mTypeName'] = $firstItem['m_type_name'];
+                    $result['serviceTypeCode'] = $firstItem['service_type_code'];
+                    $result['isExpend'] = $firstItem['is_expend'];
+                    $result['serviceUnitName'] = $firstItem['service_unit_name'];
+                    $result['tutorial'] = $firstItem['tutorial'];
+                    $result['description'] = $firstItem['description'];
+                    $result['dayCount'] = $firstItem['day_count'];
+                    $result['morning'] = $firstItem['morning'];
+                    $result['noon'] = $firstItem['noon'];
+                    $result['afternoon'] = $firstItem['afternoon'];
+                    $result['evening'] = $firstItem['evening'];
+                    $result['serviceId'] = $firstItem['service_id'];
+                    $result['medicineUseFormId'] = $firstItem['medicine_use_form_id'];
+                }
+                if ($currentField === 'm_type_name') {
+                    $result['children'] = [];
+                }else{
+                    $result['children'] = $groupData($group, $fields);
+                }
                 return $result;
             })->values();
         };
