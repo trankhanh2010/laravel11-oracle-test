@@ -113,8 +113,15 @@ class TextLibRepository
     //         'app_modifier' => $appModifier,
     //         'is_active' => 1,
     //         'is_delete' => 0,
-    //         'text_lib_code' => $request->text_lib_code,
-    //         'text_lib_name' => $request->text_lib_name,
+    //         'title' => $request->title,
+    //         'content' => $request->content,
+    //         'hashtag' => $request->hashtag,
+    //         'isPublic' => $request->isPublic,            
+    //         'hashtag' => $request->hashtag,
+    //         'hashtag' => $request->hashtag,            
+    //         'hashtag' => $request->hashtag,
+    //         'hashtag' => $request->hashtag,
+
     //     ]);
     //     return $data;
     // }

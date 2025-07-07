@@ -107,6 +107,7 @@ class SereServListVViewRepository
                 "xa_v_his_sere_serv_list.is_delete",
                 "xa_v_his_sere_serv_list.amount",
                 "xa_v_his_sere_serv_list.service_req_id",
+                "xa_v_his_sere_serv_list.service_id",
                 "xa_v_his_sere_serv_list.service_code",
                 "xa_v_his_sere_serv_list.service_name",
                 "xa_v_his_sere_serv_list.service_unit_name",
