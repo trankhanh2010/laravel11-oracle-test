@@ -77,25 +77,25 @@ class SereServListVViewRepository
     {
         return $this->sereServListVView
             ->select([
-                "id as key",
-                "id",
-                "is_no_execute",
-                "is_delete",
-                "amount",
-                "service_req_id",
-                "service_code",
-                "service_name",
-                "service_req_code",
-                "service_type_code",
-                "service_type_name",
-                "service_req_stt_code",
-                "service_req_stt_name",
-                "service_unit_code",
-                "service_unit_name",
-                "execute_room_code",
-                "execute_room_name",
-                "execute_department_code",
-                "execute_department_name",
+                "xa_v_his_sere_serv_list.id as key",
+                "xa_v_his_sere_serv_list.id",
+                "xa_v_his_sere_serv_list.is_no_execute",
+                "xa_v_his_sere_serv_list.is_delete",
+                "xa_v_his_sere_serv_list.amount",
+                "xa_v_his_sere_serv_list.service_req_id",
+                "xa_v_his_sere_serv_list.service_code",
+                "xa_v_his_sere_serv_list.service_name",
+                "xa_v_his_sere_serv_list.service_req_code",
+                "xa_v_his_sere_serv_list.service_type_code",
+                "xa_v_his_sere_serv_list.service_type_name",
+                "xa_v_his_sere_serv_list.service_req_stt_code",
+                "xa_v_his_sere_serv_list.service_req_stt_name",
+                "xa_v_his_sere_serv_list.service_unit_code",
+                "xa_v_his_sere_serv_list.service_unit_name",
+                "xa_v_his_sere_serv_list.execute_room_code",
+                "xa_v_his_sere_serv_list.execute_room_name",
+                "xa_v_his_sere_serv_list.execute_department_code",
+                "xa_v_his_sere_serv_list.execute_department_name",
             ]);
     }
     public function applyJoinsSuaChiDinh()
@@ -193,12 +193,13 @@ class SereServListVViewRepository
     }
     public function applyNotInDichVuNoiTruFilter($query)
     {
-        $query->where(function ($qr) {
-            $qr->where(function ($q) {
-                $q->whereNotIn('xa_v_his_sere_serv_list.exam_end_type', [2])
-                    ->whereNotNull('xa_v_his_sere_serv_list.exam_end_type');
-            })
-            ->orWhereNull('xa_v_his_sere_serv_list.exam_end_type');
+        $query->join('his_treatment_type', function ($join) {
+            $join->on('his_treatment_type.id', '=', 'xa_v_his_sere_serv_list.req_treatment_type_id')
+                ->whereNotIn('his_treatment_type.treatment_type_code', ["03"]); // bỏ các dịch vụ nội trú tdl_service_type_id của service_req là nội trú
+        });
+        $query->where(function ($q) {
+            $q->where('xa_v_his_sere_serv_list.is_main_exam', 0)
+                ->orWhereNull('xa_v_his_sere_serv_list.is_main_exam');
         });
         return $query;
     }
@@ -234,6 +235,13 @@ class SereServListVViewRepository
     {
         if ($param !== null) {
             $query->where(('xa_v_his_sere_serv_list.service_req_id'), $param);
+        }
+        return $query;
+    }
+    public function applyParentServiceReqIdFilter($query, $param)
+    {
+        if ($param !== null) {
+            $query->where(('xa_v_his_sere_serv_list.parent_service_req_id'), $param);
         }
         return $query;
     }

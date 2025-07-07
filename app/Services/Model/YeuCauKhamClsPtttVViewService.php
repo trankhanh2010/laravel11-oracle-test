@@ -266,11 +266,13 @@ class YeuCauKhamClsPtttVViewService
                 $data = $this->sereServListVViewRepository->applyTreatmentIdFilter($data, $treatmentId);
                 break;
             case 'tatCaKhongBaoGomDichVuNoiTru':
+                // bỏ các Y lệnh có treatmentTypeCode là 03
                 $data = $this->sereServListVViewRepository->applyNotInDichVuNoiTruFilter($data);
                 $data = $this->sereServListVViewRepository->applyTreatmentIdFilter($data, $treatmentId);
                 break;
             case 'cacChiDinhDangDuocChon':
-                $data = $this->sereServListVViewRepository->applyTreatmentIdFilter($data, $treatmentId);
+                // lấy các service của các y lệnh có parentId là y lệnh đang chọn
+                $data = $this->sereServListVViewRepository->applyParentServiceReqIdFilter($data, $serviceReqId);
                 break;
             default:
                 $data = $this->sereServListVViewRepository->applyTreatmentIdFilter($data, $treatmentId);
@@ -333,9 +335,9 @@ class YeuCauKhamClsPtttVViewService
             ];
 
             $data['thongTinKhamBenh'] = $dataThongTinKhamBenh;
-            $data['thongTinKhamBenh']['note'] = $dataYeuCau->note;
-            $data['thongTinKhamBenh']['examEndType'] = $dataYeuCau->exam_end_type;
-            $data['thongTinKhamBenh']['thongTinXuTriGanNhat'] = $loaiKetThucKhamMap[$dataYeuCau->exam_end_type] ?? '';
+            $data['thongTinKhamBenh']['note'] = $dataYeuCau?->note ?? null;
+            $data['thongTinKhamBenh']['examEndType'] = $dataYeuCau?->exam_end_type ?? null;
+            $data['thongTinKhamBenh']['thongTinXuTriGanNhat'] = $loaiKetThucKhamMap[$dataYeuCau?->exam_end_type] ?? null;
 
             $data['dichVuYeuCau'] = $dataDanhSachDichVuYeuCauCuaLanDieuTri;
             $data['dichVuChiDinh'] = $dataDanhSachDichVuChiDinhCuaLanDieuTri;
@@ -366,8 +368,12 @@ class YeuCauKhamClsPtttVViewService
                 $dataXuTriKham['tdlHeinCardNumber'] = $duLieu->tdl_hein_card_number;
                 $dataXuTriKham['maBHXH'] = $duLieu->tdl_hein_card_number ? substr($duLieu->tdl_hein_card_number, -10) : null;
                 $dataXuTriKham['danhSachDichVuKhamDaChon'] = $this->getDanhSachDichVuKhamDaChon($duLieu->treatment_id);
-                $dataXuTriKham += $this->getDataTreatment($duLieu->treatment_id)->toArray();
-                $dataXuTriKham += $this->getPrimaryPatientType($duLieu->treatment_id, $duLieu->tdl_hein_card_number)->toArray();
+
+                $dataTreatment = $this->getDataTreatment($duLieu->treatment_id);
+                $dataXuTriKham += $dataTreatment ? $dataTreatment->toArray(): [];
+
+                $dataPrimaryPatientType = $this->getPrimaryPatientType($duLieu->treatment_id, $duLieu->tdl_hein_card_number);
+                $dataXuTriKham += $dataPrimaryPatientType ? $dataPrimaryPatientType->toArray() : [];
                 $dataDotKhamHienTai = $this->getDataDotKhamHienTai($duLieu->treatment_id);
                 $dataDiUngThuoc = $this->getDataDiUngThuoc($duLieu->patient_id);
                 // $thongTinVienPhi = $this->getDataVienPhi($duLieu);
