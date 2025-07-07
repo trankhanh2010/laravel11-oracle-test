@@ -229,6 +229,7 @@ use App\Http\Controllers\Api\NoCacheControllers\TreatmentLViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TreatmentWithPatientTypeInfoSdoController;
 use App\Http\Controllers\Api\NoCacheControllers\UserRoomVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TestServiceTypeListVViewController;
+use App\Http\Controllers\Api\NoCacheControllers\TextLibController;
 use App\Http\Controllers\Api\NoCacheControllers\TrackingListVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TransactionTTDetailVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TransactionListVViewController;
@@ -1296,4 +1297,6 @@ Route::group([
     Route::apiResource('v1/exp-mest-type', ExpMestTypeController::class)->only(['index']);
     /// Loại đơn
     Route::apiResource('v1/acin-interactive', AcinInteractiveController::class)->only(['index']);
+    /// TextLib - Thư viện nội dung
+    Route::apiResource('v1/text-lib', TextLibController::class)->only(['index']);
 });

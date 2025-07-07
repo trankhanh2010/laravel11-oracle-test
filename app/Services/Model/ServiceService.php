@@ -184,7 +184,7 @@ class ServiceService
                 $cacheKey = $this->params->serviceName . '_' . $this->params->param;
                 $cacheKeySet = "cache_keys:" . $this->params->serviceName; // Set để lưu danh sách key
 
-                $data = Cache::remember($cacheKey, 3600, function () {
+                $data = Cache::remember($cacheKey, now()->addMinutes(1440), function () {
                     // **Nén dữ liệu trước khi lưu cache**
                     return base64_encode(gzcompress(serialize($this->getAllDataFromDatabaseChiDinhDichVuKyThuat())));
                 });

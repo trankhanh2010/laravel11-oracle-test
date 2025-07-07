@@ -127,6 +127,11 @@ class ServiceReqListVViewRepository
                 'xa_v_his_service_req_list.use_time',
                 'xa_v_his_service_req_list.parent_id',
 
+                'xa_v_his_service_req_list.icd_code',
+                'xa_v_his_service_req_list.icd_name',
+                'xa_v_his_service_req_list.icd_sub_code',
+                'xa_v_his_service_req_list.icd_text',
+
             ]);
     }
 

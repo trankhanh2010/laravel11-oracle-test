@@ -20,6 +20,7 @@ class BaseApiCacheController extends Controller
 {
     protected $currentUserLoginRoomIds;
     protected $currentLoginname;
+    protected $currentDepartmentId;
     protected $table;
     protected $tableName = 'Table';
     protected $errors = [];
@@ -217,6 +218,8 @@ class BaseApiCacheController extends Controller
     protected $isNoExcuteName = 'IsNoExcute';
     protected $tab;
     protected $tabName = 'Tab';
+    protected $hashTags;
+    protected $hashTagsName = 'HashTags';
     protected $type;
     protected $typeName = 'Type';
     protected $reportTypeCode;
@@ -801,6 +804,8 @@ class BaseApiCacheController extends Controller
     protected $documentListVViewName = 'document_list_v_view';
     protected $accountBookVView;
     protected $accountBookVViewName = 'account_book_v_view';
+    protected $textLib;
+    protected $textLibName = 'text_lib';
     protected $donVView;
     protected $donVViewName = 'don_v_view';
     protected $userAccountBookVView;
@@ -1170,6 +1175,8 @@ class BaseApiCacheController extends Controller
 
         // Lấy loginname hiện tại
         $this->currentLoginname = get_loginname_with_token($request->bearerToken(), $this->time);
+        // Lấy department_id của loginname hiện tại
+        $this->currentDepartmentId = $this->currentLoginname ? get_department_id_with_loginname($this->currentLoginname, $this->time) : 0;
 
         // Lấy ra danh sách room id được quyền lấy tài nguyên của tài khoản đang đăng nhập
         if($this->currentLoginname){
@@ -1821,6 +1828,15 @@ class BaseApiCacheController extends Controller
             if (!is_string($this->tab)) {
                 $this->errors[$this->tabName] = $this->messFormat;
                 $this->tab = null;
+            }
+        }
+        $this->hashTags = $this->paramRequest['ApiData']['HashTags']  ?? null;
+        if ($this->hashTags !== null) {
+            foreach ($this->hashTags as $key => $item) {
+                if (!is_string($item)) {
+                    $this->errors[$this->hashTagsName] = $this->messFormat;
+                    unset($this->hashTags[$key]);
+                } 
             }
         }
         $this->type = $this->paramRequest['ApiData']['Type']  ?? null;

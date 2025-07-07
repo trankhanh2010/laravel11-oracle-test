@@ -472,6 +472,7 @@ return [
             'exp_mest_type' => 'Có lỗi khi thực hiện thao tác với bảng Loại đơn!',
             'acin_interactive' => 'Có lỗi khi thực hiện thao tác với bảng Hoạt chất - Tương tác!',
             'material_paty' => 'Có lỗi khi thực hiện thao tác với bảng Chính sách giá vật tư!',
+            'text_lib' => 'Có lỗi khi thực hiện thao tác với bảng Thư viện nội dung!',
 
         ],
         'table' => [

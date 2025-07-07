@@ -7,6 +7,7 @@ use Illuminate\Http\JsonResponse;
 use App\Models\ACS\Token;
 use App\Models\ACS\User;
 use App\Models\HIS\BhytParam;
+use App\Models\HIS\Employee;
 use App\Models\HIS\UserRoom;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
@@ -561,6 +562,20 @@ if (!function_exists('get_loginname_with_token')) {
             return Token::select()->where('token_code', '=', $token)->value('login_name');
         });
         return $loginname;
+    }
+}
+if (!function_exists('get_department_id_with_loginname')) {
+    function get_department_id_with_loginname($loginname, $time = 14400)
+    {
+        $cacheKey = 'department_id_' . $loginname;
+        $cacheKeySet = "cache_keys:" . 'setting'; // Set để lưu danh sách key
+
+        $data = Cache::remember($cacheKey, $time, function () use ($loginname) {
+            return Employee::where('loginname', $loginname)->value('department_id');
+        });
+        // Lưu key vào Redis Set để dễ xóa sau này
+        Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+        return $data;
     }
 }
 if (!function_exists('get_username_with_token')) {
