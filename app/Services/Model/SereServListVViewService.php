@@ -74,6 +74,7 @@ class SereServListVViewService
     private function getAllDataFromDatabaseSuaChiDinh()
     {
         $data = $this->sereServListVViewRepository->applyJoinsSuaChiDinh();
+        $data = $this->sereServListVViewRepository->applyWithParamSuaChiDinh($data);
         $data = $this->sereServListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
         $data = $this->sereServListVViewRepository->applyIsDeleteFilter($data, 0);
         $data = $this->sereServListVViewRepository->applyIsNoExecuteFilter($data);

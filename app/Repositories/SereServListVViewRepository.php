@@ -105,6 +105,7 @@ class SereServListVViewRepository
                 "xa_v_his_sere_serv_list.id",     
                 "xa_v_his_sere_serv_list.is_no_execute",
                 "xa_v_his_sere_serv_list.is_delete",
+                "xa_v_his_sere_serv_list.note",
                 "xa_v_his_sere_serv_list.amount",
                 "xa_v_his_sere_serv_list.price",
                 "xa_v_his_sere_serv_list.service_req_id",
@@ -136,6 +137,12 @@ class SereServListVViewRepository
                 "xa_v_his_sere_serv_list.primary_patient_type_id",
                 "xa_v_his_sere_serv_list.assign_num_order",
             ]);
+    }
+    public function applyWithParamSuaChiDinh($query)
+    {
+        return $query->with([
+            'sere_serv_exts:sere_serv_id,instruction_note', 
+        ]);
     }
     public function applyKeywordFilter($query, $keyword)
     {

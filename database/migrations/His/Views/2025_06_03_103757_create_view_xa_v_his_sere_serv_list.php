@@ -72,7 +72,8 @@ SELECT
      sere_serv.is_not_use_bhyt,
      sere_serv.patient_type_id,
      sere_serv.primary_patient_type_id,
-     sere_serv.assign_num_order
+     sere_serv.assign_num_order,
+     service_req.note  -- ghi chú
 
     FROM his_sere_serv sere_serv
     LEFT JOIN his_service service on service.id = sere_serv.service_id
