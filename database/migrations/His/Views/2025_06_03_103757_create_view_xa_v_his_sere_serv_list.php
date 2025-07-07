@@ -29,6 +29,7 @@ SELECT
      sere_serv.is_delete,
      sere_serv.amount,
      sere_serv.vir_total_price,
+     sere_serv.price,
      sere_serv.service_req_id,
      sere_serv.exp_mest_medicine_id,
      sere_serv.service_id,
