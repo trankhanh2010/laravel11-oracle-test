@@ -270,7 +270,7 @@ class YeuCauKhamClsPtttVViewService
                 $data = $this->sereServListVViewRepository->applyTreatmentIdFilter($data, $treatmentId);
                 break;
             case 'cacChiDinhDangDuocChon':
-                $data = $this->sereServListVViewRepository->applyServiceReqIdFilter($data, $serviceReqId);
+                $data = $this->sereServListVViewRepository->applyTreatmentIdFilter($data, $treatmentId);
                 break;
             default:
                 $data = $this->sereServListVViewRepository->applyTreatmentIdFilter($data, $treatmentId);

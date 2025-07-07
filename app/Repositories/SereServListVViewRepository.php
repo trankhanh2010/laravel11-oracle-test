@@ -1,4 +1,5 @@
-<?php 
+<?php
+
 namespace App\Repositories;
 
 use App\Jobs\ElasticSearch\Index\ProcessElasticIndexingJob;
@@ -18,8 +19,8 @@ class SereServListVViewRepository
     {
         return $this->sereServListVView
             ->select([
-                "xa_v_his_sere_serv_list.id as key",     
-                "xa_v_his_sere_serv_list.id",     
+                "xa_v_his_sere_serv_list.id as key",
+                "xa_v_his_sere_serv_list.id",
                 "xa_v_his_sere_serv_list.is_no_execute",
                 "xa_v_his_sere_serv_list.is_delete",
                 "xa_v_his_sere_serv_list.amount",
@@ -48,10 +49,10 @@ class SereServListVViewRepository
     public function applyJoinsDichVuYeuCau()
     {
         return $this->sereServListVView
-            ->leftJoin('his_machine', 'xa_v_his_sere_serv_list.machine_id', '=','his_machine.id')
+            ->leftJoin('his_machine', 'xa_v_his_sere_serv_list.machine_id', '=', 'his_machine.id')
             ->select([
-                "xa_v_his_sere_serv_list.id as key",     
-                "xa_v_his_sere_serv_list.id",     
+                "xa_v_his_sere_serv_list.id as key",
+                "xa_v_his_sere_serv_list.id",
                 "xa_v_his_sere_serv_list.is_no_execute",
                 "xa_v_his_sere_serv_list.is_delete",
                 "xa_v_his_sere_serv_list.amount",
@@ -69,15 +70,15 @@ class SereServListVViewRepository
                 "his_machine.machine_code",
                 "his_machine.machine_name",
             ])
-            ;
+        ;
     }
-    
+
     public function applyJoinsDichVuChiDinh()
     {
         return $this->sereServListVView
             ->select([
                 "id as key",
-                "id",     
+                "id",
                 "is_no_execute",
                 "is_delete",
                 "amount",
@@ -101,8 +102,8 @@ class SereServListVViewRepository
     {
         return $this->sereServListVView
             ->select([
-                "xa_v_his_sere_serv_list.id as key",     
-                "xa_v_his_sere_serv_list.id",     
+                "xa_v_his_sere_serv_list.id as key",
+                "xa_v_his_sere_serv_list.id",
                 "xa_v_his_sere_serv_list.is_no_execute",
                 "xa_v_his_sere_serv_list.is_delete",
                 "xa_v_his_sere_serv_list.note",
@@ -134,6 +135,8 @@ class SereServListVViewRepository
                 "xa_v_his_sere_serv_list.is_out_parent_fee",
                 "xa_v_his_sere_serv_list.is_not_use_bhyt",
                 "xa_v_his_sere_serv_list.patient_type_id",
+                "xa_v_his_sere_serv_list.patient_type_code",
+                "xa_v_his_sere_serv_list.patient_type_name",
                 "xa_v_his_sere_serv_list.primary_patient_type_id",
                 "xa_v_his_sere_serv_list.assign_num_order",
             ]);
@@ -141,14 +144,14 @@ class SereServListVViewRepository
     public function applyWithParamSuaChiDinh($query)
     {
         return $query->with([
-            'sere_serv_exts:sere_serv_id,instruction_note', 
+            'sere_serv_exts:sere_serv_id,instruction_note',
         ]);
     }
     public function applyKeywordFilter($query, $keyword)
     {
         return $query->where(function ($query) use ($keyword) {
-            $query->where(('xa_v_his_sere_serv_list.sere_serv_list_code'), 'like', '%'. $keyword . '%')
-            ->orWhere(('xa_v_his_sere_serv_list.lower(sere_serv_list_name)'), 'like', '%'. strtolower($keyword) . '%');
+            $query->where(('xa_v_his_sere_serv_list.sere_serv_list_code'), 'like', '%' . $keyword . '%')
+                ->orWhere(('xa_v_his_sere_serv_list.lower(sere_serv_list_name)'), 'like', '%' . strtolower($keyword) . '%');
         });
     }
     public function applyIsActiveFilter($query, $isActive)
@@ -169,7 +172,7 @@ class SereServListVViewRepository
     {
         $query->where(function ($q) {
             $q->where('xa_v_his_sere_serv_list.IS_NO_EXECUTE', 0)
-              ->orWhereNull('xa_v_his_sere_serv_list.IS_NO_EXECUTE');
+                ->orWhereNull('xa_v_his_sere_serv_list.IS_NO_EXECUTE');
         });
         return $query;
     }
@@ -177,7 +180,7 @@ class SereServListVViewRepository
     {
         $query->where(function ($q) {
             $q->where('xa_v_his_sere_serv_list.SERVICE_REQ_IS_NO_EXECUTE', 0)
-              ->orWhereNull('xa_v_his_sere_serv_list.SERVICE_REQ_IS_NO_EXECUTE');
+                ->orWhereNull('xa_v_his_sere_serv_list.SERVICE_REQ_IS_NO_EXECUTE');
         });
         return $query;
     }
@@ -190,9 +193,12 @@ class SereServListVViewRepository
     }
     public function applyNotInDichVuNoiTruFilter($query)
     {
-        $query->where(function ($q) {
-            $q->whereNotIn('xa_v_his_sere_serv_list.exam_end_type', [2])
-              ->whereNotNull('xa_v_his_sere_serv_list.exam_end_type');
+        $query->where(function ($qr) {
+            $qr->where(function ($q) {
+                $q->whereNotIn('xa_v_his_sere_serv_list.exam_end_type', [2])
+                    ->whereNotNull('xa_v_his_sere_serv_list.exam_end_type');
+            })
+            ->orWhereNull('xa_v_his_sere_serv_list.exam_end_type');
         });
         return $query;
     }
@@ -235,11 +241,11 @@ class SereServListVViewRepository
     {
         if ($param != null) {
             $query->leftJoin('v_his_room request_room', 'request_room.id', '=', 'xa_v_his_sere_serv_list.request_room_id')
-            ->addSelect([
-                'request_room.room_code as request_room_code',
-                'request_room.room_name as request_room_name',
+                ->addSelect([
+                    'request_room.room_code as request_room_code',
+                    'request_room.room_name as request_room_name',
                 ])
-            ->whereIn(('xa_v_his_sere_serv_list.service_id'), $param);
+                ->whereIn(('xa_v_his_sere_serv_list.service_id'), $param);
         }
         return $query;
     }
@@ -276,18 +282,18 @@ class SereServListVViewRepository
             $snakeField = Str::snake($field);
             $fieldMappings[$snakeField] = $field;
         }
-    
+
         $snakeFields = array_keys($fieldMappings);
-    
+
         // Đệ quy nhóm dữ liệu theo thứ tự fields đã convert
         $groupData = function ($items, $fields) use (&$groupData, $fieldMappings) {
             if (empty($fields)) {
                 return $items->values(); // Hết field nhóm -> Trả về danh sách gốc
             }
-    
+
             $currentField = array_shift($fields);
             $originalField = $fieldMappings[$currentField];
-    
+
             return $items->groupBy(function ($item) use ($currentField) {
                 return $item[$currentField] ?? null;
             })->map(function ($group, $key) use ($fields, $groupData, $originalField) {
@@ -298,7 +304,7 @@ class SereServListVViewRepository
                 ];
             })->values();
         };
-    
+
         return $groupData(collect($data), $snakeFields);
     }
     public function applyGroupByFieldYeuCauClsPttt($data, $groupByFields = [])
@@ -313,18 +319,18 @@ class SereServListVViewRepository
             $snakeField = Str::snake($field);
             $fieldMappings[$snakeField] = $field;
         }
-    
+
         $snakeFields = array_keys($fieldMappings);
-    
+
         // Đệ quy nhóm dữ liệu theo thứ tự fields đã convert
         $groupData = function ($items, $fields) use (&$groupData, $fieldMappings) {
             if (empty($fields)) {
                 return $items->values(); // Hết field nhóm -> Trả về danh sách gốc
             }
-    
+
             $currentField = array_shift($fields);
             $originalField = $fieldMappings[$currentField];
-    
+
             return $items->groupBy(function ($item) use ($currentField) {
                 return $item[$currentField] ?? null;
             })->map(function ($group, $key) use ($fields, $groupData, $originalField, $currentField) {
@@ -338,10 +344,10 @@ class SereServListVViewRepository
                         return $item['service_req_stt_code'] == '03';
                     })->pluck('service_req_code')->unique()->count(),
                 ];
-            
+
                 if ($currentField === 'service_req_code') {
                     $firstItem = $group->first();
-                    $result['key'] = $firstItem['service_req_code'].$firstItem['execute_room_name'].$firstItem['execute_department_name'].$firstItem['id'] ?? null;
+                    $result['key'] = $firstItem['service_req_code'] . $firstItem['execute_room_name'] . $firstItem['execute_department_name'] . $firstItem['id'] ?? null;
                     $result['executeRoomName'] = $firstItem['execute_room_name'] ?? null;
                     $result['executeDepartmentName'] = $firstItem['execute_department_name'] ?? null;
                     $result['serviceReqId'] = $firstItem['service_req_id'] ?? null;
@@ -353,7 +359,7 @@ class SereServListVViewRepository
                 return $result;
             })->values();
         };
-    
+
         return $groupData(collect($data), $snakeFields);
     }
     public function fetchData($query, $getAll, $start, $limit)
