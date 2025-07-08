@@ -507,6 +507,18 @@ class ServiceRepository
                 ->get();
         }
     }
+    public function fetchAllChunked($query, $chunkSize = 2000)
+    {
+        $result = collect();
+
+        $query->chunk($chunkSize, function ($items) use (&$result) {
+            foreach ($items as $service) {
+                $result->push($service);
+            }
+        });
+
+        return $result;
+    }
     public function fetchAllChunkedChiDinhDichVuKyThuat($query, $chunkSize = 2000)
     {
         $result = collect();

@@ -313,6 +313,7 @@ class YeuCauKhamClsPtttVViewService
     {
         try {
             $dataYeuCau = $this->getDataById($id);
+            if(empty($dataYeuCau)) return null;
             $data = [];
             $dataThongTinKhamBenh = [];
             $dataIdDanhMucDichVuYeuCauCuaPhong = [];

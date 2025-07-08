@@ -40,7 +40,8 @@ class ServiceService
                 $this->params->orderBy,
                 $this->params->orderByJoin
             );
-            $data = $this->serviceRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+            // $data = $this->serviceRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+            $data = $this->serviceRepository->fetchAllChunked($data); // Lấy theo chunk để khỏi set lại giá trị bộ nhớ
 
             $data = $this->serviceRepository->applyGroupByField($data, $this->params->groupBy);
             return ['data' => $data, 'count' => $count];
@@ -62,7 +63,8 @@ class ServiceService
             $this->params->orderBy,
             $this->params->orderByJoin
         );
-        $data = $this->serviceRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        // $data = $this->serviceRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        $data = $this->serviceRepository->fetchAllChunked($data); // Lấy theo chunk để khỏi set lại giá trị bộ nhớ
 
         $data = $this->serviceRepository->applyGroupByField($data, $this->params->groupBy);
 
@@ -97,7 +99,7 @@ class ServiceService
         // $data = $this->serviceRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
         // chia theo chunk
         // $data = $this->serviceRepository->benchmarkChunkSize($data);
-        $data = $this->serviceRepository->fetchAllChunkedChiDinhDichVuKyThuat($data);
+        $data = $this->serviceRepository->fetchAllChunkedChiDinhDichVuKyThuat($data); // Lấy theo chunk để khỏi set lại giá trị bộ nhớ
         $data = $this->serviceRepository->buildTreeGroupByServiceTypeName($data);
         return $data;
     }
@@ -144,7 +146,7 @@ class ServiceService
     {
         try {
             // set tăng bộ nhớ
-            ini_set('memory_limit', '512M');
+            // ini_set('memory_limit', '512M');
             // Nếu không lưu cache
             if (($this->params->noCache || $this->params->serviceReqId) && $this->params->tab == 'chiDinhDichVuKyThuat') {
                 return $this->getAllDataFromDatabase();
@@ -166,7 +168,7 @@ class ServiceService
     {
         try {
             // set tăng bộ nhớ
-            ini_set('memory_limit', '512M');
+            // ini_set('memory_limit', '512M');
             // $data = [];
             // // $duLieuTree = $this->getAllDataFromDatabaseChiDinhDichVuKyThuatTree();
             // $duLieuFull = $this->getAllDataFromDatabaseChiDinhDichVuKyThuat();
