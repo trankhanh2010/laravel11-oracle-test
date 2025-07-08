@@ -1740,4 +1740,14 @@ return [
         'parent_id' => 'Dịch vụ đi kèm',
         'service_condition_id' => 'Điều kiện dịch vụ',
     ],
+    // TextLib - Thư viện nội dung
+    'text_lib' => [
+        'title' => 'Tiêu đề',
+        'content' => 'Nội dung',
+        'hashtag' => 'Thẻ',
+        'is_public' => 'Trường chia sẻ toàn viện',
+        'hot_key' => 'Mã tắt',
+        'is_public_in_department' => 'Trường chia sẻ toàn khoa',
+        'department_id' => 'Id khoa',
+    ],
 ];

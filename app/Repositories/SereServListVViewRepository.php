@@ -139,12 +139,16 @@ class SereServListVViewRepository
                 "xa_v_his_sere_serv_list.patient_type_name",
                 "xa_v_his_sere_serv_list.primary_patient_type_id",
                 "xa_v_his_sere_serv_list.assign_num_order",
+                "xa_v_his_sere_serv_list.execute_room_id",
+                "xa_v_his_sere_serv_list.execute_room_code",
+                "xa_v_his_sere_serv_list.execute_room_name",
             ]);
     }
     public function applyWithParamSuaChiDinh($query)
     {
         return $query->with([
             'sere_serv_exts:sere_serv_id,instruction_note',
+            'list_select_patient_types',
         ]);
     }
     public function applyKeywordFilter($query, $keyword)
@@ -374,7 +378,12 @@ class SereServListVViewRepository
     {
         if ($getAll) {
             // Lấy tất cả dữ liệu
-            return $query->get();
+            $data = $query->get();
+            $data->each(function ($service) {
+                $service->list_select_patient_types->each->makeHidden('pivot');
+                // $service->list_select_service_room->each->makeHidden('pivot');
+            });
+            return $data;
         } else {
             // Lấy dữ liệu phân trang
             return $query

@@ -1298,5 +1298,5 @@ Route::group([
     /// Loại đơn
     Route::apiResource('v1/acin-interactive', AcinInteractiveController::class)->only(['index']);
     /// TextLib - Thư viện nội dung
-    Route::apiResource('v1/text-lib', TextLibController::class)->only(['index']);
+    Route::apiResource('v1/text-lib', TextLibController::class);
 });

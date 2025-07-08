@@ -67,6 +67,18 @@ class IcdRepository
     {
         return $this->icd->find($id);
     }
+    public function fetchAllChunked($query, $chunkSize = 2000)
+    {
+        $result = collect();
+
+        $query->chunk($chunkSize, function ($items) use (&$result) {
+            foreach ($items as $service) {
+                $result->push($service);
+            }
+        });
+
+        return $result;
+    }
     public function create($request, $time, $appCreator, $appModifier){
         $data = $this->icd::create([
             'create_time' => now()->format('YmdHis'),

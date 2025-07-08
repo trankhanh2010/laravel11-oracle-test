@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 class TextLib extends Model
 {
     use HasFactory, dinh_dang_ten_truong;
-    protected $connection = 'oracle_his'; 
+    protected $connection = 'oracle_his';
     protected $table = 'his_text_lib';
     public $timestamps = false;
     protected $guarded = [

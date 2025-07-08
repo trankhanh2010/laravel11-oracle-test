@@ -93,4 +93,17 @@ class TextLibController extends BaseApiCacheController
         ];
         return returnDataSuccess($paramReturn, $data);
     }
+
+    public function store(CreateTextLibRequest $request)
+    {
+        return $this->textLibService->createTextLib($request);
+    }
+    public function update(UpdateTextLibRequest $request, $id)
+    {
+        return $this->textLibService->updateTextLib($id, $request);
+    }
+    public function destroy($id)
+    {
+        return $this->textLibService->deleteTextLib($id);
+    }
 }
