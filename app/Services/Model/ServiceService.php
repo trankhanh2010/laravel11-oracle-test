@@ -169,6 +169,9 @@ class ServiceService
         try {
             // set tăng bộ nhớ
             ini_set('memory_limit', '512M');
+            // set timeout thêm 3 giây
+            tangTimeoutThemNGiay(3);
+            
             // $data = [];
             // // $duLieuTree = $this->getAllDataFromDatabaseChiDinhDichVuKyThuatTree();
             // $duLieuFull = $this->getAllDataFromDatabaseChiDinhDichVuKyThuat();

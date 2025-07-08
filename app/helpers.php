@@ -14,6 +14,14 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Str;
 
+
+if (!function_exists('tangTimeoutThemNGiay')) {
+    function tangTimeoutThemNGiay($giay = 1)
+    {
+        $timeout = ini_get('max_execution_time'); // Lấy timeout hiện tại
+        ini_set('max_execution_time', $timeout + $giay); // + n giây
+    }
+}
 function create_slug($string)
 {
     $search = array(
