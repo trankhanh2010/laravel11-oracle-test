@@ -131,6 +131,7 @@ class ServiceReqListVViewRepository
                 'xa_v_his_service_req_list.icd_name',
                 'xa_v_his_service_req_list.icd_sub_code',
                 'xa_v_his_service_req_list.icd_text',
+                'xa_v_his_service_req_list.tracking_id',
 
             ]);
     }

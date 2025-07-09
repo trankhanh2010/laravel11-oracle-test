@@ -473,6 +473,7 @@ return [
             'acin_interactive' => 'Có lỗi khi thực hiện thao tác với bảng Hoạt chất - Tương tác!',
             'material_paty' => 'Có lỗi khi thực hiện thao tác với bảng Chính sách giá vật tư!',
             'text_lib' => 'Có lỗi khi thực hiện thao tác với bảng Thư viện nội dung!',
+            'tracking_temp' => 'Có lỗi khi thực hiện thao tác với bảng Mẫu tờ điều trị!',
 
         ],
         'table' => [

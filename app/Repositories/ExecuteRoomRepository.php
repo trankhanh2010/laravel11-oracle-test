@@ -35,6 +35,7 @@ class ExecuteRoomRepository
             ->select(
                                 'his_execute_room.id as key',
                 'his_execute_room.*',
+                'room.department_id',
                 'department.department_code',
                 'department.department_name',
                 'area.area_code',

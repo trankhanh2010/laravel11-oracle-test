@@ -57,6 +57,8 @@ class DonVViewRepository
     {
         return $this->donVView
             ->select([
+                "xa_v_his_don.key",
+                "xa_v_his_don.key_thuoc_vat_tu_bean",
                 "xa_v_his_don.id",
                 "xa_v_his_don.session_code",
                 "xa_v_his_don.is_active",
@@ -67,6 +69,7 @@ class DonVViewRepository
                 "xa_v_his_don.m_type_name",
                 "xa_v_his_don.service_type_code",
                 "xa_v_his_don.amount",
+                "xa_v_his_don.patient_type_id",
                 "xa_v_his_don.price",
                 "xa_v_his_don.is_expend",
                 "xa_v_his_don.expend_type_id",

@@ -284,10 +284,12 @@ class YeuCauKhamClsPtttVViewRepository
                     "his_treatment.tdl_patient_type_id", // ĐTTT lấy theo treatment chứ k theo service_req
                     "his_patient_type.patient_type_code",
                     "his_patient_type.patient_type_name",
-                    
+
                     "his_treatment.tdl_hein_card_number",
                     "his_treatment.tdl_hein_card_from_time",
                     "his_treatment.tdl_hein_card_to_time",
+
+                    "xa_v_his_yeu_cau_kham_cls_pttt.tracking_id",
                 ]
             );
     }

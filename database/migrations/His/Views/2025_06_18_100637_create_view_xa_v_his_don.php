@@ -21,6 +21,7 @@ SELECT
 exp_mest_material.id,
 'VT' as m_type,
 'VT' || exp_mest_material.id AS key,
+'VT-' || exp_mest_medi_stock.id || '-' || material_type.service_id AS key_thuoc_vat_tu_bean,
 exp_mest_material.IS_ACTIVE,
 exp_mest_material.IS_DELETE,
 exp_mest.id as exp_mest_id,
@@ -81,7 +82,8 @@ exp_mest_material.price,
 null as htu_id,
 null as htu_ids,
 exp_mest_material.pres_amount,
-exp_mest.IS_NOT_TAKEN -- Đơn không lấy (phòng khám) => đơn không lấy thì k cho sửa đơn
+exp_mest.IS_NOT_TAKEN, -- Đơn không lấy (phòng khám) => đơn không lấy thì k cho sửa đơn
+exp_mest_material.patient_type_id
 
 FROM HIS_EXP_MEST_MATERIAL exp_mest_material     
 LEFT JOIN HIS_EXP_MEST exp_mest on exp_mest.id = exp_mest_material.exp_mest_id and exp_mest.is_delete = 0
@@ -99,6 +101,7 @@ SELECT
 exp_mest_medicine.id,
 'TH' as m_type,
 'TH' || exp_mest_medicine.id AS key,
+'TH-' || exp_mest_medi_stock.id || '-' || medicine_type.service_id AS key_thuoc_vat_tu_bean,
 exp_mest_medicine.IS_ACTIVE,
 exp_mest_medicine.IS_DELETE,
 exp_mest.id as exp_mest_id,
@@ -159,7 +162,8 @@ exp_mest_medicine.price,
 exp_mest_medicine.htu_id,
 exp_mest_medicine.htu_ids,
 exp_mest_medicine.pres_amount,
-exp_mest.IS_NOT_TAKEN -- Đơn không lấy (phòng khám) => đơn không lấy thì k cho sửa đơn
+exp_mest.IS_NOT_TAKEN, -- Đơn không lấy (phòng khám) => đơn không lấy thì k cho sửa đơn
+exp_mest_medicine.patient_type_id
 
 FROM HIS_EXP_MEST_MEDICINE exp_mest_medicine     
 LEFT JOIN HIS_EXP_MEST exp_mest on exp_mest.id = exp_mest_medicine.exp_mest_id and exp_mest.is_delete = 0
@@ -177,6 +181,7 @@ SELECT
 service_req_mety.id,
 'REQ_TH' as m_type,
 'REQ_TH' || service_req_mety.id AS key,
+'TH-' ||'-' || medicine_type.service_id AS key_thuoc_vat_tu_bean,
 service_req_mety.IS_ACTIVE,
 service_req_mety.IS_DELETE,
 null as exp_mest_id,
@@ -237,7 +242,8 @@ service_req_mety.price,
 service_req_mety.htu_id,
 null as htu_ids,
 service_req_mety.pres_amount,
-null as IS_NOT_TAKEN -- Đơn không lấy (phòng khám) => đơn không lấy thì k cho sửa đơn
+null as IS_NOT_TAKEN, -- Đơn không lấy (phòng khám) => đơn không lấy thì k cho sửa đơn
+null as patient_type_id
 
 FROM HIS_SERVICE_REQ_METY service_req_mety     
 LEFT JOIN HIS_MEDICINE_TYPE medicine_type on medicine_type.id = service_req_mety.medicine_type_id
@@ -249,8 +255,9 @@ LEFT JOIN V_HIS_ROOM req_room on req_room.id = service_req.request_room_id
 
 SELECT 
 service_req_maty.id,
-'REQ_TH' as m_type,
-'REQ_TH' || service_req_maty.id AS key,
+'REQ_VT' as m_type,
+'REQ_VT' || service_req_maty.id AS key,
+'VT-' ||'-' || material_type.service_id AS key_thuoc_vat_tu_bean,
 service_req_maty.IS_ACTIVE,
 service_req_maty.IS_DELETE,
 null as exp_mest_id,
@@ -311,7 +318,8 @@ service_req_maty.price,
 null as htu_id,
 null as htu_ids,
 service_req_maty.pres_amount,
-null as IS_NOT_TAKEN -- Đơn không lấy (phòng khám) => đơn không lấy thì k cho sửa đơn
+null as IS_NOT_TAKEN, -- Đơn không lấy (phòng khám) => đơn không lấy thì k cho sửa đơn
+null as patient_type_id
 
 FROM HIS_SERVICE_REQ_MATY service_req_maty     
 LEFT JOIN HIS_MATERIAL_TYPE material_type on material_type.id = service_req_maty.material_type_id

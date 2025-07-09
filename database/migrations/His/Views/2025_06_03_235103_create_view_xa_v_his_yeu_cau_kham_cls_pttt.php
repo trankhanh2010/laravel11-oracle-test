@@ -22,6 +22,7 @@ SELECT
      service_req.is_active,
      service_req.is_delete,
      service_req.is_no_execute,
+     service_req.service_req_stt_id,
      service_req_stt.service_req_stt_code,
      service_req_stt.service_req_stt_name,
      service_req.treatment_id,
@@ -157,8 +158,8 @@ SELECT
      service_req.is_auto_finished,
      service_req.is_wait_child,
      service_req.treatment_type_id, -- treatment_type của y lệnh lúc lọc ở ngoài, còn treatment_type để hiện tracking phải join từ bảng treatment
-     service_req.IS_KIDNEY -- chạy thận
-
+     service_req.IS_KIDNEY, -- chạy thận
+     service_req.tracking_id       
 
 FROM his_service_req service_req
 --LEFT JOIN HIS_TREATMENT treatment ON treatment.id = service_req.treatment_id

@@ -558,6 +558,8 @@ class BaseApiCacheController extends Controller
     protected $expMestTypeName = 'exp_mest_type';
     protected $tranPatiTemp;
     protected $tranPatiTempName = 'tran_pati_temp';
+    protected $trackingTemp;
+    protected $trackingTempName = 'tracking_temp';
     protected $documentBook;
     protected $documentBookName = 'document_book';
     protected $expMestTemplate;

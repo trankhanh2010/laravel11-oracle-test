@@ -177,6 +177,7 @@ use App\Http\Controllers\Api\CacheControllers\SpeedUnitController;
 use App\Http\Controllers\Api\CacheControllers\StorageConditionController;
 use App\Http\Controllers\Api\CacheControllers\SuimIndexUnitController;
 use App\Http\Controllers\Api\CacheControllers\TestIndexGroupController;
+use App\Http\Controllers\Api\CacheControllers\TrackingTempController;
 use App\Http\Controllers\Api\CacheControllers\TranPatiFormController;
 use App\Http\Controllers\Api\CacheControllers\TranPatiReasonController;
 use App\Http\Controllers\Api\CacheControllers\TranPatiTempController;
@@ -1299,4 +1300,6 @@ Route::group([
     Route::apiResource('v1/acin-interactive', AcinInteractiveController::class)->only(['index']);
     /// TextLib - Thư viện nội dung
     Route::apiResource('v1/text-lib', TextLibController::class);
+    /// Mẫu tờ điều trị
+    Route::apiResource('v1/tracking-temp', TrackingTempController::class)->only(['index', 'show']);
 });
