@@ -39,17 +39,19 @@ class ServiceReqListVView extends Model
             ->leftJoin('his_service_type', 'his_service_type.id', '=', 'his_sere_serv.tdl_service_type_id')
             ->leftJoin('his_pttt_group', 'his_pttt_group.id', '=', 'his_service.pttt_group_id')
             ->leftJoin('his_medicine_type', 'his_medicine_type.service_id', '=', 'his_service.id')
-            ->leftJoin('XA_V_HIS_DON', function ($join) {
-                $join->on('XA_V_HIS_DON.service_req_id', '=', 'his_sere_serv.service_req_id')
-                    ->whereColumn('XA_V_HIS_DON.m_type_id', '=', 'his_medicine_type.id')
-                    ->whereColumn('XA_V_HIS_DON.is_delete', '=', 0);
-            })
+            // ->leftJoin('XA_V_HIS_DON', function ($join) {
+            //     $join->on('XA_V_HIS_DON.service_req_id', '=', 'his_sere_serv.service_req_id')
+            //         ->whereColumn('XA_V_HIS_DON.m_type_id', '=', 'his_medicine_type.id')
+            //         ->whereColumn('XA_V_HIS_DON.is_delete', '=', 0);
+            // })
 
             ->where('his_sere_serv.is_delete',0)
+            ->whereNotIn('his_service_type.service_type_code', ['TH', 'VT']) // k lấy service thuốc vật tư vì đã lấy ở dưới danh_sach_don
 
             ->select([
                 'his_sere_serv.id',
-                'XA_V_HIS_DON.m_type',
+                // 'XA_V_HIS_DON.m_type',
+                DB::connection('oracle_his')->raw("NULL as m_type"),
                 'his_service_type.service_type_code',
                 'his_service_type.service_type_name',
                 'his_sere_serv.service_req_id',
@@ -65,9 +67,12 @@ class ServiceReqListVView extends Model
                 'convert.service_unit_name as convert_name',
                 'his_pttt_group.pttt_group_code',
                 'his_pttt_group.pttt_group_name',
-                'XA_V_HIS_DON.speed',
-                'XA_V_HIS_DON.tutorial',
-            ]);
+                // 'XA_V_HIS_DON.speed',
+                // 'XA_V_HIS_DON.tutorial',
+                DB::connection('oracle_his')->raw("NULL as speed"),
+                DB::connection('oracle_his')->raw("NULL as tutorial"),
+            ])
+            ->orderByRaw("NLSSORT(service_name, 'NLS_SORT = Vietnamese')"); // sắp theo chữ cái tiếng việt
     }
     public function danh_sach_don()
     {

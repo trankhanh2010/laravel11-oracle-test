@@ -116,6 +116,64 @@ class ServiceReqListVViewService
         $data = $this->serviceReqListVViewRepository->applyGroupByField($data, $this->params->groupBy);
         return ['data' => $data, 'count' => $count];
     }
+    private function getAllDataFromDatabaseDanhSachChiDinhKhiThemToDieuTri()
+    {
+        $data = $this->serviceReqListVViewRepository->applyJoinsDanhSachChiDinhKhiThemToDieuTri();
+        $data = $this->serviceReqListVViewRepository->applyWithParamDanhSachChiDinhKhiThemToDieuTri($data); // khi lấy danh sách lúc thêm tờ điều trị thì lấy mấy cái chưa có trackingId
+        $data = $this->serviceReqListVViewRepository->applyTrackingIdIsNullFilter($data);
+        $data = $this->serviceReqListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $this->serviceReqListVViewRepository->applyIsDeleteFilter($data, 0);
+        $data = $this->serviceReqListVViewRepository->applyIsNoExecuteFilter($data); 
+        $data = $this->serviceReqListVViewRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
+        $data = $this->serviceReqListVViewRepository->applyIntructionTimeFromFilter($data, $this->params->intructionTimeFrom);
+        $data = $this->serviceReqListVViewRepository->applyIntructionTimeToFilter($data, $this->params->intructionTimeTo);
+        $data = $this->serviceReqListVViewRepository->applyServiceReqSttNotInChuaThucHienFilter($data); // khi lấy danh sách lúc thêm tờ điều trị => chỉ lấy trạng tahis khác chưa thực hiện
+        $data = $this->serviceReqListVViewRepository->applyTypeFilter($data, $this->params->type, $this->params->roomId, $this->params->currentLoginname);
+        $data = $this->serviceReqListVViewRepository->applyToiChiDinhFilter($data, $this->params->toiChiDinh, $this->params->currentLoginname);
+        $count = null;
+        $this->params->orderBy = [
+            "intruction_date" => "desc",
+            "num_order" => "desc",
+        ];
+        $data = $this->serviceReqListVViewRepository->applyOrdering($data, $this->params->orderBy, []);
+        $data = $this->serviceReqListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        // Group theo field
+        $this->params->groupBy = [
+            'intructionDate',
+        ];
+        $data = $this->serviceReqListVViewRepository->applyGroupByField($data, $this->params->groupBy);
+        return ['data' => $data, 'count' => $count];
+    }
+    private function getAllDataFromDatabaseThucHienDonDuTruKhiThemToDieuTri()
+    {
+        $data = $this->serviceReqListVViewRepository->applyJoinsThucHienDonDuTruKhiThemToDieuTri();
+        $data = $this->serviceReqListVViewRepository->applyWithParamThucHienDonDuTruKhiThemToDieuTri($data); 
+        $data = $this->serviceReqListVViewRepository->applyIsDonTuTrucFilter($data); // khi lấy danh sách lúc thêm tờ điều trị => chỉ lấy đơn tủ trực
+        $data = $this->serviceReqListVViewRepository->applyUsedForTrackingIdIsNullFilter($data); // khi lấy danh sách lúc thêm tờ điều trị thì lấy mấy cái chưa có usedForTrackingId
+        $data = $this->serviceReqListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $this->serviceReqListVViewRepository->applyIsDeleteFilter($data, 0);
+        $data = $this->serviceReqListVViewRepository->applyIsNoExecuteFilter($data); 
+        $data = $this->serviceReqListVViewRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
+        $data = $this->serviceReqListVViewRepository->applyUseTimeFromFilter($data, $this->params->useTimeFrom);
+        $data = $this->serviceReqListVViewRepository->applyUseTimeToFilter($data, $this->params->useTimeTo);
+        $data = $this->serviceReqListVViewRepository->applyRequestLoginnameFilter($data, $this->params->requestLoginname);
+        $data = $this->serviceReqListVViewRepository->applyServiceReqSttNotInChuaThucHienFilter($data); // khi lấy danh sách lúc thêm tờ điều trị => chỉ lấy trạng tahis khác chưa thực hiện
+        $data = $this->serviceReqListVViewRepository->applyTypeFilter($data, $this->params->type, $this->params->roomId, $this->params->currentLoginname);
+        $data = $this->serviceReqListVViewRepository->applyToiChiDinhFilter($data, $this->params->toiChiDinh, $this->params->currentLoginname);
+        $count = null;
+        $this->params->orderBy = [
+            "intruction_date" => "desc",
+            "num_order" => "desc",
+        ];
+        $data = $this->serviceReqListVViewRepository->applyOrdering($data, $this->params->orderBy, []);
+        $data = $this->serviceReqListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        // Group theo field
+        $this->params->groupBy = [
+            'intructionDate',
+        ];
+        $data = $this->serviceReqListVViewRepository->applyGroupByField($data, $this->params->groupBy);
+        return ['data' => $data, 'count' => $count];
+    }
     private function getDataById($id)
     {
         $data = $this->serviceReqListVViewRepository->applyJoins()
@@ -137,6 +195,22 @@ class ServiceReqListVViewService
         // $data = $this->serviceReqListVViewRepository->applyIsNoExecuteFilter($data); // Xem danh sách y lệnh thì k cần lọc is_no_execute, = 1 thì hiện gạch ngang
         $data = $data->first();
         return $data;
+    }
+    public function handleDataBaseGetAllDanhSachChiDinhKhiThemToDieuTri()
+    {
+        try {
+            return $this->getAllDataFromDatabaseDanhSachChiDinhKhiThemToDieuTri();
+        } catch (\Throwable $e) {
+            return writeAndThrowError(config('params')['db_service']['error']['service_req_list_v_view'], $e);
+        }
+    }
+    public function handleDataBaseGetAllThucHienDonDuTruKhiThemToDieuTri()
+    {
+        try {
+            return $this->getAllDataFromDatabaseThucHienDonDuTruKhiThemToDieuTri();
+        } catch (\Throwable $e) {
+            return writeAndThrowError(config('params')['db_service']['error']['service_req_list_v_view'], $e);
+        }
     }
     public function handleDataBaseGetAllChiDinh()
     {

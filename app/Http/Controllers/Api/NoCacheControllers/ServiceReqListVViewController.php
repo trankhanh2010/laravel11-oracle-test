@@ -60,6 +60,10 @@ class ServiceReqListVViewController extends BaseApiCacheController
             $this->currentLoginname,
             $this->roomId,
             $this->storeCode,
+            $this->toiChiDinh,
+            $this->requestLoginname,
+            $this->useTimeFrom,
+            $this->useTimeTo,
         );
         $this->serviceReqListVViewService->withParams($this->serviceReqListVViewDTO);
     }
@@ -92,7 +96,12 @@ class ServiceReqListVViewController extends BaseApiCacheController
             case 'chiDinh':
                 $data = $this->serviceReqListVViewService->handleDataBaseGetAllChiDinh();
                 break;
-
+            case 'danhSachChiDinhKhiThemToDieuTri':
+                $data = $this->serviceReqListVViewService->handleDataBaseGetAllDanhSachChiDinhKhiThemToDieuTri();
+                break;
+            case 'thucHienDonDuTruKhiThemToDieuTri':
+                $data = $this->serviceReqListVViewService->handleDataBaseGetAllThucHienDonDuTruKhiThemToDieuTri();
+                break;
             default:
                 $keyword = $this->keyword;
                 if (($keyword != null || $this->elasticSearchType != null) && !$this->cache) {

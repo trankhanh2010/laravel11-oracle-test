@@ -197,11 +197,66 @@ class ServiceReqListVViewRepository
                 'xa_v_his_service_req_list.use_time',
                 'xa_v_his_service_req_list.remedy_count', // Số thang
                 'xa_v_his_service_req_list.SAMPLER_LOGINNAME', // người lấy mẫu               
-                'xa_v_his_service_req_list.SAMPLER_USERNAME',                
+                'xa_v_his_service_req_list.SAMPLER_USERNAME',
                 'xa_v_his_service_req_list.RECEIVE_SAMPLE_LOGINNAME', // người nhận mẫu                
                 'xa_v_his_service_req_list.RECEIVE_SAMPLE_USERNAME',
                 'test_sample_type.test_sample_type_code', // Loại mẫu
                 'test_sample_type.test_sample_type_name',
+            ]);
+    }
+    public function applyJoinsDanhSachChiDinhKhiThemToDieuTri()
+    {
+        return $this->serviceReqListVView
+            ->leftJoin('his_service_req_type', 'his_service_req_type.id', '=', 'xa_v_his_service_req_list.service_req_type_id')
+            ->leftJoin('v_his_room as request_room', 'request_room.id', '=', 'xa_v_his_service_req_list.request_room_id')
+
+            ->select([
+                'xa_v_his_service_req_list.id as key',
+
+                'xa_v_his_service_req_list.id',
+                'xa_v_his_service_req_list.is_active',
+                'xa_v_his_service_req_list.is_delete',
+                'xa_v_his_service_req_list.is_no_execute',
+                'xa_v_his_service_req_list.service_req_stt_code',
+                'xa_v_his_service_req_list.service_req_stt_name',
+
+                'xa_v_his_service_req_list.service_req_code',
+                'his_service_req_type.service_req_type_code',
+                'his_service_req_type.service_req_type_name',
+
+                'xa_v_his_service_req_list.intruction_time',
+                'xa_v_his_service_req_list.intruction_date',
+
+                'xa_v_his_service_req_list.request_room_id',
+                'request_room.room_type_code as request_room_type_code',
+                'request_room.room_type_name as request_room_type_name',
+
+            ]);
+    }
+    public function applyJoinsThucHienDonDuTruKhiThemToDieuTri()
+    {
+        return $this->serviceReqListVView
+            ->leftJoin('his_service_req_type', 'his_service_req_type.id', '=', 'xa_v_his_service_req_list.service_req_type_id')
+
+            ->select([
+                'xa_v_his_service_req_list.id as key',
+
+                'xa_v_his_service_req_list.id',
+                'xa_v_his_service_req_list.is_active',
+                'xa_v_his_service_req_list.is_delete',
+                'xa_v_his_service_req_list.is_no_execute',
+                'xa_v_his_service_req_list.service_req_stt_code',
+                'xa_v_his_service_req_list.service_req_stt_name',
+
+                'xa_v_his_service_req_list.service_req_code',
+                'his_service_req_type.service_req_type_code',
+                'his_service_req_type.service_req_type_name',
+
+                'xa_v_his_service_req_list.intruction_time',
+                'xa_v_his_service_req_list.intruction_date',
+
+                'xa_v_his_service_req_list.request_room_id',
+
             ]);
     }
     public function applyWithParam($query)
@@ -221,6 +276,20 @@ class ServiceReqListVViewRepository
             'danh_sach_don',
             'the_kcb_thong_minh',
             'don_xuat',
+        ]);
+    }
+    public function applyWithParamDanhSachChiDinhKhiThemToDieuTri($query)
+    {
+        return $query->with([
+            'danh_sach_dich_vu_chi_dinh',
+            'danh_sach_don',
+        ]);
+    }
+    public function applyWithParamThucHienDonDuTruKhiThemToDieuTri($query)
+    {
+        return $query->with([
+            'danh_sach_dich_vu_chi_dinh',
+            'danh_sach_don',
         ]);
     }
 
@@ -247,6 +316,21 @@ class ServiceReqListVViewRepository
         if ($isActive !== null) {
             $query->where(('xa_v_his_service_req_list.is_active'), $isActive);
         }
+        return $query;
+    }
+    public function applyTrackingIdIsNullFilter($query)
+    {
+        $query->whereNull(('xa_v_his_service_req_list.tracking_id'));
+        return $query;
+    }
+    public function applyUsedForTrackingIdIsNullFilter($query)
+    {
+        $query->whereNull(('xa_v_his_service_req_list.used_for_tracking_id'));
+        return $query;
+    }
+    public function applyIsDonTuTrucFilter($query)
+    {
+        $query->where(('his_service_req_type.service_req_type_code'),'DT');
         return $query;
     }
     public function applyIsDeleteFilter($query, $isDelete)
@@ -318,10 +402,35 @@ class ServiceReqListVViewRepository
         }
         return $query;
     }
+    public function applyUseTimeToFilter($query, $param)
+    {
+        if ($param != null) {
+            $query->where(function ($q) use ($param) {
+                $q->where('xa_v_his_service_req_list.use_time_to', '<=', $param)
+                ->orWhereNull('xa_v_his_service_req_list.use_time_to');
+            });
+        }
+        return $query;
+    }
+    public function applyUseTimeFromFilter($query, $param)
+    {
+        if ($param != null) {
+            $query->where(('xa_v_his_service_req_list.use_time'), '>=', $param);
+        }
+        return $query;
+    }
+
     public function applyExecuteRoomIdFilter($query, $param)
     {
         if ($param != null) {
             $query->where(('xa_v_his_service_req_list.execute_room_id'), $param);
+        }
+        return $query;
+    }
+    public function applyRequestLoginnameFilter($query, $param)
+    {
+        if ($param != null) {
+            $query->where(('xa_v_his_service_req_list.request_loginname'), $param);
         }
         return $query;
     }
@@ -342,9 +451,14 @@ class ServiceReqListVViewRepository
     public function applyStoreCodeFilter($query, $param)
     {
         if ($param != null) {
-             $query->join('his_treatment', 'his_treatment.id', '=', 'xa_v_his_service_req_list.treatment_id')
-            ->where(('his_treatment.store_code'), $param);
+            $query->join('his_treatment', 'his_treatment.id', '=', 'xa_v_his_service_req_list.treatment_id')
+                ->where(('his_treatment.store_code'), $param);
         }
+        return $query;
+    }
+    public function applyServiceReqSttNotInChuaThucHienFilter($query)
+    {
+        $query->whereNotIn(('xa_v_his_service_req_list.service_req_stt_code'), ['01']);
         return $query;
     }
     public function applyTypeFilter($query, $param, $currentRoomId, $currentLoginname)
@@ -359,13 +473,21 @@ class ServiceReqListVViewRepository
             case 'phongChiDinh':
                 return $query->where(('xa_v_his_service_req_list.request_room_id'), $currentRoomId);
             case 'khoaChiDinh':
-                return $query->where(('xa_v_his_service_req_list.request_department_id'), $departmentId);;
+                return $query->where(('xa_v_his_service_req_list.request_department_id'), $departmentId);
+            case 'trongKhoa':
+                return $query->where(('xa_v_his_service_req_list.request_department_id'), $departmentId);
             case 'khoaThucHien':
-                return $query->where(('xa_v_his_service_req_list.execute_department_id'), $departmentId);;
+                return $query->where(('xa_v_his_service_req_list.execute_department_id'), $departmentId);
             default:
                 return $query;
         }
-
+    }
+    public function applyToiChiDinhFilter($query, $param, $currentLoginname)
+    {
+        if ($param) {
+            return $query->where(('xa_v_his_service_req_list.request_loginname'), $currentLoginname);
+        }
+        return $query;
     }
     public function applyGroupByField($data, $groupByFields = [])
     {
@@ -412,7 +534,7 @@ class ServiceReqListVViewRepository
             foreach ($orderBy as $key => $item) {
                 if (in_array($key, $orderByJoin)) {
                 } else {
-                    $query->orderBy($key, $item);
+                    $query->orderBy('xa_v_his_service_req_list.'.$key, $item);
                 }
             }
         }

@@ -186,8 +186,14 @@ class BaseApiCacheController extends Controller
     protected $serviceTypeIdName = 'ServiceTypeId';
     protected $loginname;
     protected $loginnameName = 'Loginname';
+    protected $requestLoginname;
+    protected $requestLoginnameName = 'RequestLoginname';
     protected $loginnames;
     protected $loginnamesName = 'Loginnames';
+    protected $useTimeFrom;
+    protected $useTimeFromName = 'UseTimeFrom';
+    protected $useTimeTo;
+    protected $useTimeToName = 'UseTimeTo';
     protected $executeRoleId;
     protected $executeRoleIdName = 'ExecuteRoleId';
     protected $moduleId;
@@ -216,6 +222,8 @@ class BaseApiCacheController extends Controller
     protected $isSpecimenName = 'IsSpecimen';
     protected $isNoExcute;
     protected $isNoExcuteName = 'IsNoExcute';
+    protected $toiChiDinh;
+    protected $toiChiDinhName = 'ToiTao';
     protected $hienThiDichVuChaLoaiXN;
     protected $hienThiDichVuChaLoaiXNName = 'HienThiDichVuChaLoaiXN';
     protected $tab;
@@ -2321,6 +2329,13 @@ class BaseApiCacheController extends Controller
                 $this->isNoExcute = null;
             }
         }
+        $this->toiChiDinh = $this->paramRequest['ApiData']['ToiChiDinh'] ?? null;
+        if ($this->toiChiDinh !== null) {
+            if (!is_bool($this->toiChiDinh)) {
+                $this->errors[$this->toiChiDinhName] = $this->messFormat;
+                $this->toiChiDinh = null;
+            }
+        }
         $this->hienThiDichVuChaLoaiXN = $this->paramRequest['ApiData']['HienThiDichVuChaLoaiXN'] ?? null;
         if ($this->hienThiDichVuChaLoaiXN !== null) {
             if (!is_bool($this->hienThiDichVuChaLoaiXN)) {
@@ -2397,6 +2412,20 @@ class BaseApiCacheController extends Controller
             if (!preg_match('/^\d{14}$/',  $this->inDateTo)) {
                 $this->errors[$this->inDateToName] = $this->messFormat;
                 $this->inDateTo = null;
+            }
+        }
+        $this->useTimeTo = $this->paramRequest['ApiData']['UseTimeTo'] ?? null;
+        if ($this->useTimeTo != null) {
+            if (!preg_match('/^\d{14}$/',  $this->useTimeTo)) {
+                $this->errors[$this->useTimeToName] = $this->messFormat;
+                $this->useTimeTo = null;
+            }
+        }
+        $this->useTimeFrom = $this->paramRequest['ApiData']['UseTimeFrom'] ?? null;
+        if ($this->useTimeFrom != null) {
+            if (!preg_match('/^\d{14}$/',  $this->useTimeFrom)) {
+                $this->errors[$this->useTimeFromName] = $this->messFormat;
+                $this->useTimeFrom = null;
             }
         }
         $this->tdlPatientTypeIds = $this->paramRequest['ApiData']['TdlPatientTypeIds'] ?? null;
@@ -2534,6 +2563,14 @@ class BaseApiCacheController extends Controller
             if (!is_string($this->loginname)) {
                 $this->errors[$this->loginnameName] = $this->messFormat;
                 $this->loginname = null;
+            }
+        }
+        $this->requestLoginname = $this->paramRequest['ApiData']['RequestLoginname'] ?? null;
+        if ($this->requestLoginname !== null) {
+            // Kiểm tra 
+            if (!is_string($this->requestLoginname)) {
+                $this->errors[$this->requestLoginnameName] = $this->messFormat;
+                $this->requestLoginname = null;
             }
         }
         $this->loginnames = $this->paramRequest['ApiData']['Loginnames'] ?? null;

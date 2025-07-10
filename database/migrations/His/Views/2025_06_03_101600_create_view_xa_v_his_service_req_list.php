@@ -72,7 +72,13 @@ SELECT
      service_req.icd_code,
      service_req.icd_name,
      service_req.icd_sub_code,
-     service_req.icd_text  
+     service_req.icd_text,  
+     service_req.is_not_show_material_tracking,
+     service_req.is_not_show_medicine_tracking,
+     service_req.is_not_show_out_mate_tracking,
+     service_req.is_not_show_out_medi_tracking,
+     service_req.use_time_to,
+     service_req.used_for_tracking_id
 
     FROM his_service_req service_req
     LEFT JOIN his_department request_department on request_department.id = service_req.request_department_id
