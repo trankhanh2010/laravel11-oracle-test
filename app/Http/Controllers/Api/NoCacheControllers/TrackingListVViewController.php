@@ -20,8 +20,7 @@ class TrackingListVViewController extends BaseApiCacheController
         $this->trackingListVView = $trackingListVView;
         // Kiểm tra tên trường trong bảng
         if ($this->orderBy != null) {
-            $this->orderByJoin = [
-            ];
+            $this->orderByJoin = [];
             $columns = $this->getColumnsTable($this->trackingListVView, true);
             $this->orderBy = $this->checkOrderBy($this->orderBy, $columns, $this->orderByJoin ?? []);
         }
@@ -38,14 +37,15 @@ class TrackingListVViewController extends BaseApiCacheController
             $this->start,
             $this->limit,
             $request,
-            $this->appCreator, 
-            $this->appModifier, 
+            $this->appCreator,
+            $this->appModifier,
             $this->time,
             $this->treatmentId,
             $this->groupBy,
             $this->param,
             $this->noCache,
             $this->treatmentCode,
+            $this->tab,
         );
         $this->trackingListVViewService->withParams($this->trackingListVViewDTO);
     }
@@ -57,7 +57,15 @@ class TrackingListVViewController extends BaseApiCacheController
         if ($this->checkParam()) {
             return $this->checkParam();
         }
-        $data = $this->trackingListVViewService->handleDataBaseGetAll();
+        switch ($this->tab) {
+            case 'danhSachToDieuTriCu':
+                $data = $this->trackingListVViewService->handleDataBaseGetAllDanhSachToDieuTriCu();
+                break;
+            default:
+                $data = $this->trackingListVViewService->handleDataBaseGetAll();
+                break;
+        }
+
         $paramReturn = [
             $this->getAllName => $this->getAll,
             $this->startName => $this->getAll ? null : $this->start,

@@ -2,9 +2,9 @@
 
 namespace App\DTOs;
 
-class TrackingListVViewDTO
+class KetQuaClsVViewDTO
 {
-    public $trackingListVViewName;
+    public $ketQuaClsVViewName;
     public $keyword;
     public $isActive;
     public $isDelete;
@@ -18,14 +18,14 @@ class TrackingListVViewDTO
     public $appCreator;
     public $appModifier;
     public $time;
-    public $treatmentId;
-    public $groupBy;
     public $param;
     public $noCache;
-    public $treatmentCode;
-    public $tab;
+    public $treatmentId;
+    public $hienThiDichVuChaLoaiXN;
+    public $intructionTimeFrom;
+    public $intructionTimeTo;
     public function __construct(
-        $trackingListVViewName,
+        $ketQuaClsVViewName,
         $keyword, 
         $isActive, 
         $isDelete,
@@ -39,15 +39,15 @@ class TrackingListVViewDTO
         $appCreator,
         $appModifier,
         $time,
-        $treatmentId,
-        $groupBy,
         $param,
         $noCache,
-        $treatmentCode,
-        $tab,
+        $treatmentId,
+        $hienThiDichVuChaLoaiXN,
+        $intructionTimeFrom,
+        $intructionTimeTo,
         )
     {
-        $this->trackingListVViewName = $trackingListVViewName;
+        $this->ketQuaClsVViewName = $ketQuaClsVViewName;
         $this->keyword = $keyword;
         $this->isActive = $isActive;
         $this->isDelete = $isDelete;
@@ -61,11 +61,11 @@ class TrackingListVViewDTO
         $this->appCreator = $appCreator;
         $this->appModifier = $appModifier;
         $this->time = $time;
-        $this->treatmentId = $treatmentId;
-        $this->groupBy = $groupBy;
         $this->param = $param;
         $this->noCache = $noCache;
-        $this->treatmentCode = $treatmentCode;
-        $this->tab = $tab;
+        $this->treatmentId = $treatmentId;
+        $this->hienThiDichVuChaLoaiXN = $hienThiDichVuChaLoaiXN;
+        $this->intructionTimeFrom = $intructionTimeFrom;
+        $this->intructionTimeTo = $intructionTimeTo;
     }
 }

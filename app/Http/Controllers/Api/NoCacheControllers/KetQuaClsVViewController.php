@@ -2,31 +2,35 @@
 
 namespace App\Http\Controllers\Api\NoCacheControllers;
 
-use App\DTOs\TreatmentListVViewDTO;
+use App\DTOs\KetQuaClsVViewDTO;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
-use App\Models\View\TreatmentListVView;
-use App\Services\Model\TreatmentListVViewService;
+use App\Http\Requests\KetQuaClsVView\CreateKetQuaClsVViewRequest;
+use App\Http\Requests\KetQuaClsVView\UpdateKetQuaClsVViewRequest;
+use App\Models\View\KetQuaClsVView;
+use App\Services\Elastic\ElasticsearchService;
+use App\Services\Model\KetQuaClsVViewService;
 use Illuminate\Http\Request;
 
 
-class TreatmentListVViewController extends BaseApiCacheController
+class KetQuaClsVViewController extends BaseApiCacheController
 {
-    protected $treatmentListVViewService;
-    protected $treatmentListVViewDTO;
-    public function __construct(Request $request, TreatmentListVViewService $treatmentListVViewService, TreatmentListVView $treatmentListVView)
+    protected $ketQuaClsVViewService;
+    protected $ketQuaClsVViewDTO;
+    public function __construct(Request $request, ElasticsearchService $elasticSearchService, KetQuaClsVViewService $ketQuaClsVViewService, KetQuaClsVView $ketQuaClsVView)
     {
         parent::__construct($request); // Gọi constructor của BaseController
-        $this->treatmentListVViewService = $treatmentListVViewService;
-        $this->treatmentListVView = $treatmentListVView;
+        $this->elasticSearchService = $elasticSearchService;
+        $this->ketQuaClsVViewService = $ketQuaClsVViewService;
+        $this->ketQuaClsVView = $ketQuaClsVView;
         // Kiểm tra tên trường trong bảng
         if ($this->orderBy != null) {
             $this->orderByJoin = [];
-            $columns = $this->getColumnsTable($this->treatmentListVView, true);
+            $columns = $this->getColumnsTable($this->ketQuaClsVView, true);
             $this->orderBy = $this->checkOrderBy($this->orderBy, $columns, $this->orderByJoin ?? []);
         }
         // Thêm tham số vào service
-        $this->treatmentListVViewDTO = new TreatmentListVViewDTO(
-            $this->treatmentListVViewName,
+        $this->ketQuaClsVViewDTO = new KetQuaClsVViewDTO(
+            $this->ketQuaClsVViewName,
             $this->keyword,
             $this->isActive,
             $this->isDelete,
@@ -40,36 +44,40 @@ class TreatmentListVViewController extends BaseApiCacheController
             $this->appCreator,
             $this->appModifier,
             $this->time,
-            $this->groupBy,
-            $this->patientCode,
             $this->param,
-            $this->treatmentTypeCode,
-            $this->inTimeFrom,
-            $this->inTimeTo,
             $this->noCache,
             $this->treatmentId,
-            $this->patientId,
+            $this->hienThiDichVuChaLoaiXN,
+            $this->intructionTimeFrom,
+            $this->intructionTimeTo,
         );
-        $this->treatmentListVViewService->withParams($this->treatmentListVViewDTO);
+        $this->ketQuaClsVViewService->withParams($this->ketQuaClsVViewDTO);
     }
     public function index()
     {
-        // Check xem người dùng có quyền lấy thông tin của patietnCode này không
-        // $this->checkUserRoomPatientCode($this->patientCode);
+        if (
+            $this->treatmentId === null
+        ) {
+            $this->errors[$this->treatmentIdName] = "Thiếu thông tin lần điều trị";
+        }
         if ($this->checkParam()) {
             return $this->checkParam();
         }
-        if ($this->patientCode == null) {
-            return returnDataSuccess(null, []);
-        }
+        $keyword = $this->keyword;
+
         switch ($this->tab) {
-            case 'hoSoKhac':
-                $data = $this->treatmentListVViewService->handleDataBaseGetAllHoSoKhac();
+            case 'chonKetQuaCls':
+                $data = $this->ketQuaClsVViewService->handleDataBaseGetAllChonKetQuaCls();
                 break;
             default:
-                $data = $this->treatmentListVViewService->handleDataBaseGetAll();
+                if (($keyword != null || $this->elasticSearchType != null) && !$this->cache) {
+                    $data = $this->ketQuaClsVViewService->handleDataBaseSearch();
+                } else {
+                    $data = $this->ketQuaClsVViewService->handleDataBaseGetAll();
+                }
                 break;
         }
+
         $paramReturn = [
             $this->getAllName => $this->getAll,
             $this->startName => $this->getAll ? null : $this->start,
@@ -88,12 +96,12 @@ class TreatmentListVViewController extends BaseApiCacheController
             return $this->checkParam();
         }
         if ($id !== null) {
-            $validationError = $this->validateAndCheckId($id, $this->treatmentListVView, $this->treatmentListVViewName);
+            $validationError = $this->validateAndCheckId($id, $this->ketQuaClsVView, $this->ketQuaClsVViewName);
             if ($validationError) {
                 return $validationError;
             }
         }
-        $data = $this->treatmentListVViewService->handleDataBaseGetWithId($id);
+        $data = $this->ketQuaClsVViewService->handleDataBaseGetWithId($id);
         $paramReturn = [
             $this->idName => $id,
             $this->isActiveName => $this->isActive,

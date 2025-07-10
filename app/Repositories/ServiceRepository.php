@@ -10,7 +10,9 @@ use App\Models\HIS\ServicePaty;
 use App\Models\HIS\ServiceRoom;
 use App\Models\HIS\ServSegr;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
@@ -226,7 +228,7 @@ class ServiceRepository
     {
         if ($param != null) {
             $query->join('his_service_room', 'his_service_room.service_id', '=', 'his_service.id')
-            ->where(DB::connection('oracle_his')->raw('his_service_room.room_id'), $param);
+                ->where(DB::connection('oracle_his')->raw('his_service_room.room_id'), $param);
         }
         return $query;
     }
@@ -535,7 +537,7 @@ class ServiceRepository
 
         return $result;
     }
-    
+
     public function benchmarkChunkSize($query, $sizes = [2000, 3000, 4000, 5000])
     {
         // Test tìm số lượng bản ghi trong chunk
@@ -549,7 +551,29 @@ class ServiceRepository
         }
         dd();
     }
-
+    public function getDanhMucXetNghiemJoinTheoDichVuCha()
+    {
+        $cacheKey = 'danh_muc_service';
+        $cacheKeySet = "cache_keys:" . "setting"; // Set để lưu danh sách key
+        $data = Cache::remember($cacheKey, now()->addMinutes(14400), function () {
+            return $this->service
+                ->join('his_service_type', function ($join) {
+                    $join->on('his_service_type.id', '=', 'his_service.service_type_id')
+                        ->where('his_service_type.service_type_code', '=', 'XN'); // thêm điều kiện tại đây
+                })
+                ->select(
+                    'his_service.id as key',
+                    'his_service.id',
+                    'his_service.service_code',
+                    'his_service.service_name',
+                    'his_service.parent_id',
+                )
+                ->get();
+        });
+        // Lưu key vào Redis Set để dễ xóa sau này
+        Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+        return $data;
+    }
     public function getById($id)
     {
         return $this->service->find($id);

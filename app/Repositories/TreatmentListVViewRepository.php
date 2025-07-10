@@ -35,7 +35,7 @@ class TreatmentListVViewRepository
     }
     public function applyPatientCodeFilter($query, $param)
     {
-        if ($param !== null) {
+        if ($param != null) {
             $query->where(('tdl_patient_code'), $param);
         }
         return $query;
@@ -65,6 +65,13 @@ class TreatmentListVViewRepository
             }
         }
 
+        return $query;
+    }
+    public function applyNotInTreatmentIdFilter($query, $param)
+    {
+        if ($param != null) {
+            $query->whereNotIn(('id'), $param);
+        }
         return $query;
     }
     public function applyGroupByField($data, $groupByFields = [])

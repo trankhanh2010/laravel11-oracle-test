@@ -200,6 +200,7 @@ use App\Http\Controllers\Api\NoCacheControllers\DepositReqListVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\DhstController;
 use App\Http\Controllers\Api\NoCacheControllers\DocumentListVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\DonVViewController;
+use App\Http\Controllers\Api\NoCacheControllers\KetQuaClsVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\MedicalCaseCoverListVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\MedicineListVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\PatientTypeAlterVViewController;
@@ -1302,4 +1303,6 @@ Route::group([
     Route::apiResource('v1/text-lib', TextLibController::class);
     /// Mẫu tờ điều trị
     Route::apiResource('v1/tracking-temp', TrackingTempController::class)->only(['index', 'show']);
+    /// Kết quả CLS
+    Route::apiResource('v1/ket-qua-cls', KetQuaClsVViewController::class)->only(['index']);
 });

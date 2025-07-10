@@ -21,6 +21,7 @@ SELECT
      treatment.is_active,
      treatment.is_delete,
      treatment.treatment_code,
+     treatment.patient_id,
      treatment.tdl_patient_code,
      treatment.tdl_patient_name,
      treatment.in_time,

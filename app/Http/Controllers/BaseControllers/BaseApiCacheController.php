@@ -216,6 +216,8 @@ class BaseApiCacheController extends Controller
     protected $isSpecimenName = 'IsSpecimen';
     protected $isNoExcute;
     protected $isNoExcuteName = 'IsNoExcute';
+    protected $hienThiDichVuChaLoaiXN;
+    protected $hienThiDichVuChaLoaiXNName = 'HienThiDichVuChaLoaiXN';
     protected $tab;
     protected $tabName = 'Tab';
     protected $hashTags;
@@ -806,6 +808,8 @@ class BaseApiCacheController extends Controller
     protected $documentListVViewName = 'document_list_v_view';
     protected $accountBookVView;
     protected $accountBookVViewName = 'account_book_v_view';
+    protected $ketQuaClsVView;
+    protected $ketQuaClsVViewName = 'ket_qua_cls_v_view';
     protected $textLib;
     protected $textLibName = 'text_lib';
     protected $donVView;
@@ -1163,6 +1167,17 @@ class BaseApiCacheController extends Controller
         $cacheKeySet = "cache_keys:" . "setting"; // Set để lưu danh sách key
         $data = Cache::remember($cacheKey, $this->time, function () use($code) {
             return Treatment::where('treatment_code', $code)->first()->tdl_patient_code ?? 0;
+        });
+        // Lưu key vào Redis Set để dễ xóa sau này
+        Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+
+        return $data;
+    }
+    public function getPatientCodedByTreatmentId($id){
+        $cacheKey = 'patient_code_by_treatment_id_'.$id;
+        $cacheKeySet = "cache_keys:" . "setting"; // Set để lưu danh sách key
+        $data = Cache::remember($cacheKey, $this->time, function () use($id) {
+            return Treatment::where('id', $id)->first()->tdl_patient_code ?? 0;
         });
         // Lưu key vào Redis Set để dễ xóa sau này
         Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
@@ -2141,6 +2156,18 @@ class BaseApiCacheController extends Controller
                 $this->treatmentCode = null;
             }
         }
+        $this->treatmentId = $this->paramRequest['ApiData']['TreatmentId'] ?? null;
+        if ($this->treatmentId !== null) {
+            // Kiểm tra xem ID có tồn tại trong bảng  hay không
+            if (!is_numeric($this->treatmentId)) {
+                $this->errors[$this->treatmentIdName] = $this->messFormat;
+                $this->treatmentId = null;
+            } 
+        }else{
+            if($this->treatmentCode != null){
+                $this->treatmentId = $this->getTreatmentIdByTreatmentCode($this->treatmentCode);
+            }
+        }
         $this->depositCode = $this->paramRequest['ApiData']['DepositCode'] ?? null;
         if ($this->depositCode !== null) {
             if (!is_string($this->depositCode)) {
@@ -2191,7 +2218,12 @@ class BaseApiCacheController extends Controller
         }else{
             if($this->treatmentCode != null){
                 $this->patientCode = $this->getPatientCodedByTreatmentCode($this->treatmentCode);
+            }else{
+                if($this->treatmentId != null){
+                    $this->patientCode = $this->getPatientCodedByTreatmentId($this->treatmentId);
+                }
             }
+            
         }
         $this->executeRoomCode = $this->paramRequest['ApiData']['ExecuteRoomCode'] ?? null;
         if ($this->executeRoomCode !== null) {
@@ -2287,6 +2319,13 @@ class BaseApiCacheController extends Controller
             if (!is_bool($this->isNoExcute)) {
                 $this->errors[$this->isNoExcuteName] = $this->messFormat;
                 $this->isNoExcute = null;
+            }
+        }
+        $this->hienThiDichVuChaLoaiXN = $this->paramRequest['ApiData']['HienThiDichVuChaLoaiXN'] ?? null;
+        if ($this->hienThiDichVuChaLoaiXN !== null) {
+            if (!is_bool($this->hienThiDichVuChaLoaiXN)) {
+                $this->errors[$this->hienThiDichVuChaLoaiXNName] = $this->messFormat;
+                $this->hienThiDichVuChaLoaiXN = null;
             }
         }
         $this->isSpecimen = $this->paramRequest['ApiData']['IsSpecimen'] ?? null;
@@ -2564,18 +2603,6 @@ class BaseApiCacheController extends Controller
                 $this->errors[$this->materialTypeIdName] = $this->messFormat;
                 $this->materialTypeId = null;
             } 
-        }
-        $this->treatmentId = $this->paramRequest['ApiData']['TreatmentId'] ?? null;
-        if ($this->treatmentId !== null) {
-            // Kiểm tra xem ID có tồn tại trong bảng  hay không
-            if (!is_numeric($this->treatmentId)) {
-                $this->errors[$this->treatmentIdName] = $this->messFormat;
-                $this->treatmentId = null;
-            } 
-        }else{
-            if($this->treatmentCode != null){
-                $this->treatmentId = $this->getTreatmentIdByTreatmentCode($this->treatmentCode);
-            }
         }
 
         $this->trackingId = $this->paramRequest['ApiData']['TrackingId'] ?? null;

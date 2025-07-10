@@ -53,6 +53,19 @@ class TrackingListVViewService
         $data = $this->trackingListVViewRepository->applyGroupByField($data, $this->params->groupBy);
         return ['data' => $data, 'count' => $count];
     }
+    private function getAllDataFromDatabaseDanhSachToDieuTriCu()
+    {
+        $data = $this->trackingListVViewRepository->applyJoinsDanhSachToDieuTriCu();
+        $data = $this->trackingListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $this->trackingListVViewRepository->applyIsDeleteFilter($data, 0);
+        $data = $this->trackingListVViewRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
+        $count = $data->count();
+        $data = $this->trackingListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->trackingListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        // Group theo field
+        $data = $this->trackingListVViewRepository->applyGroupByField($data, $this->params->groupBy);
+        return ['data' => $data, 'count' => $count];
+    }
     private function getDataById($id)
     {
         $data = $this->trackingListVViewRepository->applyJoins()
@@ -67,6 +80,14 @@ class TrackingListVViewService
     {
         try {
             return $this->getAllDataFromDatabase();
+        } catch (\Throwable $e) {
+            return writeAndThrowError(config('params')['db_service']['error']['tracking_list_v_view'], $e);
+        }
+    }
+    public function handleDataBaseGetAllDanhSachToDieuTriCu()
+    {
+        try {
+            return $this->getAllDataFromDatabaseDanhSachToDieuTriCu();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['tracking_list_v_view'], $e);
         }

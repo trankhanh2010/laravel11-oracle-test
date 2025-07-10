@@ -25,6 +25,7 @@ class TreatmentListVViewDTO
     public $inTimeFrom;
     public $inTimeTo;
     public $noCache;
+    public $treatmentId;
 
     public function __construct(
         $treatmentListVViewName,
@@ -48,6 +49,7 @@ class TreatmentListVViewDTO
         $inTimeFrom,
         $inTimeTo,
         $noCache,
+        $treatmentId,
         )
     {
         $this->treatmentListVViewName = $treatmentListVViewName;
@@ -71,5 +73,6 @@ class TreatmentListVViewDTO
         $this->inTimeFrom = $inTimeFrom;
         $this->inTimeTo = $inTimeTo;
         $this->noCache = $noCache;
+        $this->treatmentId = $treatmentId;
     }
 }

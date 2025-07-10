@@ -17,10 +17,23 @@ class TrackingListVViewRepository
     public function applyJoins()
     {
         return $this->trackingListVView
+            ->select("*");
+    }
+    public function applyJoinsDanhSachToDieuTriCu()
+    {
+        return $this->trackingListVView
             ->select([
-                "id",            
+                "id",
+                "creator",            
                 "treatment_id",
                 "tracking_time",
+                "icd_code",
+                "icd_name",
+                "medical_instruction",
+                "department_id",
+                "care_instruction",
+                "room_id",
+                "EMR_DOCUMENT_STT_ID",
                 "content",
                 "department_code",
                 "department_name",
