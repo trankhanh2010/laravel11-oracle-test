@@ -21,6 +21,8 @@ class YeuCauKhamClsPtttVViewRepository
                 [
                     "key",
                     "id",
+                    "yeu_cau_kham_cls_status_text",
+                    "goi_nho",
                     "is_active",
                     "is_delete",
                     "is_no_execute",
@@ -403,16 +405,36 @@ class YeuCauKhamClsPtttVViewRepository
             case 'tatCa':
                 return $query;
             case 'chuaKetThuc':
-                return $query->whereNull('finish_time');
+                return $query->where(function ($q) {
+                    $q->where(function ($sub) {
+                        $sub->whereNull('finish_time')
+                            ->orWhereNull('treatment_end_type_id');
+                    })
+                    ->where('service_req_stt_code', '<>', '03');
+                });
             case 'chuaXuLy':
-                return $query->where('service_req_stt_code', '01');
+                return $query->where(function ($q) {
+                    $q->where('service_req_stt_code', '01');
+                });
+
             case 'dangXuLy':
-                return $query->where('service_req_stt_code', '02');
+                return $query->where(function ($q) {
+                    $q->where('service_req_stt_code', '02');
+                });
             case 'ketThuc':
-                return $query->whereNotNull('finish_time');
+                return $query
+                    ->where(function ($q) {
+                        $q->where(function ($sub) {
+                            $sub->whereNotNull('finish_time')
+                                ->whereNotNull('treatment_end_type_id');
+                        })
+                        ->orWhere('service_req_stt_code', '03');
+                    });
             case 'goiNho':
-                return $query->where('call_count', '>=', 1)
+                return $query->where(function ($q) {
+                    $q->where('call_count', '>=', 1)
                     ->where('service_req_stt_code', '01');
+                });
             default:
                 return $query;
         }

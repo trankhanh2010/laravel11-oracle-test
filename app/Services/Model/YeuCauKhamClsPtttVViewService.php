@@ -17,6 +17,7 @@ use App\Repositories\ServiceRoomRepository;
 use App\Repositories\TreatmentFeeDetailVViewRepository;
 use Illuminate\Support\Facades\Cache;
 use App\Repositories\YeuCauKhamClsPtttVViewRepository;
+use Exception;
 use Illuminate\Support\Facades\DB;
 
 class YeuCauKhamClsPtttVViewService
@@ -354,6 +355,14 @@ class YeuCauKhamClsPtttVViewService
     {
         try {
             $duLieu = $this->getDuLieu($serviceReqCode);
+            if(empty($duLieu)){
+                throw new Exception('Y lệnh với mã '.(string) $serviceReqCode .' không tồn tại hoặc không phải là yêu cầu khám cls!');
+            }
+        } catch (\Throwable $e) {
+            return writeAndThrowError($e->getMessage(), $e); // Lấy lỗi tự thêm
+        }
+        
+        try {
             $data = [];
             $dataLichSuKham = [];
             $dataXuTriKham = [];

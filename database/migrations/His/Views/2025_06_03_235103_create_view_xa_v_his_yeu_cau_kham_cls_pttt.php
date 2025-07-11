@@ -17,6 +17,24 @@ return new class extends Migration
             <<<SQL
 CREATE OR REPLACE VIEW XA_V_HIS_YEU_CAU_KHAM_CLS_PTTT AS
 SELECT
+
+    CASE 
+        WHEN service_req_stt.service_req_stt_code = '01' THEN 
+            CASE 
+                WHEN service_req.call_count >= 1 THEN 'Gọi nhỡ'
+                ELSE 'Chưa xử lý'
+            END
+        WHEN service_req_stt.service_req_stt_code = '02' THEN 'Đang xử lý'
+        WHEN service_req_stt.service_req_stt_code <> '03' AND (service_req.finish_time IS NULL OR treatment.treatment_end_type_id IS NULL)
+            THEN 'Chưa kết thúc'
+        ELSE 'Kết thúc' -- ngược lại thì kết thúc
+    END AS yeu_cau_kham_cls_status_text, -- trạng thái của yêu cầu khám cls
+
+    CASE 
+        WHEN service_req.call_count >= 1 THEN 1
+        ELSE 0
+    END AS goi_nho,
+
      service_req.id as key,
      service_req.id,
      service_req.is_active,
@@ -159,10 +177,11 @@ SELECT
      service_req.is_wait_child,
      service_req.treatment_type_id, -- treatment_type của y lệnh lúc lọc ở ngoài, còn treatment_type để hiện tracking phải join từ bảng treatment
      service_req.IS_KIDNEY, -- chạy thận
-     service_req.tracking_id       
+     service_req.tracking_id,
+     treatment.treatment_end_type_id       
 
 FROM his_service_req service_req
---LEFT JOIN HIS_TREATMENT treatment ON treatment.id = service_req.treatment_id
+LEFT JOIN HIS_TREATMENT treatment ON treatment.id = service_req.treatment_id
 LEFT JOIN HIS_SERVICE_REQ_STT service_req_stt ON service_req_stt.id = service_req.service_req_stt_id
 LEFT JOIN HIS_DEPARTMENT request_department ON request_department.id = service_req.request_department_id
 LEFT JOIN V_HIS_ROOM request_room ON request_room.id = service_req.request_room_id
@@ -173,6 +192,8 @@ LEFT JOIN HIS_MACHINE machine ON machine.id = service_req.machine_id
 LEFT JOIN HIS_TREATMENT_BED_ROOM treatment_bed_room ON treatment_bed_room.treatment_id = service_req.treatment_id AND remove_time IS NULL
 LEFT JOIN HIS_BED bed ON bed.id = treatment_bed_room.bed_id
 LEFT JOIN HIS_SERVICE_REQ_TYPE service_req_type ON service_req_type.id = service_req.service_req_type_id
+
+WHERE service_req_type.service_req_type_code not in ('DK', 'GI', 'DT', 'DN', 'DM') -- không lấy của y lệnh đơn với giường
 SQL
         );
     }

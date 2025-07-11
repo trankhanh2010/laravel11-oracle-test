@@ -140,6 +140,7 @@ class ServiceReqListVViewService
         // Group theo field
         $this->params->groupBy = [
             'intructionDate',
+            'serviceReqTypeName',
         ];
         $data = $this->serviceReqListVViewRepository->applyGroupByField($data, $this->params->groupBy);
         return ['data' => $data, 'count' => $count];
@@ -170,6 +171,7 @@ class ServiceReqListVViewService
         // Group theo field
         $this->params->groupBy = [
             'intructionDate',
+            'serviceReqTypeName',
         ];
         $data = $this->serviceReqListVViewRepository->applyGroupByField($data, $this->params->groupBy);
         return ['data' => $data, 'count' => $count];
