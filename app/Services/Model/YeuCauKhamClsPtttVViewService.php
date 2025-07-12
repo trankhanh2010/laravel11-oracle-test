@@ -354,6 +354,7 @@ class YeuCauKhamClsPtttVViewService
     public function handleDataBaseLayDuLieu($serviceReqCode)
     {
         try {
+            $chiLayKhamBenh = $this->params->tab == 'khamBenh'; // Chỉ lấy data phần khám bệnh
             $duLieu = $this->getDuLieu($serviceReqCode);
             if(empty($duLieu)){
                 throw new Exception('Y lệnh với mã '.(string) $serviceReqCode .' không tồn tại hoặc không phải là yêu cầu khám cls!');
@@ -361,7 +362,7 @@ class YeuCauKhamClsPtttVViewService
         } catch (\Throwable $e) {
             return writeAndThrowError($e->getMessage(), $e); // Lấy lỗi tự thêm
         }
-        
+
         try {
             $data = [];
             $dataLichSuKham = [];
@@ -370,24 +371,32 @@ class YeuCauKhamClsPtttVViewService
             $dataDiUngThuoc = [];
             $thongTinVienPhi = [];
             if($duLieu){
-                $duLieu['xepLoaiBMI'] = xepLoaiBMI($duLieu->virBmi);
-                $dataLichSuKham = $this->getDataLichSuKham($duLieu->patient_id, $duLieu->treatment_id);
-                $dataXuTriKham = $this->getDataXuTriKham($duLieu->patient_id)->toArray();
-                $dataXuTriKham['isMainExam'] = $duLieu->is_main_exam;
-                $dataXuTriKham['isAutoFinished'] = $duLieu->is_auto_finished;
-                $dataXuTriKham['tdlHeinCardNumber'] = $duLieu->tdl_hein_card_number;
-                $dataXuTriKham['maBHXH'] = $duLieu->tdl_hein_card_number ? substr($duLieu->tdl_hein_card_number, -10) : null;
-                $dataXuTriKham['danhSachDichVuKhamDaChon'] = $this->getDanhSachDichVuKhamDaChon($duLieu->treatment_id);
-
                 $dataTreatment = $this->getDataTreatment($duLieu->treatment_id);
-                $dataXuTriKham += $dataTreatment ? $dataTreatment->toArray(): [];
-
                 $dataPrimaryPatientType = $this->getPrimaryPatientType($duLieu->treatment_id, $duLieu->tdl_hein_card_number);
-                $dataXuTriKham += $dataPrimaryPatientType ? $dataPrimaryPatientType->toArray() : [];
-                $dataDotKhamHienTai = $this->getDataDotKhamHienTai($duLieu->treatment_id);
-                $dataDiUngThuoc = $this->getDataDiUngThuoc($duLieu->patient_id);
+
+                $duLieu['xepLoaiBMI'] = xepLoaiBMI($duLieu->virBmi);
+
+                if(!$chiLayKhamBenh){
+                    $dataLichSuKham = $chiLayKhamBenh ? $this->getDataLichSuKham($duLieu->patient_id, $duLieu->treatment_id) : [];
+
+                    $dataXuTriKham = $chiLayKhamBenh ? $this->getDataXuTriKham($duLieu->patient_id)->toArray() : null;
+                    $dataXuTriKham['isMainExam'] = $duLieu->is_main_exam;
+                    $dataXuTriKham['isAutoFinished'] = $duLieu->is_auto_finished;
+                    $dataXuTriKham['tdlHeinCardNumber'] = $duLieu->tdl_hein_card_number;
+                    $dataXuTriKham['maBHXH'] = $duLieu->tdl_hein_card_number ? substr($duLieu->tdl_hein_card_number, -10) : null;
+                    $dataXuTriKham['danhSachDichVuKhamDaChon'] = $this->getDanhSachDichVuKhamDaChon($duLieu->treatment_id);
+                    $dataXuTriKham += $dataTreatment ? $dataTreatment->toArray(): [];
+                    $dataXuTriKham += $dataPrimaryPatientType ? $dataPrimaryPatientType->toArray() : [];
+
+                    $dataDotKhamHienTai = $this->getDataDotKhamHienTai($duLieu->treatment_id);
+                    $dataDiUngThuoc = $this->getDataDiUngThuoc($duLieu->patient_id);
+                }
+
                 // $thongTinVienPhi = $this->getDataVienPhi($duLieu);
             }
+            $duLieu = $duLieu->toArray();
+            $duLieu += $dataTreatment ? $dataTreatment->toArray(): [];
+
             $data['khamBenh'] = $duLieu;
             $data['lichSuKham'] = $dataLichSuKham;
             $data['xuTriKham'] = $dataXuTriKham;

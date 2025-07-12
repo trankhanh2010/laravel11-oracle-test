@@ -629,6 +629,18 @@ if (!function_exists('returnNotRecord')) {
     }
 }
 
+if (!function_exists('returnDanhSachRong')) {
+    function returnDanhSachRong()
+    {
+            return response()->json([
+                'status'    => 200,
+                'success' => true,
+                'param' => [],
+                'data' => [],
+            ], 200);
+    }
+}
+
 if (!function_exists('returnDataSuccess')) {
     function returnDataSuccess($param_return, $data_return)
     {

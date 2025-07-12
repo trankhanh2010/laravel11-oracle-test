@@ -93,7 +93,12 @@ class ServiceReqListVViewController extends BaseApiCacheController
                 }
                 $data = $this->serviceReqListVViewService->handleDataBaseGetAllWithChiTietDon();
                 break;
-            case 'chiDinh':
+            case 'chiDinh': // Danh sách y lệnh
+                if(empty($this->keyword) && empty($this->patientCode) && empty($this->serviceReqCode) && empty($this->treatmentCode) 
+                && empty($this->storeCode) && empty($this->intructionTimeFrom) && empty($this->intructionTimeTo)
+                && empty($this->executeRoomId) && empty($this->type) && empty($this->roomId)){
+                    return returnDanhSachRong(); // trống hết thì trả về rỗng thay vì lấy toàn bộ danh sách
+                }
                 $data = $this->serviceReqListVViewService->handleDataBaseGetAllChiDinh();
                 break;
             case 'danhSachChiDinhKhiThemToDieuTri':

@@ -330,7 +330,7 @@ class ServiceReqListVViewRepository
     }
     public function applyIsDonTuTrucFilter($query)
     {
-        $query->where(('his_service_req_type.service_req_type_code'),'DT');
+        $query->where(('his_service_req_type.service_req_type_code'), 'DT');
         return $query;
     }
     public function applyIsDeleteFilter($query, $isDelete)
@@ -407,7 +407,7 @@ class ServiceReqListVViewRepository
         if ($param != null) {
             $query->where(function ($q) use ($param) {
                 $q->where('xa_v_his_service_req_list.use_time_to', '<=', $param)
-                ->orWhereNull('xa_v_his_service_req_list.use_time_to');
+                    ->orWhereNull('xa_v_his_service_req_list.use_time_to');
             });
         }
         return $query;
@@ -515,12 +515,21 @@ class ServiceReqListVViewRepository
 
             return $items->groupBy(function ($item) use ($currentField) {
                 return $item[$currentField] ?? null;
-            })->map(function ($group, $key) use ($fields, $groupData, $originalField) {
-                return [
+            })->map(function ($group, $key) use ($fields, $groupData, $originalField, $currentField) {
+                $result =  [
+                    'key' => (string)$key,
                     $originalField => (string)$key, // Hiển thị tên gốc
                     'total' => $group->count(),
-                    'data' => $groupData($group, $fields),
                 ];
+                switch ($currentField) {
+                    case 'intruction_time':
+                        $firstItem = $group->first();
+                        $result['intructionDate'] = $firstItem['intruction_date'] ?? null;
+                        break;
+                    default:
+                }
+                $result['children'] = $groupData($group, $fields);
+                return $result;
             })->values();
         };
 
@@ -534,8 +543,19 @@ class ServiceReqListVViewRepository
             foreach ($orderBy as $key => $item) {
                 if (in_array($key, $orderByJoin)) {
                 } else {
-                    $query->orderBy('xa_v_his_service_req_list.'.$key, $item);
+                    $query->orderBy('xa_v_his_service_req_list.' . $key, $item);
                 }
+            }
+        }
+
+        return $query;
+    }
+
+    public function applyOrderingUnionAll($query, $orderBy)
+    {
+        if ($orderBy != null) {
+            foreach ($orderBy as $key => $item) {
+                $query->orderBy($key, $item);
             }
         }
 
@@ -566,6 +586,47 @@ class ServiceReqListVViewRepository
                 ->take($limit)
                 ->get();
         }
+    }
+    public function applyUnionAllDichVuDon($query)
+    {
+        $queryDichVu = clone $query;
+        $queryDon = clone $query;
+
+        $queryDichVu->leftJoin('his_sere_serv sere_serv', 'sere_serv.service_req_id', '=', 'xa_v_his_service_req_list.id')
+            ->leftJoin('his_service_type service_type', 'service_type.id', '=', 'sere_serv.tdl_service_type_id')
+            ->leftJoin('his_service_unit service_unit', 'service_unit.id', '=', 'sere_serv.tdl_service_unit_id')
+            ->addSelect([
+                'sere_serv.tdl_service_name',
+                'sere_serv.tdl_service_code',
+                'sere_serv.amount',
+                'service_unit.service_unit_code',
+                'service_unit.service_unit_name',
+                'service_type.service_type_code',
+                'service_type.service_type_name',
+                DB::connection('oracle_his')->raw("NULL as sort_num_order"),
+
+            ])
+            ->whereNotIn('service_type.service_type_code', ['TH', 'VT']); // thuốc và vật tư lấy ở dưới rồi hợp lại
+
+        $queryDon->leftJoin('xa_v_his_don don', 'don.service_req_id', '=', 'xa_v_his_service_req_list.id')
+            ->leftJoin('his_service service', 'service.id', '=', 'don.service_id')
+            ->leftJoin('his_service_unit service_unit', 'service_unit.id', '=', 'service.service_unit_id')
+            ->leftJoin('his_service_type service_type', 'service_type.id', '=', 'service.service_type_id')
+            ->addSelect([
+                'service.service_name as tdl_service_name',
+                'service.service_code as tdl_service_code',
+                'don.amount',
+                'service_unit.service_unit_code',
+                'service_unit.service_unit_name',
+                'service_type.service_type_code',
+                'service_type.service_type_name',
+                'don.num_order as sort_num_order',
+            ])
+            ->where('don.is_delete', 0);
+
+        $queryResult =  $queryDichVu->unionall($queryDon); // Hợp đơn với dịch vụ ở trên
+
+        return $queryResult;
     }
     public function getById($id)
     {

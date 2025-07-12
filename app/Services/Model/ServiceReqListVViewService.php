@@ -92,6 +92,10 @@ class ServiceReqListVViewService
     }
     private function getAllDataFromDatabaseChiDinh()
     {
+        if (!empty($this->params->patientCode) || !empty($this->params->serviceReqCode) || !empty($this->params->treatmentCode) || !empty($this->params->storeCode)) {
+            $this->params->type = 'tatCa';
+        }
+
         $data = $this->serviceReqListVViewRepository->applyJoinsChiDinh();
         // $data = $this->serviceReqListVViewRepository->applyWithParamChiDinh($data);
         $data = $this->serviceReqListVViewRepository->applyKeywordFilter($data, $this->params->keyword);
@@ -119,11 +123,11 @@ class ServiceReqListVViewService
     private function getAllDataFromDatabaseDanhSachChiDinhKhiThemToDieuTri()
     {
         $data = $this->serviceReqListVViewRepository->applyJoinsDanhSachChiDinhKhiThemToDieuTri();
-        $data = $this->serviceReqListVViewRepository->applyWithParamDanhSachChiDinhKhiThemToDieuTri($data); // khi lấy danh sách lúc thêm tờ điều trị thì lấy mấy cái chưa có trackingId
-        $data = $this->serviceReqListVViewRepository->applyTrackingIdIsNullFilter($data);
+        // $data = $this->serviceReqListVViewRepository->applyWithParamDanhSachChiDinhKhiThemToDieuTri($data); 
+        $data = $this->serviceReqListVViewRepository->applyTrackingIdIsNullFilter($data); // khi lấy danh sách lúc thêm tờ điều trị thì lấy mấy cái chưa có trackingId
         $data = $this->serviceReqListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
         $data = $this->serviceReqListVViewRepository->applyIsDeleteFilter($data, 0);
-        $data = $this->serviceReqListVViewRepository->applyIsNoExecuteFilter($data); 
+        $data = $this->serviceReqListVViewRepository->applyIsNoExecuteFilter($data);
         $data = $this->serviceReqListVViewRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
         $data = $this->serviceReqListVViewRepository->applyIntructionTimeFromFilter($data, $this->params->intructionTimeFrom);
         $data = $this->serviceReqListVViewRepository->applyIntructionTimeToFilter($data, $this->params->intructionTimeTo);
@@ -132,15 +136,18 @@ class ServiceReqListVViewService
         $data = $this->serviceReqListVViewRepository->applyToiChiDinhFilter($data, $this->params->toiChiDinh, $this->params->currentLoginname);
         $count = null;
         $this->params->orderBy = [
-            "intruction_date" => "desc",
-            "num_order" => "desc",
+            "sort_num_order" => 'asc',
         ];
-        $data = $this->serviceReqListVViewRepository->applyOrdering($data, $this->params->orderBy, []);
+
+        $data = $this->serviceReqListVViewRepository->applyUnionAllDichVuDon($data); // Join các đơn thuốc - vật tư, dịch vụ và hợp lại
+
+        $data = $this->serviceReqListVViewRepository->applyOrderingUnionAll($data, $this->params->orderBy);
         $data = $this->serviceReqListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
         // Group theo field
         $this->params->groupBy = [
             'intructionDate',
-            'serviceReqTypeName',
+            'serviceTypeName',
+            'serviceReqCode',
         ];
         $data = $this->serviceReqListVViewRepository->applyGroupByField($data, $this->params->groupBy);
         return ['data' => $data, 'count' => $count];
@@ -148,12 +155,12 @@ class ServiceReqListVViewService
     private function getAllDataFromDatabaseThucHienDonDuTruKhiThemToDieuTri()
     {
         $data = $this->serviceReqListVViewRepository->applyJoinsThucHienDonDuTruKhiThemToDieuTri();
-        $data = $this->serviceReqListVViewRepository->applyWithParamThucHienDonDuTruKhiThemToDieuTri($data); 
+        // $data = $this->serviceReqListVViewRepository->applyWithParamThucHienDonDuTruKhiThemToDieuTri($data); 
         $data = $this->serviceReqListVViewRepository->applyIsDonTuTrucFilter($data); // khi lấy danh sách lúc thêm tờ điều trị => chỉ lấy đơn tủ trực
         $data = $this->serviceReqListVViewRepository->applyUsedForTrackingIdIsNullFilter($data); // khi lấy danh sách lúc thêm tờ điều trị thì lấy mấy cái chưa có usedForTrackingId
         $data = $this->serviceReqListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
         $data = $this->serviceReqListVViewRepository->applyIsDeleteFilter($data, 0);
-        $data = $this->serviceReqListVViewRepository->applyIsNoExecuteFilter($data); 
+        $data = $this->serviceReqListVViewRepository->applyIsNoExecuteFilter($data);
         $data = $this->serviceReqListVViewRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
         $data = $this->serviceReqListVViewRepository->applyUseTimeFromFilter($data, $this->params->useTimeFrom);
         $data = $this->serviceReqListVViewRepository->applyUseTimeToFilter($data, $this->params->useTimeTo);
@@ -164,14 +171,19 @@ class ServiceReqListVViewService
         $count = null;
         $this->params->orderBy = [
             "intruction_date" => "desc",
-            "num_order" => "desc",
+            "service_type_name" => "asc",
+            "service_req_code" => "asc",
+            "sort_num_order" => 'asc',
         ];
-        $data = $this->serviceReqListVViewRepository->applyOrdering($data, $this->params->orderBy, []);
+        $data = $this->serviceReqListVViewRepository->applyUnionAllDichVuDon($data); // Join các đơn thuốc - vật tư, dịch vụ và hợp lại
+
+        $data = $this->serviceReqListVViewRepository->applyOrderingUnionAll($data, $this->params->orderBy);
         $data = $this->serviceReqListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
         // Group theo field
         $this->params->groupBy = [
-            'intructionDate',
-            'serviceReqTypeName',
+            'intructionTime',
+            'serviceTypeName',
+            'serviceReqCode',
         ];
         $data = $this->serviceReqListVViewRepository->applyGroupByField($data, $this->params->groupBy);
         return ['data' => $data, 'count' => $count];
