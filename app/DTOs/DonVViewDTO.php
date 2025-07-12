@@ -28,6 +28,7 @@ class DonVViewDTO
     public $intructionDate;
     public $sessionCodes;
     public $serviceReqId;
+    public $serviceReqCode;
     public function __construct(
         $donVViewName,
         $keyword, 
@@ -53,6 +54,7 @@ class DonVViewDTO
         $intructionDate,
         $sessionCodes,
         $serviceReqId,
+        $serviceReqCode,
         )
     {
         $this->donVViewName = $donVViewName;
@@ -79,5 +81,6 @@ class DonVViewDTO
         $this->intructionDate = $intructionDate;
         $this->sessionCodes = $sessionCodes;
         $this->serviceReqId = $serviceReqId;
+        $this->serviceReqCode = $serviceReqCode;
     }
 }

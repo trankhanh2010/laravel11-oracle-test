@@ -135,6 +135,7 @@ class DonVViewService
         $data = $this->donVViewRepository->applyIsDeleteFilter($data, 0);
         $data = $this->donVViewRepository->applyTabFilter($data, $this->params->tab);
         $data = $this->donVViewRepository->applyServiceReqIdFilter($data, $this->params->serviceReqId);
+        $data = $this->donVViewRepository->applyServiceReqCodeFilter($data, $this->params->serviceReqCode);
         $data = $this->donVViewRepository->applyIntructionTimeFromFilter($data, $this->params->intructionTimeFrom);
         $data = $this->donVViewRepository->applyIntructionTimeToFilter($data, $this->params->intructionTimeTo);
         $data = $this->donVViewRepository->applyIntructionDateFilter($data, $this->params->intructionDate);

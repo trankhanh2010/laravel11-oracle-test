@@ -69,6 +69,7 @@ class YeuCauKhamClsPtttVViewService
             $data = $this->yeuCauKhamClsPtttVViewRepository->applyIsActiveFilter($data, 1);
             $data = $this->yeuCauKhamClsPtttVViewRepository->applyIsDeleteFilter($data, 0);
             $data = $this->yeuCauKhamClsPtttVViewRepository->applyIsNoExecuteFilter($data);
+            $data = $this->yeuCauKhamClsPtttVViewRepository->applyIsYeuCauKhamPtttClsFilter($data); // không lấy của y lệnh đơn với giường
             $data = $this->yeuCauKhamClsPtttVViewRepository->applyIntructionTimeFromFilter($data, $this->params->intructionTimeFrom);
             $data = $this->yeuCauKhamClsPtttVViewRepository->applyIntructionTimeToFilter($data, $this->params->intructionTimeTo);
             $data = $this->yeuCauKhamClsPtttVViewRepository->applyExecuteRoomIdFilter($data, $this->params->executeRoomId);
@@ -99,6 +100,7 @@ class YeuCauKhamClsPtttVViewService
         $data = $this->yeuCauKhamClsPtttVViewRepository->applyIsActiveFilter($data, 1);
         $data = $this->yeuCauKhamClsPtttVViewRepository->applyIsDeleteFilter($data, 0);
         $data = $this->yeuCauKhamClsPtttVViewRepository->applyIsNoExecuteFilter($data);
+        $data = $this->yeuCauKhamClsPtttVViewRepository->applyIsYeuCauKhamPtttClsFilter($data); // không lấy của y lệnh đơn với giường
         $data = $this->yeuCauKhamClsPtttVViewRepository->applyIntructionTimeFromFilter($data, $this->params->intructionTimeFrom);
         $data = $this->yeuCauKhamClsPtttVViewRepository->applyIntructionTimeToFilter($data, $this->params->intructionTimeTo);
         $data = $this->yeuCauKhamClsPtttVViewRepository->applyExecuteRoomIdFilter($data, $this->params->executeRoomId);
@@ -134,6 +136,9 @@ class YeuCauKhamClsPtttVViewService
     {
         $data = $this->yeuCauKhamClsPtttVViewRepository->applyJoinsLayDuLieu();
         $data = $data->where('XA_V_HIS_YEU_CAU_KHAM_CLS_PTTT.service_req_code', $serviceReqCode);
+        $data = ($this->params->tab == 'khamBenh') 
+        ? $this->yeuCauKhamClsPtttVViewRepository->applyIsYeuCauKhamPtttClsFilter($data) // không lấy của y lệnh đơn với giường, nếu
+        : $data;
         $data = $this->yeuCauKhamClsPtttVViewRepository->applyIsActiveFilter($data, 1);
         $data = $this->yeuCauKhamClsPtttVViewRepository->applyIsDeleteFilter($data, 0);
         $data = $this->yeuCauKhamClsPtttVViewRepository->applyIsNoExecuteFilter($data);

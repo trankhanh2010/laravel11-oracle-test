@@ -334,6 +334,12 @@ class YeuCauKhamClsPtttVViewRepository
                 ->orWhereNull('XA_V_HIS_YEU_CAU_KHAM_CLS_PTTT.is_no_execute');
         });
     }
+    public function applyIsYeuCauKhamPtttClsFilter($query)
+    {
+        return $query->where(function ($query) {
+            $query->whereNotIn('XA_V_HIS_YEU_CAU_KHAM_CLS_PTTT.service_req_type_code', ['DK', 'GI', 'DT', 'DN', 'DM']); // không lấy của y lệnh đơn với giường
+        });
+    }
     public function applyIntructionTimeFromFilter($query, $param)
     {
         if ($param != null) {

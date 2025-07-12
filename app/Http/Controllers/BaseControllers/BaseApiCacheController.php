@@ -1192,6 +1192,17 @@ class BaseApiCacheController extends Controller
 
         return $data;
     }
+    public function getServiceReqIdByServiceReqCode($code){
+        $cacheKey = 'service_req_id_by_service_req_code_'.$code;
+        $cacheKeySet = "cache_keys:" . "setting"; // Set để lưu danh sách key
+        $data = Cache::remember($cacheKey, $this->time, function () use($code) {
+            return ServiceReq::where('service_req_code', $code)->first()->id ?? 0;
+        });
+        // Lưu key vào Redis Set để dễ xóa sau này
+        Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+
+        return $data;
+    }
     public function __construct(Request $request)
     {
         // Thời gian tồn tại của cache
@@ -2470,6 +2481,10 @@ class BaseApiCacheController extends Controller
                 $this->errors[$this->serviceReqIdName] = $this->messFormat;
                 $this->serviceReqId = null;
             } 
+        }else{
+            if($this->serviceReqCode != null){
+                $this->serviceReqId = $this->getServiceReqIdByServiceReqCode($this->serviceReqCode);
+            }
         }
         $this->isAddition = $this->paramRequest['ApiData']['IsAddition'] ?? null;
         if ($this->isAddition !== null) {

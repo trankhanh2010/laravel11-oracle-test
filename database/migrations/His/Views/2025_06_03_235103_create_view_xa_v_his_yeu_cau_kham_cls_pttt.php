@@ -193,7 +193,6 @@ LEFT JOIN HIS_TREATMENT_BED_ROOM treatment_bed_room ON treatment_bed_room.treatm
 LEFT JOIN HIS_BED bed ON bed.id = treatment_bed_room.bed_id
 LEFT JOIN HIS_SERVICE_REQ_TYPE service_req_type ON service_req_type.id = service_req.service_req_type_id
 
-WHERE service_req_type.service_req_type_code not in ('DK', 'GI', 'DT', 'DN', 'DM') -- không lấy của y lệnh đơn với giường
 SQL
         );
     }

@@ -136,6 +136,9 @@ class ServiceReqListVViewService
         $data = $this->serviceReqListVViewRepository->applyToiChiDinhFilter($data, $this->params->toiChiDinh, $this->params->currentLoginname);
         $count = null;
         $this->params->orderBy = [
+            "intruction_date" => "desc",
+            "service_type_name" => "asc",
+            "service_req_code" => "asc",
             "sort_num_order" => 'asc',
         ];
 
@@ -147,9 +150,10 @@ class ServiceReqListVViewService
         $this->params->groupBy = [
             'intructionDate',
             'serviceTypeName',
+            'textDuTru',
             'serviceReqCode',
         ];
-        $data = $this->serviceReqListVViewRepository->applyGroupByField($data, $this->params->groupBy);
+        $data = $this->serviceReqListVViewRepository->applyGroupByFieldDanhSachChiDinhKhiThemToDieuTri($data, $this->params->groupBy);
         return ['data' => $data, 'count' => $count];
     }
     private function getAllDataFromDatabaseThucHienDonDuTruKhiThemToDieuTri()
@@ -170,9 +174,6 @@ class ServiceReqListVViewService
         $data = $this->serviceReqListVViewRepository->applyToiChiDinhFilter($data, $this->params->toiChiDinh, $this->params->currentLoginname);
         $count = null;
         $this->params->orderBy = [
-            "intruction_date" => "desc",
-            "service_type_name" => "asc",
-            "service_req_code" => "asc",
             "sort_num_order" => 'asc',
         ];
         $data = $this->serviceReqListVViewRepository->applyUnionAllDichVuDon($data); // Join các đơn thuốc - vật tư, dịch vụ và hợp lại
@@ -185,7 +186,7 @@ class ServiceReqListVViewService
             'serviceTypeName',
             'serviceReqCode',
         ];
-        $data = $this->serviceReqListVViewRepository->applyGroupByField($data, $this->params->groupBy);
+        $data = $this->serviceReqListVViewRepository->applyGroupByFieldThucHienDonDuTruKhiThemToDieuTri($data, $this->params->groupBy);
         return ['data' => $data, 'count' => $count];
     }
     private function getDataById($id)

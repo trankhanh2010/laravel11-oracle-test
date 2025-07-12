@@ -61,6 +61,7 @@ class DonVViewController extends BaseApiCacheController
             $this->intructionDate,
             $this->sessionCodes,
             $this->serviceReqId,
+            $this->serviceReqCode,
         );
         $this->donVViewService->withParams($this->donVViewDTO);
     }

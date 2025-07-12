@@ -535,6 +535,104 @@ class ServiceReqListVViewRepository
 
         return $groupData(collect($data), $snakeFields);
     }
+    public function applyGroupByFieldDanhSachChiDinhKhiThemToDieuTri($data, $groupByFields = [])
+    {
+        if (empty($groupByFields)) {
+            return $data;
+        }
+
+        // Chuyển các field thành snake_case trước khi nhóm
+        $fieldMappings = [];
+        foreach ($groupByFields as $field) {
+            $snakeField = Str::snake($field);
+            $fieldMappings[$snakeField] = $field;
+        }
+
+        $snakeFields = array_keys($fieldMappings);
+
+        // Đệ quy nhóm dữ liệu theo thứ tự fields đã convert
+        $groupData = function ($items, $fields) use (&$groupData, $fieldMappings) {
+            if (empty($fields)) {
+                return $items->values(); // Hết field nhóm -> Trả về danh sách gốc
+            }
+
+            $currentField = array_shift($fields);
+            $originalField = $fieldMappings[$currentField];
+
+            return $items->groupBy(function ($item) use ($currentField) {
+                return $item[$currentField] ?? null;
+            })->map(function ($group, $key) use ($fields, $groupData, $originalField, $currentField) {
+                $result =  [
+                    'key' => (string)$key,
+                    $originalField => (string)$key, // Hiển thị tên gốc
+                    'total' => $group->count(),
+                ];
+                switch ($currentField) {
+                    case 'text_du_tru':
+                        $firstItem = $group->first();
+                        $textNgay = $firstItem['text_du_tru'] ? ' ngày '. Carbon::createFromFormat('YmdHis', $firstItem['intruction_date'])->format('d/m/Y') : '';
+                        $result['textDuTru'] = $firstItem['text_du_tru'] . $textNgay;    
+                        $result['intructionDate'] = $firstItem['intruction_date'] ?? null;
+                        break;
+                    default:
+                }
+                $result['children'] = $groupData($group, $fields);
+                return $result;
+            })->values();
+        };
+
+        return $groupData(collect($data), $snakeFields);
+    }
+    public function applyGroupByFieldThucHienDonDuTruKhiThemToDieuTri($data, $groupByFields = [])
+    {
+        if (empty($groupByFields)) {
+            return $data;
+        }
+
+        // Chuyển các field thành snake_case trước khi nhóm
+        $fieldMappings = [];
+        foreach ($groupByFields as $field) {
+            $snakeField = Str::snake($field);
+            $fieldMappings[$snakeField] = $field;
+        }
+
+        $snakeFields = array_keys($fieldMappings);
+
+        // Đệ quy nhóm dữ liệu theo thứ tự fields đã convert
+        $groupData = function ($items, $fields) use (&$groupData, $fieldMappings) {
+            if (empty($fields)) {
+                return $items->values(); // Hết field nhóm -> Trả về danh sách gốc
+            }
+
+            $currentField = array_shift($fields);
+            $originalField = $fieldMappings[$currentField];
+
+            return $items->groupBy(function ($item) use ($currentField) {
+                return $item[$currentField] ?? null;
+            })->map(function ($group, $key) use ($fields, $groupData, $originalField, $currentField) {
+                $result =  [
+                    'key' => (string)$key,
+                    $originalField => (string)$key, // Hiển thị tên gốc
+                    'total' => $group->count(),
+                ];
+                switch ($currentField) {
+                    case 'intruction_time':
+                        $firstItem = $group->first();
+                        $result['intructionDate'] = $firstItem['intruction_date'] ?? null;
+                        break;
+                    case 'service_req_code':
+                        $firstItem = $group->first();
+                        $result['key'] = ($firstItem['service_req_code'] ?? '').($firstItem['service_type_name'] ?? '');
+                        break;
+                    default:
+                }
+                $result['children'] = $groupData($group, $fields);
+                return $result;
+            })->values();
+        };
+
+        return $groupData(collect($data), $snakeFields);
+    }
 
 
     public function applyOrdering($query, $orderBy, $orderByJoin)
@@ -604,7 +702,7 @@ class ServiceReqListVViewRepository
                 'service_type.service_type_code',
                 'service_type.service_type_name',
                 DB::connection('oracle_his')->raw("NULL as sort_num_order"),
-
+                DB::connection('oracle_his')->raw("NULL as text_du_tru"),
             ])
             ->whereNotIn('service_type.service_type_code', ['TH', 'VT']); // thuốc và vật tư lấy ở dưới rồi hợp lại
 
@@ -621,6 +719,7 @@ class ServiceReqListVViewRepository
                 'service_type.service_type_code',
                 'service_type.service_type_name',
                 'don.num_order as sort_num_order',
+                DB::raw("CASE WHEN his_service_req_type.service_req_type_code = 'DT' THEN service_type.service_type_name || ' dự trù' ELSE NULL END AS text_du_tru"),
             ])
             ->where('don.is_delete', 0);
 

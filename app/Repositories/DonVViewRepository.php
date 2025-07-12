@@ -155,6 +155,13 @@ class DonVViewRepository
         }
         return $query;
     }
+    public function applyServiceReqCodeFilter($query, $param)
+    {
+        if ($param != null) {
+            $query->where(DB::connection('oracle_his')->raw('xa_v_his_don.tdl_service_req_code'), $param);
+        }
+        return $query;
+    }
     public function applySessionCodesFilter($query, $param)
     {
         if ($param != null) {
