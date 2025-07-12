@@ -67,7 +67,10 @@ null as ACTIVE_INGR_BHYT_CODE,
 null as ACTIVE_INGR_BHYT_NAME,
 service_req.session_code,
 null as concentra,
-'VT' as service_type_code,
+service.service_code,
+service.service_name,
+service_type.service_type_code,
+service_type.service_type_name,
 null as tutorial,
 null as speed,    
 null as description,    
@@ -94,6 +97,10 @@ LEFT JOIN HIS_MEDI_STOCK exp_mest_medi_stock on exp_mest_medi_stock.id = exp_mes
 --LEFT JOIN HIS_MEDI_STOCK m_medi_stock on m_medi_stock.id = exp_mest_material.tdl_medi_stock_id
 LEFT JOIN V_HIS_ROOM req_room on req_room.id = exp_mest.req_room_id
 LEFT JOIN HIS_SERVICE_REQ service_req on service_req.id = exp_mest.service_req_id
+LEFT JOIN HIS_SERVICE service on service.id = material_type.service_id
+LEFT JOIN HIS_SERVICE_TYPE service_type on service_type.id = service.service_type_id
+
+WHERE service_type.service_type_code = 'VT'
 
   UNION ALL
 
@@ -147,7 +154,10 @@ medicine_type.ACTIVE_INGR_BHYT_CODE,
 medicine_type.ACTIVE_INGR_BHYT_NAME,
 service_req.session_code,
 medicine_type.concentra,
-'TH' as service_type_code,
+service.service_code,
+service.service_name,
+service_type.service_type_code,
+service_type.service_type_name,
 exp_mest_medicine.tutorial,   
 exp_mest_medicine.speed, 
 exp_mest_medicine.description,    
@@ -174,6 +184,10 @@ LEFT JOIN HIS_MEDI_STOCK exp_mest_medi_stock on exp_mest_medi_stock.id = exp_mes
 --LEFT JOIN HIS_MEDI_STOCK m_medi_stock on m_medi_stock.id = exp_mest_medicine.tdl_medi_stock_id
 LEFT JOIN V_HIS_ROOM req_room on req_room.id = exp_mest.req_room_id
 LEFT JOIN HIS_SERVICE_REQ service_req on service_req.id = exp_mest.service_req_id
+LEFT JOIN HIS_SERVICE service on service.id = medicine_type.service_id
+LEFT JOIN HIS_SERVICE_TYPE service_type on service_type.id = service.service_type_id
+
+WHERE service_type.service_type_code = 'TH'
 
   UNION ALL
 
@@ -227,7 +241,10 @@ medicine_type.ACTIVE_INGR_BHYT_CODE,
 medicine_type.ACTIVE_INGR_BHYT_NAME,
 service_req.session_code,
 medicine_type.concentra,
-'TH' as service_type_code,
+service.service_code,
+service.service_name,
+service_type.service_type_code,
+service_type.service_type_name,
 service_req_mety.tutorial, 
 service_req_mety.speed,   
 null as description,    
@@ -249,7 +266,10 @@ FROM HIS_SERVICE_REQ_METY service_req_mety
 LEFT JOIN HIS_MEDICINE_TYPE medicine_type on medicine_type.id = service_req_mety.medicine_type_id
 LEFT JOIN HIS_SERVICE_REQ service_req on service_req.id = service_req_mety.service_req_id
 LEFT JOIN V_HIS_ROOM req_room on req_room.id = service_req.request_room_id
+LEFT JOIN HIS_SERVICE service on service.id = medicine_type.service_id
+LEFT JOIN HIS_SERVICE_TYPE service_type on service_type.id = service.service_type_id
 
+WHERE service_type.service_type_code = 'TH'
 
   UNION ALL
 
@@ -303,7 +323,10 @@ null as ACTIVE_INGR_BHYT_CODE,
 null as ACTIVE_INGR_BHYT_NAME,
 service_req.session_code,
 null as concentra,
-'VT' as service_type_code,
+service.service_code,
+service.service_name,
+service_type.service_type_code,
+service_type.service_type_name,
 null as tutorial,   
 null as speed, 
 null as description,    
@@ -325,6 +348,11 @@ FROM HIS_SERVICE_REQ_MATY service_req_maty
 LEFT JOIN HIS_MATERIAL_TYPE material_type on material_type.id = service_req_maty.material_type_id
 LEFT JOIN HIS_SERVICE_REQ service_req on service_req.id = service_req_maty.service_req_id
 LEFT JOIN V_HIS_ROOM req_room on req_room.id = service_req.request_room_id
+LEFT JOIN HIS_SERVICE service on service.id = material_type.service_id
+LEFT JOIN HIS_SERVICE_TYPE service_type on service_type.id = service.service_type_id
+
+WHERE service_type.service_type_code = 'VT'
+
 )
 SQL
         );

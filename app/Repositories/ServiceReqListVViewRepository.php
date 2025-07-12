@@ -695,7 +695,6 @@ class ServiceReqListVViewRepository
             ->leftJoin('his_service_unit service_unit', 'service_unit.id', '=', 'sere_serv.tdl_service_unit_id')
             ->addSelect([
                 'sere_serv.tdl_service_name',
-                'sere_serv.tdl_service_code',
                 'sere_serv.amount',
                 'service_unit.service_unit_code',
                 'service_unit.service_unit_name',
@@ -704,23 +703,24 @@ class ServiceReqListVViewRepository
                 DB::connection('oracle_his')->raw("NULL as sort_num_order"),
                 DB::connection('oracle_his')->raw("NULL as text_du_tru"),
             ])
-            ->whereNotIn('service_type.service_type_code', ['TH', 'VT']); // thuốc và vật tư lấy ở dưới rồi hợp lại
+            ->whereNotIn('service_type.service_type_code', ['TH', 'VT']) // thuốc và vật tư lấy ở dưới rồi hợp lại
+            ->whereNotIn('his_service_req_type.service_req_type_code', ['DK', 'DT', 'DN']); // đơn
 
         $queryDon->leftJoin('xa_v_his_don don', 'don.service_req_id', '=', 'xa_v_his_service_req_list.id')
-            ->leftJoin('his_service service', 'service.id', '=', 'don.service_id')
-            ->leftJoin('his_service_type service_type', 'service_type.id', '=', 'service.service_type_id')
+
             ->addSelect([
-                'service.service_name as tdl_service_name',
-                'service.service_code as tdl_service_code',
+                'don.service_name as tdl_service_name', // Lấy MedicineTypeName hoặc MedicineTypeCode
                 'don.amount',
                 'don.service_unit_code',
                 'don.service_unit_name',
-                'service_type.service_type_code',
-                'service_type.service_type_name',
+                'don.service_type_code',
+                'don.service_type_name',
                 'don.num_order as sort_num_order',
-                DB::raw("CASE WHEN his_service_req_type.service_req_type_code = 'DT' THEN service_type.service_type_name || ' dự trù' ELSE NULL END AS text_du_tru"),
+                DB::raw("CASE WHEN his_service_req_type.service_req_type_code = 'DT' THEN don.m_type_name || ' dự trù' ELSE NULL END AS text_du_tru"),
             ])
-            ->where('don.is_delete', 0);
+            ->where('don.is_delete', 0)
+            ->whereIn('don.service_type_code', ['TH', 'VT']) // thuốc và vật tư lấy ở dưới rồi hợp lại;
+            ->whereIn('his_service_req_type.service_req_type_code', ['DK', 'DT', 'DN']); // đơn
 
         $queryResult =  $queryDichVu->unionall($queryDon); // Hợp đơn với dịch vụ ở trên
 
