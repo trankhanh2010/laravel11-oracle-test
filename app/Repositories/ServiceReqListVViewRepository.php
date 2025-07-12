@@ -708,14 +708,13 @@ class ServiceReqListVViewRepository
 
         $queryDon->leftJoin('xa_v_his_don don', 'don.service_req_id', '=', 'xa_v_his_service_req_list.id')
             ->leftJoin('his_service service', 'service.id', '=', 'don.service_id')
-            ->leftJoin('his_service_unit service_unit', 'service_unit.id', '=', 'service.service_unit_id')
             ->leftJoin('his_service_type service_type', 'service_type.id', '=', 'service.service_type_id')
             ->addSelect([
                 'service.service_name as tdl_service_name',
                 'service.service_code as tdl_service_code',
                 'don.amount',
-                'service_unit.service_unit_code',
-                'service_unit.service_unit_name',
+                'don.service_unit_code',
+                'don.service_unit_name',
                 'service_type.service_type_code',
                 'service_type.service_type_name',
                 'don.num_order as sort_num_order',

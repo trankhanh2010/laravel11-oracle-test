@@ -178,7 +178,8 @@ SELECT
      service_req.treatment_type_id, -- treatment_type của y lệnh lúc lọc ở ngoài, còn treatment_type để hiện tracking phải join từ bảng treatment
      service_req.IS_KIDNEY, -- chạy thận
      service_req.tracking_id,
-     treatment.treatment_end_type_id       
+     treatment.treatment_end_type_id,
+     service_req.advise       
 
 FROM his_service_req service_req
 LEFT JOIN HIS_TREATMENT treatment ON treatment.id = service_req.treatment_id

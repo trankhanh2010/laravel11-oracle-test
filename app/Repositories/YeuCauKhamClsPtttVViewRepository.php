@@ -292,6 +292,7 @@ class YeuCauKhamClsPtttVViewRepository
                     "his_treatment.tdl_hein_card_to_time",
 
                     "xa_v_his_yeu_cau_kham_cls_pttt.tracking_id",
+                    "xa_v_his_yeu_cau_kham_cls_pttt.advise",
                 ]
             );
     }
