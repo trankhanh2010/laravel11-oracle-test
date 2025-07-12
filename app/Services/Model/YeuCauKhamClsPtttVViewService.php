@@ -141,7 +141,9 @@ class YeuCauKhamClsPtttVViewService
         : $data;
         $data = $this->yeuCauKhamClsPtttVViewRepository->applyIsActiveFilter($data, 1);
         $data = $this->yeuCauKhamClsPtttVViewRepository->applyIsDeleteFilter($data, 0);
-        $data = $this->yeuCauKhamClsPtttVViewRepository->applyIsNoExecuteFilter($data);
+        $data = (!$this->params->tab == 'khamBenh') 
+        ? $this->yeuCauKhamClsPtttVViewRepository->applyIsNoExecuteFilter($data) // không lấy y lệnh k thực hiện nếu đang ở yêu cầu khám cls
+        : $data;
         $data = $data->first();
         return $data;
     }
@@ -362,7 +364,7 @@ class YeuCauKhamClsPtttVViewService
             $chiLayKhamBenh = $this->params->tab == 'khamBenh'; // Chỉ lấy data phần khám bệnh
             $duLieu = $this->getDuLieu($serviceReqCode);
             if(empty($duLieu)){
-                throw new Exception('Y lệnh với mã '.(string) $serviceReqCode .' không tồn tại hoặc không phải là yêu cầu khám cls!');
+                throw new Exception('Y lệnh với mã '.(string) $serviceReqCode .' không tồn tại, không thực hiện hoặc không phải là yêu cầu khám cls!');
             }
         } catch (\Throwable $e) {
             return writeAndThrowError($e->getMessage(), $e); // Lấy lỗi tự thêm

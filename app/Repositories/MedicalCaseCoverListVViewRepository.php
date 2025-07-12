@@ -26,6 +26,10 @@ class MedicalCaseCoverListVViewRepository
             return $this->medicalCaseCoverListVView
                 ->select([
                     'id',
+                    'is_active',
+                    'is_delete',
+                    'is_pause',
+                    'is_lock_hein',
                     'treatment_id',
                     'department_code',
                     'patient_type_name',
