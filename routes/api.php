@@ -237,6 +237,7 @@ use App\Http\Controllers\Api\NoCacheControllers\TransactionTTDetailVViewControll
 use App\Http\Controllers\Api\NoCacheControllers\TransactionListVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TransactionTUDetailVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TreatmentBedRoomListVViewController;
+use App\Http\Controllers\Api\NoCacheControllers\TreatmentDataController;
 use App\Http\Controllers\Api\NoCacheControllers\TreatmentExecuteRoomListVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TreatmentFeeDetailVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\TreatmentFeeListVViewController;
@@ -1305,4 +1306,6 @@ Route::group([
     Route::apiResource('v1/tracking-temp', TrackingTempController::class)->only(['index', 'show']);
     /// Kết quả CLS
     Route::apiResource('v1/ket-qua-cls', KetQuaClsVViewController::class)->only(['index']);
+    /// Kết quả CLS
+    Route::apiResource('v1/treatment-data', TreatmentDataController::class)->only(['show']);
 });

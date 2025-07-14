@@ -68,6 +68,15 @@ class TreatmentListVViewService
         $data = $data->first();
         return $data;
     }
+    private function getDataByTreatmentCode($code)
+    {
+        $data = $this->treatmentListVViewRepository->applyJoins()
+            ->where('treatment_code', $code);
+        $data = $this->treatmentListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $this->treatmentListVViewRepository->applyIsDeleteFilter($data, 0);
+        $data = $data->first();
+        return $data;
+    }
     public function handleDataBaseGetAll()
     {
         try {
@@ -106,6 +115,15 @@ class TreatmentListVViewService
             return writeAndThrowError(config('params')['db_service']['error']['treatment_list_v_view'], $e);
         }
     }
+    public function handleDataBaseGetWithTreatmentCode($id)
+    {
+        try {
+            return $this->getDataByTreatmentCode($id);
+        } catch (\Throwable $e) {
+            return writeAndThrowError(config('params')['db_service']['error']['treatment_list_v_view'], $e);
+        }
+    }
+
 
     // public function createTreatmentListVView($request)
     // {
