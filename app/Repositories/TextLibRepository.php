@@ -18,6 +18,7 @@ class TextLibRepository
     {
         return $this->textLib
             ->select(
+                'his_text_lib.id as key',
                 'his_text_lib.*'
             );
     }
