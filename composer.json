@@ -11,6 +11,7 @@
         "php": "^8.2",
         "elasticsearch/elasticsearch": "8.15",
         "guzzlehttp/guzzle": "^7.0.1",
+        "henck/rtf-to-html": "^1.2",
         "intervention/image": "^3.11",
         "irazasyed/telegram-bot-sdk": "^3.14",
         "laravel/framework": "^11.0",

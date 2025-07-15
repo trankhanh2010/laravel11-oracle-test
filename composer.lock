@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "952d08e1013d73457044e1ab99b3c2fa",
+    "content-hash": "5431201014ec9b3dba0759b5a065e039",
     "packages": [
         {
             "name": "brick/math",
@@ -1169,6 +1169,53 @@
                 }
             ],
             "time": "2025-02-03T10:55:03+00:00"
+        },
+        {
+            "name": "henck/rtf-to-html",
+            "version": "1.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/henck/rtf-html-php.git",
+                "reference": "ff984a1d44fa359c85c0cffa0d66e991bf4dc967"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/henck/rtf-html-php/zipball/ff984a1d44fa359c85c0cffa0d66e991bf4dc967",
+                "reference": "ff984a1d44fa359c85c0cffa0d66e991bf4dc967",
+                "shasum": ""
+            },
+            "require": {
+                "ext-mbstring": "*"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "7"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "RtfHtmlPhp\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "Alexander van Oostenrijk",
+                    "email": "alex.vanoostenrijk@gmail.com"
+                }
+            ],
+            "description": "RTF to HTML converter in PHP",
+            "keywords": [
+                "converter",
+                "rtf"
+            ],
+            "support": {
+                "issues": "https://github.com/henck/rtf-html-php/issues",
+                "source": "https://github.com/henck/rtf-html-php/tree/v1.2"
+            },
+            "time": "2021-09-10T15:19:14+00:00"
         },
         {
             "name": "intervention/gif",
