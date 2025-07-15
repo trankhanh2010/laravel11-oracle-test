@@ -74,6 +74,10 @@ class YeuCauKhamClsPtttVViewRepository
             ->select(
                 [
                     "xa_v_his_yeu_cau_kham_cls_pttt.id",
+                    "xa_v_his_yeu_cau_kham_cls_pttt.yeu_cau_kham_cls_status_text",
+                    "xa_v_his_yeu_cau_kham_cls_pttt.goi_nho",
+                    "xa_v_his_yeu_cau_kham_cls_pttt.service_req_stt_code",
+                    "xa_v_his_yeu_cau_kham_cls_pttt.service_req_stt_name",
                     "xa_v_his_yeu_cau_kham_cls_pttt.treatment_id",
                     "xa_v_his_yeu_cau_kham_cls_pttt.execute_room_id",
                     "xa_v_his_yeu_cau_kham_cls_pttt.exam_end_type",
@@ -157,6 +161,8 @@ class YeuCauKhamClsPtttVViewRepository
             ->select(
                 [
                     "xa_v_his_yeu_cau_kham_cls_pttt.id",
+                    "xa_v_his_yeu_cau_kham_cls_pttt.yeu_cau_kham_cls_status_text",
+                    "xa_v_his_yeu_cau_kham_cls_pttt.goi_nho",
                     "sere_serv.id as current_sere_serv_id",
                     "xa_v_his_yeu_cau_kham_cls_pttt.treatment_id",
                     "xa_v_his_yeu_cau_kham_cls_pttt.patient_id",
