@@ -19,6 +19,10 @@ class ServiceReqListVView extends Model
     protected $guarded = [
         'id',
     ];
+    protected $hidden = [
+        'tdl_service_name_sort', // Tránh trả ra JSON -- trường này chỉ dùng để sắp xếp trong lấy lấy data danh sách y lệnh cho thêm tờ điều trị
+        'sort_num_order',
+    ];
     public function sere_serv()
     {
         return $this->hasMany(SereServ::class, 'service_req_id', 'id');

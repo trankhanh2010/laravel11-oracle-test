@@ -231,6 +231,8 @@ class ServiceReqListVViewRepository
                 'request_room.room_type_code as request_room_type_code',
                 'request_room.room_type_name as request_room_type_name',
 
+                'xa_v_his_service_req_list.num_order as service_req_num_order',
+
             ]);
     }
     public function applyJoinsThucHienDonDuTruKhiThemToDieuTri()
@@ -252,11 +254,12 @@ class ServiceReqListVViewRepository
                 'his_service_req_type.service_req_type_code',
                 'his_service_req_type.service_req_type_name',
 
-                'xa_v_his_service_req_list.intruction_time',
-                'xa_v_his_service_req_list.intruction_date',
+                'xa_v_his_service_req_list.use_time',
+                'xa_v_his_service_req_list.use_time_date',
 
                 'xa_v_his_service_req_list.request_room_id',
-
+                'xa_v_his_service_req_list.num_order as service_req_num_order',
+                'xa_v_his_service_req_list.prescription_type_id',
             ]);
     }
     public function applyWithParam($query)
@@ -570,9 +573,14 @@ class ServiceReqListVViewRepository
                 switch ($currentField) {
                     case 'text_du_tru':
                         $firstItem = $group->first();
-                        $textNgay = $firstItem['text_du_tru'] ? ' ngày '. Carbon::createFromFormat('YmdHis', $firstItem['intruction_date'])->format('d/m/Y') : '';
-                        $result['textDuTru'] = $firstItem['text_du_tru'] . $textNgay;    
+                        $textNgay = $firstItem['text_du_tru'] ? ' ngày ' . Carbon::createFromFormat('YmdHis', $firstItem['intruction_date'])->format('d/m/Y') : '';
+                        $result['textDuTru'] = $firstItem['text_du_tru'] . $textNgay;
                         $result['intructionDate'] = $firstItem['intruction_date'] ?? null;
+                        break;
+                    case 'service_req_code':
+                        $firstItem = $group->first();
+                        $result['serviceReqSttCode'] = $firstItem['service_req_stt_code'];
+                        $result['serviceReqSttName'] = $firstItem['service_req_stt_name'];
                         break;
                     default:
                 }
@@ -616,13 +624,13 @@ class ServiceReqListVViewRepository
                     'total' => $group->count(),
                 ];
                 switch ($currentField) {
-                    case 'intruction_time':
+                    case 'use_time':
                         $firstItem = $group->first();
-                        $result['intructionDate'] = $firstItem['intruction_date'] ?? null;
+                        $result['useTimeDate'] = $firstItem['use_time_date'] ?? null;
                         break;
                     case 'service_req_code':
                         $firstItem = $group->first();
-                        $result['key'] = ($firstItem['service_req_code'] ?? '').($firstItem['service_type_name'] ?? '');
+                        $result['key'] = ($firstItem['service_req_code'] ?? '') . ($firstItem['service_type_name'] ?? '');
                         break;
                     default:
                 }
@@ -690,11 +698,43 @@ class ServiceReqListVViewRepository
         $queryDichVu = clone $query;
         $queryDon = clone $query;
 
-        $queryDichVu->leftJoin('his_sere_serv sere_serv', 'sere_serv.service_req_id', '=', 'xa_v_his_service_req_list.id')
+        $queryDichVu = $this->getQueryDichVuLucThemToDieuTri($queryDichVu);
+        $queryDon = $this->getQueryDonLucThemToDieuTri($queryDon);
+
+        $queryResult =  $queryDichVu->unionall($queryDon); // Hợp đơn với dịch vụ ở trên
+
+        return $queryResult;
+    }
+    public function getQueryDonLucThemToDieuTri($query)
+    {
+        return $query->leftJoin('xa_v_his_don don', 'don.service_req_id', '=', 'xa_v_his_service_req_list.id')
+
+            ->addSelect([
+                'don.service_name as tdl_service_name', // Lấy MedicineTypeName hoặc MedicineTypeCode
+                DB::connection('oracle_his')->raw("NLSSORT(DON.SERVICE_NAME, 'NLS_SORT = Vietnamese') AS TDL_SERVICE_NAME_SORT"),
+                'don.service_code as tdl_service_code',
+                'don.amount',
+                'don.service_unit_code',
+                'don.service_unit_name',
+                'don.service_type_code',
+                'don.service_type_name',
+                'don.num_order as sort_num_order',
+                DB::raw("CASE WHEN his_service_req_type.service_req_type_code = 'DT' THEN don.service_type_name || ' dự trù' ELSE NULL END AS text_du_tru"),
+            ])
+            ->where('don.is_delete', 0)
+            ->whereIn('don.service_type_code', ['TH', 'VT']) // thuốc và vật tư lấy ở dưới rồi hợp lại;
+            ->whereIn('his_service_req_type.service_req_type_code', ['DK', 'DT', 'DN']); // đơn
+
+    }
+    public function getQueryDichVuLucThemToDieuTri($query)
+    {
+        return $query->leftJoin('his_sere_serv sere_serv', 'sere_serv.service_req_id', '=', 'xa_v_his_service_req_list.id')
             ->leftJoin('his_service_type service_type', 'service_type.id', '=', 'sere_serv.tdl_service_type_id')
             ->leftJoin('his_service_unit service_unit', 'service_unit.id', '=', 'sere_serv.tdl_service_unit_id')
             ->addSelect([
                 'sere_serv.tdl_service_name',
+                DB::connection('oracle_his')->raw("NLSSORT(sere_serv.TDL_SERVICE_NAME, 'NLS_SORT = Vietnamese') AS TDL_SERVICE_NAME_SORT"),
+                'sere_serv.tdl_service_code',
                 'sere_serv.amount',
                 'service_unit.service_unit_code',
                 'service_unit.service_unit_name',
@@ -705,26 +745,6 @@ class ServiceReqListVViewRepository
             ])
             ->whereNotIn('service_type.service_type_code', ['TH', 'VT']) // thuốc và vật tư lấy ở dưới rồi hợp lại
             ->whereNotIn('his_service_req_type.service_req_type_code', ['DK', 'DT', 'DN']); // đơn
-
-        $queryDon->leftJoin('xa_v_his_don don', 'don.service_req_id', '=', 'xa_v_his_service_req_list.id')
-
-            ->addSelect([
-                'don.service_name as tdl_service_name', // Lấy MedicineTypeName hoặc MedicineTypeCode
-                'don.amount',
-                'don.service_unit_code',
-                'don.service_unit_name',
-                'don.service_type_code',
-                'don.service_type_name',
-                'don.num_order as sort_num_order',
-                DB::raw("CASE WHEN his_service_req_type.service_req_type_code = 'DT' THEN don.m_type_name || ' dự trù' ELSE NULL END AS text_du_tru"),
-            ])
-            ->where('don.is_delete', 0)
-            ->whereIn('don.service_type_code', ['TH', 'VT']) // thuốc và vật tư lấy ở dưới rồi hợp lại;
-            ->whereIn('his_service_req_type.service_req_type_code', ['DK', 'DT', 'DN']); // đơn
-
-        $queryResult =  $queryDichVu->unionall($queryDon); // Hợp đơn với dịch vụ ở trên
-
-        return $queryResult;
     }
     public function getById($id)
     {

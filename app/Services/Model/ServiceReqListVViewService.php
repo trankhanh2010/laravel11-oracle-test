@@ -139,7 +139,8 @@ class ServiceReqListVViewService
             "intruction_date" => "desc",
             "service_type_name" => "asc",
             "service_req_code" => "asc",
-            "sort_num_order" => 'asc',
+            "sort_num_order" => 'asc', // đơn thì sắp theo num_order
+            "tdl_service_name_sort" => 'asc', // dịch vụ num_order = null thì sắp theo tên tiếng Việt tăng dần
         ];
 
         $data = $this->serviceReqListVViewRepository->applyUnionAllDichVuDon($data); // Join các đơn thuốc - vật tư, dịch vụ và hợp lại
@@ -160,7 +161,7 @@ class ServiceReqListVViewService
     {
         $data = $this->serviceReqListVViewRepository->applyJoinsThucHienDonDuTruKhiThemToDieuTri();
         // $data = $this->serviceReqListVViewRepository->applyWithParamThucHienDonDuTruKhiThemToDieuTri($data); 
-        $data = $this->serviceReqListVViewRepository->applyIsDonTuTrucFilter($data); // khi lấy danh sách lúc thêm tờ điều trị => chỉ lấy đơn tủ trực
+        // $data = $this->serviceReqListVViewRepository->applyIsDonTuTrucFilter($data); // khi lấy danh sách lúc thêm tờ điều trị => chỉ lấy đơn tủ trực
         $data = $this->serviceReqListVViewRepository->applyUsedForTrackingIdIsNullFilter($data); // khi lấy danh sách lúc thêm tờ điều trị thì lấy mấy cái chưa có usedForTrackingId
         $data = $this->serviceReqListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
         $data = $this->serviceReqListVViewRepository->applyIsDeleteFilter($data, 0);
@@ -174,15 +175,22 @@ class ServiceReqListVViewService
         $data = $this->serviceReqListVViewRepository->applyToiChiDinhFilter($data, $this->params->toiChiDinh, $this->params->currentLoginname);
         $count = null;
         $this->params->orderBy = [
+            "prescription_type_id" => 'desc',
+            "request_department_id" => 'asc',
+            "exp_mest_medi_stock_id" => 'desc',
+            "service_req_num_order" => 'asc',
+            "service_type_name" => 'desc',
+            "service_req_code" => 'asc',
             "sort_num_order" => 'asc',
         ];
-        $data = $this->serviceReqListVViewRepository->applyUnionAllDichVuDon($data); // Join các đơn thuốc - vật tư, dịch vụ và hợp lại
+
+        $data = $this->serviceReqListVViewRepository->getQueryDonLucThemToDieuTri($data); // Join các đơn thuốc - vật tư 
 
         $data = $this->serviceReqListVViewRepository->applyOrderingUnionAll($data, $this->params->orderBy);
         $data = $this->serviceReqListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
         // Group theo field
         $this->params->groupBy = [
-            'intructionTime',
+            'useTime',
             'serviceTypeName',
             'serviceReqCode',
         ];
