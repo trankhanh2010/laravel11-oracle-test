@@ -101,14 +101,29 @@ class KetQuaClsVViewRepository
     public function applyTrenNguongDuoiNguongFilter($query, $trenNguong, $duoiNguong)
     {
         // if ($trenNguong || $duoiNguong) {
-        //     $query->where('xa_v_his_ket_qua_cls.service_type_code', 'XN'); // Chỉ áp dụng cho loại dịch vụ là xét nghiệm
+        //     $query->where('xa_v_his_ket_qua_cls.service_type_code', 'XN');
 
         //     $query->where(function ($q) use ($trenNguong, $duoiNguong) {
         //         if ($trenNguong) {
-        //             $q->orWhereRaw('CAST(xa_v_his_ket_qua_cls.value AS FLOAT) > CAST(his_test_index_range.max_value AS FLOAT)');
+        //             $q->orWhereExists(function ($sub) {
+        //                 $sub->select(DB::raw(1))
+        //                     ->from('his_test_index_range')
+        //                     ->whereRaw('his_test_index_range.test_index_id = xa_v_his_ket_qua_cls.test_index_id')
+        //                     ->whereRaw("REGEXP_LIKE(xa_v_his_ket_qua_cls.ket_qua, '^-?[0-9]+(\\.[0-9]+)?$')")
+        //                     ->whereRaw("REGEXP_LIKE(his_test_index_range.max_value, '^-?[0-9]+(\\.[0-9]+)?$')")
+        //                     ->whereRaw('TO_NUMBER(xa_v_his_ket_qua_cls.ket_qua) > TO_NUMBER(his_test_index_range.max_value)');
+        //             });
         //         }
+
         //         if ($duoiNguong) {
-        //             $q->orWhereRaw('CAST(xa_v_his_ket_qua_cls.value AS FLOAT) < CAST(his_test_index_range.min_value AS FLOAT)');
+        //             $q->orWhereExists(function ($sub) {
+        //                 $sub->select(DB::raw(1))
+        //                     ->from('his_test_index_range')
+        //                     ->whereRaw('his_test_index_range.test_index_id = xa_v_his_ket_qua_cls.test_index_id')
+        //                     ->whereRaw("REGEXP_LIKE(xa_v_his_ket_qua_cls.ket_qua, '^-?[0-9]+(\\.[0-9]+)?$')")
+        //                     ->whereRaw("REGEXP_LIKE(his_test_index_range.min_value, '^-?[0-9]+(\\.[0-9]+)?$')")
+        //                     ->whereRaw('TO_NUMBER(xa_v_his_ket_qua_cls.ket_qua) < TO_NUMBER(his_test_index_range.min_value)');
+        //             });
         //         }
         //     });
         // }

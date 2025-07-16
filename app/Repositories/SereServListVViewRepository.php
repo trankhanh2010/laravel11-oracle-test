@@ -387,7 +387,7 @@ class SereServListVViewRepository
                 return [
                     $originalField => (string)$key, // Hiển thị tên gốc
                     'total' => $group->count(),
-                    'data' => $groupData($group, $fields),
+                    'children' => $groupData($group, $fields),
                 ];
             })->values();
         };
