@@ -44,9 +44,8 @@ class CreateTextLibRequest extends FormRequest
                 'max:1000',
                 function ($attribute, $value, $fail) {
                     if ($value !== null && $value !== '') {
-                        // Phải bắt đầu và kết thúc bằng dấu phẩy, và không chứa khoảng trắng
-                        if (!preg_match('/^,(?!,)([^,\s]+,)*$/', $value)) {
-                            $fail("Định dạng hashtag không hợp lệ. Phải có dạng ,hashtag1, hoặc ,hashtag1,hashtag2,...");
+                        if (!preg_match('/^[a-záàảãạăắằẳẵặâấầẩẫậđéèẻẽẹêếềểễệíìỉĩịóòỏõọôốồổỗộơớờởỡợúùủũụưứừửữựýỳỷỹỵ_,]+$/u', $value)) {
+                            $fail("Định dạng hashtag không hợp lệ. Chỉ chấp nhận chữ thường có hoặc không dấu, dấu (_) và dấu (,), không khoảng trắng.");
                         }
                     }
                 },
