@@ -45,6 +45,7 @@ class KetQuaClsVViewRepository
                 "xa_v_his_ket_qua_cls.ten_chi_so",
                 "xa_v_his_ket_qua_cls.is_important",
                 "xa_v_his_ket_qua_cls.is_leaf",
+                "xa_v_his_ket_qua_cls.sri_code",
             ]);
     }
     public function applyKeywordFilter($query, $keyword)

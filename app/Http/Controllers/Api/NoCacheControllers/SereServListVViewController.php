@@ -102,6 +102,12 @@ class SereServListVViewController extends BaseApiCacheController
 
                 $data = $this->sereServListVViewService->handleDataBaseGetAllSuaChiDinh();
                 break;
+        case 'chonThongTinXuLy': // Lấy ra danh sách dịch vụ đã chọn của bệnh nhân và nhóm lại theo loại dịch vụ
+                if (!$this->treatmentId) {
+                    $this->errors[$this->treatmentIdName] = "Thiếu thông tin hồ sơ bệnh án!";
+                }
+                $data = $this->sereServListVViewService->handleDataBaseGetAllChonThongTinXuLy();
+                break;
             default:
                 $data = $this->sereServListVViewService->handleDataBaseGetAll();
                 break;

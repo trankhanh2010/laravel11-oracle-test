@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Jobs\ElasticSearch\Index\ProcessElasticIndexingJob;
+use App\Models\View\DonVView;
 use App\Models\View\SereServListVView;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -10,9 +11,13 @@ use Illuminate\Support\Str;
 class SereServListVViewRepository
 {
     protected $sereServListVView;
-    public function __construct(SereServListVView $sereServListVView)
-    {
+    protected $donVView;
+    public function __construct(
+        SereServListVView $sereServListVView,
+        DonVView $donVView,
+    ) {
         $this->sereServListVView = $sereServListVView;
+        $this->donVView = $donVView;
     }
 
     public function applyJoins()
@@ -151,6 +156,14 @@ class SereServListVViewRepository
             'list_select_patient_types',
         ]);
     }
+    public function applyJoinsChonThongTinXuLy()
+    {
+        // UnionAll rồi mới addSelect sau
+        return $this->sereServListVView->select([
+            'xa_v_his_sere_serv_list.service_name',
+            'xa_v_his_sere_serv_list.service_code',
+        ]);
+    }
     public function applyKeywordFilter($query, $keyword)
     {
         return $query->where(function ($query) use ($keyword) {
@@ -268,6 +281,69 @@ class SereServListVViewRepository
         }
         return $query;
     }
+    public function applyChonThongTinXuLyFilter($query)
+    {
+        $query->whereIn(('xa_v_his_sere_serv_list.service_type_code'), ['KH', 'XN', 'HA', 'TT', 'CN', 'GI', 'NS', 'SA', 'PT', 'CL', 'PH', 'GB',]);
+        return $query;
+    }
+    public function applyUnionAllDichVuDonChonThongTinXuLy($query, $treatmentId)
+    {
+        $queryDichVu = clone $query;
+        // $queryDon = clone $query;
+
+        $queryDichVu = $this->getQueryDichVuLucChonThongTinXuLy($queryDichVu);
+        $queryDon = $this->getQueryDonLucChonThongTinXuLy($treatmentId);
+        $queryResult =  $queryDichVu->unionall($queryDon); // Hợp đơn với dịch vụ ở trên
+
+        return $queryResult;
+    }
+    public function getQueryDonLucChonThongTinXuLy($treatmentId)
+    {
+        try {
+            return $this->donVView
+                ->select([
+                    'xa_v_his_don.service_name',
+                    'xa_v_his_don.service_code',
+                    'xa_v_his_don.CONCENTRA',
+                    DB::connection('oracle_his')->raw('SUM(xa_v_his_don.amount) as amount'),
+                    'xa_v_his_don.service_unit_code',
+                    'xa_v_his_don.service_unit_name',
+                    'xa_v_his_don.service_type_code',
+                    'xa_v_his_don.service_type_name',
+                    'xa_v_his_don.tutorial',
+                ])
+                ->where('xa_v_his_don.is_delete', 0)
+                ->whereIn('xa_v_his_don.service_type_code', ['TH', 'VT'])
+                ->where('xa_v_his_don.TREATMENT_ID', $treatmentId)
+                ->groupBy( // Nhóm lại theo serviceName amount là tổng amount
+                    'xa_v_his_don.service_name',
+                    'xa_v_his_don.service_code',
+                    'xa_v_his_don.CONCENTRA',
+                    'xa_v_his_don.service_unit_code',
+                    'xa_v_his_don.service_unit_name',
+                    'xa_v_his_don.service_type_code',
+                    'xa_v_his_don.service_type_name',
+                    'xa_v_his_don.tutorial'
+                );
+        } catch (\Throwable $e) {
+            return writeAndThrowError(config('params')['db_service']['error']['don_v_view'], $e);
+        }
+    }
+
+    public function getQueryDichVuLucChonThongTinXuLy($query)
+    {
+        $query = $this->applyChonThongTinXuLyFilter($query);
+        $query->addSelect([
+            DB::connection('oracle_his')->raw("NULL as concentra"),
+            'xa_v_his_sere_serv_list.amount',
+            'xa_v_his_sere_serv_list.service_unit_code',
+            'xa_v_his_sere_serv_list.service_unit_name',
+            'xa_v_his_sere_serv_list.service_type_code',
+            'xa_v_his_sere_serv_list.service_type_name',
+            DB::connection('oracle_his')->raw("NULL as tutorial"),
+        ]);
+        return $query;
+    }
 
     public function applyOrdering($query, $orderBy, $orderByJoin)
     {
@@ -383,6 +459,20 @@ class SereServListVViewRepository
                 $service->list_select_patient_types->each->makeHidden('pivot');
                 // $service->list_select_service_room->each->makeHidden('pivot');
             });
+            return $data;
+        } else {
+            // Lấy dữ liệu phân trang
+            return $query
+                ->skip($start)
+                ->take($limit)
+                ->get();
+        }
+    }
+    public function fetchDataNotWith($query, $getAll, $start, $limit)
+    {
+        if ($getAll) {
+            // Lấy tất cả dữ liệu
+            $data = $query->get();
             return $data;
         } else {
             // Lấy dữ liệu phân trang

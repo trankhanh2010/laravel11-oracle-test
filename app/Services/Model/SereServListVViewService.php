@@ -94,6 +94,26 @@ class SereServListVViewService
         $data = $this->sereServListVViewRepository->applyGroupByField($data, $this->params->groupBy);
         return ['data' => $data, 'count' => $count];
     }
+    private function getAllDataFromDatabaseChonThongTinXuLy()
+    {
+        $data = $this->sereServListVViewRepository->applyJoinsChonThongTinXuLy();
+        $data = $this->sereServListVViewRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $data = $this->sereServListVViewRepository->applyIsDeleteFilter($data, 0);
+        $data = $this->sereServListVViewRepository->applyIsNoExecuteFilter($data);
+        $data = $this->sereServListVViewRepository->applyServiceReqIsNoExecuteFilter($data);
+        $data = $this->sereServListVViewRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
+        $data = $this->sereServListVViewRepository->applyUnionAllDichVuDonChonThongTinXuLy($data, $this->params->treatmentId);
+        
+        $count = null;
+        $data = $this->sereServListVViewRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->sereServListVViewRepository->fetchDataNotWith($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        // Group theo field
+        $this->params->groupBy = [
+            'serviceTypeName',
+        ];
+        $data = $this->sereServListVViewRepository->applyGroupByField($data, $this->params->groupBy);
+        return ['data' => $data, 'count' => $count];
+    }
     private function getDataById($id)
     {
         $data = $this->sereServListVViewRepository->applyJoins()
@@ -117,6 +137,14 @@ class SereServListVViewService
     {
         try {
             return $this->getAllDataFromDatabaseSuaChiDinh();
+        } catch (\Throwable $e) {
+            return writeAndThrowError(config('params')['db_service']['error']['sere_serv_list_v_view'], $e);
+        }
+    }
+    public function handleDataBaseGetAllChonThongTinXuLy()
+    {
+        try {
+            return $this->getAllDataFromDatabaseChonThongTinXuLy();
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['sere_serv_list_v_view'], $e);
         }

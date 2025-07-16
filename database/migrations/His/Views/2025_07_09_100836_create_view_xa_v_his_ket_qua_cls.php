@@ -33,7 +33,8 @@ SELECT
     null as ma_chi_so,
     null as ten_chi_so,
     null as is_important,
-    1 as is_leaf   
+    1 as is_leaf,
+    null as sri_code   
 
 FROM HIS_SERE_SERV_EXT ext     
 LEFT JOIN HIS_SERE_SERV sere_serv ON ext.sere_serv_id = sere_serv.id
@@ -64,7 +65,8 @@ SELECT
     test_index.test_index_code as ma_chi_so,
     test_index.test_index_name as ten_chi_so,
     test_index.is_important,
-    1 as is_leaf     
+    1 as is_leaf,
+    tein.sri_code     
 
 FROM HIS_SERE_SERV_TEIN tein     
 LEFT JOIN HIS_SERE_SERV sere_serv ON tein.sere_serv_id = sere_serv.id

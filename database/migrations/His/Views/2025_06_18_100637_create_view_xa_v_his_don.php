@@ -86,7 +86,8 @@ null as htu_id,
 null as htu_ids,
 exp_mest_material.pres_amount,
 exp_mest.IS_NOT_TAKEN, -- Đơn không lấy (phòng khám) => đơn không lấy thì k cho sửa đơn
-exp_mest_material.patient_type_id
+exp_mest_material.patient_type_id,
+service_req.treatment_id
 
 FROM HIS_EXP_MEST_MATERIAL exp_mest_material     
 LEFT JOIN HIS_EXP_MEST exp_mest on exp_mest.id = exp_mest_material.exp_mest_id and exp_mest.is_delete = 0
@@ -173,7 +174,8 @@ exp_mest_medicine.htu_id,
 exp_mest_medicine.htu_ids,
 exp_mest_medicine.pres_amount,
 exp_mest.IS_NOT_TAKEN, -- Đơn không lấy (phòng khám) => đơn không lấy thì k cho sửa đơn
-exp_mest_medicine.patient_type_id
+exp_mest_medicine.patient_type_id,
+service_req.treatment_id
 
 FROM HIS_EXP_MEST_MEDICINE exp_mest_medicine     
 LEFT JOIN HIS_EXP_MEST exp_mest on exp_mest.id = exp_mest_medicine.exp_mest_id and exp_mest.is_delete = 0
@@ -260,7 +262,8 @@ service_req_mety.htu_id,
 null as htu_ids,
 service_req_mety.pres_amount,
 null as IS_NOT_TAKEN, -- Đơn không lấy (phòng khám) => đơn không lấy thì k cho sửa đơn
-null as patient_type_id
+null as patient_type_id,
+service_req.treatment_id
 
 FROM HIS_SERVICE_REQ_METY service_req_mety     
 LEFT JOIN HIS_MEDICINE_TYPE medicine_type on medicine_type.id = service_req_mety.medicine_type_id
@@ -342,7 +345,8 @@ null as htu_id,
 null as htu_ids,
 service_req_maty.pres_amount,
 null as IS_NOT_TAKEN, -- Đơn không lấy (phòng khám) => đơn không lấy thì k cho sửa đơn
-null as patient_type_id
+null as patient_type_id,
+service_req.treatment_id
 
 FROM HIS_SERVICE_REQ_MATY service_req_maty     
 LEFT JOIN HIS_MATERIAL_TYPE material_type on material_type.id = service_req_maty.material_type_id

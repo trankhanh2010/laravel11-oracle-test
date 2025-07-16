@@ -76,7 +76,8 @@ SELECT
      service_req.note,  -- ghi chú
      service_req.treatment_type_id as req_treatment_type_id,
      service_req.is_main_exam,
-     service_req.parent_id as parent_service_req_id
+     service_req.parent_id as parent_service_req_id,
+     service_req.service_req_type_id
 
     FROM his_sere_serv sere_serv
     LEFT JOIN his_service service on service.id = sere_serv.service_id
