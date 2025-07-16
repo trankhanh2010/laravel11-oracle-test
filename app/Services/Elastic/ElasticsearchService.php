@@ -405,7 +405,7 @@ class ElasticsearchService extends BaseApiCacheController
         try {
             if ($this->getAll) {
                 return [
-                    'size' => 10000,
+                    'size' => 2000000,
                     'from' => 0,
                 ];
             }

@@ -24,6 +24,9 @@ class KetQuaClsVViewDTO
     public $hienThiDichVuChaLoaiXN;
     public $intructionTimeFrom;
     public $intructionTimeTo;
+    public $trenNguong;
+    public $duoiNguong;
+    public $chiSoQuanTrong;
     public function __construct(
         $ketQuaClsVViewName,
         $keyword, 
@@ -45,6 +48,9 @@ class KetQuaClsVViewDTO
         $hienThiDichVuChaLoaiXN,
         $intructionTimeFrom,
         $intructionTimeTo,
+        $trenNguong,
+        $duoiNguong,
+        $chiSoQuanTrong,
         )
     {
         $this->ketQuaClsVViewName = $ketQuaClsVViewName;
@@ -67,5 +73,8 @@ class KetQuaClsVViewDTO
         $this->hienThiDichVuChaLoaiXN = $hienThiDichVuChaLoaiXN;
         $this->intructionTimeFrom = $intructionTimeFrom;
         $this->intructionTimeTo = $intructionTimeTo;
+        $this->trenNguong = $trenNguong;
+        $this->duoiNguong = $duoiNguong;
+        $this->chiSoQuanTrong = $chiSoQuanTrong;
     }
 }

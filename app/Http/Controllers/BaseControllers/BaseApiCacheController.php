@@ -284,6 +284,12 @@ class BaseApiCacheController extends Controller
     protected $cungCoSoName = 'CungCoSo';
     protected $testServiceTypeId;
     protected $testServiceTypeIdName = 'TestServiceTypeId';
+    protected $trenNguong;
+    protected $trenNguongName = 'TrenNguong';
+    protected $duoiNguong;
+    protected $duoiNguongName = 'DuoiNguong';
+    protected $chiSoQuanTrong;
+    protected $chiSoQuanTrongName = 'ChiSoQuanTrong';
     protected $treatmentId;
     protected $treatmentIdName = 'TreatmentId';
     protected $trackingId;
@@ -2290,6 +2296,18 @@ class BaseApiCacheController extends Controller
         if (!is_bool($this->hasExecute)) {
             $this->errors[$this->hasExecuteName] = $this->messFormat;
             $this->hasExecute = true;
+        }
+        $this->trenNguong = $this->paramRequest['ApiData']['TrenNguong'] ?? false;
+        if (!is_bool($this->trenNguong)) {
+            $this->errors[$this->trenNguongName] = $this->messFormat;
+        }
+        $this->duoiNguong = $this->paramRequest['ApiData']['DuoiNguong'] ?? false;
+        if (!is_bool($this->duoiNguong)) {
+            $this->errors[$this->duoiNguongName] = $this->messFormat;
+        }
+        $this->chiSoQuanTrong = $this->paramRequest['ApiData']['ChiSoQuanTrong'] ?? false;
+        if (!is_bool($this->chiSoQuanTrong)) {
+            $this->errors[$this->chiSoQuanTrongName] = $this->messFormat;
         }
         $this->fromTime = $this->paramRequest['ApiData']['FromTime'] ?? null;
         if ($this->fromTime != null) {

@@ -23,7 +23,8 @@ SELECT
     service_req.intruction_time,
     ext.tdl_treatment_id,
     ext.conclude as ket_qua,
-    ext.description as ghi_chu,
+    ext.description as nhan_xet,
+    null as ghi_chu,
     service.service_code,
     service.service_name,
     null as parent_id,
@@ -34,7 +35,8 @@ SELECT
     null as ten_chi_so,
     null as is_important,
     1 as is_leaf,
-    null as sri_code   
+    null as sri_code,
+    null as test_index_id   
 
 FROM HIS_SERE_SERV_EXT ext     
 LEFT JOIN HIS_SERE_SERV sere_serv ON ext.sere_serv_id = sere_serv.id
@@ -55,6 +57,7 @@ SELECT
     service_req.intruction_time,
     tein.tdl_treatment_id,
     tein.value as ket_qua,
+    null as nhan_xet,
     TO_CLOB(tein.description) as ghi_chu, -- ép sang clob để hợp
     service.service_code,
     service.service_name,
@@ -66,7 +69,8 @@ SELECT
     test_index.test_index_name as ten_chi_so,
     test_index.is_important,
     1 as is_leaf,
-    tein.sri_code     
+    tein.sri_code,
+    tein.test_index_id     
 
 FROM HIS_SERE_SERV_TEIN tein     
 LEFT JOIN HIS_SERE_SERV sere_serv ON tein.sere_serv_id = sere_serv.id

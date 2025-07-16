@@ -34,6 +34,7 @@ class KetQuaClsVViewRepository
                 "xa_v_his_ket_qua_cls.intruction_date",
                 "xa_v_his_ket_qua_cls.tdl_treatment_id",
                 "xa_v_his_ket_qua_cls.ket_qua",
+                "xa_v_his_ket_qua_cls.nhan_xet",
                 "xa_v_his_ket_qua_cls.ghi_chu",
                 "xa_v_his_ket_qua_cls.service_code",
                 "xa_v_his_ket_qua_cls.service_name",
@@ -88,6 +89,30 @@ class KetQuaClsVViewRepository
         if ($param != null) {
             $query->where(DB::connection('oracle_his')->raw('xa_v_his_ket_qua_cls.intruction_time'), '<=', $param);
         }
+        return $query;
+    }
+    public function applyChiSoQuanTrongFilter($query, $param)
+    {
+        if ($param != null) {
+            $query->where(DB::connection('oracle_his')->raw('xa_v_his_ket_qua_cls.is_important'),1);
+        }
+        return $query;
+    }
+    public function applyTrenNguongDuoiNguongFilter($query, $trenNguong, $duoiNguong)
+    {
+        // if ($trenNguong || $duoiNguong) {
+        //     $query->where('xa_v_his_ket_qua_cls.service_type_code', 'XN'); // Chỉ áp dụng cho loại dịch vụ là xét nghiệm
+
+        //     $query->where(function ($q) use ($trenNguong, $duoiNguong) {
+        //         if ($trenNguong) {
+        //             $q->orWhereRaw('CAST(xa_v_his_ket_qua_cls.value AS FLOAT) > CAST(his_test_index_range.max_value AS FLOAT)');
+        //         }
+        //         if ($duoiNguong) {
+        //             $q->orWhereRaw('CAST(xa_v_his_ket_qua_cls.value AS FLOAT) < CAST(his_test_index_range.min_value AS FLOAT)');
+        //         }
+        //     });
+        // }
+
         return $query;
     }
     public function applyOrdering($query, $orderBy, $orderByJoin)

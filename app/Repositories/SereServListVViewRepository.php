@@ -305,25 +305,24 @@ class SereServListVViewRepository
                     'xa_v_his_don.service_name',
                     'xa_v_his_don.service_code',
                     'xa_v_his_don.CONCENTRA',
-                    DB::connection('oracle_his')->raw('SUM(xa_v_his_don.amount) as amount'),
+                    DB::raw('SUM(xa_v_his_don.amount) as amount'),
                     'xa_v_his_don.service_unit_code',
                     'xa_v_his_don.service_unit_name',
                     'xa_v_his_don.service_type_code',
                     'xa_v_his_don.service_type_name',
-                    'xa_v_his_don.tutorial',
+                    DB::raw('MAX(xa_v_his_don.tutorial) KEEP (DENSE_RANK LAST ORDER BY xa_v_his_don.id) AS tutorial'),
                 ])
                 ->where('xa_v_his_don.is_delete', 0)
                 ->whereIn('xa_v_his_don.service_type_code', ['TH', 'VT'])
                 ->where('xa_v_his_don.TREATMENT_ID', $treatmentId)
-                ->groupBy( // Nhóm lại theo serviceName amount là tổng amount
+                ->groupBy(
                     'xa_v_his_don.service_name',
                     'xa_v_his_don.service_code',
                     'xa_v_his_don.CONCENTRA',
                     'xa_v_his_don.service_unit_code',
                     'xa_v_his_don.service_unit_name',
                     'xa_v_his_don.service_type_code',
-                    'xa_v_his_don.service_type_name',
-                    'xa_v_his_don.tutorial'
+                    'xa_v_his_don.service_type_name'
                 );
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['don_v_view'], $e);

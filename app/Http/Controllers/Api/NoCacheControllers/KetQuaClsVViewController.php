@@ -4,10 +4,7 @@ namespace App\Http\Controllers\Api\NoCacheControllers;
 
 use App\DTOs\KetQuaClsVViewDTO;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
-use App\Http\Requests\KetQuaClsVView\CreateKetQuaClsVViewRequest;
-use App\Http\Requests\KetQuaClsVView\UpdateKetQuaClsVViewRequest;
 use App\Models\View\KetQuaClsVView;
-use App\Services\Elastic\ElasticsearchService;
 use App\Services\Model\KetQuaClsVViewService;
 use Illuminate\Http\Request;
 
@@ -16,10 +13,9 @@ class KetQuaClsVViewController extends BaseApiCacheController
 {
     protected $ketQuaClsVViewService;
     protected $ketQuaClsVViewDTO;
-    public function __construct(Request $request, ElasticsearchService $elasticSearchService, KetQuaClsVViewService $ketQuaClsVViewService, KetQuaClsVView $ketQuaClsVView)
+    public function __construct(Request $request,KetQuaClsVViewService $ketQuaClsVViewService, KetQuaClsVView $ketQuaClsVView)
     {
         parent::__construct($request); // Gọi constructor của BaseController
-        $this->elasticSearchService = $elasticSearchService;
         $this->ketQuaClsVViewService = $ketQuaClsVViewService;
         $this->ketQuaClsVView = $ketQuaClsVView;
         // Kiểm tra tên trường trong bảng
@@ -50,6 +46,9 @@ class KetQuaClsVViewController extends BaseApiCacheController
             $this->hienThiDichVuChaLoaiXN,
             $this->intructionTimeFrom,
             $this->intructionTimeTo,
+            $this->trenNguong,
+            $this->duoiNguong,
+            $this->chiSoQuanTrong,
         );
         $this->ketQuaClsVViewService->withParams($this->ketQuaClsVViewDTO);
     }
