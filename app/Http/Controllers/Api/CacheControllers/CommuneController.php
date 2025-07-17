@@ -43,8 +43,8 @@ class CommuneController extends BaseApiCacheController
             $this->start,
             $this->limit,
             $request,
-            $this->appCreator, 
-            $this->appModifier, 
+            $this->appCreator,
+            $this->appModifier,
             $this->time,
             $this->param,
             $this->noCache,
@@ -56,19 +56,32 @@ class CommuneController extends BaseApiCacheController
         if ($this->checkParam()) {
             return $this->checkParam();
         }
-        $keyword = $this->keyword;
-        if (($keyword != null || $this->elasticSearchType != null) && !$this->cache) {
-            if ($this->elasticSearchType != null) {
-                $data = $this->elasticSearchService->handleElasticSearchSearch($this->communeName);
-            } else {
-                $data = $this->communeService->handleDataBaseSearch();
-            }
-        } else {
-            if ($this->elastic) {
-                $data = $this->elasticSearchService->handleElasticSearchGetAll($this->communeName);
-            } else {
-                $data = $this->communeService->handleDataBaseGetAll();
-            }
+        switch ($this->tab) {
+            case 'getDataSelect': // lấy danh sách
+                $data = $this->communeService->handleDataBaseGetAllGetDataSelect();
+                break;
+            case 'getDataSelect2Cap': // lấy danh sách
+                $data = $this->communeService->handleDataBaseGetAllGetDataSelect2Cap();
+                break;
+            case 'getDataSelectTHX': // lấy danh sách
+                $data = $this->communeService->handleDataBaseGetAllGetDataSelectTHX();
+                break;
+            default:
+                $keyword = $this->keyword;
+                if (($keyword != null || $this->elasticSearchType != null) && !$this->cache) {
+                    if ($this->elasticSearchType != null) {
+                        $data = $this->elasticSearchService->handleElasticSearchSearch($this->communeName);
+                    } else {
+                        $data = $this->communeService->handleDataBaseSearch();
+                    }
+                } else {
+                    if ($this->elastic) {
+                        $data = $this->elasticSearchService->handleElasticSearchGetAll($this->communeName);
+                    } else {
+                        $data = $this->communeService->handleDataBaseGetAll();
+                    }
+                }
+                break;
         }
         $paramReturn = [
             $this->getAllName => $this->getAll,

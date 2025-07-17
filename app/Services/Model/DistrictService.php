@@ -46,6 +46,15 @@ class DistrictService
         $data = $this->districtRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
         return ['data' => $data, 'count' => $count];
     }
+    private function getAllDataFromDatabaseGetDataSelect()
+    {
+        $data = $this->districtRepository->applyJoinsGetDataSelect();
+        $data = $this->districtRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $count = $data->count();
+        $data = $this->districtRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->districtRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        return ['data' => $data, 'count' => $count];
+    }
     private function getDataById($id)
     {
         $data = $this->districtRepository->applyJoins()
@@ -65,6 +74,26 @@ class DistrictService
                 $cacheKeySet = "cache_keys:" . $this->params->districtName; // Set để lưu danh sách key
                 $data = Cache::remember($cacheKey, $this->params->time, function () {
                     return $this->getAllDataFromDatabase();
+                });
+                // Lưu key vào Redis Set để dễ xóa sau này
+                Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+                return $data;
+            }
+        } catch (\Throwable $e) {
+            return writeAndThrowError(config('params')['db_service']['error']['district'], $e);
+        }
+    }
+    public function handleDataBaseGetAllGetDataSelect()
+    {
+        try {
+            // Nếu không lưu cache
+            if ($this->params->noCache) {
+                return $this->getAllDataFromDatabaseGetDataSelect();
+            } else {
+                $cacheKey = $this->params->districtName . '_' . $this->params->param;
+                $cacheKeySet = "cache_keys:" . $this->params->districtName; // Set để lưu danh sách key
+                $data = Cache::remember($cacheKey, $this->params->time, function () {
+                    return $this->getAllDataFromDatabaseGetDataSelect();
                 });
                 // Lưu key vào Redis Set để dễ xóa sau này
                 Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);

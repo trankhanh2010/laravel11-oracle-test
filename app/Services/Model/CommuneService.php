@@ -46,6 +46,35 @@ class CommuneService
         $data = $this->communeRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
         return ['data' => $data, 'count' => $count];
     }
+    private function getAllDataFromDatabaseGetDataSelect()
+    {
+        $data = $this->communeRepository->applyJoinsGetDataSelect();
+        $data = $this->communeRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $count = $data->count();
+        $data = $this->communeRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->communeRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        return ['data' => $data, 'count' => $count];
+    }
+    private function getAllDataFromDatabaseGetDataSelect2Cap()
+    {
+        $data = $this->communeRepository->applyJoinsGetDataSelect2Cap();
+        $data = $this->communeRepository->applyIsActiveFilter($data, 1);
+        $data = $this->communeRepository->applyIsDeleteFilter($data, 0);
+        $count = $data->count();
+        $data = $this->communeRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->communeRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        return ['data' => $data, 'count' => $count];
+    }
+    private function getAllDataFromDatabaseGetDataSelectTHX()
+    {
+        $data = $this->communeRepository->applyJoinsGetDataSelectTHX();
+        $data = $this->communeRepository->applyIsActiveFilter($data, 1);
+        $data = $this->communeRepository->applyIsDeleteFilter($data, 0);
+        $count = $data->count();
+        $data = $this->communeRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->communeRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        return ['data' => $data, 'count' => $count];
+    }
     private function getDataById($id)
     {
         $data = $this->communeRepository->applyJoins()
@@ -65,6 +94,69 @@ class CommuneService
                 $cacheKeySet = "cache_keys:" . $this->params->communeName; // Set để lưu danh sách key
                 $data = Cache::remember($cacheKey, $this->params->time, function () {
                     return $this->getAllDataFromDatabase();
+                });
+
+                // Lưu key vào Redis Set để dễ xóa sau này
+                Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+                return $data;
+            }
+        } catch (\Throwable $e) {
+            return writeAndThrowError(config('params')['db_service']['error']['commune'], $e);
+        }
+    }
+    public function handleDataBaseGetAllGetDataSelect()
+    {
+        try {
+            // Nếu không lưu cache
+            if ($this->params->noCache) {
+                return $this->getAllDataFromDatabaseGetDataSelect();
+            } else {
+                $cacheKey = $this->params->communeName . '_' . $this->params->param;
+                $cacheKeySet = "cache_keys:" . $this->params->communeName; // Set để lưu danh sách key
+                $data = Cache::remember($cacheKey, $this->params->time, function () {
+                    return $this->getAllDataFromDatabaseGetDataSelect();
+                });
+
+                // Lưu key vào Redis Set để dễ xóa sau này
+                Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+                return $data;
+            }
+        } catch (\Throwable $e) {
+            return writeAndThrowError(config('params')['db_service']['error']['commune'], $e);
+        }
+    }
+    public function handleDataBaseGetAllGetDataSelect2Cap()
+    {
+        try {
+            // Nếu không lưu cache
+            if ($this->params->noCache) {
+                return $this->getAllDataFromDatabaseGetDataSelect2Cap();
+            } else {
+                $cacheKey = $this->params->communeName . '_' . $this->params->param;
+                $cacheKeySet = "cache_keys:" . $this->params->communeName; // Set để lưu danh sách key
+                $data = Cache::remember($cacheKey, $this->params->time, function () {
+                    return $this->getAllDataFromDatabaseGetDataSelect2Cap();
+                });
+
+                // Lưu key vào Redis Set để dễ xóa sau này
+                Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+                return $data;
+            }
+        } catch (\Throwable $e) {
+            return writeAndThrowError(config('params')['db_service']['error']['commune'], $e);
+        }
+    }
+    public function handleDataBaseGetAllGetDataSelectTHX()
+    {
+        try {
+            // Nếu không lưu cache
+            if ($this->params->noCache) {
+                return $this->getAllDataFromDatabaseGetDataSelectTHX();
+            } else {
+                $cacheKey = $this->params->communeName . '_' . $this->params->param;
+                $cacheKeySet = "cache_keys:" . $this->params->communeName; // Set để lưu danh sách key
+                $data = Cache::remember($cacheKey, $this->params->time, function () {
+                    return $this->getAllDataFromDatabaseGetDataSelectTHX();
                 });
 
                 // Lưu key vào Redis Set để dễ xóa sau này

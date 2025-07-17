@@ -46,6 +46,26 @@ class ProvinceService
         $data = $this->provinceRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
         return ['data' => $data, 'count' => $count];
     }
+    private function getAllDataFromDatabaseGetDataSelect()
+    {
+        $data = $this->provinceRepository->applyJoinsGetDataSelect();
+        $data = $this->provinceRepository->applyIsActiveFilter($data, $this->params->isActive);
+        $count = $data->count();
+        $data = $this->provinceRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->provinceRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        return ['data' => $data, 'count' => $count];
+    }
+    private function getAllDataFromDatabaseGetDataSelect2Cap()
+    {
+        $data = $this->provinceRepository->applyJoinsGetDataSelect();
+        $data = $this->provinceRepository->applyIsActiveFilter($data, 1);
+        $data = $this->provinceRepository->applyIsDeleteFilter($data, 0);
+        $data = $this->provinceRepository->apply2CapFilter($data);
+        $count = $data->count();
+        $data = $this->provinceRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->provinceRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        return ['data' => $data, 'count' => $count];
+    }
     private function getDataById($id)
     {
         $data = $this->provinceRepository->applyJoins()
@@ -65,6 +85,46 @@ class ProvinceService
                 $cacheKeySet = "cache_keys:" . $this->params->provinceName; // Set để lưu danh sách key
                 $data = Cache::remember($cacheKey, $this->params->time, function () {
                     return $this->getAllDataFromDatabase();
+                });
+                // Lưu key vào Redis Set để dễ xóa sau này
+                Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+                return $data;
+            }
+        } catch (\Throwable $e) {
+            return writeAndThrowError(config('params')['db_service']['error']['province'], $e);
+        }
+    }
+    public function handleDataBaseGetAllGetDataSelect()
+    {
+        try {
+            // Nếu không lưu cache
+            if ($this->params->noCache) {
+                return $this->getAllDataFromDatabaseGetDataSelect();
+            } else {
+                $cacheKey = $this->params->provinceName . '_' . $this->params->param;
+                $cacheKeySet = "cache_keys:" . $this->params->provinceName; // Set để lưu danh sách key
+                $data = Cache::remember($cacheKey, $this->params->time, function () {
+                    return $this->getAllDataFromDatabaseGetDataSelect();
+                });
+                // Lưu key vào Redis Set để dễ xóa sau này
+                Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+                return $data;
+            }
+        } catch (\Throwable $e) {
+            return writeAndThrowError(config('params')['db_service']['error']['province'], $e);
+        }
+    }
+    public function handleDataBaseGetAllGetDataSelect2Cap()
+    {
+        try {
+            // Nếu không lưu cache
+            if ($this->params->noCache) {
+                return $this->getAllDataFromDatabaseGetDataSelect2Cap();
+            } else {
+                $cacheKey = $this->params->provinceName . '_' . $this->params->param;
+                $cacheKeySet = "cache_keys:" . $this->params->provinceName; // Set để lưu danh sách key
+                $data = Cache::remember($cacheKey, $this->params->time, function () {
+                    return $this->getAllDataFromDatabaseGetDataSelect2Cap();
                 });
                 // Lưu key vào Redis Set để dễ xóa sau này
                 Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);

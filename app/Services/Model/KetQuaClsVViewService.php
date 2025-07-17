@@ -62,7 +62,7 @@ class KetQuaClsVViewService
         $data = $this->ketQuaClsVViewRepository->applyIntructionTimeFromFilter($data, $this->params->intructionTimeFrom);
         $data = $this->ketQuaClsVViewRepository->applyIntructionTimeToFilter($data, $this->params->intructionTimeTo);
         $data = $this->ketQuaClsVViewRepository->applyChiSoQuanTrongFilter($data, $this->params->chiSoQuanTrong);
-        $data = $this->ketQuaClsVViewRepository->applyTrenNguongDuoiNguongFilter($data, $this->params->trenNguong, $this->params->duoiNguong);
+        $data = $this->ketQuaClsVViewRepository->applyTrenNguongDuoiNguongFilter($data, $this->params->treatmentId, $this->params->trenNguong, $this->params->duoiNguong);
 
         $count = $data->count();
         $orderBy = [

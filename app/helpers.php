@@ -1104,4 +1104,40 @@ if (!function_exists('logError')) {
             return 'Béo phì độ III';
         }
     }
+
+    if (!function_exists('getTuoi')) {
+    /**
+     * Trả về tuổi theo năm, tháng, ngày, giờ từ chuỗi 14 ký tự định dạng YmdHis.
+     *
+     * @param string $dobString
+     * @return array|null
+     */
+    function getTuoi(string $dobString): ?array
+    {
+        if (!preg_match('/^\d{14}$/', $dobString)) {
+            return null;
+        }
+
+        try {
+            $dob = \DateTime::createFromFormat('YmdHis', $dobString);
+            $now = new \DateTime();
+
+            // Tính chênh lệch
+            $diff = $dob->diff($now);
+
+            // Tính thời gian tổng thể
+            $intervalInSeconds = $now->getTimestamp() - $dob->getTimestamp();
+
+            return [
+                '01'  => $diff->y, // năm
+                '02' => $diff->y * 12 + $diff->m, // tháng
+                '03'   => floor($intervalInSeconds / (60 * 60 * 24)), // ngày
+                '04'  => floor($intervalInSeconds / (60 * 60)), // giờ
+            ];
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+}
+
 }

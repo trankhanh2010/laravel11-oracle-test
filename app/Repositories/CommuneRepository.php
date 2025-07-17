@@ -1,4 +1,5 @@
-<?php 
+<?php
+
 namespace App\Repositories;
 
 use App\Jobs\ElasticSearch\Index\ProcessElasticIndexingJob;
@@ -23,6 +24,57 @@ class CommuneRepository
                 'district.district_code',
             );
     }
+    public function applyJoinsGetDataSelect()
+    {
+        return $this->commune
+            ->select(
+                'sda_commune.id as key',
+                'sda_commune.id',
+                'sda_commune.commune_code',
+                'sda_commune.commune_name',
+                'sda_commune.initial_name',
+                'sda_commune.province_id',
+            );
+    }
+    public function applyJoinsGetDataSelect2Cap()
+    {
+        return $this->commune
+            ->join('sda_province', function ($join) {
+                $join->on('sda_province.id', '=', 'sda_commune.province_id')
+                    ->where('sda_province.IS_NO_DISTRICT', 1)
+                    ->where('sda_province.is_active', 1)
+                    ->where('sda_province.is_delete', 0); // điều kiện bổ sung
+            })
+            ->select(
+                'sda_commune.id as key',
+                'sda_commune.id',
+                'sda_commune.commune_code',
+                'sda_commune.commune_name',
+                'sda_commune.initial_name',
+                'sda_commune.province_id',
+            );
+    }
+    public function applyJoinsGetDataSelectTHX()
+    {
+        return $this->commune
+            ->join('sda_province', function ($join) {
+                $join->on('sda_province.id', '=', 'sda_commune.province_id')
+                    ->where('sda_province.IS_NO_DISTRICT', 1)
+                    ->where('sda_province.is_active', 1)
+                    ->where('sda_province.is_delete', 0); // điều kiện bổ sung
+            })
+            ->select(
+                'sda_commune.id as key',
+                'sda_commune.id',
+                'sda_commune.commune_code',
+                'sda_commune.commune_name',
+                'sda_commune.initial_name',
+                'sda_commune.province_id',
+                'sda_province.province_code',
+                'sda_province.province_name',
+                DB::raw("sda_commune.search_code || sda_province.search_code AS T_H_X_search_code")
+            );
+    }
     public function applyKeywordFilter($query, $keyword)
     {
         return $query->where(function ($query) use ($keyword) {
@@ -38,6 +90,14 @@ class CommuneRepository
 
         return $query;
     }
+    public function applyIsDeleteFilter($query, $isDelete)
+    {
+        if ($isDelete !== null) {
+            $query->where(DB::connection('oracle_sda')->raw('sda_commune.is_delete'), $isDelete);
+        }
+
+        return $query;
+    }
     public function applyOrdering($query, $orderBy, $orderByJoin)
     {
         if ($orderBy != null) {
@@ -47,7 +107,17 @@ class CommuneRepository
                         $query->orderBy('district.' . $key, $item);
                     }
                 } else {
-                    $query->orderBy('sda_commune.' . $key, $item);
+                    switch ($key) {
+                        case 'commune_name':
+                            $query->orderByRaw("NLSSORT(sda_commune.commune_name, 'NLS_SORT = Vietnamese') $item");
+                            break;
+                        case 'province_name':
+                            $query->orderByRaw("NLSSORT(sda_province.province_name, 'NLS_SORT = Vietnamese') $item");
+                            break;
+                        default:
+                            $query->orderBy('sda_commune.' . $key, $item);
+                            break;
+                    }
                 }
             }
         }
@@ -71,7 +141,8 @@ class CommuneRepository
     {
         return $this->commune->find($id);
     }
-    public function create($request, $time, $appCreator, $appModifier){
+    public function create($request, $time, $appCreator, $appModifier)
+    {
         $data = $this->commune::create([
             'create_time' => now()->format('YmdHis'),
             'modify_time' => now()->format('YmdHis'),
@@ -87,7 +158,8 @@ class CommuneRepository
         ]);
         return $data;
     }
-    public function update($request, $data, $time, $appModifier){
+    public function update($request, $data, $time, $appModifier)
+    {
         $data->update([
             'modify_time' => now()->format('YmdHis'),
             'modifier' => get_loginname_with_token($request->bearerToken(), $time),
@@ -101,7 +173,8 @@ class CommuneRepository
         ]);
         return $data;
     }
-    public function delete($data){
+    public function delete($data)
+    {
         $data->delete();
         return $data;
     }

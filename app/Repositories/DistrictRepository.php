@@ -23,6 +23,17 @@ class DistrictRepository
                 'province.province_code',
             );
     }
+    public function applyJoinsGetDataSelect()
+    {
+        return $this->district
+            ->select(
+                'sda_district.id as key',
+                                'sda_district.id',
+                'sda_district.district_code',
+                'sda_district.district_name',
+                'sda_district.province_id',
+            );
+    }
     public function applyKeywordFilter($query, $keyword)
     {
         return $query->where(function ($query) use ($keyword) {

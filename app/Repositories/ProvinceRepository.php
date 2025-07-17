@@ -1,4 +1,5 @@
-<?php 
+<?php
+
 namespace App\Repositories;
 
 use App\Jobs\ElasticSearch\Index\ProcessElasticIndexingJob;
@@ -23,6 +24,16 @@ class ProvinceRepository
                 'national.national_code',
             );
     }
+    public function applyJoinsGetDataSelect()
+    {
+        return $this->province
+            ->select(
+                'sda_province.id as key',
+                'sda_province.id',
+                'sda_province.province_code',
+                'sda_province.province_name',
+            );
+    }
     public function applyKeywordFilter($query, $keyword)
     {
         return $query->where(function ($query) use ($keyword) {
@@ -38,6 +49,19 @@ class ProvinceRepository
 
         return $query;
     }
+    public function applyIsDeleteFilter($query, $isDelete)
+    {
+        if ($isDelete !== null) {
+            $query->where(DB::connection('oracle_sda')->raw('sda_province.is_delete'), $isDelete);
+        }
+
+        return $query;
+    }
+    public function apply2CapFilter($query)
+    {
+        $query->where(DB::connection('oracle_sda')->raw('sda_province.is_no_district'), 1);
+        return $query;
+    }
     public function applyOrdering($query, $orderBy, $orderByJoin)
     {
         if ($orderBy != null) {
@@ -47,7 +71,15 @@ class ProvinceRepository
                         $query->orderBy('national.' . $key, $item);
                     }
                 } else {
-                    $query->orderBy('sda_province.' . $key, $item);
+                   switch ($key) {
+                        case 'province_name':
+                            $query->orderByRaw("NLSSORT(sda_province.province_name, 'NLS_SORT = Vietnamese') $item");
+                            break;
+
+                        default:
+                            $query->orderBy("sda_province.$key", $item);
+                            break;
+                    }
                 }
             }
         }
@@ -71,7 +103,8 @@ class ProvinceRepository
     {
         return $this->province->find($id);
     }
-    public function create($request, $time, $appCreator, $appModifier){
+    public function create($request, $time, $appCreator, $appModifier)
+    {
         $data = $this->province::create([
             'create_time' => now()->format('YmdHis'),
             'modify_time' => now()->format('YmdHis'),
@@ -86,7 +119,8 @@ class ProvinceRepository
         ]);
         return $data;
     }
-    public function update($request, $data, $time, $appModifier){
+    public function update($request, $data, $time, $appModifier)
+    {
         $data->update([
             'modify_time' => now()->format('YmdHis'),
             'modifier' => get_loginname_with_token($request->bearerToken(), $time),
@@ -99,7 +133,8 @@ class ProvinceRepository
         ]);
         return $data;
     }
-    public function delete($data){
+    public function delete($data)
+    {
         $data->delete();
         return $data;
     }

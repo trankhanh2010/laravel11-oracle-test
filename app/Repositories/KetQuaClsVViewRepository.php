@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Jobs\ElasticSearch\Index\ProcessElasticIndexingJob;
+use App\Models\HIS\Treatment;
 use App\Models\View\KetQuaClsVView;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -11,12 +12,15 @@ class KetQuaClsVViewRepository
 {
     protected $ketQuaClsVView;
     protected $serviceRepository;
+    protected $treatment;
     public function __construct(
         KetQuaClsVView $ketQuaClsVView,
         ServiceRepository $serviceRepository,
+        Treatment $treatment,
     ) {
         $this->ketQuaClsVView = $ketQuaClsVView;
         $this->serviceRepository = $serviceRepository;
+        $this->treatment = $treatment;
     }
 
     public function applyJoins()
@@ -98,36 +102,88 @@ class KetQuaClsVViewRepository
         }
         return $query;
     }
-    public function applyTrenNguongDuoiNguongFilter($query, $trenNguong, $duoiNguong)
+    public function applyTrenNguongDuoiNguongFilter($query, $treatmentId, $trenNguong, $duoiNguong)
     {
-        // if ($trenNguong || $duoiNguong) {
-        //     $query->where('xa_v_his_ket_qua_cls.service_type_code', 'XN');
 
-        //     $query->where(function ($q) use ($trenNguong, $duoiNguong) {
-        //         if ($trenNguong) {
-        //             $q->orWhereExists(function ($sub) {
-        //                 $sub->select(DB::raw(1))
-        //                     ->from('his_test_index_range')
-        //                     ->whereRaw('his_test_index_range.test_index_id = xa_v_his_ket_qua_cls.test_index_id')
-        //                     ->whereRaw("REGEXP_LIKE(xa_v_his_ket_qua_cls.ket_qua, '^-?[0-9]+(\\.[0-9]+)?$')")
-        //                     ->whereRaw("REGEXP_LIKE(his_test_index_range.max_value, '^-?[0-9]+(\\.[0-9]+)?$')")
-        //                     ->whereRaw('TO_NUMBER(xa_v_his_ket_qua_cls.ket_qua) > TO_NUMBER(his_test_index_range.max_value)');
-        //             });
-        //         }
+        if ($trenNguong || $duoiNguong) {
+            $ngaySinh = $this->treatment->find($treatmentId)->value('tdl_patient_dob')??0;
+            $listTuoi = getTuoi($ngaySinh);
 
-        //         if ($duoiNguong) {
-        //             $q->orWhereExists(function ($sub) {
-        //                 $sub->select(DB::raw(1))
-        //                     ->from('his_test_index_range')
-        //                     ->whereRaw('his_test_index_range.test_index_id = xa_v_his_ket_qua_cls.test_index_id')
-        //                     ->whereRaw("REGEXP_LIKE(xa_v_his_ket_qua_cls.ket_qua, '^-?[0-9]+(\\.[0-9]+)?$')")
-        //                     ->whereRaw("REGEXP_LIKE(his_test_index_range.min_value, '^-?[0-9]+(\\.[0-9]+)?$')")
-        //                     ->whereRaw('TO_NUMBER(xa_v_his_ket_qua_cls.ket_qua) < TO_NUMBER(his_test_index_range.min_value)');
-        //             });
-        //         }
-        //     });
-        // }
+            $tuoiCaseSql = "CASE his_age_type.age_type_code";
+            foreach ($listTuoi as $code => $tuoi) {
+                $tuoiCaseSql .= " WHEN '{$code}' THEN {$tuoi}";
+            }
+            $tuoiCaseSql .= " ELSE NULL END";
 
+            $whereTuoiFrom = "(
+                his_test_index_range.age_from IS NULL OR 
+                his_test_index_range.age_from <= ($tuoiCaseSql)
+            )";
+            $whereTuoiTo = "(
+                his_test_index_range.age_to IS NULL OR 
+                his_test_index_range.age_to >= ($tuoiCaseSql)
+            )";
+
+            $query->where('xa_v_his_ket_qua_cls.service_type_code', 'XN');
+
+            $query->where(function ($q) use ($trenNguong, $duoiNguong, $whereTuoiFrom, $whereTuoiTo) {
+                if ($trenNguong) {
+                    $q->orWhereExists(function ($sub) use ($whereTuoiFrom, $whereTuoiTo) {
+                        $sub->select(DB::raw(1))
+                            ->from('his_test_index_range')
+                            ->leftJoin('his_age_type', 'his_age_type.id', 'his_test_index_range.age_type_id')
+                            ->whereRaw('his_test_index_range.test_index_id = xa_v_his_ket_qua_cls.test_index_id')
+                            ->whereRaw("REGEXP_LIKE(xa_v_his_ket_qua_cls.ket_qua, '^-?[0-9]+(\\.[0-9]+)?$')") // check ngưỡng
+                            ->whereRaw("REGEXP_LIKE(his_test_index_range.max_value, '^-?[0-9]+(\\.[0-9]+)?$')")
+                            ->whereRaw("
+                                (
+                                    CASE 
+                                        WHEN his_test_index_range.is_accept_equal_min = 1 THEN 
+                                            TO_NUMBER(xa_v_his_ket_qua_cls.ket_qua) >= TO_NUMBER(his_test_index_range.max_value)
+                                        ELSE 
+                                            TO_NUMBER(xa_v_his_ket_qua_cls.ket_qua) > TO_NUMBER(his_test_index_range.max_value)
+                                    END
+                                )
+                            ") // Nếu có thì so sánh = không thì thôi
+                            ->where(function ($q) use ($whereTuoiFrom, $whereTuoiTo) { // hoặc k có age_type hoặc nếu có age_type thì phải khớp tuổi với loại tuổi
+                                $q->whereNull('his_test_index_range.age_type_id')
+                                ->orWhere(function ($q2) use ($whereTuoiFrom, $whereTuoiTo) { 
+                                   $q2->whereRaw($whereTuoiFrom)
+                                    ->whereRaw($whereTuoiTo);
+                                });
+                            });
+                    });
+                }
+
+                if ($duoiNguong) {
+                    $q->orWhereExists(function ($sub) use ($whereTuoiFrom, $whereTuoiTo) {
+                        $sub->select(DB::raw(1))
+                            ->from('his_test_index_range')
+                            ->leftJoin('his_age_type', 'his_age_type.id', 'his_test_index_range.age_type_id')
+                            ->whereRaw('his_test_index_range.test_index_id = xa_v_his_ket_qua_cls.test_index_id')
+                            ->whereRaw("REGEXP_LIKE(xa_v_his_ket_qua_cls.ket_qua, '^-?[0-9]+(\\.[0-9]+)?$')") // check ngưỡng
+                            ->whereRaw("REGEXP_LIKE(his_test_index_range.min_value, '^-?[0-9]+(\\.[0-9]+)?$')")
+                            ->whereRaw("
+                                (
+                                    CASE 
+                                        WHEN his_test_index_range.is_accept_equal_min = 1 THEN 
+                                            TO_NUMBER(xa_v_his_ket_qua_cls.ket_qua) <= TO_NUMBER(his_test_index_range.min_value)
+                                        ELSE 
+                                            TO_NUMBER(xa_v_his_ket_qua_cls.ket_qua) < TO_NUMBER(his_test_index_range.min_value)
+                                    END
+                                )
+                            ") // Nếu có thì so sánh = không thì thôi
+                            ->where(function ($q) use ($whereTuoiFrom, $whereTuoiTo) { // hoặc k có age_type hoặc nếu có age_type thì phải khớp tuổi với loại tuổi
+                                $q->whereNull('his_test_index_range.age_type_id')
+                                ->orWhere(function ($q2) use ($whereTuoiFrom, $whereTuoiTo) { 
+                                   $q2->whereRaw($whereTuoiFrom)
+                                    ->whereRaw($whereTuoiTo);
+                                });
+                            });
+                    });
+                }
+            });
+        }
         return $query;
     }
     public function applyOrdering($query, $orderBy, $orderByJoin)

@@ -24,8 +24,7 @@ class ProvinceController extends BaseApiCacheController
         $this->province = $province;
         // Kiểm tra tên trường trong bảng
         if ($this->orderBy != null) {
-            $this->orderByJoin = [
-            ];
+            $this->orderByJoin = [];
             $columns = $this->getColumnsTable($this->province);
             $this->orderBy = $this->checkOrderBy($this->orderBy, $columns, $this->orderByJoin ?? []);
         }
@@ -41,8 +40,8 @@ class ProvinceController extends BaseApiCacheController
             $this->start,
             $this->limit,
             $request,
-            $this->appCreator, 
-            $this->appModifier, 
+            $this->appCreator,
+            $this->appModifier,
             $this->time,
             $this->param,
             $this->noCache,
@@ -54,19 +53,29 @@ class ProvinceController extends BaseApiCacheController
         if ($this->checkParam()) {
             return $this->checkParam();
         }
-        $keyword = $this->keyword;
-        if (($keyword != null || $this->elasticSearchType != null) && !$this->cache) {
-            if ($this->elasticSearchType != null) {
-                $data = $this->elasticSearchService->handleElasticSearchSearch($this->provinceName);
-            } else {
-                $data = $this->provinceService->handleDataBaseSearch();
-            }
-        } else {
-            if ($this->elastic) {
-                $data = $this->elasticSearchService->handleElasticSearchGetAll($this->provinceName);
-            } else {
-                $data = $this->provinceService->handleDataBaseGetAll();
-            }
+        switch ($this->tab) {
+            case 'getDataSelect': // lấy danh sách
+                $data = $this->provinceService->handleDataBaseGetAllGetDataSelect();
+                break;
+            case 'getDataSelect2Cap': // lấy danh sách
+                $data = $this->provinceService->handleDataBaseGetAllGetDataSelect2Cap();
+                break;
+            default:
+                $keyword = $this->keyword;
+                if (($keyword != null || $this->elasticSearchType != null) && !$this->cache) {
+                    if ($this->elasticSearchType != null) {
+                        $data = $this->elasticSearchService->handleElasticSearchSearch($this->provinceName);
+                    } else {
+                        $data = $this->provinceService->handleDataBaseSearch();
+                    }
+                } else {
+                    if ($this->elastic) {
+                        $data = $this->elasticSearchService->handleElasticSearchGetAll($this->provinceName);
+                    } else {
+                        $data = $this->provinceService->handleDataBaseGetAll();
+                    }
+                }
+                break;
         }
         $paramReturn = [
             $this->getAllName => $this->getAll,

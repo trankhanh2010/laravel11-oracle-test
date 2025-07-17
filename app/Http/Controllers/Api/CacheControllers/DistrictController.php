@@ -43,8 +43,8 @@ class DistrictController extends BaseApiCacheController
             $this->start,
             $this->limit,
             $request,
-            $this->appCreator, 
-            $this->appModifier, 
+            $this->appCreator,
+            $this->appModifier,
             $this->time,
             $this->param,
             $this->noCache,
@@ -56,19 +56,26 @@ class DistrictController extends BaseApiCacheController
         if ($this->checkParam()) {
             return $this->checkParam();
         }
-        $keyword = $this->keyword;
-        if (($keyword != null || $this->elasticSearchType != null) && !$this->cache) {
-            if ($this->elasticSearchType != null) {
-                $data = $this->elasticSearchService->handleElasticSearchSearch($this->districtName);
-            } else {
-                $data = $this->districtService->handleDataBaseSearch();
-            }
-        } else {
-            if ($this->elastic) {
-                $data = $this->elasticSearchService->handleElasticSearchGetAll($this->districtName);
-            } else {
-                $data = $this->districtService->handleDataBaseGetAll();
-            }
+        switch ($this->tab) {
+            case 'getDataSelect': // lấy danh sách
+                $data = $this->districtService->handleDataBaseGetAllGetDataSelect();
+                break;
+            default:
+                $keyword = $this->keyword;
+                if (($keyword != null || $this->elasticSearchType != null) && !$this->cache) {
+                    if ($this->elasticSearchType != null) {
+                        $data = $this->elasticSearchService->handleElasticSearchSearch($this->districtName);
+                    } else {
+                        $data = $this->districtService->handleDataBaseSearch();
+                    }
+                } else {
+                    if ($this->elastic) {
+                        $data = $this->elasticSearchService->handleElasticSearchGetAll($this->districtName);
+                    } else {
+                        $data = $this->districtService->handleDataBaseGetAll();
+                    }
+                }
+                break;
         }
         $paramReturn = [
             $this->getAllName => $this->getAll,
