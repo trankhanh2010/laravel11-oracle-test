@@ -286,7 +286,7 @@ class YeuCauKhamClsPtttVViewService
                 $data = $this->sereServListVViewRepository->applyTreatmentIdFilter($data, $treatmentId);
                 break;
         }
-        $data = $this->sereServListVViewRepository->applyOrdering($data, ['service_code' => 'asc'], []);
+        $data = $this->sereServListVViewRepository->applyOrdering($data, ['service_req_code' => 'asc'], []);
         $data = $this->sereServListVViewRepository->fetchData($data, true, $this->params->start, $this->params->limit);
         // Group theo field
         $groupBy = [

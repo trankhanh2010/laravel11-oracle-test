@@ -403,6 +403,7 @@ Route::prefix('v1/guest')->withoutMiddleware('check_token')->group(function () {
     Route::get('priority-type', [PriorityTypeController::class, 'guest']);
     Route::get('blood-abo', [BloodAboController::class, 'guest']);
     Route::get('blood-rh', [BloodRhController::class, 'guest']);
+    Route::get('hospitalize-reason', [HospitalizeReasonController::class, 'guest']);
 });
 
 
