@@ -205,6 +205,10 @@ class CacheController extends BaseApiCacheController
                 'exp_mest_type',
                 'acin_interactive',
                 'material_paty',
+                'emergency_wtime',
+                'owe_type',
+                'blood_abo',
+                'blood_rh',
             ];
         }
         // Nếu xóa theo param

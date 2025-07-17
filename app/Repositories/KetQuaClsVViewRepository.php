@@ -137,14 +137,13 @@ class KetQuaClsVViewRepository
                             ->whereRaw("REGEXP_LIKE(his_test_index_range.max_value, '^-?[0-9]+(\\.[0-9]+)?$')")
                             ->whereRaw("
                                 (
-                                    CASE 
-                                        WHEN his_test_index_range.is_accept_equal_min = 1 THEN 
-                                            TO_NUMBER(xa_v_his_ket_qua_cls.ket_qua) >= TO_NUMBER(his_test_index_range.max_value)
-                                        ELSE 
-                                            TO_NUMBER(xa_v_his_ket_qua_cls.ket_qua) > TO_NUMBER(his_test_index_range.max_value)
-                                    END
+                                    (his_test_index_range.is_accept_equal_min = 1 AND 
+                                    TO_NUMBER(xa_v_his_ket_qua_cls.ket_qua) >= TO_NUMBER(his_test_index_range.max_value))
+                                OR
+                                    (NVL(his_test_index_range.is_accept_equal_min, 0) <> 1 AND 
+                                    TO_NUMBER(xa_v_his_ket_qua_cls.ket_qua) > TO_NUMBER(his_test_index_range.max_value))
                                 )
-                            ") // Nếu có thì so sánh = không thì thôi
+                            ")// Nếu có thì so sánh = không thì thôi
                             ->where(function ($q) use ($whereTuoiFrom, $whereTuoiTo) { // hoặc k có age_type hoặc nếu có age_type thì phải khớp tuổi với loại tuổi
                                 $q->whereNull('his_test_index_range.age_type_id')
                                 ->orWhere(function ($q2) use ($whereTuoiFrom, $whereTuoiTo) { 
@@ -165,12 +164,9 @@ class KetQuaClsVViewRepository
                             ->whereRaw("REGEXP_LIKE(his_test_index_range.min_value, '^-?[0-9]+(\\.[0-9]+)?$')")
                             ->whereRaw("
                                 (
-                                    CASE 
-                                        WHEN his_test_index_range.is_accept_equal_min = 1 THEN 
-                                            TO_NUMBER(xa_v_his_ket_qua_cls.ket_qua) <= TO_NUMBER(his_test_index_range.min_value)
-                                        ELSE 
-                                            TO_NUMBER(xa_v_his_ket_qua_cls.ket_qua) < TO_NUMBER(his_test_index_range.min_value)
-                                    END
+                                    (his_test_index_range.is_accept_equal_min = 1 AND TO_NUMBER(xa_v_his_ket_qua_cls.ket_qua) <= TO_NUMBER(his_test_index_range.min_value))
+                                    OR
+                                    (his_test_index_range.is_accept_equal_min != 1 AND TO_NUMBER(xa_v_his_ket_qua_cls.ket_qua) < TO_NUMBER(his_test_index_range.min_value))
                                 )
                             ") // Nếu có thì so sánh = không thì thôi
                             ->where(function ($q) use ($whereTuoiFrom, $whereTuoiTo) { // hoặc k có age_type hoặc nếu có age_type thì phải khớp tuổi với loại tuổi

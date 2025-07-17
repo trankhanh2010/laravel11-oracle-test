@@ -2,36 +2,36 @@
 
 namespace App\Http\Controllers\Api\CacheControllers;
 
-use App\DTOs\PriorityTypeDTO;
+use App\DTOs\BloodAboDTO;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
-use App\Http\Requests\PriorityType\CreatePriorityTypeRequest;
-use App\Http\Requests\PriorityType\UpdatePriorityTypeRequest;
-use App\Models\HIS\PriorityType;
+use App\Http\Requests\BloodAbo\CreateBloodAboRequest;
+use App\Http\Requests\BloodAbo\UpdateBloodAboRequest;
+use App\Models\HIS\BloodAbo;
 use App\Services\Elastic\ElasticsearchService;
-use App\Services\Model\PriorityTypeService;
+use App\Services\Model\BloodAboService;
 use Illuminate\Http\Request;
 
 
-class PriorityTypeController extends BaseApiCacheController
+class BloodAboController extends BaseApiCacheController
 {
-    protected $priorityTypeService;
-    protected $priorityTypeDTO;
-    public function __construct(Request $request, ElasticsearchService $elasticSearchService, PriorityTypeService $priorityTypeService, PriorityType $priorityType)
+    protected $bloodAboService;
+    protected $bloodAboDTO;
+    public function __construct(Request $request, ElasticsearchService $elasticSearchService, BloodAboService $bloodAboService, BloodAbo $bloodAbo)
     {
         parent::__construct($request); // Gọi constructor của BaseController
         $this->elasticSearchService = $elasticSearchService;
-        $this->priorityTypeService = $priorityTypeService;
-        $this->priorityType = $priorityType;
+        $this->bloodAboService = $bloodAboService;
+        $this->bloodAbo = $bloodAbo;
         // Kiểm tra tên trường trong bảng
         if ($this->orderBy != null) {
             $this->orderByJoin = [
             ];
-            $columns = $this->getColumnsTable($this->priorityType);
+            $columns = $this->getColumnsTable($this->bloodAbo);
             $this->orderBy = $this->checkOrderBy($this->orderBy, $columns, $this->orderByJoin ?? []);
         }
         // Thêm tham số vào service
-        $this->priorityTypeDTO = new PriorityTypeDTO(
-            $this->priorityTypeName,
+        $this->bloodAboDTO = new BloodAboDTO(
+            $this->bloodAboName,
             $this->keyword,
             $this->isActive,
             $this->orderBy,
@@ -47,7 +47,7 @@ class PriorityTypeController extends BaseApiCacheController
             $this->param,
             $this->noCache,
         );
-        $this->priorityTypeService->withParams($this->priorityTypeDTO);
+        $this->bloodAboService->withParams($this->bloodAboDTO);
     }
     public function index()
     {
@@ -57,15 +57,15 @@ class PriorityTypeController extends BaseApiCacheController
         $keyword = $this->keyword;
         if (($keyword != null || $this->elasticSearchType != null) && !$this->cache) {
             if ($this->elasticSearchType != null) {
-                $data = $this->elasticSearchService->handleElasticSearchSearch($this->priorityTypeName);
+                $data = $this->elasticSearchService->handleElasticSearchSearch($this->bloodAboName);
             } else {
-                $data = $this->priorityTypeService->handleDataBaseSearch();
+                $data = $this->bloodAboService->handleDataBaseSearch();
             }
         } else {
             if ($this->elastic) {
-                $data = $this->elasticSearchService->handleElasticSearchGetAll($this->priorityTypeName);
+                $data = $this->elasticSearchService->handleElasticSearchGetAll($this->bloodAboName);
             } else {
-                $data = $this->priorityTypeService->handleDataBaseGetAll();
+                $data = $this->bloodAboService->handleDataBaseGetAll();
             }
         }
         $paramReturn = [
@@ -84,7 +84,7 @@ class PriorityTypeController extends BaseApiCacheController
         if ($this->checkParam()) {
             return $this->checkParam();
         }
-        $data = $this->priorityTypeService->handleDataBaseGetAll();
+        $data = $this->bloodAboService->handleDataBaseGetAll();
         $paramReturn = [
             $this->getAllName => $this->getAll,
             $this->startName => $this->getAll ? null : $this->start,
@@ -102,32 +102,20 @@ class PriorityTypeController extends BaseApiCacheController
             return $this->checkParam();
         }
         if ($id !== null) {
-            $validationError = $this->validateAndCheckId($id, $this->priorityType, $this->priorityTypeName);
+            $validationError = $this->validateAndCheckId($id, $this->bloodAbo, $this->bloodAboName);
             if ($validationError) {
                 return $validationError;
             }
         }
         if ($this->elastic) {
-            $data = $this->elasticSearchService->handleElasticSearchGetWithId($this->priorityTypeName, $id);
+            $data = $this->elasticSearchService->handleElasticSearchGetWithId($this->bloodAboName, $id);
         } else {
-            $data = $this->priorityTypeService->handleDataBaseGetWithId($id);
+            $data = $this->bloodAboService->handleDataBaseGetWithId($id);
         }
         $paramReturn = [
             $this->idName => $id,
             $this->isActiveName => $this->isActive,
         ];
         return returnDataSuccess($paramReturn, $data);
-    }
-    public function store(CreatePriorityTypeRequest $request)
-    {
-        return $this->priorityTypeService->createPriorityType($request);
-    }
-    public function update(UpdatePriorityTypeRequest $request, $id)
-    {
-        return $this->priorityTypeService->updatePriorityType($id, $request);
-    }
-    public function destroy($id)
-    {
-        return $this->priorityTypeService->deletePriorityType($id);
     }
 }

@@ -568,6 +568,14 @@ class BaseApiCacheController extends Controller
     protected $materialPatyName = 'material_paty';
     protected $accidentBodyPart;
     protected $accidentBodyPartName = 'accident_body_part';
+    protected $emergencyWtime;
+    protected $emergencyWtimeName = 'emergency_wtime';
+    protected $oweType;
+    protected $oweTypeName = 'owe_type';
+    protected $bloodAbo;
+    protected $bloodAboName = 'blood_abo';
+    protected $bloodRh;
+    protected $bloodRhName = 'blood_rh';
     protected $acinInteractive;
     protected $acinInteractiveName = 'acin_interactive';
     protected $expMestType;

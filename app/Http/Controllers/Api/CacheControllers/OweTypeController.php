@@ -2,36 +2,36 @@
 
 namespace App\Http\Controllers\Api\CacheControllers;
 
-use App\DTOs\PriorityTypeDTO;
+use App\DTOs\OweTypeDTO;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
-use App\Http\Requests\PriorityType\CreatePriorityTypeRequest;
-use App\Http\Requests\PriorityType\UpdatePriorityTypeRequest;
-use App\Models\HIS\PriorityType;
+use App\Http\Requests\OweType\CreateOweTypeRequest;
+use App\Http\Requests\OweType\UpdateOweTypeRequest;
+use App\Models\HIS\OweType;
 use App\Services\Elastic\ElasticsearchService;
-use App\Services\Model\PriorityTypeService;
+use App\Services\Model\OweTypeService;
 use Illuminate\Http\Request;
 
 
-class PriorityTypeController extends BaseApiCacheController
+class OweTypeController extends BaseApiCacheController
 {
-    protected $priorityTypeService;
-    protected $priorityTypeDTO;
-    public function __construct(Request $request, ElasticsearchService $elasticSearchService, PriorityTypeService $priorityTypeService, PriorityType $priorityType)
+    protected $oweTypeService;
+    protected $oweTypeDTO;
+    public function __construct(Request $request, ElasticsearchService $elasticSearchService, OweTypeService $oweTypeService, OweType $oweType)
     {
         parent::__construct($request); // Gọi constructor của BaseController
         $this->elasticSearchService = $elasticSearchService;
-        $this->priorityTypeService = $priorityTypeService;
-        $this->priorityType = $priorityType;
+        $this->oweTypeService = $oweTypeService;
+        $this->oweType = $oweType;
         // Kiểm tra tên trường trong bảng
         if ($this->orderBy != null) {
             $this->orderByJoin = [
             ];
-            $columns = $this->getColumnsTable($this->priorityType);
+            $columns = $this->getColumnsTable($this->oweType);
             $this->orderBy = $this->checkOrderBy($this->orderBy, $columns, $this->orderByJoin ?? []);
         }
         // Thêm tham số vào service
-        $this->priorityTypeDTO = new PriorityTypeDTO(
-            $this->priorityTypeName,
+        $this->oweTypeDTO = new OweTypeDTO(
+            $this->oweTypeName,
             $this->keyword,
             $this->isActive,
             $this->orderBy,
@@ -47,7 +47,7 @@ class PriorityTypeController extends BaseApiCacheController
             $this->param,
             $this->noCache,
         );
-        $this->priorityTypeService->withParams($this->priorityTypeDTO);
+        $this->oweTypeService->withParams($this->oweTypeDTO);
     }
     public function index()
     {
@@ -57,15 +57,15 @@ class PriorityTypeController extends BaseApiCacheController
         $keyword = $this->keyword;
         if (($keyword != null || $this->elasticSearchType != null) && !$this->cache) {
             if ($this->elasticSearchType != null) {
-                $data = $this->elasticSearchService->handleElasticSearchSearch($this->priorityTypeName);
+                $data = $this->elasticSearchService->handleElasticSearchSearch($this->oweTypeName);
             } else {
-                $data = $this->priorityTypeService->handleDataBaseSearch();
+                $data = $this->oweTypeService->handleDataBaseSearch();
             }
         } else {
             if ($this->elastic) {
-                $data = $this->elasticSearchService->handleElasticSearchGetAll($this->priorityTypeName);
+                $data = $this->elasticSearchService->handleElasticSearchGetAll($this->oweTypeName);
             } else {
-                $data = $this->priorityTypeService->handleDataBaseGetAll();
+                $data = $this->oweTypeService->handleDataBaseGetAll();
             }
         }
         $paramReturn = [
@@ -84,7 +84,7 @@ class PriorityTypeController extends BaseApiCacheController
         if ($this->checkParam()) {
             return $this->checkParam();
         }
-        $data = $this->priorityTypeService->handleDataBaseGetAll();
+        $data = $this->oweTypeService->handleDataBaseGetAll();
         $paramReturn = [
             $this->getAllName => $this->getAll,
             $this->startName => $this->getAll ? null : $this->start,
@@ -102,32 +102,20 @@ class PriorityTypeController extends BaseApiCacheController
             return $this->checkParam();
         }
         if ($id !== null) {
-            $validationError = $this->validateAndCheckId($id, $this->priorityType, $this->priorityTypeName);
+            $validationError = $this->validateAndCheckId($id, $this->oweType, $this->oweTypeName);
             if ($validationError) {
                 return $validationError;
             }
         }
         if ($this->elastic) {
-            $data = $this->elasticSearchService->handleElasticSearchGetWithId($this->priorityTypeName, $id);
+            $data = $this->elasticSearchService->handleElasticSearchGetWithId($this->oweTypeName, $id);
         } else {
-            $data = $this->priorityTypeService->handleDataBaseGetWithId($id);
+            $data = $this->oweTypeService->handleDataBaseGetWithId($id);
         }
         $paramReturn = [
             $this->idName => $id,
             $this->isActiveName => $this->isActive,
         ];
         return returnDataSuccess($paramReturn, $data);
-    }
-    public function store(CreatePriorityTypeRequest $request)
-    {
-        return $this->priorityTypeService->createPriorityType($request);
-    }
-    public function update(UpdatePriorityTypeRequest $request, $id)
-    {
-        return $this->priorityTypeService->updatePriorityType($id, $request);
-    }
-    public function destroy($id)
-    {
-        return $this->priorityTypeService->deletePriorityType($id);
     }
 }

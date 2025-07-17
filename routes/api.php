@@ -141,11 +141,14 @@ use App\Http\Controllers\Api\CacheControllers\AgeTypeController;
 use App\Http\Controllers\Api\CacheControllers\AppointmentPeriodController;
 use App\Http\Controllers\Api\CacheControllers\AtcController;
 use App\Http\Controllers\Api\CacheControllers\BidController;
+use App\Http\Controllers\Api\CacheControllers\BloodAboController;
+use App\Http\Controllers\Api\CacheControllers\BloodRhController;
 use App\Http\Controllers\Api\CacheControllers\ConfigController;
 use App\Http\Controllers\Api\CacheControllers\DeathCauseController;
 use App\Http\Controllers\Api\CacheControllers\DeathCertBookController;
 use App\Http\Controllers\Api\CacheControllers\DocumentBookController;
 use App\Http\Controllers\Api\CacheControllers\DocumentTypeController;
+use App\Http\Controllers\Api\CacheControllers\EmergencyWtimeController;
 use App\Http\Controllers\Api\CacheControllers\EmrCoverTypeController;
 use App\Http\Controllers\Api\CacheControllers\EmrFormController;
 use App\Http\Controllers\Api\CacheControllers\EquipmentSetController;
@@ -167,6 +170,7 @@ use App\Http\Controllers\Api\CacheControllers\MedicalContractController;
 use App\Http\Controllers\Api\CacheControllers\MemaGroupController;
 use App\Http\Controllers\Api\CacheControllers\ModuleController;
 use App\Http\Controllers\Api\CacheControllers\NextTreaIntrController;
+use App\Http\Controllers\Api\CacheControllers\OweTypeController;
 use App\Http\Controllers\Api\CacheControllers\PackingTypeController;
 use App\Http\Controllers\Api\CacheControllers\PayFormController;
 use App\Http\Controllers\Api\CacheControllers\Phieutdvacsbnc2PhieumauController;
@@ -379,50 +383,27 @@ Route::get("v1/get-column-name", [BaseApiRequestController::class, "getColumnnam
 
 
 /// GUEST - cho khách
-/// Giới tính
-Route::get("v1/guest/gender", [GenderController::class, "guest"])->name('.guest_gender')
-    ->withoutMiddleware('check_token'); 
-/// Nghề nghiệp
-Route::get("v1/guest/career", [CareerController::class, "guest"])->name('.guest_career')
-    ->withoutMiddleware('check_token'); 
-/// Đối tượng
-Route::get("v1/guest/patient-type", [PatientTypeController::class, "guest"])->name('.guest_patient_type')
-    ->withoutMiddleware('check_token'); 
-/// Xã
-Route::get("v1/guest/commune", [CommuneController::class, "guest"])->name('.guest_commune')
-    ->withoutMiddleware('check_token'); 
-/// Tỉnh
-Route::get("v1/guest/province", [ProvinceController::class, "guest"])->name('.guest_province')
-    ->withoutMiddleware('check_token'); 
-/// Phòng khám cls pttt
-Route::get("v1/guest/execute-room", [ExecuteRoomController::class, "guest"])->name('.guest_execute_room')
-    ->withoutMiddleware('check_token'); 
-/// Dịch vụ phòng
-Route::get("v1/guest/service-room", [ServiceRoomController::class, "guest"])->name('.guest_service_room')
-    ->withoutMiddleware('check_token'); 
-/// Diện điều trị
-Route::get("v1/guest/treatment-type", [TreatmentTypeController::class, "guest"])->name('.guest_treatment_type')
-    ->withoutMiddleware('check_token'); 
-/// Nguồn chi trả khác
-Route::get("v1/guest/other-pay-source", [OtherPaySourceController::class, "guest"])->name('.guest_other_pay_source')
-    ->withoutMiddleware('check_token'); 
-/// Dân tộc
-Route::get("v1/guest/ethnic", [EthnicController::class, "guest"])->name('.guest_ethnic')
-    ->withoutMiddleware('check_token'); 
-/// Quốc tịch
-Route::get("v1/guest/national", [NationalController::class, "guest"])->name('.guest_national')
-    ->withoutMiddleware('check_token'); 
-/// Nơi làm việc
-Route::get("v1/guest/work-place", [WorkPlaceController::class, "guest"])->name('.guest_work_place')
-    ->withoutMiddleware('check_token'); 
-/// Phân loại bệnh nhân    
-Route::get("v1/guest/patient-classify", [PatientClassifyController::class, "guest"])->name('.guest_patient_classify')
-    ->withoutMiddleware('check_token'); 
-/// Bảo lãnh
-Route::get("v1/guest/emp-user", [EmployeeController::class, "guest"])->name('.guest_employee')
-    ->withoutMiddleware('check_token'); 
-
-
+Route::prefix('v1/guest')->withoutMiddleware('check_token')->group(function () {
+    Route::get('gender', [GenderController::class, 'guest']);
+    Route::get('career', [CareerController::class, 'guest']);
+    Route::get('patient-type', [PatientTypeController::class, 'guest']);
+    Route::get('commune', [CommuneController::class, 'guest']);
+    Route::get('province', [ProvinceController::class, 'guest']);
+    Route::get('execute-room', [ExecuteRoomController::class, 'guest']);
+    Route::get('service-room', [ServiceRoomController::class, 'guest']);
+    Route::get('treatment-type', [TreatmentTypeController::class, 'guest']);
+    Route::get('other-pay-source', [OtherPaySourceController::class, 'guest']);
+    Route::get('ethnic', [EthnicController::class, 'guest']);
+    Route::get('national', [NationalController::class, 'guest']);
+    Route::get('work-place', [WorkPlaceController::class, 'guest']);
+    Route::get('patient-classify', [PatientClassifyController::class, 'guest']);
+    Route::get('emp-user', [EmployeeController::class, 'guest']);
+    Route::get('emergency-wtime', [EmergencyWtimeController::class, 'guest']);
+    Route::get('owe-type', [OweTypeController::class, 'guest']);
+    Route::get('priority-type', [PriorityTypeController::class, 'guest']);
+    Route::get('blood-abo', [BloodAboController::class, 'guest']);
+    Route::get('blood-rh', [BloodRhController::class, 'guest']);
+});
 
 
 Route::group([
@@ -1357,4 +1338,12 @@ Route::group([
     Route::apiResource('v1/ket-qua-cls', KetQuaClsVViewController::class)->only(['index']);
     /// Kết quả CLS
     Route::apiResource('v1/treatment-data', TreatmentDataController::class)->only(['show']);
+    /// Thời gian đau
+    Route::apiResource('v1/emergency-wtime', EmergencyWtimeController::class)->only(['index']);
+    /// Nợ viện phí
+    Route::apiResource('v1/owe-type', OweTypeController::class)->only(['index']);
+    /// Nhóm máu ABO
+    Route::apiResource('v1/blood-abo', BloodAboController::class)->only(['index']);
+    /// BloodRh
+    Route::apiResource('v1/blood-rh', BloodRhController::class)->only(['index']);
 });

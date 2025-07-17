@@ -475,7 +475,10 @@ return [
             'text_lib' => 'Có lỗi khi thực hiện thao tác với bảng Thư viện nội dung!',
             'tracking_temp' => 'Có lỗi khi thực hiện thao tác với bảng Mẫu tờ điều trị!',
             'ket_qua_cls_v_view' => 'Có lỗi khi thực hiện thao tác với bảng tạm Kết quả CLS!',
-
+            'emergency_wtime' => 'Có lỗi khi thực hiện thao tác với bảng Thời gian đau!',
+            'owe_type' => 'Có lỗi khi thực hiện thao tác với bảng Nợ viện phí!',
+            'blood_abo' => 'Có lỗi khi thực hiện thao tác với bảng Nhóm máu ABO!',
+            'blood_rh' => 'Có lỗi khi thực hiện thao tác với bảng BloodRh!',
         ],
         'table' => [
             'bed' => [
