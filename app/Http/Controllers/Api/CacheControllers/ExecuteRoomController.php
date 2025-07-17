@@ -103,7 +103,23 @@ class ExecuteRoomController extends BaseApiCacheController
         ];
         return returnDataSuccess($paramReturn, $data['data']);
     }
-
+    public function guest()
+    {
+        if ($this->checkParam()) {
+            return $this->checkParam();
+        }
+        $data = $this->executeRoomService->handleDataBaseGetAll();
+        $paramReturn = [
+            $this->getAllName => $this->getAll,
+            $this->startName => $this->getAll ? null : $this->start,
+            $this->limitName => $this->getAll ? null : $this->limit,
+            $this->countName => $data['count'],
+            $this->isActiveName => $this->isActive,
+            $this->keywordName => $this->keyword,
+            $this->orderByName => $this->orderByRequest
+        ];
+        return returnDataSuccess($paramReturn, $data['data']);
+    }
     public function show($id)
     {
         if ($this->checkParam()) {

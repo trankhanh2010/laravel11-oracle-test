@@ -376,6 +376,55 @@ Route::post('v1/vietinbank-inq-detail-trans', [VietinbankController::class, 'han
 /// Request
 Route::get("v1/get-column-name", [BaseApiRequestController::class, "getColumnname"])->name('.get_column_name')
     ->withoutMiddleware('check_token');
+
+
+/// GUEST - cho khách
+/// Giới tính
+Route::get("v1/guest/gender", [GenderController::class, "guest"])->name('.guest_gender')
+    ->withoutMiddleware('check_token'); 
+/// Nghề nghiệp
+Route::get("v1/guest/career", [CareerController::class, "guest"])->name('.guest_career')
+    ->withoutMiddleware('check_token'); 
+/// Đối tượng
+Route::get("v1/guest/patient-type", [PatientTypeController::class, "guest"])->name('.guest_patient_type')
+    ->withoutMiddleware('check_token'); 
+/// Xã
+Route::get("v1/guest/commune", [CommuneController::class, "guest"])->name('.guest_commune')
+    ->withoutMiddleware('check_token'); 
+/// Tỉnh
+Route::get("v1/guest/province", [ProvinceController::class, "guest"])->name('.guest_province')
+    ->withoutMiddleware('check_token'); 
+/// Phòng khám cls pttt
+Route::get("v1/guest/execute-room", [ExecuteRoomController::class, "guest"])->name('.guest_execute_room')
+    ->withoutMiddleware('check_token'); 
+/// Dịch vụ phòng
+Route::get("v1/guest/service-room", [ServiceRoomController::class, "guest"])->name('.guest_service_room')
+    ->withoutMiddleware('check_token'); 
+/// Diện điều trị
+Route::get("v1/guest/treatment-type", [TreatmentTypeController::class, "guest"])->name('.guest_treatment_type')
+    ->withoutMiddleware('check_token'); 
+/// Nguồn chi trả khác
+Route::get("v1/guest/other-pay-source", [OtherPaySourceController::class, "guest"])->name('.guest_other_pay_source')
+    ->withoutMiddleware('check_token'); 
+/// Dân tộc
+Route::get("v1/guest/ethnic", [EthnicController::class, "guest"])->name('.guest_ethnic')
+    ->withoutMiddleware('check_token'); 
+/// Quốc tịch
+Route::get("v1/guest/national", [NationalController::class, "guest"])->name('.guest_national')
+    ->withoutMiddleware('check_token'); 
+/// Nơi làm việc
+Route::get("v1/guest/work-place", [WorkPlaceController::class, "guest"])->name('.guest_work_place')
+    ->withoutMiddleware('check_token'); 
+/// Phân loại bệnh nhân    
+Route::get("v1/guest/patient-classify", [PatientClassifyController::class, "guest"])->name('.guest_patient_classify')
+    ->withoutMiddleware('check_token'); 
+/// Bảo lãnh
+Route::get("v1/guest/emp-user", [EmployeeController::class, "guest"])->name('.guest_employee')
+    ->withoutMiddleware('check_token'); 
+
+
+
+
 Route::group([
     "middleware" => ["check_admin:api"]
 ], function () {

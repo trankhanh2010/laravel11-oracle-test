@@ -51,6 +51,7 @@ class ServiceRoomService
         $data = $this->serviceRoomRepository->applyJoins();
         $data = $this->serviceRoomRepository->applyIsActiveFilter($data, $this->params->isActive);
         $data = $this->serviceRoomRepository->applyRoomIdFilter($data, $this->params->roomId);
+        $data = $this->serviceRoomRepository->applyRoomIdsFilter($data, $this->params->roomIds);
         $data = $this->serviceRoomRepository->applyServiceIdFilter($data, $this->params->serviceId);
         $count = $data->count();
         $data = $this->serviceRoomRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);

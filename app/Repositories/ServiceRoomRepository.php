@@ -99,8 +99,15 @@ class ServiceRoomRepository
     }
     public function applyRoomIdFilter($query, $roomId)
     {
-        if ($roomId !== null) {
+        if ($roomId != null) {
             $query->where(DB::connection('oracle_his')->raw('his_service_room.room_id'), $roomId);
+        }
+        return $query;
+    }
+    public function applyRoomIdsFilter($query, $roomIds)
+    {
+        if ($roomIds != null) {
+            $query->whereIn(DB::connection('oracle_his')->raw('his_service_room.room_id'), $roomIds);
         }
         return $query;
     }

@@ -88,6 +88,33 @@ class ProvinceController extends BaseApiCacheController
         ];
         return returnDataSuccess($paramReturn, $data['data']);
     }
+    public function guest()
+    {
+        if ($this->checkParam()) {
+            return $this->checkParam();
+        }
+        switch ($this->tab) {
+            case 'getDataSelect': // lấy danh sách
+                $data = $this->provinceService->handleDataBaseGetAllGetDataSelect();
+                break;
+            case 'getDataSelect2Cap': // lấy danh sách
+                $data = $this->provinceService->handleDataBaseGetAllGetDataSelect2Cap();
+                break;
+            default:
+                $data = $this->provinceService->handleDataBaseGetAll();
+                break;
+        }
+        $paramReturn = [
+            $this->getAllName => $this->getAll,
+            $this->startName => $this->getAll ? null : $this->start,
+            $this->limitName => $this->getAll ? null : $this->limit,
+            $this->countName => $data['count'],
+            $this->isActiveName => $this->isActive,
+            $this->keywordName => $this->keyword,
+            $this->orderByName => $this->orderByRequest
+        ];
+        return returnDataSuccess($paramReturn, $data['data']);
+    }
 
     public function show($id)
     {

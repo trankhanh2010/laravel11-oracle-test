@@ -64,7 +64,7 @@ class KetQuaClsVViewService
         $data = $this->ketQuaClsVViewRepository->applyChiSoQuanTrongFilter($data, $this->params->chiSoQuanTrong);
         $data = $this->ketQuaClsVViewRepository->applyTrenNguongDuoiNguongFilter($data, $this->params->treatmentId, $this->params->trenNguong, $this->params->duoiNguong);
 
-        $count = $data->count();
+        $count = null;
         $orderBy = [
             "intruction_date" => "desc",
             "test_index_num_order" => "asc",

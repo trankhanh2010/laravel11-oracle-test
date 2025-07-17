@@ -28,7 +28,9 @@ class EmployeeRepository
             ->leftJoin('his_gender as gender', 'gender.id', '=', 'his_employee.gender_id')
             ->leftJoin('his_career_title as career_title', 'career_title.id', '=', 'his_employee.career_title_id')
             ->select(
-                'his_employee.*',
+                'his_employee.id',
+                'his_employee.loginname',
+                'his_employee.tdl_username',
                 'department.department_name',
                 'department.department_code',
                 'gender.gender_name',

@@ -21,6 +21,7 @@ class ServiceRoomDTO
     public $roomId;
     public $param;
     public $noCache;
+    public $roomIds;
     public function __construct(
         $serviceRoomName,
         $keyword, 
@@ -39,6 +40,7 @@ class ServiceRoomDTO
         $roomId,
         $param,
         $noCache,
+        $roomIds,
         )
     {
         $this->serviceRoomName = $serviceRoomName;
@@ -58,5 +60,6 @@ class ServiceRoomDTO
         $this->roomId = $roomId;
         $this->param = $param;
         $this->noCache = $noCache;
+        $this->roomIds = $roomIds;
     }
 }

@@ -106,6 +106,49 @@ class EmployeeController extends BaseApiCacheController
         ];
         return returnDataSuccess($paramReturn, $data['data']);
     }
+    public function guest()
+    {
+        if ($this->checkParam()) {
+            return $this->checkParam();
+        }
+        $keyword = $this->keyword;
+        $source = [
+            'id',
+            'loginname',
+            'tdl_username',
+        ];
+        $this->elasticCustom = $this->employeeService->handleCustomParamElasticSearch();
+        if ($this->elasticSearchType || $this->elastic) {
+            if(!$keyword){
+                $cacheKey = $this->employeeName .'_'. 'elastic' . '_' . $this->param;
+                $cacheKeySet = "cache_keys:" . $this->employeeName; // Set để lưu danh sách key
+                $data = Cache::remember($cacheKey, $this->time, function () use ($source) {
+                    $data = $this->elasticSearchService->handleElasticSearchSearch($this->employeeName, $this->elasticCustom, $source);
+                    return $data;
+                });
+                // Lưu key vào Redis Set để dễ xóa sau này
+                Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+            }else{
+                $data = $this->elasticSearchService->handleElasticSearchSearch($this->employeeName, $this->elasticCustom, $source);
+            }
+        } else {
+            if ($keyword) {
+                $data = $this->employeeService->handleDataBaseSearch();
+            } else {
+                $data = $this->employeeService->handleDataBaseGetAll();
+            }
+        }
+        $paramReturn = [
+            $this->getAllName => $this->getAll,
+            $this->startName => $this->getAll ? null : $this->start,
+            $this->limitName => $this->getAll ? null : $this->limit,
+            $this->countName => $data['count'],
+            $this->isActiveName => $this->isActive,
+            $this->keywordName => $this->keyword,
+            $this->orderByName => $this->orderByRequest
+        ];
+        return returnDataSuccess($paramReturn, $data['data']);
+    }
 
     public function show($id)
     {
