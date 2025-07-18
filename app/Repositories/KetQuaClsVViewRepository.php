@@ -3,9 +3,12 @@
 namespace App\Repositories;
 
 use App\Jobs\ElasticSearch\Index\ProcessElasticIndexingJob;
+use App\Models\HIS\Gender;
 use App\Models\HIS\Treatment;
 use App\Models\View\KetQuaClsVView;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Str;
 
 class KetQuaClsVViewRepository
@@ -13,14 +16,37 @@ class KetQuaClsVViewRepository
     protected $ketQuaClsVView;
     protected $serviceRepository;
     protected $treatment;
+    protected $gender;
+
+    protected $genderNamId;
+    protected $genderNuId;
     public function __construct(
         KetQuaClsVView $ketQuaClsVView,
         ServiceRepository $serviceRepository,
         Treatment $treatment,
+        Gender $gender,
     ) {
         $this->ketQuaClsVView = $ketQuaClsVView;
         $this->serviceRepository = $serviceRepository;
         $this->treatment = $treatment;
+        $this->gender = $gender;
+
+        $cacheKeySet = "cache_keys:" . "setting"; // Set để lưu danh sách key
+        $cacheKey = 'gender_name_id';
+        $this->genderNamId = Cache::remember($cacheKey, now()->addMinutes(10080), function () {
+            $data =  $this->gender->where('gender_code', '02')->get();
+            return $data->value('id');
+        });
+        // Lưu key vào Redis Set để dễ xóa sau này
+        Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+
+        $cacheKey = 'gender_nu_id';
+        $this->genderNuId = Cache::remember($cacheKey, now()->addMinutes(10080), function () {
+            $data =  $this->gender->where('gender_code', '01')->get();
+            return $data->value('id');
+        });
+        // Lưu key vào Redis Set để dễ xóa sau này
+        Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
     }
 
     public function applyJoins()
@@ -98,7 +124,7 @@ class KetQuaClsVViewRepository
     public function applyChiSoQuanTrongFilter($query, $param)
     {
         if ($param != null) {
-            $query->where(DB::connection('oracle_his')->raw('xa_v_his_ket_qua_cls.is_important'),1);
+            $query->where(DB::connection('oracle_his')->raw('xa_v_his_ket_qua_cls.is_important'), 1);
         }
         return $query;
     }
@@ -106,8 +132,14 @@ class KetQuaClsVViewRepository
     {
 
         if ($trenNguong || $duoiNguong) {
-            $ngaySinh = $this->treatment->find($treatmentId)->value('tdl_patient_dob')??0;
-            $listTuoi = getTuoi($ngaySinh);
+            $dataTreatment = $this->treatment->find($treatmentId);
+            $ngaySinh = $dataTreatment->tdl_patient_dob ?? 0;
+            $genderId = $dataTreatment->tdl_patient_gender_id ?? 0;
+
+            $listTuoi = getTuoi($ngaySinh); // lấy ra danh sách tuổi theo năm tháng ngày giờ
+
+            $laNam = $genderId == $this->genderNamId; // là nam
+            $laNu = $genderId == $this->genderNuId; // là nữ
 
             $tuoiCaseSql = "CASE his_age_type.age_type_code";
             foreach ($listTuoi as $code => $tuoi) {
@@ -126,13 +158,22 @@ class KetQuaClsVViewRepository
 
             $query->where('xa_v_his_ket_qua_cls.service_type_code', 'XN');
 
-            $query->where(function ($q) use ($trenNguong, $duoiNguong, $whereTuoiFrom, $whereTuoiTo) {
+            $query->where(function ($q) use ($trenNguong, $duoiNguong, $whereTuoiFrom, $whereTuoiTo, $laNam, $laNu) {
                 if ($trenNguong) {
-                    $q->orWhereExists(function ($sub) use ($whereTuoiFrom, $whereTuoiTo) {
+                    $q->orWhereExists(function ($sub) use ($whereTuoiFrom, $whereTuoiTo, $laNam, $laNu) {
                         $sub->select(DB::raw(1))
                             ->from('his_test_index_range')
                             ->leftJoin('his_age_type', 'his_age_type.id', 'his_test_index_range.age_type_id')
                             ->whereRaw('his_test_index_range.test_index_id = xa_v_his_ket_qua_cls.test_index_id')
+                            ->where(function ($q) use ($laNam, $laNu) { // check điều kiện áp dụng cho nam/nữ
+                                $q->whereRaw('1 = 0'); // tránh OR hoạt động sai
+                                if ($laNam) {
+                                    $q->orWhere('his_test_index_range.is_male', 1);
+                                }
+                                if ($laNu) {
+                                    $q->orWhere('his_test_index_range.is_female', 1);
+                                }
+                            })
                             ->whereRaw("REGEXP_LIKE(xa_v_his_ket_qua_cls.ket_qua, '^-?[0-9]+(\\.[0-9]+)?$')") // check ngưỡng
                             ->whereRaw("REGEXP_LIKE(his_test_index_range.max_value, '^-?[0-9]+(\\.[0-9]+)?$')")
                             ->whereRaw("
@@ -143,23 +184,32 @@ class KetQuaClsVViewRepository
                                     (NVL(his_test_index_range.is_accept_equal_min, 0) <> 1 AND 
                                     TO_NUMBER(xa_v_his_ket_qua_cls.ket_qua) > TO_NUMBER(his_test_index_range.max_value))
                                 )
-                            ")// Nếu có thì so sánh = không thì thôi
+                            ") // Nếu có thì so sánh = không thì thôi
                             ->where(function ($q) use ($whereTuoiFrom, $whereTuoiTo) { // hoặc k có age_type hoặc nếu có age_type thì phải khớp tuổi với loại tuổi
                                 $q->whereNull('his_test_index_range.age_type_id')
-                                ->orWhere(function ($q2) use ($whereTuoiFrom, $whereTuoiTo) { 
-                                   $q2->whereRaw($whereTuoiFrom)
-                                    ->whereRaw($whereTuoiTo);
-                                });
+                                    ->orWhere(function ($q2) use ($whereTuoiFrom, $whereTuoiTo) {
+                                        $q2->whereRaw($whereTuoiFrom)
+                                            ->whereRaw($whereTuoiTo);
+                                    });
                             });
                     });
                 }
 
                 if ($duoiNguong) {
-                    $q->orWhereExists(function ($sub) use ($whereTuoiFrom, $whereTuoiTo) {
+                    $q->orWhereExists(function ($sub) use ($whereTuoiFrom, $whereTuoiTo, $laNam, $laNu) {
                         $sub->select(DB::raw(1))
                             ->from('his_test_index_range')
                             ->leftJoin('his_age_type', 'his_age_type.id', 'his_test_index_range.age_type_id')
                             ->whereRaw('his_test_index_range.test_index_id = xa_v_his_ket_qua_cls.test_index_id')
+                            ->where(function ($q) use ($laNam, $laNu) { // check điều kiện áp dụng cho nam/nữ
+                                $q->whereRaw('1 = 0'); // tránh OR hoạt động sai
+                                if ($laNam) {
+                                    $q->orWhere('his_test_index_range.is_male', 1);
+                                }
+                                if ($laNu) {
+                                    $q->orWhere('his_test_index_range.is_female', 1);
+                                }
+                            })
                             ->whereRaw("REGEXP_LIKE(xa_v_his_ket_qua_cls.ket_qua, '^-?[0-9]+(\\.[0-9]+)?$')") // check ngưỡng
                             ->whereRaw("REGEXP_LIKE(his_test_index_range.min_value, '^-?[0-9]+(\\.[0-9]+)?$')")
                             ->whereRaw("
@@ -171,10 +221,10 @@ class KetQuaClsVViewRepository
                             ") // Nếu có thì so sánh = không thì thôi
                             ->where(function ($q) use ($whereTuoiFrom, $whereTuoiTo) { // hoặc k có age_type hoặc nếu có age_type thì phải khớp tuổi với loại tuổi
                                 $q->whereNull('his_test_index_range.age_type_id')
-                                ->orWhere(function ($q2) use ($whereTuoiFrom, $whereTuoiTo) { 
-                                   $q2->whereRaw($whereTuoiFrom)
-                                    ->whereRaw($whereTuoiTo);
-                                });
+                                    ->orWhere(function ($q2) use ($whereTuoiFrom, $whereTuoiTo) {
+                                        $q2->whereRaw($whereTuoiFrom)
+                                            ->whereRaw($whereTuoiTo);
+                                    });
                             });
                     });
                 }

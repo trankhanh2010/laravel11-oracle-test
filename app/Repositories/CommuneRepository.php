@@ -52,6 +52,7 @@ class CommuneRepository
                 'sda_commune.commune_name',
                 'sda_commune.initial_name',
                 'sda_commune.province_id',
+                'sda_province.province_code',
             );
     }
     public function applyJoinsGetDataSelectTHX()
