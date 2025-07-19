@@ -208,6 +208,7 @@ use App\Http\Controllers\Api\NoCacheControllers\DonVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\KetQuaClsVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\MedicalCaseCoverListVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\MedicineListVViewController;
+use App\Http\Controllers\Api\NoCacheControllers\PatientController;
 use App\Http\Controllers\Api\NoCacheControllers\PatientTypeAlterVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\ResultClsVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\RoomVViewController;
@@ -387,6 +388,8 @@ Route::get("v1/get-column-name", [BaseApiRequestController::class, "getColumnnam
 Route::prefix('v1/guest')->withoutMiddleware('check_token')->group(function () {
     // Đăng ký khám
     Route::post('dang-ky-kham', [DangKyKhamController::class, 'dangKyKham']);
+    Route::get('tim-thong-tin-benh-nhan', [PatientController::class, 'timThongTinBenhNhan']);
+    Route::get('lay-thong-tin-benh-nhan', [PatientController::class, 'layThongTinBenhNhan']);
 
     Route::get('gender', [GenderController::class, 'guest']);
     Route::get('career', [CareerController::class, 'guest']);

@@ -126,6 +126,10 @@ class BaseApiCacheController extends Controller
     protected $intructionTimeName = 'IntructionTime';
     protected $intructionDate;
     protected $intructionDateName = 'IntructionDate';
+    protected $phone;
+    protected $phoneName = 'Phone';
+    protected $cccdNumber;
+    protected $cccdNumberName = 'CccdNumber';
     protected $addLoginname;
     protected $addLoginnameName = 'AddLoginname';
     protected $depositReqCode;
@@ -474,6 +478,8 @@ class BaseApiCacheController extends Controller
     protected $ethnicName = 'ethnic';
     protected $patientType;
     protected $patientTypeName = 'patient_type';
+    protected $patient;
+    protected $patientName = 'patient';
     protected $priorityType;
     protected $priorityTypeName = 'priority_type';
     protected $career;
@@ -936,22 +942,24 @@ class BaseApiCacheController extends Controller
     {
         return $this->errors;
     }
-    protected function userRoom403($roomIds){
-        if(is_array($roomIds)){
-            return "Tài khoản không có quyền lấy tài nguyên với RoomId: ". implode(', ', $roomIds);
-        }else{
-            return "Tài khoản không có quyền lấy tài nguyên với RoomId: ".$roomIds;
+    protected function userRoom403($roomIds)
+    {
+        if (is_array($roomIds)) {
+            return "Tài khoản không có quyền lấy tài nguyên với RoomId: " . implode(', ', $roomIds);
+        } else {
+            return "Tài khoản không có quyền lấy tài nguyên với RoomId: " . $roomIds;
         }
-    } 
-    protected function  checkUserRoomCurrent($roomIds){
-        if($this->currentUserLoginRoomIds == null) {
+    }
+    protected function  checkUserRoomCurrent($roomIds)
+    {
+        if ($this->currentUserLoginRoomIds == null) {
             $result = $roomIds;
             return $result;
         }
-        if(is_array($roomIds)){
+        if (is_array($roomIds)) {
             $result = array_diff($roomIds, $this->currentUserLoginRoomIds);
-        }else{
-            $check = in_array( $roomIds, $this->currentUserLoginRoomIds);
+        } else {
+            $check = in_array($roomIds, $this->currentUserLoginRoomIds);
             $result = $check ? null : $roomIds;
         }
         return $result;
@@ -1010,7 +1018,7 @@ class BaseApiCacheController extends Controller
     protected function getColumnsTable($table, $isView = false)
     {
         // Tắt để k cần check
-        return ;
+        return;
 
         $tableName = strtolower($table->getTable());
         $parts = explode('_', $tableName);
@@ -1046,12 +1054,13 @@ class BaseApiCacheController extends Controller
         // }
         return $orderBy;
     }
-    public function getBedRoomIdsTreatmentId($treatmentId){
-        $cacheKey = 'bed_room_ids_treatment_id_'.$treatmentId;
+    public function getBedRoomIdsTreatmentId($treatmentId)
+    {
+        $cacheKey = 'bed_room_ids_treatment_id_' . $treatmentId;
         $cacheKeySet = "cache_keys:" . $this->currentLoginname; // Set để lưu danh sách key
-        $data = Cache::remember($cacheKey, 600, function () use($treatmentId) {
-            $bedRoomIds = TreatmentBedRoom::join('his_bed_room','his_bed_room.id', '=', 'his_treatment_bed_room.bed_room_id')
-            ->where('treatment_id', $treatmentId)->pluck('his_bed_room.room_id')->toArray();
+        $data = Cache::remember($cacheKey, 600, function () use ($treatmentId) {
+            $bedRoomIds = TreatmentBedRoom::join('his_bed_room', 'his_bed_room.id', '=', 'his_treatment_bed_room.bed_room_id')
+                ->where('treatment_id', $treatmentId)->pluck('his_bed_room.room_id')->toArray();
             return $bedRoomIds;
         });
         // Lưu key vào Redis Set để dễ xóa sau này
@@ -1060,10 +1069,11 @@ class BaseApiCacheController extends Controller
         return $data;
     }
 
-    public function getExeRoomIdsTreatmentId($treatmentId){
-        $cacheKey = 'exe_room_ids_treatment_id_'.$treatmentId;
+    public function getExeRoomIdsTreatmentId($treatmentId)
+    {
+        $cacheKey = 'exe_room_ids_treatment_id_' . $treatmentId;
         $cacheKeySet = "cache_keys:" . $this->currentLoginname; // Set để lưu danh sách key
-        $data = Cache::remember($cacheKey, 600, function () use($treatmentId) {
+        $data = Cache::remember($cacheKey, 600, function () use ($treatmentId) {
             $executeRoomIds = ServiceReq::where('treatment_id', $treatmentId)->pluck('execute_room_id')->toArray();
             return $executeRoomIds;
         });
@@ -1072,10 +1082,11 @@ class BaseApiCacheController extends Controller
 
         return $data;
     }
-    public function checkUserRoomTreatmentId($treatmentId){
-        if($treatmentId == null || !is_numeric($treatmentId)){
+    public function checkUserRoomTreatmentId($treatmentId)
+    {
+        if ($treatmentId == null || !is_numeric($treatmentId)) {
             $this->errors[$this->treatmentIdName] = $this->messFormat;
-            return ;
+            return;
         }
         $bedRoomIds = $this->getBedRoomIdsTreatmentId($treatmentId);
         $executeRoomIds = $this->getExeRoomIdsTreatmentId($treatmentId);
@@ -1085,21 +1096,22 @@ class BaseApiCacheController extends Controller
         $intersectExeRoom = array_intersect($executeRoomIds, $this->currentUserLoginRoomIds);
 
         $success = false;
-        if(!empty($intersectBedRoom) || !empty($intersectExeRoom)){
+        if (!empty($intersectBedRoom) || !empty($intersectExeRoom)) {
             $success = true;
         }
-        if(!$success){
+        if (!$success) {
             $this->errors[$this->treatmentIdName] = 'Không có quyền xem thông tin hồ sơ này';
         }
     }
 
-    public function getBedRoomIdsPatientCode($patientCode){
-        $cacheKey = 'bed_room_ids_patient_code_'.$patientCode;
+    public function getBedRoomIdsPatientCode($patientCode)
+    {
+        $cacheKey = 'bed_room_ids_patient_code_' . $patientCode;
         $cacheKeySet = "cache_keys:" . $this->currentLoginname; // Set để lưu danh sách key
-        $data = Cache::remember($cacheKey, 600, function () use($patientCode) {
-            $bedRoomIds = Treatment::join('his_treatment_bed_room','his_treatment_bed_room.treatment_id', '=', 'his_treatment.id')
-            ->join('his_bed_room','his_bed_room.id', '=', 'his_treatment_bed_room.bed_room_id')
-            ->where('tdl_patient_code', $patientCode)->pluck('his_bed_room.room_id')->toArray();
+        $data = Cache::remember($cacheKey, 600, function () use ($patientCode) {
+            $bedRoomIds = Treatment::join('his_treatment_bed_room', 'his_treatment_bed_room.treatment_id', '=', 'his_treatment.id')
+                ->join('his_bed_room', 'his_bed_room.id', '=', 'his_treatment_bed_room.bed_room_id')
+                ->where('tdl_patient_code', $patientCode)->pluck('his_bed_room.room_id')->toArray();
             return $bedRoomIds;
         });
         // Lưu key vào Redis Set để dễ xóa sau này
@@ -1108,10 +1120,11 @@ class BaseApiCacheController extends Controller
         return $data;
     }
 
-    public function getExeRoomIdsPatientCode($patientCode){
-        $cacheKey = 'exe_room_ids_patient_code_'.$patientCode;
+    public function getExeRoomIdsPatientCode($patientCode)
+    {
+        $cacheKey = 'exe_room_ids_patient_code_' . $patientCode;
         $cacheKeySet = "cache_keys:" . $this->currentLoginname; // Set để lưu danh sách key
-        $data = Cache::remember($cacheKey, 600, function () use($patientCode) {
+        $data = Cache::remember($cacheKey, 600, function () use ($patientCode) {
             $executeRoomIds = ServiceReq::where('tdl_patient_code', $patientCode)->pluck('execute_room_id')->toArray();
             return $executeRoomIds;
         });
@@ -1120,10 +1133,11 @@ class BaseApiCacheController extends Controller
 
         return $data;
     }
-    public function checkUserRoomPatientCode($patientCode){
-        if($patientCode == null || !is_string($patientCode)){
+    public function checkUserRoomPatientCode($patientCode)
+    {
+        if ($patientCode == null || !is_string($patientCode)) {
             $this->errors[$this->patientCodeName] = $this->messFormat;
-            return ;
+            return;
         }
         $bedRoomIds = $this->getBedRoomIdsPatientCode($patientCode);
         $executeRoomIds = $this->getExeRoomIdsPatientCode($patientCode);
@@ -1133,17 +1147,18 @@ class BaseApiCacheController extends Controller
         $intersectExeRoom = array_intersect($executeRoomIds, $this->currentUserLoginRoomIds);
 
         $success = false;
-        if(!empty($intersectBedRoom) || !empty($intersectExeRoom)){
+        if (!empty($intersectBedRoom) || !empty($intersectExeRoom)) {
             $success = true;
         }
-        if(!$success){
+        if (!$success) {
             $this->errors[$this->patientCodeName] = 'Không có quyền xem thông tin bệnh nhân này';
         }
     }
-    public function getTreatmentIdByTrackingId($id){
-        $cacheKey = 'treatment_id_by_tracking_id_'.$id;
+    public function getTreatmentIdByTrackingId($id)
+    {
+        $cacheKey = 'treatment_id_by_tracking_id_' . $id;
         $cacheKeySet = "cache_keys:" . "setting"; // Set để lưu danh sách key
-        $data = Cache::remember($cacheKey, 600, function () use($id) {
+        $data = Cache::remember($cacheKey, 600, function () use ($id) {
             return Tracking::find($id)->treatment_id ?? null;
         });
         // Lưu key vào Redis Set để dễ xóa sau này
@@ -1151,10 +1166,11 @@ class BaseApiCacheController extends Controller
 
         return $data;
     }
-    public function getTreatmentIdByServiceReqId($id){
-        $cacheKey = 'treatment_id_by_service_req_id_'.$id;
+    public function getTreatmentIdByServiceReqId($id)
+    {
+        $cacheKey = 'treatment_id_by_service_req_id_' . $id;
         $cacheKeySet = "cache_keys:" . "setting"; // Set để lưu danh sách key
-        $data = Cache::remember($cacheKey, 600, function () use($id) {
+        $data = Cache::remember($cacheKey, 600, function () use ($id) {
             return ServiceReq::find($id)->treatment_id ?? null;
         });
         // Lưu key vào Redis Set để dễ xóa sau này
@@ -1162,10 +1178,11 @@ class BaseApiCacheController extends Controller
 
         return $data;
     }
-    public function getTreatmentIdBySereServId($id){
-        $cacheKey = 'treatment_id_by_sere_serv_id_'.$id;
+    public function getTreatmentIdBySereServId($id)
+    {
+        $cacheKey = 'treatment_id_by_sere_serv_id_' . $id;
         $cacheKeySet = "cache_keys:" . "setting"; // Set để lưu danh sách key
-        $data = Cache::remember($cacheKey, 600, function () use($id) {
+        $data = Cache::remember($cacheKey, 600, function () use ($id) {
             return SereServ::find($id)->tdl_treatment_id ?? null;
         });
         // Lưu key vào Redis Set để dễ xóa sau này
@@ -1173,10 +1190,11 @@ class BaseApiCacheController extends Controller
 
         return $data;
     }
-    public function getTreatmentIdByTreatmentCode($code){
-        $cacheKey = 'treatment_id_by_treatment_code_'.$code;
+    public function getTreatmentIdByTreatmentCode($code)
+    {
+        $cacheKey = 'treatment_id_by_treatment_code_' . $code;
         $cacheKeySet = "cache_keys:" . "setting"; // Set để lưu danh sách key
-        $data = Cache::remember($cacheKey, $this->time, function () use($code) {
+        $data = Cache::remember($cacheKey, $this->time, function () use ($code) {
             return Treatment::where('treatment_code', $code)->first()->id ?? 0;
         });
         // Lưu key vào Redis Set để dễ xóa sau này
@@ -1184,10 +1202,11 @@ class BaseApiCacheController extends Controller
 
         return $data;
     }
-    public function getPatientCodedByTreatmentCode($code){
-        $cacheKey = 'patient_code_by_treatment_code_'.$code;
+    public function getPatientCodedByTreatmentCode($code)
+    {
+        $cacheKey = 'patient_code_by_treatment_code_' . $code;
         $cacheKeySet = "cache_keys:" . "setting"; // Set để lưu danh sách key
-        $data = Cache::remember($cacheKey, $this->time, function () use($code) {
+        $data = Cache::remember($cacheKey, $this->time, function () use ($code) {
             return Treatment::where('treatment_code', $code)->first()->tdl_patient_code ?? 0;
         });
         // Lưu key vào Redis Set để dễ xóa sau này
@@ -1195,10 +1214,11 @@ class BaseApiCacheController extends Controller
 
         return $data;
     }
-    public function getPatientCodedByTreatmentId($id){
-        $cacheKey = 'patient_code_by_treatment_id_'.$id;
+    public function getPatientCodedByTreatmentId($id)
+    {
+        $cacheKey = 'patient_code_by_treatment_id_' . $id;
         $cacheKeySet = "cache_keys:" . "setting"; // Set để lưu danh sách key
-        $data = Cache::remember($cacheKey, $this->time, function () use($id) {
+        $data = Cache::remember($cacheKey, $this->time, function () use ($id) {
             return Treatment::where('id', $id)->first()->tdl_patient_code ?? 0;
         });
         // Lưu key vào Redis Set để dễ xóa sau này
@@ -1206,10 +1226,11 @@ class BaseApiCacheController extends Controller
 
         return $data;
     }
-    public function getServiceReqIdByServiceReqCode($code){
-        $cacheKey = 'service_req_id_by_service_req_code_'.$code;
+    public function getServiceReqIdByServiceReqCode($code)
+    {
+        $cacheKey = 'service_req_id_by_service_req_code_' . $code;
         $cacheKeySet = "cache_keys:" . "setting"; // Set để lưu danh sách key
-        $data = Cache::remember($cacheKey, $this->time, function () use($code) {
+        $data = Cache::remember($cacheKey, $this->time, function () use ($code) {
             return ServiceReq::where('service_req_code', $code)->first()->id ?? 0;
         });
         // Lưu key vào Redis Set để dễ xóa sau này
@@ -1229,14 +1250,14 @@ class BaseApiCacheController extends Controller
         $this->currentDepartmentId = $this->currentLoginname ? get_department_id_with_loginname($this->currentLoginname, $this->time) : 0;
 
         // Lấy ra danh sách room id được quyền lấy tài nguyên của tài khoản đang đăng nhập
-        if($this->currentLoginname){
-            $cacheKey = 'user_login_room_ids_'.$this->currentLoginname;
+        if ($this->currentLoginname) {
+            $cacheKey = 'user_login_room_ids_' . $this->currentLoginname;
             $cacheKeySet = "cache_keys:" . $this->currentLoginname; // Set để lưu danh sách key
             $cacheKeySetU = "cache_keys:" . $this->userRoomVViewName; // Set để lưu danh sách key
 
             $this->currentUserLoginRoomIds = Cache::remember(
-                $cacheKey, 
-                $this->time, 
+                $cacheKey,
+                $this->time,
                 function () {
                     $data = UserRoom::getRoomIdsByLoginname($this->currentLoginname);
                     return base64_encode(gzcompress(serialize($data))); // Nén và mã hóa trước khi lưu
@@ -1245,7 +1266,7 @@ class BaseApiCacheController extends Controller
             // Lưu key vào Redis Set để dễ xóa sau này
             Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
             Redis::connection('cache')->sadd($cacheKeySetU, [$cacheKey]);
-       }
+        }
         // Giải nén dữ liệu khi lấy từ cache
         if ($this->currentUserLoginRoomIds && is_string($this->currentUserLoginRoomIds)) {
             $decompressedData = @gzuncompress(base64_decode($this->currentUserLoginRoomIds));
@@ -1550,6 +1571,18 @@ class BaseApiCacheController extends Controller
                 $this->accountBookCode = null;
             }
         }
+        $this->phone = $this->paramRequest['ApiData']['Phone'] ?? null;
+        if ($this->phone !== null) {
+            if (!is_string($this->phone) || mb_strlen($this->phone) > 20) {
+                $this->errors[$this->phoneName] = $this->messFormat;
+            }
+        }
+        $this->cccdNumber = $this->paramRequest['ApiData']['CccdNumber'] ?? null;
+        if ($this->phone !== null) {
+            if (!is_string($this->cccdNumber) || !preg_match('/^\d{12}$/', $this->cccdNumber)) {
+                $this->errors[$this->cccdNumberName] = $this->messFormat;
+            }
+        }
         $this->storeCode = $this->paramRequest['ApiData']['StoreCode'] ?? null;
         if ($this->storeCode !== null) {
             if (!is_string($this->storeCode)) {
@@ -1689,7 +1722,7 @@ class BaseApiCacheController extends Controller
                 if (!is_numeric($item)) {
                     $this->errors[$this->serviceTypeIdsName] = $this->messFormat;
                     unset($this->serviceTypeIds[$key]);
-                } 
+                }
             }
         }
         if ($this->serviceTypeIds != null) {
@@ -1702,7 +1735,7 @@ class BaseApiCacheController extends Controller
                 if (!is_numeric($item)) {
                     $this->errors[$this->treatmentTypeIdsName] = $this->messFormat;
                     unset($this->treatmentTypeIds[$key]);
-                } 
+                }
             }
         }
         if ($this->treatmentTypeIds != null) {
@@ -1716,7 +1749,7 @@ class BaseApiCacheController extends Controller
                 if (!is_numeric($item)) {
                     $this->errors[$this->serviceGroupIdsName] = $this->messFormat;
                     unset($this->serviceGroupIds[$key]);
-                } 
+                }
             }
         }
 
@@ -1761,7 +1794,7 @@ class BaseApiCacheController extends Controller
                 if (!is_string($item)) {
                     $this->errors[$this->keysName] = $this->messFormat;
                     unset($this->keys[$key]);
-                } 
+                }
             }
         }
 
@@ -1785,7 +1818,7 @@ class BaseApiCacheController extends Controller
                 if (!is_string($item)) {
                     $this->errors[$this->serviceTypeCodesName] = $this->messFormat;
                     unset($this->serviceTypeCodes[$key]);
-                } 
+                }
             }
         }
         if ($this->serviceTypeCodes !=  null) {
@@ -1798,7 +1831,7 @@ class BaseApiCacheController extends Controller
                 if (!is_string($item)) {
                     $this->errors[$this->serviceReqSttCodesName] = $this->messFormat;
                     unset($this->serviceReqSttCodes[$key]);
-                } 
+                }
             }
         }
 
@@ -1808,7 +1841,7 @@ class BaseApiCacheController extends Controller
                 if (!is_string($item)) {
                     $this->errors[$this->sessionCodesName] = $this->messFormat;
                     unset($this->sessionCodes[$key]);
-                } 
+                }
             }
         }
 
@@ -1818,7 +1851,7 @@ class BaseApiCacheController extends Controller
                 if (!is_string($item)) {
                     $this->errors[$this->serviceCodesName] = $this->messFormat;
                     unset($this->serviceCodes[$key]);
-                } 
+                }
             }
         }
 
@@ -1828,7 +1861,7 @@ class BaseApiCacheController extends Controller
                 if (!is_string($item)) {
                     $this->errors[$this->tableName] = $this->messFormat;
                     unset($this->table[$key]);
-                } 
+                }
             }
         }
         $this->documentIds = $this->paramRequest['ApiData']['DocumentIds'] ?? null;
@@ -1838,7 +1871,7 @@ class BaseApiCacheController extends Controller
                 if (!is_numeric($item)) {
                     $this->errors[$this->documentIdsName] = $this->messFormat;
                     unset($this->documentIds[$key]);
-                } 
+                }
             }
         }
 
@@ -1849,7 +1882,7 @@ class BaseApiCacheController extends Controller
                 if (!is_numeric($item)) {
                     $this->errors[$this->testIndexIdsName] = $this->messFormat;
                     unset($this->testIndexIds[$key]);
-                } 
+                }
             }
         }
         $this->serviceReqIds = $this->paramRequest['ApiData']['ServiceReqIds'] ?? null;
@@ -1870,7 +1903,7 @@ class BaseApiCacheController extends Controller
                 if (!is_numeric($item)) {
                     $this->errors[$this->sereServIdsName] = $this->messFormat;
                     unset($this->sereServIds[$key]);
-                } 
+                }
             }
         }
         $this->tab = $this->paramRequest['ApiData']['Tab']  ?? null;
@@ -1886,7 +1919,7 @@ class BaseApiCacheController extends Controller
                 if (!is_string($item)) {
                     $this->errors[$this->hashTagsName] = $this->messFormat;
                     unset($this->hashTags[$key]);
-                } 
+                }
             }
         }
         $this->type = $this->paramRequest['ApiData']['Type']  ?? null;
@@ -1910,10 +1943,10 @@ class BaseApiCacheController extends Controller
                 if (!is_numeric($item)) {
                     $this->errors[$this->bedRoomIdsName] = $this->messFormat;
                     unset($this->bedRoomIds[$key]);
-                } 
+                }
             }
             $resultCheckUserRoom = $this->checkUserRoomCurrent($this->bedRoomIds);
-            if($resultCheckUserRoom){
+            if ($resultCheckUserRoom) {
                 $this->errors[$this->bedRoomIdsName] = $this->userRoom403($resultCheckUserRoom);
             }
         }
@@ -2042,7 +2075,7 @@ class BaseApiCacheController extends Controller
             if (!is_numeric($this->serviceId)) {
                 $this->errors[$this->serviceIdName] = $this->messFormat;
                 $this->serviceId = null;
-            } 
+            }
         }
         $this->kskContractId = $this->paramRequest['ApiData']['KskContractId'] ?? null;
         if ($this->kskContractId !== null) {
@@ -2050,7 +2083,7 @@ class BaseApiCacheController extends Controller
             if (!is_numeric($this->kskContractId)) {
                 $this->errors[$this->kskContractIdName] = $this->messFormat;
                 $this->kskContractId = null;
-            } 
+            }
         }
         $this->billId = $this->paramRequest['ApiData']['BillId'] ?? null;
         if ($this->billId !== null) {
@@ -2058,7 +2091,7 @@ class BaseApiCacheController extends Controller
             if (!is_numeric($this->billId)) {
                 $this->errors[$this->billIdName] = $this->messFormat;
                 $this->billId = null;
-            } 
+            }
         }
         $this->depositId = $this->paramRequest['ApiData']['DepositId'] ?? null;
         if ($this->depositId !== null) {
@@ -2066,7 +2099,7 @@ class BaseApiCacheController extends Controller
             if (!is_numeric($this->depositId)) {
                 $this->errors[$this->depositIdName] = $this->messFormat;
                 $this->depositId = null;
-            } 
+            }
         }
         $this->machineId = $this->paramRequest['ApiData']['MachineId'] ?? null;
         if ($this->machineId !== null) {
@@ -2074,7 +2107,7 @@ class BaseApiCacheController extends Controller
             if (!is_numeric($this->machineId)) {
                 $this->errors[$this->machineIdName] = $this->messFormat;
                 $this->machineId = null;
-            } 
+            }
         }
         $this->transactionTypeIds = $this->paramRequest['ApiData']['TransactionTypeIds'] ?? null;
         if ($this->transactionTypeIds != null) {
@@ -2083,7 +2116,7 @@ class BaseApiCacheController extends Controller
                 if (!is_numeric($item)) {
                     $this->errors[$this->transactionTypeIdsName] = $this->messFormat;
                     unset($this->transactionTypeIds[$key]);
-                } 
+                }
             }
         }
         $this->executeRoomIds = $this->paramRequest['ApiData']['ExecuteRoomIds'] ?? null;
@@ -2093,10 +2126,10 @@ class BaseApiCacheController extends Controller
                 if (!is_numeric($item)) {
                     $this->errors[$this->executeRoomIdsName] = $this->messFormat;
                     unset($this->executeRoomIds[$key]);
-                } 
+                }
             }
             $resultCheckUserRoom = $this->checkUserRoomCurrent($this->executeRoomIds);
-            if($resultCheckUserRoom){
+            if ($resultCheckUserRoom) {
                 $this->errors[$this->executeRoomIdsName] = $this->userRoom403($resultCheckUserRoom);
             }
         }
@@ -2106,7 +2139,7 @@ class BaseApiCacheController extends Controller
             if (!is_numeric($this->packageId)) {
                 $this->errors[$this->packageIdName] = $this->messFormat;
                 $this->packageId = null;
-            } 
+            }
         }
         $this->departmentId = $this->paramRequest['ApiData']['DepartmentId'] ?? null;
         if ($this->departmentId !== null) {
@@ -2114,7 +2147,7 @@ class BaseApiCacheController extends Controller
             if (!is_numeric($this->departmentId)) {
                 $this->errors[$this->departmentIdName] = $this->messFormat;
                 $this->departmentId = null;
-            } 
+            }
         }
         $this->tdlTreatmentId = $this->paramRequest['ApiData']['TdlTreatmentId'] ?? null;
         if ($this->tdlTreatmentId !== null) {
@@ -2122,7 +2155,7 @@ class BaseApiCacheController extends Controller
             if (!is_numeric($this->tdlTreatmentId)) {
                 $this->errors[$this->tdlTreatmentIdName] = $this->messFormat;
                 $this->tdlTreatmentId = null;
-            } 
+            }
         }
         $this->documentTypeId = $this->paramRequest['ApiData']['DocumentTypeId'] ?? null;
         if ($this->documentTypeId !== null) {
@@ -2130,7 +2163,7 @@ class BaseApiCacheController extends Controller
             if (!is_numeric($this->documentTypeId)) {
                 $this->errors[$this->documentTypeIdName] = $this->messFormat;
                 $this->documentTypeId = null;
-            } 
+            }
         }
         $this->isActive = $this->paramRequest['ApiData']['IsActive'] ?? null;
         if ($this->isActive !== null) {
@@ -2150,7 +2183,7 @@ class BaseApiCacheController extends Controller
             if (!is_numeric($this->roomTypeId)) {
                 $this->errors[$this->roomTypeIdName] = $this->messFormat;
                 $this->roomTypeId = null;
-            } 
+            }
         }
         $this->billTypeIds = $this->paramRequest['ApiData']['BillTypeIds'] ?? null;
         if ($this->billTypeIds != null) {
@@ -2159,7 +2192,7 @@ class BaseApiCacheController extends Controller
                 if (!is_numeric($item)) {
                     $this->errors[$this->billTypeIdsName] = $this->messFormat;
                     unset($this->billTypeIds[$key]);
-                } 
+                }
             }
         }
         $this->departmentIds = $this->paramRequest['ApiData']['DepartmentIds'] ?? null;
@@ -2169,7 +2202,7 @@ class BaseApiCacheController extends Controller
                 if (!is_numeric($item)) {
                     $this->errors[$this->departmentIdsName] = $this->messFormat;
                     unset($this->departmentIds[$key]);
-                } 
+                }
             }
         }
         $this->mediStockIds = $this->paramRequest['ApiData']['MediStockIds'] ?? null;
@@ -2179,7 +2212,7 @@ class BaseApiCacheController extends Controller
                 if (!is_numeric($item)) {
                     $this->errors[$this->mediStockIdsName] = $this->messFormat;
                     unset($this->mediStockIds[$key]);
-                } 
+                }
             }
         }
         $this->treatmentCode = $this->paramRequest['ApiData']['TreatmentCode'] ?? null;
@@ -2195,9 +2228,9 @@ class BaseApiCacheController extends Controller
             if (!is_numeric($this->treatmentId)) {
                 $this->errors[$this->treatmentIdName] = $this->messFormat;
                 $this->treatmentId = null;
-            } 
-        }else{
-            if($this->treatmentCode != null){
+            }
+        } else {
+            if ($this->treatmentCode != null) {
                 $this->treatmentId = $this->getTreatmentIdByTreatmentCode($this->treatmentCode);
             }
         }
@@ -2221,7 +2254,7 @@ class BaseApiCacheController extends Controller
                 if (!is_string($item)) {
                     $this->errors[$this->treatmentTypeCodesName] = $this->messFormat;
                     unset($this->treatmentTypeCodes[$key]);
-                } 
+                }
             }
         }
         $this->patientTypeCodes = $this->paramRequest['ApiData']['PatientTypeCodes'] ?? null;
@@ -2230,7 +2263,7 @@ class BaseApiCacheController extends Controller
                 if (!is_string($item)) {
                     $this->errors[$this->patientTypeCodesName] = $this->messFormat;
                     unset($this->patientTypeCodes[$key]);
-                } 
+                }
             }
         }
         $this->endDepartmentCodes = $this->paramRequest['ApiData']['EndDepartmentCodes'] ?? null;
@@ -2239,7 +2272,7 @@ class BaseApiCacheController extends Controller
                 if (!is_string($item)) {
                     $this->errors[$this->endDepartmentCodesName] = $this->messFormat;
                     unset($this->endDepartmentCodes[$key]);
-                } 
+                }
             }
         }
         $this->patientCode = $this->paramRequest['ApiData']['PatientCode'] ?? null;
@@ -2248,15 +2281,14 @@ class BaseApiCacheController extends Controller
                 $this->errors[$this->patientCodeName] = $this->messFormat;
                 $this->patientCode = null;
             }
-        }else{
-            if($this->treatmentCode != null){
+        } else {
+            if ($this->treatmentCode != null) {
                 $this->patientCode = $this->getPatientCodedByTreatmentCode($this->treatmentCode);
-            }else{
-                if($this->treatmentId != null){
+            } else {
+                if ($this->treatmentId != null) {
                     $this->patientCode = $this->getPatientCodedByTreatmentId($this->treatmentId);
                 }
             }
-            
         }
         $this->executeRoomCode = $this->paramRequest['ApiData']['ExecuteRoomCode'] ?? null;
         if ($this->executeRoomCode !== null) {
@@ -2280,7 +2312,7 @@ class BaseApiCacheController extends Controller
             if (!is_numeric($this->debateId)) {
                 $this->errors[$this->debateIdName] = $this->messFormat;
                 $this->debateId = null;
-            } 
+            }
         }
         $this->treatmentTypeId = $this->paramRequest['ApiData']['TreatmentTypeId'] ?? null;
         if ($this->treatmentTypeId != null) {
@@ -2288,7 +2320,7 @@ class BaseApiCacheController extends Controller
             if (!is_numeric($this->treatmentTypeId)) {
                 $this->errors[$this->treatmentTypeIdName] = $this->messFormat;
                 $this->treatmentTypeId = null;
-            } 
+            }
         }
         $this->serviceReqSttIds = $this->paramRequest['ApiData']['ServiceReqSttIds'] ?? null;
         if ($this->serviceReqSttIds != null) {
@@ -2297,7 +2329,7 @@ class BaseApiCacheController extends Controller
                 if (!is_numeric($item)) {
                     $this->errors[$this->serviceReqSttIdsName] = $this->messFormat;
                     unset($this->serviceReqSttIds[$key]);
-                } 
+                }
             }
         }
         $this->hasExecute = $this->paramRequest['ApiData']['HasExecute'] ?? true;
@@ -2406,7 +2438,7 @@ class BaseApiCacheController extends Controller
             if (!preg_match('/^\d{14}$/',  $this->intructionTimeDay)) {
                 $this->errors[$this->intructionTimeDayName] = $this->messFormat;
                 $this->intructionTimeDay = null;
-            }else{
+            } else {
                 $day = substr($this->intructionTimeDay, 0, 8); // Lấy yyyyMMdd
                 $this->intructionTimeFrom = $day . '000000'; // Đầu ngày
                 $this->intructionTimeTo = $day . '235959';   // Cuối ngày
@@ -2417,7 +2449,7 @@ class BaseApiCacheController extends Controller
             if (!preg_match('/^\d{14}$/',  $this->intructionTimeMonth)) {
                 $this->errors[$this->intructionTimeMonthName] = $this->messFormat;
                 $this->intructionTimeMonth = null;
-            }else{
+            } else {
                 $month = substr($this->intructionTimeMonth, 0, 6); // Lấy yyyyMM
                 $this->intructionTimeFrom = $month . '01000000'; // Đầu tháng
                 $this->intructionTimeTo = $month . '31235959';   // Cuối tháng
@@ -2472,7 +2504,7 @@ class BaseApiCacheController extends Controller
                 if (!is_numeric($item)) {
                     $this->errors[$this->tdlPatientTypeIdsName] = $this->messFormat;
                     unset($this->tdlPatientTypeIds[$key]);
-                } 
+                }
             }
         }
         $this->tdlTreatmentTypeIds = $this->paramRequest['ApiData']['TdlTreatmentTypeIds'] ?? null;
@@ -2492,7 +2524,7 @@ class BaseApiCacheController extends Controller
                 if (!is_numeric($item)) {
                     $this->errors[$this->notInServiceReqTypeIdsName] = $this->messFormat;
                     unset($this->notInServiceReqTypeIds[$key]);
-                } 
+                }
             }
         }
         $this->isNotKskRequriedAprovalOrIsKskApprove = $this->paramRequest['ApiData']['IsNotKskRequriedAproval_Or_IsKskApprove'] ?? true;
@@ -2506,9 +2538,9 @@ class BaseApiCacheController extends Controller
             if (!is_numeric($this->serviceReqId)) {
                 $this->errors[$this->serviceReqIdName] = $this->messFormat;
                 $this->serviceReqId = null;
-            } 
-        }else{
-            if($this->serviceReqCode != null){
+            }
+        } else {
+            if ($this->serviceReqCode != null) {
                 $this->serviceReqId = $this->getServiceReqIdByServiceReqCode($this->serviceReqCode);
             }
         }
@@ -2525,7 +2557,7 @@ class BaseApiCacheController extends Controller
             if (!is_numeric($this->serviceTypeId)) {
                 $this->errors[$this->serviceTypeIdName] = $this->messFormat;
                 $this->serviceTypeId = null;
-            } 
+            }
         }
         $this->branchId = $this->paramRequest['ApiData']['BranchId'] ?? null;
         if ($this->branchId !== null) {
@@ -2533,7 +2565,7 @@ class BaseApiCacheController extends Controller
             if (!is_numeric($this->branchId)) {
                 $this->errors[$this->branchIdName] = $this->messFormat;
                 $this->branchId = null;
-            } 
+            }
         }
         $this->isApproveStore = $this->paramRequest['ApiData']['IsApproveStore'] ?? null;
         if ($this->isApproveStore !== null) {
@@ -2562,7 +2594,7 @@ class BaseApiCacheController extends Controller
                 if (!is_numeric($item)) {
                     $this->errors[$this->machineIdsName] = $this->messFormat;
                     unset($this->machineIds[$key]);
-                } 
+                }
             }
         }
         if ($this->machineIds != null) {
@@ -2575,7 +2607,7 @@ class BaseApiCacheController extends Controller
                 if (!is_numeric($item)) {
                     $this->errors[$this->roomIdsName] = $this->messFormat;
                     unset($this->roomIds[$key]);
-                } 
+                }
             }
         }
         $this->serviceFollowIds = $this->paramRequest['ApiData']['ServiceFollowIds'] ?? null;
@@ -2585,7 +2617,7 @@ class BaseApiCacheController extends Controller
                 if (!is_numeric($item)) {
                     $this->errors[$this->serviceFollowIdsName] = $this->messFormat;
                     unset($this->serviceFollowIds[$key]);
-                } 
+                }
             }
         }
         $this->bedIds = $this->paramRequest['ApiData']['BedIds'] ?? null;
@@ -2595,7 +2627,7 @@ class BaseApiCacheController extends Controller
                 if (!is_numeric($item)) {
                     $this->errors[$this->bedIdsName] = $this->messFormat;
                     unset($this->bedIds[$key]);
-                } 
+                }
             }
         }
         $this->loginname = $this->paramRequest['ApiData']['Loginname'] ?? null;
@@ -2621,7 +2653,7 @@ class BaseApiCacheController extends Controller
                 if (!is_string($item)) {
                     $this->errors[$this->loginnamesName] = $this->messFormat;
                     unset($this->loginnames[$key]);
-                } 
+                }
             }
         }
         $this->executeRoleId = $this->paramRequest['ApiData']['ExecuteRoleId'] ?? null;
@@ -2630,7 +2662,7 @@ class BaseApiCacheController extends Controller
             if (!is_numeric($this->executeRoleId)) {
                 $this->errors[$this->executeRoleIdName] = $this->messFormat;
                 $this->executeRoleId = null;
-            } 
+            }
         }
         $this->moduleId = $this->paramRequest['ApiData']['ModuleId'] ?? null;
         if ($this->moduleId !== null) {
@@ -2638,7 +2670,7 @@ class BaseApiCacheController extends Controller
             if (!is_numeric($this->moduleId)) {
                 $this->errors[$this->moduleIdName] = $this->messFormat;
                 $this->moduleId = null;
-            } 
+            }
         }
         $this->roleId = $this->paramRequest['ApiData']['RoleId'] ?? null;
         if ($this->roleId !== null) {
@@ -2646,7 +2678,7 @@ class BaseApiCacheController extends Controller
             if (!is_numeric($this->roleId)) {
                 $this->errors[$this->roleIdName] = $this->messFormat;
                 $this->roleId = null;
-            } 
+            }
         }
         $this->mediStockId = $this->paramRequest['ApiData']['MediStockId'] ?? null;
         if ($this->mediStockId !== null) {
@@ -2654,7 +2686,7 @@ class BaseApiCacheController extends Controller
             if (!is_numeric($this->mediStockId)) {
                 $this->errors[$this->mediStockIdName] = $this->messFormat;
                 $this->mediStockId = null;
-            } 
+            }
         }
         $this->patientId = $this->paramRequest['ApiData']['PatientId'] ?? 0;
 
@@ -2664,7 +2696,7 @@ class BaseApiCacheController extends Controller
             if (!is_numeric($this->patientTypeId)) {
                 $this->errors[$this->patientTypeIdName] = $this->messFormat;
                 $this->patientTypeId = null;
-            } 
+            }
         }
         $this->medicineTypeId = $this->paramRequest['ApiData']['MedicineTypeId'] ?? null;
         if ($this->medicineTypeId !== null) {
@@ -2680,7 +2712,7 @@ class BaseApiCacheController extends Controller
             if (!is_numeric($this->materialTypeId)) {
                 $this->errors[$this->materialTypeIdName] = $this->messFormat;
                 $this->materialTypeId = null;
-            } 
+            }
         }
 
         $this->trackingId = $this->paramRequest['ApiData']['TrackingId'] ?? null;
@@ -2689,7 +2721,7 @@ class BaseApiCacheController extends Controller
             if (!is_numeric($this->trackingId)) {
                 $this->errors[$this->trackingIdName] = $this->messFormat;
                 $this->trackingId = null;
-            } 
+            }
         }
         $this->roomId = $this->paramRequest['ApiData']['RoomId'] ?? null;
         if ($this->roomId !== null) {
@@ -2697,7 +2729,7 @@ class BaseApiCacheController extends Controller
             if (!is_numeric($this->roomId)) {
                 $this->errors[$this->roomIdName] = $this->messFormat;
                 $this->roomId = null;
-            } 
+            }
         }
         $this->executeRoomId = $this->paramRequest['ApiData']['ExecuteRoomId'] ?? null;
         if ($this->executeRoomId !== null) {
@@ -2705,7 +2737,7 @@ class BaseApiCacheController extends Controller
             if (!is_numeric($this->executeRoomId)) {
                 $this->errors[$this->executeRoomIdName] = $this->messFormat;
                 $this->executeRoomId = null;
-            } 
+            }
         }
         $this->patientTypeAllowId = $this->paramRequest['ApiData']['PatientTypeAllowId'] ?? null;
         if ($this->patientTypeAllowId !== null) {
@@ -2713,7 +2745,7 @@ class BaseApiCacheController extends Controller
             if (!is_numeric($this->patientTypeAllowId)) {
                 $this->errors[$this->patientTypeAllowIdName] = $this->messFormat;
                 $this->patientTypeAllowId = null;
-            } 
+            }
         }
         $this->activeIngredientId = $this->paramRequest['ApiData']['ActiveIngredientId'] ?? null;
         if ($this->activeIngredientId !== null) {
@@ -2721,7 +2753,7 @@ class BaseApiCacheController extends Controller
             if (!is_numeric($this->activeIngredientId)) {
                 $this->errors[$this->activeIngredientIdName] = $this->messFormat;
                 $this->activeIngredientId = null;
-            } 
+            }
         }
         $this->testServiceTypeId = $this->paramRequest['ApiData']['TestServiceTypeId'] ?? null;
         if ($this->testServiceTypeId !== null) {

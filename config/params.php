@@ -479,6 +479,7 @@ return [
             'owe_type' => 'Có lỗi khi thực hiện thao tác với bảng Nợ viện phí!',
             'blood_abo' => 'Có lỗi khi thực hiện thao tác với bảng Nhóm máu ABO!',
             'blood_rh' => 'Có lỗi khi thực hiện thao tác với bảng BloodRh!',
+            'patient' => 'Có lỗi khi thực hiện thao tác với bảng Bệnh nhân!',
         ],
         'table' => [
             'bed' => [
