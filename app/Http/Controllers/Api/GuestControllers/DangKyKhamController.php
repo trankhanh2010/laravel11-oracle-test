@@ -28,10 +28,11 @@ class DangKyKhamController extends Controller
             );
             $this->dangKyKhamService->withParams($this->dangKyKhamDTO);
             $data = $this->dangKyKhamService->handleDangKyKham();
+            $data = $data['Data'];
             $paramReturn = [];
             return returnDataSuccess($paramReturn, $data);
         } catch (\Throwable $e) {
-            return writeAndThrowError('Có lỗi khi đăng ký khám!', $e); // Lấy lỗi tự thêm
+            return writeAndThrowError($e->getMessage(), $e); // Lấy lỗi tự thêm
         }
     }
 }

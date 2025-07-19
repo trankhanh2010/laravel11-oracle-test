@@ -2,6 +2,14 @@
 
 namespace App\Http\Requests\DangKyKham;
 
+use App\Models\HIS\Career;
+use App\Models\HIS\Gender;
+use App\Models\HIS\Service;
+use App\Models\SDA\Commune;
+use App\Models\SDA\Ethnic;
+use App\Models\SDA\National;
+use App\Models\SDA\Province;
+use App\Models\View\RoomVView;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Contracts\Validation\Validator;
@@ -32,14 +40,15 @@ class DangKyKhamRequest extends FormRequest
         $minDob = '19000101000000'; // Giới hạn kỹ thuật tối thiểu
 
         return [
+            'patientId' =>    'required|integer',
             'hoVaTen' =>      'required|string|max:100',
             'genderId' =>                  [
                 'required',
                 'integer',
-                Rule::exists('App\Models\HIS\Gender', 'id')
+                Rule::exists(Gender::class, 'id')
                     ->where(function ($query) {
                         $query = $query
-                            ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                            ->where(("is_active"), 1);
                     }),
             ],
             'dob' => [
@@ -52,37 +61,37 @@ class DangKyKhamRequest extends FormRequest
             'nationalId' =>                  [
                 'nullable',
                 'integer',
-                Rule::exists('App\Models\SDA\National', 'id')
+                Rule::exists(National::class, 'id')
                     ->where(function ($query) {
                         $query = $query
-                            ->where(DB::connection('oracle_sda')->raw("is_active"), 1);
+                            ->where(("is_active"), 1);
                     }),
             ],
             'ethnicId' =>                  [
                 'nullable',
                 'integer',
-                Rule::exists('App\Models\SDA\Ethnic', 'id')
+                Rule::exists(Ethnic::class, 'id')
                     ->where(function ($query) {
                         $query = $query
-                            ->where(DB::connection('oracle_sda')->raw("is_active"), 1);
+                            ->where(("is_active"), 1);
                     }),
             ],
             'provinceId' =>                  [
                 'nullable',
                 'integer',
-                Rule::exists('App\Models\SDA\Province', 'id')
+                Rule::exists(Province::class, 'id')
                     ->where(function ($query) {
                         $query = $query
-                            ->where(DB::connection('oracle_sda')->raw("is_active"), 1);
+                            ->where(("is_active"), 1);
                     }),
             ],
             'communeId' =>                  [
                 'nullable',
                 'integer',
-                Rule::exists('App\Models\SDA\Commune', 'id')
+                Rule::exists(Commune::class, 'id')
                     ->where(function ($query) {
                         $query = $query
-                            ->where(DB::connection('oracle_sda')->raw("is_active"), 1);
+                            ->where(("is_active"), 1);
                     }),
             ],
             'address' =>      'nullable|string|max:200',
@@ -95,17 +104,16 @@ class DangKyKhamRequest extends FormRequest
             'careerId' =>                  [
                 'required',
                 'integer',
-                Rule::exists('App\Models\HIS\Career', 'id')
+                Rule::exists(Career::class, 'id')
                     ->where(function ($query) {
                         $query = $query
-                            ->where(DB::connection('oracle_his')->raw("is_active"), 1);
+                            ->where(("is_active"), 1);
                     }),
             ],
             'workPlace' =>      'nullable|string|max:500',
             'cccdNumber' =>     [
                 'required',
                 'regex:/^\d{12}$/',
-                Rule::unique('HIS_PATIENT', 'CCCD_NUMBER'),
             ],
             'cccdDate' => [
                 'nullable',
@@ -129,21 +137,21 @@ class DangKyKhamRequest extends FormRequest
             'serviceReqDetails.*.serviceId' => [
                 'required',
                 'integer',
-                Rule::exists('App\Models\HIS\Service', 'id')
+                Rule::exists(Service::class, 'id')
                     ->where(function ($query) {
                         $query = $query
-                            ->where(DB::connection('oracle_his')->raw("is_active"), 1)
-                            ->where(DB::connection('oracle_his')->raw("is_delete"), 0);
+                            ->where(("is_active"), 1)
+                            ->where(("is_delete"), 0);
                     }),
             ],
             'serviceReqDetails.*.roomId' => [
                 'required',
                 'integer',
-                Rule::exists('App\Models\View\RoomVView', 'id')
+                Rule::exists(RoomVView::class, 'id')
                     ->where(function ($query) {
                         $query = $query
-                            ->where(DB::connection('oracle_his')->raw("is_active"), 1)
-                            ->where(DB::connection('oracle_his')->raw("is_delete"), 0);
+                            ->where(("is_active"), 1)
+                            ->where(("is_delete"), 0);
                     }),
             ],
         ];
@@ -151,6 +159,9 @@ class DangKyKhamRequest extends FormRequest
     public function messages()
     {
         return [
+            'patientId.required'    => 'Id bệnh nhân' . config('keywords')['error']['required'],
+            'patientId.integer'     => 'Id bệnh nhân' . config('keywords')['error']['integer'],
+
             'hoVaTen.required'    => 'Họ và tên' . config('keywords')['error']['required'],
             'hoVaTen.string'      => 'Họ và tên' . config('keywords')['error']['string'],
             'hoVaTen.max'         => 'Họ và tên' . config('keywords')['error']['string_max'],
@@ -210,7 +221,6 @@ class DangKyKhamRequest extends FormRequest
 
             'cccdNumber.required'    => 'Số CCCD' . config('keywords')['error']['required'],
             'cccdNumber.regex'       => 'Số CCCD không hợp lệ, phải là 12 số!',
-            'cccdNumber.unique'      => 'Đã tồn tại hồ sơ khám chữa bệnh với số CCCD này!',
 
             'cccdDate.integer'            => 'Ngày cấp CCCD phải được định dạng lại sang số!',
             'cccdDate.regex'              => 'Ngày cấp CCCD' . config('keywords')['error']['regex_ymdhis'],
