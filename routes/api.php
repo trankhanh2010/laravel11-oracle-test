@@ -190,6 +190,7 @@ use App\Http\Controllers\Api\CacheControllers\TransactionTypeController;
 use App\Http\Controllers\Api\CacheControllers\TreatmentEndTypeExtController;
 use App\Http\Controllers\Api\CacheControllers\TreatmentResultController;
 use App\Http\Controllers\Api\CacheControllers\VaccineTypeController;
+use App\Http\Controllers\Api\GuestControllers\DangKyKhamController;
 use App\Http\Controllers\Api\NoCacheControllers\AccountBookVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\BangKeVViewController;
 use App\Http\Controllers\Api\NoCacheControllers\CareController;
@@ -384,6 +385,9 @@ Route::get("v1/get-column-name", [BaseApiRequestController::class, "getColumnnam
 
 /// GUEST - cho khách
 Route::prefix('v1/guest')->withoutMiddleware('check_token')->group(function () {
+    // Đăng ký khám
+    Route::post('dang-ky-kham', [DangKyKhamController::class, 'dangKyKham']);
+
     Route::get('gender', [GenderController::class, 'guest']);
     Route::get('career', [CareerController::class, 'guest']);
     Route::get('patient-type', [PatientTypeController::class, 'guest']);

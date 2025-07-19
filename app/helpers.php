@@ -1140,5 +1140,29 @@ if (!function_exists('logError')) {
         }
     }
 }
+    function tachHoTen(string $hoTen): array
+    {
+        $hoTen = mb_strtoupper(trim($hoTen), 'UTF-8'); // in hoa bỏ trắng thừa
+
+        // Tách chuỗi thành mảng các từ
+        $parts = preg_split('/\s+/', $hoTen);
+
+        // Nếu chỉ có 1 từ thì đó là FIRST_NAME, LAST_NAME để rỗng
+        if (count($parts) === 1) {
+            return [
+                'LAST_NAME' => '',
+                'FIRST_NAME' => strtoupper($parts[0]),
+            ];
+        }
+
+        // FIRST_NAME là từ cuối, LAST_NAME là phần còn lại
+        $firstName = strtoupper(array_pop($parts));
+        $lastName = strtoupper(implode(' ', $parts));
+
+        return [
+            'LAST_NAME' => $lastName,
+            'FIRST_NAME' => $firstName,
+        ];
+    }
 
 }
