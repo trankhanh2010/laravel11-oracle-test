@@ -254,6 +254,7 @@ class OtpController extends Controller
             'limitRequest' => $limitRequest,
             'otpMaxRequestsPerDay' => $this->otpMaxRequestsPerDay,
             'otpMaxRequestsVerifyPerOtp' => $this->otpMaxRequestsVerifyPerOtp,
+            'totalRequestPerDay' => $this->getTotalRequestSendOtp($patientCode),
             'otpTTL' => $this->otpTTL,
         ]);
     }
@@ -278,6 +279,7 @@ class OtpController extends Controller
             'limitRequest' => $limitRequest,
             'otpMaxRequestsPerDay' => $this->otpMaxRequestsPerDay,
             'otpMaxRequestsVerifyPerOtp' => $this->otpMaxRequestsVerifyPerOtp,
+            'totalRequestPerDay' => $this->getTotalRequestSendOtp($patientCode),
             'otpTTL' => $this->otpTTL,
         ]);
     }
@@ -302,6 +304,7 @@ class OtpController extends Controller
             'limitRequest' => $limitRequest,
             'otpMaxRequestsPerDay' => $this->otpMaxRequestsPerDay,
             'otpMaxRequestsVerifyPerOtp' => $this->otpMaxRequestsVerifyPerOtp,
+            'totalRequestPerDay' => $this->getTotalRequestSendOtp($patientCode),
             'otpTTL' => $this->otpTTL,
         ]);
     }
@@ -326,6 +329,7 @@ class OtpController extends Controller
             'limitRequest' => $limitRequest,
             'otpMaxRequestsPerDay' => $this->otpMaxRequestsPerDay,
             'otpMaxRequestsVerifyPerOtp' => $this->otpMaxRequestsVerifyPerOtp,
+            'totalRequestPerDay' => $this->getTotalRequestSendOtp($patientCode),
             'otpTTL' => $this->otpTTL,
         ]);
     }
@@ -350,6 +354,7 @@ class OtpController extends Controller
             'limitRequest' => $limitRequest,
             'otpMaxRequestsPerDay' => $this->otpMaxRequestsPerDay,
             'otpMaxRequestsVerifyPerOtp' => $this->otpMaxRequestsVerifyPerOtp,
+            'totalRequestPerDay' => $this->getTotalRequestSendOtp($patientCode),
             'otpTTL' => $this->otpTTL,
         ]);
     }
@@ -374,6 +379,7 @@ class OtpController extends Controller
             'limitRequest' => $limitRequest,
             'otpMaxRequestsPerDay' => $this->otpMaxRequestsPerDay,
             'otpMaxRequestsVerifyPerOtp' => $this->otpMaxRequestsVerifyPerOtp,
+            'totalRequestPerDay' => $this->getTotalRequestSendOtp($patientCode),
             'otpTTL' => $this->otpTTL,
         ]);
     }
@@ -399,6 +405,7 @@ class OtpController extends Controller
             'limitRequest' => $limitRequest,
             'otpMaxRequestsPerDay' => $this->otpMaxRequestsPerDay,
             'otpMaxRequestsVerifyPerOtp' => $this->otpMaxRequestsVerifyPerOtp,
+            'totalRequestPerDay' => $this->getTotalRequestSendOtp($patientCode),
             'otpTTL' => $this->otpTTL,
         ]);
     }
@@ -423,6 +430,7 @@ class OtpController extends Controller
             'limitRequest' => $limitRequest,
             'otpMaxRequestsPerDay' => $this->otpMaxRequestsPerDay,
             'otpMaxRequestsVerifyPerOtp' => $this->otpMaxRequestsVerifyPerOtp,
+            'totalRequestPerDay' => $this->getTotalRequestSendOtp($patientCode),
             'otpTTL' => $this->otpTTL,
         ]);
     }
@@ -447,6 +455,7 @@ class OtpController extends Controller
             'limitRequest' => $limitRequest,
             'otpMaxRequestsPerDay' => $this->otpMaxRequestsPerDay,
             'otpMaxRequestsVerifyPerOtp' => $this->otpMaxRequestsVerifyPerOtp,
+            'totalRequestPerDay' => $this->getTotalRequestSendOtp($patientCode),
             'otpTTL' => $this->otpTTL,
         ]);
     }

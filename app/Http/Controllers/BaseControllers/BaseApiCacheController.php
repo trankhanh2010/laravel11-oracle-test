@@ -893,6 +893,7 @@ class BaseApiCacheController extends Controller
     protected $paymentOptionName = 'PaymentOption';
     // OTP
     protected $authOtpName = 'AuthOtp';
+    protected $verifyOtpName = 'verifyOtp';
     // Khai báo các biến cho Elastic
     protected $elasticSearchService;
     protected $client;
@@ -1578,7 +1579,7 @@ class BaseApiCacheController extends Controller
             }
         }
         $this->cccdNumber = $this->paramRequest['ApiData']['CccdNumber'] ?? null;
-        if ($this->phone !== null) {
+        if ($this->cccdNumber != null) {
             if (!is_string($this->cccdNumber) || !preg_match('/^\d{12}$/', $this->cccdNumber)) {
                 $this->errors[$this->cccdNumberName] = $this->messFormat;
             }

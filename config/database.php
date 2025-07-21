@@ -257,8 +257,8 @@ return [
             'sender' => env('SPEED_SMS_SENDER', ""),
         ],
         'otp' => [
-            'otp_max_requests_per_day' => env('OTP_MAX_REQUESTS_PER_DAY', 20),
-            'otp_max_requests_verify_per_otp' => env('OTP_MAX_REQUESTS_VERIFY_PER_OTP', 5),
+            'otp_max_requests_per_day' => intval(env('OTP_MAX_REQUESTS_PER_DAY', 20)),
+            'otp_max_requests_verify_per_otp' => intval(env('OTP_MAX_REQUESTS_VERIFY_PER_OTP', 5)),
             'otp_ttl' => intval(env('OTP_TTL', 5)),
         ],
         'telegram' => [

@@ -28,8 +28,7 @@ class PatientService
         $data = $this->patientRepository->applyWithParamTimThongTinBenhNhan($data);
         $data = $this->patientRepository->applyIsActiveFilter($data, 1);
         $data = $this->patientRepository->applyIsDeleteFilter($data, 0);
-        $data = $this->patientRepository->applyPhoneFilter($data, $this->params->phone);
-        $data = $this->patientRepository->applyCccdNumberFilter($data, $this->params->cccdNumber);
+        $data = $this->patientRepository->applyGuestFilter($data, $this->params->phone, $this->params->cccdNumber);
         $count = null;
         $this->params->orderBy = [
             'create_time' => 'desc'
@@ -41,11 +40,11 @@ class PatientService
     private function getAllDataFromDatabaseLayThongTinBenhNhan()
     {
         $data = $this->patientRepository->applyJoinsLayThongTinBenhNhan();
-        $data = $this->patientRepository->applyWithParamTimThongTinBenhNhan($data);
+        $data = $this->patientRepository->applyWithParamLayThongTinBenhNhan($data);
         $data = $this->patientRepository->applyIsActiveFilter($data, 1);
         $data = $this->patientRepository->applyIsDeleteFilter($data, 0);
-        $data = $this->patientRepository->applyPhoneFilter($data, $this->params->phone);
-        $data = $this->patientRepository->applyCccdNumberFilter($data, $this->params->cccdNumber);
+        // $data = $this->patientRepository->applyPhoneFilter($data, $this->params->phone);
+        // $data = $this->patientRepository->applyCccdNumberFilter($data, $this->params->cccdNumber);
         $data = $this->patientRepository->applyPatientCodeFilter($data, $this->params->patientCode);
         $data = $data->first();
         return $data;

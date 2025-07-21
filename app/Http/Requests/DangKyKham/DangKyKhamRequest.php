@@ -112,7 +112,7 @@ class DangKyKhamRequest extends FormRequest
             ],
             'workPlace' =>      'nullable|string|max:500',
             'cccdNumber' =>     [
-                'required',
+                'nullable',
                 'regex:/^\d{12}$/',
             ],
             'cccdDate' => [

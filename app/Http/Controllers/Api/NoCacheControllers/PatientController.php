@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\NoCacheControllers;
 use App\DTOs\PatientDTO;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
 use App\Models\HIS\Patient;
+use App\Services\Auth\OtpService;
 use App\Services\Model\PatientService;
 use Illuminate\Http\Request;
 
@@ -13,11 +14,18 @@ class PatientController extends BaseApiCacheController
 {
     protected $patientService;
     protected $patientDTO;
-    public function __construct(Request $request, PatientService $patientService, Patient $patient)
+    protected $otpService;
+    public function __construct(
+        Request $request, 
+        PatientService $patientService, 
+        Patient $patient,
+        OtpService $otpService,
+        )
     {
         parent::__construct($request); // Gọi constructor của BaseController
         $this->patientService = $patientService;
         $this->patient = $patient;
+        $this->otpService = $otpService;
         // Kiểm tra tên trường trong bảng
         if ($this->orderBy != null) {
             $this->orderByJoin = [
@@ -51,10 +59,8 @@ class PatientController extends BaseApiCacheController
     }
     public function timThongTinBenhNhan()
     {
-        if ($this->phone == null) {
+        if ($this->phone == null && $this->cccdNumber == null) {
             $this->errors[$this->phoneName] = "Thiếu số điện thoại";
-        }
-        if ($this->cccdNumber == null) {
             $this->errors[$this->cccdNumberName] = "Thiếu số CCCD";
         }
         if ($this->checkParam()) {
@@ -74,12 +80,12 @@ class PatientController extends BaseApiCacheController
     }
     public function layThongTinBenhNhan()
     {
-        if ($this->phone == null) {
-            $this->errors[$this->phoneName] = "Thiếu số điện thoại";
-        }
-        if ($this->cccdNumber == null) {
-            $this->errors[$this->cccdNumberName] = "Thiếu số CCCD";
-        }
+        // if ($this->phone == null) {
+        //     $this->errors[$this->phoneName] = "Thiếu số điện thoại";
+        // }
+        // if ($this->cccdNumber == null) {
+        //     $this->errors[$this->cccdNumberName] = "Thiếu số CCCD";
+        // }
         if ($this->patientCode == null) {
             $this->errors[$this->patientCodeName] = "Thiếu mã bệnh nhân";
         }
@@ -88,6 +94,34 @@ class PatientController extends BaseApiCacheController
         }
         $data = $this->patientService->handleDataBaseGetAllLayThongTinBenhNhan();
         $paramReturn = [];
+        if($data){
+            $patientCode = $data->patient_code;
+            $deviceInfo = request()->header('User-Agent'); // Lấy thông tin thiết bị từ User-Agent
+            $ipAddress = request()->ip(); // Lấy địa chỉ IP
+    
+            // Gọi OtpService để xác thực OTP
+            $otpVerified = $this->otpService->isOtpTreatmentFeeVerified( $patientCode, $deviceInfo, $ipAddress);
+            $paramReturn[$this->verifyOtpName] = $otpVerified;
+            if (!$otpVerified){
+                // Hàm để giữ 2 ký tự đầu và cuối, còn lại thay bằng dấu *
+                function maskPhone($value) {
+                    if (strlen($value) > 6) {
+                        return substr($value, 0, 3) . str_repeat('*', strlen($value) - 6) . substr($value, -3);
+                    }
+                    return $value; // Nếu độ dài < 6, không thay đổi
+                }
+                // Lọc các trường cần thiết từ mỗi item trong data
+                $filteredData  = [
+                        'patientCode' => $data->patient_code,
+                        'patientPhone' => maskPhone($data->phone),
+                        'patientMobile' => maskPhone($data->mobile),
+                        'patientEmail' => maskPhone($data->email),
+                        'patientRelativePhone' => maskPhone($data->relative_phone),
+                        'patientRelativeMobile' => maskPhone($data->relative_mobile),
+                    ];
+                $data = $filteredData;
+            }
+        }
         return returnDataSuccess($paramReturn, $data);
     }
 
