@@ -28,6 +28,7 @@ class OtpController extends Controller
         $this->otpTTL = config('database')['connections']['otp']['otp_ttl'];
         $this->otpMaxRequestsVerifyPerOtp = config('database')['connections']['otp']['otp_max_requests_verify_per_otp'];
         $this->otpMaxRequestsPerDay = config('database')['connections']['otp']['otp_max_requests_per_day'];
+        
     }
     public function sendOtpTreatmentFee(Request $request)
     {
