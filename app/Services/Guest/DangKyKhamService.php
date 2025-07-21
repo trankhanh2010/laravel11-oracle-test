@@ -36,6 +36,11 @@ class DangKyKhamService
     protected $timeCacheMacDinh; // thời gian cache redis mặc định
     protected $urlAcs;
     protected $urlMos;
+    protected $apiDangKyKham;
+    protected $apiDangNhap;
+    protected $apiDangKyPhienLamViec;
+    protected $cacheKeySetting;
+    protected $cacheKeyGuest;
     protected $usernameTaiKhoanMacDinh; // tên đăng nhập tk mặc định
     protected $passwordTaiKhoanMacDinh; // mật khẩu đăng nhập tk mặc định
     protected $params;
@@ -74,6 +79,11 @@ class DangKyKhamService
         $this->cacheKeyTaiKhoanMacDinh = 'thong_tin_dang_nhap_tai_khoan_mac_dinh_dang_ky_kham';
         $this->urlAcs = config('database')['connections']['acs']['acs_url'];
         $this->urlMos = config('database')['connections']['mos']['mos_url'];
+        $this->apiDangKyKham = $this->urlMos . '/api/HisServiceReq/ExamRegister';
+        $this->apiDangKyPhienLamViec = $this->urlMos . '/api/Token/UpdateWorkInfo';
+        $this->apiDangNhap = $this->urlAcs . '/api/Token/Login';
+        $this->cacheKeySetting = "cache_keys:" . "setting"; // Set để lưu danh sách key
+        $this->cacheKeyGuest = "cache_keys:" . "guest"; // Set để lưu danh sách key
         $this->usernameTaiKhoanMacDinh = config('database')['connections']['guest']['dang_ky_kham']['tai_khoan_mac_dinh']['username'];
         $this->passwordTaiKhoanMacDinh = config('database')['connections']['guest']['dang_ky_kham']['tai_khoan_mac_dinh']['password'];
         // Không có tài khoản hoặc mật khẩu => ném lỗi
@@ -103,14 +113,13 @@ class DangKyKhamService
 
 
         // lấy cache roomId mặc định
-        $cacheKeySet = "cache_keys:" . "setting"; // Set để lưu danh sách key
         $cacheKey = 'room_dang_ky_kham_benh_mac_dinh_room_id_' . $this->roomCodeMacDinh;
         $this->roomIdMacDinh = (int) Cache::remember($cacheKey, $this->timeCacheMacDinh, function () {
             $data =  $this->roomVView->where('room_code', $this->roomCodeMacDinh)->get();
             return $data->value('id');
         });
         // Lưu key vào Redis Set để dễ xóa sau này
-        Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+        Redis::connection('cache')->sadd($this->cacheKeySetting, [$cacheKey]);
         // Không có phòng mặc định thì ném ra lỗi
         if (!$this->roomIdMacDinh) {
             throw new \Exception('Không có thông tin phòng làm việc mặc định.');
@@ -125,7 +134,7 @@ class DangKyKhamService
             return $data->value('department_id');
         });
         // Lưu key vào Redis Set để dễ xóa sau này
-        Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+        Redis::connection('cache')->sadd($this->cacheKeySetting, [$cacheKey]);
         // Không có khoa của phòng mặc định thì ném ra lỗi
         if (!$this->departmentIdRoomIdMacDinh) {
             throw new \Exception('Không có thông tin Khoa của phòng làm việc mặc định.');
@@ -140,7 +149,7 @@ class DangKyKhamService
             return $data->value('branch_id');
         });
         // Lưu key vào Redis Set để dễ xóa sau này
-        Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+        Redis::connection('cache')->sadd($this->cacheKeySetting, [$cacheKey]);
         // Không có cơ sở của phòng mặc định thì ném ra lỗi
         if (!$this->branchIdRoomIdMacDinh) {
             throw new \Exception('Không có thông tin Cơ sở của phòng làm việc mặc định.');
@@ -155,7 +164,7 @@ class DangKyKhamService
             return $data->value('id');
         });
         // Lưu key vào Redis Set để dễ xóa sau này
-        Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+        Redis::connection('cache')->sadd($this->cacheKeySetting, [$cacheKey]);
 
 
 
@@ -166,7 +175,7 @@ class DangKyKhamService
             return $data->value('id');
         });
         // Lưu key vào Redis Set để dễ xóa sau này
-        Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+        Redis::connection('cache')->sadd($this->cacheKeySetting, [$cacheKey]);
     }
     public function withParams(DangKyKhamDTO $params)
     {
@@ -176,12 +185,11 @@ class DangKyKhamService
     private function callApiDangKyKham($rawBody)
     {
         try {
-            $url = $this->urlMos . '/api/HisServiceReq/ExamRegister';
             $response = Http::withHeaders([
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json',
                 'Authorization' => 'Bearer ' . $this->taiKhoanMacDinh['Data']['TokenCode'],
-            ])->post($url, $rawBody);
+            ])->post($this->apiDangKyKham, $rawBody);
 
             $data = $response->json();
         } catch (\Throwable $e) {
@@ -197,9 +205,7 @@ class DangKyKhamService
         $username = 'HIS:' . $this->usernameTaiKhoanMacDinh;
         $password = $this->passwordTaiKhoanMacDinh;
 
-        $url = $this->urlAcs . '/api/Token/Login';
-
-        $response = Http::withBasicAuth($username, $password)->get($url);
+        $response = Http::withBasicAuth($username, $password)->get($this->apiDangNhap);
 
         $data = $response->json();
         if (!$data['Success']) {
@@ -209,7 +215,6 @@ class DangKyKhamService
     }
     private function callApiDangKyPhienLamViecChoPhongMacDinh()
     {
-        $url = $this->urlMos . '/api/Token/UpdateWorkInfo';
         $rawBody = [
             "CommonParam" => [
                 "Messages" => [],
@@ -240,7 +245,7 @@ class DangKyKhamService
             'Accept' => 'application/json',
             'Content-Type' => 'application/json',
             'Authorization' => 'Bearer ' . $this->taiKhoanMacDinh['Data']['TokenCode'],
-        ])->post($url, $rawBody);
+        ])->post($this->apiDangKyPhienLamViec, $rawBody);
         $data = $response->json();
         if (!$data['Success']) {
             throw new \Exception("Lỗi gọi API đăng ký phiên làm việc cho tài khoản mặc định đăng ký khám!");
@@ -249,16 +254,14 @@ class DangKyKhamService
     private function layTaiKhoanMacDinhChoDangKyKham()
     {
         try {
-            $cacheKeySet = "cache_keys:" . "setting"; // Set để lưu danh sách key
-            $cacheKeyGuestSet = "cache_keys:" . "guest"; // Set để lưu danh sách key
             // lưu 6 ngày
             $this->taiKhoanMacDinh = Cache::remember($this->cacheKeyTaiKhoanMacDinh, now()->addMinutes(8640), function () {
                 $data =  $this->callApiDangNhapTaiKhoanMacDinhChoDangKyKham();
                 return $data;
             });
             // Lưu key vào Redis Set để dễ xóa sau này
-            Redis::connection('cache')->sadd($cacheKeySet, [$this->cacheKeyTaiKhoanMacDinh]);
-            Redis::connection('cache')->sadd($cacheKeyGuestSet, [$this->cacheKeyTaiKhoanMacDinh]);
+            Redis::connection('cache')->sadd($this->cacheKeySetting, [$this->cacheKeyTaiKhoanMacDinh]);
+            Redis::connection('cache')->sadd($this->cacheKeyGuest, [$this->cacheKeyTaiKhoanMacDinh]);
         } catch (\Throwable $e) {
             throw new \Exception("Lỗi khi lấy tài khoản mặc định đăng ký khám!");
         }
@@ -276,19 +279,18 @@ class DangKyKhamService
             throw new \Exception('Không thể đăng ký phiên làm việc cho phòng mặc định.');
         }
     }
-
     private function getHisPatientArrayRequest()
     {
         $data = [];
         $arrayHoVaTen = $this->tachHoVaTen();
         // lưu cache redis
-        $dataNational = $this->national->find($this->params->request->nationalId);
-        $dataEthnic = $this->ethnic->find($this->params->request->ethnicId);
-        $dataProvince = $this->province->find($this->params->request->provinceId);
-        $dataCommune = $this->commune->find($this->params->request->communeId);
-        $dataCareer = $this->career->find($this->params->request->careerId);
-        $dataBloodAbo = $this->bloodAbo->find($this->params->request->bloodAboId);
-        $dataBloodRh = $this->bloodRh->find($this->params->request->bloodRhId);
+        $dataNational = $this->getCacheNational();
+        $dataEthnic = $this->getCacheEthnic();
+        $dataProvince = $this->getCacheProvince();
+        $dataCommune = $this->getCacheCommune();
+        $dataCareer = $this->getCacheCareer();
+        // $dataBloodAbo = $this->getCacheBloodAbo();
+        // $dataBloodRh = $this->getCacheBloodRh();
 
 
         $data = [
@@ -359,14 +361,13 @@ class DangKyKhamService
             }
             return $hisPatient;
         } catch (\Throwable $e) {
-            dd($e->getMessage());
             throw new \Exception('Có lỗi khi tạo hoặc lấy thông tin bệnh nhân cho việc đăng ký khám.');
         }
     }
     private function getHisTreatment()
     {
         try {
-            $dataHospitalizeReason = $this->hospitalizeReason->find($this->params->request->hospitalizeReasonId);
+            $dataHospitalizeReason = $this->getCacheHospitalizeReason();
             $hisTreatment = [
                 "ID" => 0,
                 "PATIENT_ID" => $this->params->request->patientId ?? 0,
@@ -571,6 +572,103 @@ class DangKyKhamService
         if (isset($data['LAST_NAME']) && mb_strlen($data['LAST_NAME']) > 70) {
             throw new \Exception('Họ và chữ lót vượt quá 70 ký tự.');
         }
+        return $data;
+    }
+    public function getCacheNational()
+    {
+        $cacheKey = 'guest_national_id_' . $this->params->request->nationalId;
+        $data =  Cache::remember($cacheKey, $this->timeCacheMacDinh, function () {
+            $data = $this->national->find($this->params->request->nationalId);
+            return $data;
+        });
+        // Lưu key vào Redis Set để dễ xóa sau này
+        Redis::connection('cache')->sadd($this->cacheKeySetting, [$cacheKey]);
+        Redis::connection('cache')->sadd($this->cacheKeyGuest, [$cacheKey]);
+        return $data;
+    }
+
+    public function getCacheEthnic()
+    {
+        $cacheKey = 'guest_ethnic_id_' . $this->params->request->ethnicId;
+        $data =  Cache::remember($cacheKey, $this->timeCacheMacDinh, function () {
+            $data = $this->ethnic->find($this->params->request->ethnicId);
+            return $data;
+        });
+        // Lưu key vào Redis Set để dễ xóa sau này
+        Redis::connection('cache')->sadd($this->cacheKeySetting, [$cacheKey]);
+        Redis::connection('cache')->sadd($this->cacheKeyGuest, [$cacheKey]);
+        return $data;
+    }
+    public function getCacheProvince()
+    {
+        $cacheKey = 'guest_province_id_' . $this->params->request->provinceId;
+        $data =  Cache::remember($cacheKey, $this->timeCacheMacDinh, function () {
+            $data = $this->province->find($this->params->request->provinceId);
+            return $data;
+        });
+        // Lưu key vào Redis Set để dễ xóa sau này
+        Redis::connection('cache')->sadd($this->cacheKeySetting, [$cacheKey]);
+        Redis::connection('cache')->sadd($this->cacheKeyGuest, [$cacheKey]);
+        return $data;
+    }
+    public function getCacheCommune()
+    {
+        $cacheKey = 'guest_commune_id_' . $this->params->request->communeId;
+        $data =  Cache::remember($cacheKey, $this->timeCacheMacDinh, function () {
+            $data = $this->commune->find($this->params->request->communeId);
+            return $data;
+        });
+        // Lưu key vào Redis Set để dễ xóa sau này
+        Redis::connection('cache')->sadd($this->cacheKeySetting, [$cacheKey]);
+        Redis::connection('cache')->sadd($this->cacheKeyGuest, [$cacheKey]);
+        return $data;
+    }
+    public function getCacheCareer()
+    {
+        $cacheKey = 'guest_career_id_' . $this->params->request->careerId;
+        $data =  Cache::remember($cacheKey, $this->timeCacheMacDinh, function () {
+            $data = $this->career->find($this->params->request->careerId);
+            return $data;
+        });
+        // Lưu key vào Redis Set để dễ xóa sau này
+        Redis::connection('cache')->sadd($this->cacheKeySetting, [$cacheKey]);
+        Redis::connection('cache')->sadd($this->cacheKeyGuest, [$cacheKey]);
+        return $data;
+    }
+    public function getCacheBloodAbo()
+    {
+        $cacheKey = 'guest_blood_abo_id' . $this->params->request->bloodAboId;
+        $data =  Cache::remember($cacheKey, $this->timeCacheMacDinh, function () {
+            $data = $this->bloodAbo->find($this->params->request->bloodAboId);
+            return $data;
+        });
+        // Lưu key vào Redis Set để dễ xóa sau này
+        Redis::connection('cache')->sadd($this->cacheKeySetting, [$cacheKey]);
+        Redis::connection('cache')->sadd($this->cacheKeyGuest, [$cacheKey]);
+        return $data;
+    }
+    public function getCacheBloodRh()
+    {
+        $cacheKey = 'guest_blood_rh_id' . $this->params->request->bloodRhId;
+        $data =  Cache::remember($cacheKey, $this->timeCacheMacDinh, function () {
+            $data = $this->bloodRh->find($this->params->request->bloodRhId);
+            return $data;
+        });
+        // Lưu key vào Redis Set để dễ xóa sau này
+        Redis::connection('cache')->sadd($this->cacheKeySetting, [$cacheKey]);
+        Redis::connection('cache')->sadd($this->cacheKeyGuest, [$cacheKey]);
+        return $data;
+    }
+    public function getCacheHospitalizeReason()
+    {
+        $cacheKey = 'guest_hospitalize_reason_id' . $this->params->request->hospitalizeReasonId;
+        $data =  Cache::remember($cacheKey, $this->timeCacheMacDinh, function () {
+            $data = $this->hospitalizeReason->find($this->params->request->hospitalizeReasonId);
+            return $data;
+        });
+        // Lưu key vào Redis Set để dễ xóa sau này
+        Redis::connection('cache')->sadd($this->cacheKeySetting, [$cacheKey]);
+        Redis::connection('cache')->sadd($this->cacheKeyGuest, [$cacheKey]);
         return $data;
     }
     public function handleDangKyKham()

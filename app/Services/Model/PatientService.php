@@ -25,6 +25,7 @@ class PatientService
     private function getAllDataFromDatabaseTimThongTinBenhNhan()
     {
         $data = $this->patientRepository->applyJoinsTimThongTinBenhNhan();
+        $data = $this->patientRepository->applyWithParamTimThongTinBenhNhan($data);
         $data = $this->patientRepository->applyIsActiveFilter($data, 1);
         $data = $this->patientRepository->applyIsDeleteFilter($data, 0);
         $data = $this->patientRepository->applyPhoneFilter($data, $this->params->phone);

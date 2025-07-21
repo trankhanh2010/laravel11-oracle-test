@@ -31,13 +31,28 @@ class PatientRepository
                 'his_patient.vir_patient_name',
                 'his_patient.gender_id',
                 'his_patient.dob',
+                'his_patient.career_id',
 
                 'his_patient.commune_code',
                 'his_patient.province_code',
                 'his_patient.address',
-            
+                'his_patient.phone',
+
+                'his_patient.father_name',
+                'his_patient.mother_name',
+                'his_patient.relative_name',
+                'his_patient.relative_type',
+                'his_patient.relative_address',
+                'his_patient.relative_phone',
+
+                'his_patient.ethnic_code',
+                'his_patient.national_code',
+
                 'his_patient.work_place',
                 'his_work_place.work_place_name',
+                'his_patient.cccd_number',
+                'his_patient.cccd_date',
+                'his_patient.cccd_place',
             );
     }
     public function applyJoinsLayThongTinBenhNhan()
