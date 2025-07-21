@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\DangKyKham\DangKyKhamRequest;
 use App\Models\HIS\Patient;
 use App\Services\Auth\OtpService;
+use App\Services\Notification\NotificationService;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\MessageBag;
 
@@ -18,15 +19,18 @@ class DangKyKhamController extends Controller
     protected $dangKyKhamDTO;
     protected $patient;
     protected $otpService;
+    protected $notificationService; 
     public function __construct(
         // DangKyKhamRequest $request,
         DangKyKhamService $dangKyKhamService,
         Patient $patient,
         OtpService $otpService,
+        NotificationService $notificationService,
     ) {
         $this->dangKyKhamService = $dangKyKhamService;
         $this->patient = $patient;
         $this->otpService = $otpService;
+        $this->notificationService = $notificationService;
     }
     public function dangKyKham(DangKyKhamRequest $request)
     {
@@ -68,7 +72,8 @@ class DangKyKhamController extends Controller
             $paramReturn = [];
 
             // Gửi thông báo đăng ký thành công
-            // $sereServList = $data['sereServs']
+            $this->notificationService->sendDangKyKhamThanhCong($data);
+
             return returnDataSuccess($paramReturn, $data);
         } catch (\Throwable $e) {
             return writeAndThrowError($e->getMessage(), $e); // Lấy lỗi tự thêm

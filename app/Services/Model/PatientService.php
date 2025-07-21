@@ -47,6 +47,7 @@ class PatientService
         // $data = $this->patientRepository->applyCccdNumberFilter($data, $this->params->cccdNumber);
         $data = $this->patientRepository->applyPatientCodeFilter($data, $this->params->patientCode);
         $data = $data->first();
+        $data = $this->patientRepository->mergeSdaIdsToPatient($data);
         return $data;
     }
     public function handleDataBaseGetAllTimThongTinBenhNhan()
