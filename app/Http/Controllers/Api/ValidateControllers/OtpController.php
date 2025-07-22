@@ -471,13 +471,8 @@ class OtpController extends Controller
     // }
     public function setTokenOtpZalo(Request $request)
     {
-        $accessToken = $request->input('access_token');
         $refreshToken = $request->input('refresh_token');
-        $this->zaloSerivce->setTokenOtpZalo([
-            'access_token' => $accessToken,
-            'refresh_token' => $refreshToken,
-        ]);
-        // Xóa cache
-        Cache::forget('zalo_config');
+        // lấy refreshToken từ param => gọi api => nhận về 1 cặp AT, RT mới => lưu db
+        $this->zaloSerivce->refreshAccessToken($refreshToken);
     }
 }

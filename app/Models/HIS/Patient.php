@@ -19,6 +19,7 @@ class Patient extends Model
     {
         return $this->hasOne(ServiceReq::class, 'tdl_patient_id')
             ->leftJoin('his_service_req_type', 'his_service_req_type.id', '=', 'his_service_req.service_req_type_id')
+            ->leftJoin('his_service_req_stt', 'his_service_req_stt.id', '=', 'his_service_req.service_req_stt_id')
             ->leftJoin('v_his_room execute_room','execute_room.id', '=', 'his_service_req.execute_room_id')
             ->select([
                 'his_service_req.tdl_patient_id', 
@@ -34,6 +35,8 @@ class Patient extends Model
             ) as tdl_service_name'))
             ->where('his_service_req.is_main_exam', 1)
             ->where('his_service_req.is_delete', 0)
+            ->where('his_service_req_stt.service_req_stt_code', '03') // Lấy của mấy cái đã hoàn thành
+            
             ->where(function ($query) {
                 $query->where('his_service_req.is_no_execute', 0)
                     ->orWhereNull('his_service_req.is_no_execute');

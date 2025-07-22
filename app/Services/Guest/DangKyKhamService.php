@@ -279,6 +279,9 @@ class DangKyKhamService
             throw new \Exception('Không thể đăng ký phiên làm việc cho phòng mặc định.');
         }
     }
+    private function validate(){
+        $this->validateTreDuoi6Tuoi();
+    }
     private function validateTreDuoi6Tuoi(){
         $tuoiTheoNam = getTuoi($this->params->request->dob)['01'];
         if($tuoiTheoNam < 6){
@@ -481,7 +484,7 @@ class DangKyKhamService
         $hisPatient = $this->getHisPatient();
         $hisTreatment = $this->getHisTreatment();
         $hisPatientTypeAlter = $this->getHisPatientTypeAlter();
-
+        $serviceReqDetails = $this->getServiceReqDetails();
         try {
             $rawBody = [
                 "CommonParam" => [
@@ -526,7 +529,7 @@ class DangKyKhamService
                     "IsAutoCreateDepositForNonBhyt" => false,
                     "IsUsingEpayment" => false,
                     "InstructionTime" => $this->params->request->thoiGianYeuCauKhac, // thời gian phần yêu cầu khác
-                    "ServiceReqDetails" =>  $this->getServiceReqDetails(), // Lặp qua từng hàng phòng khám đang chọn (là phần mảng ids để gọi api lấy dịch vụ khám) => mỗi phần tử ở dưới tương ứng với  1 phòng
+                    "ServiceReqDetails" =>  $serviceReqDetails, // Lặp qua từng hàng phòng khám đang chọn (là phần mảng ids để gọi api lấy dịch vụ khám) => mỗi phần tử ở dưới tương ứng với  1 phòng
 
                     "ExecuteGroupId" => null,
                     // "Priority" => $this->params->request->priority ?? 0, // ưu tiên phần yêu cầu khác
@@ -691,7 +694,7 @@ class DangKyKhamService
         // Đăng ký phiên làm việc
         $this->dangKyPhienLamViecChoPhongMacDinh();
         // check dưới 6 tuổi nếu k có đủ thông tin người thân thì ném ra lỗi
-        $this->validateTreDuoi6Tuoi();
+        $this->validate();
         // lấy rawBody api ExamRegister
         $rawBody = $this->getRawBodyDangKyKham();
         // Gọi api đăng ký khám

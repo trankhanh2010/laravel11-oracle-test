@@ -79,15 +79,16 @@ class ZaloService
             throw new \Exception('Error from Zalo API: ' . $responseBody['message']);
         }
     }
-    public function refreshAccessToken()
+    public function refreshAccessToken($refreshToken = '') // Nhận vào refreshToken để check lúc gọi api setDBTokenOtpZalo => nếu check đúng mới cập nhật   // lấy refreshToken từ param => gọi api => nhận về 1 cặp AT, RT mới => lưu db
     {
         $url = 'https://oauth.zaloapp.com/v4/oa/access_token';
 
         $data = [
             'app_id' => $this->appId,
             'grant_type' => 'refresh_token',
-            'refresh_token' => $this->refreshToken,
+            'refresh_token' => !empty($refreshToken) ? $refreshToken : $this->refreshToken, // Nhận vào refreshToken từ param request lúc setDB hoặc lấy từ cache khi bình thường
         ];
+        // dump($data);
         $response = $this->client->post($url, [
             'form_params' => $data,
             'headers' => [
