@@ -53,6 +53,7 @@ class Patient extends Model
                 'execute_room.room_name as execute_room_name',
                 ])
             ->addSelect(DB::connection('oracle_his')->raw('(select tdl_service_name from his_sere_serv where his_sere_serv.service_req_id = his_service_req.id and his_sere_serv.is_delete = 0 and (his_sere_serv.is_no_execute is null or his_sere_serv.is_no_execute = 0)) as tdl_service_name'))
+            ->addSelect(DB::connection('oracle_his')->raw('(select id               from his_sere_serv where his_sere_serv.service_req_id = his_service_req.id and his_sere_serv.is_delete = 0 and (his_sere_serv.is_no_execute is null or his_sere_serv.is_no_execute = 0)) as key'))
             ->where('his_service_req.is_main_exam', 1)
             ->where('his_service_req.is_delete', 0)
             ->where(function ($query) {

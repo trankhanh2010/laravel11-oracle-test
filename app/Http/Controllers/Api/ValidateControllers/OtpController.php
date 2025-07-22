@@ -98,7 +98,7 @@ class OtpController extends Controller
         $cacheKey = 'total_verify_OTP_treatment_fee_' . $patientCode; // Tránh key quá dài
 
         $totalRequestVerify = Cache::get($cacheKey) ?? 0;
-        return $this->otpMaxRequestsVerifyPerOtp - $totalRequestVerify;
+        return max(0,$this->otpMaxRequestsVerifyPerOtp - $totalRequestVerify); // bé hơn 0 thì trả 0 
     }
     public function verifyOtpTreatmentFee(Request $request)
     {

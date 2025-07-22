@@ -98,9 +98,9 @@ class DangKyKhamRequest extends FormRequest
             'htAddress' =>      'nullable|string|max:200',
             'phone' =>      'required|string|max:20',
             'relativeType' =>      'nullable|string|max:50',
-            'relativeName' =>      'required|string|max:100',
+            'relativeName' =>      'nullable|string|max:100',
             'relativeAddress' =>      'nullable|string|max:200',
-            'relativePhone' =>      'required|string|max:12',
+            'relativePhone' =>      'nullable|string|max:12',
             'careerId' =>                  [
                 'required',
                 'integer',

@@ -279,6 +279,19 @@ class DangKyKhamService
             throw new \Exception('Không thể đăng ký phiên làm việc cho phòng mặc định.');
         }
     }
+    private function validateTreDuoi6Tuoi(){
+        $tuoiTheoNam = getTuoi($this->params->request->dob)['01'];
+        if($tuoiTheoNam < 6){
+            if(
+                empty($this->params->request->relativeType)
+                || empty($this->params->request->relativeName)
+                || empty($this->params->request->motherName)
+                || empty($this->params->request->fatherName)
+            ){
+                throw new \Exception('Trẻ dưới 6 tuổi bắt buộc phải nhập các thông tin người thân.');
+            }
+        }
+    }
     private function getHisPatientArrayRequest()
     {
         $data = [];
@@ -677,6 +690,8 @@ class DangKyKhamService
         $this->layTaiKhoanMacDinhChoDangKyKham();
         // Đăng ký phiên làm việc
         $this->dangKyPhienLamViecChoPhongMacDinh();
+        // check dưới 6 tuổi nếu k có đủ thông tin người thân thì ném ra lỗi
+        $this->validateTreDuoi6Tuoi();
         // lấy rawBody api ExamRegister
         $rawBody = $this->getRawBodyDangKyKham();
         // Gọi api đăng ký khám

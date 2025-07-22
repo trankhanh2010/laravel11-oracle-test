@@ -283,10 +283,10 @@ return [
         ],
         'guest' => [
             'dang_ky_kham' => [
-                'request_room_code_mac_dinh' => env('REQUEST_ROOM_CODE_MAC_DINH_DANG_KY_KHAM', ''),
+                'request_room_code_mac_dinh' => env('REQUEST_ROOM_CODE_MAC_DINH_DANG_KY_KHAM', 'KB_DT'),
                 'tai_khoan_mac_dinh' => [
-                    'username' => env('USERNAME_TAI_KHOAN_MAC_DINH_DANG_KY_KHAM', ''),
-                    'password' => env('PASSWORD_TAI_KHOAN_MAC_DINH_DANG_KY_KHAM', ''),
+                    'username' => env('USERNAME_TAI_KHOAN_MAC_DINH_DANG_KY_KHAM', 'truyenlm'),
+                    'password' => env('PASSWORD_TAI_KHOAN_MAC_DINH_DANG_KY_KHAM', 'truyenlm'),
                 ],
             ],
         ],
