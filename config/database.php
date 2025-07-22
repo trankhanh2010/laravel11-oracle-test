@@ -276,10 +276,10 @@ return [
             'fss_url' => env('URL_FSS', ''),
         ],
         'acs' => [
-            'acs_url' => env('URL_ACS', ''),
+            'acs_url' => env('URL_ACS', 'https://apigw-vlg.xuyenahospital.com.vn/dev/vss/acs'),
         ],
         'mos' => [
-            'mos_url' => env('URL_MOS', ''),
+            'mos_url' => env('URL_MOS', 'http://192.168.101.10:1408'),
         ],
         'guest' => [
             'dang_ky_kham' => [
