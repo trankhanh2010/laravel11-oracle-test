@@ -33,7 +33,7 @@ class PatientRepository
                 'his_patient.vir_patient_name',
                 'his_gender.gender_name',
                 'his_patient.dob',
-
+                'his_patient.address',
                 'his_patient.work_place',
                 'his_work_place.work_place_name',
             );

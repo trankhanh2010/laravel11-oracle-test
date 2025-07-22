@@ -37,6 +37,7 @@ class DangKyKhamService
     protected $urlAcs;
     protected $urlMos;
     protected $apiDangKyKham;
+    protected $apiDangKyThongTin;
     protected $apiDangNhap;
     protected $apiDangKyPhienLamViec;
     protected $cacheKeySetting;
@@ -80,6 +81,7 @@ class DangKyKhamService
         $this->urlAcs = config('database')['connections']['acs']['acs_url'];
         $this->urlMos = config('database')['connections']['mos']['mos_url'];
         $this->apiDangKyKham = $this->urlMos . '/api/HisServiceReq/ExamRegister';
+        $this->apiDangKyThongTin = $this->urlMos .'/api/HisPatient/RegisterProfile';
         $this->apiDangKyPhienLamViec = $this->urlMos . '/api/Token/UpdateWorkInfo';
         $this->apiDangNhap = $this->urlAcs . '/api/Token/Login';
         $this->cacheKeySetting = "cache_keys:" . "setting"; // Set để lưu danh sách key
@@ -182,6 +184,13 @@ class DangKyKhamService
         $this->params = $params;
         return $this;
     }
+    private function callApiMos($rawBody){
+        if(empty($this->params->request->serviceReqDetails) && ($this->params->request->patientId == 0)){ // Nếu đăng ký mới và k chọn dịch vụ => /api/HisPatient/RegisterProfile
+            return $this->callApiDangKyThongTin($rawBody);
+        }else{
+            return $this->callApiDangKyKham($rawBody);
+        }
+    }
     private function callApiDangKyKham($rawBody)
     {
         try {
@@ -197,6 +206,24 @@ class DangKyKhamService
         }
         if (!$data['Success']) {
             throw new \Exception("Đăng ký khám không thành công!");
+        }
+        return $data;
+    }
+    private function callApiDangKyThongTin($rawBody)
+    {
+        try {
+            $response = Http::withHeaders([
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json',
+                'Authorization' => 'Bearer ' . $this->taiKhoanMacDinh['Data']['TokenCode'],
+            ])->post($this->apiDangKyThongTin, $rawBody);
+
+            $data = $response->json();
+        } catch (\Throwable $e) {
+            throw new \Exception("Lỗi gọi API đăng ký thông tin!");
+        }
+        if (!$data['Success']) {
+            throw new \Exception("Đăng ký thông tin không thành công!");
         }
         return $data;
     }
@@ -324,26 +351,26 @@ class DangKyKhamService
             "PROVINCE_NAME" => $dataProvince->province_name ?? "", // tỉnh 
             "COMMUNE_CODE" => $dataCommune->commune_code ?? "", // xã 
             "COMMUNE_NAME" => $dataCommune->commune_name ?? "", //xã
-            "ADDRESS" => $this->params->request->address, // địa chỉ phần liên hệ
-            "HT_ADDRESS" => $this->params->request->htAddress, // địa chỉ hiện tại
-            "PHONE" => $this->params->request->phone, // số điện thoại phần liên hệ
-            "RELATIVE_TYPE" => $this->params->request->relativeType, // quan hệ phần người thân 
-            "RELATIVE_NAME" => $this->params->request->relativeName, // người nhà 
-            "RELATIVE_ADDRESS" => $this->params->request->relativeAddress, // địa chỉ phần người thân
+            "ADDRESS" => $this->params->request->address ?? "", // địa chỉ phần liên hệ
+            "HT_ADDRESS" => $this->params->request->htAddress ?? null, // địa chỉ hiện tại
+            "PHONE" => $this->params->request->phone ?? null, // số điện thoại phần liên hệ
+            "RELATIVE_TYPE" => $this->params->request->relativeType ?? "", // quan hệ phần người thân 
+            "RELATIVE_NAME" => $this->params->request->relativeName ?? "", // người nhà 
+            "RELATIVE_ADDRESS" => $this->params->request->relativeAddress ?? "", // địa chỉ phần người thân
             // "RELATIVE_CMND_NUMBER" => $this->params->request->relativeCmndNumber, // cmnd phần người thân, 9 số
             // "RELATIVE_MOBILE" => $this->params->request->phone, // lấy điện thoại phần liên hệ 
-            "RELATIVE_PHONE" => $this->params->request->relativePhone, // điện thoại phần người thân
+            "RELATIVE_PHONE" => $this->params->request->relativePhone ?? "", // điện thoại phần người thân
             "CAREER_CODE" => $dataCareer->career_code ?? "", // nghề nghiệp
             "CAREER_NAME" => $dataCareer->career_name ?? "", // nghề nghiệp
             "CAREER_ID" => $this->params->request->careerId, // id nghề nghiệp
             // "WORK_PLACE_ID" => $this->params->request->workPlaceId, // id nơi làm việc hoặc ép số workPlaceId nếu tìm được thông tin bệnh nhân
-            "WORK_PLACE" => $this->params->request->workPlace, // nơi làm việc nếu tự gõ hoặc workPlace nếu tìm được thông tin bệnh nhân
+            "WORK_PLACE" => $this->params->request->workPlace ?? null, // nơi làm việc nếu tự gõ hoặc workPlace nếu tìm được thông tin bệnh nhân
             "BRANCH_ID" => $this->branchIdRoomIdMacDinh, // id chi nhánh, lấy từ tài khoản đang đăng nhập
             // "BLOOD_ABO_CODE" => $dataBloodAbo->blood_abo_code ?? "", // "" hoặc code nhóm máu phần mở rộng
             // "BLOOD_RH_CODE" => $dataBloodRh->blood_rh_code ?? "", // "" hoặc code Rh phần mở rộng
-            "CCCD_NUMBER" => $this->params->request->cccdNumber ?? "", // số cccd phần thông tin khác, 12 số k được trùng
-            "CCCD_DATE" => $this->params->request->cccdDate ?? 0, // ngày cấp cccd phần thông tin khác
-            "CCCD_PLACE" => $this->params->request->cccdPlace ?? "", // nơi cấp cccd phần thông tin khác
+            "CCCD_NUMBER" => $this->params->request->cccdNumber ?? null, // số cccd phần thông tin khác, 12 số k được trùng
+            "CCCD_DATE" => $this->params->request->cccdDate ?? null, // ngày cấp cccd phần thông tin khác
+            "CCCD_PLACE" => $this->params->request->cccdPlace ?? null, // nơi cấp cccd phần thông tin khác
             "MOTHER_NAME" => $this->params->request->motherName ?? "", // tên mẹ
             "FATHER_NAME" => $this->params->request->fatherName ?? "", // tên bố
             "TAX_CODE" => $this->params->request->taxCode ?? "", // null hoặc mã số thuế phần mở rộng
@@ -434,7 +461,7 @@ class DangKyKhamService
     private function getServiceReqDetails()
     {
         $serviceReqDetails = [];
-        foreach ($this->params->request->serviceReqDetails as $key => $item) {
+        foreach ($this->params->request->serviceReqDetails ?? [] as $key => $item) {
             $hasServiceRoom = $this->checkHasServiceRoom($item);
             if (!$hasServiceRoom) {
                 throw new \Exception('Phòng và dịch vụ công khám đã chọn không khớp.');
@@ -697,7 +724,7 @@ class DangKyKhamService
         $this->validate();
         // lấy rawBody api ExamRegister
         $rawBody = $this->getRawBodyDangKyKham();
-        // Gọi api đăng ký khám
-        return $this->callApiDangKyKham($rawBody);
+        // Gọi api đăng ký khám / api đăng ký thông tin
+        return $this->callApiMos($rawBody);
     }
 }
