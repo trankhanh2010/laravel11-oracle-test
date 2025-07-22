@@ -10,18 +10,18 @@ use Illuminate\Queue\SerializesModels;
 class DangKyKhamThanhCongMail extends Mailable
 {
     use Queueable, SerializesModels;
-    public $sereServList;
+    public $responeMos;
 
-    public function __construct($sereServList)
+    public function __construct($responeMos)
     {
-        $this->sereServList = $sereServList;
+        $this->responeMos = $responeMos;
     }
     public function build()
     {
         return $this->subject('BVXA - Đăng ký khám thành công')
             ->view('emails.dang_ky_kham_thanh_cong')
             ->with([
-                'sereServList' => $this->sereServList,
+                'responeMos' => $this->responeMos,
             ]);
     }
 }

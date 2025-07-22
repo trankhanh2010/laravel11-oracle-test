@@ -43,7 +43,7 @@ class ZaloService
         $url = 'https://business.openapi.zalo.me/message/template';
 
         $data = [
-            'phone' => '84772064649',
+            'phone' => $phoneNumber, // 84772064649
             'template_id' => 408549, // Thay bằng ID của template ZNS đã được phê duyệt
             'template_data' => [
                 'otp' => $otpCode

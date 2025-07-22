@@ -14,9 +14,9 @@ class MailService
         Mail::to($email)->send($message);
         return true;
     }
-    public function sendThongBaoDangKyKhamThanhCong($email, $sereServList)
+    public function sendThongBaoDangKyKhamThanhCong($email, $responeMos)
     {
-        $message = new DangKyKhamThanhCongMail($sereServList);
+        $message = new DangKyKhamThanhCongMail($responeMos);
         Mail::to($email)->send($message);
         return true;
     }

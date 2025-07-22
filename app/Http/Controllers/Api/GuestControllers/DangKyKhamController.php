@@ -72,8 +72,7 @@ class DangKyKhamController extends Controller
             $paramReturn = [];
 
             // Gửi thông báo đăng ký thành công
-            $this->notificationService->sendDangKyKhamThanhCong($data);
-
+            $resultDispatchJobGuiThongBao = $this->notificationService->sendDangKyKhamThanhCong($data);
             return returnDataSuccess($paramReturn, $data);
         } catch (\Throwable $e) {
             return writeAndThrowError($e->getMessage(), $e); // Lấy lỗi tự thêm
