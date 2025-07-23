@@ -348,7 +348,7 @@ Route::fallback(function () {
 Route::get('v1/check-otp-treatment-fee', [OtpController::class, 'verifyOtpTreatmentFee'])
     ->withoutMiddleware('check_token');
 /// Gửi OTP    
-Route::get('v1/send-otp-treatment-fee', [OtpController::class, 'sendOtpTreatmentFee'])
+Route::get('v1/send-otp-treatment-fee', [OtpController::class, 'sendOtp'])
     ->withoutMiddleware('check_token');
 
 // refresh AccessToken OA zalo

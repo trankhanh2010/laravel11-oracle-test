@@ -2,12 +2,10 @@
 
 namespace App\Http\Controllers\Api\NoCacheControllers;
 
+use App\DTOs\OtpDTO;
 use App\DTOs\TreatmentFeeListVViewDTO;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
-use App\Http\Requests\TreatmentFeeListVView\CreateTreatmentFeeListVViewRequest;
-use App\Http\Requests\TreatmentFeeListVView\UpdateTreatmentFeeListVViewRequest;
 use App\Models\View\TreatmentFeeListVView;
-use App\Services\Elastic\ElasticsearchService;
 use App\Services\Model\TreatmentFeeListVViewService;
 use App\Services\Auth\OtpService;
 use App\Services\Sms\TwilioService;
@@ -18,6 +16,7 @@ class TreatmentFeeListVViewController extends BaseApiCacheController
 {
     protected $treatmentFeeListVViewService;
     protected $treatmentFeeListVViewDTO;
+    protected $otpDTO;
     protected $otpService;
     public function __construct(
         Request $request,
@@ -94,9 +93,9 @@ class TreatmentFeeListVViewController extends BaseApiCacheController
             return $this->checkParam();
         }
         $keyword = $this->keyword;
-        if($keyword != null){
+        if ($keyword != null) {
             $data = $this->treatmentFeeListVViewService->handleDataBaseSearch();
-        }else{
+        } else {
             $data = $this->treatmentFeeListVViewService->handleDataBaseGetAll();
         }
         $paramReturn = [
@@ -159,18 +158,20 @@ class TreatmentFeeListVViewController extends BaseApiCacheController
         if ($data['count'] > 0) {
 
             $patientCode = $data['data'][0]->patient_code;
-            $deviceInfo = request()->header('User-Agent'); // Lấy thông tin thiết bị từ User-Agent
-            $ipAddress = request()->ip(); // Lấy địa chỉ IP
-    
+            // Thêm tham số vào service
+            $this->otpDTO = new OtpDTO($patientCode,);
+            $this->otpService->withParams($this->otpDTO);
+
             // Gọi OtpService để xác thực OTP
-            $otpVerified = $this->otpService->isOtpTreatmentFeeVerified( $patientCode, $deviceInfo, $ipAddress);
-    
-           
+            $otpVerified = $this->otpService->isVerified();
+
+
             if ($otpVerified) {
                 $paramReturn[$this->authOtpName] = true;
-            }else{
+            } else {
                 // Hàm để giữ 2 ký tự đầu và cuối, còn lại thay bằng dấu *
-                function maskPhone($value) {
+                function maskPhone($value)
+                {
                     if (strlen($value) > 6) {
                         return substr($value, 0, 3) . str_repeat('*', strlen($value) - 6) . substr($value, -3);
                     }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\GuestControllers;
 
 use App\DTOs\DangKyKhamDTO;
+use App\DTOs\OtpDTO;
 use App\Http\Controllers\Controller;
 use App\Services\Guest\DangKyKhamService;
 use Illuminate\Http\Request;
@@ -17,9 +18,10 @@ class DangKyKhamController extends Controller
 {
     protected $dangKyKhamService;
     protected $dangKyKhamDTO;
+    protected $otpDTO;
     protected $patient;
     protected $otpService;
-    protected $notificationService; 
+    protected $notificationService;
     public function __construct(
         // DangKyKhamRequest $request,
         DangKyKhamService $dangKyKhamService,
@@ -42,10 +44,10 @@ class DangKyKhamController extends Controller
                 $errors->add('patientId', 'Không tìm thấy thông tin bệnh nhân!');
             } else {
                 $patientCode = $dataPatient->patient_code;
-                $deviceInfo = request()->header('User-Agent');
-                $ipAddress = request()->ip();
-
-                $otpVerified = $this->otpService->isOtpTreatmentFeeVerified($patientCode, $deviceInfo, $ipAddress);
+                // Thêm tham số vào service
+                $this->otpDTO = new OtpDTO($patientCode,);
+                $this->otpService->withParams($this->otpDTO);
+                $otpVerified = $this->otpService->isVerified();
                 if (!$otpVerified) {
                     $errors->add('verifyOtp', 'Chưa xác thực OTP!');
                 }
@@ -54,7 +56,7 @@ class DangKyKhamController extends Controller
 
         // Nếu có lỗi, ném ra giống như trong FormRequest
         if ($errors->isNotEmpty()) {
-                throw new HttpResponseException(response()->json([
+            throw new HttpResponseException(response()->json([
                 'success'   => false,
                 'message'   => 'Dữ liệu không hợp lệ!',
                 'data'      => $errors->toArray()

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\NoCacheControllers;
 
+use App\DTOs\OtpDTO;
 use App\DTOs\PatientDTO;
 use App\Http\Controllers\BaseControllers\BaseApiCacheController;
 use App\Models\HIS\Patient;
@@ -14,22 +15,21 @@ class PatientController extends BaseApiCacheController
 {
     protected $patientService;
     protected $patientDTO;
+    protected $otpDTO;
     protected $otpService;
     public function __construct(
-        Request $request, 
-        PatientService $patientService, 
+        Request $request,
+        PatientService $patientService,
         Patient $patient,
         OtpService $otpService,
-        )
-    {
+    ) {
         parent::__construct($request); // Gọi constructor của BaseController
         $this->patientService = $patientService;
         $this->patient = $patient;
         $this->otpService = $otpService;
         // Kiểm tra tên trường trong bảng
         if ($this->orderBy != null) {
-            $this->orderByJoin = [
-            ];
+            $this->orderByJoin = [];
             $columns = $this->getColumnsTable($this->patient);
             $this->orderBy = $this->checkOrderBy($this->orderBy, $columns, $this->orderByJoin ?? []);
         }
@@ -46,8 +46,8 @@ class PatientController extends BaseApiCacheController
             $this->start,
             $this->limit,
             $request,
-            $this->appCreator, 
-            $this->appModifier, 
+            $this->appCreator,
+            $this->appModifier,
             $this->time,
             $this->param,
             $this->noCache,
@@ -94,17 +94,19 @@ class PatientController extends BaseApiCacheController
         }
         $data = $this->patientService->handleDataBaseGetAllLayThongTinBenhNhan();
         $paramReturn = [];
-        if($data){
+        if ($data) {
             $patientCode = $data->patient_code;
-            $deviceInfo = request()->header('User-Agent'); // Lấy thông tin thiết bị từ User-Agent
-            $ipAddress = request()->ip(); // Lấy địa chỉ IP
-    
+            // Thêm tham số vào service
+            $this->otpDTO = new OtpDTO($patientCode,);
+            $this->otpService->withParams($this->otpDTO);
+
             // Gọi OtpService để xác thực OTP
-            $otpVerified = $this->otpService->isOtpTreatmentFeeVerified( $patientCode, $deviceInfo, $ipAddress);
+            $otpVerified = $this->otpService->isVerified();
             $paramReturn[$this->verifyOtpName] = $otpVerified;
-            if (!$otpVerified){
+            if (!$otpVerified) {
                 // Hàm để giữ 2 ký tự đầu và cuối, còn lại thay bằng dấu *
-                function maskPhone($value) {
+                function maskPhone($value)
+                {
                     if (strlen($value) > 6) {
                         return substr($value, 0, 3) . str_repeat('*', strlen($value) - 6) . substr($value, -3);
                     }
@@ -112,17 +114,16 @@ class PatientController extends BaseApiCacheController
                 }
                 // Lọc các trường cần thiết từ mỗi item trong data
                 $filteredData  = [
-                        'patientCode' => $data->patient_code,
-                        'patientPhone' => maskPhone($data->phone),
-                        'patientMobile' => maskPhone($data->mobile),
-                        'patientEmail' => maskPhone($data->email),
-                        'patientRelativePhone' => maskPhone($data->relative_phone),
-                        'patientRelativeMobile' => maskPhone($data->relative_mobile),
-                    ];
+                    'patientCode' => $data->patient_code,
+                    'patientPhone' => maskPhone($data->phone),
+                    'patientMobile' => maskPhone($data->mobile),
+                    'patientEmail' => maskPhone($data->email),
+                    'patientRelativePhone' => maskPhone($data->relative_phone),
+                    'patientRelativeMobile' => maskPhone($data->relative_mobile),
+                ];
                 $data = $filteredData;
             }
         }
         return returnDataSuccess($paramReturn, $data);
     }
-
 }

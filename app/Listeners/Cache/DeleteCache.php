@@ -30,7 +30,6 @@ class DeleteCache
         // Lấy danh sách key từ Redis Set thay vì dùng KEYS
         $cacheKeySet = "cache_keys:" . $event->modelName;
         $keys = Redis::connection('cache')->smembers($cacheKeySet);
-    
         foreach ($keys as $key) {
             Redis::connection('cache')->del($key);
         }
