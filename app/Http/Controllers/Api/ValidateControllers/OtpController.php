@@ -53,10 +53,16 @@ class OtpController extends Controller
         // Gọi function trong OtpService thì phải gọi sau khi truyền params
         $this->isLimitTotalRequestSendOtp = $this->checkLimitTotalRequestSendOtp($this->otpService->getTotalRequestSendOtp());
         $this->isLimitTotalRequestVerifyOtp = $this->checkLimitTotalRequestVerifyOtp();
-
     }
     public function sendOtp()
     {
+        // Nếu thiết bị đã xác thực rồi mà yêu cầu OTP tiếp => return false
+        if ($this->otpService->isVerified()) {
+            return returnDataSuccess([], [
+                'success' => false,
+            ]);
+        }
+
         switch ($this->method) {
             case 'patient-phone-sms':
                 return $this->sendOtpPhoneTreatmentFee();

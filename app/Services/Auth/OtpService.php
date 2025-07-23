@@ -441,17 +441,4 @@ class OtpService
     /**
      * Tạo và gửi OTP
      */
-    public function generateAndSendOtpTreatmentFee($patientCode, $deviceInfo, $ipAddress)
-    {
-
-        if ($this->isVerified()) {
-            return true; // Nếu OTP đã xác thực, không cần gửi lại
-        }
-
-        // Nếu chưa có OTP trong cache thì tạo mới
-        // Gọi hàm tạo và gửi OTP
-        $this->createAndSendOtpPhoneTreatmentFee();
-
-        return false;
-    }
 }
