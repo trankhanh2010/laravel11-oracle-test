@@ -36,4 +36,12 @@ class ZaloController extends Controller
         // lấy refreshToken từ param => gọi api => nhận về 1 cặp AT, RT mới => lưu db
         $this->zaloSerivce->refreshAccessToken($refreshToken);
     }
+    public function getInfoTemplate(Request $request){
+        $id = $request->input('id');
+        if(empty($id) || !is_numeric($id)){
+            throw new \Exception('Thiếu id hoặc id không hợp lệ');
+        }
+        $data = $this->zaloSerivce->getInfoTemplate($id);
+        return returnDataSuccess([], $data);
+    }
 }

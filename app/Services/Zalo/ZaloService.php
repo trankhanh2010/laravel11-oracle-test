@@ -118,6 +118,19 @@ class ZaloService
     public function setTokenOtpZalo($data){
         $this->zaloConfigRepository->updateToken($data);
     }
+    public function getInfoTemplate($id){
+        $url = 'https://business.openapi.zalo.me/template/info/v2'. '?template_id='.$id;
+
+    
+        $response = $this->client->get($url, [
+            'headers' => [
+                'access_token' => $this->accessToken,
+                'Content-Type' => 'application/x-www-form-urlencoded'
+            ]
+        ]);
+        $responseBody = json_decode($response->getBody(), true);
+        return $responseBody;
+    }
     // public function getAccessAndRefreshToken(){
     //     $url = 'https://oauth.zaloapp.com/v4/oa/access_token';
 

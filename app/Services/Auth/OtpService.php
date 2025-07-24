@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Redis;
 
 class OtpService
 {
+    protected $phoneRegister;
     protected $params;
     protected $smsSerivce;
     protected $twilioService;
