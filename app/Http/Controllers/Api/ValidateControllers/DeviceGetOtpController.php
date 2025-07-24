@@ -34,11 +34,13 @@ class DeviceGetOtpController extends Controller
                 if (($cacheData['total_requests'] ?? 0) >= $this->maxRequestSendOtpOnday) {
                     $ttl = Redis::connection('cache')->ttl($key); // Lấy TTL của cache (nếu dùng Redis)
                     $devices[] = [
+                        'key' => $key,
                         'device' => $cacheData['device'] ?? 'Unknown',
                         'ip' => $cacheData['ip'] ?? 'Unknown',
                         'totalRequests' => $cacheData['total_requests'] ?? 0,
                         'firstRequestAt' => $cacheData['first_request_at'] ?? null,
                         'lastRequestAt' => $cacheData['last_request_at'] ?? null,
+                        'lastPatientCodeRequestOtp' => $cacheData['last_patient_code_request_otp'] ?? null,
                         'patientCodeList' => $cacheData['patient_code_list'] ?? [],
                         'ttl' => $ttl ?? 0, // Thêm TTL vào kết quả
                     ];
@@ -50,29 +52,25 @@ class DeviceGetOtpController extends Controller
 
     public function unlockDeviceLimitTotalRequestSendOtp(Request $request)
     {
-        $deviceInfo = $request->deviceInfo;
-        $ipAddress = $request->ipAddress;
+        $key = $request->key;
     
-        if (!$deviceInfo || !$ipAddress) {
+        if (!$key) {
             return returnDataSuccess([], ['success' => false]);
         }
-    
-        $cacheKey = 'total_OTP_treatment_fee_' . $deviceInfo . '_' . $ipAddress;
-    
+        
         // Lấy dữ liệu từ cache
-        $cachedData = Cache::get($cacheKey);
-    
+        $cachedData = Cache::get($key);
         if ($cachedData && is_array($cachedData)) {
             // Cập nhật giá trị total_requests
-            $cachedData['total_requests'] = $this->maxRequestSendOtpOnday - 3;
+            $cachedData['total_requests'] = $this->maxRequestSendOtpOnday - 5;
     
             // Ghi đè lại dữ liệu vào cache với thời gian lưu không đổi
-            Cache::put($cacheKey, $cachedData, now()->addHours(24)); // Giữ thời gian cache theo nhu cầu
+            Cache::put($key, $cachedData, now()->addHours(24)); // Giữ thời gian cache theo nhu cầu
         } else {
             return returnDataSuccess([], ['success' => false, 'message' => 'Không tìm thấy dữ liệu cache']);
         }
     
-        return returnDataSuccess([], ['success' => true, 'total_requests' => $cachedData['total_requests']]);
+        return returnDataSuccess([], ['success' => true, 'totalRequests' => $cachedData['total_requests']]);
     }
     
     

@@ -301,6 +301,7 @@ use App\Http\Controllers\Api\TransactionControllers\VietinbankController;
 use App\Http\Controllers\Api\TransactionControllers\TransactionRestoreController;
 use App\Http\Controllers\Api\ValidateControllers\DeviceGetOtpController;
 use App\Http\Controllers\Api\ValidateControllers\OtpController;
+use App\Http\Controllers\Api\ValidateControllers\ZaloController;
 use App\Http\Controllers\BaseControllers\ConvertController;
 use App\Http\Controllers\BaseControllers\DigitalCertificateController;
 use App\Http\Controllers\BaseControllers\XmlController;
@@ -352,10 +353,10 @@ Route::get('v1/send-otp-treatment-fee', [OtpController::class, 'sendOtp'])
     ->withoutMiddleware('check_token');
 
 // refresh AccessToken OA zalo
-Route::get('v1/refresh-access-token-otp-zalo', [OtpController::class, 'refreshAccessTokenOtpZalo'])
+Route::get('v1/refresh-access-token-otp-zalo', [ZaloController::class, 'refreshAccessTokenOtpZalo'])
     ->withoutMiddleware('check_token');
 // cập nhật token zalo trong db
-Route::get('v1/set-token-otp-zalo', [OtpController::class, 'setTokenOtpZalo'])
+Route::get('v1/set-token-otp-zalo', [ZaloController::class, 'setTokenOtpZalo'])
     ->withoutMiddleware('check_token');
 // // Lấy AccessToken và RefreshToken từ đầu
 // Route::get('v1/get-access-and-refresh-token', [OtpController::class, 'getAccessAndRefreshToken'])
