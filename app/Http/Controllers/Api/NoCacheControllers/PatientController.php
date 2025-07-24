@@ -115,6 +115,7 @@ class PatientController extends BaseApiCacheController
                 // Lọc các trường cần thiết từ mỗi item trong data
                 $filteredData  = [
                     'patientCode' => $data->patient_code,
+                    'patientName' => $data->vir_patient_name ?? '',
                     'patientPhone' => maskPhone(convertPhoneToLocalFormat($data->phone)),
                     'patientMobile' => maskPhone(convertPhoneToLocalFormat($data->mobile)),
                     'patientEmail' => maskPhone($data->email),
