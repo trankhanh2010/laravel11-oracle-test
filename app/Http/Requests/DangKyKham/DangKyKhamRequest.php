@@ -96,7 +96,12 @@ class DangKyKhamRequest extends FormRequest
             ],
             'address' =>      'nullable|string|max:200',
             'htAddress' =>      'nullable|string|max:200',
-            'phone' =>      'required|string|max:20',
+            'phone' => [
+                    'required',
+                    'string',
+                    'max:20',
+                    'regex:/^(0|84)[0-9]{8,}$/'
+                ],
             'relativeType' =>      'nullable|string|max:50',
             'relativeName' =>      'nullable|string|max:100',
             'relativeAddress' =>      'nullable|string|max:200',
@@ -197,6 +202,7 @@ class DangKyKhamRequest extends FormRequest
             'phone.required'    => 'Số điện thoại liên hệ ' . config('keywords')['error']['required'],
             'phone.string'      => 'Số điện thoại liên hệ không hợp lệ!',
             'phone.max'         => 'Số điện thoại liên hệ không hợp lệ!',
+            'phone.regex'       => 'Số điện thoại phải ở dạng 0xxx hoặc 84xxxx!',
 
             'relativeType.string'      => 'Quan hệ của người nhà với người đăng ký khám' . config('keywords')['error']['string'],
             'relativeType.max'         => 'Quan hệ của người nhà với người đăng ký khám' . config('keywords')['error']['string_max'],
