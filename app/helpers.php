@@ -566,7 +566,7 @@ if (!function_exists('view_service_req')) {
 if (!function_exists('get_loginname_with_token')) {
     function get_loginname_with_token($token, $time = 14400)
     {
-        if(!$token) return null;
+        if (!$token) return null;
         $loginname = Cache::remember('token_' . $token . '_loginname', $time, function () use ($token) {
             return Token::select()->where('token_code', '=', $token)->value('login_name');
         });
@@ -633,12 +633,12 @@ if (!function_exists('returnNotRecord')) {
 if (!function_exists('returnDanhSachRong')) {
     function returnDanhSachRong()
     {
-            return response()->json([
-                'status'    => 200,
-                'success' => true,
-                'param' => [],
-                'data' => [],
-            ], 200);
+        return response()->json([
+            'status'    => 200,
+            'success' => true,
+            'param' => [],
+            'data' => [],
+        ], 200);
     }
 }
 
@@ -1107,39 +1107,39 @@ if (!function_exists('logError')) {
     }
 
     if (!function_exists('getTuoi')) {
-    /**
-     * Trả về tuổi theo năm, tháng, ngày, giờ từ chuỗi 14 ký tự định dạng YmdHis.
-     *
-     * @param string $dobString
-     * @return array|null
-     */
-    function getTuoi(string $dobString): ?array
-    {
-        if (!preg_match('/^\d{14}$/', $dobString)) {
-            return null;
-        }
+        /**
+         * Trả về tuổi theo năm, tháng, ngày, giờ từ chuỗi 14 ký tự định dạng YmdHis.
+         *
+         * @param string $dobString
+         * @return array|null
+         */
+        function getTuoi(string $dobString): ?array
+        {
+            if (!preg_match('/^\d{14}$/', $dobString)) {
+                return null;
+            }
 
-        try {
-            $dob = \DateTime::createFromFormat('YmdHis', $dobString);
-            $now = new \DateTime();
+            try {
+                $dob = \DateTime::createFromFormat('YmdHis', $dobString);
+                $now = new \DateTime();
 
-            // Tính chênh lệch
-            $diff = $dob->diff($now);
+                // Tính chênh lệch
+                $diff = $dob->diff($now);
 
-            // Tính thời gian tổng thể
-            $intervalInSeconds = $now->getTimestamp() - $dob->getTimestamp();
+                // Tính thời gian tổng thể
+                $intervalInSeconds = $now->getTimestamp() - $dob->getTimestamp();
 
-            return [
-                '01'  => $diff->y, // năm
-                '02' => $diff->y * 12 + $diff->m, // tháng
-                '03'   => floor($intervalInSeconds / (60 * 60 * 24)), // ngày
-                '04'  => floor($intervalInSeconds / (60 * 60)), // giờ
-            ];
-        } catch (\Exception $e) {
-            return null;
+                return [
+                    '01'  => $diff->y, // năm
+                    '02' => $diff->y * 12 + $diff->m, // tháng
+                    '03'   => floor($intervalInSeconds / (60 * 60 * 24)), // ngày
+                    '04'  => floor($intervalInSeconds / (60 * 60)), // giờ
+                ];
+            } catch (\Exception $e) {
+                return null;
+            }
         }
     }
-}
     function tachHoTen(string $hoTen): array
     {
         $hoTen = mb_strtoupper(trim($hoTen), 'UTF-8'); // in hoa bỏ trắng thừa
@@ -1165,4 +1165,70 @@ if (!function_exists('logError')) {
         ];
     }
 
+    function normalizePhoneFormats(string $phone): array
+    {
+        $phone0 = null;
+        $phone84 = null;
+        // 1. Loại bỏ tất cả ký tự không phải số
+        $digits = preg_replace('/\D+/', '', $phone);
+
+        // 2. Nếu bắt đầu bằng 84 và sau đó là 9 chữ số → Dạng quốc tế
+        if (str_starts_with($digits, '84') && strlen($digits) === 11) {
+            $phone84 = $digits;
+            $phone0 = '0' . substr($digits, 2); // chuyển về dạng 0xxx
+        }
+        // 3. Nếu bắt đầu bằng 0 và có 10 số → Dạng nội địa
+        elseif (str_starts_with($digits, '0') && strlen($digits) === 10) {
+            $phone0 = $digits;
+            $phone84 = '84' . substr($digits, 1); // chuyển sang 84xxx
+        }
+        return [
+            $phone,
+            $phone0,
+            $phone84,
+        ];
+
+
+    }
+    /**
+     * Chuyển số điện thoại về định dạng quốc tế bắt đầu bằng 84, không có dấu +
+     */
+    function convertPhoneTo84Format($phone)
+    {
+        // Bỏ tất cả ký tự không phải số (giữ lại chữ số)
+        $digits = preg_replace('/\D+/', '', $phone);
+
+        // Nếu bắt đầu bằng '84' và đủ 11 số → giữ nguyên
+        if (str_starts_with($digits, '84') && strlen($digits) === 11) {
+            return $digits;
+        }
+
+        // Nếu bắt đầu bằng '0' và đủ 10 số → chuyển về 84
+        if (str_starts_with($digits, '0') && strlen($digits) === 10) {
+            return '84' . substr($digits, 1);
+        }
+
+        // Nếu là số không hợp lệ (ví dụ 9 số hoặc sai đầu số), trả về null
+        return null;
+    }
+    /**
+     * Chuyển số điện thoại về dạng nội địa bắt đầu bằng 0
+     */
+    function convertPhoneToLocalFormat($phone)
+    {
+        // Bỏ ký tự không phải số
+        $digits = preg_replace('/\D+/', '', $phone);
+
+        // Nếu là 84xxxxxxxxx → chuyển thành 0xxxxxxxxx
+        if (str_starts_with($digits, '84') && strlen($digits) === 11) {
+            return '0' . substr($digits, 2);
+        }
+
+        // Nếu đã là dạng 0xxxxxxxxx → giữ nguyên
+        if (str_starts_with($digits, '0') && strlen($digits) === 10) {
+            return $digits;
+        }
+
+        return null; // Không hợp lệ
+    }
 }

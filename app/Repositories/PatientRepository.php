@@ -151,7 +151,8 @@ class PatientRepository
         if ($phone != null || $cccdNumber != null) {
             $query->where(function ($q) use ($phone, $cccdNumber) {
                 if ($phone != null) {
-                    $q->where(DB::connection('oracle_his')->raw('his_patient.phone'), $phone);
+                    $arrKeywordSearch = normalizePhoneFormats($phone);
+                    $q->whereIn(DB::connection('oracle_his')->raw('his_patient.phone'), $arrKeywordSearch);
                 }
                 if ($cccdNumber != null) {
                     $q->orWhere(DB::connection('oracle_his')->raw('his_patient.cccd_number'), $cccdNumber);

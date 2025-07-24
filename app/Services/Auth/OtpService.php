@@ -77,11 +77,11 @@ class OtpService
         $this->patientCode = $this->params->patientCode;
         $this->dataPatient = $this->getDataPatient($this->patientCode); // Lấy data patient
         $this->validatePatientCode();
-        $this->phone = $this->dataPatient->phone;
-        $this->mobile = $this->dataPatient->mobile;
+        $this->phone = convertPhoneTo84Format($this->dataPatient->phone); // chuyển về dạng 84 để xử lý
+        $this->mobile = convertPhoneTo84Format($this->dataPatient->mobile); // chuyển về dạng 84 để xử lý
         $this->email = $this->dataPatient->email;
-        $this->relativePhone = $this->dataPatient->relative_phone;
-        $this->relativeMobile = $this->dataPatient->relative_mobile;
+        $this->relativePhone = convertPhoneTo84Format($this->dataPatient->relative_phone); // chuyển về dạng 84 để xử lý 
+        $this->relativeMobile = convertPhoneTo84Format($this->dataPatient->relative_mobile); // chuyển về dạng 84 để xử lý
         $this->patientName = $this->dataPatient->vir_patient_name ?? '';
         $this->otpCode = $this->getRandomNumberOtp(); // Lấy random 
         $this->cacheKeySaveOtp = $this->getCacheKeySaveOtp(); // Lấy key cache sẽ lưu mã otp
@@ -142,7 +142,7 @@ class OtpService
     // Trả về key lưu mã otp của patient
     public function getCacheKeySaveOtp()
     {
-        $key = 'otp_phone_' . $this->phone;
+        $key = 'otp_phone_' . $this->patientCode;
         return $key;
     }
     // Trả về key lưu trạng thái đã xác thực của thiết bị với patient này
