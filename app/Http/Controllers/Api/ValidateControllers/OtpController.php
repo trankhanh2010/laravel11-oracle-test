@@ -47,7 +47,10 @@ class OtpController extends Controller
         $this->ipAddress = request()->ip(); // Lấy địa chỉ IP
         $this->inputOtp = $request->input('otp'); // Lấy mã OTP sẽ xác thực từ request
         // Thêm tham số vào service
-        $this->otpDTO = new OtpDTO($this->patientCode,);
+        $this->otpDTO = new OtpDTO(
+            $this->patientCode,
+            $this->method,
+        );
         $this->otpService->withParams($this->otpDTO);
 
 
