@@ -353,14 +353,11 @@ Route::get('v1/send-otp-treatment-fee', [OtpController::class, 'sendOtp'])
     ->withoutMiddleware('check_token');
 
 // refresh AccessToken OA zalo
-Route::get('v1/refresh-access-token-otp-zalo', [ZaloController::class, 'refreshAccessTokenOtpZalo'])
-    ->withoutMiddleware('check_token');
+Route::get('v1/refresh-access-token-otp-zalo', [ZaloController::class, 'refreshAccessTokenOtpZalo']);
 // cập nhật token zalo trong db
-Route::get('v1/set-token-otp-zalo', [ZaloController::class, 'setTokenOtpZalo'])
-    ->withoutMiddleware('check_token');
+Route::get('v1/set-token-otp-zalo', [ZaloController::class, 'setTokenOtpZalo']);
 // xem chi tiết 1 template zalo
-Route::get('v1/get-info-template-zalo', [ZaloController::class, 'getInfoTemplate'])
-    ->withoutMiddleware('check_token');
+Route::get('v1/get-info-template-zalo', [ZaloController::class, 'getInfoTemplate']);
 // // Lấy AccessToken và RefreshToken từ đầu
 // Route::get('v1/get-access-and-refresh-token', [OtpController::class, 'getAccessAndRefreshToken'])
 //     ->withoutMiddleware('check_token');
