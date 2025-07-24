@@ -52,6 +52,14 @@ class DangKyKhamController extends Controller
                     $errors->add('verifyOtp', 'Chưa xác thực OTP!');
                 }
             }
+        }else{
+            // Nếu đăng ký mới thì xác thực sđt => lưu cache cho sđt đó
+            $this->otpDTO = new OtpDTO('', '', $request->phone);
+            $this->otpService->withParams($this->otpDTO);
+            $otpVerified = $this->otpService->isVerified();
+                if (!$otpVerified) {
+                    $errors->add('verifyOtpRegisterPhone', 'Chưa xác thực OTP cho số ' .convertPhoneToLocalFormat($request->phone). '!');
+                }
         }
 
         // Nếu có lỗi, ném ra giống như trong FormRequest

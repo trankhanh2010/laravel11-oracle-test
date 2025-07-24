@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Redis;
 
 class OtpService
 {
-    protected $phoneRegister;
+    protected $registerPhone;
     protected $params;
     protected $smsSerivce;
     protected $twilioService;
@@ -76,14 +76,7 @@ class OtpService
     {
         $this->params = $params;
         $this->patientCode = $this->params->patientCode;
-        $this->dataPatient = $this->getDataPatient($this->patientCode); // Lấy data patient
-        $this->validatePatientCode();
-        $this->phone = convertPhoneTo84Format($this->dataPatient->phone); // chuyển về dạng 84 để xử lý
-        $this->mobile = convertPhoneTo84Format($this->dataPatient->mobile); // chuyển về dạng 84 để xử lý
-        $this->email = $this->dataPatient->email;
-        $this->relativePhone = convertPhoneTo84Format($this->dataPatient->relative_phone); // chuyển về dạng 84 để xử lý 
-        $this->relativeMobile = convertPhoneTo84Format($this->dataPatient->relative_mobile); // chuyển về dạng 84 để xử lý
-        $this->patientName = $this->dataPatient->vir_patient_name ?? '';
+        $this->setParamsPatient();
         $this->otpCode = $this->getRandomNumberOtp(); // Lấy random 
         $this->cacheKeySaveOtp = $this->getCacheKeySaveOtp(); // Lấy key cache sẽ lưu mã otp
         $this->cacheKeyVerifyPaitent = $this->getCacheKeyVerifyPaitent(); // lấy key cache sẽ lưu trạng thái đã xác thực
@@ -92,6 +85,22 @@ class OtpService
 
         $this->setLastOtpSentTo(); // cập nhật nơi nhận otp của lần gọi api này
         return $this;
+    }
+    public function setParamsPatient(){
+        if(!empty($this->patientCode)){
+            // lúc xác thực khi tìm dữ liệu cũ
+            $this->dataPatient = $this->getDataPatient($this->patientCode); // Lấy data patient
+            $this->validatePatientCode();
+            $this->phone = convertPhoneTo84Format($this->dataPatient->phone ?? null); // chuyển về dạng 84 để xử lý
+            $this->mobile = convertPhoneTo84Format($this->dataPatient->mobile ?? null); // chuyển về dạng 84 để xử lý
+            $this->email = $this->dataPatient->email ?? null;
+            $this->relativePhone = convertPhoneTo84Format($this->dataPatient->relative_phone ?? null); // chuyển về dạng 84 để xử lý 
+            $this->relativeMobile = convertPhoneTo84Format($this->dataPatient->relative_mobile ?? null); // chuyển về dạng 84 để xử lý
+            $this->patientName = $this->dataPatient->vir_patient_name ?? '';
+        }else{
+            // lúc đăng ký mới
+            $this->registerPhone = convertPhoneTo84Format($this->params->registerPhone);
+        }
     }
     public function validatePatientCode()
     {
@@ -143,13 +152,13 @@ class OtpService
     // Trả về key lưu mã otp của patient
     public function getCacheKeySaveOtp()
     {
-        $key = 'otp_phone_' . $this->patientCode;
+        $key = 'otp_patient_' . $this->patientCode. '_register_phone_'.$this->registerPhone; // Lưu thêm để dùng lúc gọi xác thực sđt khi đăng ký mới
         return $key;
     }
     // Trả về key lưu trạng thái đã xác thực của thiết bị với patient này
     public function getCacheKeyVerifyPaitent()
     {
-        $key = 'OTP_verify_' . $this->phone . '_' . $this->sanitizedDeviceInfo . '_' . $this->ipAddress; // thay patientCode = phone
+        $key = 'OTP_verify_' . ($this->phone ?? $this->registerPhone) . '_' . $this->sanitizedDeviceInfo . '_' . $this->ipAddress; // thay patientCode = phone
         return $key;
     }
     // Trả về key lưu số lần gọi lấy OTP của thiết bị 
@@ -292,7 +301,7 @@ class OtpService
      */
     public function isVerified(): bool
     {
-        if (!$this->phone) {
+        if (!empty($this->patientCode) && empty($this->phone)) {
             return false;
         }
         // Trả về xem có cache verify cho patient không
@@ -493,6 +502,24 @@ class OtpService
 
         try {
             $this->zaloSerivce->sendOtp($this->relativeMobile, $this->otpCode);
+            // Gửi thành công thì mới tạo cache
+            $this->createCacheSaveOtp();
+            return true;
+        } catch (\Throwable $e) {
+            return false;
+        }
+    }
+    // Gửi qua zalo số điện thoại đăng ký mới
+    public function createAndSendOtpZaloRegisterPhone()
+    {
+        if (!$this->registerPhone) {
+            return false;
+        }
+        // clear OTP cũ trước khi gửi OTP mới
+        $this->clearCacheSaveOtp();
+
+        try {
+            $this->zaloSerivce->sendOtp($this->registerPhone, $this->otpCode);
             // Gửi thành công thì mới tạo cache
             $this->createCacheSaveOtp();
             return true;

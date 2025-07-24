@@ -26,6 +26,7 @@ class OtpController extends Controller
     protected $sanitizedDeviceInfo;
     protected $ipAddress;
     protected $inputOtp;
+    protected $registerPhone;
     protected $isLimitTotalRequestSendOtp; // Nhớ gọi sau khi đã truyền parasm vào OtpService
     protected $isLimitTotalRequestVerifyOtp; // Nhớ gọi sau khi đã truyền parasm vào OtpService
     public function __construct(
@@ -46,17 +47,9 @@ class OtpController extends Controller
         $this->sanitizedDeviceInfo = preg_replace('/[^a-zA-Z0-9-_]/', '', $this->deviceInfo); // bỏ cách ký tự đặc biệt
         $this->ipAddress = request()->ip(); // Lấy địa chỉ IP
         $this->inputOtp = $request->input('otp'); // Lấy mã OTP sẽ xác thực từ request
-        // Thêm tham số vào service
-        $this->otpDTO = new OtpDTO(
-            $this->patientCode,
-            $this->method,
-        );
-        $this->otpService->withParams($this->otpDTO);
+        $this->registerPhone = $request->input('registerPhone'); // Lấy mã OTP sẽ xác thực từ request
 
-
-        // Gọi function trong OtpService thì phải gọi sau khi truyền params
-        $this->isLimitTotalRequestSendOtp = $this->checkLimitTotalRequestSendOtp($this->otpService->getTotalRequestSendOtp());
-        $this->isLimitTotalRequestVerifyOtp = $this->checkLimitTotalRequestVerifyOtp();
+        $this->setParam();
     }
     public function sendOtp()
     {
@@ -68,6 +61,7 @@ class OtpController extends Controller
         }
 
         switch ($this->method) {
+            // Theo mã bệnh nhân
             case 'patient-phone-sms':
                 return $this->sendOtpPhoneTreatmentFee();
             case 'patient-mobile-sms':
@@ -86,11 +80,28 @@ class OtpController extends Controller
                 return $this->sendOtpZaloPatientRelativePhoneTreatmentFee();
             case 'patient-relative-mobile-zalo':
                 return $this->sendOtpZaloPatientRelativeMobileTreatmentFee();
+    
+            // Theo số điện thoại đăng ký mới
+            case 'register-phone-zalo':
+                return $this->sendOtpZaloRegisterPhone();
             default:
                 return returnDataSuccess([], [
                     'success' => false,
                 ]);
         }
+    }
+    public function setParam(){
+        // Thêm tham số vào service
+        $this->otpDTO = new OtpDTO(
+            $this->patientCode,
+            $this->method,
+            $this->registerPhone,
+        );
+        $this->otpService->withParams($this->otpDTO);
+
+        // Gọi function trong OtpService thì phải gọi sau khi truyền params
+        $this->isLimitTotalRequestSendOtp = $this->checkLimitTotalRequestSendOtp($this->otpService->getTotalRequestSendOtp());
+        $this->isLimitTotalRequestVerifyOtp = $this->checkLimitTotalRequestVerifyOtp();
     }
     public function checkLimitTotalRequestVerifyOtp()
     {
@@ -332,6 +343,30 @@ class OtpController extends Controller
             $data = false;
         } else {
             $data = $this->otpService->createAndSendOtpZaloPatientRelativePhoneTreatmentFee();
+            if ($data) {
+                $this->otpService->clearCacheTotalRequestVerifyOtp(); // Nếu gửi mã OTP mới thì xóa cache limitRequestVerifyOtp
+                $this->otpService->addTotalRequestSendOtp(); // Nếu gửi mã OTP thì tăng tổng lên 1
+            }
+        }
+        return returnDataSuccess(
+            [],
+            array_merge(
+                [
+                    'success' => $data,
+                    'limitRequest' => $this->isLimitTotalRequestSendOtp,
+                ],
+                $this->getDataInfoResponse()
+            )
+        );
+    }
+
+    public function sendOtpZaloRegisterPhone()
+    {
+        // Đạt giới hạn thì k gửi otp
+        if ($this->isLimitTotalRequestSendOtp) {
+            $data = false;
+        } else {
+            $data = $this->otpService->createAndSendOtpZaloRegisterPhone();
             if ($data) {
                 $this->otpService->clearCacheTotalRequestVerifyOtp(); // Nếu gửi mã OTP mới thì xóa cache limitRequestVerifyOtp
                 $this->otpService->addTotalRequestSendOtp(); // Nếu gửi mã OTP thì tăng tổng lên 1
