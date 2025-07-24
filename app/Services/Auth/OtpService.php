@@ -138,6 +138,9 @@ class OtpService
             case 'patient-relative-mobile-zalo':
                 $value = $this->relativeMobile;
                 break;
+            case 'register-phone-zalo':
+                $value = $this->registerPhone;
+                break;
             default:
                 $value = '';
                 break;

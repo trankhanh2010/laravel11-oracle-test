@@ -59,6 +59,7 @@ class ZaloService
         ]);
         return $response;
     }
+    // Gửi otp
     public function sendOtp($phoneNumber, $otpCode)
     {
         $response = $this->callApiSendOtp($phoneNumber, $otpCode);
@@ -130,6 +131,47 @@ class ZaloService
         ]);
         $responseBody = json_decode($response->getBody(), true);
         return $responseBody;
+    }
+    public function callApiSendThongBaoDangKyKhamThanhCong($phoneNumber, $responeMos){
+        $url = 'https://business.openapi.zalo.me/message/template';
+
+        $data = [
+            'phone' => $phoneNumber, // 84772064649
+            'template_id' => 408549, // Thay bằng ID của template ZNS đã được phê duyệt
+            'template_data' => [
+                'otp' => ''
+            ],
+        ];
+
+        $response = $this->client->post($url, [
+            'headers' => [
+                'Content-Type' => 'application/json',
+                'access_token' => $this->accessToken,
+            ],
+            'json' => $data,
+        ]);
+        return $response;
+    }
+    // Gửi thông báo khi đăng ký khám thành công
+    public function sendThongBaoDangKyKhamThanhCong($phoneNumber, $responeMos)
+    {
+        $response = $this->callApiSendOtp($phoneNumber, $responeMos);
+
+        $responseBody = json_decode($response->getBody(), true);
+        // Kiểm tra mã lỗi trả về từ Zalo
+        // Nếu mã = 0 thì thành công
+        if (isset($responseBody['error']) && $responseBody['error'] == 0) {
+            return $responseBody;
+        } else {
+            // Nếu mã liên quan đến accessToken thì thử refresh
+            if (isset($responseBody['error']) && $responseBody['error'] == -124) {
+                $result = $this->refreshAccessToken();
+                // Dừng lại
+                throw new \Exception('Error: Retry send otp');
+            }
+            // Còn lại ném ra lỗi
+            throw new \Exception('Error from Zalo API: ' . $responseBody['message']);
+        }
     }
     // public function getAccessAndRefreshToken(){
     //     $url = 'https://oauth.zaloapp.com/v4/oa/access_token';

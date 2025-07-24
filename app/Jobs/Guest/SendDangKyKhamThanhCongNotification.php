@@ -46,10 +46,18 @@ class SendDangKyKhamThanhCongNotification implements ShouldQueue
         }
 
         // gửi mail
-        if(!empty($this->responeMos['HisPatientProfile']['HisPatient']['EMAIL'])){
-            $this->mailService = $mailService;
-            $this->mailService->sendThongBaoDangKyKhamThanhCong($this->responeMos['HisPatientProfile']['HisPatient']['EMAIL'], $this->responeMos);
-        }
-        // gửi zalo
+        // if(!empty($this->responeMos['HisPatientProfile']['HisPatient']['EMAIL'])){
+        //     $email = $this->responeMos['HisPatientProfile']['HisPatient']['EMAIL'];
+        //     $this->mailService = $mailService;
+        //     $this->mailService->sendThongBaoDangKyKhamThanhCong($email, $this->responeMos);
+        // }
+        // gửi zalo qua số điện thoại đã đăng ký
+        // if(!empty($this->responeMos['HisPatientProfile']['HisPatient']['PHONE'])){
+        //     $phone = convertPhoneTo84Format($this->responeMos['HisPatientProfile']['HisPatient']['PHONE']);
+        //     if(!empty($phone)){
+        //         $this->zaloSerivce = $zaloSerivce;
+        //         $this->zaloSerivce->sendThongBaoDangKyKhamThanhCong($phone, $this->responeMos);
+        //     }
+        // }
     }
 }

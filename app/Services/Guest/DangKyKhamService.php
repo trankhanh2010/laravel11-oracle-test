@@ -191,6 +191,13 @@ class DangKyKhamService
             return $this->callApiDangKyKham($rawBody);
         }
     }
+    private function getResultCallApiMos($data){
+        if(!$data['Success'] || !empty($data['Param']['BugCodes'])){
+            return false;
+        }else{
+            return true;
+        }
+    }
     private function callApiDangKyKham($rawBody)
     {
         try {
@@ -204,7 +211,7 @@ class DangKyKhamService
         } catch (\Throwable $e) {
             throw new \Exception("Lỗi gọi API đăng ký khám!");
         }
-        if (!$data['Success']) {
+        if (!$this->getResultCallApiMos($data)) {
             throw new \Exception("Đăng ký khám không thành công!");
         }
         return $data;
@@ -222,7 +229,7 @@ class DangKyKhamService
         } catch (\Throwable $e) {
             throw new \Exception("Lỗi gọi API đăng ký thông tin!");
         }
-        if (!$data['Success']) {
+        if (!$this->getResultCallApiMos($data)) {
             throw new \Exception("Đăng ký thông tin không thành công!");
         }
         return $data;
