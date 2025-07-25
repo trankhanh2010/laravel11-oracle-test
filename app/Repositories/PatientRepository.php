@@ -95,13 +95,14 @@ class PatientRepository
     public function applyWithParamTimThongTinBenhNhan($query)
     {
         return $query->with([
-            'lan_kham_gan_nhat',
+            'dich_vu_gan_nhat',
         ]);
     }
     public function applyWithParamLayThongTinBenhNhan($query)
     {
         return $query->with([
-            'cac_lan_kham',
+            'cac_dich_vu_da_dung',
+            'cac_dich_vu_da_dang_ky',
         ]);
     }
     public function applyKeywordFilter($query, $keyword)
