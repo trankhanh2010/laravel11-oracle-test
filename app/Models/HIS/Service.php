@@ -309,4 +309,9 @@ class Service extends Model
             ->where('v_his_room.is_active', 1)
             ->orderBy('v_his_room.room_code');
     }
+    public function service_patys()
+    {
+        return $this->hasMany(ServicePaty::class, 'service_id');
+    }
+
 }

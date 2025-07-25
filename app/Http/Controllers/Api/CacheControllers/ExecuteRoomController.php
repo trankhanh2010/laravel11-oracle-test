@@ -108,7 +108,7 @@ class ExecuteRoomController extends BaseApiCacheController
         if ($this->checkParam()) {
             return $this->checkParam();
         }
-        $data = $this->executeRoomService->handleDataBaseGetAll();
+        $data = $this->executeRoomService->handleDataBaseGetAllGuest();
         $paramReturn = [
             $this->getAllName => $this->getAll,
             $this->startName => $this->getAll ? null : $this->start,

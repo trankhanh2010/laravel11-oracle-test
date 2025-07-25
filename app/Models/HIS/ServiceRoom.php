@@ -30,4 +30,8 @@ class ServiceRoom extends Model
     {
         return $this->belongsTo(ExecuteRoom::class, 'room_id');
     }
+    public function service_paty()
+    {
+        return $this->hasMany(ServicePaty::class, 'room_id');
+    }
 }

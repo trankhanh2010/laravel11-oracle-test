@@ -52,6 +52,18 @@ class ExecuteRoomService
         $data = $this->executeRoomRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
         return ['data' => $data, 'count' => $count];
     }
+    private function getAllDataFromDatabaseGuest()
+    {
+        $data = $this->executeRoomRepository->applyJoins();
+        $data = $this->executeRoomRepository->applyIsActiveFilter($data, 1);
+        $data = $this->executeRoomRepository->applyIsDeleteFilter($data, 0);
+        $data = $this->executeRoomRepository->applyGuestFilter($data); // Trả về mấy bản ghi có dịch vụ thỏa có 1 service_paty có day_from = 2 và day_to = 7
+        $data = $this->executeRoomRepository->applyTabFilter($data, $this->params->tab);
+        $count = $data->count();
+        $data = $this->executeRoomRepository->applyOrdering($data, $this->params->orderBy, $this->params->orderByJoin);
+        $data = $this->executeRoomRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
+        return ['data' => $data, 'count' => $count];
+    }
     private function getDataById($id)
     {
         $data = $this->executeRoomRepository->applyJoins()
@@ -71,6 +83,26 @@ class ExecuteRoomService
                 $cacheKeySet = "cache_keys:" . $this->params->executeRoomName; // Set để lưu danh sách key
                 $data = Cache::remember($cacheKey, $this->params->time, function () {
                     return $this->getAllDataFromDatabase();
+                });
+                // Lưu key vào Redis Set để dễ xóa sau này
+                Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+                return $data;
+            }
+        } catch (\Throwable $e) {
+            return writeAndThrowError(config('params')['db_service']['error']['execute_room'], $e);
+        }
+    }
+    public function handleDataBaseGetAllGuest()
+    {
+        try {
+            // Nếu không lưu cache
+            if ($this->params->noCache) {
+                return $this->getAllDataFromDatabaseGuest();
+            } else {
+                $cacheKey = 'guest_'.$this->params->executeRoomName . '_' . $this->params->param;
+                $cacheKeySet = "cache_keys:" . $this->params->executeRoomName; // Set để lưu danh sách key
+                $data = Cache::remember($cacheKey, $this->params->time, function () {
+                    return $this->getAllDataFromDatabaseGuest();
                 });
                 // Lưu key vào Redis Set để dễ xóa sau này
                 Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);

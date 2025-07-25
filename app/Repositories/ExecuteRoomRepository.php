@@ -73,6 +73,14 @@ class ExecuteRoomRepository
 
         return $query;
     }
+    public function applyIsDeleteFilter($query, $isDelete)
+    {
+        if ($isDelete !== null) {
+            $query->where(DB::connection('oracle_his')->raw('his_execute_room.is_delete'), $isDelete);
+        }
+
+        return $query;
+    }
     public function applyTabFilter($query, $param)
     {
         switch ($param) {
@@ -103,6 +111,21 @@ class ExecuteRoomRepository
                 $query->where(DB::connection('oracle_his')->raw('branch.id'), $branchId);
             }
         }
+
+        return $query;
+    }
+    public function applyGuestFilter($query)
+    {
+        $query->whereHas('services', function ($q) {
+            $q->where('his_service.is_active', 1)
+            ->where('his_service.is_delete', 0)
+            ->whereHas('service_patys', function ($q2) {
+                $q2->where('his_service_paty.day_from', 2)
+                    ->where('his_service_paty.day_to', 7)
+                    ->where('his_service_paty.is_active', 1)
+                    ->where('his_service_paty.is_delete', 0);
+            });
+        });
 
         return $query;
     }

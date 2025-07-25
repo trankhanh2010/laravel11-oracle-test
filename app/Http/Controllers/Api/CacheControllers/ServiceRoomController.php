@@ -97,7 +97,7 @@ class ServiceRoomController extends BaseApiCacheController
         if ($this->checkParam()) {
             return $this->checkParam();
         }
-        $data = $this->serviceRoomService->handleDataBaseGetAll();
+        $data = $this->serviceRoomService->handleDataBaseGetAllGuest(); // không lấy mấy cái ngoài giờ, lọc có servicePaty có day_from = 2 và day_to = 7
         $paramReturn = [
             $this->getAllName => $this->getAll,
             $this->startName => $this->getAll ? null : $this->start,

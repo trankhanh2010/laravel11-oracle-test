@@ -42,6 +42,8 @@ class PatientRepository
     {
         return $this->patient
             ->leftJoin('his_work_place', 'his_work_place.id', '=', 'his_patient.work_place_id')
+            ->leftJoin('his_career', 'his_career.id', '=', 'his_patient.career_id')
+
             ->select(
                 'his_patient.id',
                 'his_patient.patient_code',
@@ -49,6 +51,7 @@ class PatientRepository
                 'his_patient.gender_id',
                 'his_patient.dob',
                 'his_patient.career_id',
+                'his_career.career_name',
 
                 'his_patient.commune_code',
                 'his_patient.province_code',
