@@ -60,6 +60,13 @@ class DangKyKhamService
     protected $treatmentType;
     protected $patientType;
     protected $serviceRoom;
+    protected $dataNational;
+    protected $dataEthnic;
+    protected $dataProvince;
+    protected $dataCommune;
+    protected $dataCareer;
+    protected $dataBloodAbo;
+    protected $dataBloodRh;
     public function __construct(
         Patient $patient,
         National $national,
@@ -81,7 +88,7 @@ class DangKyKhamService
         $this->urlAcs = config('database')['connections']['acs']['acs_url'];
         $this->urlMos = config('database')['connections']['mos']['mos_url'];
         $this->apiDangKyKham = $this->urlMos . '/api/HisServiceReq/ExamRegister';
-        $this->apiDangKyThongTin = $this->urlMos .'/api/HisPatient/RegisterProfile';
+        $this->apiDangKyThongTin = $this->urlMos . '/api/HisPatient/RegisterProfile';
         $this->apiDangKyPhienLamViec = $this->urlMos . '/api/Token/UpdateWorkInfo';
         $this->apiDangNhap = $this->urlAcs . '/api/Token/Login';
         $this->cacheKeySetting = "cache_keys:" . "setting"; // Set để lưu danh sách key
@@ -184,17 +191,19 @@ class DangKyKhamService
         $this->params = $params;
         return $this;
     }
-    private function callApiMos($rawBody){
-        if(empty($this->params->request->serviceReqDetails) && ($this->params->request->patientId == 0)){ // Nếu đăng ký mới và k chọn dịch vụ => /api/HisPatient/RegisterProfile
+    private function callApiMos($rawBody)
+    {
+        if (empty($this->params->request->serviceReqDetails)) { // Nếu k chọn dịch vụ => /api/HisPatient/RegisterProfile
             return $this->callApiDangKyThongTin($rawBody);
-        }else{
+        } else {
             return $this->callApiDangKyKham($rawBody);
         }
     }
-    private function getResultCallApiMos($data){
-        if(!$data['Success'] || !empty($data['Param']['BugCodes'])){
+    private function getResultCallApiMos($data)
+    {
+        if (!$data['Success'] || !empty($data['Param']['BugCodes'])) {
             return false;
-        }else{
+        } else {
             return true;
         }
     }
@@ -313,18 +322,20 @@ class DangKyKhamService
             throw new \Exception('Không thể đăng ký phiên làm việc cho phòng mặc định.');
         }
     }
-    private function validate(){
+    private function validate()
+    {
         $this->validateTreDuoi6Tuoi();
     }
-    private function validateTreDuoi6Tuoi(){
+    private function validateTreDuoi6Tuoi()
+    {
         $tuoiTheoNam = getTuoi($this->params->request->dob)['01'];
-        if($tuoiTheoNam < 6){
-            if(
+        if ($tuoiTheoNam < 6) {
+            if (
                 empty($this->params->request->relativeType)
                 || empty($this->params->request->relativeName)
                 || empty($this->params->request->motherName)
                 || empty($this->params->request->fatherName)
-            ){
+            ) {
                 throw new \Exception('Trẻ dưới 6 tuổi bắt buộc phải nhập các thông tin người thân.');
             }
         }
@@ -334,13 +345,13 @@ class DangKyKhamService
         $data = [];
         $arrayHoVaTen = $this->tachHoVaTen();
         // lưu cache redis
-        $dataNational = $this->getCacheNational();
-        $dataEthnic = $this->getCacheEthnic();
-        $dataProvince = $this->getCacheProvince();
-        $dataCommune = $this->getCacheCommune();
-        $dataCareer = $this->getCacheCareer();
-        // $dataBloodAbo = $this->getCacheBloodAbo();
-        // $dataBloodRh = $this->getCacheBloodRh();
+        $this->dataNational = $this->getCacheNational();
+        $this->dataEthnic = $this->getCacheEthnic();
+        $this->dataProvince = $this->getCacheProvince();
+        $this->dataCommune = $this->getCacheCommune();
+        $this->dataCareer = $this->getCacheCareer();
+        // $this->dataBloodAbo = $this->getCacheBloodAbo();
+        // $this->dataBloodRh = $this->getCacheBloodRh();
 
 
         $data = [
@@ -350,14 +361,14 @@ class DangKyKhamService
             "GENDER_ID" => $this->params->request->genderId, // id giới tính 
             "DOB" => $this->params->request->dob, // ngày sinh
             // "IS_HAS_NOT_DAY_DOB" => 0, 
-            "NATIONAL_CODE" => $dataNational->national_code ?? "", // quốc gia 
-            "NATIONAL_NAME" => $dataNational->national_name ?? "", // quốc gia 
-            "ETHNIC_CODE" => $dataEthnic->ethnic_code ?? "", // dân tộc 
-            "ETHNIC_NAME" => $dataEthnic->ethnic_name ?? "", // dân tộc
-            "PROVINCE_CODE" => $dataProvince->province_code ?? "", // tỉnh 
-            "PROVINCE_NAME" => $dataProvince->province_name ?? "", // tỉnh 
-            "COMMUNE_CODE" => $dataCommune->commune_code ?? "", // xã 
-            "COMMUNE_NAME" => $dataCommune->commune_name ?? "", //xã
+            "NATIONAL_CODE" => $this->dataNational->national_code ?? "", // quốc gia 
+            "NATIONAL_NAME" => $this->dataNational->national_name ?? "", // quốc gia 
+            "ETHNIC_CODE" => $this->dataEthnic->ethnic_code ?? "", // dân tộc 
+            "ETHNIC_NAME" => $this->dataEthnic->ethnic_name ?? "", // dân tộc
+            "PROVINCE_CODE" => $this->dataProvince->province_code ?? "", // tỉnh 
+            "PROVINCE_NAME" => $this->dataProvince->province_name ?? "", // tỉnh 
+            "COMMUNE_CODE" => $this->dataCommune->commune_code ?? "", // xã 
+            "COMMUNE_NAME" => $this->dataCommune->commune_name ?? "", //xã
             "ADDRESS" => $this->params->request->address ?? "", // địa chỉ phần liên hệ
             "HT_ADDRESS" => $this->params->request->htAddress ?? null, // địa chỉ hiện tại
             "PHONE" => $this->params->request->phone ?? null, // số điện thoại phần liên hệ
@@ -367,14 +378,14 @@ class DangKyKhamService
             // "RELATIVE_CMND_NUMBER" => $this->params->request->relativeCmndNumber, // cmnd phần người thân, 9 số
             // "RELATIVE_MOBILE" => $this->params->request->phone, // lấy điện thoại phần liên hệ 
             "RELATIVE_PHONE" => $this->params->request->relativePhone ?? "", // điện thoại phần người thân
-            "CAREER_CODE" => $dataCareer->career_code ?? "", // nghề nghiệp
-            "CAREER_NAME" => $dataCareer->career_name ?? "", // nghề nghiệp
+            "CAREER_CODE" => $this->dataCareer->career_code ?? "", // nghề nghiệp
+            "CAREER_NAME" => $this->dataCareer->career_name ?? "", // nghề nghiệp
             "CAREER_ID" => $this->params->request->careerId, // id nghề nghiệp
             // "WORK_PLACE_ID" => $this->params->request->workPlaceId, // id nơi làm việc hoặc ép số workPlaceId nếu tìm được thông tin bệnh nhân
             "WORK_PLACE" => $this->params->request->workPlace ?? null, // nơi làm việc nếu tự gõ hoặc workPlace nếu tìm được thông tin bệnh nhân
             "BRANCH_ID" => $this->branchIdRoomIdMacDinh, // id chi nhánh, lấy từ tài khoản đang đăng nhập
-            // "BLOOD_ABO_CODE" => $dataBloodAbo->blood_abo_code ?? "", // "" hoặc code nhóm máu phần mở rộng
-            // "BLOOD_RH_CODE" => $dataBloodRh->blood_rh_code ?? "", // "" hoặc code Rh phần mở rộng
+            // "BLOOD_ABO_CODE" => $this->dataBloodAbo->blood_abo_code ?? "", // "" hoặc code nhóm máu phần mở rộng
+            // "BLOOD_RH_CODE" => $this->dataBloodRh->blood_rh_code ?? "", // "" hoặc code Rh phần mở rộng
             "CCCD_NUMBER" => $this->params->request->cccdNumber ?? null, // số cccd phần thông tin khác, 12 số k được trùng
             "CCCD_DATE" => $this->params->request->cccdDate ?? null, // ngày cấp cccd phần thông tin khác
             "CCCD_PLACE" => $this->params->request->cccdPlace ?? null, // nơi cấp cccd phần thông tin khác
@@ -468,7 +479,7 @@ class DangKyKhamService
     private function getServiceReqDetails()
     {
         $serviceReqDetails = [];
-        foreach ($this->params->request->serviceReqDetails ?? [] as $key => $item) {
+        foreach (($this->params->request->serviceReqDetails ?? []) as $key => $item) {
             $hasServiceRoom = $this->checkHasServiceRoom($item);
             if (!$hasServiceRoom) {
                 throw new \Exception('Phòng và dịch vụ công khám đã chọn không khớp.');
@@ -512,6 +523,25 @@ class DangKyKhamService
         }
         return $serviceReqDetails;
     }
+    private function getRawBody()
+    {
+        // đã bắt lỗi trong getHisPatient getHisTreatment getHisPatientTypeAlter
+        $isDangKyKham = !empty($this->params->request->serviceReqDetails); // đăng ký khám khi có gửi dịch vụ, ngược lại là cập nhật hoặc đăng ký thông tin
+        if ($isDangKyKham) {
+            try {
+                $rawBody = $this->getRawBodyDangKyKham();
+            } catch (\Throwable $e) {
+                throw new \Exception('Có lỗi khi tạo thông tin cho việc đăng ký khám.');
+            }
+        } else {
+            try {
+                $rawBody = $this->getRawBodyDangKyThongTin();
+            } catch (\Throwable $e) {
+                throw new \Exception('Có lỗi khi tạo thông tin cho việc đăng ký/cập nhật thông tin bệnh nhân.');
+            }
+        }
+        return $rawBody;
+    }
     private function getRawBodyDangKyKham()
     {
         // đã bắt lỗi trong getHisPatient getHisTreatment getHisPatientTypeAlter
@@ -519,99 +549,135 @@ class DangKyKhamService
         $hisTreatment = $this->getHisTreatment();
         $hisPatientTypeAlter = $this->getHisPatientTypeAlter();
         $serviceReqDetails = $this->getServiceReqDetails();
-        try {
-            $rawBody = [
-                "CommonParam" => [
-                    "Messages" => [],
-                    "BugCodes" => [],
-                    "MessageCodes" => [],
-                    "Start" => null,
-                    "Limit" => null,
-                    "Count" => null,
-                    "ModuleCode" => null,
-                    "LanguageCode" => "VI",
-                    "Now" => 0,
-                    "HasException" => false
+        $rawBody = [
+            "CommonParam" => [
+                "Messages" => [],
+                "BugCodes" => [],
+                "MessageCodes" => [],
+                "Start" => null,
+                "Limit" => null,
+                "Count" => null,
+                "ModuleCode" => null,
+                "LanguageCode" => "VI",
+                "Now" => 0,
+                "HasException" => false
+            ],
+            "ApiData" => [
+                "HisPatientProfile" => [
+                    "HisPatient" => $hisPatient, // mảng hisPatient
+                    "HisTreatment" => $hisTreatment, // mảng hisTreatment
+                    "HisPatientTypeAlter" => $hisPatientTypeAlter, // mảng hisPatientTyeAlter
+                    "DepartmentId" => $this->departmentIdRoomIdMacDinh, // id khoa của phòng đang chọn hiện tại
+                    "CardCode" => null,
+                    "CardServiceCode" => null,
+                    "BankCardCode" => null,
+                    "TreatmentTime" => $this->params->request->thoiGianYeuCauKhac, // thời gian phần yêu cầu khác
+                    "ProvinceCode" => $this->dataProvince->province_code ?? "", // tỉnh 
+                    "DistrictCode" => null,
+                    "RequestRoomId" => 476, // roomId phòng đang chọn hiện tại
+                    "IsChronic" => $this->params->request->isChronic ?? false, // Mãn tính phần yêu cầu khác
+                    "ImgBhytData" => null,
+                    "ImgAvatarData" => null,
+                    "ImgCmndBeforeData" => null,
+                    "ImgCmndAfterData" => null,
+                    "ImgTransferInData" => null
                 ],
-                "ApiData" => [
-                    "HisPatientProfile" => [
-                        "HisPatient" => $hisPatient, // mảng hisPatient
-                        "HisTreatment" => $hisTreatment, // mảng hisTreatment
-                        "HisPatientTypeAlter" => $hisPatientTypeAlter, // mảng hisPatientTyeAlter
-                        "DepartmentId" => $this->departmentIdRoomIdMacDinh, // id khoa của phòng đang chọn hiện tại
-                        "CardCode" => null,
-                        "CardServiceCode" => null,
-                        "BankCardCode" => null,
-                        "TreatmentTime" => $this->params->request->thoiGianYeuCauKhac, // thời gian phần yêu cầu khác
-                        "ProvinceCode" => "91", // tỉnh
-                        "DistrictCode" => null,
-                        "RequestRoomId" => 476, // roomId phòng đang chọn hiện tại
-                        // "IsChronic" => $this->params->request->isChronic ?? false, // Mãn tính phần yêu cầu khác
-                        "ImgBhytData" => null,
-                        "ImgAvatarData" => null,
-                        "ImgCmndBeforeData" => null,
-                        "ImgCmndAfterData" => null,
-                        "ImgTransferInData" => null
-                    ],
-                    "AccountBookId" => null,
-                    "PayFormId" => null,
-                    "TransNumOrder" => null,
-                    "CashierLoginName" => null,
-                    "CashierUserName" => null,
-                    "CashierWorkingRoomId" => null,
-                    "IsAutoCreateBillForNonBhyt" => false,
-                    "IsAutoCreateDepositForNonBhyt" => false,
-                    "IsUsingEpayment" => false,
-                    "InstructionTime" => $this->params->request->thoiGianYeuCauKhac, // thời gian phần yêu cầu khác
-                    "ServiceReqDetails" =>  $serviceReqDetails, // Lặp qua từng hàng phòng khám đang chọn (là phần mảng ids để gọi api lấy dịch vụ khám) => mỗi phần tử ở dưới tương ứng với  1 phòng
+                "AccountBookId" => null,
+                "PayFormId" => null,
+                "TransNumOrder" => null,
+                "CashierLoginName" => null,
+                "CashierUserName" => null,
+                "CashierWorkingRoomId" => null,
+                "IsAutoCreateBillForNonBhyt" => false,
+                "IsAutoCreateDepositForNonBhyt" => false,
+                "IsUsingEpayment" => false,
+                "InstructionTime" => $this->params->request->thoiGianYeuCauKhac, // thời gian phần yêu cầu khác
+                "ServiceReqDetails" =>  $serviceReqDetails, // Lặp qua từng hàng phòng khám đang chọn (là phần mảng ids để gọi api lấy dịch vụ khám) => mỗi phần tử ở dưới tương ứng với  1 phòng
 
-                    "ExecuteGroupId" => null,
-                    // "Priority" => $this->params->request->priority ?? 0, // ưu tiên phần yêu cầu khác
-                    "PriorityTypeId" => null, // Id loại ưu tiên
-                    // "IsNotRequireFee" => $this->params->request->isNotRequireFee ?? null, // check thu sau = 1
-                    "IsNoExecute" => false,
-                    "IsEmergency" => $this->params->request->isEmergency ?? false, // cấp cứu
-                    "IsInformResultBySms" => false,
-                    "ManualRequestRoomId" => false,
-                    "SessionCode" => null,
-                    "InstructionTimes" => null,
-                    "TrackingInfos" => null,
-                    // "Note" => $this->params->request->note ?? "", // ghi chú phần yêu cầu khác
-                    "IsExamOnline" => false,
-                    "UseTimes" => null,
-                    "NumOrder" => null,
-                    "Id" => null,
-                    "ParentServiceReqId" => null,
-                    "IcdText" => null,
-                    "IcdCode" => null,
-                    "IcdName" => null,
-                    "IcdCauseCode" => null,
-                    "TraditionalIcdCode" => null,
-                    "TraditionalIcdName" => null,
-                    "TraditionalIcdSubCode" => null,
-                    "TraditionalIcdText" => null,
-                    "IcdCauseName" => null,
-                    "IcdSubCode" => null,
-                    "ProvisionalDiagnosis" => null,
-                    "Description" => null,
-                    "TreatmentId" => 0,
-                    "TrackingId" => null,
-                    "RequestRoomId" => $this->roomIdMacDinh, // roomId phòng đang chọn
-                    "RequestLoginName" => $this->taiKhoanMacDinh['Data']['User']['LoginName'], // người đang đăng nhập
-                    "RequestUserName" => $this->taiKhoanMacDinh['Data']['User']['UserName'], // người đang dăng nhập
-                    "ConsultantLoginName" => null,
-                    "ConsultantUserName" => null,
-                    "KidneyShift" => null,
-                    "MachineId" => null,
-                    "ExpMestTemplateId" => null,
-                    "IsKidney" => false,
-                    "AssignTimeTo" => null
-                ]
-            ];
-            return $rawBody;
-        } catch (\Throwable $e) {
-            throw new \Exception('Có lỗi khi tạo thông tin cho việc đăng ký khám.');
-        }
+                "ExecuteGroupId" => null,
+                // "Priority" => $this->params->request->priority ?? 0, // ưu tiên phần yêu cầu khác
+                "PriorityTypeId" => null, // Id loại ưu tiên
+                // "IsNotRequireFee" => $this->params->request->isNotRequireFee ?? null, // check thu sau = 1
+                "IsNoExecute" => false,
+                "IsEmergency" => ($this->params->request->isEmergency ?? false), // cấp cứu
+                "IsInformResultBySms" => false,
+                "ManualRequestRoomId" => false,
+                "SessionCode" => null,
+                "InstructionTimes" => null,
+                "TrackingInfos" => null,
+                // "Note" => $this->params->request->note ?? "", // ghi chú phần yêu cầu khác
+                "IsExamOnline" => false,
+                "UseTimes" => null,
+                "NumOrder" => null,
+                "Id" => null,
+                "ParentServiceReqId" => null,
+                "IcdText" => null,
+                "IcdCode" => null,
+                "IcdName" => null,
+                "IcdCauseCode" => null,
+                "TraditionalIcdCode" => null,
+                "TraditionalIcdName" => null,
+                "TraditionalIcdSubCode" => null,
+                "TraditionalIcdText" => null,
+                "IcdCauseName" => null,
+                "IcdSubCode" => null,
+                "ProvisionalDiagnosis" => null,
+                "Description" => null,
+                "TreatmentId" => 0,
+                "TrackingId" => null,
+                "RequestRoomId" => $this->roomIdMacDinh, // roomId phòng đang chọn
+                "RequestLoginName" => $this->taiKhoanMacDinh['Data']['User']['LoginName'], // người đang đăng nhập
+                "RequestUserName" => $this->taiKhoanMacDinh['Data']['User']['UserName'], // người đang dăng nhập
+                "ConsultantLoginName" => null,
+                "ConsultantUserName" => null,
+                "KidneyShift" => null,
+                "MachineId" => null,
+                "ExpMestTemplateId" => null,
+                "IsKidney" => false,
+                "AssignTimeTo" => null
+            ]
+        ];
+        return $rawBody;
+    }
+    private function getRawBodyDangKyThongTin()
+    {
+        $hisPatient = $this->getHisPatient();
+        $hisTreatment = $this->getHisTreatment();
+        $hisPatientTypeAlter = $this->getHisPatientTypeAlter();
+        $rawBody = [
+            "CommonParam" => [
+                "Messages" => [],
+                "BugCodes" => [],
+                "MessageCodes" => [],
+                "Start" => null,
+                "Limit" => null,
+                "Count" => null,
+                "ModuleCode" => null,
+                "LanguageCode" => "VI",
+                "Now" => 0,
+                "HasException" => false
+            ],
+            "ApiData" => [
+                "HisPatient" => $hisPatient,
+                "HisTreatment" => $hisTreatment,
+                "HisPatientTypeAlter" => $hisPatientTypeAlter,
+                "DepartmentId" => $this->departmentIdRoomIdMacDinh, // id khoa của phòng đang chọn hiện tại,
+                "CardCode" => null,
+                "CardServiceCode" => null,
+                "BankCardCode" => null,
+                "TreatmentTime" => $this->params->request->thoiGianYeuCauKhac, // thời gian phần yêu cầu khác
+                "ProvinceCode" => $this->dataProvince->province_code ?? "", // tỉnh 
+                "DistrictCode" => null,
+                "RequestRoomId" => $this->roomIdMacDinh, // roomId phòng đang chọn
+                "IsChronic" => $this->params->request->isChronic ?? false, // Mãn tính phần yêu cầu khác,
+                "ImgBhytData" => null,
+                "ImgAvatarData" => null,
+                "ImgCmndBeforeData" => null,
+                "ImgCmndAfterData" => null,
+                "ImgTransferInData" => null,
+            ]
+        ];
+        return $rawBody;
     }
     private function tachHoVaTen()
     {
@@ -729,8 +795,8 @@ class DangKyKhamService
         $this->dangKyPhienLamViecChoPhongMacDinh();
         // check dưới 6 tuổi nếu k có đủ thông tin người thân thì ném ra lỗi
         $this->validate();
-        // lấy rawBody api ExamRegister
-        $rawBody = $this->getRawBodyDangKyKham();
+        // lấy rawBody api ExamRegister / RegisterProfile
+        $rawBody = $this->getRawBody();
         // Gọi api đăng ký khám / api đăng ký thông tin
         return $this->callApiMos($rawBody);
     }
