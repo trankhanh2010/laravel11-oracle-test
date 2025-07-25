@@ -30,15 +30,25 @@ class ZaloService
         $this->secretKey = config('database')['connections']['zalo']['zalo_app_secret_key'];
 
         // Lấy data từ  cache
-        $this->zaloConfig =  Cache::remember('zalo_config', now()->addHours(25), function () {
-            return $this->zaloConfigRepository->getToken();
-        });
+        $this->setParams();
+    }
+    public function setParams(){
+        $this->zaloConfig =  $this->getCacheZaloConfig();
         $this->accessToken =  $this->zaloConfig->access_token;
         $this->refreshToken =  $this->zaloConfig->refresh_token;
         // $this->authorizationCode = config('database')['connections']['zalo']['authorization_code'];
         // $this->codeVerifier = config('database')['connections']['zalo']['code_verifier'];
     }
-
+    public function getCacheZaloConfig(){
+        return Cache::remember('zalo_config', now()->addHours(25), function () {
+            return $this->zaloConfigRepository->getToken();
+        });
+    }
+    public function resetParams(){
+            // Xóa cache
+            Cache::forget('zalo_config');
+            $this->setParams();
+    }
     public function callApiSendOtp($phoneNumber, $otpCode){
         $url = 'https://business.openapi.zalo.me/message/template';
 
@@ -82,6 +92,9 @@ class ZaloService
     }
     public function refreshAccessToken($refreshToken = '') // Nhận vào refreshToken để check lúc gọi api setDBTokenOtpZalo => nếu check đúng mới cập nhật   // lấy refreshToken từ param => gọi api => nhận về 1 cặp AT, RT mới => lưu db
     {
+        // Lấy param mới nhất, tránh sai khi local và dev khác Redis nhưng chung 1 DB
+        $this->resetParams();
+
         $url = 'https://oauth.zaloapp.com/v4/oa/access_token';
 
         $data = [

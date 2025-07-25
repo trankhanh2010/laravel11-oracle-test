@@ -352,15 +352,6 @@ Route::get('v1/check-otp-treatment-fee', [OtpController::class, 'verifyOtpTreatm
 Route::get('v1/send-otp-treatment-fee', [OtpController::class, 'sendOtp'])
     ->withoutMiddleware('check_token');
 
-// refresh AccessToken OA zalo
-Route::get('v1/refresh-access-token-otp-zalo', [ZaloController::class, 'refreshAccessTokenOtpZalo']);
-// cập nhật token zalo trong db
-Route::get('v1/set-token-otp-zalo', [ZaloController::class, 'setTokenOtpZalo']);
-// xem chi tiết 1 template zalo
-Route::get('v1/get-info-template-zalo', [ZaloController::class, 'getInfoTemplate']);
-// // Lấy AccessToken và RefreshToken từ đầu
-// Route::get('v1/get-access-and-refresh-token', [OtpController::class, 'getAccessAndRefreshToken'])
-//     ->withoutMiddleware('check_token');
 
 /// MOMO nofity ipn
 // Thông báo trạng thái thanh toán /// k cần token
@@ -443,6 +434,16 @@ Route::group([
     Route::get("v1/log", [LogController::class, "getLog"])->name('.get_log');
     /// Request
     Route::get("v1/get-all-request-name", [BaseApiRequestController::class, "getAllRequestname"])->name('.get_all_request_name');
+
+    // refresh AccessToken OA zalo
+    Route::get('v1/refresh-access-token-otp-zalo', [ZaloController::class, 'refreshAccessTokenOtpZalo']);
+    // cập nhật token zalo trong db
+    Route::get('v1/set-token-otp-zalo', [ZaloController::class, 'setTokenOtpZalo']);
+    // xem chi tiết 1 template zalo
+    Route::get('v1/get-info-template-zalo', [ZaloController::class, 'getInfoTemplate']);
+    // // Lấy AccessToken và RefreshToken từ đầu
+    // Route::get('v1/get-access-and-refresh-token', [OtpController::class, 'getAccessAndRefreshToken'])
+    //     ->withoutMiddleware('check_token');
 });
 Route::group([
     "middleware" => ["check_module:api"]
