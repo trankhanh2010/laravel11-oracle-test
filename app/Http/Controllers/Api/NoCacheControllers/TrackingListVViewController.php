@@ -58,8 +58,11 @@ class TrackingListVViewController extends BaseApiCacheController
             return $this->checkParam();
         }
         switch ($this->tab) {
-            case 'danhSachToDieuTriCu':
+            case 'danhSachToDieuTriCu': // bỏ
                 $data = $this->trackingListVViewService->handleDataBaseGetAllDanhSachToDieuTriCu();
+                break;
+            case 'danhSachTheoKhoaDieuTri':
+                $data = $this->trackingListVViewService->handleDataBaseGetAllDanhSachTheoKhoaDieuTri();
                 break;
             default:
                 $data = $this->trackingListVViewService->handleDataBaseGetAll();

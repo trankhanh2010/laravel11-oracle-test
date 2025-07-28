@@ -2,9 +2,11 @@
 
 namespace App\Services\Zalo;
 
+use App\Jobs\Zalo\SendAccessTokenRefreshTokenZalo;
 use App\Repositories\ZaloConfigRepository;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class ZaloService
 {
@@ -117,6 +119,10 @@ class ZaloService
             $this->accessToken = $responseBody['access_token'];
             $this->refreshToken = $responseBody['refresh_token'];
 
+            Log::error('AccessToken Zalo:'.$responseBody['access_token']);
+            Log::error('RefreshToken Zalo:'.$responseBody['refresh_token']);
+            // chạy job gửi AT RT qua mail
+            // dispatch(new SendAccessTokenRefreshTokenZalo($responseBody['access_token'], $responseBody['refresh_token']));
             $this->setTokenOtpZalo([
                 'access_token' => $this->accessToken,
                 'refresh_token' => $this->refreshToken,

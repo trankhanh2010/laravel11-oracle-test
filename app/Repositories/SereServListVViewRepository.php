@@ -149,6 +149,31 @@ class SereServListVViewRepository
                 "xa_v_his_sere_serv_list.execute_room_name",
             ]);
     }
+    public function applyJoinsNotInTracking()
+    {
+        return $this->sereServListVView
+            ->select([
+                DB::connection('oracle_his')->raw("'sere_serv' || id as key"),
+                "xa_v_his_sere_serv_list.id",
+                "xa_v_his_sere_serv_list.amount",
+                "xa_v_his_sere_serv_list.service_req_id",
+                "xa_v_his_sere_serv_list.service_code",
+                "xa_v_his_sere_serv_list.service_name",
+                "xa_v_his_sere_serv_list.service_unit_name",
+                "xa_v_his_sere_serv_list.service_req_code",
+                "xa_v_his_sere_serv_list.intruction_time",
+                "xa_v_his_sere_serv_list.intruction_date",
+                "xa_v_his_sere_serv_list.vir_intruction_month",
+                "xa_v_his_sere_serv_list.patient_type_name",
+                "xa_v_his_sere_serv_list.request_department_name",
+                "xa_v_his_sere_serv_list.tutorial",
+                "xa_v_his_sere_serv_list.service_type_code",
+                "xa_v_his_sere_serv_list.service_type_name",
+                "xa_v_his_sere_serv_list.service_req_stt_code",
+                "xa_v_his_sere_serv_list.service_req_stt_name",
+                "xa_v_his_sere_serv_list.patient_code",
+            ]);
+    }
     public function applyWithParamSuaChiDinh($query)
     {
         return $query->with([
@@ -440,6 +465,51 @@ class SereServListVViewRepository
                     $result['serviceReqId'] = $firstItem['service_req_id'] ?? null;
                     $result['serviceReqSttCode'] = $firstItem['service_req_stt_code'] ?? null;
                     $result['serviceReqSttName'] = $firstItem['service_req_stt_name'] ?? null;
+                }
+
+                $result['children']  = $groupData($group, $fields);
+                return $result;
+            })->values();
+        };
+
+        return $groupData(collect($data), $snakeFields);
+    }
+    public function applyGroupByFieldNotInTracking($data, $groupByFields = ['intructionDate'])
+    {
+        if (empty($groupByFields)) {
+            return $data;
+        }
+
+        // Chuyển các field thành snake_case trước khi nhóm
+        $fieldMappings = [];
+        foreach ($groupByFields as $field) {
+            $snakeField = Str::snake($field);
+            $fieldMappings[$snakeField] = $field;
+        }
+
+        $snakeFields = array_keys($fieldMappings);
+
+        // Đệ quy nhóm dữ liệu theo thứ tự fields đã convert
+        $groupData = function ($items, $fields) use (&$groupData, $fieldMappings) {
+            if (empty($fields)) {
+                return $items->values(); // Hết field nhóm -> Trả về danh sách gốc
+            }
+
+            $currentField = array_shift($fields);
+            $originalField = $fieldMappings[$currentField];
+
+            return $items->groupBy(function ($item) use ($currentField) {
+                return $item[$currentField] ?? null;
+            })->map(function ($group, $key) use ($fields, $groupData, $originalField, $currentField) {
+                $result = [
+                    $originalField => (string)$key, // Hiển thị tên gốc
+                    'total' => $group->count(),
+                ];
+
+                if ($currentField === 'intruction_date') {
+                    $firstItem = $group->first();
+                    $result['key'] = $firstItem['request_department_name'].$firstItem['intruction_date'];
+                    $result['requestDepartmentName'] = $firstItem['request_department_name'] ?? null;
                 }
 
                 $result['children']  = $groupData($group, $fields);

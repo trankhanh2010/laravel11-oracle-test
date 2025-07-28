@@ -41,6 +41,22 @@ class TrackingListVViewRepository
                 "tracking_creator",
             ]);
     }
+    public function applyJoinsDanhSachTheoKhoaDieuTri()
+    {
+        return $this->trackingListVView
+            ->select([
+                DB::connection('oracle_his')->raw("'tracking' || id as key"),
+                "id",
+                "creator",            
+                "tracking_time",
+                "icd_code",
+                "icd_name",
+                "content",
+                "department_name",
+                "intruction_date",
+                "tracking_creator",
+            ]);
+    }
     public function applyKeywordFilter($query, $keyword)
     {
         return $query->where(function ($query) use ($keyword) {
@@ -105,9 +121,10 @@ class TrackingListVViewRepository
                 return $item[$currentField] ?? null;
             })->map(function ($group, $key) use ($fields, $groupData, $originalField) {
                 return [
+                    'key' => (string)$key,
                     $originalField => (string)$key, // Hiển thị tên gốc
                     'total' => $group->count(),
-                    'data' => $groupData($group, $fields),
+                    'children' => $groupData($group, $fields),
                 ];
             })->values();
         };

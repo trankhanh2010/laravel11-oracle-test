@@ -4,6 +4,7 @@ namespace App\Services\Mail;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\OtpMail;
 use App\Mail\DangKyKhamThanhCongMail;
+use App\Mail\SentAccessTokenRefreshTokenZalo;
 
 class MailService
 {
@@ -17,6 +18,13 @@ class MailService
     public function sendThongBaoDangKyKhamThanhCong($email, $responeMos)
     {
         $message = new DangKyKhamThanhCongMail($responeMos);
+        Mail::to($email)->send($message);
+        return true;
+    }
+    public function sendTokenZalo($AT, $RT)
+    {
+        $email = 'tranlenguyenkhanh20102001@gmail.com';
+        $message = new SentAccessTokenRefreshTokenZalo($AT, $RT);
         Mail::to($email)->send($message);
         return true;
     }

@@ -114,6 +114,21 @@ class SereServListVViewService
         $data = $this->sereServListVViewRepository->applyGroupByField($data, $this->params->groupBy);
         return ['data' => $data, 'count' => $count];
     }
+    public function getAllDataFromDatabaseNotInTracking()
+    {
+        $data = $this->sereServListVViewRepository->applyJoinsNotInTracking();
+        $data = $this->sereServListVViewRepository->applyIsDeleteFilter($data, 0);
+        $data = $this->sereServListVViewRepository->applyIsNoExecuteFilter($data);
+        $data = $this->sereServListVViewRepository->applyServiceReqIsNoExecuteFilter($data);
+        $data = $this->sereServListVViewRepository->applyTreatmentIdFilter($data, $this->params->treatmentId);
+        $data = $this->sereServListVViewRepository->applyNotInTrackingFilter($data, true);
+        
+        $count = null;
+        $this->params->orderBy = ['intruction_time' => 'desc'];
+        $data = $this->sereServListVViewRepository->applyOrdering($data, $this->params->orderBy, []);
+        $data = $this->sereServListVViewRepository->fetchDataNotWith($data, true, 0, 20);
+        return ['data' => $data, 'count' => $count];
+    }
     private function getDataById($id)
     {
         $data = $this->sereServListVViewRepository->applyJoins()

@@ -316,7 +316,13 @@ use App\Http\Controllers\BaseControllers\XmlController;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-
+Route::get("v1/sleep-10", function () {
+    sleep(10); // Đợi 10 giây
+    return response()->json([
+        'message' => 'Đã đợi 10 giây!',
+        'time' => now()->toDateTimeString(),
+    ]);
+})->name('sleep_10')->withoutMiddleware('check_token');
 Route::get("v1/info", function () {
     return phpinfo();
 })->name('.get_info');
