@@ -380,6 +380,7 @@ Route::get("v1/get-column-name", [BaseApiRequestController::class, "getColumnnam
 Route::prefix('v1/guest')->withoutMiddleware('check_token')->group(function () {
     // Đăng ký khám
     Route::post('dang-ky-kham', [DangKyKhamController::class, 'dangKyKham']);
+    Route::post('huy-dang-ky-dich-vu', [DangKyKhamController::class, 'huyDangKyDichVu']);
     Route::get('tim-thong-tin-benh-nhan', [PatientController::class, 'timThongTinBenhNhan']);
     Route::get('lay-thong-tin-benh-nhan', [PatientController::class, 'layThongTinBenhNhan']);
 

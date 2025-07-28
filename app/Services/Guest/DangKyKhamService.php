@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Redis;
 use App\Events\Cache\DeleteCache;
 use App\Models\HIS\PatientType;
+use App\Models\HIS\ServiceReq;
 use App\Models\HIS\ServiceRoom;
 use App\Models\HIS\TreatmentType;
 use App\Models\View\RoomVView;
@@ -38,6 +39,7 @@ class DangKyKhamService
     protected $urlMos;
     protected $apiDangKyKham;
     protected $apiDangKyThongTin;
+    protected $apiDeleteSereServ;
     protected $apiDangNhap;
     protected $apiDangKyPhienLamViec;
     protected $cacheKeySetting;
@@ -54,6 +56,7 @@ class DangKyKhamService
     protected $workPlace;
     protected $bloodAbo;
     protected $bloodRh;
+    protected $serviceReq;
     protected $patientClassify;
     protected $hospitalizeReason;
     protected $roomVView;
@@ -67,6 +70,8 @@ class DangKyKhamService
     protected $dataCareer;
     protected $dataBloodAbo;
     protected $dataBloodRh;
+    protected $dataServiceReqHuyDichVu;
+    protected $totalSereServServiceReqHuyDichVu;
     public function __construct(
         Patient $patient,
         National $national,
@@ -77,6 +82,7 @@ class DangKyKhamService
         WorkPlace $workPlace,
         BloodAbo $bloodAbo,
         BloodRh $bloodRh,
+        ServiceReq $serviceReq,
         PatientClassify $patientClassify,
         HospitalizeReason $hospitalizeReason,
         RoomVView $roomVView,
@@ -89,6 +95,7 @@ class DangKyKhamService
         $this->urlMos = config('database')['connections']['mos']['mos_url'];
         $this->apiDangKyKham = $this->urlMos . '/api/HisServiceReq/ExamRegister';
         $this->apiDangKyThongTin = $this->urlMos . '/api/HisPatient/RegisterProfile';
+        $this->apiDeleteSereServ = $this->urlMos . '/api/HisServiceReq/UpdateSereServ';
         $this->apiDangKyPhienLamViec = $this->urlMos . '/api/Token/UpdateWorkInfo';
         $this->apiDangNhap = $this->urlAcs . '/api/Token/Login';
         $this->cacheKeySetting = "cache_keys:" . "setting"; // Set để lưu danh sách key
@@ -113,6 +120,7 @@ class DangKyKhamService
         $this->workPlace = $workPlace;
         $this->bloodAbo = $bloodAbo;
         $this->bloodRh = $bloodRh;
+        $this->serviceReq = $serviceReq;
         $this->patientClassify = $patientClassify;
         $this->hospitalizeReason = $hospitalizeReason;
         $this->roomVView = $roomVView;
@@ -190,6 +198,12 @@ class DangKyKhamService
     {
         $this->params = $params;
         return $this;
+    }
+    public function setTaiKhoanPhongMacDinh(){
+        // Lấy tài khoản mặc định
+        $this->layTaiKhoanMacDinhChoDangKyKham();
+        // Đăng ký phiên làm việc
+        $this->dangKyPhienLamViecChoPhongMacDinh();
     }
     private function callApiMos($rawBody)
     {
@@ -322,7 +336,7 @@ class DangKyKhamService
             throw new \Exception('Không thể đăng ký phiên làm việc cho phòng mặc định.');
         }
     }
-    private function validate()
+    private function validateDangKyKhamTreDuoi6Tuoi()
     {
         $this->validateTreDuoi6Tuoi();
     }
@@ -789,15 +803,116 @@ class DangKyKhamService
     }
     public function handleDangKyKham()
     {
-        // Lấy tài khoản mặc định
-        $this->layTaiKhoanMacDinhChoDangKyKham();
-        // Đăng ký phiên làm việc
-        $this->dangKyPhienLamViecChoPhongMacDinh();
+        $this->setTaiKhoanPhongMacDinh();
         // check dưới 6 tuổi nếu k có đủ thông tin người thân thì ném ra lỗi
-        $this->validate();
+        $this->validateDangKyKhamTreDuoi6Tuoi();
         // lấy rawBody api ExamRegister / RegisterProfile
         $rawBody = $this->getRawBody();
         // Gọi api đăng ký khám / api đăng ký thông tin
         return $this->callApiMos($rawBody);
+    }
+
+
+    private function validateSereServHuyDangKy()
+    {
+        $this->validateHuyDichVu();
+    }
+    private function validateHuyDichVu()
+    {
+        $this->getDataServiceReqHuyDichVu();
+        if ($this->khongTheHuyDichVu()) {
+            throw new \Exception('Chỉ xóa được các dịch vụ chưa xử lý và do bạn đăng ký từ Website.');
+        }
+    }
+    public function getDataServiceReqHuyDichVu()
+    {
+        $this->dataServiceReqHuyDichVu = $this->serviceReq
+            ->select([
+                'his_service_req.id',
+                'his_service_req.request_loginname',
+                'his_service_req_stt.service_req_stt_code',
+            ])
+            ->leftJoin('his_service_req_stt', 'his_service_req_stt.id', '=', 'his_service_req.service_req_stt_id')
+            ->where(function ($q) {
+                $q->where('his_service_req.is_no_execute', 0)
+                    ->orWhereNull('his_service_req.is_no_execute');
+            })
+            ->find($this->params->request->deleteServiceReqId);
+
+        if (empty($this->dataServiceReqHuyDichVu)) {
+            throw new \Exception('Không tìm thấy y lệnh của dịch vụ cần xóa.');
+        }
+    }
+    public function khongTheHuyDichVu()
+    {
+        if ($this->dataServiceReqHuyDichVu->service_req_stt_code != '01') return true;
+        if ($this->dataServiceReqHuyDichVu->request_loginname != $this->usernameTaiKhoanMacDinh) return true;
+        return false;
+    }
+    private function getRawBodyHuySereServ()
+    {
+        $rawBody = [
+            "CommonParam" => [
+                "Messages" => [],
+                "BugCodes" => [],
+                "MessageCodes" => [],
+                "Start" => null,
+                "Limit" => null,
+                "Count" => null,
+                "ModuleCode" => null,
+                "LanguageCode" => "VI",
+                "Now" => 0,
+                "HasException" => false
+            ],
+            "ApiData" => [
+                "ExecuteRoomId" => $this->roomIdMacDinh,
+                "ServiceReqId" => $this->dataServiceReqHuyDichVu->id,
+                "DeleteSereServIds" => [
+                    $this->params->request->deleteSereServId,
+                ],
+                "InsertServices" => [],
+                "UpdateServices" => [],
+                "InstructionTime" => now()->format('YmdHis'),
+                "UseTime" => null
+            ]
+        ];
+        return $rawBody;
+    }
+    private function getRawBodyHuyDangKyDichVu()
+    {
+        $rawBody = $this->getRawBodyHuySereServ();
+        return $rawBody;
+    }
+    private function callApiDeleteSereServ($rawBody)
+    {
+        try {
+            $response = Http::withHeaders([
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json',
+                'Authorization' => 'Bearer ' . $this->taiKhoanMacDinh['Data']['TokenCode'],
+            ])->post($this->apiDeleteSereServ, $rawBody);
+
+            $data = $response->json();
+        } catch (\Throwable $e) {
+            throw new \Exception("Lỗi gọi API hủy đăng ký dịch vụ!");
+        }
+        if (!$this->getResultCallApiMos($data)) {
+            throw new \Exception("Hủy đăng ký dịch vụ không thành công!");
+        }
+        return $data;
+    }
+    private function callApiMosHuyDangKyDichVu($rawBody)
+    {
+        return $this->callApiDeleteSereServ($rawBody);
+    }
+    public function handleHuyDangKyDichVu()
+    {
+        $this->setTaiKhoanPhongMacDinh();
+        // check xem y lệnh có thực hiện chưa và có phải được tạo bằng tài khoản mặc định hay không
+        $this->validateSereServHuyDangKy();
+        // Lấy rawBody cho api UpdateSereServ
+        $rawBody = $this->getRawBodyHuyDangKyDichVu();
+        // Gọi api delete SereServ
+        return $this->callApiMosHuyDangKyDichVu($rawBody);
     }
 }
