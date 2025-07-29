@@ -185,6 +185,7 @@ class SereServListVViewRepository
     {
         // UnionAll rồi mới addSelect sau
         return $this->sereServListVView->select([
+            DB::raw("'sere_serv_' || xa_v_his_sere_serv_list.id as key"),
             'xa_v_his_sere_serv_list.service_name',
             'xa_v_his_sere_serv_list.service_code',
         ]);
@@ -327,6 +328,7 @@ class SereServListVViewRepository
         try {
             return $this->donVView
                 ->select([
+                    'xa_v_his_don.key',
                     'xa_v_his_don.service_name',
                     'xa_v_his_don.service_code',
                     'xa_v_his_don.CONCENTRA',
@@ -341,6 +343,7 @@ class SereServListVViewRepository
                 ->whereIn('xa_v_his_don.service_type_code', ['TH', 'VT'])
                 ->where('xa_v_his_don.TREATMENT_ID', $treatmentId)
                 ->groupBy(
+                    'xa_v_his_don.key',
                     'xa_v_his_don.service_name',
                     'xa_v_his_don.service_code',
                     'xa_v_his_don.CONCENTRA',

@@ -290,6 +290,9 @@ return [
                 ],
             ],
         ],
+        'thong_bao' => [
+            'danh_sach_email_nhan_thong_bao_loi' =>  explode(',', env('DANH_SACH_EMAIL_NHAN_THONG_BAO_LOI','tranlenguyenkhanh20102001@gmail.com'))
+        ],
     ],
 
     /*
