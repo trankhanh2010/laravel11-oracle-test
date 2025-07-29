@@ -4,6 +4,7 @@ namespace App\Services\Mail;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\OtpMail;
 use App\Mail\DangKyKhamThanhCongMail;
+use App\Mail\SendInvalidRefreshTokenTokenZaloNotification;
 use App\Mail\SentAccessTokenRefreshTokenZalo;
 
 class MailService
@@ -25,6 +26,13 @@ class MailService
     {
         $email = 'tranlenguyenkhanh20102001@gmail.com';
         $message = new SentAccessTokenRefreshTokenZalo($AT, $RT);
+        Mail::to($email)->send($message);
+        return true;
+    }
+    public function sendInvalidRefreshTokenTokenZaloNotification($AT, $RT)
+    {
+        $email = 'tranlenguyenkhanh20102001@gmail.com';
+        $message = new SendInvalidRefreshTokenTokenZaloNotification($AT, $RT);
         Mail::to($email)->send($message);
         return true;
     }

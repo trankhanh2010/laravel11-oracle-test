@@ -6,7 +6,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class SentAccessTokenRefreshTokenZalo extends Mailable
+class SendInvalidRefreshTokenTokenZaloNotification extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -21,8 +21,8 @@ class SentAccessTokenRefreshTokenZalo extends Mailable
 
     public function build()
     {
-        return $this->subject(config('app')['name'].': Cập nhật mới Access Token, Refresh Token Zalo')
-            ->view('emails.sent_AT_RT')
+        return $this->subject(config('app')['name'].': Invalid Refresh Token Zalo')
+            ->view('emails.send_invalid_refresh_token_token_zalo_notification')
             ->with([
                 'AT' => $this->AT,
                 'RT' => $this->RT,

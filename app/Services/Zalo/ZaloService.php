@@ -3,6 +3,7 @@
 namespace App\Services\Zalo;
 
 use App\Jobs\Zalo\SendAccessTokenRefreshTokenZalo;
+use App\Jobs\Zalo\SendInvalidRefreshTokenTokenZaloNotification;
 use App\Repositories\ZaloConfigRepository;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Cache;
@@ -114,6 +115,10 @@ class ZaloService
         ]);
         $responseBody = json_decode($response->getBody(), true);
         // dump($responseBody);
+        // Nếu mã liên quan đến refreshToken thì gửi mail thông báo
+        if (isset($responseBody['error']) && $responseBody['error'] == -14014) {
+            dispatch(new SendInvalidRefreshTokenTokenZaloNotification($this->accessToken, $this->refreshToken));
+        }
         // Nếu thành công, cập nhật db
         if (isset($responseBody['access_token']) && isset($responseBody['refresh_token'])) {
             $this->accessToken = $responseBody['access_token'];
@@ -122,7 +127,7 @@ class ZaloService
             Log::error('AccessToken Zalo:'.$responseBody['access_token']);
             Log::error('RefreshToken Zalo:'.$responseBody['refresh_token']);
             // chạy job gửi AT RT qua mail
-            // dispatch(new SendAccessTokenRefreshTokenZalo($responseBody['access_token'], $responseBody['refresh_token']));
+            dispatch(new SendAccessTokenRefreshTokenZalo($responseBody['access_token'], $responseBody['refresh_token']));
             $this->setTokenOtpZalo([
                 'access_token' => $this->accessToken,
                 'refresh_token' => $this->refreshToken,
