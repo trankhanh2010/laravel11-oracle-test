@@ -384,9 +384,9 @@ class YeuCauKhamClsPtttVViewService
                 $duLieu['xepLoaiBMI'] = xepLoaiBMI($duLieu->virBmi);
 
                 if(!$chiLayKhamBenh){
-                    $dataLichSuKham = $chiLayKhamBenh ? $this->getDataLichSuKham($duLieu->patient_id, $duLieu->treatment_id) : [];
+                    $dataLichSuKham = $this->getDataLichSuKham($duLieu->patient_id, $duLieu->treatment_id);
 
-                    $dataXuTriKham = $chiLayKhamBenh ? $this->getDataXuTriKham($duLieu->patient_id)->toArray() : null;
+                    $dataXuTriKham = $this->getDataXuTriKham($duLieu->patient_id)->toArray();
                     $dataXuTriKham['isMainExam'] = $duLieu->is_main_exam;
                     $dataXuTriKham['isAutoFinished'] = $duLieu->is_auto_finished;
                     $dataXuTriKham['tdlHeinCardNumber'] = $duLieu->tdl_hein_card_number;
