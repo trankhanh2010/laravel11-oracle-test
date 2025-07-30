@@ -198,6 +198,30 @@ class TrackingListVViewService
             }
         }
 
+        // Sau khi thêm mấy phần k có tờ điều trị xong
+        $data = collect($data);
+
+        // Duyệt qua từng department để sort children theo intructionDate giảm dần
+        $data = collect($data)
+            ->sortBy('departmentCode') // Sắp xếp departmentCode tăng dần
+            ->values()
+            ->map(function ($dept) {
+                $dept['children'] = collect($dept['children'])
+                    ->sortByDesc('intructionDate') // Sắp intructionDate giảm dần
+                    ->values()
+                    ->map(function ($instruction) {
+                        $instruction['children'] = collect($instruction['children'])
+                            ->sortByDesc('trackingTime') // Sắp theo trackingTime giảm dần
+                            ->values()
+                            ->toArray();
+                        return $instruction;
+                    })
+                    ->toArray();
+
+                return $dept;
+            })
+            ->toArray();
+
         return $data;
     }
     public function deepToArray($data)

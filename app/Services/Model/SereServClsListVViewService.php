@@ -102,7 +102,7 @@ class SereServClsListVViewService
                 $cacheKey = $this->params->sereServClsListVViewName . '_' . $this->params->param;
                 $cacheKeySet = "cache_keys:" . $this->params->sereServClsListVViewName; // Set để lưu danh sách key
 
-                $data = Cache::remember($cacheKey, 3600, function () {
+                $data = Cache::remember($cacheKey, 30, function () {
                     // **Nén dữ liệu trước khi lưu cache**
                     return base64_encode(gzcompress(serialize($this->getAllDataFromDatabase())));
                 });
