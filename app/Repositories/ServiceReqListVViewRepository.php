@@ -648,6 +648,7 @@ class ServiceReqListVViewRepository
                     case 'service_req_code':
                         $firstItem = $group->first();
                         $result['key'] = ($firstItem['service_req_code'] ?? '') . ($firstItem['service_type_name'] ?? '');
+                        $result['id'] = $firstItem['id'] ?? null;
                         break;
                     default:
                 }
