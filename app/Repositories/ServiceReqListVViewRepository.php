@@ -574,7 +574,7 @@ class ServiceReqListVViewRepository
                     case 'text_du_tru':
                         $firstItem = $group->first();
                         $textNgay = $firstItem['text_du_tru'] ? ' ngày ' . Carbon::createFromFormat('YmdHis', $firstItem['intruction_date'])->format('d/m/Y') : '';
-                        $result['key'] = (string)$key.'_du_tru_'.$firstItem['intruction_date'];
+                        $result['key'] = (string)$key.'_du_tru_'.$firstItem['intruction_date'].$firstItem['tdl_service_name'];
                         $result['textDuTru'] = $firstItem['text_du_tru'] . $textNgay;
                         $result['intructionDate'] = $firstItem['intruction_date'] ?? null;
                         break;
