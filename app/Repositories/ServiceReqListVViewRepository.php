@@ -211,8 +211,6 @@ class ServiceReqListVViewRepository
             ->leftJoin('v_his_room as request_room', 'request_room.id', '=', 'xa_v_his_service_req_list.request_room_id')
 
             ->select([
-                'xa_v_his_service_req_list.id as key',
-
                 'xa_v_his_service_req_list.id',
                 'xa_v_his_service_req_list.is_active',
                 'xa_v_his_service_req_list.is_delete',
@@ -711,6 +709,7 @@ class ServiceReqListVViewRepository
         return $query->join('xa_v_his_don don', 'don.service_req_id', '=', 'xa_v_his_service_req_list.id')
 
             ->addSelect([
+                'don.key',
                 'don.service_name as tdl_service_name', // Lấy MedicineTypeName hoặc MedicineTypeCode
                 DB::connection('oracle_his')->raw("NLSSORT(DON.SERVICE_NAME, 'NLS_SORT = Vietnamese') AS TDL_SERVICE_NAME_SORT"),
                 'don.service_code as tdl_service_code',
@@ -734,6 +733,7 @@ class ServiceReqListVViewRepository
             ->leftJoin('his_service_type service_type', 'service_type.id', '=', 'sere_serv.tdl_service_type_id')
             ->leftJoin('his_service_unit service_unit', 'service_unit.id', '=', 'sere_serv.tdl_service_unit_id')
             ->addSelect([
+                DB::raw("'sere_serv_' || sere_serv.id as key"),
                 'sere_serv.tdl_service_name',
                 DB::connection('oracle_his')->raw("NLSSORT(sere_serv.TDL_SERVICE_NAME, 'NLS_SORT = Vietnamese') AS TDL_SERVICE_NAME_SORT"),
                 'sere_serv.tdl_service_code',
