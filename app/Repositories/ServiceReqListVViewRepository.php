@@ -230,6 +230,10 @@ class ServiceReqListVViewRepository
                 'request_room.room_type_name as request_room_type_name',
 
                 'xa_v_his_service_req_list.num_order as service_req_num_order',
+                'xa_v_his_service_req_list.is_not_show_material_tracking',
+                'xa_v_his_service_req_list.is_not_show_medicine_tracking',
+                'xa_v_his_service_req_list.is_not_show_out_mate_tracking',
+                'xa_v_his_service_req_list.is_not_show_out_medi_tracking',
 
             ]);
     }
@@ -258,6 +262,10 @@ class ServiceReqListVViewRepository
                 'xa_v_his_service_req_list.request_room_id',
                 'xa_v_his_service_req_list.num_order as service_req_num_order',
                 'xa_v_his_service_req_list.prescription_type_id',
+                'xa_v_his_service_req_list.is_not_show_material_tracking',
+                'xa_v_his_service_req_list.is_not_show_medicine_tracking',
+                'xa_v_his_service_req_list.is_not_show_out_mate_tracking',
+                'xa_v_his_service_req_list.is_not_show_out_medi_tracking',
             ]);
     }
     public function applyWithParam($query)
@@ -583,8 +591,13 @@ class ServiceReqListVViewRepository
                     case 'service_req_code':
                         $firstItem = $group->first();
                         $result['key'] = (string)$key.$firstItem['intruction_date'].$firstItem['tdl_service_name'].$firstItem['text_du_tru'];
+                        $result['id'] = $firstItem['id'];
                         $result['serviceReqSttCode'] = $firstItem['service_req_stt_code'];
                         $result['serviceReqSttName'] = $firstItem['service_req_stt_name'];
+                        $result['isNotShowMaterialTracking'] = $firstItem['is_not_show_material_tracking'];
+                        $result['isNotShowMedicineTracking'] = $firstItem['is_not_show_medicine_tracking'];
+                        $result['isNotShowOutMateTracking'] = $firstItem['is_not_show_out_mate_tracking'];
+                        $result['isNotShowOutMediTracking'] = $firstItem['is_not_show_out_medi_tracking'];
                         break;
                     default:
                 }
