@@ -708,7 +708,7 @@ class ServiceReqListVViewRepository
     }
     public function getQueryDonLucThemToDieuTri($query, $treatmentId)
     {
-        return $query->leftJoin('xa_v_his_don don', 'don.service_req_id', '=', 'xa_v_his_service_req_list.id')
+        return $query->join('xa_v_his_don don', 'don.service_req_id', '=', 'xa_v_his_service_req_list.id')
 
             ->addSelect([
                 'don.service_name as tdl_service_name', // Lấy MedicineTypeName hoặc MedicineTypeCode
@@ -730,7 +730,7 @@ class ServiceReqListVViewRepository
     }
     public function getQueryDichVuLucThemToDieuTri($query, $treatmentId)
     {
-        return $query->leftJoin('his_sere_serv sere_serv', 'sere_serv.service_req_id', '=', 'xa_v_his_service_req_list.id')
+        return $query->join('his_sere_serv sere_serv', 'sere_serv.service_req_id', '=', 'xa_v_his_service_req_list.id')
             ->leftJoin('his_service_type service_type', 'service_type.id', '=', 'sere_serv.tdl_service_type_id')
             ->leftJoin('his_service_unit service_unit', 'service_unit.id', '=', 'sere_serv.tdl_service_unit_id')
             ->addSelect([
