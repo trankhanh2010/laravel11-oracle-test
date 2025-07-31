@@ -169,6 +169,7 @@ class YeuCauKhamClsPtttVViewRepository
                     "xa_v_his_yeu_cau_kham_cls_pttt.execute_room_id",
                     "xa_v_his_yeu_cau_kham_cls_pttt.execute_room_code",
                     "xa_v_his_yeu_cau_kham_cls_pttt.execute_room_name",
+                    "xa_v_his_yeu_cau_kham_cls_pttt.execute_department_id",
                     "xa_v_his_yeu_cau_kham_cls_pttt.tdl_treatment_code",
                     "xa_v_his_yeu_cau_kham_cls_pttt.tdl_patient_name",
                     "xa_v_his_yeu_cau_kham_cls_pttt.tdl_patient_code",
