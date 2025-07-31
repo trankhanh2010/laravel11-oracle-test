@@ -296,6 +296,7 @@ class YeuCauKhamClsPtttVViewRepository
                     "his_treatment.tdl_hein_card_number",
                     "his_treatment.tdl_hein_card_from_time",
                     "his_treatment.tdl_hein_card_to_time",
+                    "his_treatment.tdl_patient_address",
 
                     "xa_v_his_yeu_cau_kham_cls_pttt.tracking_id",
                     "xa_v_his_yeu_cau_kham_cls_pttt.advise",

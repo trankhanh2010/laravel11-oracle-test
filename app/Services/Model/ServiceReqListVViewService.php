@@ -143,7 +143,7 @@ class ServiceReqListVViewService
             "tdl_service_name_sort" => 'asc', // dịch vụ num_order = null thì sắp theo tên tiếng Việt tăng dần
         ];
 
-        $data = $this->serviceReqListVViewRepository->applyUnionAllDichVuDon($data); // Join các đơn thuốc - vật tư, dịch vụ và hợp lại
+        $data = $this->serviceReqListVViewRepository->applyUnionAllDichVuDon($data, $this->params->treatmentId); // Join các đơn thuốc - vật tư, dịch vụ và hợp lại
 
         $data = $this->serviceReqListVViewRepository->applyOrderingUnionAll($data, $this->params->orderBy);
         $data = $this->serviceReqListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);
@@ -184,7 +184,7 @@ class ServiceReqListVViewService
             "sort_num_order" => 'asc',
         ];
 
-        $data = $this->serviceReqListVViewRepository->getQueryDonLucThemToDieuTri($data); // Join các đơn thuốc - vật tư 
+        $data = $this->serviceReqListVViewRepository->getQueryDonLucThemToDieuTri($data, $this->params->treatmentId); // Join các đơn thuốc - vật tư 
 
         $data = $this->serviceReqListVViewRepository->applyOrderingUnionAll($data, $this->params->orderBy);
         $data = $this->serviceReqListVViewRepository->fetchData($data, $this->params->getAll, $this->params->start, $this->params->limit);

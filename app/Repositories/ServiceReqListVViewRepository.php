@@ -693,19 +693,19 @@ class ServiceReqListVViewRepository
                 ->get();
         }
     }
-    public function applyUnionAllDichVuDon($query)
+    public function applyUnionAllDichVuDon($query, $treatmentId)
     {
         $queryDichVu = clone $query;
         $queryDon = clone $query;
 
-        $queryDichVu = $this->getQueryDichVuLucThemToDieuTri($queryDichVu);
-        $queryDon = $this->getQueryDonLucThemToDieuTri($queryDon);
+        $queryDichVu = $this->getQueryDichVuLucThemToDieuTri($queryDichVu, $treatmentId);
+        $queryDon = $this->getQueryDonLucThemToDieuTri($queryDon, $treatmentId);
 
         $queryResult =  $queryDichVu->unionall($queryDon); // Hợp đơn với dịch vụ ở trên
 
         return $queryResult;
     }
-    public function getQueryDonLucThemToDieuTri($query)
+    public function getQueryDonLucThemToDieuTri($query, $treatmentId)
     {
         return $query->leftJoin('xa_v_his_don don', 'don.service_req_id', '=', 'xa_v_his_service_req_list.id')
 
@@ -721,12 +721,13 @@ class ServiceReqListVViewRepository
                 'don.num_order as sort_num_order',
                 DB::raw("CASE WHEN his_service_req_type.service_req_type_code = 'DT' THEN don.service_type_name || ' dự trù' ELSE NULL END AS text_du_tru"),
             ])
+            ->where('don.treatment_id', $treatmentId)
             ->where('don.is_delete', 0)
             ->whereIn('don.service_type_code', ['TH', 'VT']) // thuốc và vật tư lấy ở dưới rồi hợp lại;
             ->whereIn('his_service_req_type.service_req_type_code', ['DK', 'DT', 'DN']); // đơn
 
     }
-    public function getQueryDichVuLucThemToDieuTri($query)
+    public function getQueryDichVuLucThemToDieuTri($query, $treatmentId)
     {
         return $query->leftJoin('his_sere_serv sere_serv', 'sere_serv.service_req_id', '=', 'xa_v_his_service_req_list.id')
             ->leftJoin('his_service_type service_type', 'service_type.id', '=', 'sere_serv.tdl_service_type_id')
@@ -743,6 +744,7 @@ class ServiceReqListVViewRepository
                 DB::connection('oracle_his')->raw("NULL as sort_num_order"),
                 DB::connection('oracle_his')->raw("NULL as text_du_tru"),
             ])
+            ->where('sere_serv.tdl_treatment_id', $treatmentId)
             ->whereNotIn('service_type.service_type_code', ['TH', 'VT']) // thuốc và vật tư lấy ở dưới rồi hợp lại
             ->whereNotIn('his_service_req_type.service_req_type_code', ['DK', 'DT', 'DN']); // đơn
     }
