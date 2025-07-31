@@ -569,6 +569,10 @@ class ServiceReqListVViewRepository
                     'total' => $group->count(),
                 ];
                 switch ($currentField) {
+                    case 'service_type_name':
+                        $firstItem = $group->first();
+                        $result['key'] = (string)$key.$firstItem['intruction_date'];
+                        break;
                     case 'text_du_tru':
                         $firstItem = $group->first();
                         $textNgay = $firstItem['text_du_tru'] ? ' ngày ' . Carbon::createFromFormat('YmdHis', $firstItem['intruction_date'])->format('d/m/Y') : '';
@@ -578,6 +582,7 @@ class ServiceReqListVViewRepository
                         break;
                     case 'service_req_code':
                         $firstItem = $group->first();
+                        $result['key'] = (string)$key.$firstItem['intruction_date'].$firstItem['tdl_service_name'].$firstItem['text_du_tru'];
                         $result['serviceReqSttCode'] = $firstItem['service_req_stt_code'];
                         $result['serviceReqSttName'] = $firstItem['service_req_stt_name'];
                         break;
