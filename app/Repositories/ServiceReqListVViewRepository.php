@@ -645,6 +645,10 @@ class ServiceReqListVViewRepository
                         $firstItem = $group->first();
                         $result['useTimeDate'] = $firstItem['use_time_date'] ?? null;
                         break;
+                    case 'service_type_name':
+                        $firstItem = $group->first();
+                        $result['key'] = ($firstItem['use_time_date'] ?? '') . ($firstItem['service_type_name'] ?? '');
+                        break;
                     case 'service_req_code':
                         $firstItem = $group->first();
                         $result['key'] = ($firstItem['service_req_code'] ?? '') . ($firstItem['service_type_name'] ?? '');
