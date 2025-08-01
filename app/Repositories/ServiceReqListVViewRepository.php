@@ -592,6 +592,7 @@ class ServiceReqListVViewRepository
                         $firstItem = $group->first();
                         $result['key'] = (string)$key.$firstItem['intruction_date'].$firstItem['tdl_service_name'].$firstItem['text_du_tru'];
                         $result['id'] = $firstItem['id'];
+                        $result['serviceReqTypeCode'] = $firstItem['service_req_type_code'];
                         $result['serviceReqSttCode'] = $firstItem['service_req_stt_code'];
                         $result['serviceReqSttName'] = $firstItem['service_req_stt_name'];
                         $result['requestRoomTypeCode'] = $firstItem['request_room_type_code'];
