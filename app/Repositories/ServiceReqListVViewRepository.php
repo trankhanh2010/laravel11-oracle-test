@@ -649,11 +649,11 @@ class ServiceReqListVViewRepository
                         break;
                     case 'service_type_name':
                         $firstItem = $group->first();
-                        $result['key'] = ($firstItem['use_time_date'] ?? '') . ($firstItem['service_type_name'] ?? '');
+                        $result['key'] = ($firstItem['use_time'] ?? '') . ($firstItem['service_type_name'] ?? '');
                         break;
                     case 'service_req_code':
                         $firstItem = $group->first();
-                        $result['key'] = ($firstItem['service_req_code'] ?? '') . ($firstItem['service_type_name'] ?? '');
+                        $result['key'] = ($firstItem['service_req_code'] ?? '') . ($firstItem['service_type_name'] ?? ''). ($firstItem['use_time'] ?? '');
                         $result['id'] = $firstItem['id'] ?? null;
                         break;
                     default:
