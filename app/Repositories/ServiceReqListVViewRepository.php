@@ -594,6 +594,7 @@ class ServiceReqListVViewRepository
                         $result['id'] = $firstItem['id'];
                         $result['serviceReqSttCode'] = $firstItem['service_req_stt_code'];
                         $result['serviceReqSttName'] = $firstItem['service_req_stt_name'];
+                        $result['requestRoomTypeCode'] = $firstItem['request_room_type_code'];
                         $result['isNotShowMaterialTracking'] = $firstItem['is_not_show_material_tracking'];
                         $result['isNotShowMedicineTracking'] = $firstItem['is_not_show_medicine_tracking'];
                         $result['isNotShowOutMateTracking'] = $firstItem['is_not_show_out_mate_tracking'];
