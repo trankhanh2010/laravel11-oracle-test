@@ -72,31 +72,33 @@ class PatientController extends BaseApiCacheController
         if (!empty($dataListPatient['data'])) {
             $data = $dataListPatient['data'][0] ?? [];
             // Thêm tham số vào service
-            if(empty($data)){
+            if (empty($data)) {
                 $data = null;
-            }else{
-            $patientCode = $data->patient_code;
-            $this->otpDTO = new OtpDTO($patientCode,);
-            $this->otpService->withParams($this->otpDTO);
+            } else {
+                $patientCode = $data->patient_code;
+                $this->otpDTO = new OtpDTO($patientCode,);
+                $this->otpService->withParams($this->otpDTO);
 
-            // Gọi OtpService để xác thực OTP
-            $otpVerified = $this->otpService->isVerified();
-            $paramReturn[$this->verifyOtpName] = $otpVerified;
-            if (!$otpVerified) {
-                // Hàm để giữ 2 ký tự đầu và cuối, còn lại thay bằng dấu *
-                function maskPhone($value)
-                {
-                    if (strlen($value) > 6) {
-                        return substr($value, 0, 3) . str_repeat('*', strlen($value) - 6) . substr($value, -3);
+                // Gọi OtpService để xác thực OTP
+                $otpVerified = $this->otpService->isVerified();
+                $paramReturn[$this->verifyOtpName] = $otpVerified;
+                if (!$otpVerified) {
+                    // Hàm để giữ 2 ký tự đầu và cuối, còn lại thay bằng dấu *
+                    function maskPhone($value)
+                    {
+                        if (strlen($value) > 6) {
+                            return substr($value, 0, 3) . str_repeat('*', strlen($value) - 6) . substr($value, -3);
+                        }
+                        return $value; // Nếu độ dài < 6, không thay đổi
                     }
-                    return $value; // Nếu độ dài < 6, không thay đổi
+                    // Lọc các trường cần thiết từ mỗi item trong data
+                    $filteredData  = [
+                        'phone' => maskPhone(convertPhoneToLocalFormat($data->phone)),
+                    ];
+                    $data = $filteredData;
+                } else {
+                    $data = $dataListPatient['data'];
                 }
-                // Lọc các trường cần thiết từ mỗi item trong data
-                $filteredData  = [
-                    'phone' => maskPhone(convertPhoneToLocalFormat($data->phone)),
-                ];
-                $data = $filteredData;
-            }
             }
         }
         return returnDataSuccess($paramReturn, $data);
