@@ -8,6 +8,7 @@ use App\Events\Elastic\ServiceReq\InsertServiceReqIndex;
 use App\Events\Elastic\DeleteIndex;
 use Illuminate\Support\Facades\Cache;
 use App\Repositories\PatientRepository;
+use Illuminate\Support\Facades\Redis;
 
 class PatientService
 {
@@ -52,8 +53,16 @@ class PatientService
     }
     public function handleDataBaseGetAllTimThongTinBenhNhan()
     {
+        // Cache tạm 5 phút
         try {
-            return $this->getAllDataFromDatabaseTimThongTinBenhNhan();
+            $cacheKey = $this->params->patientName . '_' . $this->params->param;
+            $cacheKeySet = "cache_keys:" . $this->params->patientName; // Set để lưu danh sách key
+            $data = Cache::remember($cacheKey, 300, function () {
+                return $this->getAllDataFromDatabaseTimThongTinBenhNhan();
+            });
+            // Lưu key vào Redis Set để dễ xóa sau này
+            Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
+            return $data;
         } catch (\Throwable $e) {
             return writeAndThrowError(config('params')['db_service']['error']['patient'], $e);
         }

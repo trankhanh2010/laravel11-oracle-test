@@ -4,12 +4,9 @@ namespace App\Http\Controllers\Api\ValidateControllers;
 
 use App\DTOs\OtpDTO;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Otp\SendOtpRequest;
 use App\Services\Auth\OtpService;
 use App\Services\Zalo\ZaloService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Redis;
 
 class OtpController extends Controller
 {
@@ -27,6 +24,7 @@ class OtpController extends Controller
     protected $ipAddress;
     protected $inputOtp;
     protected $registerPhone;
+    protected $paramTimKiemThongTin;
     protected $isLimitTotalRequestSendOtp; // Nhớ gọi sau khi đã truyền parasm vào OtpService
     protected $isLimitTotalRequestVerifyOtp; // Nhớ gọi sau khi đã truyền parasm vào OtpService
     public function __construct(
@@ -48,6 +46,7 @@ class OtpController extends Controller
         $this->ipAddress = request()->ip(); // Lấy địa chỉ IP
         $this->inputOtp = $request->input('otp'); // Lấy mã OTP sẽ xác thực từ request
         $this->registerPhone = $request->input('registerPhone'); // Lấy mã OTP sẽ xác thực từ request
+        $this->paramTimKiemThongTin = request()->input('paramTimKiemThongTin');
 
         $this->setParam();
     }
@@ -85,6 +84,10 @@ class OtpController extends Controller
             case 'register-phone-zalo':
                 return $this->sendOtpZaloRegisterPhone();
             default:
+                // Theo số điện thoại / cccd lúc tìm kiếm thông tin => tìm ds bệnh nhân => có => lấy sđt của phần tử đầu tiên
+                if(!empty($this->paramTimKiemThongTin)){
+                    return $this->sendOtpZaloPhoneTimKiemBenhNhan();
+                }
                 return returnDataSuccess([], [
                     'success' => false,
                 ]);
@@ -367,6 +370,30 @@ class OtpController extends Controller
             $data = false;
         } else {
             $data = $this->otpService->createAndSendOtpZaloRegisterPhone();
+            if ($data) {
+                $this->otpService->clearCacheTotalRequestVerifyOtp(); // Nếu gửi mã OTP mới thì xóa cache limitRequestVerifyOtp
+                $this->otpService->addTotalRequestSendOtp(); // Nếu gửi mã OTP thì tăng tổng lên 1
+            }
+        }
+        return returnDataSuccess(
+            [],
+            array_merge(
+                [
+                    'success' => $data,
+                    'limitRequest' => $this->isLimitTotalRequestSendOtp,
+                ],
+                $this->getDataInfoResponse()
+            )
+        );
+    }
+
+    public function sendOtpZaloPhoneTimKiemBenhNhan()
+    {
+        // Đạt giới hạn thì k gửi otp
+        if ($this->isLimitTotalRequestSendOtp) {
+            $data = false;
+        } else {
+            $data = $this->otpService->createAndSendOtpZaloPhoneTimKiemBenhNhan();
             if ($data) {
                 $this->otpService->clearCacheTotalRequestVerifyOtp(); // Nếu gửi mã OTP mới thì xóa cache limitRequestVerifyOtp
                 $this->otpService->addTotalRequestSendOtp(); // Nếu gửi mã OTP thì tăng tổng lên 1

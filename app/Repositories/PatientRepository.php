@@ -36,6 +36,7 @@ class PatientRepository
                 'his_patient.address',
                 'his_patient.work_place',
                 'his_work_place.work_place_name',
+                'his_patient.phone',
             );
     }
     public function applyJoinsLayThongTinBenhNhan()
@@ -193,47 +194,52 @@ class PatientRepository
                 ->get();
         }
     }
-function mergeSdaIdsToPatient($patient)
-{
-    // Ép kiểu nếu là object
-    $isObject = is_object($patient);
+    function mergeSdaIdsToPatient($patient)
+    {
+        try {
 
-    $communeCode = $isObject ? $patient->commune_code : $patient['commune_code'];
-    $provinceCode = $isObject ? $patient->province_code : $patient['province_code'];
-    $ethnicCode = $isObject ? $patient->ethnic_code : $patient['ethnic_code'];
-    $nationalCode = $isObject ? $patient->national_code : $patient['national_code'];
-    // Truy vấn từ SDA
-    $communeId = DB::connection('oracle_sda')->table('sda_commune')
-        ->where('commune_code', $communeCode)
-        ->value('id');
+            // Ép kiểu nếu là object
+            $isObject = is_object($patient);
 
-    $provinceId = DB::connection('oracle_sda')->table('sda_province')
-        ->where('province_code', $provinceCode)
-        ->value('id');
+            $communeCode = $isObject ? $patient->commune_code : $patient['commune_code'];
+            $provinceCode = $isObject ? $patient->province_code : $patient['province_code'];
+            $ethnicCode = $isObject ? $patient->ethnic_code : $patient['ethnic_code'];
+            $nationalCode = $isObject ? $patient->national_code : $patient['national_code'];
+            // Truy vấn từ SDA
+            $communeId = DB::connection('oracle_sda')->table('sda_commune')
+                ->where('commune_code', $communeCode)
+                ->value('id');
 
-    $ethnicId = DB::connection('oracle_sda')->table('sda_ethnic')
-        ->where('ethnic_code', $ethnicCode)
-        ->value('id');
+            $provinceId = DB::connection('oracle_sda')->table('sda_province')
+                ->where('province_code', $provinceCode)
+                ->value('id');
 
-    $nationalId = DB::connection('oracle_sda')->table('sda_national')
-        ->where('national_code', $nationalCode)
-        ->value('id');
+            $ethnicId = DB::connection('oracle_sda')->table('sda_ethnic')
+                ->where('ethnic_code', $ethnicCode)
+                ->value('id');
 
-    // Gán ngược lại
-    if ($isObject) {
-        $patient->commune_id = $communeId;
-        $patient->province_id = $provinceId;
-        $patient->ethnic_id = $ethnicId;
-        $patient->national_id = $nationalId;
-    } else {
-        $patient['commune_id'] = $communeId;
-        $patient['province_id'] = $provinceId;
-        $patient['ethnic_id'] = $ethnicId;
-        $patient['national_id'] = $nationalId;
+            $nationalId = DB::connection('oracle_sda')->table('sda_national')
+                ->where('national_code', $nationalCode)
+                ->value('id');
+
+            // Gán ngược lại
+            if ($isObject) {
+                $patient->commune_id = $communeId;
+                $patient->province_id = $provinceId;
+                $patient->ethnic_id = $ethnicId;
+                $patient->national_id = $nationalId;
+            } else {
+                $patient['commune_id'] = $communeId;
+                $patient['province_id'] = $provinceId;
+                $patient['ethnic_id'] = $ethnicId;
+                $patient['national_id'] = $nationalId;
+            }
+
+            return $patient;
+        } catch (\Throwable $e) {
+            return $patient;
+        }
     }
-
-    return $patient;
-}
 
 
     public function getById($id)

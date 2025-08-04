@@ -3,15 +3,18 @@
 namespace App\Services\Auth;
 
 use App\DTOs\OtpDTO;
+use App\DTOs\PatientDTO;
 use App\Events\Cache\DeleteCache;
 use App\Models\HIS\Patient;
 use App\Repositories\PatientRepository;
 use App\Services\Mail\MailService;
+use App\Services\Model\PatientService;
 use App\Services\Sms\ESmsService;
 use App\Services\Sms\SpeedSmsService;
 use Illuminate\Support\Facades\Cache;
 // use App\Services\Sms\TwilioService;
 use App\Services\Zalo\ZaloService;
+use Exception;
 use Illuminate\Support\Facades\Redis;
 
 class OtpService
@@ -24,6 +27,8 @@ class OtpService
     protected $speedSmsService;
     protected $mailService;
     protected $zaloSerivce;
+    protected $patientService;
+    protected $patientDTO;
     protected $patientRepository;
     protected $patient;
     protected $otpTTL;
@@ -39,6 +44,7 @@ class OtpService
     protected $relativeMobile;
     protected $patientName;
     protected $patientCode;
+    protected $phoneTimKiemThongTin;
     protected $otpCode;
     protected $cacheKeySaveOtp;
     protected $cacheKeyVerifyPaitent;
@@ -51,6 +57,7 @@ class OtpService
         SpeedSmsService $speedSmsService,
         MailService $mailService,
         ZaloService $zaloSerivce,
+        PatientService $patientService,
         PatientRepository $patientRepository,
         Patient $patient,
     ) {
@@ -59,6 +66,7 @@ class OtpService
         $this->speedSmsService = $speedSmsService;
         $this->mailService = $mailService;
         $this->zaloSerivce = $zaloSerivce;
+        $this->patientService = $patientService;
         $this->patientRepository = $patientRepository;
         $this->patient = $patient;
 
@@ -86,8 +94,9 @@ class OtpService
         $this->setLastOtpSentTo(); // cập nhật nơi nhận otp của lần gọi api này
         return $this;
     }
-    public function setParamsPatient(){
-        if(!empty($this->patientCode)){
+    public function setParamsPatient()
+    {
+        if (!empty($this->patientCode)) {
             // lúc xác thực khi tìm dữ liệu cũ
             $this->dataPatient = $this->getDataPatient($this->patientCode); // Lấy data patient
             $this->validatePatientCode();
@@ -97,9 +106,13 @@ class OtpService
             $this->relativePhone = convertPhoneTo84Format($this->dataPatient->relative_phone ?? null); // chuyển về dạng 84 để xử lý 
             $this->relativeMobile = convertPhoneTo84Format($this->dataPatient->relative_mobile ?? null); // chuyển về dạng 84 để xử lý
             $this->patientName = $this->dataPatient->vir_patient_name ?? '';
-        }else{
+        } else {
             // lúc đăng ký mới
             $this->registerPhone = convertPhoneTo84Format($this->params->registerPhone);
+            // lúc tìm kiếm theo sđt/cccd
+            if (empty($this->registerPhone)) {
+                $this->getPhoneTimKiemThongTin();
+            }
         }
     }
     public function validatePatientCode()
@@ -142,10 +155,89 @@ class OtpService
                 $value = $this->registerPhone;
                 break;
             default:
-                $value = '';
+                $value = $this->phoneTimKiemThongTin;
                 break;
         }
         $this->lastOtpSentTo = $value;
+    }
+    public function getPhoneTimKiemThongTin()
+    {
+        $this->phoneTimKiemThongTin = null;
+        if (empty(request()->input('paramTimKiemThongTin'))) {
+            return;
+        } // không có thông tin tìm kiếm => ngắt luôn
+
+        $paramTimKiemThongTin = $this->getParamTimKiemThongTin();
+        if (empty($paramTimKiemThongTin['phone']) && empty($paramTimKiemThongTin['cccdNumber'])) {
+            return;
+        }
+
+        $this->patientDTO = new PatientDTO(
+            'patient',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            true,
+            0,
+            20,
+            '',
+            '',
+            '',
+            '',
+            request()->input('paramTimKiemThongTin'),
+            '',
+            $paramTimKiemThongTin['phone'],
+            $paramTimKiemThongTin['cccdNumber'],
+            '',
+        );
+        $this->patientService->withParams($this->patientDTO);
+        $dataTimKiemThongTinList = $this->patientService->handleDataBaseGetAllTimThongTinBenhNhan();
+        $dataTimKiemThongTin = $dataTimKiemThongTinList['data'];
+        if (empty($dataTimKiemThongTin)) {
+            return;
+        } // list trống => ngắt
+        $data = $dataTimKiemThongTin[0] ?? [];
+        $phone = convertPhoneTo84Format($data->phone ?? null);
+        if (empty($phone)) {
+            return;
+        }
+        $this->phoneTimKiemThongTin = $phone;
+    }
+    public function getParamTimKiemThongTin()
+    {
+        $data = [
+            'phone' => null,
+            'cccdNumber' => null,
+        ];
+        // Thay thế dấu + và / nếu bị thay đổi thành khoảng trắng hoặc các ký tự khác
+        $encodedParam  = str_replace([' ', '+', '/'], ['+', '+', '/'], request()->input('paramTimKiemThongTin'));
+        // Lọc bỏ các đoạn comment kiểu /* ... */
+        $cleanBase64Decode = preg_replace('#/\*.*?\*/#s', '', base64_decode($encodedParam));
+
+        $paramRequest = json_decode($cleanBase64Decode, true) ?? null;
+        if (empty($paramRequest)) {
+            return $data;
+        }
+
+        $phone = $paramRequest['ApiData']['Phone'] ?? null;
+        $cccdNumber = $paramRequest['ApiData']['CccdNumber'] ?? null;
+        if ($phone != null) {
+            if (!is_string($phone) || mb_strlen($phone) > 20) {
+                throw new Exception("SĐT không hợp lệ");
+            }
+        }
+        if ($cccdNumber != null) {
+            if (!is_string($cccdNumber) || !preg_match('/^\d{12}$/', $cccdNumber)) {
+                throw new Exception("Số CCCD không hợp lệ");
+            }
+        }
+        return [
+            'phone' => $phone,
+            'cccdNumber' => $cccdNumber,
+        ];
     }
     public function getDataPatient($patientCode)
     {
@@ -155,13 +247,13 @@ class OtpService
     // Trả về key lưu mã otp của patient
     public function getCacheKeySaveOtp()
     {
-        $key = 'otp_patient_' . $this->patientCode. '_register_phone_'.$this->registerPhone; // Lưu thêm để dùng lúc gọi xác thực sđt khi đăng ký mới
+        $key = 'otp_patient_phone_' . ($this->phone ?? $this->phoneTimKiemThongTin) . '_register_phone_' . $this->registerPhone; // Lưu thêm để dùng lúc gọi xác thực sđt khi đăng ký mới
         return $key;
     }
     // Trả về key lưu trạng thái đã xác thực của thiết bị với patient này
     public function getCacheKeyVerifyPaitent()
     {
-        $key = 'OTP_verify_' . ($this->phone ?? $this->registerPhone) . '_' . $this->sanitizedDeviceInfo . '_' . $this->ipAddress; // thay patientCode = phone
+        $key = 'OTP_verify_' . ($this->phone ?? $this->registerPhone ?? $this->phoneTimKiemThongTin) . '_' . $this->sanitizedDeviceInfo . '_' . $this->ipAddress; // thay patientCode = phone
         return $key;
     }
     // Trả về key lưu số lần gọi lấy OTP của thiết bị 
@@ -173,7 +265,7 @@ class OtpService
     // Trả về key lưu số lần xác thực OTP của thiết bị 
     public function getCacheKeyTotalRequestVerifyOtp()
     {
-        $key = 'total_request_verify_otp_' . $this->patientCode; // Tránh key quá dài
+        $key = 'total_request_verify_otp_' . $this->sanitizedDeviceInfo . '_' . $this->ipAddress; // Tránh key quá dài
         return $key;
     }
     // set lại giá trị mã OTP về null
@@ -523,6 +615,25 @@ class OtpService
 
         try {
             $this->zaloSerivce->sendOtp($this->registerPhone, $this->otpCode);
+            // Gửi thành công thì mới tạo cache
+            $this->createCacheSaveOtp();
+            return true;
+        } catch (\Throwable $e) {
+            return false;
+        }
+    }
+    // Gửi qua zalo số điện thoại đầu tiên trong khi tìm kiếm thông tin
+    public function createAndSendOtpZaloPhoneTimKiemBenhNhan()
+    {
+        if (!$this->phoneTimKiemThongTin) {
+            return false;
+        }
+        // clear OTP cũ trước khi gửi OTP mới
+        $this->clearCacheSaveOtp();
+
+        try {
+            // $this->zaloSerivce->sendOtp($this->phoneTimKiemThongTin, $this->otpCode);
+            $this->mailService->sendOtp('ndai6618@gmail.com', $this->otpCode);
             // Gửi thành công thì mới tạo cache
             $this->createCacheSaveOtp();
             return true;
