@@ -62,31 +62,31 @@ class OtpController extends Controller
         switch ($this->method) {
             // Theo mã bệnh nhân
             case 'patient-phone-sms':
-                return $this->sendOtpPhoneTreatmentFee();
+                return $this->otpService->createAndSendOtpPhoneTreatmentFee();
             case 'patient-mobile-sms':
-                return $this->sendOtpMobileTreatmentFee();
+                return $this->otpService->createAndSendOtpMobileTreatmentFee();
             case 'patient-mail':
-                return $this->sendOtpMailTreatmentFee();
+                return $this->otpService->createAndSendOtpMailTreatmentFee();
             case 'patient-phone-zalo':
-                return $this->sendOtpZaloPhoneTreatmentFee();
+                return $this->otpService->createAndSendOtpZaloPhoneTreatmentFee();
             case 'patient-mobile-zalo':
-                return $this->sendOtpZaloMobileTreatmentFee();
+                return $this->otpService->createAndSendOtpZaloMobileTreatmentFee();
             case 'patient-relative-phone-sms':
-                return $this->sendOtpPatientRelativePhoneTreatmentFee();
+                return $this->otpService->createAndSendOtpPatientRelativePhoneTreatmentFee();
             case 'patient-relative-mobile-sms':
-                return $this->sendOtpPatientRelativeMobileTreatmentFee();
+                return $this->otpService->createAndSendOtpPatientRelativeMobileTreatmentFee();
             case 'patient-relative-phone-zalo':
-                return $this->sendOtpZaloPatientRelativePhoneTreatmentFee();
+                return $this->otpService->createAndSendOtpZaloPatientRelativePhoneTreatmentFee();
             case 'patient-relative-mobile-zalo':
-                return $this->sendOtpZaloPatientRelativeMobileTreatmentFee();
+                return $this->otpService->createAndSendOtpZaloPatientRelativeMobileTreatmentFee();
     
             // Theo số điện thoại đăng ký mới
             case 'register-phone-zalo':
-                return $this->sendOtpZaloRegisterPhone();
+                return $this->otpService->createAndSendOtpZaloRegisterPhone();
             default:
                 // Theo số điện thoại / cccd lúc tìm kiếm thông tin => tìm ds bệnh nhân => có => lấy sđt của phần tử đầu tiên
                 if(!empty($this->paramTimKiemThongTin)){
-                    return $this->sendOtpZaloPhoneTimKiemBenhNhan();
+                    return $this->otpService->createAndSendOtpZaloPhoneTimKiemBenhNhan();
                 }
                 return returnDataSuccess([], [
                     'success' => false,
@@ -101,313 +101,14 @@ class OtpController extends Controller
             $this->registerPhone,
         );
         $this->otpService->withParams($this->otpDTO);
-
-        // Gọi function trong OtpService thì phải gọi sau khi truyền params
-        $this->isLimitTotalRequestSendOtp = $this->checkLimitTotalRequestSendOtp($this->otpService->getTotalRequestSendOtp());
-        $this->isLimitTotalRequestVerifyOtp = $this->checkLimitTotalRequestVerifyOtp();
-    }
-    public function checkLimitTotalRequestVerifyOtp()
-    {
-        return $this->otpService->getOrCreateTotalRequestVerifyOtp() > $this->otpMaxRequestsVerifyPerOtp;
-    }
-    public function getTotalRetryVerifyOtp()
-    {
-        return max(0, $this->otpMaxRequestsVerifyPerOtp - $this->otpService->getDataTotalRequestVerifyOtp()); // bé hơn 0 thì trả 0 
-    }
-    public function handleVerifySuccess()
-    {
-        $this->otpService->clearCacheSaveOtp(); // Xóa mã OTP sau khi sử dụng
-        $this->otpService->clearCacheTotalRequestVerifyOtp(); // Nếu xác minh thành công thì xóa cache limitRequestVerifyOtp
-        $this->otpService->clearCacheTotalRequestSendOtp(); // Nếu xác minh thành công thì xóa cache limitRequestSendOtp
-        // Tạo cache lưu trạng thái
-        $this->otpService->createCacheVerifySuccess();
-    }
-    public function verifyOtp()
-    {
-        return $this->otpService->getDataCacheOtp() && $this->otpService->getDataCacheOtp() == $this->inputOtp;
-    }
-    public function getDataInfoResponse()
-    {
-        return [
-            'totalRetryVerify' => $this->getTotalRetryVerifyOtp(),
-            'totalRequestPerDay' => $this->otpService->getTotalRequestSendOtp(),
-            'otpMaxRequestsPerDay' => $this->otpMaxRequestsPerDay,
-            'otpMaxRequestsVerifyPerOtp' => $this->otpMaxRequestsVerifyPerOtp,
-            'otpTTL' => $this->otpTTL,
-        ];
     }
     public function verifyOtpTreatmentFee()
     {
-        $response = array_merge(['limitRequest' => $this->isLimitTotalRequestVerifyOtp], $this->getDataInfoResponse());
-        // Nếu hết lần thử xác thực OTP
-        if ($this->isLimitTotalRequestVerifyOtp) {
-            return returnDataSuccess([], array_merge(['success' => false], $response));
-        }
-        $isVerified = $this->verifyOtp();
-        if ($isVerified) {
-            $this->handleVerifySuccess();
-        }
-        return returnDataSuccess([], array_merge(['success' => $isVerified], $response));
+        return $this->otpService->callApiVerifyOtp($this->inputOtp);
     }
 
     public function checkLimitTotalRequestSendOtp($total)
     {
         return $total >= $this->maxRequestSendOtpOnday;
-    }
-    public function sendOtpPhoneTreatmentFee()
-    {
-        // Đạt giới hạn thì k gửi otp
-        if ($this->isLimitTotalRequestSendOtp) {
-            $data = false;
-        } else {
-            $data = $this->otpService->createAndSendOtpPhoneTreatmentFee();
-            if ($data) {
-                $this->otpService->clearCacheTotalRequestVerifyOtp(); // Nếu gửi mã OTP mới thì xóa cache limitRequestVerifyOtp
-                $this->otpService->addTotalRequestSendOtp(); // Nếu gửi mã OTP thì tăng tổng lên 1
-            }
-        }
-        return returnDataSuccess(
-            [],
-            array_merge(
-                [
-                    'success' => $data,
-                    'limitRequest' => $this->isLimitTotalRequestSendOtp,
-                ],
-                $this->getDataInfoResponse()
-            )
-        );
-    }
-    public function sendOtpMobileTreatmentFee()
-    {
-        // Đạt giới hạn thì k gửi otp
-        if ($this->isLimitTotalRequestSendOtp) {
-            $data = false;
-        } else {
-            $data = $this->otpService->createAndSendOtpMobileTreatmentFee();
-            if ($data) {
-                $this->otpService->clearCacheTotalRequestVerifyOtp(); // Nếu gửi mã OTP mới thì xóa cache limitRequestVerifyOtp
-                $this->otpService->addTotalRequestSendOtp(); // Nếu gửi mã OTP thì tăng tổng lên 1
-            }
-        }
-        return returnDataSuccess(
-            [],
-            array_merge(
-                [
-                    'success' => $data,
-                    'limitRequest' => $this->isLimitTotalRequestSendOtp,
-                ],
-                $this->getDataInfoResponse()
-            )
-        );
-    }
-    public function sendOtpPatientRelativePhoneTreatmentFee()
-    {
-        // Đạt giới hạn thì k gửi otp
-        if ($this->isLimitTotalRequestSendOtp) {
-            $data = false;
-        } else {
-            $data = $this->otpService->createAndSendOtpPatientRelativePhoneTreatmentFee();
-            if ($data) {
-                $this->otpService->clearCacheTotalRequestVerifyOtp(); // Nếu gửi mã OTP mới thì xóa cache limitRequestVerifyOtp
-                $this->otpService->addTotalRequestSendOtp(); // Nếu gửi mã OTP thì tăng tổng lên 1
-            }
-        }
-        return returnDataSuccess(
-            [],
-            array_merge(
-                [
-                    'success' => $data,
-                    'limitRequest' => $this->isLimitTotalRequestSendOtp,
-                ],
-                $this->getDataInfoResponse()
-            )
-        );
-    }
-    public function sendOtpPatientRelativeMobileTreatmentFee()
-    {
-        // Đạt giới hạn thì k gửi otp
-        if ($this->isLimitTotalRequestSendOtp) {
-            $data = false;
-        } else {
-            $data = $this->otpService->createAndSendOtpPatientRelativeMobileTreatmentFee();
-            if ($data) {
-                $this->otpService->clearCacheTotalRequestVerifyOtp(); // Nếu gửi mã OTP mới thì xóa cache limitRequestVerifyOtp
-                $this->otpService->addTotalRequestSendOtp(); // Nếu gửi mã OTP thì tăng tổng lên 1
-            }
-        }
-        return returnDataSuccess(
-            [],
-            array_merge(
-                [
-                    'success' => $data,
-                    'limitRequest' => $this->isLimitTotalRequestSendOtp,
-                ],
-                $this->getDataInfoResponse()
-            )
-        );
-    }
-    public function sendOtpMailTreatmentFee()
-    {
-        // Đạt giới hạn thì k gửi otp
-        if ($this->isLimitTotalRequestSendOtp) {
-            $data = false;
-        } else {
-            $data = $this->otpService->createAndSendOtpMailTreatmentFee();
-            if ($data) {
-                $this->otpService->clearCacheTotalRequestVerifyOtp(); // Nếu gửi mã OTP mới thì xóa cache limitRequestVerifyOtp
-                $this->otpService->addTotalRequestSendOtp(); // Nếu gửi mã OTP thì tăng tổng lên 1
-            }
-        }
-        return returnDataSuccess(
-            [],
-            array_merge(
-                [
-                    'success' => $data,
-                    'limitRequest' => $this->isLimitTotalRequestSendOtp,
-                ],
-                $this->getDataInfoResponse()
-            )
-        );
-    }
-    public function sendOtpZaloPhoneTreatmentFee()
-    {
-        // Đạt giới hạn thì k gửi otp
-        if ($this->isLimitTotalRequestSendOtp) {
-            $data = false;
-        } else {
-            $data = $this->otpService->createAndSendOtpZaloPhoneTreatmentFee();
-            if ($data) {
-                $this->otpService->clearCacheTotalRequestVerifyOtp(); // Nếu gửi mã OTP mới thì xóa cache limitRequestVerifyOtp
-                $this->otpService->addTotalRequestSendOtp(); // Nếu gửi mã OTP thì tăng tổng lên 1
-            }
-        }
-        return returnDataSuccess(
-            [],
-            array_merge(
-                [
-                    'success' => $data,
-                    'limitRequest' => $this->isLimitTotalRequestSendOtp,
-                ],
-                $this->getDataInfoResponse()
-            )
-        );
-    }
-
-    public function sendOtpZaloMobileTreatmentFee()
-    {
-        // Đạt giới hạn thì k gửi otp
-        if ($this->isLimitTotalRequestSendOtp) {
-            $data = false;
-        } else {
-            $data = $this->otpService->createAndSendOtpZaloMobileTreatmentFee();
-            if ($data) {
-                $this->otpService->clearCacheTotalRequestVerifyOtp(); // Nếu gửi mã OTP mới thì xóa cache limitRequestVerifyOtp
-                $this->otpService->addTotalRequestSendOtp(); // Nếu gửi mã OTP thì tăng tổng lên 1
-            }
-        }
-        return returnDataSuccess(
-            [],
-            array_merge(
-                [
-                    'success' => $data,
-                    'limitRequest' => $this->isLimitTotalRequestSendOtp,
-                ],
-                $this->getDataInfoResponse()
-            )
-        );
-    }
-    public function sendOtpZaloPatientRelativeMobileTreatmentFee()
-    {
-        // Đạt giới hạn thì k gửi otp
-        if ($this->isLimitTotalRequestSendOtp) {
-            $data = false;
-        } else {
-            $data = $this->otpService->createAndSendOtpZaloPatientRelativeMobileTreatmentFee();
-            if ($data) {
-                $this->otpService->clearCacheTotalRequestVerifyOtp(); // Nếu gửi mã OTP mới thì xóa cache limitRequestVerifyOtp
-                $this->otpService->addTotalRequestSendOtp(); // Nếu gửi mã OTP thì tăng tổng lên 1
-            }
-        }
-        return returnDataSuccess(
-            [],
-            array_merge(
-                [
-                    'success' => $data,
-                    'limitRequest' => $this->isLimitTotalRequestSendOtp,
-                ],
-                $this->getDataInfoResponse()
-            )
-        );
-    }
-    public function sendOtpZaloPatientRelativePhoneTreatmentFee()
-    {
-        // Đạt giới hạn thì k gửi otp
-        if ($this->isLimitTotalRequestSendOtp) {
-            $data = false;
-        } else {
-            $data = $this->otpService->createAndSendOtpZaloPatientRelativePhoneTreatmentFee();
-            if ($data) {
-                $this->otpService->clearCacheTotalRequestVerifyOtp(); // Nếu gửi mã OTP mới thì xóa cache limitRequestVerifyOtp
-                $this->otpService->addTotalRequestSendOtp(); // Nếu gửi mã OTP thì tăng tổng lên 1
-            }
-        }
-        return returnDataSuccess(
-            [],
-            array_merge(
-                [
-                    'success' => $data,
-                    'limitRequest' => $this->isLimitTotalRequestSendOtp,
-                ],
-                $this->getDataInfoResponse()
-            )
-        );
-    }
-
-    public function sendOtpZaloRegisterPhone()
-    {
-        // Đạt giới hạn thì k gửi otp
-        if ($this->isLimitTotalRequestSendOtp) {
-            $data = false;
-        } else {
-            $data = $this->otpService->createAndSendOtpZaloRegisterPhone();
-            if ($data) {
-                $this->otpService->clearCacheTotalRequestVerifyOtp(); // Nếu gửi mã OTP mới thì xóa cache limitRequestVerifyOtp
-                $this->otpService->addTotalRequestSendOtp(); // Nếu gửi mã OTP thì tăng tổng lên 1
-            }
-        }
-        return returnDataSuccess(
-            [],
-            array_merge(
-                [
-                    'success' => $data,
-                    'limitRequest' => $this->isLimitTotalRequestSendOtp,
-                ],
-                $this->getDataInfoResponse()
-            )
-        );
-    }
-
-    public function sendOtpZaloPhoneTimKiemBenhNhan()
-    {
-        // Đạt giới hạn thì k gửi otp
-        if ($this->isLimitTotalRequestSendOtp) {
-            $data = false;
-        } else {
-            $data = $this->otpService->createAndSendOtpZaloPhoneTimKiemBenhNhan();
-            if ($data) {
-                $this->otpService->clearCacheTotalRequestVerifyOtp(); // Nếu gửi mã OTP mới thì xóa cache limitRequestVerifyOtp
-                $this->otpService->addTotalRequestSendOtp(); // Nếu gửi mã OTP thì tăng tổng lên 1
-            }
-        }
-        return returnDataSuccess(
-            [],
-            array_merge(
-                [
-                    'success' => $data,
-                    'limitRequest' => $this->isLimitTotalRequestSendOtp,
-                ],
-                $this->getDataInfoResponse()
-            )
-        );
     }
 }

@@ -16,9 +16,11 @@ use Illuminate\Support\Facades\Cache;
 use App\Services\Zalo\ZaloService;
 use Exception;
 use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Facades\Http;
 
 class OtpService
 {
+    protected $urlOtpService;
     protected $registerPhone;
     protected $params;
     protected $smsSerivce;
@@ -46,11 +48,6 @@ class OtpService
     protected $patientCode;
     protected $phoneTimKiemThongTin;
     protected $otpCode;
-    protected $cacheKeySaveOtp;
-    protected $cacheKeyVerifyPaitent;
-    protected $cacheKeyTotalRequestSendOtp;
-    protected $cacheKeyTotalRequestVerifyOtp;
-    protected $lastOtpSentTo; // Lưu lại nơi nhận otp trong lần gọi api này => lưu lastOtpSentTo trong totalRequestSendOtp
     public function __construct(
         // TwilioService $twilioService,
         ESmsService $eSmsService,
@@ -61,6 +58,7 @@ class OtpService
         PatientRepository $patientRepository,
         Patient $patient,
     ) {
+        $this->urlOtpService = config('database')['connections']['otp_service']['url'];
         // $this->twilioService = $twilioService;
         $this->eSmsService = $eSmsService;
         $this->speedSmsService = $speedSmsService;
@@ -86,12 +84,6 @@ class OtpService
         $this->patientCode = $this->params->patientCode;
         $this->setParamsPatient();
         $this->otpCode = $this->getRandomNumberOtp(); // Lấy random 
-        $this->cacheKeySaveOtp = $this->getCacheKeySaveOtp(); // Lấy key cache sẽ lưu mã otp
-        $this->cacheKeyVerifyPaitent = $this->getCacheKeyVerifyPaitent(); // lấy key cache sẽ lưu trạng thái đã xác thực
-        $this->cacheKeyTotalRequestSendOtp = $this->getCacheKeyTotalRequestSendOtp(); // lấy key cache sẽ lưu số lần gọi OTP
-        $this->cacheKeyTotalRequestVerifyOtp = $this->getCacheKeyTotalRequestVerifyOtp(); // lấy key cache sẽ lưu số lần đã xác thực mã OTP
-
-        $this->setLastOtpSentTo(); // cập nhật nơi nhận otp của lần gọi api này
         return $this;
     }
     public function setParamsPatient()
@@ -120,45 +112,6 @@ class OtpService
         if (empty($this->dataPatient)) {
             throw new \Exception('Không tìm thấy thông tin bệnh nhân.');
         }
-    }
-    public function setLastOtpSentTo()
-    {
-        switch ($this->params->method) {
-            case 'patient-phone-sms':
-                $value = $this->phone;
-                break;
-            case 'patient-mobile-sms':
-                $value = $this->mobile;
-                break;
-            case 'patient-mail':
-                $value = $this->email;
-                break;
-            case 'patient-phone-zalo':
-                $value = $this->phone;
-                break;
-            case 'patient-mobile-zalo':
-                $value = $this->mobile;
-                break;
-            case 'patient-relative-phone-sms':
-                $value = $this->relativePhone;
-                break;
-            case 'patient-relative-mobile-sms':
-                $value = $this->relativeMobile;
-                break;
-            case 'patient-relative-phone-zalo':
-                $value = $this->relativePhone;
-                break;
-            case 'patient-relative-mobile-zalo':
-                $value = $this->relativeMobile;
-                break;
-            case 'register-phone-zalo':
-                $value = $this->registerPhone;
-                break;
-            default:
-                $value = $this->phoneTimKiemThongTin;
-                break;
-        }
-        $this->lastOtpSentTo = $value;
     }
     public function getPhoneTimKiemThongTin()
     {
@@ -244,200 +197,20 @@ class OtpService
         $dataPatient = $this->patient->where('patient_code', $patientCode)->first();
         return $dataPatient;
     }
-    // Trả về key lưu mã otp của patient
-    public function getCacheKeySaveOtp()
-    {
-        $key = 'otp_patient_phone_' . ($this->phone ?? $this->phoneTimKiemThongTin) . '_register_phone_' . $this->registerPhone; // Lưu thêm để dùng lúc gọi xác thực sđt khi đăng ký mới
-        return $key;
-    }
-    // Trả về key lưu trạng thái đã xác thực của thiết bị với patient này
-    public function getCacheKeyVerifyPaitent()
-    {
-        $key = 'OTP_verify_' . ($this->phone ?? $this->registerPhone ?? $this->phoneTimKiemThongTin) . '_' . $this->sanitizedDeviceInfo . '_' . $this->ipAddress; // thay patientCode = phone
-        return $key;
-    }
-    // Trả về key lưu số lần gọi lấy OTP của thiết bị 
-    public function getCacheKeyTotalRequestSendOtp()
-    {
-        $key = 'total_request_send_otp_' . $this->sanitizedDeviceInfo . '_' . $this->ipAddress; // Tránh key quá dài
-        return $key;
-    }
-    // Trả về key lưu số lần xác thực OTP của thiết bị 
-    public function getCacheKeyTotalRequestVerifyOtp()
-    {
-        $key = 'total_request_verify_otp_' . $this->sanitizedDeviceInfo . '_' . $this->ipAddress; // Tránh key quá dài
-        return $key;
-    }
-    // set lại giá trị mã OTP về null
-    public function setNullCacheOtp()
-    {
-        Cache::put($this->cacheKeySaveOtp, false, $this->otpTTL);
-    }
-    // Lấy mã OTP từ cache
-    public function getDataCacheOtp()
-    {
-        $otp = Cache::get($this->cacheKeySaveOtp);
-        return $otp;
-    }
-    // Tạo cache lưu trạng thái đã xác thực cho thiết bị với patient này
-    public function createCacheVerifySuccess()
-    {
-        Cache::put($this->cacheKeyVerifyPaitent, 1, $this->cacheVerifySuccesTTL);
-    }
-    // Lấy data các lần gọi nhận otp của thiết bị
-    public function getDataTotalRequestSendOtp()
-    {
-        $otp = Cache::get($this->cacheKeyTotalRequestSendOtp);
-        return $otp;
-    }
-    // Tạo cache lưu các lần gọi nhận OTP
-    public function createCacheTotalRequestSendOtp($dataTotalRequestSendOtp)
-    {
-        // **Lưu lại vào cache với TTL 
-        $cacheKeySet = "cache_keys:" . "device_get_otp"; // Set để lưu danh sách key
-        Cache::put($this->cacheKeyTotalRequestSendOtp, $dataTotalRequestSendOtp, now()->addDay());
-        // Lưu key vào Redis Set để dễ xóa sau này
-        Redis::connection('cache')->sadd($cacheKeySet, [$this->cacheKeyTotalRequestSendOtp]);
-    }
-    // Trả về param khởi tạo cho patientCode khi lưu cache totalRequestSendOtp
-    public function getFirstParamPatientCodeTotalRequestSendOtp()
-    {
-        // Thêm patientCode đầu tiên
-        return [
-            'totalRequests' => 1,
-            'patientName' => $this->patientName,
-            'lastOtpSentTo' => $this->lastOtpSentTo, // Nơi nhận otp lần cuối
-        ];
-    }
-    // Trả về param khởi tạo cho totalRequestSendOtp khi lưu cache totalRequestSendOtp
-    public function getFirstParamTotalRequestSendOtp()
-    {
-        return [
-            'device' => $this->deviceInfo,
-            'ip' => $this->ipAddress,
-            'total_requests' => 0,  // Số lần gửi OTP
-            'first_request_at' => now()->format('YmdHis'), // Thời gian gọi lần đầu
-            'last_request_at' => null, // Chưa có lần cuối
-            'last_patient_code_request_otp' => $this->patientCode, // patientCode gọi lấy OTP lần cuối
-            'patient_code_list' => [
-                $this->patientCode => $this->getFirstParamPatientCodeTotalRequestSendOtp() // Thêm patientCode đầu tiên
-            ]
-        ];
-    }
-    public function getTotalRequestSendOtp()
-    {
-        // Kiểm tra cache hiện tại
-        $dataTotalRequestSendOtp = $this->getDataTotalRequestSendOtp();
-        // Nếu cache chưa tồn tại, khởi tạo dữ liệu
-        if (!$dataTotalRequestSendOtp) {
-            $dataTotalRequestSendOtp = $this->getFirstParamTotalRequestSendOtp();
-        }
-        $this->createCacheTotalRequestSendOtp($dataTotalRequestSendOtp);
-        return $dataTotalRequestSendOtp['total_requests'];
-    }
-    public function getDataTotalRequestVerifyOtp()
-    {
-        $total = Cache::get($this->cacheKeyTotalRequestVerifyOtp) ?? 0;
-        return $total;
-    }
-    // set lại giá trị số lần gọi xác thực OTP
-    public function setTotalRequestVerifyOtp($total)
-    {
-        Cache::put($this->cacheKeyTotalRequestVerifyOtp, $total, now()->addHour());
-    }
-    // set lại giá trị số lần gọi nhận mã OTP
-    public function setTotalRequestSendOtp($total)
-    {
-        Cache::put($this->cacheKeyTotalRequestSendOtp, $total, 5);
-    }
-    // Khởi tạo hoặc trả về số lần gọi xác thực OTP
-    public function getOrCreateTotalRequestVerifyOtp()
-    {
-        // Kiểm tra xem cache đã tồn tại chưa
-        if (!Cache::has($this->cacheKeyTotalRequestVerifyOtp)) {
-            // Nếu chưa có, đặt giá trị là 1 
-            $this->setTotalRequestVerifyOtp(1);
-        } else {
-            // Nếu đã có, tăng giá trị lên 1
-            Cache::increment($this->cacheKeyTotalRequestVerifyOtp);
-        }
-        // Trả về số lần gửi OTP của thiết bị này trong thời gian
-        return Cache::get($this->cacheKeyTotalRequestVerifyOtp);
-    }
-    // Thêm 1 vào số lần yêu cầu nhận mã OTP
-    public function addTotalRequestSendOtp()
-    {
-        // Kiểm tra cache hiện tại
-        $dataTotalRequestSendOtp = $this->getDataTotalRequestSendOtp();
-
-        // Nếu cache chưa tồn tại, khởi tạo dữ liệu
-        if (!$dataTotalRequestSendOtp) {
-            $dataTotalRequestSendOtp = $this->getFirstParamTotalRequestSendOtp();
-        } else {
-            // Nếu đã tồn tại, tăng số lần gửi OTP
-            $dataTotalRequestSendOtp['total_requests'] += 1;
-            $dataTotalRequestSendOtp['last_request_at'] = now()->format('YmdHis'); // Cập nhật lần cuối gửi OTP
-            $dataTotalRequestSendOtp['last_patient_code_request_otp'] = $this->patientCode; // patientCode gọi nhận otp lần cuối
-            // Kiểm tra patientCode đã có chưa
-            if (isset($dataTotalRequestSendOtp['patient_code_list'][$this->patientCode])) {
-                $dataTotalRequestSendOtp['patient_code_list'][$this->patientCode]['totalRequests'] += 1; // Tăng số lần gửi cho patientCode
-                $dataTotalRequestSendOtp['patient_code_list'][$this->patientCode]['lastOtpSentTo'] = $this->lastOtpSentTo; // Cập nhật địa chỉ nhận OTP lần cuối
-            } else {
-                $dataTotalRequestSendOtp['patient_code_list'][$this->patientCode] = $this->getFirstParamPatientCodeTotalRequestSendOtp(); // Thêm patientCode mới
-            }
-        }
-        // Lưu lại vào cache 
-        $this->createCacheTotalRequestSendOtp($dataTotalRequestSendOtp);
-
-        return $dataTotalRequestSendOtp['total_requests'];
-    }
-    /**
-     * Kiểm tra xem OTP đã được xác thực chưa
-     */
-    public function isVerified(): bool
-    {
-        if (!empty($this->patientCode) && empty($this->phone)) {
-            return false;
-        }
-        // Trả về xem có cache verify cho patient không
-        return Cache::has($this->getCacheKeyVerifyPaitent());
-    }
     // Lấy số ngẫu nhiên
     public function getRandomNumberOtp()
     {
         $otpCode = rand(100000, 999999);
         return $otpCode;
     }
-
-    public function createCacheSaveOtp()
+    /**
+     * Kiểm tra xem OTP đã được xác thực chưa
+     */
+    public function isVerified(): bool
     {
-        // $cacheKeySet = "cache_keys:" . "token"; // Set để lưu danh sách key
-        $data = Cache::put($this->cacheKeySaveOtp, $this->otpCode, now()->addMinutes($this->otpTTL));
-        // Lưu key vào Redis Set để dễ xóa sau này
-        // Redis::connection('cache')->sadd($cacheKeySet, [$cacheKey]);
-
-        return $data;
-    }
-    public function clearCacheSaveOtp()
-    {
-        if (Cache::has($this->cacheKeySaveOtp)) {
-            // Nếu có cache thì set nó về rỗng
-            $this->setNullCacheOtp();
-        };
-    }
-    public function clearCacheTotalRequestVerifyOtp()
-    {
-        if (Cache::has($this->cacheKeyTotalRequestVerifyOtp)) {
-            // Nếu có cache thì đặt nó về 0
-            $this->setTotalRequestVerifyOtp(0);
-        };
-    }
-    public function clearCacheTotalRequestSendOtp()
-    {
-        if (Cache::has($this->cacheKeyTotalRequestSendOtp)) {
-            // Nếu có cache thì đặt nó về 0
-            $this->setTotalRequestSendOtp(0);
-        };
+        $phone = $this->phone ?? $this->registerPhone ?? $this->phoneTimKiemThongTin;
+        // Trả về xem có cache verify cho patient không
+        return $this->callApiCheckStatusVerifyOtp($phone);
     }
     /**
      * Tạo và gửi OTP nếu chưa có trong cache
@@ -445,203 +218,153 @@ class OtpService
     // Gửi qua phone bệnh nhân
     public function createAndSendOtpPhoneTreatmentFee()
     {
-        if (!$this->phone) {
-            return false;
-        }
-        // clear OTP cũ trước khi gửi OTP mới
-        $this->clearCacheSaveOtp();
-
-        try {
-            $this->smsSerivce->sendOtp($this->phone, $this->otpCode);
-            // Gửi thành công thì mới tạo cache
-            $this->createCacheSaveOtp();
-            return true;
-        } catch (\Throwable $e) {
-            return false;
-        }
+        return $this->callApiSendOtp($this->phone, null, 'sms');
     }
     // Gửi qua mobile bệnh nhân
     public function createAndSendOtpMobileTreatmentFee()
     {
-        if (!$this->mobile) {
-            return false;
-        }
-        // clear OTP cũ trước khi gửi OTP mới
-        $this->clearCacheSaveOtp();
-
-        try {
-            $this->smsSerivce->sendOtp($this->mobile, $this->otpCode);
-            // Gửi thành công thì mới tạo cache
-            $this->createCacheSaveOtp();
-            return true;
-        } catch (\Throwable $e) {
-            return false;
-        }
+        return $this->callApiSendOtp($this->mobile, null, 'sms');
     }
     // Gửi qua phone người thân
     public function createAndSendOtpPatientRelativePhoneTreatmentFee()
     {
-        if (!$this->relativePhone) {
-            return false;
-        }
-        // clear OTP cũ trước khi gửi OTP mới
-        $this->clearCacheSaveOtp();
-
-        try {
-            $this->smsSerivce->sendOtp($this->relativePhone, $this->otpCode);
-            // Gửi thành công thì mới tạo cache
-            $this->createCacheSaveOtp();
-            return true;
-        } catch (\Throwable $e) {
-            return false;
-        }
+        return $this->callApiSendOtp($this->relativePhone, null, 'sms');
     }
     // Gửi qua mobile người thân
     public function createAndSendOtpPatientRelativeMobileTreatmentFee()
     {
-        if (!$this->relativeMobile) {
-            return false;
-        }
-        // clear OTP cũ trước khi gửi OTP mới
-        $this->clearCacheSaveOtp();
-
-        try {
-            $this->smsSerivce->sendOtp($this->relativeMobile, $this->otpCode);
-            // Gửi thành công thì mới tạo cache
-            $this->createCacheSaveOtp();
-            return true;
-        } catch (\Throwable $e) {
-            return false;
-        }
+        return $this->callApiSendOtp($this->relativeMobile, null, 'sms');
     }
     public function createAndSendOtpMailTreatmentFee()
     {
-        if (!$this->email) {
-            return false;
-        }
-        // clear OTP cũ trước khi gửi OTP mới
-        $this->clearCacheSaveOtp();
-
-        try {
-            $this->mailService->sendOtp($this->email, $this->otpCode);
-            // Gửi thành công thì mới tạo cache
-            $this->createCacheSaveOtp();
-            return true;
-        } catch (\Throwable $e) {
-            return false;
-        }
+        return $this->callApiSendOtp($this->phone, $this->email, 'mail');
     }
 
     // Gửi qua zalo phone bệnh nhân
     public function createAndSendOtpZaloPhoneTreatmentFee()
     {
-        if (!$this->phone) {
-            return false;
-        }
-        // clear OTP cũ trước khi gửi OTP mới
-        $this->clearCacheSaveOtp();
-
-        try {
-            $this->zaloSerivce->sendOtp($this->phone, $this->otpCode);
-            // Gửi thành công thì mới tạo cache
-            $this->createCacheSaveOtp();
-            return true;
-        } catch (\Throwable $e) {
-            return false;
-        }
+        return $this->callApiSendOtp($this->phone, 'ndai6618@gmail.com', 'mail');
+        return $this->callApiSendOtp($this->phone, null, 'zalo');
     }
     // Gửi qua zalo mobile bệnh nhân
     public function createAndSendOtpZaloMobileTreatmentFee()
     {
-        if (!$this->mobile) {
-            return false;
-        }
-        // clear OTP cũ trước khi gửi OTP mới
-        $this->clearCacheSaveOtp();
-
-        try {
-            $this->zaloSerivce->sendOtp($this->mobile, $this->otpCode);
-            // Gửi thành công thì mới tạo cache
-            $this->createCacheSaveOtp();
-            return true;
-        } catch (\Throwable $e) {
-            return false;
-        }
+        return $this->callApiSendOtp($this->mobile, null, 'zalo');
     }
     // Gửi qua zalo phone người thân bệnh nhân
     public function createAndSendOtpZaloPatientRelativePhoneTreatmentFee()
     {
-        if (!$this->relativePhone) {
-            return false;
-        }
-        // clear OTP cũ trước khi gửi OTP mới
-        $this->clearCacheSaveOtp();
-
-        try {
-            $this->zaloSerivce->sendOtp($this->relativePhone, $this->otpCode);
-            // Gửi thành công thì mới tạo cache
-            $this->createCacheSaveOtp();
-            return true;
-        } catch (\Throwable $e) {
-            return false;
-        }
+        return $this->callApiSendOtp($this->relativePhone, null, 'zalo');
     }
     // Gửi qua zalo mobile người thân bệnh nhân
     public function createAndSendOtpZaloPatientRelativeMobileTreatmentFee()
     {
-        if (!$this->relativeMobile) {
-            return false;
-        }
-        // clear OTP cũ trước khi gửi OTP mới
-        $this->clearCacheSaveOtp();
-
-        try {
-            $this->zaloSerivce->sendOtp($this->relativeMobile, $this->otpCode);
-            // Gửi thành công thì mới tạo cache
-            $this->createCacheSaveOtp();
-            return true;
-        } catch (\Throwable $e) {
-            return false;
-        }
+        return $this->callApiSendOtp($this->relativeMobile, null, 'zalo');    
     }
     // Gửi qua zalo số điện thoại đăng ký mới
     public function createAndSendOtpZaloRegisterPhone()
     {
-        if (!$this->registerPhone) {
-            return false;
-        }
-        // clear OTP cũ trước khi gửi OTP mới
-        $this->clearCacheSaveOtp();
-
-        try {
-            $this->zaloSerivce->sendOtp($this->registerPhone, $this->otpCode);
-            // Gửi thành công thì mới tạo cache
-            $this->createCacheSaveOtp();
-            return true;
-        } catch (\Throwable $e) {
-            return false;
-        }
+        return $this->callApiSendOtp($this->registerPhone, 'ndai6618@gmail.com', 'mail');
+        return $this->callApiSendOtp($this->registerPhone, null, 'zalo');
     }
     // Gửi qua zalo số điện thoại đầu tiên trong khi tìm kiếm thông tin
     public function createAndSendOtpZaloPhoneTimKiemBenhNhan()
     {
-        if (!$this->phoneTimKiemThongTin) {
-            return false;
-        }
-        // clear OTP cũ trước khi gửi OTP mới
-        $this->clearCacheSaveOtp();
+        return $this->callApiSendOtp($this->phoneTimKiemThongTin, 'ndai6618@gmail.com', 'mail');
+        return $this->callApiSendOtp($this->phoneTimKiemThongTin, null, 'zalo');
+    }
+    /**
+     * Gọi gửi OTP bằng backend otp-service
+     */
+    public function callApiSendOtp($phone, $email, $method)
+    {
+        $data = [
+            "CommonParam" => [], 
+            "ApiData" => [
+                "Method" => $method,
+                "Phone" => $phone,
+                "Email" => $email,
+                "SanitizedDeviceInfo" => $this->sanitizedDeviceInfo,
+                "IpAddress" => $this->ipAddress, 
+            ],
+        ];
+
+        // Convert to JSON then base64 encode
+        $jsonString = json_encode($data, JSON_UNESCAPED_UNICODE);
+        $paramBase64 = base64_encode($jsonString);
+
+        // Gọi API OTP service
+        $url = $this->urlOtpService."/api/v1/send-otp?param=" . urlencode($paramBase64);
 
         try {
-            // $this->zaloSerivce->sendOtp($this->phoneTimKiemThongTin, $this->otpCode);
-            $this->mailService->sendOtp('ndai6618@gmail.com', $this->otpCode);
-            // Gửi thành công thì mới tạo cache
-            $this->createCacheSaveOtp();
-            return true;
-        } catch (\Throwable $e) {
+            $response = Http::timeout(25)->get($url);
+            if (!$response->successful()) {
+                throw new Exception("Không thể call api otp-service!");
+            }
+            return $response->json();
+        } catch (Exception $e) {
+            return [
+                'success' => false,
+            ];
+        }
+    }
+    public function callApiVerifyOtp($inputOtp)
+    {
+        $data = [
+            "CommonParam" => [], 
+            "ApiData" => [
+                "InputOtp" => $inputOtp,
+                "Phone" => $this->phone ?? $this->registerPhone ?? $this->phoneTimKiemThongTin,
+                "SanitizedDeviceInfo" => $this->sanitizedDeviceInfo,
+                "IpAddress" => $this->ipAddress, 
+            ],
+        ];
+
+        // Convert to JSON then base64 encode
+        $jsonString = json_encode($data, JSON_UNESCAPED_UNICODE);
+        $paramBase64 = base64_encode($jsonString);
+
+        // Gọi API OTP service
+        $url = $this->urlOtpService."/api/v1/verify-otp?param=" . urlencode($paramBase64);
+
+        try {
+            $response = Http::timeout(25)->get($url);
+            if (!$response->successful()) {
+                throw new Exception("Không thể call api otp-service!");
+            }
+            return $response->json();
+        } catch (Exception $e) {
+            return [
+                'success' => false,
+            ];
+        }
+    }
+    public function callApiCheckStatusVerifyOtp($phone)
+    {
+        $data = [
+            "CommonParam" => [], 
+            "ApiData" => [
+                "Phone" => $phone,
+                "SanitizedDeviceInfo" => $this->sanitizedDeviceInfo,
+                "IpAddress" => $this->ipAddress, 
+            ],
+        ];
+
+        // Convert to JSON then base64 encode
+        $jsonString = json_encode($data, JSON_UNESCAPED_UNICODE);
+        $paramBase64 = base64_encode($jsonString);
+
+        // Gọi API OTP service
+        $url = $this->urlOtpService."/api/v1/check-status-verify-otp?param=" . urlencode($paramBase64);
+
+        try {
+            $response = Http::timeout(25)->get($url);
+            if (!$response->successful()) {
+                throw new Exception("Không thể call api otp-service!");
+            }
+            return $response->json()['data']['success'] ?? false;
+        } catch (Exception $e) {
             return false;
         }
     }
-    /**
-     * Tạo và gửi OTP
-     */
 }

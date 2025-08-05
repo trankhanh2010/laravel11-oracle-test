@@ -27,10 +27,10 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // Job chạy định kỳ mỗi ngày để refresh lại AccessToken Zalo
-        $schedule->call(function () {
-            dispatch(new RefreshAccessTokenZalo);
-        })->dailyAt('12:00');
+        // // Job chạy định kỳ mỗi ngày để refresh lại AccessToken Zalo
+        // $schedule->call(function () {
+        //     dispatch(new RefreshAccessTokenZalo);
+        // })->dailyAt('12:00');
         
     }
 
